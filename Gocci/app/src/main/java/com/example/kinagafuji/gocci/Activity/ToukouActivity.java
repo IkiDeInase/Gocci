@@ -1,9 +1,11 @@
-package com.example.kinagafuji.gocci;
+package com.example.kinagafuji.gocci.Activity;
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.example.kinagafuji.gocci.R;
 
 
 public class ToukouActivity extends Activity {

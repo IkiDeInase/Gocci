@@ -1,4 +1,4 @@
-package com.example.kinagafuji.gocci;
+package com.example.kinagafuji.gocci.Fragment;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -24,6 +24,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.kinagafuji.gocci.Base.BaseFragment;
+import com.example.kinagafuji.gocci.R;
+import com.example.kinagafuji.gocci.Activity.TenpoActivity;
 import com.example.kinagafuji.gocci.data.UserData;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -134,8 +137,7 @@ public class Search_mapFragment extends BaseFragment {
     }
 
     @Override
-    public void onDestroyView()
-    {
+    public void onDestroyView() {
         super.onDestroyView();
         Fragment fragment = (getFragmentManager().findFragmentById(R.id.map));
         FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();

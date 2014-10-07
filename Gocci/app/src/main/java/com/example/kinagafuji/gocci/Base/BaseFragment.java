@@ -1,4 +1,4 @@
-package com.example.kinagafuji.gocci;
+package com.example.kinagafuji.gocci.Base;
 
 import android.support.v4.app.Fragment;
 

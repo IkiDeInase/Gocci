@@ -1,4 +1,4 @@
-package com.example.kinagafuji.gocci;
+package com.example.kinagafuji.gocci.Activity;
 
 
 import android.app.Activity;
@@ -7,6 +7,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.Window;
 import android.view.WindowManager;
+
+import com.example.kinagafuji.gocci.LoginActivity;
+import com.example.kinagafuji.gocci.R;
 
 
 public class SplashActivity extends Activity {

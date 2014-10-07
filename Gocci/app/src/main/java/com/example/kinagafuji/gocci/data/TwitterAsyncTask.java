@@ -1,6 +1,8 @@
-package com.example.kinagafuji.gocci;
+package com.example.kinagafuji.gocci.data;
 
 import android.os.AsyncTask;
+
+import com.example.kinagafuji.gocci.data.TwitterResult;
 
 import twitter4j.TwitterException;
 
@@ -35,7 +37,7 @@ public class TwitterAsyncTask<Params, Progress, Result> extends AsyncTask<Params
 
     @Override
     protected void onPostExecute(TwitterResult<Result> result) {
-        if(!result.hasError()) {
+        if (!result.hasError()) {
             mCallback.run(result.getResult());
         } else {
             mOnError.run(result.getError());
@@ -51,6 +53,7 @@ public class TwitterAsyncTask<Params, Progress, Result> extends AsyncTask<Params
 
     /**
      * doInBackgroundの処理を委譲する
+     *
      * @param <Result>
      * @param <Params>
      */
@@ -60,6 +63,7 @@ public class TwitterAsyncTask<Params, Progress, Result> extends AsyncTask<Params
 
     /**
      * onPostExecuteの処理を委譲する
+     *
      * @param <Result>
      */
     public static interface TwitterCallback<Result> {

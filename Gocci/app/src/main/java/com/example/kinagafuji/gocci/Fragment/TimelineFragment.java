@@ -1,32 +1,36 @@
-package com.example.kinagafuji.gocci;
+package com.example.kinagafuji.gocci.Fragment;
 
-import android.app.Activity;
+import android.animation.Animator;
+import android.animation.AnimatorInflater;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.StrictMode;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.MediaController;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.VideoView;
+
+import com.example.kinagafuji.gocci.Base.BaseFragment;
+import com.example.kinagafuji.gocci.R;
+import com.example.kinagafuji.gocci.Activity.ToukouActivity;
+import com.example.kinagafuji.gocci.data.UserData;
+import com.squareup.picasso.Picasso;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -38,14 +42,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 
-public class MyActivity extends Activity {
+public class TimelineFragment extends BaseFragment {
 
-    ProgressDialog pDialog;
+    private ProgressDialog pDialog;
 
     static boolean isXLargeScreen = false;
 
@@ -59,28 +60,72 @@ public class MyActivity extends Activity {
     private static final String TAG_MOVIE = "movie";
     private static final String TAG_RESTNAME = "restname";
 
-    private ArrayList<User> users = new ArrayList<User>();
+    private ArrayList<UserData> users = new ArrayList<UserData>();
     private String data;
     private static boolean isMov = false;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_my);
+    private ListView mListView;
 
-        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().build());
+    private int mCardLayoutIndex = 0;
+
+    public static TimelineFragment newInstance() {
+        TimelineFragment fragment = new TimelineFragment();
+
+        return fragment;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // FragmentのViewを返却
+        View rootView = inflater.inflate(R.layout.fragment_timeline, container, false);
+
         isXLargeScreen = isXLargeScreen();
         // SwipeRefreshLayoutの設定
-        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.refresh);
         mSwipeRefreshLayout.setOnRefreshListener(mOnRefreshListener);
         mSwipeRefreshLayout.setColorSchemeColors(Color.GRAY, Color.CYAN, Color.MAGENTA, Color.BLACK);
 
+        mListView = (ListView) rootView.findViewById(R.id.mylistView2);
+
+        final UserAdapter userAdapter = new UserAdapter(getActivity(), 0, users);
+        mListView.setDivider(null);
+        // スクロールバーを表示しない
+        mListView.setVerticalScrollBarEnabled(false);
+        // カード部分をselectorにするので、リストのselectorは透明にする
+        mListView.setSelector(android.R.color.transparent);
+
+        // 最後の余白分のビューを追加
+        if (mCardLayoutIndex > 0) {
+            mListView.addFooterView(LayoutInflater.from(getActivity()).inflate(
+                    R.layout.card_footer, mListView, false));
+        }
+        mListView.setAdapter(userAdapter);
+
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
+
+                UserData country = users.get(pos);
+
+                Intent intent = new Intent(getActivity().getApplicationContext(), ToukouActivity.class);
+
+                //intent.putExtra("restname", country.getRestname());
+
+                //intent.putExtra("locality", country.getLocality());
+
+                startActivity(intent);
+            }
+
+        });
+
         new UserTask().execute(url);
-        pDialog = new ProgressDialog(this);
+        pDialog = new ProgressDialog(getActivity());
         pDialog.setMessage("Please wait..");
         pDialog.setIndeterminate(true);
         pDialog.setCancelable(false);
         pDialog.show();
+
+        return rootView;
     }
 
     public boolean isXLargeScreen() {
@@ -102,11 +147,10 @@ public class MyActivity extends Activity {
         }
     };
 
-    public class UserTask extends AsyncTask<String, String, String> {
-
+    public class UserTask extends AsyncTask<String, String, Integer> {
 
         @Override
-        protected String doInBackground(String... strings) {
+        protected Integer doInBackground(String... strings) {
             HttpClient httpClient = new DefaultHttpClient();
 
 
@@ -133,14 +177,10 @@ public class MyActivity extends Activity {
                 } catch (Exception e) {
                     Log.d("JSONSampleActivity", "Error");
                     Log.d("error", String.valueOf(e));
-
                 }
 
-
                 try {
-
                     JSONArray jsonArray = new JSONArray(data);
-
 
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -154,7 +194,7 @@ public class MyActivity extends Activity {
 
                         Log.d("String", post_id + "/" + user_id + "/" + user_name + "/" + picture + "/" + movie + "/" + restname);
 
-                        User user = new User();
+                        UserData user = new UserData();
 
                         //movieとpictureはどうすれば？
                         user.setPost_id(post_id);
@@ -166,52 +206,28 @@ public class MyActivity extends Activity {
 
                         users.add(user);
 
-
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
                     Log.d("error", String.valueOf(e));
                 }
-
-
             } else {
                 Log.d("JSONSampleActivity", "Status" + status);
-
-
             }
 
-            return data;
+            return status;
         }
 
         @Override
-        protected void onPostExecute(String result) {
+        protected void onPostExecute(Integer result) {
+            if (result != null && result == HttpStatus.SC_OK) {
+                //ListViewの最読み込み
+                mListView.invalidateViews();
+            } else {
+                //通信失敗した際のエラー処理
+                Toast.makeText(getActivity().getApplicationContext(), "タイムラインの取得に失敗しました。", Toast.LENGTH_SHORT).show();
+            }
             pDialog.dismiss();
-
-            final UserAdapter userAdapter = new UserAdapter(MyActivity.this, 0, users);
-            ListView lv = (ListView) findViewById(R.id.mylistView2);
-            lv.setDivider(null);
-            // スクロールバーを表示しない
-            lv.setVerticalScrollBarEnabled(false);
-            // カード部分をselectorにするので、リストのselectorは透明にする
-            lv.setSelector(android.R.color.transparent);
-            lv.setAdapter(userAdapter);
-
-            lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
-
-                    User country = users.get(pos);
-
-                    Intent intent = new Intent(MyActivity.this, ToukouActivity.class);
-
-                    //intent.putExtra("restname", country.getRestname());
-
-                    //intent.putExtra("locality", country.getLocality());
-
-                    startActivity(intent);
-                }
-
-            });
         }
     }
 
@@ -230,73 +246,14 @@ public class MyActivity extends Activity {
             this.user_id = (TextView) view.findViewById(R.id.user_id);
             this.user_name = (TextView) view.findViewById(R.id.user_name);
             this.restname = (TextView) view.findViewById(R.id.restname);
-
         }
     }
 
-    public class User {
-        private String movie;
-        private String picture;
-        private String post_id;
-        private String user_id;
-        private String user_name;
-        private String restname;
-
-        public String getMovie() {
-            return this.movie;
-        }
-
-        public void setMovie(String movie) {
-            this.movie = movie;
-        }
-
-        public String getPicture() {
-            return this.picture;
-        }
-
-        public void setPicture(String picture) {
-            this.picture = picture;
-        }
-
-        public String getPost_id() {
-            return this.post_id;
-        }
-
-        public void setPost_id(String post_id) {
-            this.post_id = post_id;
-        }
-
-        public String getUser_id() {
-            return this.user_id;
-        }
-
-        public void setUser_id(String user_id) {
-            this.user_id = user_id;
-        }
-
-        public String getUser_name() {
-            return this.user_name;
-        }
-
-        public void setUser_name(String user_name) {
-            this.user_name = user_name;
-        }
-
-        public String getRestname() {
-            return this.restname;
-        }
-
-        public void setRestname(String restname) {
-            this.restname = restname;
-        }
-
-    }
-
-    public class UserAdapter extends ArrayAdapter<User> {
+    public class UserAdapter extends ArrayAdapter<UserData> {
         private LayoutInflater layoutInflater;
+        int mAnimatedPosition = ListView.INVALID_POSITION;
 
-
-        public UserAdapter(Context context, int viewResourceId, ArrayList<User> users) {
+        public UserAdapter(Context context, int viewResourceId, ArrayList<UserData> users) {
             super(context, viewResourceId, users);
             this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
@@ -311,7 +268,7 @@ public class MyActivity extends Activity {
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
-            User user = this.getItem(position);
+            UserData user = this.getItem(position);
 
             viewHolder.post_id.setText(user.getPost_id());
             viewHolder.user_id.setText(user.getUser_id());
@@ -321,24 +278,32 @@ public class MyActivity extends Activity {
                 @Override
                 public void onPrepared(MediaPlayer mediaPlayer) {
                     viewHolder.movie.start();
+                    Log.d("videoview", "start");
                 }
             });
             viewHolder.movie.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 public void onCompletion(MediaPlayer mp) {
                     isMov = false;
                     viewHolder.movie.setVideoURI(null);
+                    viewHolder.movie.requestFocus();
+                    Log.d("videoview", "setnull");
                     //動画終了
                 }
             });
-            //中略
-            //ランダムでリソースIDをゲット-rawから取得
             if (!isMov) {
                 isMov = true;
 
+                MediaController mediaController = new MediaController(getContext());
+                mediaController.setAnchorView(viewHolder.movie);
                 viewHolder.movie.setVideoURI(Uri.parse(user.getMovie()));
-                //mVideoView.start(); onPreparedで再生するのでコメント
+                Log.d("videoview", "setURL");
             }
-            try {
+            Picasso.with(getContext())
+                    .load(user.getPicture())
+                    .resize(50, 50)
+                    .centerCrop()
+                    .into(viewHolder.picture);
+            /*try{
                 URL url = new URL(user.getPicture());
                 InputStream istream = url.openStream();
                 Bitmap bitmap = BitmapFactory.decodeStream(istream);
@@ -346,34 +311,20 @@ public class MyActivity extends Activity {
                 istream.close();
             } catch (IOException e) {
                 e.printStackTrace();
-            }
+            }*/
 
+            // まだ表示していない位置ならアニメーションする
+            if (mAnimatedPosition < position) {
+                // XMLからアニメーターを作成
+                Animator animator = AnimatorInflater.loadAnimator(getContext(),
+                        R.animator.card_slide_in);
+                // アニメーションさせるビューをセット
+                animator.setTarget(convertView);
+                // アニメーションを開始
+                animator.start();
+                mAnimatedPosition = position;
+            }
             return convertView;
         }
-
-
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.my, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        if (id == R.id.action_search__map) {
-            Intent intent = new Intent(MyActivity.this, Search_MapActivity.class);
-            startActivity(intent);
-        }
-        return super.onOptionsItemSelected(item);
     }
 }

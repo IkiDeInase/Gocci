@@ -18,8 +18,7 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:id="@+id/movie"
-        android:layout_marginTop="5dp"
-        />
+        android:layout_marginTop="5dp" />
 
     <ImageView
         android:layout_width="50dp"

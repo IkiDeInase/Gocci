@@ -2,20 +2,19 @@ package com.example.kinagafuji.gocci;
 
 
 import android.app.ActionBar;
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.LoaderManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.kinagafuji.gocci.Activity.PagerTabStripActivity;
+import com.example.kinagafuji.gocci.data.TwitterAsyncTask;
+import com.example.kinagafuji.gocci.data.TwitterResult;
 import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.Session;
@@ -24,22 +23,14 @@ import com.facebook.UiLifecycleHelper;
 import com.facebook.model.GraphUser;
 
 import java.util.Arrays;
-import java.util.Locale;
 
-import twitter4j.AsyncTwitter;
-import twitter4j.AsyncTwitterFactory;
-import twitter4j.Twitter;
-import twitter4j.TwitterAdapter;
 import twitter4j.TwitterException;
-import twitter4j.TwitterFactory;
-import twitter4j.TwitterListener;
 import twitter4j.auth.AccessToken;
 import twitter4j.auth.OAuthAuthorization;
-import twitter4j.auth.RequestToken;
 import twitter4j.conf.ConfigurationBuilder;
 
 
-public class LoginActivity extends FragmentActivity  {
+public class LoginActivity extends FragmentActivity {
 
     // ログインボタン
     private Button mFbloginBtn;
@@ -82,7 +73,8 @@ public class LoginActivity extends FragmentActivity  {
             public void onClick(View v) {
                 new TwitterAsyncTask<Object, Void, String>(new TwitterAsyncTask.TwitterPreExecute() {
                     @Override
-                    public void run() {}
+                    public void run() {
+                    }
                 }, new TwitterAsyncTask.TwitterAction<TwitterResult<String>, Object>() {
                     @Override
                     public TwitterResult<String> run(Object param) {
@@ -125,7 +117,8 @@ public class LoginActivity extends FragmentActivity  {
 
             new TwitterAsyncTask<Uri, Void, AccessToken>(new TwitterAsyncTask.TwitterPreExecute() {
                 @Override
-                public void run() { }
+                public void run() {
+                }
             }, new TwitterAsyncTask.TwitterAction<TwitterResult<AccessToken>, Uri>() {
                 @Override
                 public TwitterResult<AccessToken> run(Uri param) {

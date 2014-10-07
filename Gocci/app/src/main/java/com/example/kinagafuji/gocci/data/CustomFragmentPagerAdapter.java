@@ -1,13 +1,13 @@
-package com.example.kinagafuji.gocci;
+package com.example.kinagafuji.gocci.data;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.app.FragmentTransaction;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.example.kinagafuji.gocci.Fragment.LifelogFragment;
+import com.example.kinagafuji.gocci.Fragment.ProfileFragment;
+import com.example.kinagafuji.gocci.Fragment.Search_mapFragment;
+import com.example.kinagafuji.gocci.Fragment.TimelineFragment;
 
 public class CustomFragmentPagerAdapter extends FragmentStatePagerAdapter {
 
@@ -41,7 +41,6 @@ public class CustomFragmentPagerAdapter extends FragmentStatePagerAdapter {
     public int getCount() {
         return 4;
     }
-
 
 
 }
