@@ -58,7 +58,7 @@ public class Search_mapFragment extends BaseFragment {
 
     public double Longitude1;
 
-    private String MapURL;
+    public String MapURL;
 
     private String data;
 

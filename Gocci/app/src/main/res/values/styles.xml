@@ -20,4 +20,11 @@
         <item name="android:icon">@drawable/ic_logo</item>
     </style>
 
+    <style name="Animations"/>
+
+    <style name="Animations.GrowFromBottom">
+        <item name="@android:windowEnterAnimation">@anim/grow_from_bottom</item>
+        <item name="@android:windowExitAnimation">@anim/shrink_from_top</item>
+    </style>
+
 </resources>

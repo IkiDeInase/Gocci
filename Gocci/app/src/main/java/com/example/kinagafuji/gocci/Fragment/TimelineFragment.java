@@ -2,11 +2,16 @@ package com.example.kinagafuji.gocci.Fragment;
 
 import android.animation.Animator;
 import android.animation.AnimatorInflater;
+import android.animation.ObjectAnimator;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.Typeface;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -17,11 +22,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.MediaController;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -29,7 +37,13 @@ import android.widget.VideoView;
 import com.example.kinagafuji.gocci.Base.BaseFragment;
 import com.example.kinagafuji.gocci.R;
 import com.example.kinagafuji.gocci.Activity.ToukouActivity;
+import com.example.kinagafuji.gocci.data.PopupHelper;
 import com.example.kinagafuji.gocci.data.UserData;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.javacv.recorder.FFmpegRecorderActivity;
 import com.squareup.picasso.Picasso;
 
 import org.apache.http.HttpResponse;
@@ -43,6 +57,10 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+
+import uk.me.lewisdeane.ldialogs.BaseDialog;
+import uk.me.lewisdeane.ldialogs.CustomListDialog;
+
 
 public class TimelineFragment extends BaseFragment {
 
@@ -60,13 +78,35 @@ public class TimelineFragment extends BaseFragment {
     private static final String TAG_MOVIE = "movie";
     private static final String TAG_RESTNAME = "restname";
 
+    private String searchdata;
+
+    private static final String TAG_TELL = "tell";
+    private static final String TAG_RESTNAME1 = "restname";
+    private static final String TAG_CATEGORY = "category";
+    private static final String TAG_LAT = "lat";
+    private static final String TAG_LON = "lon";
+    private static final String TAG_LOCALITY = "locality";
+    private static final String TAG_DISTANCE = "distance";
+
     private ArrayList<UserData> users = new ArrayList<UserData>();
     private String data;
     private static boolean isMov = false;
 
     private ListView mListView;
 
+    private ListView searchListView;
+
+    private double Latitude;
+    private double Longitude;
+
+    private String SearchUrl;
+
+    private ArrayList<UserData> searchusers = new ArrayList<UserData>();
+
+
     private int mCardLayoutIndex = 0;
+
+    private UserAdapter userAdapter;
 
     public static TimelineFragment newInstance() {
         TimelineFragment fragment = new TimelineFragment();
@@ -75,9 +115,9 @@ public class TimelineFragment extends BaseFragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
         // FragmentのViewを返却
-        View rootView = inflater.inflate(R.layout.fragment_timeline, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_timeline, container, false);
 
         isXLargeScreen = isXLargeScreen();
         // SwipeRefreshLayoutの設定
@@ -87,7 +127,59 @@ public class TimelineFragment extends BaseFragment {
 
         mListView = (ListView) rootView.findViewById(R.id.mylistView2);
 
-        final UserAdapter userAdapter = new UserAdapter(getActivity(), 0, users);
+        ImageButton floatImageButton = (ImageButton)rootView.findViewById(R.id.floatImageButton);
+        animateAlpha(floatImageButton);
+        floatImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PopupWindow window = PopupHelper.newBasicPopupWindow(getActivity());
+
+                View inflateView = inflater.inflate(R.layout.searchlist, container, false);
+                searchListView = (ListView) inflateView.findViewById(R.id.searchListView);
+
+                setUpLocation();
+
+                new SearchCameraAsyncTask().execute(SearchUrl);
+                pDialog = new ProgressDialog(getActivity());
+                pDialog.setMessage("Please wait..");
+                pDialog.setIndeterminate(true);
+                pDialog.setCancelable(false);
+                pDialog.show();
+
+                SearchAdapter searchAdapter = new SearchAdapter(getActivity(), 0, searchusers);
+                searchListView.setAdapter(searchAdapter);
+
+                searchListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
+
+                        UserData country = searchusers.get(pos);
+
+                        Intent intent = new Intent(getActivity().getApplicationContext(), com.javacv.recorder.FFmpegRecorderActivity.class);
+                        startActivity(intent);
+
+                    }
+
+                });
+
+                window.setContentView(inflateView);
+                //int totalHeight = getWindowManager().getDefaultDisplay().getHeight();
+                int[] location = new int[2];
+                v.getLocationOnScreen(location);
+
+                PopupHelper.showLikeQuickAction(window, inflateView, v, getActivity().getWindowManager(),  0, 0);
+
+            }
+        });
+
+        new UserTask().execute(url);
+        pDialog = new ProgressDialog(getActivity());
+        pDialog.setMessage("Please wait..");
+        pDialog.setIndeterminate(true);
+        pDialog.setCancelable(false);
+        pDialog.show();
+
+        userAdapter = new UserAdapter(getActivity(), 0, users);
         mListView.setDivider(null);
         // スクロールバーを表示しない
         mListView.setVerticalScrollBarEnabled(false);
@@ -118,15 +210,41 @@ public class TimelineFragment extends BaseFragment {
 
         });
 
-        new UserTask().execute(url);
-        pDialog = new ProgressDialog(getActivity());
-        pDialog.setMessage("Please wait..");
-        pDialog.setIndeterminate(true);
-        pDialog.setCancelable(false);
-        pDialog.show();
+
 
         return rootView;
     }
+
+    private void setUpLocation() {
+
+        LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        Criteria criteria = new Criteria();
+
+        String provider = locationManager.getBestProvider(criteria, true);
+        Location myLocation = locationManager.getLastKnownLocation(provider);
+
+        Latitude = myLocation.getLatitude();
+
+        Longitude = myLocation.getLongitude();
+
+        Log.d("経度・緯度", Latitude + "/" + Longitude);
+
+        SearchUrl = "https://codelecture.com/gocci/?lat=" + String.valueOf(Latitude) + "&lon=" + String.valueOf(Longitude) + "&limit=30";
+
+    }
+
+    private void animateAlpha( ImageView target ) {
+
+        // alphaプロパティを0fから1fに変化させます
+        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat( target, "alpha", 0f, 1f );
+
+        // 3秒かけて実行させます
+        objectAnimator.setDuration( 3000 );
+
+        // アニメーションを開始します
+        objectAnimator.start();
+    }
+
 
     public boolean isXLargeScreen() {
         int layout = getResources().getConfiguration().screenLayout;
@@ -231,6 +349,103 @@ public class TimelineFragment extends BaseFragment {
         }
     }
 
+    public class SearchCameraAsyncTask extends AsyncTask<String, String, Integer> {
+
+        @Override
+        protected Integer doInBackground(String... params) {
+
+            HttpClient httpClient = new DefaultHttpClient();
+
+            StringBuilder uri = new StringBuilder(SearchUrl);
+            HttpGet request = new HttpGet(uri.toString());
+            HttpResponse httpResponse = null;
+
+            try {
+                httpResponse = httpClient.execute(request);
+            } catch (Exception e) {
+                Log.d("JSONSampleActivity", "Error Execute");
+
+            }
+
+            int status = httpResponse.getStatusLine().getStatusCode();
+
+            if (HttpStatus.SC_OK == status) {
+                try {
+                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                    httpResponse.getEntity().writeTo(outputStream);
+                    searchdata = outputStream.toString(); // JSONデータ
+                    Log.d("data", searchdata);
+
+                } catch (Exception e) {
+                    Log.d("JSONSampleActivity", "Error");
+                }
+
+                try {
+
+
+                    JSONArray jsonArray = new JSONArray(searchdata);
+
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                        String tell = jsonObject.getString(TAG_TELL);
+                        String restname = jsonObject.getString(TAG_RESTNAME1);
+                        String category = jsonObject.getString(TAG_CATEGORY);
+                        Double lat = jsonObject.getDouble(TAG_LAT);
+                        Double lon = jsonObject.getDouble(TAG_LON);
+                        String locality = jsonObject.getString(TAG_LOCALITY);
+                        String distance = jsonObject.getString(TAG_DISTANCE);
+
+
+                        Log.d("String", tell + "/" + restname + "/" + category + "/" + lat + "/" + lon + "/" + locality + "/" + distance);
+
+                        UserData user = new UserData();
+
+                        user.setTell(tell);
+                        user.setRestname(restname);
+                        user.setCategory(category);
+                        user.setLat(lat);
+                        user.setLon(lon);
+                        user.setLocality(locality);
+                        user.setDistance(distance);
+
+                        searchusers.add(user);
+
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Log.d("えらー", String.valueOf(e));
+                }
+
+
+            } else {
+                Log.d("JSONSampleActivity", "Status" + status);
+
+
+            }
+
+            return status;
+
+        }
+
+
+        // このメソッドは非同期処理の終わった後に呼び出されます
+        @Override
+        protected void onPostExecute(Integer result) {
+
+            if (result != null && result == HttpStatus.SC_OK) {
+                //ListViewの最読み込み
+                searchListView.invalidateViews();
+            } else {
+                //通信失敗した際のエラー処理
+                Toast.makeText(getActivity().getApplicationContext(), "タイムラインの取得に失敗しました。", Toast.LENGTH_SHORT).show();
+            }
+            pDialog.dismiss();
+        }
+    }
+
+
     private static class ViewHolder {
         VideoView movie;
         ImageView picture;
@@ -248,6 +463,23 @@ public class TimelineFragment extends BaseFragment {
             this.restname = (TextView) view.findViewById(R.id.restname);
         }
     }
+
+    public static class ViewHolder2 {
+        TextView tell;
+        TextView restname;
+        TextView category;
+        TextView locality;
+        TextView distance;
+
+        public ViewHolder2(View view) {
+            this.tell = (TextView) view.findViewById(R.id.tell);
+            this.restname = (TextView) view.findViewById(R.id.restname);
+            this.category = (TextView) view.findViewById(R.id.category);
+            this.locality = (TextView) view.findViewById(R.id.locality);
+            this.distance = (TextView) view.findViewById(R.id.distance);
+        }
+    }
+
 
     public class UserAdapter extends ArrayAdapter<UserData> {
         private LayoutInflater layoutInflater;
@@ -324,6 +556,40 @@ public class TimelineFragment extends BaseFragment {
                 animator.start();
                 mAnimatedPosition = position;
             }
+            return convertView;
+        }
+    }
+
+    public class SearchAdapter extends ArrayAdapter<UserData> {
+        private LayoutInflater layoutInflater;
+
+        public SearchAdapter(Context context, int viewResourceId, ArrayList<UserData> searchusers) {
+            super(context, viewResourceId, searchusers);
+            this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            final ViewHolder2 viewHolder2;
+            if (convertView == null) {
+                convertView = layoutInflater.inflate(R.layout.maplist, null);
+                viewHolder2 = new ViewHolder2(convertView);
+                convertView.setTag(viewHolder2);
+            } else {
+                viewHolder2 = (ViewHolder2) convertView.getTag();
+            }
+
+            final UserData user = this.getItem(position);
+
+
+
+            viewHolder2.tell.setText(user.getTell());
+            viewHolder2.restname.setText(user.getRestname());
+            viewHolder2.category.setText(user.getCategory());
+            viewHolder2.locality.setText(user.getLocality());
+            viewHolder2.distance.setText(user.getDistance());
+
+
             return convertView;
         }
     }

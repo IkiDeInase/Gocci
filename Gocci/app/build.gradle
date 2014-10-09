@@ -42,4 +42,12 @@ dependencies {
     compile files('libs/twitter4j-async-4.0.2.jar')
     compile 'com.android.support:support-v13:20.0.0'
     compile files('libs/picasso-2.3.4.jar')
+    compile 'uk.me.lewisdeane.ldialogs:ldialogs@aar'
+
+}
+
+repositories{
+    flatDir{
+        dirs 'libs'
+    }
 }
