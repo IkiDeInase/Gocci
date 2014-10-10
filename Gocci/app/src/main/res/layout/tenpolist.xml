@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="16dp">
+
+    <VideoView
+        android:layout_width="wrap_content"
+        android:layout_height="220dp"
+        android:id="@+id/movie"
+        android:layout_below="@+id/picture"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="post_id"
+        android:id="@+id/post_id"
+        android:layout_marginRight="@dimen/small" />
+
+    <ImageView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:id="@+id/picture"
+        android:layout_below="@+id/post_id"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="@dimen/very_small" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="user_name"
+        android:id="@+id/user_name"
+        android:layout_below="@+id/restname"
+        android:layout_alignLeft="@+id/restname"
+        android:layout_alignStart="@+id/restname"
+        android:layout_marginTop="@dimen/very_small" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="review"
+        android:id="@+id/review"
+        android:layout_below="@+id/user_name"
+        android:layout_alignRight="@+id/locality"
+        android:layout_alignEnd="@+id/locality"
+        android:layout_marginTop="@dimen/very_small" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="restname"
+        android:id="@+id/restname"
+        android:layout_above="@+id/picture"
+        android:layout_toRightOf="@+id/picture"
+        android:layout_toEndOf="@+id/picture"
+        android:layout_marginLeft="@dimen/very_small" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="locality"
+        android:id="@+id/locality"
+        android:layout_toEndOf="@+id/restname"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/restname"
+        android:layout_marginLeft="@dimen/small" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="goodnum"
+        android:id="@+id/goodnum"
+        android:layout_below="@+id/movie"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="@dimen/very_small"
+        android:layout_marginLeft="@dimen/normal" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="comment_num"
+        android:id="@+id/comment_num"
+        android:layout_below="@+id/movie"
+        android:layout_alignRight="@+id/movie"
+        android:layout_alignEnd="@+id/movie"
+        android:layout_marginRight="@dimen/normal"
+        android:layout_marginTop="@dimen/very_small" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="star_evaluation"
+        android:id="@+id/star_evaluation"
+        android:layout_below="@+id/goodnum"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="thumbnail"
+        android:id="@+id/thumbnail"
+        android:layout_alignTop="@+id/star_evaluation"
+        android:layout_toRightOf="@+id/star_evaluation"
+        android:layout_toEndOf="@+id/star_evaluation"
+        android:layout_marginLeft="@dimen/normal" />
+
+</RelativeLayout>

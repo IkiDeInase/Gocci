@@ -28,6 +28,7 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.example.kinagafuji.gocci.Base.BaseActivity;
+import com.example.kinagafuji.gocci.Base.CustomProgressDialog;
 import com.example.kinagafuji.gocci.R;
 import com.example.kinagafuji.gocci.data.UserData;
 import com.squareup.picasso.Picasso;
@@ -40,8 +41,11 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.ByteArrayOutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 
@@ -49,13 +53,20 @@ public class TenpoActivity extends BaseActivity {
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private static final String TAG_POST_ID = "post_id";
-    private static final String TAG_USER_ID = "user_id";
+    //private static final String TAG_USER_ID = "user_id";
     private static final String TAG_USER_NAME = "user_name";
     private static final String TAG_PICTURE = "picture";
     private static final String TAG_MOVIE = "movie";
     private static final String TAG_RESTNAME = "restname";
+    private static final String TAG_LOCALITY = "locality";
+    private static final String TAG_REVIEW = "review";
+    private static final String TAG_GOODNUM = "goodnum";
+    private static final String TAG_COMMENT_NUM = "comment_num";
+    private static final String TAG_THUMBNAIL = "thumbnail";
+    private static final String TAG_STAR_EVALUATION = "star_evaluation";
 
-    ProgressDialog pDialog;
+
+    private CustomProgressDialog dialog;
 
     static boolean isXLargeScreen = false;
 
@@ -64,7 +75,9 @@ public class TenpoActivity extends BaseActivity {
 
     private String restname1;
     private String locality1;
-    private String tenpoUrl = "https://codelecture.com/gocci/submit/restpage.php?restname=" + restname1;
+    private String tenpoUrl;
+    private String encoderestname;
+
 
     private ListView tenpoListView;
     private UserAdapter userAdapter;
@@ -84,11 +97,17 @@ public class TenpoActivity extends BaseActivity {
         mSwipeRefreshLayout.setOnRefreshListener(mOnRefreshListener);
         mSwipeRefreshLayout.setColorSchemeColors(Color.TRANSPARENT, Color.GRAY, Color.TRANSPARENT, Color.TRANSPARENT);
 
-
-
         Intent intent = getIntent();
         restname1 = intent.getStringExtra("restname");
         locality1 = intent.getStringExtra("locality");
+
+        try {
+            encoderestname = URLEncoder.encode(restname1, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        tenpoUrl = "https://codelecture.com/gocci/submit/restpage.php?restname=" + encoderestname;
 
         TextView TenpoView = (TextView) findViewById(R.id.TenpoView);
         TenpoView.setText(restname1);
@@ -105,14 +124,11 @@ public class TenpoActivity extends BaseActivity {
             }
         });
 
+
         new MyTenpoAsync().execute(tenpoUrl);
-        Log.d("URl", tenpoUrl);
-        // Showing progress dialog before sending http request
-        pDialog = new ProgressDialog(this);
-        pDialog.setMessage("Please wait..");
-        pDialog.setIndeterminate(true);
-        pDialog.setCancelable(false);
-        pDialog.show();
+        dialog = new CustomProgressDialog(this);
+        dialog.setCancelable(false);
+        dialog.show();
 
         userAdapter = new UserAdapter(this, 0, users);
         tenpoListView = (ListView) findViewById(R.id.mylistView3);
@@ -150,10 +166,14 @@ public class TenpoActivity extends BaseActivity {
     public class MyTenpoAsync extends AsyncTask<String, String, Integer> {
 
         @Override
-        protected Integer doInBackground(String... strings) {
+        protected Integer doInBackground(String... params) {
             HttpClient httpClient = new DefaultHttpClient();
 
+
             StringBuilder uri = new StringBuilder(tenpoUrl);
+            Log.d("URL", String.valueOf(uri));
+
+
             HttpGet request = new HttpGet(uri.toString());
             HttpResponse httpResponse = null;
 
@@ -185,13 +205,20 @@ public class TenpoActivity extends BaseActivity {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
 
                         String post_id = jsonObject.getString(TAG_POST_ID);
-                        String user_id = jsonObject.getString(TAG_USER_ID);
+                        //String user_id = jsonObject.getString(TAG_USER_ID);
                         String user_name = jsonObject.getString(TAG_USER_NAME);
                         String picture = jsonObject.getString(TAG_PICTURE);
                         String movie = jsonObject.getString(TAG_MOVIE);
                         String restname = jsonObject.getString(TAG_RESTNAME);
+                        String locality = jsonObject.getString(TAG_LOCALITY);
+                        String review = jsonObject.getString(TAG_REVIEW);
+                        String goodnum = jsonObject.getString(TAG_GOODNUM);
+                        String comment_num = jsonObject.getString(TAG_COMMENT_NUM);
+                        String thumbnail = jsonObject.getString(TAG_THUMBNAIL);
+                        String star_evaluation = jsonObject.getString(TAG_STAR_EVALUATION);
 
-                        Log.d("String", post_id + "/" + user_id + "/" + user_name + "/" + picture + "/" + movie + "/" + restname);
+                        Log.d("String", post_id + "/" + user_name + "/" + picture + "/" + movie + "/" + restname + "/" +
+                        locality + "/" + review + "/" + goodnum + "/" + comment_num + "/" + thumbnail + "/" + star_evaluation);
 
                         UserData user = new UserData();
 
@@ -199,9 +226,15 @@ public class TenpoActivity extends BaseActivity {
                         user.setPost_id(post_id);
                         user.setMovie(movie);
                         user.setPicture(picture);
-                        user.setUser_id(user_id);
+                        //user.setUser_id(user_id);
                         user.setUser_name(user_name);
                         user.setRestname(restname);
+                        user.setLocality(locality);
+                        user.setReview(review);
+                        user.setgoodnum(goodnum);
+                        user.setComment_num(comment_num);
+                        user.setThumbnail(thumbnail);
+                        user.setStar_evaluation(star_evaluation);
 
                         users.add(user);
 
@@ -229,7 +262,7 @@ public class TenpoActivity extends BaseActivity {
                 //通信失敗した際のエラー処理
                 Toast.makeText(TenpoActivity.this, "タイムラインの取得に失敗しました。", Toast.LENGTH_SHORT).show();
             }
-            pDialog.dismiss();
+            dialog.dismiss();
         }
     }
 
@@ -259,15 +292,26 @@ public class TenpoActivity extends BaseActivity {
         TextView user_name;
         TextView restname;
         TextView post_id;
-        TextView user_id;
+        TextView locality;
+        TextView review;
+        TextView goodnum;
+        TextView comment_num;
+        TextView thumbnail;
+        TextView star_evaluation;
+
 
         public ViewHolder(View view) {
             this.movie = (VideoView) view.findViewById(R.id.movie);
             this.picture = (ImageView) view.findViewById(R.id.picture);
             this.user_name = (TextView) view.findViewById(R.id.user_name);
             this.post_id = (TextView) view.findViewById(R.id.post_id);
-            this.user_id = (TextView) view.findViewById(R.id.user_id);
             this.restname = (TextView) view.findViewById(R.id.restname);
+            this.locality = (TextView) view.findViewById(R.id.locality);
+            this.review = (TextView) view.findViewById(R.id.review);
+            this.goodnum = (TextView) view.findViewById(R.id.goodnum);
+            this.comment_num = (TextView) view.findViewById(R.id.comment_num);
+            this.thumbnail = (TextView) view.findViewById(R.id.thumbnail);
+            this.star_evaluation = (TextView) view.findViewById(R.id.star_evaluation);
 
         }
     }
@@ -286,7 +330,7 @@ public class TenpoActivity extends BaseActivity {
             final ViewHolder viewHolder;
 
             if (convertView == null) {
-                convertView = layoutInflater.inflate(R.layout.timeline, null);
+                convertView = layoutInflater.inflate(R.layout.tenpolist, null);
                 viewHolder = new ViewHolder(convertView);
                 convertView.setTag(viewHolder);
             } else {
@@ -296,9 +340,14 @@ public class TenpoActivity extends BaseActivity {
             UserData user = this.getItem(position);
 
             viewHolder.post_id.setText(user.getPost_id());
-            viewHolder.user_id.setText(user.getUser_id());
             viewHolder.user_name.setText(user.getUser_name());
             viewHolder.restname.setText(user.getRestname());
+            viewHolder.locality.setText(user.getLocality());
+            viewHolder.review.setText(user.getReview());
+            viewHolder.goodnum.setText(user.getgoodnum());
+            viewHolder.comment_num.setText(user.getComment_num());
+            viewHolder.thumbnail.setText(user.getThumbnail());
+            viewHolder.star_evaluation.setText(user.getStar_evaluation());
             viewHolder.movie.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mediaPlayer) {

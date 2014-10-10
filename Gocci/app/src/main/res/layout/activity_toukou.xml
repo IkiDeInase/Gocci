@@ -97,7 +97,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="山下雄旗[Yokohama]"
-                    android:id="@+id/textView"
+                    android:id="@+id/post_id"
                     android:textColor="#ffff5361"
                     android:textSize="16sp"
                     android:layout_gravity="right"

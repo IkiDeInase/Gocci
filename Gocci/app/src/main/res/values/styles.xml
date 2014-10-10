@@ -27,4 +27,12 @@
         <item name="@android:windowExitAnimation">@anim/shrink_from_top</item>
     </style>
 
+    <style
+        name="Theme.CustomProgressDialog"
+        parent="android:style/Theme.Dialog">
+
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+
+    </style>
 </resources>

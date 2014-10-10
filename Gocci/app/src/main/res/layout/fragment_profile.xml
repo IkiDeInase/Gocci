@@ -10,6 +10,6 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="PROFILE"
-        android:id="@+id/textView"
+        android:id="@+id/post_id"
         android:layout_gravity="center_horizontal" />
 </LinearLayout>

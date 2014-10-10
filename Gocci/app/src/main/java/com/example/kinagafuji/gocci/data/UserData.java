@@ -13,6 +13,11 @@ public class UserData {
     private Double lon;
     private String locality;
     private String distance;
+    private String review;
+    private String goodnum;
+    private String comment_num;
+    private String thumbnail;
+    private String star_evaluation;
 
     public String getMovie() {
         return this.movie;
@@ -108,5 +113,45 @@ public class UserData {
 
     public void setDistance(String distance) {
         this.distance = distance;
+    }
+
+    public String getReview() {
+        return this.review;
+    }
+
+    public void setReview(String review) {
+        this.review = review;
+    }
+
+    public String getgoodnum() {
+        return this.goodnum;
+    }
+
+    public void setgoodnum(String goodnum) {
+        this.goodnum = goodnum;
+    }
+
+    public String getComment_num() {
+        return this.comment_num;
+    }
+
+    public void setComment_num(String comment_num) {
+        this.comment_num = comment_num;
+    }
+
+    public String getThumbnail() {
+        return this.thumbnail;
+    }
+
+    public void setThumbnail(String thumbnail) {
+        this.thumbnail = thumbnail;
+    }
+
+    public String getStar_evaluation() {
+        return this.star_evaluation;
+    }
+
+    public void setStar_evaluation(String star_evaluation) {
+        this.star_evaluation = star_evaluation;
     }
 }

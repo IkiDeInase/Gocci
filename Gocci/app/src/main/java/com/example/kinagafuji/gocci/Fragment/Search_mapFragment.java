@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.kinagafuji.gocci.Base.BaseFragment;
+import com.example.kinagafuji.gocci.Base.CustomProgressDialog;
 import com.example.kinagafuji.gocci.R;
 import com.example.kinagafuji.gocci.Activity.TenpoActivity;
 import com.example.kinagafuji.gocci.data.UserData;
@@ -70,7 +71,7 @@ public class Search_mapFragment extends BaseFragment {
     private static final String TAG_LOCALITY = "locality";
     private static final String TAG_DISTANCE = "distance";
 
-    ProgressDialog pDialog;
+    private CustomProgressDialog dialog;
 
     static boolean isXLargeScreen = false;
 
@@ -125,13 +126,9 @@ public class Search_mapFragment extends BaseFragment {
         });
 
         new MyMapAsync().execute(MapURL);
-        System.out.println(MapURL);
-        // Showing progress dialog before sending http request
-        pDialog = new ProgressDialog(getActivity());
-        pDialog.setMessage("Please wait..");
-        pDialog.setIndeterminate(true);
-        pDialog.setCancelable(false);
-        pDialog.show();
+        dialog = new CustomProgressDialog(getActivity());
+        dialog.setCancelable(false);
+        dialog.show();
 
         return rootView;
     }
@@ -283,7 +280,7 @@ public class Search_mapFragment extends BaseFragment {
                 //通信失敗した際のエラー処理
                 Toast.makeText(getActivity().getApplicationContext(), "タイムラインの取得に失敗しました。", Toast.LENGTH_SHORT).show();
             }
-            pDialog.dismiss();
+            dialog.dismiss();
         }
     }
 

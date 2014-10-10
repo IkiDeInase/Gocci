@@ -35,6 +35,7 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.example.kinagafuji.gocci.Base.BaseFragment;
+import com.example.kinagafuji.gocci.Base.CustomProgressDialog;
 import com.example.kinagafuji.gocci.R;
 import com.example.kinagafuji.gocci.Activity.ToukouActivity;
 import com.example.kinagafuji.gocci.data.PopupHelper;
@@ -64,7 +65,7 @@ import uk.me.lewisdeane.ldialogs.CustomListDialog;
 
 public class TimelineFragment extends BaseFragment {
 
-    private ProgressDialog pDialog;
+    private CustomProgressDialog dialog;
 
     static boolean isXLargeScreen = false;
 
@@ -139,11 +140,14 @@ public class TimelineFragment extends BaseFragment {
                 setUpLocation();
 
                 new SearchCameraAsyncTask().execute(SearchUrl);
-                pDialog = new ProgressDialog(getActivity());
+                /*pDialog = new ProgressDialog(getActivity());
                 pDialog.setMessage("Please wait..");
                 pDialog.setIndeterminate(true);
                 pDialog.setCancelable(false);
-                pDialog.show();
+                pDialog.show();*/
+                dialog = new CustomProgressDialog(getActivity());
+                dialog.setCancelable(false);
+                dialog.show();
 
                 SearchAdapter searchAdapter = new SearchAdapter(getActivity(), 0, searchusers);
                 searchListView.setAdapter(searchAdapter);
@@ -172,11 +176,9 @@ public class TimelineFragment extends BaseFragment {
         });
 
         new UserTask().execute(url);
-        pDialog = new ProgressDialog(getActivity());
-        pDialog.setMessage("Please wait..");
-        pDialog.setIndeterminate(true);
-        pDialog.setCancelable(false);
-        pDialog.show();
+        dialog = new CustomProgressDialog(getActivity());
+        dialog.setCancelable(false);
+        dialog.show();
 
         userAdapter = new UserAdapter(getActivity(), 0, users);
         mListView.setDivider(null);
@@ -332,7 +334,7 @@ public class TimelineFragment extends BaseFragment {
                 //通信失敗した際のエラー処理
                 Toast.makeText(getActivity().getApplicationContext(), "タイムラインの取得に失敗しました。", Toast.LENGTH_SHORT).show();
             }
-            pDialog.dismiss();
+            dialog.dismiss();
         }
     }
 
@@ -428,7 +430,7 @@ public class TimelineFragment extends BaseFragment {
                 //通信失敗した際のエラー処理
                 Toast.makeText(getActivity().getApplicationContext(), "タイムラインの取得に失敗しました。", Toast.LENGTH_SHORT).show();
             }
-            pDialog.dismiss();
+            dialog.dismiss();
         }
     }
 
