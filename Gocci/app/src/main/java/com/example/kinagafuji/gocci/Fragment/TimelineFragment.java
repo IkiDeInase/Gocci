@@ -128,7 +128,6 @@ public class TimelineFragment extends BaseFragment {
         mListView = (ListView) rootView.findViewById(R.id.mylistView2);
 
         ImageButton floatImageButton = (ImageButton)rootView.findViewById(R.id.floatImageButton);
-        animateAlpha(floatImageButton);
         floatImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -231,18 +230,6 @@ public class TimelineFragment extends BaseFragment {
 
         SearchUrl = "https://codelecture.com/gocci/?lat=" + String.valueOf(Latitude) + "&lon=" + String.valueOf(Longitude) + "&limit=30";
 
-    }
-
-    private void animateAlpha( ImageView target ) {
-
-        // alphaプロパティを0fから1fに変化させます
-        ObjectAnimator objectAnimator = ObjectAnimator.ofFloat( target, "alpha", 0f, 1f );
-
-        // 3秒かけて実行させます
-        objectAnimator.setDuration( 3000 );
-
-        // アニメーションを開始します
-        objectAnimator.start();
     }
 
 

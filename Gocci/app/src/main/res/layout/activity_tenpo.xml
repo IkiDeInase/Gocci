@@ -1,4 +1,4 @@
-<LinearLayout
+<LinearLayout xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -97,5 +97,6 @@
             android:layout_height="fill_parent"
             android:id="@+id/mylistView3" />
     </android.support.v4.widget.SwipeRefreshLayout>
+
 
 </LinearLayout>
