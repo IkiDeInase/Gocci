@@ -235,7 +235,7 @@ public class FFmpegFrameRecorder extends FrameRecorder {
 
         this.pixelFormat   = AV_PIX_FMT_NONE;
         this.videoCodec    = AV_CODEC_ID_NONE;
-        this.videoBitrate  = 1000000;
+        this.videoBitrate  = 500000;
         this.frameRate     = 30;
 
         this.sampleFormat  = AV_SAMPLE_FMT_NONE;

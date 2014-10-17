@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.Buffer;
 import java.nio.ShortBuffer;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -56,9 +57,12 @@ import android.widget.TextView;
 import com.googlecode.javacv.FrameRecorder;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.HttpMultipartMode;
@@ -67,6 +71,7 @@ import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 
 
 public class FFmpegRecorderActivity extends Activity implements OnClickListener, OnTouchListener {
@@ -75,6 +80,9 @@ public class FFmpegRecorderActivity extends Activity implements OnClickListener,
 	private final static String LOG_TAG = CLASS_LABEL;
 
 	private PowerManager.WakeLock mWakeLock;
+    private String Movieurl = "https://codelecture.com/gocci/movie.php";
+    private String PostUrl = "https://codelecture.com/gocci/submit/post_restname.php";
+    private String restname ;
 	private String strAudioPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "rec_audio.mp4";
 	private String strVideoPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "rec_video.mp4";
 	private String strFinalPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "rec_final.mp4";
@@ -168,6 +176,9 @@ public class FFmpegRecorderActivity extends Activity implements OnClickListener,
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.ffmpeg_recorder);
+
+        Intent intent = getIntent();
+        restname = intent.getStringExtra("restname");
 
 		PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE); 
 		mWakeLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, CLASS_LABEL); 
@@ -366,8 +377,8 @@ public class FFmpegRecorderActivity extends Activity implements OnClickListener,
 		videoRecorder.setVideoQuality(recorderParameters.getVideoQuality()); 
 		videoRecorder.setAudioQuality(recorderParameters.getVideoQuality());
 		videoRecorder.setAudioCodec(recorderParameters.getAudioCodec());
-		videoRecorder.setVideoBitrate(1000000);
-		videoRecorder.setAudioBitrate(128000);
+		videoRecorder.setVideoBitrate(recorderParameters.getVideoBitrate());
+		videoRecorder.setAudioBitrate(recorderParameters.getAudioBitrate());
 	}
 
 	public void startRecording() {
@@ -383,9 +394,8 @@ public class FFmpegRecorderActivity extends Activity implements OnClickListener,
 		}
 	}
 
-		public class AsyncStopRecording extends AsyncTask<Void, Void, Void>
+		public class AsyncStopRecording extends AsyncTask<String, String, String>
 		{
-
 
 
             @Override
@@ -408,44 +418,46 @@ public class FFmpegRecorderActivity extends Activity implements OnClickListener,
 			}
 			
 			@Override
-			protected Void doInBackground(Void... params) {
+			protected String doInBackground(String... param) {
 
 				isFinalizing = false;
 				if (videoRecorder != null && recording) {
 					recording = false;
 					releaseResources();
 					strFinalPath = Util.createFinalPath();
-					Util.combineVideoAndAudio(FFmpegRecorderActivity.this, strVideoPath,strAudioPath,strFinalPath );
-                    Log.e("行ったよ", "パートX");
-
-                    try {
-                        Log.e("行ったよ", "パート０");
+					Util.combineVideoAndAudio(FFmpegRecorderActivity.this, strVideoPath, strAudioPath, strFinalPath);
 
                         DefaultHttpClient client = new DefaultHttpClient();
-                        HttpPost post = new HttpPost("https://codelecture.com/gocci/and.movie.php");//サーバーのURL
-                        Log.e("行ったよ", "パート１");
+                        HttpPost post = new HttpPost(PostUrl);//サーバーのURL
+
+                        List<NameValuePair> params = new ArrayList<NameValuePair>();
+                        params.add(new BasicNameValuePair("restname", restname));
+
+                        try {
+                            post.setEntity(new UrlEncodedFormEntity(params, "utf-8"));
+                            HttpResponse response = client.execute(post);
+                            int status = response.getStatusLine().getStatusCode();
+                            return "Status:" + status;
+                        } catch (Exception e) {
+                            return "Error:" + e.getMessage();
+                        }
+
+                    /*try{
+                        DefaultHttpClient client2 = new DefaultHttpClient();
+                        HttpPost post2 = new HttpPost(Movieurl);//サーバーのURL
+
                         ResponseHandler<String> responseHandler =
                                 new BasicResponseHandler();
-                        Log.e("行ったよ", "パート２");
                         MultipartEntityBuilder entity = MultipartEntityBuilder.create();
-                        Log.e("行ったよ", "パート３");
                         entity.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
                         entity.setCharset(Charset.forName("UTF-8"));
-                        Log.e("行ったよ", "パート４");
 
                         File file = new File(strFinalPath);//ファイルパスとやら・・・・
                         entity.addBinaryBody("movies", file, ContentType.create("video/mp4"), strFinalPath);
-                        Log.e("行ったよ", "パート５" );
 
-                        //テキストを追加
-                        ContentType textContentType = ContentType.create("text/plain", "UTF-8");
-                        entity.addTextBody("movies", "ヤッホー", textContentType);
-                        Log.e("行ったよ", "パート６");
 
-                        post.setEntity(entity.build());
-                        Log.e("行ったよ", "パート７");
-                        client.execute(post, responseHandler);
-                        Log.e("行ったよ", "パート８");
+                        post2.setEntity(entity.build());
+                        client2.execute(post2, responseHandler);
                         Log.e("成功", "成功です");
                     }catch (ClientProtocolException e){
                         e.printStackTrace();
@@ -455,8 +467,7 @@ public class FFmpegRecorderActivity extends Activity implements OnClickListener,
                         e.printStackTrace();
                         Log.e("エラー", "エラーです２");
 
-                    }
-
+                    }*/
 
                 }
 				return null;
@@ -464,7 +475,7 @@ public class FFmpegRecorderActivity extends Activity implements OnClickListener,
 
 
 			@Override
-			protected void onPostExecute(Void result) {
+			protected void onPostExecute(String result) {
 				creatingProgress.dismiss();
 				registerVideo();
 				returnToCaller(true);

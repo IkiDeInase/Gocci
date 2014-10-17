@@ -15,7 +15,7 @@ public class RecorderParameters {
 	private int audioCodec = AAC_SUPPORTED ? avcodec.AV_CODEC_ID_AAC : avcodec.AV_CODEC_ID_AMR_NB;
 	private int audioChannel = 1;
 	private int audioBitrate = 128000;//192000;//AAC_SUPPORTED ? 96000 : 12200;
-	private int videoBitrate = 1000000;
+	private int videoBitrate = 500000;
 	private int audioSamplingRate = AAC_SUPPORTED ? 44100 : 8000; 
 	private String videoOutputFormat = AAC_SUPPORTED ? "mp4"  : "3gp"; 
 	

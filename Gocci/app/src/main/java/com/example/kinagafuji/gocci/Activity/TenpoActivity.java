@@ -120,6 +120,7 @@ public class TenpoActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(TenpoActivity.this, com.javacv.recorder.FFmpegRecorderActivity.class);
+                intent.putExtra("restname", restname1);
                 startActivity(intent);
             }
         });

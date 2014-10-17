@@ -17,6 +17,9 @@
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
+    <permission android:name="com.example.kinagafuji.gocci.ACCESS_ALLOW"
+        android:protectionLevel="signature"/>
+
     <permission
         android:name="com.example.kinagafuji.gocci.permission.MAPS_RECEIVE"
         android:protectionLevel="signature" />
@@ -55,13 +58,16 @@
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
         <activity
             android:name=".Activity.TenpoActivity"
-            android:label="@string/title_activity_tenpo" />
+            android:label="@string/title_activity_tenpo"
+            />
         <activity
             android:name=".Activity.ToukouActivity"
-            android:label="@string/title_activity_toukou" />
+            android:label="@string/title_activity_toukou"
+            />
         <activity
             android:name=".Activity.SplashActivity"
-            android:label="@string/app_name">
+            android:label="@string/app_name"
+            android:process="com.example.kinagafuji.gocci.ACCESS_ALLOW">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -71,7 +77,7 @@
         <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_login"
-            android:launchMode="singleTask"
+            android:launchMode="singleTop"
             android:parentActivityName=".Activity.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

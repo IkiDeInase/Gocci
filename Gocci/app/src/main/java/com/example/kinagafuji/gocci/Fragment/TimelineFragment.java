@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.PixelFormat;
 import android.graphics.Typeface;
 import android.location.Criteria;
 import android.location.Location;
@@ -20,6 +21,8 @@ import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -37,7 +40,6 @@ import android.widget.VideoView;
 import com.example.kinagafuji.gocci.Base.BaseFragment;
 import com.example.kinagafuji.gocci.Base.CustomProgressDialog;
 import com.example.kinagafuji.gocci.R;
-import com.example.kinagafuji.gocci.Activity.ToukouActivity;
 import com.example.kinagafuji.gocci.data.PopupHelper;
 import com.example.kinagafuji.gocci.data.UserData;
 import com.google.android.gms.maps.GoogleMap;
@@ -57,6 +59,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import uk.me.lewisdeane.ldialogs.BaseDialog;
@@ -78,6 +81,12 @@ public class TimelineFragment extends BaseFragment {
     private static final String TAG_PICTURE = "picture";
     private static final String TAG_MOVIE = "movie";
     private static final String TAG_RESTNAME = "restname";
+    private static final String TAG_GOODNUM = "goodnum";
+    private static final String TAG_COMMENT_NUM = "comment_num";
+    private static final String TAG_THUMBNAIL = "thumbnail";
+    private static final String TAG_STAR_EVALUATION = "star_evaluation";
+
+    private  ViewHolder viewHolder;
 
     private String searchdata;
 
@@ -109,6 +118,11 @@ public class TimelineFragment extends BaseFragment {
 
     private UserAdapter userAdapter;
 
+    private SurfaceView mSurfaceView;
+    private SurfaceHolder mSurfaceHolder;
+    private MediaPlayer mMediaPlayer;
+
+
     public static TimelineFragment newInstance() {
         TimelineFragment fragment = new TimelineFragment();
 
@@ -139,7 +153,7 @@ public class TimelineFragment extends BaseFragment {
 
                 setUpLocation();
 
-                new SearchCameraAsyncTask().execute(SearchUrl);
+                new SearchCameraAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 /*pDialog = new ProgressDialog(getActivity());
                 pDialog.setMessage("Please wait..");
                 pDialog.setIndeterminate(true);
@@ -175,7 +189,7 @@ public class TimelineFragment extends BaseFragment {
             }
         });
 
-        new UserTask().execute(url);
+        new UserTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         dialog = new CustomProgressDialog(getActivity());
         dialog.setCancelable(false);
         dialog.show();
@@ -200,13 +214,13 @@ public class TimelineFragment extends BaseFragment {
 
                 UserData country = users.get(pos);
 
-                Intent intent = new Intent(getActivity().getApplicationContext(), ToukouActivity.class);
+                //Intent intent = new Intent(getActivity().getApplicationContext(), ToukouActivity.class);
 
                 //intent.putExtra("restname", country.getRestname());
 
                 //intent.putExtra("locality", country.getLocality());
 
-                startActivity(intent);
+                //startActivity(intent);
             }
 
         });
@@ -214,6 +228,18 @@ public class TimelineFragment extends BaseFragment {
 
 
         return rootView;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+    }
+
+    @Override
+    public void onDestroy() {
+
+        super.onDestroy();
+
     }
 
     private void setUpLocation() {
@@ -298,6 +324,10 @@ public class TimelineFragment extends BaseFragment {
                         String picture = jsonObject.getString(TAG_PICTURE);
                         String movie = jsonObject.getString(TAG_MOVIE);
                         String restname = jsonObject.getString(TAG_RESTNAME);
+                        String goodnum = jsonObject.getString(TAG_GOODNUM);
+                        String comment_num = jsonObject.getString(TAG_COMMENT_NUM);
+                        String thumbnail = jsonObject.getString(TAG_THUMBNAIL);
+                        String star_evaluation = jsonObject.getString(TAG_STAR_EVALUATION);
 
                         Log.d("String", post_id + "/" + user_id + "/" + user_name + "/" + picture + "/" + movie + "/" + restname);
 
@@ -310,6 +340,10 @@ public class TimelineFragment extends BaseFragment {
                         user.setUser_id(user_id);
                         user.setUser_name(user_name);
                         user.setRestname(restname);
+                        user.setgoodnum(goodnum);
+                        user.setComment_num(comment_num);
+                        user.setThumbnail(thumbnail);
+                        user.setStar_evaluation(star_evaluation);
 
                         users.add(user);
 
@@ -444,7 +478,7 @@ public class TimelineFragment extends BaseFragment {
         TextView restname;
 
         public ViewHolder(View view) {
-            this.movie = (VideoView) view.findViewById(R.id.movieView);
+            this.movie = (VideoView) view.findViewById(R.id.movieview);
             this.picture = (ImageView) view.findViewById(R.id.pictureView);
             this.post_id = (TextView) view.findViewById(R.id.post_id);
             this.user_id = (TextView) view.findViewById(R.id.user_id);
@@ -481,7 +515,7 @@ public class TimelineFragment extends BaseFragment {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            final ViewHolder viewHolder;
+
             if (convertView == null) {
                 convertView = layoutInflater.inflate(R.layout.timeline, null);
                 viewHolder = new ViewHolder(convertView);
@@ -495,44 +529,26 @@ public class TimelineFragment extends BaseFragment {
             viewHolder.user_id.setText(user.getUser_id());
             viewHolder.user_name.setText(user.getUser_name());
             viewHolder.restname.setText(user.getRestname());
+            Uri video = Uri.parse(user.getMovie());
+
+            viewHolder.movie.setVideoURI(video);
             viewHolder.movie.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
-                public void onPrepared(MediaPlayer mediaPlayer) {
+                public void onPrepared(MediaPlayer mp) {
                     viewHolder.movie.start();
-                    Log.d("videoview", "start");
+                    mp.setLooping(true);
                 }
             });
-            viewHolder.movie.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                public void onCompletion(MediaPlayer mp) {
-                    isMov = false;
-                    viewHolder.movie.setVideoURI(null);
-                    viewHolder.movie.requestFocus();
-                    Log.d("videoview", "setnull");
-                    //動画終了
-                }
-            });
-            if (!isMov) {
-                isMov = true;
 
-                MediaController mediaController = new MediaController(getContext());
-                mediaController.setAnchorView(viewHolder.movie);
-                viewHolder.movie.setVideoURI(Uri.parse(user.getMovie()));
-                Log.d("videoview", "setURL");
-            }
+
+
             Picasso.with(getContext())
                     .load(user.getPicture())
                     .resize(50, 50)
+                    .placeholder(R.drawable.ic_gocci)
                     .centerCrop()
                     .into(viewHolder.picture);
-            /*try{
-                URL url = new URL(user.getPicture());
-                InputStream istream = url.openStream();
-                Bitmap bitmap = BitmapFactory.decodeStream(istream);
-                viewHolder.picture.setImageBitmap(bitmap);
-                istream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }*/
+
 
             // まだ表示していない位置ならアニメーションする
             if (mAnimatedPosition < position) {
@@ -582,4 +598,6 @@ public class TimelineFragment extends BaseFragment {
             return convertView;
         }
     }
+
+
 }

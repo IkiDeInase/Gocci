@@ -73,4 +73,6 @@ public class PagerTabStripActivity extends FragmentActivity {
         mActionBar.addTab(mActionBar.newTab().setIcon(R.drawable.abc_ic_menu_moreoverflow_normal_holo_dark).setTabListener(tabListener));
     }
 
+
+
 }

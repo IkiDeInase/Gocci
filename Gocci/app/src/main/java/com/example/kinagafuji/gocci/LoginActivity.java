@@ -2,17 +2,19 @@ package com.example.kinagafuji.gocci;
 
 
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.kinagafuji.gocci.Activity.PagerTabStripActivity;
+import com.example.kinagafuji.gocci.Base.CustomProgressDialog;
 import com.example.kinagafuji.gocci.data.TwitterAsyncTask;
 import com.example.kinagafuji.gocci.data.TwitterResult;
 import com.facebook.Request;
@@ -21,8 +23,23 @@ import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
 import com.facebook.model.GraphUser;
+import com.googlecode.javacv.cpp.opencv_stitching;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
+
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import twitter4j.TwitterException;
 import twitter4j.auth.AccessToken;
@@ -30,7 +47,7 @@ import twitter4j.auth.OAuthAuthorization;
 import twitter4j.conf.ConfigurationBuilder;
 
 
-public class LoginActivity extends FragmentActivity {
+public class LoginActivity extends Activity {
 
     // ログインボタン
     private Button mFbloginBtn;
@@ -48,6 +65,15 @@ public class LoginActivity extends FragmentActivity {
     private static final String CONSUMER_SECRET = "lgNOyQTEA4AXrxlDsP0diEkmChm5ji2B4QoXwsldpHzI0mfJTg";
     private static final String CALLBACK = "myapp://test";
     private OAuthAuthorization mOauth;
+
+    private static final String TAG_NAME = "name";
+    private static final String TAG_ID = "id";
+
+    public String name;
+    public String id;
+
+    private String Dataurl = "https://codelecture.com/gocci/signup.php";
+
 
 
     @Override
@@ -163,6 +189,7 @@ public class LoginActivity extends FragmentActivity {
             public void onClick(View view) {
                 loginFacebook();
 
+
                 //データ解析してIntentで送る。ifでログイン出来たら遷移する。
                 Intent intent = new Intent(LoginActivity.this, PagerTabStripActivity.class);
                 startActivity(intent);
@@ -170,6 +197,8 @@ public class LoginActivity extends FragmentActivity {
         });
 
     }
+
+
 
 
     private void loginFacebook() {
@@ -194,6 +223,36 @@ public class LoginActivity extends FragmentActivity {
         }
     }
 
+    public class SignupTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            HttpClient client = new DefaultHttpClient();
+            HttpPost method = new HttpPost(Dataurl);
+
+            String pictureUrl = "https://graph.facebook.com/" + id + "/picture";
+
+            ArrayList<NameValuePair> contents = new ArrayList<NameValuePair>();
+            contents.add(new BasicNameValuePair("user_nama", name));
+            contents.add(new BasicNameValuePair("picture", pictureUrl));
+            Log.d("読み取り",name + pictureUrl);
+
+            String body = null;
+            try {
+                method.setEntity(new UrlEncodedFormEntity(contents, "utf-8"));
+                HttpResponse res = client.execute(method);
+                Log.d("TAGだよ", "反応");
+                HttpEntity entity = res.getEntity();
+                body = EntityUtils.toString(entity, "UTF-8");
+                Log.d("bodyの中身だよ", body);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            client.getConnectionManager().shutdown();
+
+            return null;
+        }
+    }
+
 
     private void onSessionStateChange(Session session, SessionState state, Exception exception) {
         if (session.isOpened()) {
@@ -204,6 +263,22 @@ public class LoginActivity extends FragmentActivity {
                     super.onCompleted(user, response);
 
                     Log.d("TAG", "user = " + user.getInnerJSONObject());
+                    try {
+
+                        name = user.getInnerJSONObject().getString(TAG_NAME);
+                        id = user.getInnerJSONObject().getString(TAG_ID);
+
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        Log.d("error", String.valueOf(e));
+                    }
+
+                    SignupTask task = new SignupTask();
+                    task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+
+
                 }
             }).executeAsync();
         }
