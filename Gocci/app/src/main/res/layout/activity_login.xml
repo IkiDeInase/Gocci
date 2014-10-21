@@ -51,7 +51,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="食体験をシェアする。"
-        android:id="@+id/textView"
+        android:id="@+id/post_name"
         android:layout_below="@+id/myImageView2"
         android:layout_centerHorizontal="true"
         android:textSize="28sp"

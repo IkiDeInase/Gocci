@@ -35,6 +35,7 @@ public class PagerTabStripActivity extends FragmentActivity {
         mCustomFragmentPagerAdapter = new CustomFragmentPagerAdapter(getSupportFragmentManager());
 
         mViewwPager = (ViewPager) findViewById(R.id.pager);
+        mViewwPager.setOffscreenPageLimit(1);
         mViewwPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {

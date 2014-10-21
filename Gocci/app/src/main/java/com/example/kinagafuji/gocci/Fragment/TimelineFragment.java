@@ -28,6 +28,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -37,10 +38,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import com.example.kinagafuji.gocci.Activity.TenpoActivity;
 import com.example.kinagafuji.gocci.Base.BaseFragment;
 import com.example.kinagafuji.gocci.Base.CustomProgressDialog;
 import com.example.kinagafuji.gocci.R;
 import com.example.kinagafuji.gocci.data.PopupHelper;
+import com.example.kinagafuji.gocci.data.RoundedTransformation;
 import com.example.kinagafuji.gocci.data.UserData;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
@@ -208,24 +211,6 @@ public class TimelineFragment extends BaseFragment {
         }
         mListView.setAdapter(userAdapter);
 
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
-
-                UserData country = users.get(pos);
-
-                //Intent intent = new Intent(getActivity().getApplicationContext(), ToukouActivity.class);
-
-                //intent.putExtra("restname", country.getRestname());
-
-                //intent.putExtra("locality", country.getLocality());
-
-                //startActivity(intent);
-            }
-
-        });
-
-
 
         return rootView;
     }
@@ -270,11 +255,14 @@ public class TimelineFragment extends BaseFragment {
     private SwipeRefreshLayout.OnRefreshListener mOnRefreshListener = new SwipeRefreshLayout.OnRefreshListener() {
         @Override
         public void onRefresh() {
+            mSwipeRefreshLayout.setEnabled(false);
+            new UserTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             // 3秒待機
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     mSwipeRefreshLayout.setRefreshing(false);
+                    mSwipeRefreshLayout.setEnabled(true);
                 }
             }, 3000);
         }
@@ -475,7 +463,7 @@ public class TimelineFragment extends BaseFragment {
         TextView post_id;
         TextView user_id;
         TextView user_name;
-        TextView restname;
+        Button restnamebutton;
 
         public ViewHolder(View view) {
             this.movie = (VideoView) view.findViewById(R.id.movieview);
@@ -483,7 +471,7 @@ public class TimelineFragment extends BaseFragment {
             this.post_id = (TextView) view.findViewById(R.id.post_id);
             this.user_id = (TextView) view.findViewById(R.id.user_id);
             this.user_name = (TextView) view.findViewById(R.id.user_name);
-            this.restname = (TextView) view.findViewById(R.id.restname);
+            this.restnamebutton = (Button) view.findViewById(R.id.restnamebutton);
         }
     }
 
@@ -514,7 +502,7 @@ public class TimelineFragment extends BaseFragment {
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, View convertView, ViewGroup parent) {
 
             if (convertView == null) {
                 convertView = layoutInflater.inflate(R.layout.timeline, null);
@@ -528,7 +516,6 @@ public class TimelineFragment extends BaseFragment {
             viewHolder.post_id.setText(user.getPost_id());
             viewHolder.user_id.setText(user.getUser_id());
             viewHolder.user_name.setText(user.getUser_name());
-            viewHolder.restname.setText(user.getRestname());
             Uri video = Uri.parse(user.getMovie());
 
             viewHolder.movie.setVideoURI(video);
@@ -547,7 +534,9 @@ public class TimelineFragment extends BaseFragment {
                     .resize(50, 50)
                     .placeholder(R.drawable.ic_gocci)
                     .centerCrop()
+                    .transform(new RoundedTransformation())
                     .into(viewHolder.picture);
+            //ここをImageではなく、ImageButtonに変更は可能？
 
 
             // まだ表示していない位置ならアニメーションする
@@ -561,6 +550,19 @@ public class TimelineFragment extends BaseFragment {
                 animator.start();
                 mAnimatedPosition = position;
             }
+
+            viewHolder.restnamebutton.setText(user.getRestname());
+            viewHolder.restnamebutton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getActivity().getApplicationContext(), TenpoActivity.class);
+                    UserData country = users.get(position);
+                    intent.putExtra("restname", country.getRestname());
+                    intent.putExtra("locality", country.getLocality());
+
+                    startActivity(intent);
+                }
+            });
             return convertView;
         }
     }

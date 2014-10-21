@@ -12,6 +12,7 @@
     <style name="actionBar" parent="Widget.AppCompat.ActionBar">
         <!-- タイトルバーの背景色 -->
         <item name="android:background">@drawable/ab_gradation</item>
+        <item name="android:displayOptions"></item>
         <item name="android:titleTextStyle">@style/titleTextStyle</item>
     </style>
 

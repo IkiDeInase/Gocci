@@ -28,11 +28,11 @@
             android:background="#00000000"
              />
 
-        <TextView
+        <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/restname"
-            android:id="@+id/restname"
+            android:id="@+id/restnamebutton"
             android:layout_marginTop="5dp"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp" />

@@ -4,10 +4,16 @@ package com.example.kinagafuji.gocci;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -15,6 +21,7 @@ import android.widget.Toast;
 
 import com.example.kinagafuji.gocci.Activity.PagerTabStripActivity;
 import com.example.kinagafuji.gocci.Base.CustomProgressDialog;
+import com.example.kinagafuji.gocci.Fragment.ProfileFragment;
 import com.example.kinagafuji.gocci.data.TwitterAsyncTask;
 import com.example.kinagafuji.gocci.data.TwitterResult;
 import com.facebook.Request;
@@ -36,6 +43,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,7 +55,7 @@ import twitter4j.auth.OAuthAuthorization;
 import twitter4j.conf.ConfigurationBuilder;
 
 
-public class LoginActivity extends Activity {
+public class LoginActivity extends FragmentActivity {
 
     // ログインボタン
     private Button mFbloginBtn;
@@ -68,9 +76,20 @@ public class LoginActivity extends Activity {
 
     private static final String TAG_NAME = "name";
     private static final String TAG_ID = "id";
+    private static final String TAG_BIRTHDAY = "birthday";
+    private static final String TAG_MAIL = "email";
+    private static final String TAG_GENDER = "gender";
+    private static final String TAG_LOCATION = "location";
+
+    public String pictureUrl;
 
     public String name;
     public String id;
+    public String birthday;
+    public String mail;
+    public String gender;
+    public String location;
+
 
     private String Dataurl = "https://codelecture.com/gocci/signup.php";
 
@@ -229,12 +248,10 @@ public class LoginActivity extends Activity {
             HttpClient client = new DefaultHttpClient();
             HttpPost method = new HttpPost(Dataurl);
 
-            String pictureUrl = "https://graph.facebook.com/" + id + "/picture";
-
             ArrayList<NameValuePair> contents = new ArrayList<NameValuePair>();
-            contents.add(new BasicNameValuePair("user_nama", name));
+            contents.add(new BasicNameValuePair("user_name", name));
             contents.add(new BasicNameValuePair("picture", pictureUrl));
-            Log.d("読み取り",name + pictureUrl);
+            Log.d("読み取り",name + "と" + pictureUrl);
 
             String body = null;
             try {
@@ -247,7 +264,20 @@ public class LoginActivity extends Activity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            client.getConnectionManager().shutdown();
+                client.getConnectionManager().shutdown();
+
+
+            SharedPreferences pref = getSharedPreferences("pref", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = pref.edit();
+
+            editor.putString("name",name);
+            editor.putString("pictureUrl", pictureUrl);
+            editor.putString("birthday", birthday);
+            editor.putString("gender", gender);
+            editor.putString("mail", mail);
+            editor.putString("location",location);
+
+            editor.apply();
 
             return null;
         }
@@ -265,8 +295,19 @@ public class LoginActivity extends Activity {
                     Log.d("TAG", "user = " + user.getInnerJSONObject());
                     try {
 
+                        //必要なJSONデータを出力
                         name = user.getInnerJSONObject().getString(TAG_NAME);
                         id = user.getInnerJSONObject().getString(TAG_ID);
+                        birthday = user.getInnerJSONObject().getString(TAG_BIRTHDAY);
+                        gender = user.getInnerJSONObject().getString(TAG_GENDER);
+                        mail = user.getInnerJSONObject().getString(TAG_MAIL);
+                        JSONObject locale = user.getInnerJSONObject().getJSONObject(TAG_LOCATION);
+                        location = locale.getString("name");
+
+                        Log.d("jsondata", name + "and" + birthday + "and" + gender + "and" + mail + "and" +
+                        location);
+
+                        pictureUrl = "https://graph.facebook.com/" + id + "/picture";
 
 
                     } catch (JSONException e) {
@@ -276,6 +317,7 @@ public class LoginActivity extends Activity {
 
                     SignupTask task = new SignupTask();
                     task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
 
 
 

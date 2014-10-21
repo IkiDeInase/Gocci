@@ -1,6 +1,5 @@
 package com.example.kinagafuji.gocci.Fragment;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -167,9 +166,11 @@ public class Search_mapFragment extends BaseFragment {
 
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
-        Latitude1 = myLocation.getLatitude();
+        if (myLocation != null) {
+            Latitude1 = myLocation.getLatitude();
 
-        Longitude1 = myLocation.getLongitude();
+            Longitude1 = myLocation.getLongitude();
+        }
 
         Log.d("経度・緯度", Latitude1 + "/" + Longitude1);
 
