@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,6 +47,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 public class Search_mapFragment extends BaseFragment {
@@ -55,12 +58,17 @@ public class Search_mapFragment extends BaseFragment {
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
     public double Latitude1;
-
     public double Longitude1;
 
     public String MapURL;
+    public String SearchURL;
+
+    private String encodesearchword;
 
     private String data;
+
+    public UserAdapter userAdapter;
+    public UserAdapter2 userAdapter2;
 
     private static final String TAG_TELL = "tell";
     private static final String TAG_RESTNAME1 = "restname";
@@ -72,18 +80,13 @@ public class Search_mapFragment extends BaseFragment {
 
     private CustomProgressDialog dialog;
 
-    static boolean isXLargeScreen = false;
-
     private ArrayList<UserData> users = new ArrayList<UserData>();
+    private ArrayList<UserData> users2 = new ArrayList<UserData>();
+
+    private SearchView searchView;
+    private String searchword;
 
     private ListView mlistView;
-
-
-    public static Search_mapFragment newInstance() {
-        Search_mapFragment fragment = new Search_mapFragment();
-
-        return fragment;
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -92,13 +95,13 @@ public class Search_mapFragment extends BaseFragment {
 
         setUpMapIfNeeded();
 
-        isXLargeScreen = isXLargeScreen();
         // SwipeRefreshLayoutの設定
         mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.refresh);
         mSwipeRefreshLayout.setOnRefreshListener(mOnRefreshListener);
         mSwipeRefreshLayout.setColorSchemeColors(Color.GRAY, Color.CYAN, Color.MAGENTA, Color.BLACK);
 
-        final UserAdapter userAdapter = new UserAdapter(getActivity(), 0, users);
+        userAdapter = new UserAdapter(getActivity(), 0, users);
+        userAdapter2 = new UserAdapter2(getActivity(), 0, users2);
 
         mlistView = (ListView) rootView.findViewById(R.id.mylistView1);
         mlistView.setDivider(null);
@@ -115,21 +118,66 @@ public class Search_mapFragment extends BaseFragment {
                 UserData country = users.get(pos);
 
                 Intent intent = new Intent(getActivity().getApplicationContext(), TenpoActivity.class);
-
                 intent.putExtra("restname", country.getRestname());
-
                 intent.putExtra("locality", country.getLocality());
-
                 startActivity(intent);
             }
         });
 
-        new MyMapAsync().execute(MapURL);
+        searchView = (SearchView)rootView.findViewById(R.id.searchbar);
+        searchView.setIconifiedByDefault(true);
+        searchView.setSubmitButtonEnabled(true);
+
+        searchView.setOnQueryTextListener(onQueryTextListener);
+
+        new MyMapAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,MapURL);
         dialog = new CustomProgressDialog(getActivity());
         dialog.setCancelable(false);
         dialog.show();
 
         return rootView;
+    }
+
+    private SearchView.OnQueryTextListener onQueryTextListener = new SearchView.OnQueryTextListener() {
+        @Override
+        public boolean onQueryTextSubmit(String searchWord) {
+            // SubmitボタンorEnterKeyを押されたら呼び出されるメソッド
+            return setSearchWord(searchWord);
+        }
+
+        @Override
+        public boolean onQueryTextChange(String newText) {
+            // 入力される度に呼び出される
+            return false;
+        }
+    };
+
+    private boolean setSearchWord(String searchWord) {
+        if (searchWord != null && !searchWord.equals("")) {
+            // searchWordがあることを確認
+            searchword = searchWord;
+
+            try {
+                encodesearchword = URLEncoder.encode(searchword, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            SearchURL = "https://codelecture.com/gocci/search.php?restname=" + encodesearchword;
+        } else {
+            Toast.makeText(getActivity().getApplicationContext(), "文字を入力して下さい。", Toast.LENGTH_SHORT).show();
+        }
+        // 虫眼鏡アイコンを隠す
+        this.searchView.setIconified(false);
+        // SearchViewを隠す
+        this.searchView.onActionViewCollapsed();
+        // Focusを外す
+        this.searchView.clearFocus();
+
+        new MySearchAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, SearchURL);
+        dialog = new CustomProgressDialog(getActivity());
+        dialog.setCancelable(false);
+        dialog.show();
+        return false;
     }
 
     @Override
@@ -185,8 +233,92 @@ public class Search_mapFragment extends BaseFragment {
         // MyLocationButtonを有効に
         UiSettings settings = mMap.getUiSettings();
         settings.setMyLocationButtonEnabled(true);
+    }
 
+    public class MySearchAsync extends AsyncTask<String, String, Integer> {
 
+        @Override
+        protected Integer doInBackground(String... params) {
+
+            HttpClient httpClient = new DefaultHttpClient();
+
+            HttpGet request = new HttpGet(SearchURL);
+            HttpResponse httpResponse = null;
+
+            try {
+                httpResponse = httpClient.execute(request);
+            } catch (Exception e) {
+                Log.d("JSONSampleActivity", "Error Execute");
+            }
+
+            int status = httpResponse.getStatusLine().getStatusCode();
+
+            if (HttpStatus.SC_OK == status) {
+                try {
+                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                    httpResponse.getEntity().writeTo(outputStream);
+                    data = outputStream.toString(); // JSONデータ
+                    Log.d("data", data);
+
+                } catch (Exception e) {
+                    Log.d("JSONSampleActivity", "Error");
+                }
+
+                try {
+
+                    JSONArray jsonArray = new JSONArray(data);
+
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                        String tell = jsonObject.getString(TAG_TELL);
+                        String restname = jsonObject.getString(TAG_RESTNAME1);
+                        String category = jsonObject.getString(TAG_CATEGORY);
+                        Double lat = jsonObject.getDouble(TAG_LAT);
+                        Double lon = jsonObject.getDouble(TAG_LON);
+                        String locality = jsonObject.getString(TAG_LOCALITY);
+                        String distance = jsonObject.getString(TAG_DISTANCE);
+
+                        UserData user = new UserData();
+
+                        user.setTell(tell);
+                        user.setRestname(restname);
+                        user.setCategory(category);
+                        user.setLat(lat);
+                        user.setLon(lon);
+                        user.setLocality(locality);
+                        user.setDistance(distance);
+
+                        users.add(user);
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Log.d("えらー", String.valueOf(e));
+                }
+
+            } else {
+                Log.d("JSONSampleActivity", "Status" + status);
+
+            }
+
+            return status;
+        }
+
+        // このメソッドは非同期処理の終わった後に呼び出されます
+        @Override
+        protected void onPostExecute(Integer result) {
+
+            if (result != null && result == HttpStatus.SC_OK) {
+                //ListViewの最読み込み
+                mlistView.invalidateViews();
+                userAdapter2.notifyDataSetChanged();
+            } else {
+                //通信失敗した際のエラー処理
+                Toast.makeText(getActivity().getApplicationContext(), "タイムラインの取得に失敗しました。", Toast.LENGTH_SHORT).show();
+            }
+            dialog.dismiss();
+        }
     }
 
     public class MyMapAsync extends AsyncTask<String, String, Integer> {
@@ -196,8 +328,7 @@ public class Search_mapFragment extends BaseFragment {
 
             HttpClient httpClient = new DefaultHttpClient();
 
-            StringBuilder uri = new StringBuilder(MapURL);
-            HttpGet request = new HttpGet(uri.toString());
+            HttpGet request = new HttpGet(MapURL);
             HttpResponse httpResponse = null;
 
             try {
@@ -222,7 +353,6 @@ public class Search_mapFragment extends BaseFragment {
 
                 try {
 
-
                     JSONArray jsonArray = new JSONArray(data);
 
                     for (int i = 0; i < jsonArray.length(); i++) {
@@ -236,9 +366,6 @@ public class Search_mapFragment extends BaseFragment {
                         String locality = jsonObject.getString(TAG_LOCALITY);
                         String distance = jsonObject.getString(TAG_DISTANCE);
 
-
-                        Log.d("String", tell + "/" + restname + "/" + category + "/" + lat + "/" + lon + "/" + locality + "/" + distance);
-
                         UserData user = new UserData();
 
                         user.setTell(tell);
@@ -251,24 +378,19 @@ public class Search_mapFragment extends BaseFragment {
 
                         users.add(user);
 
-
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
                     Log.d("えらー", String.valueOf(e));
                 }
 
-
             } else {
                 Log.d("JSONSampleActivity", "Status" + status);
-
 
             }
 
             return status;
-
         }
-
 
         // このメソッドは非同期処理の終わった後に呼び出されます
         @Override
@@ -277,6 +399,7 @@ public class Search_mapFragment extends BaseFragment {
             if (result != null && result == HttpStatus.SC_OK) {
                 //ListViewの最読み込み
                 mlistView.invalidateViews();
+                userAdapter.notifyDataSetChanged();
             } else {
                 //通信失敗した際のエラー処理
                 Toast.makeText(getActivity().getApplicationContext(), "タイムラインの取得に失敗しました。", Toast.LENGTH_SHORT).show();
@@ -297,12 +420,6 @@ public class Search_mapFragment extends BaseFragment {
             }, 3000);
         }
     };
-
-    public boolean isXLargeScreen() {
-        int layout = getResources().getConfiguration().screenLayout;
-        return (layout & Configuration.SCREENLAYOUT_SIZE_MASK)
-                == Configuration.SCREENLAYOUT_SIZE_XLARGE;
-    }
 
     public static class ViewHolder {
         TextView tell;
@@ -341,8 +458,8 @@ public class Search_mapFragment extends BaseFragment {
 
             final UserData user = this.getItem(position);
 
-
             LatLng latLng1 = new LatLng(user.getLat(), user.getLon());
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng1));
             MarkerOptions options = new MarkerOptions();
             options.position(latLng1);
             options.title(user.getRestname());
@@ -361,6 +478,49 @@ public class Search_mapFragment extends BaseFragment {
             viewHolder.locality.setText(user.getLocality());
             viewHolder.distance.setText(user.getDistance());
 
+            return convertView;
+        }
+    }
+    public class UserAdapter2 extends ArrayAdapter<UserData> {
+        private LayoutInflater layoutInflater;
+
+        public UserAdapter2(Context context, int viewResourceId, ArrayList<UserData> users2) {
+            super(context, viewResourceId, users2);
+            this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            final ViewHolder viewHolder;
+            if (convertView == null) {
+                convertView = layoutInflater.inflate(R.layout.maplist, null);
+                viewHolder = new ViewHolder(convertView);
+                convertView.setTag(viewHolder);
+            } else {
+                viewHolder = (ViewHolder) convertView.getTag();
+            }
+
+            final UserData user = this.getItem(position);
+
+            LatLng latLng2 = new LatLng(user.getLat(), user.getLon());
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng2));
+            MarkerOptions options = new MarkerOptions();
+            options.position(latLng2);
+            options.title(user.getRestname());
+            options.draggable(false);
+            mMap.addMarker(options);
+            mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                @Override
+                public boolean onMarkerClick(Marker marker) {
+                    return false;
+                }
+            });
+
+            viewHolder.tell.setText(user.getTell());
+            viewHolder.restname.setText(user.getRestname());
+            viewHolder.category.setText(user.getCategory());
+            viewHolder.locality.setText(user.getLocality());
+            viewHolder.distance.setText(user.getDistance());
 
             return convertView;
         }

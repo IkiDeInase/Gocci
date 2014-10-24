@@ -1,6 +1,7 @@
 package com.example.kinagafuji.gocci.data;
 
 public class UserData {
+
     private String movie;
     private String picture;
     private String post_id;

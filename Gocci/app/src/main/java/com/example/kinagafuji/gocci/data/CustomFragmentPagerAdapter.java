@@ -11,23 +11,18 @@ import com.example.kinagafuji.gocci.Fragment.TimelineFragment;
 
 public class CustomFragmentPagerAdapter extends FragmentStatePagerAdapter {
 
-
     public CustomFragmentPagerAdapter(FragmentManager fm) {
         super(fm);
-
     }
 
     @Override
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                //Fragement for Android Tab
                 return new TimelineFragment();
             case 1:
-                //Fragment for Ios Tab
                 return new Search_mapFragment();
             case 2:
-                //Fragment for Windows Tab
                 return new LifelogFragment();
             case 3:
 
@@ -36,11 +31,9 @@ public class CustomFragmentPagerAdapter extends FragmentStatePagerAdapter {
         return null;
     }
 
-
     @Override
     public int getCount() {
         return 4;
     }
-
 
 }

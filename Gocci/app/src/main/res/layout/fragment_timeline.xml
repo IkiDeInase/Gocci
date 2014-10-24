@@ -23,6 +23,7 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:src="@drawable/ic_switchcamera"
-        android:contentDescription="@string/movie" />
+        android:contentDescription="@string/movie"
+        android:onClick="onfloatClick" />
 
 </RelativeLayout>

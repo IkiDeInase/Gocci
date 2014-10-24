@@ -2,7 +2,6 @@ package com.example.kinagafuji.gocci;
 
 
 import android.app.ActionBar;
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -10,18 +9,13 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.kinagafuji.gocci.Activity.PagerTabStripActivity;
-import com.example.kinagafuji.gocci.Base.CustomProgressDialog;
-import com.example.kinagafuji.gocci.Fragment.ProfileFragment;
 import com.example.kinagafuji.gocci.data.TwitterAsyncTask;
 import com.example.kinagafuji.gocci.data.TwitterResult;
 import com.facebook.Request;
@@ -30,11 +24,9 @@ import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
 import com.facebook.model.GraphUser;
-import com.googlecode.javacv.cpp.opencv_stitching;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -47,7 +39,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import twitter4j.TwitterException;
 import twitter4j.auth.AccessToken;
@@ -90,10 +81,7 @@ public class LoginActivity extends FragmentActivity {
     public String gender;
     public String location;
 
-
     private String Dataurl = "https://codelecture.com/gocci/signup.php";
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -149,7 +137,6 @@ public class LoginActivity extends FragmentActivity {
                     }
                 })
                         .execute(new Object());
-
             }
         });
     }
@@ -196,7 +183,6 @@ public class LoginActivity extends FragmentActivity {
         }
     }
 
-
     private void initFacebook(Bundle savedInstanceState) {
         // ライフサイクルヘルパーの初期化
         mUiHelper = new UiLifecycleHelper(this, mFacebookCallback);
@@ -208,17 +194,12 @@ public class LoginActivity extends FragmentActivity {
             public void onClick(View view) {
                 loginFacebook();
 
-
                 //データ解析してIntentで送る。ifでログイン出来たら遷移する。
                 Intent intent = new Intent(LoginActivity.this, PagerTabStripActivity.class);
                 startActivity(intent);
             }
         });
-
     }
-
-
-
 
     private void loginFacebook() {
         // リクエストの生成
@@ -231,7 +212,6 @@ public class LoginActivity extends FragmentActivity {
         Session.setActiveSession(session);
         // 認証を要求する。
         session.openForRead(openRequest);
-
     }
 
     private void logoutFacebook() {
@@ -243,9 +223,11 @@ public class LoginActivity extends FragmentActivity {
     }
 
     public class SignupTask extends AsyncTask<Void, Void, Void> {
+
         @Override
         protected Void doInBackground(Void... params) {
             HttpClient client = new DefaultHttpClient();
+
             HttpPost method = new HttpPost(Dataurl);
 
             ArrayList<NameValuePair> contents = new ArrayList<NameValuePair>();
@@ -264,8 +246,6 @@ public class LoginActivity extends FragmentActivity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-                client.getConnectionManager().shutdown();
-
 
             SharedPreferences pref = getSharedPreferences("pref", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = pref.edit();
@@ -282,7 +262,6 @@ public class LoginActivity extends FragmentActivity {
             return null;
         }
     }
-
 
     private void onSessionStateChange(Session session, SessionState state, Exception exception) {
         if (session.isOpened()) {
@@ -309,7 +288,6 @@ public class LoginActivity extends FragmentActivity {
 
                         pictureUrl = "https://graph.facebook.com/" + id + "/picture";
 
-
                     } catch (JSONException e) {
                         e.printStackTrace();
                         Log.d("error", String.valueOf(e));
@@ -317,9 +295,6 @@ public class LoginActivity extends FragmentActivity {
 
                     SignupTask task = new SignupTask();
                     task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
-
-
 
                 }
             }).executeAsync();
@@ -359,7 +334,6 @@ public class LoginActivity extends FragmentActivity {
             mProgress.setMessage(message);
             mProgress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             mProgress.show();
-
         }
 
         @Override
@@ -368,6 +342,3 @@ public class LoginActivity extends FragmentActivity {
         }
     }
 }
-
-
-

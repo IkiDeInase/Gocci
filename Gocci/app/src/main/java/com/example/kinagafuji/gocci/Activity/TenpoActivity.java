@@ -2,10 +2,8 @@ package com.example.kinagafuji.gocci.Activity;
 
 import android.animation.Animator;
 import android.animation.AnimatorInflater;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -22,7 +20,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -30,6 +27,7 @@ import android.widget.VideoView;
 import com.example.kinagafuji.gocci.Base.BaseActivity;
 import com.example.kinagafuji.gocci.Base.CustomProgressDialog;
 import com.example.kinagafuji.gocci.R;
+import com.example.kinagafuji.gocci.data.RoundedTransformation;
 import com.example.kinagafuji.gocci.data.UserData;
 import com.squareup.picasso.Picasso;
 
@@ -41,19 +39,17 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
-
 public class TenpoActivity extends BaseActivity {
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
+
     private static final String TAG_POST_ID = "post_id";
-    //private static final String TAG_USER_ID = "user_id";
     private static final String TAG_USER_NAME = "user_name";
     private static final String TAG_PICTURE = "picture";
     private static final String TAG_MOVIE = "movie";
@@ -65,12 +61,10 @@ public class TenpoActivity extends BaseActivity {
     private static final String TAG_THUMBNAIL = "thumbnail";
     private static final String TAG_STAR_EVALUATION = "star_evaluation";
 
-
     private CustomProgressDialog dialog;
 
-    static boolean isXLargeScreen = false;
-
     private String data;
+
     private ArrayList<UserData> users = new ArrayList<UserData>();
 
     private String restname1;
@@ -80,7 +74,8 @@ public class TenpoActivity extends BaseActivity {
 
 
     private ListView tenpoListView;
-    private UserAdapter userAdapter;
+
+    public TenpoAdapter tenpoAdapter;
 
     private int mCardLayoutIndex = 0;
 
@@ -91,7 +86,6 @@ public class TenpoActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tenpo);
 
-        isXLargeScreen = isXLargeScreen();
         // SwipeRefreshLayoutの設定
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh);
         mSwipeRefreshLayout.setOnRefreshListener(mOnRefreshListener);
@@ -126,12 +120,13 @@ public class TenpoActivity extends BaseActivity {
         });
 
 
-        new MyTenpoAsync().execute(tenpoUrl);
+        new MyTenpoAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, tenpoUrl);
         dialog = new CustomProgressDialog(this);
         dialog.setCancelable(false);
         dialog.show();
 
-        userAdapter = new UserAdapter(this, 0, users);
+        tenpoAdapter = new TenpoAdapter(this, 0, users);
+
         tenpoListView = (ListView) findViewById(R.id.mylistView3);
         tenpoListView.setDivider(null);
         // スクロールバーを表示しない
@@ -144,23 +139,14 @@ public class TenpoActivity extends BaseActivity {
             tenpoListView.addFooterView(LayoutInflater.from(this).inflate(
                     R.layout.card_footer, tenpoListView, false));
         }
-        tenpoListView.setAdapter(userAdapter);
+        tenpoListView.setAdapter(tenpoAdapter);
 
         tenpoListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
 
                 UserData country = users.get(pos);
-
-                //Intent intent = new Intent(getActivity().getApplicationContext(), ToukouActivity.class);
-
-                //intent.putExtra("restname", country.getRestname());
-
-                //intent.putExtra("locality", country.getLocality());
-
-                //startActivity(intent);
             }
-
         });
     }
 
@@ -170,20 +156,13 @@ public class TenpoActivity extends BaseActivity {
         protected Integer doInBackground(String... params) {
             HttpClient httpClient = new DefaultHttpClient();
 
-
-            StringBuilder uri = new StringBuilder(tenpoUrl);
-            Log.d("URL", String.valueOf(uri));
-
-
-            HttpGet request = new HttpGet(uri.toString());
+            HttpGet request = new HttpGet(tenpoUrl);
             HttpResponse httpResponse = null;
 
             try {
                 httpResponse = httpClient.execute(request);
             } catch (Exception e) {
-                Log.d("JSONSampleActivity", "Error Execute");
                 Log.d("error", String.valueOf(e));
-
             }
 
             int status = httpResponse.getStatusLine().getStatusCode();
@@ -195,7 +174,6 @@ public class TenpoActivity extends BaseActivity {
                     data = outputStream.toString(); // JSONデータ
                     Log.d("data", data);
                 } catch (Exception e) {
-                    Log.d("JSONSampleActivity", "Error");
                     Log.d("error", String.valueOf(e));
                 }
 
@@ -206,7 +184,6 @@ public class TenpoActivity extends BaseActivity {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
 
                         String post_id = jsonObject.getString(TAG_POST_ID);
-                        //String user_id = jsonObject.getString(TAG_USER_ID);
                         String user_name = jsonObject.getString(TAG_USER_NAME);
                         String picture = jsonObject.getString(TAG_PICTURE);
                         String movie = jsonObject.getString(TAG_MOVIE);
@@ -218,16 +195,11 @@ public class TenpoActivity extends BaseActivity {
                         String thumbnail = jsonObject.getString(TAG_THUMBNAIL);
                         String star_evaluation = jsonObject.getString(TAG_STAR_EVALUATION);
 
-                        Log.d("String", post_id + "/" + user_name + "/" + picture + "/" + movie + "/" + restname + "/" +
-                        locality + "/" + review + "/" + goodnum + "/" + comment_num + "/" + thumbnail + "/" + star_evaluation);
-
                         UserData user = new UserData();
 
-                        //movieとpictureはどうすれば？
                         user.setPost_id(post_id);
                         user.setMovie(movie);
                         user.setPicture(picture);
-                        //user.setUser_id(user_id);
                         user.setUser_name(user_name);
                         user.setRestname(restname);
                         user.setLocality(locality);
@@ -251,26 +223,19 @@ public class TenpoActivity extends BaseActivity {
             return status;
         }
 
-
-        // このメソッドは非同期処理の終わった後に呼び出されます
         @Override
         protected void onPostExecute(Integer result) {
 
             if (result != null && result == HttpStatus.SC_OK) {
                 //ListViewの最読み込み
                 tenpoListView.invalidateViews();
+                tenpoAdapter.notifyDataSetChanged();
             } else {
                 //通信失敗した際のエラー処理
                 Toast.makeText(TenpoActivity.this, "タイムラインの取得に失敗しました。", Toast.LENGTH_SHORT).show();
             }
             dialog.dismiss();
         }
-    }
-
-    public boolean isXLargeScreen() {
-        int layout = getResources().getConfiguration().screenLayout;
-        return (layout & Configuration.SCREENLAYOUT_SIZE_MASK)
-                == Configuration.SCREENLAYOUT_SIZE_XLARGE;
     }
 
     private SwipeRefreshLayout.OnRefreshListener mOnRefreshListener = new SwipeRefreshLayout.OnRefreshListener() {
@@ -286,7 +251,6 @@ public class TenpoActivity extends BaseActivity {
         }
     };
 
-
     private static class ViewHolder {
         VideoView movie;
         ImageView picture;
@@ -300,7 +264,6 @@ public class TenpoActivity extends BaseActivity {
         TextView thumbnail;
         TextView star_evaluation;
 
-
         public ViewHolder(View view) {
             this.movie = (VideoView) view.findViewById(R.id.movie);
             this.picture = (ImageView) view.findViewById(R.id.picture);
@@ -313,15 +276,14 @@ public class TenpoActivity extends BaseActivity {
             this.comment_num = (TextView) view.findViewById(R.id.comment_num);
             this.thumbnail = (TextView) view.findViewById(R.id.thumbnail);
             this.star_evaluation = (TextView) view.findViewById(R.id.star_evaluation);
-
         }
     }
 
-    public class UserAdapter extends ArrayAdapter<UserData> {
+    public class TenpoAdapter extends ArrayAdapter<UserData> {
         private LayoutInflater layoutInflater;
         int mAnimatedPosition = ListView.INVALID_POSITION;
 
-        public UserAdapter(Context context, int viewResourceId, ArrayList<UserData> users) {
+        public TenpoAdapter(Context context, int viewResourceId, ArrayList<UserData> users) {
             super(context, viewResourceId, users);
             this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
@@ -349,34 +311,37 @@ public class TenpoActivity extends BaseActivity {
             viewHolder.comment_num.setText(user.getComment_num());
             viewHolder.thumbnail.setText(user.getThumbnail());
             viewHolder.star_evaluation.setText(user.getStar_evaluation());
+            Uri video = Uri.parse(user.getMovie());
+
+            viewHolder.movie.setVideoURI(video);
             viewHolder.movie.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
-                public void onPrepared(MediaPlayer mediaPlayer) {
+                public void onPrepared(MediaPlayer mp) {
                     viewHolder.movie.start();
-                    Log.d("videoview", "start");
+                    mp.setLooping(true);
                 }
             });
+
             viewHolder.movie.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                 public void onCompletion(MediaPlayer mp) {
                     isMov = false;
                     viewHolder.movie.setVideoURI(null);
-                    viewHolder.movie.requestFocus();
-                    Log.d("videoview", "setnull");
                     //動画終了
                 }
             });
+
             if (!isMov) {
                 isMov = true;
-
-                MediaController mediaController = new MediaController(getContext());
-                mediaController.setAnchorView(viewHolder.movie);
-                viewHolder.movie.setVideoURI(Uri.parse(user.getMovie()));
-                Log.d("videoview", "setURL");
+                viewHolder.movie.setVideoURI(video);
+                //viewHolder.movie.start();
             }
+
             Picasso.with(getContext())
                     .load(user.getPicture())
                     .resize(50, 50)
+                    .placeholder(R.drawable.ic_gocci)
                     .centerCrop()
+                    .transform(new RoundedTransformation())
                     .into(viewHolder.picture);
 
             if (mAnimatedPosition < position) {
@@ -393,7 +358,4 @@ public class TenpoActivity extends BaseActivity {
             return convertView;
         }
     }
-
-
-
 }

@@ -3,7 +3,6 @@ package com.example.kinagafuji.gocci.Fragment;
 
 import android.animation.Animator;
 import android.animation.AnimatorInflater;
-import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -53,7 +52,9 @@ public class ProfileFragment extends BaseFragment {
 
     private ListView proflist;
 
-    private  ViewHolder viewHolder;
+    private ViewHolder viewHolder;
+
+    private static boolean isMov = false;
 
     private static String profUrl = "https://codelecture.com/gocci/mypage.php";
     private static String Dataurl = "https://codelecture.com/gocci/signup.php";
@@ -72,8 +73,11 @@ public class ProfileFragment extends BaseFragment {
     private String data;
 
     private CustomProgressDialog dialog;
+
     private ArrayList<UserData> profuser = new ArrayList<UserData>();
+
     private int mCardLayoutIndex = 0;
+
     private ProfAdapter profAdapter;
 
     private String name;
@@ -88,7 +92,6 @@ public class ProfileFragment extends BaseFragment {
         // FragmentのViewを返却
         View rootView = inflater.inflate(R.layout.fragment_profile, container, false);
 
-
         TextView post_name = (TextView) rootView.findViewById(R.id.post_name);
         TextView post_url = (TextView) rootView.findViewById(R.id.post_url);
         TextView post_gender = (TextView) rootView.findViewById(R.id.post_gender);
@@ -97,6 +100,7 @@ public class ProfileFragment extends BaseFragment {
         TextView post_birthday = (TextView) rootView.findViewById(R.id.post_birthday);
 
         SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
+
         name = pref.getString("name", "");
         pictureUrl = pref.getString("pictureUrl", "");
         birthday = pref.getString("birthday", "");
@@ -113,13 +117,13 @@ public class ProfileFragment extends BaseFragment {
 
         proflist = (ListView) rootView.findViewById(R.id.proflist);
 
-        //new ProfTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        new ProfTask2().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        new ProfTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         dialog = new CustomProgressDialog(getActivity());
         dialog.setCancelable(false);
         dialog.show();
 
         profAdapter = new ProfAdapter(getActivity(), 0, profuser);
+
         proflist.setDivider(null);
         // スクロールバーを表示しない
         proflist.setVerticalScrollBarEnabled(false);
@@ -136,19 +140,18 @@ public class ProfileFragment extends BaseFragment {
         return rootView;
     }
 
-
-
     public class ProfTask extends AsyncTask<String, String, Integer> {
 
         @Override
         protected Integer doInBackground(String... strings) {
             HttpClient client1 = new DefaultHttpClient();
+
             HttpPost method = new HttpPost(Dataurl);
 
             ArrayList<NameValuePair> contents = new ArrayList<NameValuePair>();
             contents.add(new BasicNameValuePair("user_name", name));
             contents.add(new BasicNameValuePair("picture", pictureUrl));
-            Log.d("読み取り",name + "と" + pictureUrl);
+            Log.d("読み取り", name + "と" + pictureUrl);
 
             String body = null;
             try {
@@ -161,32 +164,14 @@ public class ProfileFragment extends BaseFragment {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            client1.getConnectionManager().shutdown();
 
-            return null;
-        }
-
-
-
-
-    }
-
-    public class ProfTask2 extends AsyncTask<String, String, Integer> {
-
-        @Override
-        protected Integer doInBackground(String... params) {
-            HttpClient httpClient = new DefaultHttpClient();
-
-            StringBuilder uri = new StringBuilder(profUrl);
-
-            HttpGet request = new HttpGet(uri.toString());
+            HttpGet request = new HttpGet(profUrl);
             HttpResponse httpResponse = null;
 
             try {
-                httpResponse = httpClient.execute(request);
+                httpResponse = client1.execute(request);
             } catch (Exception e) {
                 Log.d("error", String.valueOf(e));
-
             }
 
             int status = httpResponse.getStatusLine().getStatusCode();
@@ -203,7 +188,6 @@ public class ProfileFragment extends BaseFragment {
 
                 try {
                     JSONArray jsonArray = new JSONArray(data);
-                    Log.d("error", data);
 
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -219,11 +203,8 @@ public class ProfileFragment extends BaseFragment {
                         String thumbnail = jsonObject.getString(TAG_THUMBNAIL);
                         String star_evaluation = jsonObject.getString(TAG_STAR_EVALUATION);
 
-                        Log.d("String", post_id + "/" + user_id + "/" + user_name + "/" + picture + "/" + movie + "/" + restname);
-
                         UserData user = new UserData();
 
-                        //movieとpictureはどうすれば？
                         user.setPost_id(post_id);
                         user.setMovie(movie);
                         user.setPicture(picture);
@@ -254,6 +235,7 @@ public class ProfileFragment extends BaseFragment {
             if (result != null && result == HttpStatus.SC_OK) {
                 //ListViewの最読み込み
                 proflist.invalidateViews();
+                profAdapter.notifyDataSetChanged();
             } else {
                 //通信失敗した際のエラー処理
                 Toast.makeText(getActivity().getApplicationContext(), "タイムラインの取得に失敗しました。", Toast.LENGTH_SHORT).show();
@@ -315,7 +297,19 @@ public class ProfileFragment extends BaseFragment {
                 }
             });
 
+            viewHolder.movie.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                public void onCompletion(MediaPlayer mp) {
+                    isMov = false;
+                    viewHolder.movie.setVideoURI(null);
+                    //動画終了
+                }
+            });
 
+            if (!isMov) {
+                isMov = true;
+                viewHolder.movie.setVideoURI(video);
+                //viewHolder.movie.start();
+            }
 
             Picasso.with(getContext())
                     .load(user.getPicture())
@@ -325,7 +319,6 @@ public class ProfileFragment extends BaseFragment {
                     .transform(new RoundedTransformation())
                     .into(viewHolder.picture);
             //ここをImageではなく、ImageButtonに変更は可能？
-
 
             // まだ表示していない位置ならアニメーションする
             if (mAnimatedPosition < position) {
@@ -354,5 +347,4 @@ public class ProfileFragment extends BaseFragment {
             return convertView;
         }
     }
-
 }
