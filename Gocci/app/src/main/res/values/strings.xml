@@ -9,9 +9,8 @@
     <string name="title_activity_toukou">Toukou</string>
     <string name="title_activity_splash">SplashActivity</string>
     <string name="title_activity_login">LoginActivity</string>
-    <string name="facebook_appId">facebook</string>
+    <string name="app_id">673123156062598</string>
     <string name="map_key">AIzaSyAGSbxYvWNh136FcFzELekR_OLTOA5Oglk</string>
-    <string name="app_id">566579750128624</string>
     <string name="user_id">ユーザーID</string>
     <string name="user_name">ユーザー名</string>
     <string name="picture">写真URL</string>
@@ -47,5 +46,8 @@
     <string name="shared_pref_name">twitter_auth_sample</string>
     <string name="shared_pref_key_twitter_access_token">twitter_access_token</string>
     <string name="shared_pref_key_twitter_access_token_secret">twitter_access_token_secret</string>
+    <string name="title_activity_login_activity2">LoginActivity2</string>
+    <string name="title_activity_kanryo">KanryoActivity</string>
+    <string name="title_activity_sliding_tab">SlidingTabActivity</string>
 
 </resources>

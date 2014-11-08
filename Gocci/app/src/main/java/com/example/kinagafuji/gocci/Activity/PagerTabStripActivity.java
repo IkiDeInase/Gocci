@@ -68,10 +68,10 @@ public class PagerTabStripActivity extends FragmentActivity {
             }
         };
         //Add New Tab
-        mActionBar.addTab(mActionBar.newTab().setIcon(R.drawable.abc_ic_menu_share_holo_dark).setTabListener(tabListener));
+        /*mActionBar.addTab(mActionBar.newTab().setIcon(R.drawable.abc_ic_menu_share_holo_dark).setTabListener(tabListener));
         mActionBar.addTab(mActionBar.newTab().setIcon(R.drawable.abc_ic_search).setTabListener(tabListener));
         mActionBar.addTab(mActionBar.newTab().setIcon(R.drawable.abc_ic_clear).setTabListener(tabListener));
-        mActionBar.addTab(mActionBar.newTab().setIcon(R.drawable.abc_ic_menu_moreoverflow_normal_holo_dark).setTabListener(tabListener));
+        mActionBar.addTab(mActionBar.newTab().setIcon(R.drawable.abc_ic_menu_moreoverflow_normal_holo_dark).setTabListener(tabListener));*/
     }
 
 

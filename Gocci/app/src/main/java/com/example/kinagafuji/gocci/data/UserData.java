@@ -3,11 +3,11 @@ package com.example.kinagafuji.gocci.data;
 public class UserData {
 
     private String movie;
-    private String picture;
+    private String circleImage;
     private String post_id;
     private String user_id;
     private String user_name;
-    private String restname;
+    private String rest_name;
     private String tell;
     private String category;
     private Double lat;
@@ -29,11 +29,11 @@ public class UserData {
     }
 
     public String getPicture() {
-        return this.picture;
+        return this.circleImage;
     }
 
-    public void setPicture(String picture) {
-        this.picture = picture;
+    public void setPicture(String circleImage) {
+        this.circleImage = circleImage;
     }
 
     public String getPost_id() {
@@ -60,12 +60,12 @@ public class UserData {
         this.user_name = user_name;
     }
 
-    public String getRestname() {
-        return this.restname;
+    public String getRest_name() {
+        return this.rest_name;
     }
 
-    public void setRestname(String restname) {
-        this.restname = restname;
+    public void setRest_name(String rest_name) {
+        this.rest_name = rest_name;
     }
 
     public String getTell() {

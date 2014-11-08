@@ -5,6 +5,7 @@ import android.animation.AnimatorInflater;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
@@ -27,12 +28,13 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import com.example.kinagafuji.gocci.Activity.TenpoActivity;
 import com.example.kinagafuji.gocci.Base.BaseFragment;
 import com.example.kinagafuji.gocci.Base.CustomProgressDialog;
 import com.example.kinagafuji.gocci.R;
-import com.example.kinagafuji.gocci.data.BaseVideoView;
+import com.example.kinagafuji.gocci.Base.BaseVideoView;
 import com.example.kinagafuji.gocci.data.PopupHelper;
 import com.example.kinagafuji.gocci.data.RoundedTransformation;
 import com.example.kinagafuji.gocci.data.UserData;
@@ -55,9 +57,7 @@ public class TimelineFragment extends BaseFragment {
 
     private CustomProgressDialog dialog;
 
-    private SwipeRefreshLayout mSwipeRefreshLayout;
-
-    private static String url = "https://codelecture.com/gocci/timeline.php";
+    public static String url = "https://codelecture.com/gocci/timeline.php";
     private String SearchUrl;
 
     private ViewHolder viewHolder;
@@ -104,10 +104,9 @@ public class TimelineFragment extends BaseFragment {
         // FragmentのViewを返却
         final View rootView = inflater.inflate(R.layout.fragment_timeline, container, false);
 
-        // SwipeRefreshLayoutの設定
-        mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.refresh);
-        mSwipeRefreshLayout.setOnRefreshListener(mOnRefreshListener);
-        mSwipeRefreshLayout.setColorSchemeColors(Color.GRAY, Color.CYAN, Color.MAGENTA, Color.BLACK);
+        Point size = new Point();
+        final int width = size.x;
+        final int height = size.y;
 
         mListView = (ListView) rootView.findViewById(R.id.mylistView2);
 
@@ -115,7 +114,7 @@ public class TimelineFragment extends BaseFragment {
         floatImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PopupWindow window = PopupHelper.newBasicPopupWindow(getActivity());
+                PopupWindow window = PopupHelper.newBasicPopupWindow(getActivity(), width, height);
 
                 View inflateView = inflater.inflate(R.layout.searchlist, container, false);
                 searchListView = (ListView) inflateView.findViewById(R.id.searchListView);
@@ -129,20 +128,6 @@ public class TimelineFragment extends BaseFragment {
 
                 searchAdapter = new SearchAdapter(getActivity(), 0, searchusers);
                 searchListView.setAdapter(searchAdapter);
-
-                searchListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
-
-                        //UserData country = searchusers.get(pos);
-
-                        //カメラは後々Intentで設定する。
-                        Intent intent = new Intent(getActivity().getApplicationContext(), com.javacv.recorder.FFmpegRecorderActivity.class);
-                        startActivity(intent);
-
-                    }
-
-                });
 
                 window.setContentView(inflateView);
                 //int totalHeight = getWindowManager().getDefaultDisplay().getHeight();
@@ -194,30 +179,17 @@ public class TimelineFragment extends BaseFragment {
 
     }
 
-    private SwipeRefreshLayout.OnRefreshListener mOnRefreshListener = new SwipeRefreshLayout.OnRefreshListener() {
-        @Override
-        public void onRefresh() {
-            mSwipeRefreshLayout.setEnabled(false);
-            new UserTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            // 3秒待機
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mSwipeRefreshLayout.setRefreshing(false);
-                    mSwipeRefreshLayout.setEnabled(true);
-                }
-            }, 3000);
-        }
-    };
+
 
     public class UserTask extends AsyncTask<String, String, Integer> {
 
         @Override
         protected Integer doInBackground(String... strings) {
+            String string = strings[0];
 
             HttpClient httpClient = new DefaultHttpClient();
 
-            HttpGet request = new HttpGet(url);
+            HttpGet request = new HttpGet(string);
             HttpResponse httpResponse = null;
 
             try {
@@ -226,7 +198,10 @@ public class TimelineFragment extends BaseFragment {
                 Log.d("error", String.valueOf(e));
             }
 
-            int status = httpResponse.getStatusLine().getStatusCode();
+            int status = 0;
+            if (httpResponse != null) {
+                status = httpResponse.getStatusLine().getStatusCode();
+            }
 
             if (HttpStatus.SC_OK == status) {
                 try {
@@ -262,7 +237,7 @@ public class TimelineFragment extends BaseFragment {
                         user.setPicture(picture);
                         user.setUser_id(user_id);
                         user.setUser_name(user_name);
-                        user.setRestname(restname);
+                        user.setRest_name(restname);
                         user.setgoodnum(goodnum);
                         user.setComment_num(comment_num);
                         user.setThumbnail(thumbnail);
@@ -299,10 +274,11 @@ public class TimelineFragment extends BaseFragment {
 
         @Override
         protected Integer doInBackground(String... params) {
+            String param = params[0];
 
             HttpClient httpClient = new DefaultHttpClient();
 
-            HttpGet request = new HttpGet(SearchUrl);
+            HttpGet request = new HttpGet(param);
             HttpResponse httpResponse = null;
 
             try {
@@ -311,7 +287,10 @@ public class TimelineFragment extends BaseFragment {
                 Log.d("JSONSampleActivity", "Error Execute");
             }
 
-            int status = httpResponse.getStatusLine().getStatusCode();
+            int status = 0;
+            if (httpResponse != null) {
+                status = httpResponse.getStatusLine().getStatusCode();
+            }
 
             if (HttpStatus.SC_OK == status) {
                 try {
@@ -340,7 +319,7 @@ public class TimelineFragment extends BaseFragment {
                         UserData user = new UserData();
 
                         user.setTell(tell);
-                        user.setRestname(restname);
+                        user.setRest_name(restname);
                         user.setCategory(category);
                         user.setLat(lat);
                         user.setLon(lon);
@@ -378,20 +357,24 @@ public class TimelineFragment extends BaseFragment {
     }
 
     private static class ViewHolder {
-        BaseVideoView movie;
-        ImageView picture;
-        TextView post_id;
-        TextView user_id;
+        VideoView movie;
+        ImageView circleImage;
+        ImageView restaurantImage;
+        TextView comment;
+        TextView time;
         TextView user_name;
-        Button restnamebutton;
+        TextView rest_name;
+        TextView category;
 
         public ViewHolder(View view) {
-            this.movie = (BaseVideoView) view.findViewById(R.id.movieview);
-            this.picture = (ImageView) view.findViewById(R.id.pictureView);
-            this.post_id = (TextView) view.findViewById(R.id.post_id);
-            this.user_id = (TextView) view.findViewById(R.id.user_id);
+            this.movie = (VideoView) view.findViewById(R.id.videoView);
+            this.circleImage = (ImageView) view.findViewById(R.id.circleImage);
+            this.restaurantImage = (ImageView) view.findViewById(R.id.restaurantImage);
+            this.comment = (TextView) view.findViewById(R.id.comment);
+            this.time = (TextView) view.findViewById(R.id.time);
             this.user_name = (TextView) view.findViewById(R.id.user_name);
-            this.restnamebutton = (Button) view.findViewById(R.id.restnamebutton);
+            this.rest_name = (TextView) view.findViewById(R.id.rest_name);
+            this.category = (TextView) view.findViewById(R.id.category);
         }
     }
 
@@ -424,17 +407,50 @@ public class TimelineFragment extends BaseFragment {
         public View getView(final int position, View convertView, ViewGroup parent) {
 
             if (convertView == null) {
-                convertView = layoutInflater.inflate(R.layout.timeline, null);
+                int param = position/4;
+                int param2 = param*4;
+                int param3 = position - param2;
+
+                switch (param3) {
+
+                    case 0:
+                        convertView = layoutInflater.inflate(R.layout.name_picture_bar, null);
+
+                        break;
+
+
+                    case 1:
+                        convertView = layoutInflater.inflate(R.layout.video_bar, null);
+
+                        break;
+
+
+                    case 2:
+                        convertView = layoutInflater.inflate(R.layout.comment_bar, null);
+
+                        break;
+
+
+                    case 3:
+                        convertView = layoutInflater.inflate(R.layout.restaurant_bar, null);
+
+                        break;
+
+                }
+
                 viewHolder = new ViewHolder(convertView);
                 convertView.setTag(viewHolder);
+
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
+
             UserData user = this.getItem(position);
 
-            viewHolder.post_id.setText(user.getPost_id());
-            viewHolder.user_id.setText(user.getUser_id());
+
             viewHolder.user_name.setText(user.getUser_name());
+            viewHolder.rest_name.setText(user.getRest_name());
+            viewHolder.category.setText(user.getLocality());
             Uri video = Uri.parse(user.getMovie());
 
             viewHolder.movie.setVideoURI(video);
@@ -466,7 +482,7 @@ public class TimelineFragment extends BaseFragment {
                     .placeholder(R.drawable.ic_gocci)
                     .centerCrop()
                     .transform(new RoundedTransformation())
-                    .into(viewHolder.picture);
+                    .into(viewHolder.circleImage);
             //ここをImageではなく、ImageButtonに変更は可能？
 
             // まだ表示していない位置ならアニメーションする
@@ -481,7 +497,7 @@ public class TimelineFragment extends BaseFragment {
                 mAnimatedPosition = position;
             }
 
-            viewHolder.restnamebutton.setText(user.getRestname());
+            /*viewHolder.restnamebutton.setText(user.getRestname());
             viewHolder.restnamebutton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -492,7 +508,7 @@ public class TimelineFragment extends BaseFragment {
 
                     startActivity(intent);
                 }
-            });
+            });*/
             return convertView;
         }
     }
@@ -519,7 +535,7 @@ public class TimelineFragment extends BaseFragment {
             final UserData user = this.getItem(position);
 
             viewHolder2.tell.setText(user.getTell());
-            viewHolder2.restname.setText(user.getRestname());
+            viewHolder2.restname.setText(user.getRest_name());
             viewHolder2.category.setText(user.getCategory());
             viewHolder2.locality.setText(user.getLocality());
             viewHolder2.distance.setText(user.getDistance());

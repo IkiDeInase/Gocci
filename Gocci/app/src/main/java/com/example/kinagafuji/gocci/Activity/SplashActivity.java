@@ -14,7 +14,7 @@ import com.example.kinagafuji.gocci.R;
 
 public class SplashActivity extends Activity {
 
-    private final int SPLASH_DISPLAY_LENGTH = 3000;
+    public final int SPLASH_DISPLAY_LENGTH = 3000;
 
 
     @Override

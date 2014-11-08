@@ -55,8 +55,6 @@ public class Search_mapFragment extends BaseFragment {
 
     private GoogleMap mMap = null;
 
-    private SwipeRefreshLayout mSwipeRefreshLayout;
-
     public double Latitude1;
     public double Longitude1;
 
@@ -84,7 +82,7 @@ public class Search_mapFragment extends BaseFragment {
     private ArrayList<UserData> users2 = new ArrayList<UserData>();
 
     private SearchView searchView;
-    private String searchword;
+    public String searchword;
 
     private ListView mlistView;
 
@@ -92,13 +90,6 @@ public class Search_mapFragment extends BaseFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // FragmentのViewを返却
         View rootView = inflater.inflate(R.layout.fragment_search_map, container, false);
-
-        setUpMapIfNeeded();
-
-        // SwipeRefreshLayoutの設定
-        mSwipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.refresh);
-        mSwipeRefreshLayout.setOnRefreshListener(mOnRefreshListener);
-        mSwipeRefreshLayout.setColorSchemeColors(Color.GRAY, Color.CYAN, Color.MAGENTA, Color.BLACK);
 
         userAdapter = new UserAdapter(getActivity(), 0, users);
         userAdapter2 = new UserAdapter2(getActivity(), 0, users2);
@@ -118,7 +109,7 @@ public class Search_mapFragment extends BaseFragment {
                 UserData country = users.get(pos);
 
                 Intent intent = new Intent(getActivity().getApplicationContext(), TenpoActivity.class);
-                intent.putExtra("restname", country.getRestname());
+                intent.putExtra("restname", country.getRest_name());
                 intent.putExtra("locality", country.getLocality());
                 startActivity(intent);
             }
@@ -136,6 +127,13 @@ public class Search_mapFragment extends BaseFragment {
         dialog.show();
 
         return rootView;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle bundle){
+        super.onActivityCreated(bundle);
+
+        setUpMapIfNeeded();
     }
 
     private SearchView.OnQueryTextListener onQueryTextListener = new SearchView.OnQueryTextListener() {
@@ -239,10 +237,11 @@ public class Search_mapFragment extends BaseFragment {
 
         @Override
         protected Integer doInBackground(String... params) {
+            String param = params[0];
 
             HttpClient httpClient = new DefaultHttpClient();
 
-            HttpGet request = new HttpGet(SearchURL);
+            HttpGet request = new HttpGet(param);
             HttpResponse httpResponse = null;
 
             try {
@@ -251,7 +250,10 @@ public class Search_mapFragment extends BaseFragment {
                 Log.d("JSONSampleActivity", "Error Execute");
             }
 
-            int status = httpResponse.getStatusLine().getStatusCode();
+            int status = 0;
+            if (httpResponse != null) {
+                status = httpResponse.getStatusLine().getStatusCode();
+            }
 
             if (HttpStatus.SC_OK == status) {
                 try {
@@ -282,7 +284,7 @@ public class Search_mapFragment extends BaseFragment {
                         UserData user = new UserData();
 
                         user.setTell(tell);
-                        user.setRestname(restname);
+                        user.setRest_name(restname);
                         user.setCategory(category);
                         user.setLat(lat);
                         user.setLon(lon);
@@ -325,10 +327,11 @@ public class Search_mapFragment extends BaseFragment {
 
         @Override
         protected Integer doInBackground(String... params) {
+            String param = params[0];
 
             HttpClient httpClient = new DefaultHttpClient();
 
-            HttpGet request = new HttpGet(MapURL);
+            HttpGet request = new HttpGet(param);
             HttpResponse httpResponse = null;
 
             try {
@@ -338,7 +341,10 @@ public class Search_mapFragment extends BaseFragment {
 
             }
 
-            int status = httpResponse.getStatusLine().getStatusCode();
+            int status = 0;
+            if (httpResponse != null) {
+                status = httpResponse.getStatusLine().getStatusCode();
+            }
 
             if (HttpStatus.SC_OK == status) {
                 try {
@@ -369,7 +375,7 @@ public class Search_mapFragment extends BaseFragment {
                         UserData user = new UserData();
 
                         user.setTell(tell);
-                        user.setRestname(restname);
+                        user.setRest_name(restname);
                         user.setCategory(category);
                         user.setLat(lat);
                         user.setLon(lon);
@@ -408,18 +414,6 @@ public class Search_mapFragment extends BaseFragment {
         }
     }
 
-    private SwipeRefreshLayout.OnRefreshListener mOnRefreshListener = new SwipeRefreshLayout.OnRefreshListener() {
-        @Override
-        public void onRefresh() {
-            // 3秒待機
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mSwipeRefreshLayout.setRefreshing(false);
-                }
-            }, 3000);
-        }
-    };
 
     public static class ViewHolder {
         TextView tell;
@@ -462,7 +456,7 @@ public class Search_mapFragment extends BaseFragment {
             mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng1));
             MarkerOptions options = new MarkerOptions();
             options.position(latLng1);
-            options.title(user.getRestname());
+            options.title(user.getRest_name());
             options.draggable(false);
             mMap.addMarker(options);
             mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
@@ -473,7 +467,7 @@ public class Search_mapFragment extends BaseFragment {
             });
 
             viewHolder.tell.setText(user.getTell());
-            viewHolder.restname.setText(user.getRestname());
+            viewHolder.restname.setText(user.getRest_name());
             viewHolder.category.setText(user.getCategory());
             viewHolder.locality.setText(user.getLocality());
             viewHolder.distance.setText(user.getDistance());
@@ -506,7 +500,7 @@ public class Search_mapFragment extends BaseFragment {
             mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng2));
             MarkerOptions options = new MarkerOptions();
             options.position(latLng2);
-            options.title(user.getRestname());
+            options.title(user.getRest_name());
             options.draggable(false);
             mMap.addMarker(options);
             mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
@@ -517,7 +511,7 @@ public class Search_mapFragment extends BaseFragment {
             });
 
             viewHolder.tell.setText(user.getTell());
-            viewHolder.restname.setText(user.getRestname());
+            viewHolder.restname.setText(user.getRest_name());
             viewHolder.category.setText(user.getCategory());
             viewHolder.locality.setText(user.getLocality());
             viewHolder.distance.setText(user.getDistance());

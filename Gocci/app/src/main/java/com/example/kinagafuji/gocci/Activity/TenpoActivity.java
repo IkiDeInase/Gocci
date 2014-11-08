@@ -201,7 +201,7 @@ public class TenpoActivity extends BaseActivity {
                         user.setMovie(movie);
                         user.setPicture(picture);
                         user.setUser_name(user_name);
-                        user.setRestname(restname);
+                        user.setRest_name(restname);
                         user.setLocality(locality);
                         user.setReview(review);
                         user.setgoodnum(goodnum);
@@ -304,7 +304,7 @@ public class TenpoActivity extends BaseActivity {
 
             viewHolder.post_id.setText(user.getPost_id());
             viewHolder.user_name.setText(user.getUser_name());
-            viewHolder.restname.setText(user.getRestname());
+            viewHolder.restname.setText(user.getRest_name());
             viewHolder.locality.setText(user.getLocality());
             viewHolder.review.setText(user.getReview());
             viewHolder.goodnum.setText(user.getgoodnum());

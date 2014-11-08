@@ -57,6 +57,41 @@
                 qualifiers=""
                 type="drawable" />
             <file
+                name="com_facebook_button_like"
+                path="/Users/kinagafuji/Desktop/Gocci_Android/Gocci/facebook/res/drawable/com_facebook_button_like.xml"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="com_facebook_button_like_background"
+                path="/Users/kinagafuji/Desktop/Gocci_Android/Gocci/facebook/res/drawable/com_facebook_button_like_background.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="com_facebook_button_like_background_selected"
+                path="/Users/kinagafuji/Desktop/Gocci_Android/Gocci/facebook/res/drawable/com_facebook_button_like_background_selected.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="com_facebook_button_like_icon"
+                path="/Users/kinagafuji/Desktop/Gocci_Android/Gocci/facebook/res/drawable/com_facebook_button_like_icon.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="com_facebook_button_like_icon_selected"
+                path="/Users/kinagafuji/Desktop/Gocci_Android/Gocci/facebook/res/drawable/com_facebook_button_like_icon_selected.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="com_facebook_button_like_pressed"
+                path="/Users/kinagafuji/Desktop/Gocci_Android/Gocci/facebook/res/drawable/com_facebook_button_like_pressed.png"
+                qualifiers=""
+                type="drawable" />
+            <file
+                name="com_facebook_button_like_selected"
+                path="/Users/kinagafuji/Desktop/Gocci_Android/Gocci/facebook/res/drawable/com_facebook_button_like_selected.xml"
+                qualifiers=""
+                type="drawable" />
+            <file
                 name="com_facebook_close"
                 path="/Users/kinagafuji/Desktop/Gocci_Android/Gocci/facebook/res/drawable/com_facebook_close.png"
                 qualifiers=""
@@ -189,6 +224,31 @@
             <file
                 name="com_facebook_button_grey_pressed"
                 path="/Users/kinagafuji/Desktop/Gocci_Android/Gocci/facebook/res/drawable-hdpi/com_facebook_button_grey_pressed.9.png"
+                qualifiers="hdpi-v4"
+                type="drawable" />
+            <file
+                name="com_facebook_button_like_background"
+                path="/Users/kinagafuji/Desktop/Gocci_Android/Gocci/facebook/res/drawable-hdpi/com_facebook_button_like_background.png"
+                qualifiers="hdpi-v4"
+                type="drawable" />
+            <file
+                name="com_facebook_button_like_background_selected"
+                path="/Users/kinagafuji/Desktop/Gocci_Android/Gocci/facebook/res/drawable-hdpi/com_facebook_button_like_background_selected.png"
+                qualifiers="hdpi-v4"
+                type="drawable" />
+            <file
+                name="com_facebook_button_like_icon"
+                path="/Users/kinagafuji/Desktop/Gocci_Android/Gocci/facebook/res/drawable-hdpi/com_facebook_button_like_icon.png"
+                qualifiers="hdpi-v4"
+                type="drawable" />
+            <file
+                name="com_facebook_button_like_icon_selected"
+                path="/Users/kinagafuji/Desktop/Gocci_Android/Gocci/facebook/res/drawable-hdpi/com_facebook_button_like_icon_selected.png"
+                qualifiers="hdpi-v4"
+                type="drawable" />
+            <file
+                name="com_facebook_button_like_pressed"
+                path="/Users/kinagafuji/Desktop/Gocci_Android/Gocci/facebook/res/drawable-hdpi/com_facebook_button_like_pressed.png"
                 qualifiers="hdpi-v4"
                 type="drawable" />
             <file
@@ -352,6 +412,31 @@
                 qualifiers="xhdpi-v4"
                 type="drawable" />
             <file
+                name="com_facebook_button_like_background"
+                path="/Users/kinagafuji/Desktop/Gocci_Android/Gocci/facebook/res/drawable-xhdpi/com_facebook_button_like_background.png"
+                qualifiers="xhdpi-v4"
+                type="drawable" />
+            <file
+                name="com_facebook_button_like_background_selected"
+                path="/Users/kinagafuji/Desktop/Gocci_Android/Gocci/facebook/res/drawable-xhdpi/com_facebook_button_like_background_selected.png"
+                qualifiers="xhdpi-v4"
+                type="drawable" />
+            <file
+                name="com_facebook_button_like_icon"
+                path="/Users/kinagafuji/Desktop/Gocci_Android/Gocci/facebook/res/drawable-xhdpi/com_facebook_button_like_icon.png"
+                qualifiers="xhdpi-v4"
+                type="drawable" />
+            <file
+                name="com_facebook_button_like_icon_selected"
+                path="/Users/kinagafuji/Desktop/Gocci_Android/Gocci/facebook/res/drawable-xhdpi/com_facebook_button_like_icon_selected.png"
+                qualifiers="xhdpi-v4"
+                type="drawable" />
+            <file
+                name="com_facebook_button_like_pressed"
+                path="/Users/kinagafuji/Desktop/Gocci_Android/Gocci/facebook/res/drawable-xhdpi/com_facebook_button_like_pressed.png"
+                qualifiers="xhdpi-v4"
+                type="drawable" />
+            <file
                 name="com_facebook_close"
                 path="/Users/kinagafuji/Desktop/Gocci_Android/Gocci/facebook/res/drawable-xhdpi/com_facebook_close.png"
                 qualifiers="xhdpi-v4"
@@ -410,6 +495,31 @@
                 name="com_facebook_tooltip_blue_xout"
                 path="/Users/kinagafuji/Desktop/Gocci_Android/Gocci/facebook/res/drawable-xhdpi/com_facebook_tooltip_blue_xout.png"
                 qualifiers="xhdpi-v4"
+                type="drawable" />
+            <file
+                name="com_facebook_button_like_background"
+                path="/Users/kinagafuji/Desktop/Gocci_Android/Gocci/facebook/res/drawable-xxhdpi/com_facebook_button_like_background.png"
+                qualifiers="xxhdpi-v4"
+                type="drawable" />
+            <file
+                name="com_facebook_button_like_background_selected"
+                path="/Users/kinagafuji/Desktop/Gocci_Android/Gocci/facebook/res/drawable-xxhdpi/com_facebook_button_like_background_selected.png"
+                qualifiers="xxhdpi-v4"
+                type="drawable" />
+            <file
+                name="com_facebook_button_like_icon"
+                path="/Users/kinagafuji/Desktop/Gocci_Android/Gocci/facebook/res/drawable-xxhdpi/com_facebook_button_like_icon.png"
+                qualifiers="xxhdpi-v4"
+                type="drawable" />
+            <file
+                name="com_facebook_button_like_icon_selected"
+                path="/Users/kinagafuji/Desktop/Gocci_Android/Gocci/facebook/res/drawable-xxhdpi/com_facebook_button_like_icon_selected.png"
+                qualifiers="xxhdpi-v4"
+                type="drawable" />
+            <file
+                name="com_facebook_button_like_pressed"
+                path="/Users/kinagafuji/Desktop/Gocci_Android/Gocci/facebook/res/drawable-xxhdpi/com_facebook_button_like_pressed.png"
+                qualifiers="xxhdpi-v4"
                 type="drawable" />
             <file
                 name="com_facebook_friendpickerfragment"
@@ -489,6 +599,24 @@
             <file
                 path="/Users/kinagafuji/Desktop/Gocci_Android/Gocci/facebook/res/values/attrs.xml"
                 qualifiers="" >
+                <declare-styleable name="com_facebook_profile_picture_view" >
+                    <attr name="preset_size" >
+
+                        <!-- Keep in sync with constants in ProfilePictureView -->
+                        <enum
+                            name="small"
+                            value="-2" />
+                        <enum
+                            name="normal"
+                            value="-3" />
+                        <enum
+                            name="large"
+                            value="-4" />
+                    </attr>
+                    <attr
+                        name="is_cropped"
+                        format="boolean" />
+                </declare-styleable>
                 <declare-styleable name="com_facebook_login_view" >
                     <attr
                         name="confirm_logout"
@@ -540,23 +668,52 @@
                         name="done_button_background"
                         format="reference" />
                 </declare-styleable>
-                <declare-styleable name="com_facebook_profile_picture_view" >
-                    <attr name="preset_size" >
-
-                        <!-- Keep in sync with constants in ProfilePictureView -->
-                        <enum
-                            name="small"
-                            value="-2" />
-                        <enum
-                            name="normal"
-                            value="-3" />
-                        <enum
-                            name="large"
-                            value="-4" />
-                    </attr>
+                <declare-styleable name="com_facebook_like_view" >
                     <attr
-                        name="is_cropped"
-                        format="boolean" />
+                        name="foreground_color"
+                        format="color" />
+                    <attr
+                        name="object_id"
+                        format="string" />
+                    <attr name="style" >
+
+                        <!-- Keep in sync with Enums in LikeView -->
+                        <enum
+                            name="standard"
+                            value="0" />
+                        <enum
+                            name="button"
+                            value="1" />
+                        <enum
+                            name="box_count"
+                            value="2" />
+                    </attr>
+                    <attr name="auxiliary_view_position" >
+
+                        <!-- Keep in sync with Enums in LikeView -->
+                        <enum
+                            name="bottom"
+                            value="0" />
+                        <enum
+                            name="inline"
+                            value="1" />
+                        <enum
+                            name="top"
+                            value="2" />
+                    </attr>
+                    <attr name="horizontal_alignment" >
+
+                        <!-- Keep in sync with Enums in LikeView -->
+                        <enum
+                            name="center"
+                            value="0" />
+                        <enum
+                            name="left"
+                            value="1" />
+                        <enum
+                            name="right"
+                            value="2" />
+                    </attr>
                 </declare-styleable>
                 <declare-styleable name="com_facebook_friend_picker_fragment" >
                     <attr
@@ -590,6 +747,8 @@
                 </string>
                 <string name="com_facebook_loginview_logged_in_using_facebook" >Logged in using Facebook
                 </string>
+                <string name="com_facebook_like_button_not_liked" >Like
+                </string>
                 <string name="com_facebook_requesterror_reconnect" >Please log into this app again to reconnect your Facebook account.
                 </string>
                 <string name="com_facebook_placepicker_subtitle_were_here_only_format" >%1$,d were here
@@ -609,6 +768,8 @@
                 <string name="com_facebook_logo_content_description" >Facebook Logo
                 </string>
                 <string name="com_facebook_tooltip_default" >New! You\'re in control - choose what info you want to share with apps.
+                </string>
+                <string name="com_facebook_image_download_unknown_error" >Unexpected error while downloading an image.
                 </string>
                 <string name="com_facebook_requesterror_relogin" >Please log into this app again to reconnect your Facebook account.
                 </string>
@@ -630,6 +791,8 @@
                 </string>
                 <string name="com_facebook_dialogloginactivity_ok_button" >OK
                 </string>
+                <string name="com_facebook_like_button_liked" >Liked
+                </string>
                 <string name="com_facebook_internet_permission_error_message" >WebView login requires INTERNET permission
                 </string>
                 <string name="com_facebook_nearby" >Nearby
@@ -642,14 +805,6 @@
             <file
                 path="/Users/kinagafuji/Desktop/Gocci_Android/Gocci/facebook/res/values/styles.xml"
                 qualifiers="" >
-                <dimen name="com_facebook_profilepictureview_preset_size_large" >180dp
-                </dimen>
-
-                <color name="com_facebook_usersettingsfragment_not_connected_text_color" >#A6AED7
-                </color>
-
-                <dimen name="com_facebook_usersettingsfragment_profile_picture_width" >64dp
-                </dimen>
 
                 <style
                     name="com_facebook_loginview_silver_style"
@@ -680,6 +835,9 @@ center
                 <color name="com_facebook_usersettingsfragment_connected_shadow_color" >#000000
                 </color>
 
+                <dimen name="com_facebook_likeboxcountview_border_width" >1dp
+                </dimen>
+
                 <style
                     name="com_facebook_loginview_default_style"
                     parent="@android:style/Widget.Button" >
@@ -709,7 +867,71 @@ center
                     </item>
                 </style>
 
+                <dimen name="com_facebook_likebutton_padding_right" >8dp
+                </dimen>
+                <dimen name="com_facebook_likebutton_padding_bottom" >0dp
+                </dimen>
+
+                <color name="com_facebook_loginview_text_color" >#FFFFFF
+                </color>
+
+                <dimen name="com_facebook_likebutton_compound_drawable_padding" >8dp
+                </dimen>
+
+                <color name="com_facebook_blue" >#3B5998
+                </color>
+
+                <dimen name="com_facebook_likeboxcountview_caret_height" >3dp
+                </dimen>
+                <dimen name="com_facebook_loginview_text_size" >16.0sp
+                </dimen>
+                <dimen name="com_facebook_likeboxcountview_text_padding" >6dp
+                </dimen>
+
+                <color name="com_facebook_usersettingsfragment_connected_text_color" >#FFFFFF
+                </color>
+
+                <dimen name="com_facebook_loginview_padding_bottom" >12dp
+                </dimen>
+                <dimen name="com_facebook_loginview_padding_left" >12dip
+                </dimen>
+                <dimen name="com_facebook_likeboxcountview_text_size" >11.0sp
+                </dimen>
+
+                <color name="com_facebook_likeboxcountview_border_color" >#6a7180
+                </color>
+
+                <dimen name="com_facebook_likeview_edge_padding" >2dp
+                </dimen>
+
+                <color name="com_facebook_likeboxcountview_text_color" >#6a7180
+                </color>
+
+                <dimen name="com_facebook_likebutton_padding_top" >0dp
+                </dimen>
+
+                <color name="com_facebook_likeview_text_color" >#6a7180
+                </color>
+                <color name="com_facebook_likebutton_text_color" >#FFFFFF
+                </color>
+
+                <dimen name="com_facebook_profilepictureview_preset_size_large" >180dp
+                </dimen>
+                <dimen name="com_facebook_likeview_internal_padding" >6dp
+                </dimen>
+
+                <color name="com_facebook_usersettingsfragment_not_connected_text_color" >#A6AED7
+                </color>
+
+                <dimen name="com_facebook_usersettingsfragment_profile_picture_width" >64dp
+                </dimen>
+                <dimen name="com_facebook_likebutton_padding_left" >8dp
+                </dimen>
+                <dimen name="com_facebook_likeboxcountview_border_radius" >3dp
+                </dimen>
                 <dimen name="com_facebook_loginview_padding_top" >12dp
+                </dimen>
+                <dimen name="com_facebook_likebutton_text_size" >13.0sp
                 </dimen>
 
                 <style name="tooltip_bubble_text" >
@@ -733,24 +955,13 @@ left
                     </item>
                 </style>
 
-                <color name="com_facebook_loginview_text_color" >#FFFFFF
-                </color>
-                <color name="com_facebook_blue" >#3B5998
-                </color>
-
                 <dimen name="com_facebook_loginview_padding_right" >16dp
                 </dimen>
-                <dimen name="com_facebook_loginview_text_size" >16.0sp
-                </dimen>
-
-                <color name="com_facebook_usersettingsfragment_connected_text_color" >#FFFFFF
-                </color>
-
-                <dimen name="com_facebook_loginview_padding_bottom" >12dp
-                </dimen>
-                <dimen name="com_facebook_loginview_padding_left" >12dip
+                <dimen name="com_facebook_likeboxcountview_caret_width" >6dp
                 </dimen>
                 <dimen name="com_facebook_usersettingsfragment_profile_picture_height" >64dp
+                </dimen>
+                <dimen name="com_facebook_likeview_text_size" >11.0sp
                 </dimen>
                 <dimen name="com_facebook_tooltip_horizontal_padding" >10dp
                 </dimen>
@@ -804,6 +1015,8 @@ left
                 </string>
                 <string name="com_facebook_requesterror_relogin" >La aplicación no se conecta con Facebook, inicie sesión y volver a conectar esta aplicación.
                 </string>
+                <string name="com_facebook_image_download_unknown_error" >Error al descargar la imagen.
+                </string>
                 <string name="com_facebook_loading" >Cargando
                 </string>
                 <string name="com_facebook_placepicker_subtitle_catetory_only_format" >%1$s
@@ -827,6 +1040,8 @@ left
                 <string name="com_facebook_picker_done_button_text" >בצע
                 </string>
                 <string name="com_facebook_logo_content_description" >פייסבוק לוגו
+                </string>
+                <string name="com_facebook_image_download_unknown_error" >שגיאה בעת הורדת תמונה
                 </string>
                 <string name="com_facebook_placepicker_subtitle_were_here_only_format" >%1$,d היו פה
                 </string>
@@ -917,6 +1132,8 @@ left
                 <string name="com_facebook_usersettingsfragment_not_logged_in" >לא מחובר
                 </string>
                 <string name="com_facebook_placepicker_subtitle_were_here_only_format" >%1$,d היו פה
+                </string>
+                <string name="com_facebook_image_download_unknown_error" >שגיאה בעת הורדת תמונה
                 </string>
                 <string name="com_facebook_usersettingsfragment_log_in_button" >התחבר…
                 </string>

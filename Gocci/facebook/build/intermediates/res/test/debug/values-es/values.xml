@@ -6,6 +6,7 @@
 
     <string name="com_facebook_choose_friends">Elige Amigos</string>
     <string name="com_facebook_dialogloginactivity_ok_button">Aceptar</string>
+    <string name="com_facebook_image_download_unknown_error">Error al descargar la imagen.</string>
     <string name="com_facebook_internet_permission_error_message">WebView inicio de sesión requiere permiso INTERNET</string>
     <string name="com_facebook_internet_permission_error_title">Error de AndroidManifest</string>
     <string name="com_facebook_loading">Cargando</string>

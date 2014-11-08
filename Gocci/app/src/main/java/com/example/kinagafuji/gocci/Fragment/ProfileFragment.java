@@ -210,7 +210,7 @@ public class ProfileFragment extends BaseFragment {
                         user.setPicture(picture);
                         user.setUser_id(user_id);
                         user.setUser_name(user_name);
-                        user.setRestname(restname);
+                        user.setRest_name(restname);
                         user.setgoodnum(goodnum);
                         user.setComment_num(comment_num);
                         user.setThumbnail(thumbnail);
@@ -332,13 +332,13 @@ public class ProfileFragment extends BaseFragment {
                 mAnimatedPosition = position;
             }
 
-            viewHolder.restnamebutton.setText(user.getRestname());
+            viewHolder.restnamebutton.setText(user.getRest_name());
             viewHolder.restnamebutton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(getActivity().getApplicationContext(), TenpoActivity.class);
                     UserData country = profuser.get(position);
-                    intent.putExtra("restname", country.getRestname());
+                    intent.putExtra("restname", country.getRest_name());
                     intent.putExtra("locality", country.getLocality());
 
                     startActivity(intent);

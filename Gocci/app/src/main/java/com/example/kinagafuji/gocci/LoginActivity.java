@@ -10,9 +10,14 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.AnimationSet;
+import android.view.animation.ScaleAnimation;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.kinagafuji.gocci.Activity.PagerTabStripActivity;
@@ -46,7 +51,7 @@ import twitter4j.auth.OAuthAuthorization;
 import twitter4j.conf.ConfigurationBuilder;
 
 
-public class LoginActivity extends FragmentActivity {
+public class LoginActivity extends ActionBarActivity {
 
     // ログインボタン
     private Button mFbloginBtn;
@@ -86,25 +91,38 @@ public class LoginActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        /*setContentView(R.layout.activity_login);
 
-        ActionBar actionBar = getActionBar();
-        actionBar.hide();
+        ImageView imageView = (ImageView)findViewById(R.id.myImageView2);
 
-        initFacebook(savedInstanceState);
+        AnimationSet set = new AnimationSet(true);
+        ScaleAnimation scale = new ScaleAnimation(3,1,3.5f,1,0.5f,0.5f);
+        set.addAnimation(scale);
 
-        //Oauth認証用のUri作成
-        ConfigurationBuilder conf = new ConfigurationBuilder()
+        TranslateAnimation translate = new TranslateAnimation(0.5f,1.0f,0.5f,1.0f);
+        set.addAnimation(translate);
+        set.setDuration(1500);
+        set.setStartOffset(3000);
+
+        imageView.startAnimation(set);
+
+
+        //initFacebook(savedInstanceState);
+
+        /*ConfigurationBuilder conf = new ConfigurationBuilder()
                 .setOAuthConsumerKey(CONSUMER_KEY)
                 .setOAuthConsumerSecret(CONSUMER_SECRET);
         mOauth = new OAuthAuthorization(conf.build());
-        mOauth.setOAuthAccessToken(null);
+        mOauth.setOAuthAccessToken(null);*/
 
         Button buttonauth2 = (Button) findViewById(R.id.buttonAuth2);
         buttonauth2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new TwitterAsyncTask<Object, Void, String>(new TwitterAsyncTask.TwitterPreExecute() {
+
+                Intent intent = new Intent(LoginActivity.this, PagerTabStripActivity.class);
+                startActivity(intent);
+                /*new TwitterAsyncTask<Object, Void, String>(new TwitterAsyncTask.TwitterPreExecute() {
                     @Override
                     public void run() {
                     }
@@ -136,7 +154,7 @@ public class LoginActivity extends FragmentActivity {
                         finish();
                     }
                 })
-                        .execute(new Object());
+                        .execute(new Object());*/
             }
         });
     }
@@ -261,6 +279,8 @@ public class LoginActivity extends FragmentActivity {
 
             return null;
         }
+
+
     }
 
     private void onSessionStateChange(Session session, SessionState state, Exception exception) {

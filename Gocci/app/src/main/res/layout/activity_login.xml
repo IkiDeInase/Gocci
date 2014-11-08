@@ -1,13 +1,13 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:id="@+id/login">
+    >
 
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="match_parent"
         android:id="@+id/myImageView2"
-        android:src="@drawable/ic_cafe"
+        android:src="@drawable/ic_gradation"
         android:paddingTop="10dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
@@ -50,12 +50,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="食体験をシェアする。"
+        android:text="食体験をシェアしよう"
         android:id="@+id/post_name"
-        android:layout_below="@+id/myImageView2"
-        android:layout_centerHorizontal="true"
         android:textSize="28sp"
-        android:layout_marginTop="8dp" />
+        android:layout_above="@+id/buttonAuth2"
+        android:layout_alignRight="@+id/myImageView3"
+        android:layout_alignEnd="@+id/myImageView3" />
 
 
 </RelativeLayout>

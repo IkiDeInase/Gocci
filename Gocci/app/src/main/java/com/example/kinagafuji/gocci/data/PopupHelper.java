@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
+import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -14,9 +15,10 @@ import android.widget.PopupWindow;
 
 import com.example.kinagafuji.gocci.R;
 
+
 public class PopupHelper {
 
-    public static PopupWindow newBasicPopupWindow(Context context) {
+    public static PopupWindow newBasicPopupWindow(Context context, int X, int Y) {
         final PopupWindow window = new PopupWindow(context);
 
         // when a touch even happens outside of the window
@@ -32,13 +34,15 @@ public class PopupHelper {
             }
         });
 
-        window.setWidth(WindowManager.LayoutParams.WRAP_CONTENT);
-        window.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
+        window.setWidth(X);
+        window.setHeight(Y-80);
         window.setTouchable(true);
         window.setFocusable(true);
-        window.setOutsideTouchable(true);
+        window.setOutsideTouchable(false);
 
-        window.setBackgroundDrawable(new BitmapDrawable());
+
+
+
 
         return window;
     }
@@ -53,8 +57,6 @@ public class PopupHelper {
      */
     public static void showLikeQuickAction(PopupWindow window, View root, View anchor, WindowManager windowManager, int xOffset, int yOffset) {
 
-
-
         window.setAnimationStyle(R.style.Animations_GrowFromBottom);
 
         int[] location = new int[2];
@@ -64,20 +66,14 @@ public class PopupHelper {
                 new Rect(location[0], location[1], location[0] + anchor.getWidth(), location[1]
                         + anchor.getHeight());
 
-        root.measure(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        root.measure(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
         int rootWidth = root.getMeasuredWidth();
         int rootHeight = root.getMeasuredHeight();
 
-        Display display = windowManager.getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        int width = size.x;
-        int height = size.y;
+        window.showAtLocation(anchor, Gravity.CENTER, rootWidth, rootHeight);
 
-        int xPos = ((width - rootWidth) / 2) + xOffset;
-        int yPos = anchorRect.top - rootHeight + yOffset;
 
-        window.showAtLocation(anchor, Gravity.NO_GRAVITY, xPos, yPos);
     }
+
 }
