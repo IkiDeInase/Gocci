@@ -1,20 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="64dp"
-        android:id="@+id/scrollView"
-        android:fillViewport="false">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="@dimen/very_small"
+    android:paddingRight="@dimen/very_small"
+    >
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/scrollView"
+    android:fillViewport="false"
+    android:background="@drawable/list_bg">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="人生で一番面白かった！"
             android:id="@+id/comment"
-            android:layout_margin="8dp"
-            android:textSize="12sp" />
+            android:paddingLeft="@dimen/small"
+            android:paddingRight="@dimen/small"
+            android:paddingBottom="@dimen/very_small"
+            android:paddingTop="@dimen/small"
+            android:textSize="10sp" />
     </ScrollView>
 </LinearLayout>

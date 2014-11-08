@@ -26,6 +26,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -354,7 +355,26 @@ public class SlidingTabsBasicFragment extends BaseFragment {
                     JSONArray jsonArray = new JSONArray(data);
 
                     for (int i = 0; i < jsonArray.length(); i++) {
+                        int line = (i/4)*4;
+                        int position = i - line;
+
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                        /*switch(position){
+                            case 0:
+                                //０の操作
+                                break;
+                            case 1:
+                                //１の操作
+                                break;
+                            case 2:
+                                //２の操作
+                                break;
+                            case 3:
+                                //３の操作
+                                break;
+
+                        }*/
 
                         String post_id = jsonObject.getString(TAG_POST_ID);
                         String user_id = jsonObject.getString(TAG_USER_ID);
@@ -542,42 +562,41 @@ public class SlidingTabsBasicFragment extends BaseFragment {
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
 
+            //元あった感じのswitch文にも戻してみる
             if (convertView == null) {
-                int param = position/4;
-                int param2 = param*4;
-                int param3 = position - param2;
+                int line = (position/4)*4;
+                int pos = position - line;
 
                 UserData user = this.getItem(position);
 
-                switch (param3) {
+                switch(pos){
+                            case 0:
+                                //０の操作
+                                convertView = layoutInflater.inflate(R.layout.name_picture_bar, null);
 
-                    case 0:
-                        convertView = layoutInflater.inflate(R.layout.name_picture_bar, null);
+                                viewHolder = new ViewHolder(convertView);
+                                convertView.setTag(viewHolder);
 
-                        viewHolder = new ViewHolder(convertView);
-                        convertView.setTag(viewHolder);
+                                viewHolder.user_name.setText(user.getUser_name());
+                                Picasso.with(getContext())
+                                        .load(user.getPicture())
+                                        .resize(50, 50)
+                                        .placeholder(R.drawable.ic_gocci)
+                                        .centerCrop()
+                                        .transform(new RoundedTransformation())
+                                        .into(viewHolder.circleImage);
+                                break;
+                            case 1:
+                                //１の操作
+                                convertView = layoutInflater.inflate(R.layout.video_bar, null);
 
-                        viewHolder.user_name.setText(user.getUser_name());
-                        Picasso.with(getContext())
-                                .load(user.getPicture())
-                                .resize(50, 50)
-                                .placeholder(R.drawable.ic_gocci)
-                                .centerCrop()
-                                .transform(new RoundedTransformation())
-                                .into(viewHolder.circleImage);
+                                viewHolder = new ViewHolder(convertView);
+                                convertView.setTag(viewHolder);
 
-                        break;
+                                convertView.
+                                Uri video = Uri.parse(user.getMovie());
 
-
-                    case 1:
-                        convertView = layoutInflater.inflate(R.layout.video_bar, null);
-
-                        viewHolder = new ViewHolder(convertView);
-                        convertView.setTag(viewHolder);
-
-                        Uri video = Uri.parse(user.getMovie());
-
-                        /*viewHolder.movie.setVideoURI(video);
+                        viewHolder.movie.setVideoURI(video);
                         viewHolder.movie.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                             @Override
                             public void onPrepared(MediaPlayer mp) {
@@ -598,29 +617,27 @@ public class SlidingTabsBasicFragment extends BaseFragment {
                             isMov = true;
                             viewHolder.movie.setVideoURI(video);
                             //viewHolder.movie.start();
-                        }*/
-                        break;
+                        }
+                                break;
+                            case 2:
+                                //２の操作
+                                convertView = layoutInflater.inflate(R.layout.comment_bar, null);
 
+                                viewHolder = new ViewHolder(convertView);
+                                convertView.setTag(viewHolder);
+                                break;
+                            case 3:
+                                //３の操作
+                                convertView = layoutInflater.inflate(R.layout.restaurant_bar, null);
 
-                    case 2:
-                        convertView = layoutInflater.inflate(R.layout.comment_bar, null);
+                                viewHolder = new ViewHolder(convertView);
+                                convertView.setTag(viewHolder);
 
-                        viewHolder = new ViewHolder(convertView);
-                        convertView.setTag(viewHolder);
-                        break;
+                                viewHolder.rest_name.setText(user.getRest_name());
+                                viewHolder.category.setText(user.getLocality());
+                                break;
 
-
-                    case 3:
-                        convertView = layoutInflater.inflate(R.layout.restaurant_bar, null);
-
-                        viewHolder = new ViewHolder(convertView);
-                        convertView.setTag(viewHolder);
-
-                        viewHolder.rest_name.setText(user.getRest_name());
-                        viewHolder.category.setText(user.getLocality());
-                        break;
-
-                }
+                        }
 
 
             } else {
