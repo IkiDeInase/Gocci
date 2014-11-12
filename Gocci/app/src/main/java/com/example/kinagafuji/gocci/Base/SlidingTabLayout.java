@@ -28,7 +28,10 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.HorizontalScrollView;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.example.kinagafuji.gocci.R;
 
 /**
  * To be used with ViewPager to provide a tab indicator component which give constant feedback as to
@@ -67,13 +70,14 @@ public class SlidingTabLayout extends HorizontalScrollView {
     }
 
     private static final int TITLE_OFFSET_DIPS = 24;
-    private static final int TAB_VIEW_PADDING_DIPS = 16;
+    //ここを変更することで、タブのそれぞれの大きさを変えれる
+    private static final int TAB_VIEW_PADDING_DIPS = 25;
     private static final int TAB_VIEW_TEXT_SIZE_SP = 12;
 
     private int mTitleOffset;
 
     private int mTabViewLayoutId;
-    private int mTabViewTextViewId;
+    private int mTabViewImageViewId;
 
     private ViewPager mViewPager;
     private ViewPager.OnPageChangeListener mViewPagerPageChangeListener;
@@ -144,11 +148,11 @@ public class SlidingTabLayout extends HorizontalScrollView {
      * Set the custom layout to be inflated for the tab views.
      *
      * @param layoutResId Layout id to be inflated
-     * @param textViewId id of the {@link TextView} in the inflated view
+     * @param ImageViewId id of the {@link TextView} in the inflated view
      */
-    public void setCustomTabView(int layoutResId, int textViewId) {
+    public void setCustomTabView(int layoutResId, int ImageViewId) {
         mTabViewLayoutId = layoutResId;
-        mTabViewTextViewId = textViewId;
+        mTabViewImageViewId = ImageViewId;
     }
 
     /**
@@ -169,11 +173,8 @@ public class SlidingTabLayout extends HorizontalScrollView {
      * Create a default view to be used for tabs. This is called if a custom tab view is not set via
      * {@link #setCustomTabView(int, int)}.
      */
-    protected TextView createDefaultTabView(Context context) {
-        TextView textView = new TextView(context);
-        textView.setGravity(Gravity.CENTER);
-        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, TAB_VIEW_TEXT_SIZE_SP);
-        textView.setTypeface(Typeface.DEFAULT_BOLD);
+    protected ImageView createDefaultTabView(Context context) {
+        ImageView imageView = new ImageView(context);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             // If we're running on Honeycomb or newer, then we can use the Theme's
@@ -181,20 +182,15 @@ public class SlidingTabLayout extends HorizontalScrollView {
             TypedValue outValue = new TypedValue();
             getContext().getTheme().resolveAttribute(android.R.attr.selectableItemBackground,
                     outValue, true);
-            textView.setBackgroundResource(outValue.resourceId);
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            // If we're running on ICS or newer, enable all-caps to match the Action Bar tab style
-            textView.setAllCaps(true);
+            imageView.setBackgroundResource(outValue.resourceId);
         }
 
         int padding = (int) (TAB_VIEW_PADDING_DIPS * getResources().getDisplayMetrics().density);
 
-        textView.setPadding(padding, padding, padding, padding);
+        imageView.setPadding(padding, TAB_VIEW_PADDING_DIPS, padding, TAB_VIEW_PADDING_DIPS);
 
 
-        return textView;
+        return imageView;
     }
 
     private void populateTabStrip() {
@@ -203,35 +199,35 @@ public class SlidingTabLayout extends HorizontalScrollView {
 
         for (int i = 0; i < adapter.getCount(); i++) {
             View tabView = null;
-            TextView tabTitleView = null;
+            ImageView tabImageView = null;
 
             if (mTabViewLayoutId != 0) {
                 // If there is a custom tab view layout id set, try and inflate it
                 tabView = LayoutInflater.from(getContext()).inflate(mTabViewLayoutId, mTabStrip,
                         false);
-                tabTitleView = (TextView) tabView.findViewById(mTabViewTextViewId);
+                tabImageView = (ImageView) tabView.findViewById(mTabViewImageViewId);
             }
 
             if (tabView == null) {
                 tabView = createDefaultTabView(getContext());
             }
 
-            if (tabTitleView == null && TextView.class.isInstance(tabView)) {
-                tabTitleView = (TextView) tabView;
+            if (tabImageView == null && ImageView.class.isInstance(tabView)) {
+                tabImageView = (ImageView) tabView;
             }
 
             switch (i){
                 case 0:
-                    tabTitleView.setText("TimeLine");
+                    tabImageView.setImageResource(R.drawable.ic_home);
                     break;
                 case 1:
-                    tabTitleView.setText("Search");
+                    tabImageView.setImageResource(R.drawable.ic_sche);
                     break;
                 case 2:
-                    tabTitleView.setText("Lifelog");
+                    tabImageView.setImageResource(R.drawable.ic_compass);
                     break;
                 case 3:
-                    tabTitleView.setText("Profile");
+                    tabImageView.setImageResource(R.drawable.ic_meisi);
                     break;
             }
             tabView.setOnClickListener(tabClickListener);

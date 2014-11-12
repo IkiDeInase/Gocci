@@ -81,10 +81,7 @@ public class ProfileFragment extends BaseFragment {
     private ProfAdapter profAdapter;
 
     private String name;
-    private String birthday;
     private String location;
-    private String mail;
-    private String gender;
     private String pictureUrl;
 
     @Override
@@ -93,27 +90,25 @@ public class ProfileFragment extends BaseFragment {
         View rootView = inflater.inflate(R.layout.fragment_profile, container, false);
 
         TextView post_name = (TextView) rootView.findViewById(R.id.post_name);
-        TextView post_url = (TextView) rootView.findViewById(R.id.post_url);
-        TextView post_gender = (TextView) rootView.findViewById(R.id.post_gender);
-        TextView post_mail = (TextView) rootView.findViewById(R.id.post_mail);
+        ImageView post_Imageurl = (ImageView) rootView.findViewById(R.id.post_Imageurl);
         TextView post_location = (TextView) rootView.findViewById(R.id.post_location);
-        TextView post_birthday = (TextView) rootView.findViewById(R.id.post_birthday);
 
         SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
 
         name = pref.getString("name", "");
         pictureUrl = pref.getString("pictureUrl", "");
-        birthday = pref.getString("birthday", "");
-        gender = pref.getString("gender", "");
-        mail = pref.getString("mail", "");
         location = pref.getString("location", "");
 
         post_name.setText(name);
-        post_birthday.setText(birthday);
-        post_gender.setText(gender);
         post_location.setText(location);
-        post_mail.setText(mail);
-        post_url.setText(pictureUrl);
+
+        Picasso.with(getActivity())
+                .load(pictureUrl)
+                .resize(50, 50)
+                .placeholder(R.drawable.ic_userpicture)
+                .centerCrop()
+                .transform(new RoundedTransformation())
+                .into(post_Imageurl);
 
         proflist = (ListView) rootView.findViewById(R.id.proflist);
 

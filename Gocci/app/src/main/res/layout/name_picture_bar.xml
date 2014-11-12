@@ -16,7 +16,7 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:id="@+id/circleImage"
-        android:src="@drawable/ic_gocci"
+        android:src="@drawable/ic_userpicture"
         android:contentDescription="@string/picture" />
 
     <LinearLayout

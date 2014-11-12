@@ -57,12 +57,18 @@
         <activity
             android:name="com.example.kinagafuji.gocci.Activity.SplashActivity"
             android:label="@string/app_name"
-            android:process="com.example.kinagafuji.gocci.ACCESS_ALLOW" />
+            android:process="com.example.kinagafuji.gocci.ACCESS_ALLOW">
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>/>
+        </activity>
         <activity
             android:name="com.example.kinagafuji.gocci.LoginActivity"
             android:label="@string/title_activity_login"
             android:launchMode="singleTop"
-            android:parentActivityName="com.example.kinagafuji.gocci.Activity.SplashActivity" >
+           >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -84,18 +90,12 @@
             android:label="@string/title_activity_pager_tab_strip" />
         <activity
             android:name="com.example.kinagafuji.gocci.Activity.LoginActivity2"
-            android:label="@string/title_activity_login_activity2" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            android:label="@string/title_activity_login_activity2" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
 
         <activity
             android:name="com.example.kinagafuji.gocci.Activity.SlidingTabActivity"
-            android:label="@string/title_activity_sliding_tab" >
-        </activity>
+            android:label="@string/title_activity_sliding_tab" />
     </application>
 
 </manifest>

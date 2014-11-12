@@ -423,7 +423,7 @@ public class Search_mapFragment extends BaseFragment {
         TextView distance;
 
         public ViewHolder(View view) {
-            this.tell = (TextView) view.findViewById(R.id.tell);
+            //this.tell = (TextView) view.findViewById(R.id.tell);
             this.restname = (TextView) view.findViewById(R.id.restname);
             this.category = (TextView) view.findViewById(R.id.category);
             this.locality = (TextView) view.findViewById(R.id.locality);

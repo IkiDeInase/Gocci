@@ -10,70 +10,52 @@
         android:layout_height="wrap_content"
         android:id="@+id/proflist"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="168dp"
+        android:layout_marginTop="150dp"
         android:choiceMode="none" />
 
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="wrap_content"
         android:id="@+id/imageView"
-        android:src="@drawable/ic_gradation"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:src="@drawable/ic_gradation" />
 
-    <TextView
+    <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="name"
-        android:id="@+id/post_name"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:id="@+id/post_Imageurl"
+        android:layout_marginLeft="16dp"
+        android:src="@drawable/ic_userpicture"
+        android:layout_marginTop="22dp" />
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="pictureURL"
-        android:id="@+id/post_url"
-        android:layout_below="@+id/post_name"
-        android:layout_centerHorizontal="true" />
+        android:layout_marginTop="100dp">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="gender"
-        android:id="@+id/post_gender"
-        android:layout_below="@+id/post_url"
-        android:layout_centerHorizontal="true" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="name"
+            android:id="@+id/post_name"
+            android:textSize="24sp"
+            android:layout_marginLeft="16dp"
+            android:textStyle="bold"
+            android:textColor="#fffbffff" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="mail"
-        android:id="@+id/post_mail"
-        android:layout_below="@+id/post_gender"
-        android:layout_centerHorizontal="true" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="location"
-        android:id="@+id/post_location"
-        android:layout_below="@+id/post_mail"
-        android:layout_centerHorizontal="true" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="birthday"
-        android:id="@+id/post_birthday"
-        android:layout_below="@+id/post_location"
-        android:layout_centerHorizontal="true" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="location"
+            android:id="@+id/post_location"
+            android:layout_marginLeft="8dp"
+            android:textColor="#fffbffff" />
+    </LinearLayout>
 
 </RelativeLayout>

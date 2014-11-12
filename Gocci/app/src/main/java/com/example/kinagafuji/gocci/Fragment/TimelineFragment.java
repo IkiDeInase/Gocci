@@ -110,7 +110,7 @@ public class TimelineFragment extends BaseFragment {
 
         mListView = (ListView) rootView.findViewById(R.id.mylistView2);
 
-        ImageButton floatImageButton = (ImageButton) rootView.findViewById(R.id.floatImageButton);
+        ImageButton floatImageButton = (ImageButton) rootView.findViewById(R.id.toukouButton);
         floatImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -386,7 +386,7 @@ public class TimelineFragment extends BaseFragment {
         TextView distance;
 
         public ViewHolder2(View view) {
-            this.tell = (TextView) view.findViewById(R.id.tell);
+            //this.tell = (TextView) view.findViewById(R.id.tell);
             this.restname = (TextView) view.findViewById(R.id.restname);
             this.category = (TextView) view.findViewById(R.id.category);
             this.locality = (TextView) view.findViewById(R.id.locality);

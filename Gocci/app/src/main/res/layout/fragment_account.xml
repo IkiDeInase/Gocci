@@ -1,92 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
+        android:layout_width="match_parent" android:layout_height="match_parent"
+        android:background="@android:drawable/alert_light_frame"
+        android:gravity="left|center_vertical" android:orientation="vertical">
 
-    android:background="#ffeef1ff">
+        <LinearLayout android:layout_width="match_parent"
+            android:layout_height="match_parent" android:gravity="center_horizontal|center_vertical"
+            android:orientation="vertical" android:paddingBottom="3dp">
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp">
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/closeButton"
+                android:background="@drawable/ic_batu"
+                android:layout_marginRight="140dp" />
 
-        <ImageButton
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:id="@+id/closeButton"
-            android:background="@drawable/com_facebook_tooltip_black_xout"
-            android:layout_marginLeft="16dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="アカウントを作成"
-            android:id="@+id/textView"
-
-            android:textSize="28sp"
-            android:layout_marginLeft="20dp" />
-    </LinearLayout>
-
-    <TextView
+            <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Gocciは楽しい動画アプリですので"
-        android:id="@+id/textView4"
-
-        android:layout_marginTop="16dp"
-        android:textSize="16sp"
-        android:layout_marginLeft="50dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="登録するといいですよ"
-
-        android:id="@+id/textView5"
-        android:textSize="16sp"
-        android:layout_marginTop="4dp"
-        android:layout_marginLeft="96dp" />
+        android:text="アカウントを作成"
+        android:id="@+id/textView"
+        android:textSize="28sp"
+        android:layout_gravity="center_horizontal" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="SNSでアカウント作成"
         android:id="@+id/textView2"
-
         android:textSize="16sp"
         android:textStyle="bold"
-        android:layout_marginTop="32dp"
-        android:layout_marginLeft="92dp" />
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp" />
 
     <ImageButton
         android:id="@+id/facebookButton"
         android:layout_width="300dp"
         android:layout_height="50dp"
         android:layout_marginTop="16dp"
-        android:layout_marginLeft="30dp"
-        android:background="@drawable/ic_facebookkirinuki" />
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/ic_account_facebook" />
 
     <ImageButton
         android:layout_width="300dp"
         android:layout_height="50dp"
         android:id="@+id/twitterButton"
         android:layout_below="@+id/facebookButton"
-
         android:layout_marginTop="8dp"
-        android:background="@drawable/ic_twitterkirinuki"
-        android:layout_marginLeft="30dp" />
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/ic_accout_twitter" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="メールアドレスでアカウント作成"
         android:id="@+id/textView3"
-
+        android:layout_gravity="center_horizontal"
         android:layout_marginTop="32dp"
         android:textStyle="bold"
-        android:textSize="16sp"
-        android:layout_marginLeft="52dp" />
+        android:textSize="16sp"/>
 
     <EditText
         android:layout_width="300dp"
@@ -98,7 +70,7 @@
         android:hint="ユーザーID"
         android:layout_marginTop="16dp"
         android:singleLine="false"
-        android:layout_marginLeft="30dp" />
+        android:layout_gravity="center_horizontal"/>
 
     <EditText
         android:layout_width="300dp"
@@ -109,7 +81,7 @@
 
         android:hint="メールアドレス"
         android:layout_marginTop="4dp"
-        android:layout_marginLeft="30dp" />
+        android:layout_gravity="center_horizontal"/>
 
     <EditText
         android:layout_width="300dp"
@@ -117,18 +89,17 @@
         android:inputType="textPassword"
         android:ems="10"
         android:id="@+id/editText3"
-
         android:layout_marginTop="4dp"
         android:hint="パスワード"
-        android:layout_marginLeft="30dp" />
+        android:layout_gravity="center_horizontal" />
 
     <ImageButton
         android:layout_width="300dp"
         android:layout_height="50dp"
         android:id="@+id/accountButton"
-
-        android:layout_marginTop="8dp"
-        android:background="@drawable/powered_by_google_light"
-        android:layout_marginLeft="30dp" />
+        android:layout_marginTop="16dp"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/ic_account" />
 
 </LinearLayout>
+    </LinearLayout>

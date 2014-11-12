@@ -1,6 +1,5 @@
 package com.example.kinagafuji.gocci.Fragment;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,16 +12,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.PopupWindow;
-import android.widget.Toast;
 
-import com.example.kinagafuji.gocci.Activity.LoginActivity2;
 import com.example.kinagafuji.gocci.Activity.SlidingTabActivity;
 import com.example.kinagafuji.gocci.Base.BaseFragment;
 import com.example.kinagafuji.gocci.Base.CustomProgressDialog;
-import com.example.kinagafuji.gocci.LoginActivity;
 import com.example.kinagafuji.gocci.R;
 import com.example.kinagafuji.gocci.data.PopupHelper;
 import com.facebook.Request;
@@ -79,7 +74,7 @@ public class LoginFragment extends BaseFragment {
     public String mail;
     public String gender;
     public String location;
-    public String pictureUrl;
+    public String pictureImageUrl;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -104,7 +99,7 @@ public class LoginFragment extends BaseFragment {
 
         Log.d("幅", String.valueOf(width + "と" + height));
 
-        Button account = (Button)view.findViewById(R.id.account);
+        ImageButton account = (ImageButton)view.findViewById(R.id.account);
         account.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -139,8 +134,8 @@ public class LoginFragment extends BaseFragment {
             }
         });
 
-        Button signup = (Button)view.findViewById(R.id.signup);
-        signup.setOnClickListener(new View.OnClickListener() {
+        ImageButton signin = (ImageButton)view.findViewById(R.id.signin);
+        signin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -160,7 +155,8 @@ public class LoginFragment extends BaseFragment {
                 mfacebookButtonm.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        loginFacebook();
+                        uiHelper = new UiLifecycleHelper(getActivity(), callback);
+                        //loginFacebook();
                     }
                 });
 
@@ -215,7 +211,7 @@ public class LoginFragment extends BaseFragment {
                         Log.d("jsondata", name + "and" + birthday + "and" + gender + "and" + mail + "and" +
                                 location);
 
-                        pictureUrl = "https://graph.facebook.com/" + id + "/picture";
+                        pictureImageUrl = "https://graph.facebook.com/" + id + "/picture";
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -223,9 +219,7 @@ public class LoginFragment extends BaseFragment {
                     }
 
                     new SignupTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,Dataurl);
-                    dialog = new CustomProgressDialog(getActivity());
-                    dialog.setCancelable(false);
-                    dialog.show();
+
 
                 }
             }).executeAsync();
@@ -261,8 +255,8 @@ public class LoginFragment extends BaseFragment {
 
             ArrayList<NameValuePair> contents = new ArrayList<NameValuePair>();
             contents.add(new BasicNameValuePair("user_name", name));
-            contents.add(new BasicNameValuePair("picture", pictureUrl));
-            Log.d("読み取り",name + "と" + pictureUrl);
+            contents.add(new BasicNameValuePair("picture", pictureImageUrl));
+            Log.d("読み取り",name + "と" + pictureImageUrl);
 
             String body = null;
             try {
@@ -280,7 +274,7 @@ public class LoginFragment extends BaseFragment {
             SharedPreferences.Editor editor = pref.edit();
 
             editor.putString("name",name);
-            editor.putString("pictureUrl", pictureUrl);
+            editor.putString("pictureImageUrl", pictureImageUrl);
             editor.putString("birthday", birthday);
             editor.putString("gender", gender);
             editor.putString("mail", mail);
@@ -294,7 +288,6 @@ public class LoginFragment extends BaseFragment {
         @Override
         protected void onPostExecute(Integer result) {
 
-            dialog.dismiss();
         }
     }
 
@@ -341,17 +334,15 @@ public class LoginFragment extends BaseFragment {
 
     public class FacebookGraphUserCallback implements Request.GraphUserCallback {
 
-        private CustomProgressDialog mProgress = null;
-
         public FacebookGraphUserCallback(String message) {
-            mProgress = new CustomProgressDialog(getActivity());
-            mProgress.setCancelable(false);
-            mProgress.show();
+            dialog = new CustomProgressDialog(getActivity());
+            dialog.setCancelable(false);
+            dialog.show();
         }
 
         @Override
         public void onCompleted(GraphUser user, Response response) {
-            mProgress.dismiss();
+            dialog.dismiss();
         }
     }
 

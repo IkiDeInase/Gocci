@@ -2,10 +2,9 @@
 
 package com.example.kinagafuji.gocci.Base;
 
-
-import android.animation.Animator;
-import android.animation.AnimatorInflater;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.location.Criteria;
 import android.location.Location;
@@ -15,69 +14,121 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupWindow;
-import android.widget.Switch;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
 
+import com.example.kinagafuji.gocci.Activity.TenpoActivity;
 import com.example.kinagafuji.gocci.R;
 import com.example.kinagafuji.gocci.data.PopupHelper;
 import com.example.kinagafuji.gocci.data.RoundedTransformation;
+import com.example.kinagafuji.gocci.data.ToukouPopup;
 import com.example.kinagafuji.gocci.data.UserData;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.squareup.picasso.Picasso;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 public class SlidingTabsBasicFragment extends BaseFragment {
 
     public SlidingTabLayout mSlidingTabLayout;
 
-    public String url = "https://codelecture.com/gocci/timeline.php";
-    public String SearchUrl;
+    public ViewPager mViewPager;
 
-    private ViewHolder viewHolder;
+    public int width;
+    public int height;
 
-    private String data;
-    private String searchdata;
+    public String timelineUrl = "https://codelecture.com/gocci/timeline.php";
+    public String search_mapUrl;
+    public String search_keywordUrl;
+    public String profUrl = "https://codelecture.com/gocci/mypage.php";
+    public String signupUrl = "https://codelecture.com/gocci/signup.php";
 
-    private CustomProgressDialog dialog;
-    public ListView mListView;
-    private ListView searchListView;
+    private String timelineData;
+    private String search_mapData;
+    private String keywordData;
+    private String search_tenpoData;
+    private String profData;
 
-    private ArrayList<UserData> users = new ArrayList<UserData>();
-    private ArrayList<UserData> searchusers = new ArrayList<UserData>();
+    private CustomProgressDialog timelineDialog;
+    private CustomProgressDialog searchmapDialog;
+    private CustomProgressDialog searchtenpoDialog;
+    private CustomProgressDialog keywordDialog;
+    private CustomProgressDialog profDialog;
 
-    private UserAdapter userAdapter;
-    private SearchAdapter searchAdapter;
+    public ListView timelineListView;
+    private ListView timeline_search_mapListView;
+    private ListView search_mapListView;
+    private ListView profListView;
 
-    public double Latitude;
-    public double Longitude;
+    private ArrayList<UserData> timelineusers = new ArrayList<UserData>();
+    private ArrayList<UserData> search_mapusers = new ArrayList<UserData>();
+    public ArrayList<UserData> keywordusers = new ArrayList<UserData>();
+    public ArrayList<UserData> search_tenpousers = new ArrayList<UserData>();
+    private ArrayList<UserData> profusers = new ArrayList<UserData>();
+
+    private TimelineAdapter timelineAdapter;
+    private Search_mapAdapter search_mapAdapter;
+    private Search_tenpoAdapter search_tenpoAdapter;
+    private ProfAdapter profAdapter;
+
+    public double mLatitude;
+    public double mLongitude;
 
     private static boolean isMov = false;
 
     public int mCardLayoutIndex = 0;
+
+    private GoogleMap mMap = null;
+
+    public TimelineHolder timelineHolder;
+    public SearchMapHolder searchMapHolder;
+    public SearchTenpoHolder searchtenpoHolder;
+    public ProfHolder profHolder;
+
+    public SearchView mSearchView;
+
+    public String searchword;
+    private String encode_searchword;
 
     private static final String TAG_POST_ID = "post_id";
     private static final String TAG_USER_ID = "user_id";
@@ -97,42 +148,34 @@ public class SlidingTabsBasicFragment extends BaseFragment {
     private static final String TAG_LOCALITY = "locality";
     private static final String TAG_DISTANCE = "distance";
 
-    /**
-     * A {@link android.support.v4.view.ViewPager} which will be used in conjunction with the {@link SlidingTabLayout} above.
-     */
-    public ViewPager mViewPager;
+    public String name;
+    public String location;
+    public String pictureImageUrl;
 
-    /**
-     * Inflates the {@link android.view.View} which will be displayed by this {@link Fragment}, from the app's
-     * resources.
-     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v =  inflater.inflate(R.layout.fragment_sample, container, false);
 
-        new UserTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, url);
-        dialog = new CustomProgressDialog(getActivity());
-        dialog.setCancelable(false);
-        dialog.show();
+        Point size = new Point();
+        width = size.x;
+        height = size.y;
+
+        new TimelineTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, timelineUrl);
+        timelineDialog = new CustomProgressDialog(getActivity());
+        timelineDialog.setCancelable(false);
+        timelineDialog.show();
+
         return v;
     }
-    // BEGIN_INCLUDE (fragment_onviewcreated)
-    /**
-     * This is called after the {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)} has finished.
-     * Here we can pick out the {@link View}s we need to configure from the content view.
-     *
-     * We set the {@link ViewPager}'s adapter to be an instance of {@link SamplePagerAdapter}. The
-     * {@link SlidingTabLayout} is then given the {@link ViewPager} so that it can populate itself.
-     *
-     * @param view View created in {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
-     */
+
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         // BEGIN_INCLUDE (setup_viewpager)
         // Get the ViewPager and set it's PagerAdapter so that it can display items
         mViewPager = (ViewPager) view.findViewById(R.id.viewpager);
         //mViewPager.setBackgroundColor(R.color.main_color);
+        mViewPager.setOffscreenPageLimit(3);
         mViewPager.setAdapter(new SamplePagerAdapter());
         // END_INCLUDE (setup_viewpager)
 
@@ -140,7 +183,6 @@ public class SlidingTabsBasicFragment extends BaseFragment {
         // Give the SlidingTabLayout the ViewPager, this must be done AFTER the ViewPager has had
         // it's PagerAdapter set.
         mSlidingTabLayout = (SlidingTabLayout) view.findViewById(R.id.sliding_tabs);
-        //mSlidingTabLayout.setBackgroundColor(R.color.main_color);
         //mSlidingTabLayout.setCustomTabView();
         mSlidingTabLayout.setDividerColors(android.R.color.transparent);
         mSlidingTabLayout.setSelectedIndicatorColors(R.color.main_color_light);
@@ -148,46 +190,32 @@ public class SlidingTabsBasicFragment extends BaseFragment {
         mSlidingTabLayout.setViewPager(mViewPager);
         // END_INCLUDE (setup_slidingtablayout)
     }
-    // END_INCLUDE (fragment_onviewcreated)
 
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} used to display pages in this sample.
-     * The individual pages are simple and just display two lines of text. The important section of
-     * this class is the {@link #getPageTitle(int)} method which controls what is displayed in the
-     * {@link SlidingTabLayout}.
-     */
     class SamplePagerAdapter extends PagerAdapter {
 
-        /**
-         * @return the number of pages to display
-         */
         @Override
         public int getCount() {
             return 4;
         }
 
-        /**
-         * @return true if the value returned from {@link #instantiateItem(ViewGroup, int)} is the
-         * same object as the {@link View} added to the {@link ViewPager}.
-         */
         @Override
         public boolean isViewFromObject(View view, Object o) {
             return o == view;
         }
 
-        // BEGIN_INCLUDE (pageradapter_getpagetitle)
-        /**
-         * Return the title of the item at {@code position}. This is important as what this method
-         * returns is what is displayed in the {@link SlidingTabLayout}.
-         * <p>
-         * Here we construct one using the position value, but for real application the title should
-         * refer to the item's contents.
-         */
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            container.removeView((View) object);
 
-        /**
-         * Instantiate the {@link View} which should be displayed at {@code position}. Here we
-         * inflate a layout from the apps resources and then change the text view to signify the position.
-         */
+            if (position == 1) {
+                Fragment fragment = (getFragmentManager().findFragmentById(R.id.map));
+                FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+                ft.remove(fragment);
+                ft.commit();
+            }
+
+        }
+
         @Override
         public Object instantiateItem(final ViewGroup container, int position) {
 
@@ -195,64 +223,62 @@ public class SlidingTabsBasicFragment extends BaseFragment {
                 case 0:
 
                     // Inflate a new layout from our resources
-                    View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_timeline,
+                    final View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_timeline,
                             container, false);
-
 
                     // Add the newly created View to the ViewPager
                     container.addView(view);
 
-                    Point size = new Point();
-                    final int width = size.x;
-                    final int height = size.y;
+                    timelineListView = (ListView) view.findViewById(R.id.mylistView2);
 
-                    mListView = (ListView) view.findViewById(R.id.mylistView2);
-
-                    ImageButton floatImageButton = (ImageButton) view.findViewById(R.id.floatImageButton);
-                    floatImageButton.setOnClickListener(new View.OnClickListener() {
+                    ImageButton toukouButton = (ImageButton) view.findViewById(R.id.toukouButton);
+                    toukouButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            PopupWindow window = PopupHelper.newBasicPopupWindow(getActivity(), width, height);
+                            final PopupWindow window = ToukouPopup.newBasicPopupWindow(getActivity());
 
                             View inflateView = getActivity().getLayoutInflater().inflate(R.layout.searchlist, container, false);
-                            searchListView = (ListView) inflateView.findViewById(R.id.searchListView);
 
-                            setUpLocation();
+                            setUpTenpo();
 
-                            new SearchCameraAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, SearchUrl);
-                            dialog = new CustomProgressDialog(getActivity());
-                            dialog.setCancelable(false);
-                            dialog.show();
+                            timeline_search_mapListView = (ListView) inflateView.findViewById(R.id.searchListView);
+                            timeline_search_mapListView.setDivider(null);
+                            // スクロールバーを表示しない
+                            timeline_search_mapListView.setVerticalScrollBarEnabled(false);
+                            // カード部分をselectorにするので、リストのselectorは透明にする
+                            timeline_search_mapListView.setSelector(android.R.color.transparent);
 
-                            searchAdapter = new SearchAdapter(getActivity(), 0, searchusers);
-                            searchListView.setAdapter(searchAdapter);
+                            if (mCardLayoutIndex > 0) {
+                                timeline_search_mapListView.addFooterView(LayoutInflater.from(getActivity()).inflate(
+                                        R.layout.card_footer, timeline_search_mapListView, false));
+                            }
+
+                            search_tenpoAdapter = new Search_tenpoAdapter(getActivity(), 0, search_tenpousers);
+
+                            timeline_search_mapListView.setAdapter(search_tenpoAdapter);
 
                             window.setContentView(inflateView);
                             //int totalHeight = getWindowManager().getDefaultDisplay().getHeight();
                             int[] location = new int[2];
                             v.getLocationOnScreen(location);
 
-                            PopupHelper.showLikeQuickAction(window, inflateView, v, getActivity().getWindowManager(), 0, 0);
-
+                            ToukouPopup.showLikeQuickAction(window, inflateView, v, getActivity().getWindowManager(), 0, 0);
                         }
                     });
 
-
-
-                    userAdapter = new UserAdapter(getActivity(), 0, users);
-                    mListView.setDivider(null);
+                    timelineAdapter = new TimelineAdapter(getActivity(), 0, timelineusers);
+                    timelineListView.setDivider(null);
                     // スクロールバーを表示しない
-                    mListView.setVerticalScrollBarEnabled(false);
+                    timelineListView.setVerticalScrollBarEnabled(false);
                     // カード部分をselectorにするので、リストのselectorは透明にする
-                    mListView.setSelector(android.R.color.transparent);
+                    timelineListView.setSelector(android.R.color.transparent);
 
                     // 最後の余白分のビューを追加
                     if (mCardLayoutIndex > 0) {
-                        mListView.addFooterView(LayoutInflater.from(getActivity()).inflate(
-                                R.layout.card_footer, mListView, false));
+                        timelineListView.addFooterView(LayoutInflater.from(getActivity()).inflate(
+                                R.layout.card_footer, timelineListView, false));
                     }
-                    mListView.setAdapter(userAdapter);
-
+                    timelineListView.setAdapter(timelineAdapter);
 
                     // Return the View
                     return view;
@@ -260,10 +286,41 @@ public class SlidingTabsBasicFragment extends BaseFragment {
 
                 case 1:
                     // Inflate a new layout from our resources
-                    View view1 = getActivity().getLayoutInflater().inflate(R.layout.fragment_lifelog,
+                    View view1 = getActivity().getLayoutInflater().inflate(R.layout.fragment_search_map,
                             container, false);
                     // Add the newly created View to the ViewPager
                     container.addView(view1);
+
+                    setUpMapIfNeeded();
+
+                    search_mapAdapter = new Search_mapAdapter(getActivity(), 0, search_mapusers);
+
+                    search_mapListView = (ListView) view1.findViewById(R.id.mylistView1);
+                    search_mapListView.setDivider(null);
+                    // スクロールバーを表示しない
+                    search_mapListView.setVerticalScrollBarEnabled(false);
+                    // カード部分をselectorにするので、リストのselectorは透明にする
+                    search_mapListView.setSelector(android.R.color.transparent);
+                    search_mapListView.setAdapter(search_mapAdapter);
+
+                    search_mapListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
+
+                            UserData country = search_mapusers.get(pos);
+
+                            Intent intent = new Intent(getActivity().getApplicationContext(), TenpoActivity.class);
+                            intent.putExtra("restname", country.getRest_name());
+                            intent.putExtra("locality", country.getLocality());
+                            startActivity(intent);
+                        }
+                    });
+
+                    mSearchView = (SearchView)view1.findViewById(R.id.searchbar);
+                    mSearchView.setIconifiedByDefault(true);
+                    mSearchView.setSubmitButtonEnabled(true);
+
+                    mSearchView.setOnQueryTextListener(onQueryTextListener);
 
                     // Return the View
                     return view1;
@@ -283,6 +340,49 @@ public class SlidingTabsBasicFragment extends BaseFragment {
                     // Add the newly created View to the ViewPager
                     container.addView(view3);
 
+                    TextView post_name = (TextView) view3.findViewById(R.id.post_name);
+                    ImageView post_Imageurl = (ImageView) view3.findViewById(R.id.post_Imageurl);
+                    TextView post_location = (TextView) view3.findViewById(R.id.post_location);
+
+                    SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
+
+                    name = pref.getString("name", "");
+                    pictureImageUrl = pref.getString("pictureUrl", "");
+                    location = pref.getString("location", "");
+
+                    post_name.setText(name);
+                    post_location.setText(location);
+
+                    Picasso.with(getActivity())
+                            .load(pictureImageUrl)
+                            .resize(120, 120)
+                            .placeholder(R.drawable.ic_userpicture)
+                            .centerCrop()
+                            .transform(new RoundedTransformation())
+                            .into(post_Imageurl);
+
+                    profListView = (ListView) view3.findViewById(R.id.proflist);
+
+                    new ProfTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    profDialog = new CustomProgressDialog(getActivity());
+                    profDialog.setCancelable(false);
+                    profDialog.show();
+
+                    profAdapter = new ProfAdapter(getActivity(), 0, profusers);
+
+                    profListView.setDivider(null);
+                    // スクロールバーを表示しない
+                    profListView.setVerticalScrollBarEnabled(false);
+                    // カード部分をselectorにするので、リストのselectorは透明にする
+                    profListView.setSelector(android.R.color.transparent);
+
+                    // 最後の余白分のビューを追加
+                    if (mCardLayoutIndex > 0) {
+                        profListView.addFooterView(LayoutInflater.from(getActivity()).inflate(
+                                R.layout.card_footer, profListView, false));
+                    }
+                    profListView.setAdapter(profAdapter);
+
                     // Return the View
                     return view3;
 
@@ -290,7 +390,20 @@ public class SlidingTabsBasicFragment extends BaseFragment {
             return null;
         }
 
-        private void setUpLocation() {
+        private void setUpMapIfNeeded() {
+
+            if (mMap == null) {
+                mMap = ((SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
+
+                if (mMap != null) {
+                    setUpMap();
+                }
+            }
+        }
+
+        private void setUpMap() {
+
+            mMap.setMyLocationEnabled(true);
 
             LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
             Criteria criteria = new Criteria();
@@ -298,28 +411,104 @@ public class SlidingTabsBasicFragment extends BaseFragment {
             String provider = locationManager.getBestProvider(criteria, true);
             Location myLocation = locationManager.getLastKnownLocation(provider);
 
-            Latitude = myLocation.getLatitude();
+            mLatitude = myLocation.getLatitude();
 
-            Longitude = myLocation.getLongitude();
+            mLongitude = myLocation.getLongitude();
 
-            Log.d("経度・緯度", Latitude + "/" + Longitude);
+            Log.d("経度・緯度", mLatitude + "/" + mLongitude);
 
-            SearchUrl = "https://codelecture.com/gocci/?lat=" + String.valueOf(Latitude) + "&lon=" + String.valueOf(Longitude) + "&limit=30";
+            search_mapUrl = "https://codelecture.com/gocci/?lat=" + String.valueOf(mLatitude) + "&lon=" + String.valueOf(mLongitude) + "&limit=30";
+
+            new SearchMapAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, search_mapUrl);
+            searchmapDialog = new CustomProgressDialog(getActivity());
+            searchmapDialog.setCancelable(false);
+            searchmapDialog.show();
+
+
+            mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+
+            LatLng latLng = new LatLng(mLatitude, mLongitude);
+
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+
+            // MyLocationButtonを有効に
+            UiSettings settings = mMap.getUiSettings();
+            settings.setMyLocationButtonEnabled(true);
+        }
+
+        private void setUpTenpo() {
+            LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+            Criteria criteria = new Criteria();
+
+            String provider = locationManager.getBestProvider(criteria, true);
+            Location myLocation = locationManager.getLastKnownLocation(provider);
+
+            mLatitude = myLocation.getLatitude();
+
+            mLongitude = myLocation.getLongitude();
+
+            Log.d("経度・緯度", mLatitude + "/" + mLongitude);
+
+            search_mapUrl = "https://codelecture.com/gocci/?lat=" + String.valueOf(mLatitude) + "&lon=" + String.valueOf(mLongitude) + "&limit=30";
+
+            new SearchTenpoAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, search_mapUrl);
+            searchtenpoDialog = new CustomProgressDialog(getActivity());
+            searchtenpoDialog.setCancelable(false);
+            searchtenpoDialog.show();
 
         }
 
-        /**
-         * Destroy the item from the {@link ViewPager}. In our case this is simply removing the
-         * {@link View}.
-         */
-        @Override
-        public void destroyItem(ViewGroup container, int position, Object object) {
-            container.removeView((View) object);
+
+        private SearchView.OnQueryTextListener onQueryTextListener = new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String searchWord) {
+                // SubmitボタンorEnterKeyを押されたら呼び出されるメソッド
+                return setSearchWord(searchWord);
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                // 入力される度に呼び出される
+                return false;
+            }
+        };
+
+        private boolean setSearchWord(String searchWord) {
+            if (searchWord != null && !searchWord.equals("")) {
+                // searchWordがあることを確認
+                searchword = searchWord;
+
+                try {
+                    encode_searchword = URLEncoder.encode(searchword, "UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+                search_keywordUrl = "https://codelecture.com/gocci/search.php?restname=" + encode_searchword;
+            } else {
+                Toast.makeText(getActivity().getApplicationContext(), "文字を入力して下さい。", Toast.LENGTH_SHORT).show();
+            }
+            // 虫眼鏡アイコンを隠す
+            mSearchView.setIconified(false);
+            // SearchViewを隠す
+            mSearchView.onActionViewCollapsed();
+            // Focusを外す
+            mSearchView.clearFocus();
+
+            new KeywordSearchAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, search_keywordUrl);
+            keywordDialog = new CustomProgressDialog(getActivity());
+            keywordDialog.setCancelable(false);
+            keywordDialog.show();
+
+            return false;
         }
+
+
 
     }
 
-    public class UserTask extends AsyncTask<String, String, Integer> {
+    public class TimelineTask extends AsyncTask<String, String, Integer> {
 
         @Override
         protected Integer doInBackground(String... strings) {
@@ -336,23 +525,21 @@ public class SlidingTabsBasicFragment extends BaseFragment {
                 Log.d("error", String.valueOf(e));
             }
 
-            int status = 0;
-            if (httpResponse != null) {
-                status = httpResponse.getStatusLine().getStatusCode();
-            }
+            int status = httpResponse.getStatusLine().getStatusCode();
+
 
             if (HttpStatus.SC_OK == status) {
                 try {
                     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                     httpResponse.getEntity().writeTo(outputStream);
-                    data = outputStream.toString(); // JSONデータ
-                    Log.d("data", data);
+                    timelineData = outputStream.toString(); // JSONデータ
+                    Log.d("data", timelineData);
                 } catch (Exception e) {
                     Log.d("error", String.valueOf(e));
                 }
 
                 try {
-                    JSONArray jsonArray = new JSONArray(data);
+                    JSONArray jsonArray = new JSONArray(timelineData);
 
                     for (int i = 0; i < jsonArray.length(); i++) {
                         int line = (i/4)*4;
@@ -400,7 +587,7 @@ public class SlidingTabsBasicFragment extends BaseFragment {
                         user.setThumbnail(thumbnail);
                         user.setStar_evaluation(star_evaluation);
 
-                        users.add(user);
+                        timelineusers.add(user);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -417,17 +604,19 @@ public class SlidingTabsBasicFragment extends BaseFragment {
         protected void onPostExecute(Integer result) {
             if (result != null && result == HttpStatus.SC_OK) {
                 //ListViewの最読み込み
-                mListView.invalidateViews();
-                userAdapter.notifyDataSetChanged();
+                timelineListView.invalidateViews();
+                timelineAdapter.notifyDataSetChanged();
+
             } else {
                 //通信失敗した際のエラー処理
                 Toast.makeText(getActivity().getApplicationContext(), "タイムラインの取得に失敗しました。", Toast.LENGTH_SHORT).show();
             }
-            dialog.dismiss();
+
+            timelineDialog.dismiss();
         }
     }
 
-    public class SearchCameraAsyncTask extends AsyncTask<String, String, Integer> {
+    public class SearchMapAsyncTask extends AsyncTask<String, String, Integer> {
 
         @Override
         protected Integer doInBackground(String... params) {
@@ -444,23 +633,21 @@ public class SlidingTabsBasicFragment extends BaseFragment {
                 Log.d("JSONSampleActivity", "Error Execute");
             }
 
-            int status = 0;
-            if (httpResponse != null) {
-                status = httpResponse.getStatusLine().getStatusCode();
-            }
+            int status = httpResponse.getStatusLine().getStatusCode();
 
             if (HttpStatus.SC_OK == status) {
                 try {
                     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                     httpResponse.getEntity().writeTo(outputStream);
-                    searchdata = outputStream.toString(); // JSONデータ
+                    search_mapData = outputStream.toString(); // JSONデータ
+                    Log.d("data", search_mapData);
                 } catch (Exception e) {
                     Log.d("JSONSampleActivity", "Error");
                 }
 
                 try {
 
-                    JSONArray jsonArray = new JSONArray(searchdata);
+                    JSONArray jsonArray = new JSONArray(search_mapData);
 
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -483,7 +670,7 @@ public class SlidingTabsBasicFragment extends BaseFragment {
                         user.setLocality(locality);
                         user.setDistance(distance);
 
-                        searchusers.add(user);
+                        search_mapusers.add(user);
 
                     }
                 } catch (JSONException e) {
@@ -504,46 +691,337 @@ public class SlidingTabsBasicFragment extends BaseFragment {
 
             if (result != null && result == HttpStatus.SC_OK) {
                 //ListViewの最読み込み
-                searchListView.invalidateViews();
+                search_mapAdapter.notifyDataSetChanged();
+                search_mapListView.invalidateViews();
+
             } else {
                 //通信失敗した際のエラー処理
                 Toast.makeText(getActivity().getApplicationContext(), "タイムラインの取得に失敗しました。", Toast.LENGTH_SHORT).show();
             }
-            dialog.dismiss();
+
+            searchmapDialog.dismiss();
+            Log.d("ダイアログ","searchmap");
+
         }
     }
 
-    private static class ViewHolder {
-        VideoView movie;
+    public class SearchTenpoAsyncTask extends AsyncTask<String, String, Integer> {
+
+        @Override
+        protected Integer doInBackground(String... params) {
+            String param = params[0];
+
+            HttpClient httpClient = new DefaultHttpClient();
+
+            HttpGet request = new HttpGet(param);
+            HttpResponse httpResponse = null;
+
+            try {
+                httpResponse = httpClient.execute(request);
+            } catch (Exception e) {
+                Log.d("JSONSampleActivity", "Error Execute");
+            }
+
+            int status = httpResponse.getStatusLine().getStatusCode();
+
+            if (HttpStatus.SC_OK == status) {
+                try {
+                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                    httpResponse.getEntity().writeTo(outputStream);
+                    search_tenpoData = outputStream.toString(); // JSONデータ
+                    Log.d("data", search_tenpoData);
+                } catch (Exception e) {
+                    Log.d("JSONSampleActivity", "Error");
+                }
+
+                try {
+
+                    JSONArray jsonArray = new JSONArray(search_tenpoData);
+
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                        String tell = jsonObject.getString(TAG_TELL);
+                        String rest_name = jsonObject.getString(TAG_RESTNAME1);
+                        String category = jsonObject.getString(TAG_CATEGORY);
+                        Double lat = jsonObject.getDouble(TAG_LAT);
+                        Double lon = jsonObject.getDouble(TAG_LON);
+                        String locality = jsonObject.getString(TAG_LOCALITY);
+                        String distance = jsonObject.getString(TAG_DISTANCE);
+
+                        UserData user = new UserData();
+
+                        user.setTell(tell);
+                        user.setRest_name(rest_name);
+                        user.setCategory(category);
+                        user.setLat(lat);
+                        user.setLon(lon);
+                        user.setLocality(locality);
+                        user.setDistance(distance);
+
+                        search_tenpousers.add(user);
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Log.d("えらー", String.valueOf(e));
+                }
+
+            } else {
+                Log.d("JSONSampleActivity", "Status" + status);
+            }
+
+            return status;
+
+        }
+
+        @Override
+        protected void onPostExecute(Integer result) {
+
+            if (result != null && result == HttpStatus.SC_OK) {
+                //ListViewの最読み込み
+                search_tenpoAdapter.notifyDataSetChanged();
+                timeline_search_mapListView.invalidateViews();
+            } else {
+                //通信失敗した際のエラー処理
+                Toast.makeText(getActivity().getApplicationContext(), "タイムラインの取得に失敗しました。", Toast.LENGTH_SHORT).show();
+            }
+
+            searchtenpoDialog.dismiss();
+        }
+    }
+
+    public class KeywordSearchAsync extends AsyncTask<String, String, Integer> {
+
+        @Override
+        protected Integer doInBackground(String... params) {
+            String param = params[0];
+
+            HttpClient httpClient = new DefaultHttpClient();
+
+            HttpGet request = new HttpGet(param);
+            HttpResponse httpResponse = null;
+
+            try {
+                httpResponse = httpClient.execute(request);
+            } catch (Exception e) {
+                Log.d("JSONSampleActivity", "Error Execute");
+            }
+
+            int status = httpResponse.getStatusLine().getStatusCode();
+
+            if (HttpStatus.SC_OK == status) {
+                try {
+                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                    httpResponse.getEntity().writeTo(outputStream);
+                    keywordData = outputStream.toString(); // JSONデータ
+                    Log.d("data", keywordData);
+
+                } catch (Exception e) {
+                    Log.d("JSONSampleActivity", "Error");
+                }
+
+                try {
+
+                    JSONArray jsonArray = new JSONArray(keywordData);
+
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                        String tell = jsonObject.getString(TAG_TELL);
+                        String restname = jsonObject.getString(TAG_RESTNAME1);
+                        String category = jsonObject.getString(TAG_CATEGORY);
+                        Double lat = jsonObject.getDouble(TAG_LAT);
+                        Double lon = jsonObject.getDouble(TAG_LON);
+                        String locality = jsonObject.getString(TAG_LOCALITY);
+                        String distance = jsonObject.getString(TAG_DISTANCE);
+
+                        UserData user = new UserData();
+
+                        user.setTell(tell);
+                        user.setRest_name(restname);
+                        user.setCategory(category);
+                        user.setLat(lat);
+                        user.setLon(lon);
+                        user.setLocality(locality);
+                        user.setDistance(distance);
+
+                        keywordusers.add(user);
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Log.d("えらー", String.valueOf(e));
+                }
+
+            } else {
+                Log.d("JSONSampleActivity", "Status" + status);
+
+            }
+
+            return status;
+        }
+
+        // このメソッドは非同期処理の終わった後に呼び出されます
+        @Override
+        protected void onPostExecute(Integer result) {
+
+            if (result != null && result == HttpStatus.SC_OK) {
+                //ListViewの最読み込み
+                search_mapListView.invalidateViews();
+                search_mapAdapter.notifyDataSetChanged();
+
+            } else {
+                //通信失敗した際のエラー処理
+                Toast.makeText(getActivity().getApplicationContext(), "タイムラインの取得に失敗しました。", Toast.LENGTH_SHORT).show();
+            }
+
+            keywordDialog.dismiss();
+            Log.d("ダイアログ","keywordsearch");
+        }
+    }
+
+    public class ProfTask extends AsyncTask<String, String, Integer> {
+
+        @Override
+        protected Integer doInBackground(String... strings) {
+            HttpClient client1 = new DefaultHttpClient();
+
+            HttpPost method = new HttpPost(signupUrl);
+
+            ArrayList<NameValuePair> contents = new ArrayList<NameValuePair>();
+            contents.add(new BasicNameValuePair("user_name", name));
+            contents.add(new BasicNameValuePair("picture", pictureImageUrl));
+            Log.d("読み取り", name + "と" + pictureImageUrl);
+
+            String body = null;
+            try {
+                method.setEntity(new UrlEncodedFormEntity(contents, "utf-8"));
+                HttpResponse res = client1.execute(method);
+                Log.d("TAGだよ", "反応");
+                HttpEntity entity = res.getEntity();
+                body = EntityUtils.toString(entity, "UTF-8");
+                Log.d("bodyの中身だよ", body);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            HttpGet request = new HttpGet(profUrl);
+            HttpResponse httpResponse = null;
+
+            try {
+                httpResponse = client1.execute(request);
+            } catch (Exception e) {
+                Log.d("error", String.valueOf(e));
+            }
+
+            int status = httpResponse.getStatusLine().getStatusCode();
+
+            if (HttpStatus.SC_OK == status) {
+                try {
+                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                    httpResponse.getEntity().writeTo(outputStream);
+                    profData = outputStream.toString(); // JSONデータ
+                    Log.d("data", profData);
+                } catch (Exception e) {
+                    Log.d("error", String.valueOf(e));
+                }
+
+                try {
+                    JSONArray jsonArray = new JSONArray(profData);
+
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                        String post_id = jsonObject.getString(TAG_POST_ID);
+                        String user_id = jsonObject.getString(TAG_USER_ID);
+                        String user_name = jsonObject.getString(TAG_USER_NAME);
+                        String picture = jsonObject.getString(TAG_PICTURE);
+                        String movie = jsonObject.getString(TAG_MOVIE);
+                        String restname = jsonObject.getString(TAG_RESTNAME);
+                        String goodnum = jsonObject.getString(TAG_GOODNUM);
+                        String comment_num = jsonObject.getString(TAG_COMMENT_NUM);
+                        String thumbnail = jsonObject.getString(TAG_THUMBNAIL);
+                        String star_evaluation = jsonObject.getString(TAG_STAR_EVALUATION);
+
+                        UserData user = new UserData();
+
+                        user.setPost_id(post_id);
+                        user.setMovie(movie);
+                        user.setPicture(picture);
+                        user.setUser_id(user_id);
+                        user.setUser_name(user_name);
+                        user.setRest_name(restname);
+                        user.setgoodnum(goodnum);
+                        user.setComment_num(comment_num);
+                        user.setThumbnail(thumbnail);
+                        user.setStar_evaluation(star_evaluation);
+
+                        profusers.add(user);
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Log.d("error", String.valueOf(e));
+                }
+            } else {
+                Log.d("JSONSampleActivity", "Status" + status);
+            }
+
+            return status;
+        }
+
+        @Override
+        protected void onPostExecute(Integer result) {
+            if (result != null && result == HttpStatus.SC_OK) {
+                //ListViewの最読み込み
+                profListView.invalidateViews();
+                profAdapter.notifyDataSetChanged();
+            } else {
+                //通信失敗した際のエラー処理
+                Toast.makeText(getActivity().getApplicationContext(), "タイムラインの取得に失敗しました。", Toast.LENGTH_SHORT).show();
+            }
+            profDialog.dismiss();
+        }
+    }
+
+    private static class TimelineHolder {
         ImageView circleImage;
-        ImageView restaurantImage;
-        TextView comment;
         TextView time;
         TextView user_name;
+        VideoView movie;
+        TextView comment;
+        ImageView restaurantImage;
         TextView rest_name;
         TextView category;
 
-        public ViewHolder(View view) {
-            this.movie = (VideoView) view.findViewById(R.id.videoView);
+        public TimelineHolder(View view) {
             this.circleImage = (ImageView) view.findViewById(R.id.circleImage);
-            this.restaurantImage = (ImageView) view.findViewById(R.id.restaurantImage);
-            this.comment = (TextView) view.findViewById(R.id.comment);
             this.time = (TextView) view.findViewById(R.id.time);
             this.user_name = (TextView) view.findViewById(R.id.user_name);
+            this.movie = (VideoView) view.findViewById(R.id.videoView);
+            this.comment = (TextView) view.findViewById(R.id.comment);
+            this.restaurantImage = (ImageView) view.findViewById(R.id.restaurantImage);
             this.rest_name = (TextView) view.findViewById(R.id.rest_name);
             this.category = (TextView) view.findViewById(R.id.category);
+
         }
     }
 
-    public static class ViewHolder2 {
-        TextView tell;
+
+    public static class SearchMapHolder {
+        ImageView search1;
+        ImageView search2;
+        ImageView search3;
         TextView restname;
         TextView category;
         TextView locality;
         TextView distance;
 
-        public ViewHolder2(View view) {
-            this.tell = (TextView) view.findViewById(R.id.tell);
+        public SearchMapHolder(View view) {
+            this.search1 = (ImageView) view.findViewById(R.id.search1);
+            this.search2 = (ImageView) view.findViewById(R.id.search2);
+            this.search3 = (ImageView) view.findViewById(R.id.search3);
             this.restname = (TextView) view.findViewById(R.id.restname);
             this.category = (TextView) view.findViewById(R.id.category);
             this.locality = (TextView) view.findViewById(R.id.locality);
@@ -551,50 +1029,95 @@ public class SlidingTabsBasicFragment extends BaseFragment {
         }
     }
 
-    public class UserAdapter extends ArrayAdapter<UserData> {
+    public static class SearchTenpoHolder {
+        ImageView search1;
+        ImageView search2;
+        ImageView search3;
+        TextView restname;
+        TextView category;
+        TextView locality;
+        TextView distance;
+
+        public SearchTenpoHolder(View view) {
+            this.search1 = (ImageView) view.findViewById(R.id.search1);
+            this.search2 = (ImageView) view.findViewById(R.id.search2);
+            this.search3 = (ImageView) view.findViewById(R.id.search3);
+            this.restname = (TextView) view.findViewById(R.id.restname);
+            this.category = (TextView) view.findViewById(R.id.category);
+            this.locality = (TextView) view.findViewById(R.id.locality);
+            this.distance = (TextView) view.findViewById(R.id.distance);
+        }
+    }
+
+    private static class ProfHolder {
+        ImageView circleImage;
+        TextView time;
+        TextView user_name;
+        VideoView movie;
+        TextView comment;
+        ImageView restaurantImage;
+        TextView rest_name;
+        TextView category;
+
+        public ProfHolder(View view) {
+            this.circleImage = (ImageView) view.findViewById(R.id.circleImage);
+            this.time = (TextView) view.findViewById(R.id.time);
+            this.user_name = (TextView) view.findViewById(R.id.user_name);
+            this.movie = (VideoView) view.findViewById(R.id.videoView);
+            this.comment = (TextView) view.findViewById(R.id.comment);
+            this.restaurantImage = (ImageView) view.findViewById(R.id.restaurantImage);
+            this.rest_name = (TextView) view.findViewById(R.id.rest_name);
+            this.category = (TextView) view.findViewById(R.id.category);
+
+        }
+    }
+
+
+    public class TimelineAdapter extends ArrayAdapter<UserData> {
         private LayoutInflater layoutInflater;
 
-        public UserAdapter(Context context, int viewResourceId, ArrayList<UserData> users) {
-            super(context, viewResourceId, users);
+        public TimelineAdapter(Context context, int viewResourceId, ArrayList<UserData> timelineusers) {
+            super(context, viewResourceId, timelineusers);
             this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
 
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
 
+            int line = (position/4)*4;
+            int pos = position - line;
+
+            UserData user = this.getItem(position);
+
             //元あった感じのswitch文にも戻してみる
             if (convertView == null) {
-                int line = (position/4)*4;
-                int pos = position - line;
 
-                UserData user = this.getItem(position);
 
                 switch(pos){
                             case 0:
                                 //０の操作
                                 convertView = layoutInflater.inflate(R.layout.name_picture_bar, null);
 
-                                viewHolder = new ViewHolder(convertView);
-                                convertView.setTag(viewHolder);
+                                timelineHolder = new TimelineHolder(convertView);
+                                convertView.setTag(timelineHolder);
 
-                                viewHolder.user_name.setText(user.getUser_name());
+                                timelineHolder.user_name.setText(user.getUser_name());
                                 Picasso.with(getContext())
                                         .load(user.getPicture())
                                         .resize(50, 50)
-                                        .placeholder(R.drawable.ic_gocci)
+                                        .placeholder(R.drawable.ic_userpicture)
                                         .centerCrop()
                                         .transform(new RoundedTransformation())
-                                        .into(viewHolder.circleImage);
+                                        .into(timelineHolder.circleImage);
                                 break;
                             case 1:
                                 //１の操作
                                 convertView = layoutInflater.inflate(R.layout.video_bar, null);
 
-                                viewHolder = new ViewHolder(convertView);
-                                convertView.setTag(viewHolder);
-
-                                convertView.
-                                Uri video = Uri.parse(user.getMovie());
+                                timelineHolder = new TimelineHolder(convertView);
+                                convertView.setTag(timelineHolder);
+                                
+                               /* Uri video = Uri.parse(user.getMovie());
 
                         viewHolder.movie.setVideoURI(video);
                         viewHolder.movie.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
@@ -617,31 +1140,48 @@ public class SlidingTabsBasicFragment extends BaseFragment {
                             isMov = true;
                             viewHolder.movie.setVideoURI(video);
                             //viewHolder.movie.start();
-                        }
+                        }*/
                                 break;
                             case 2:
                                 //２の操作
                                 convertView = layoutInflater.inflate(R.layout.comment_bar, null);
 
-                                viewHolder = new ViewHolder(convertView);
-                                convertView.setTag(viewHolder);
+                                timelineHolder = new TimelineHolder(convertView);
+                                convertView.setTag(timelineHolder);
                                 break;
                             case 3:
                                 //３の操作
                                 convertView = layoutInflater.inflate(R.layout.restaurant_bar, null);
 
-                                viewHolder = new ViewHolder(convertView);
-                                convertView.setTag(viewHolder);
+                                timelineHolder = new TimelineHolder(convertView);
+                                convertView.setTag(timelineHolder);
 
-                                viewHolder.rest_name.setText(user.getRest_name());
-                                viewHolder.category.setText(user.getLocality());
+                                timelineHolder.rest_name.setText(user.getRest_name());
+                                timelineHolder.category.setText(user.getLocality());
                                 break;
 
                         }
 
 
             } else {
-                viewHolder = (ViewHolder) convertView.getTag();
+                switch (pos) {
+                    case 0:
+                        timelineHolder = (TimelineHolder) convertView.getTag();
+                        break;
+
+                    case 1:
+                        timelineHolder = (TimelineHolder) convertView.getTag();
+                        break;
+
+                    case 2:
+                        timelineHolder = (TimelineHolder) convertView.getTag();
+                        break;
+
+                    case 3:
+                        timelineHolder = (TimelineHolder) convertView.getTag();
+                        break;
+                }
+
             }
 
 
@@ -661,34 +1201,208 @@ public class SlidingTabsBasicFragment extends BaseFragment {
         }
     }
 
-    public class SearchAdapter extends ArrayAdapter<UserData> {
+    public class Search_mapAdapter extends ArrayAdapter<UserData> {
         private LayoutInflater layoutInflater;
 
-        public SearchAdapter(Context context, int viewResourceId, ArrayList<UserData> searchusers) {
-            super(context, viewResourceId, searchusers);
+        public Search_mapAdapter(Context context, int viewResourceId, ArrayList<UserData> search_mapusers) {
+            super(context, viewResourceId, search_mapusers);
             this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            final ViewHolder2 viewHolder2;
             if (convertView == null) {
                 convertView = layoutInflater.inflate(R.layout.maplist, null);
-                viewHolder2 = new ViewHolder2(convertView);
-                convertView.setTag(viewHolder2);
+                searchMapHolder = new SearchMapHolder(convertView);
+                convertView.setTag(searchMapHolder);
             } else {
-                viewHolder2 = (ViewHolder2) convertView.getTag();
+                searchMapHolder = (SearchMapHolder) convertView.getTag();
             }
 
             final UserData user = this.getItem(position);
 
-            viewHolder2.tell.setText(user.getTell());
-            viewHolder2.restname.setText(user.getRest_name());
-            viewHolder2.category.setText(user.getCategory());
-            viewHolder2.locality.setText(user.getLocality());
-            viewHolder2.distance.setText(user.getDistance());
+
+            searchMapHolder.restname.setText(user.getRest_name());
+            searchMapHolder.category.setText(user.getCategory());
+            searchMapHolder.distance.setText(user.getDistance());
+
+
+
+                LatLng latLng1 = new LatLng(user.getLat(), user.getLon());
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng1));
+                MarkerOptions options = new MarkerOptions();
+                options.position(latLng1);
+                options.title(user.getLocality());
+                options.draggable(false);
+                mMap.addMarker(options);
+                mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                    @Override
+                    public boolean onMarkerClick(Marker marker) {
+                        return false;
+                    }
+                });
+
+
 
             return convertView;
         }
     }
+
+    public class Search_tenpoAdapter extends ArrayAdapter<UserData> {
+        private LayoutInflater layoutInflater;
+
+        public Search_tenpoAdapter(Context context, int viewResourceId, ArrayList<UserData> search_tenpousers) {
+            super(context, viewResourceId, search_tenpousers);
+            this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                convertView = layoutInflater.inflate(R.layout.maplist, null);
+                searchtenpoHolder = new SearchTenpoHolder(convertView);
+                convertView.setTag(searchtenpoHolder);
+            } else {
+                searchtenpoHolder = (SearchTenpoHolder) convertView.getTag();
+            }
+
+            final UserData user = this.getItem(position);
+
+
+            searchtenpoHolder.restname.setText(user.getRest_name());
+            searchtenpoHolder.category.setText(user.getCategory());
+            searchtenpoHolder.distance.setText(user.getDistance());
+
+
+            return convertView;
+        }
+    }
+
+    public class ProfAdapter extends ArrayAdapter<UserData> {
+        private LayoutInflater layoutInflater;
+
+        public ProfAdapter(Context context, int viewResourceId, ArrayList<UserData> profusers) {
+            super(context, viewResourceId, profusers);
+            this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        }
+
+        @Override
+        public View getView(final int position, View convertView, ViewGroup parent) {
+
+            int line = (position/4)*4;
+            int pos = position - line;
+
+            UserData user = this.getItem(position);
+
+            //元あった感じのswitch文にも戻してみる
+            if (convertView == null) {
+
+                switch(pos){
+                    case 0:
+                        //０の操作
+                        convertView = layoutInflater.inflate(R.layout.name_picture_bar, null);
+
+                        profHolder = new ProfHolder(convertView);
+                        convertView.setTag(profHolder);
+
+                        profHolder.user_name.setText(user.getUser_name());
+                        Picasso.with(getContext())
+                                .load(user.getPicture())
+                                .resize(50, 50)
+                                .placeholder(R.drawable.ic_userpicture)
+                                .centerCrop()
+                                .transform(new RoundedTransformation())
+                                .into(profHolder.circleImage);
+                        break;
+
+                    case 1:
+                        //１の操作
+                        convertView = layoutInflater.inflate(R.layout.video_bar, null);
+
+                        profHolder = new ProfHolder(convertView);
+                        convertView.setTag(profHolder);
+
+                               /* Uri video = Uri.parse(user.getMovie());
+
+                        viewHolder.movie.setVideoURI(video);
+                        viewHolder.movie.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                            @Override
+                            public void onPrepared(MediaPlayer mp) {
+                                viewHolder.movie.start();
+                                mp.setLooping(true);
+                            }
+                        });
+
+                        viewHolder.movie.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                            public void onCompletion(MediaPlayer mp) {
+                                isMov = false;
+                                viewHolder.movie.setVideoURI(null);
+                                //動画終了
+                            }
+                        });
+
+                        if (!isMov) {
+                            isMov = true;
+                            viewHolder.movie.setVideoURI(video);
+                            //viewHolder.movie.start();
+                        }*/
+                        break;
+
+                    case 2:
+                        //２の操作
+                        convertView = layoutInflater.inflate(R.layout.comment_bar, null);
+
+                        profHolder = new ProfHolder(convertView);
+                        convertView.setTag(profHolder);
+                        break;
+
+                    case 3:
+                        //３の操作
+                        convertView = layoutInflater.inflate(R.layout.restaurant_bar, null);
+
+                        profHolder = new ProfHolder(convertView);
+                        convertView.setTag(profHolder);
+
+                        profHolder.rest_name.setText(user.getRest_name());
+                        profHolder.category.setText(user.getLocality());
+                        break;
+                }
+
+            } else {
+                switch (pos) {
+                    case 0:
+                        profHolder = (ProfHolder) convertView.getTag();
+                        break;
+
+                    case 1:
+                        profHolder = (ProfHolder) convertView.getTag();
+                        break;
+
+                    case 2:
+                        profHolder = (ProfHolder) convertView.getTag();
+                        break;
+
+                    case 3:
+                        profHolder = (ProfHolder) convertView.getTag();
+                        break;
+                }
+
+            }
+
+            /*viewHolder.restnamebutton.setText(user.getRest_name());
+            viewHolder.restnamebutton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getActivity().getApplicationContext(), TenpoActivity.class);
+                    UserData country = profuser.get(position);
+                    intent.putExtra("restname", country.getRest_name());
+                    intent.putExtra("locality", country.getLocality());
+
+                    startActivity(intent);
+                }
+            });*/
+            return convertView;
+        }
+    }
+
 }
