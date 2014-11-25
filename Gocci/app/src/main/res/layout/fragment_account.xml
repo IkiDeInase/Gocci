@@ -1,19 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent" android:layout_height="match_parent"
-        android:background="@android:drawable/alert_light_frame"
-        android:gravity="left|center_vertical" android:orientation="vertical">
+    android:background="@color/window_bg"
+        android:gravity="center_vertical|left" android:orientation="vertical">
 
-        <LinearLayout android:layout_width="match_parent"
-            android:layout_height="match_parent" android:gravity="center_horizontal|center_vertical"
-            android:orientation="vertical" android:paddingBottom="3dp">
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_vertical|center_horizontal"
+    android:orientation="vertical"
+    android:background="@color/window_bg"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
             <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/closeButton"
+                android:layout_marginRight="140dp"
                 android:background="@drawable/ic_batu"
-                android:layout_marginRight="140dp" />
+                android:padding="16dp" />
 
             <TextView
         android:layout_width="wrap_content"
@@ -33,19 +38,21 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="16dp" />
 
-    <ImageButton
-        android:id="@+id/facebookButton"
+
+    <com.facebook.widget.LoginButton
+        android:id="@+id/authButton"
         android:layout_width="300dp"
         android:layout_height="50dp"
         android:layout_marginTop="16dp"
         android:layout_gravity="center_horizontal"
-        android:src="@drawable/ic_account_facebook" />
+        android:src="@drawable/ic_account_facebook"
+         />
 
     <ImageButton
         android:layout_width="300dp"
         android:layout_height="50dp"
         android:id="@+id/twitterButton"
-        android:layout_below="@+id/facebookButton"
+        android:layout_below="@+id/authButton"
         android:layout_marginTop="8dp"
         android:layout_gravity="center_horizontal"
         android:src="@drawable/ic_accout_twitter" />

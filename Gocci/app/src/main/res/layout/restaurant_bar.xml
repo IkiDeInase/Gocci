@@ -4,16 +4,12 @@
     android:layout_height="wrap_content"
     android:paddingLeft="@dimen/very_small"
     android:paddingRight="@dimen/very_small"
-    android:paddingBottom="@dimen/very_small"
     >
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="vertical" android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="@dimen/very_small"
-        android:paddingRight="@dimen/very_small"
         android:paddingTop="4dp"
-        android:paddingBottom="4dp"
         android:background="@drawable/list_bg"
         >
 
@@ -43,24 +39,31 @@
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:text="Restname"
                 android:id="@+id/rest_name"
-                android:layout_marginTop="16dp"
-                android:textSize="12sp" />
+                android:textSize="14sp"
+                android:layout_margin="8dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="category"
-                android:id="@+id/category"
-                android:layout_marginTop="4dp"
-                android:textSize="10sp" />
+                android:text="Locality"
+                android:id="@+id/locality"
+                android:textSize="12sp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="4dp" />
         </LinearLayout>
 
     </android.support.v7.widget.CardView>
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:background="#c5c6c9" />
+
 </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="4dp"
-        android:background="@drawable/list_shadow"/>
 </LinearLayout>

@@ -47,55 +47,31 @@
             android:value="@string/app_id" />
 
         <activity
-            android:name="com.javacv.recorder.FFmpegRecorderActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
-        <activity
             android:name="com.example.kinagafuji.gocci.Activity.TenpoActivity"
             android:label="@string/title_activity_tenpo" />
         <activity
             android:name="com.example.kinagafuji.gocci.Activity.SplashActivity"
             android:label="@string/app_name"
-            android:process="com.example.kinagafuji.gocci.ACCESS_ALLOW">
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>/>
-        </activity>
-        <activity
-            android:name="com.example.kinagafuji.gocci.LoginActivity"
-            android:label="@string/title_activity_login"
-            android:launchMode="singleTop"
-           >
+            android:process="com.example.kinagafuji.gocci.ACCESS_ALLOW" >
             <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <!-- schemeはユニークなものを任意 -->
-                <data
-                    android:host="test"
-                    android:scheme="myapp" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.kinagafuji.gocci.SplashActivity" />
         </activity>
         <activity android:name="com.facebook.LoginActivity" />
-        <activity
-            android:name="com.example.kinagafuji.gocci.Activity.PagerTabStripActivity"
-            android:label="@string/title_activity_pager_tab_strip" />
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/app_id" />
         <activity
             android:name="com.example.kinagafuji.gocci.Activity.LoginActivity2"
             android:label="@string/title_activity_login_activity2" />
-
-
         <activity
             android:name="com.example.kinagafuji.gocci.Activity.SlidingTabActivity"
             android:label="@string/title_activity_sliding_tab" />
+        <activity
+            android:name="com.example.kinagafuji.gocci.Activity.IntentVineCamera"
+            android:label="@string/title_activity_intent_vine_camera" />
     </application>
 
 </manifest>

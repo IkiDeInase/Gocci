@@ -221,10 +221,10 @@ public class SlidingTabLayout extends HorizontalScrollView {
                     tabImageView.setImageResource(R.drawable.ic_home);
                     break;
                 case 1:
-                    tabImageView.setImageResource(R.drawable.ic_sche);
+                    tabImageView.setImageResource(R.drawable.ic_compass);
                     break;
                 case 2:
-                    tabImageView.setImageResource(R.drawable.ic_compass);
+                    tabImageView.setImageResource(R.drawable.ic_sche);
                     break;
                 case 3:
                     tabImageView.setImageResource(R.drawable.ic_meisi);

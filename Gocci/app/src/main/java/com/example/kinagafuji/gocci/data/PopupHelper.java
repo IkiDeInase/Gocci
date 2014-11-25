@@ -35,12 +35,10 @@ public class PopupHelper {
         });
 
         window.setWidth(X);
-        window.setHeight(Y-80);
+        window.setHeight(Y);
         window.setTouchable(true);
         window.setFocusable(true);
         window.setOutsideTouchable(false);
-
-
 
 
 
@@ -62,11 +60,7 @@ public class PopupHelper {
         int[] location = new int[2];
         anchor.getLocationOnScreen(location);
 
-        Rect anchorRect =
-                new Rect(location[0], location[1], location[0] + anchor.getWidth(), location[1]
-                        + anchor.getHeight());
-
-        root.measure(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        root.measure(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         int rootWidth = root.getMeasuredWidth();
         int rootHeight = root.getMeasuredHeight();

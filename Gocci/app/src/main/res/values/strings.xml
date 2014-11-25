@@ -49,5 +49,6 @@
     <string name="title_activity_login_activity2">LoginActivity2</string>
     <string name="title_activity_kanryo">KanryoActivity</string>
     <string name="title_activity_sliding_tab">SlidingTabActivity</string>
+    <string name="title_activity_intent_vine_camera">IntentVineCamera</string>
 
 </resources>

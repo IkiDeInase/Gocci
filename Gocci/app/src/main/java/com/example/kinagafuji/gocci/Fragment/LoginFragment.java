@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
@@ -18,8 +19,10 @@ import android.widget.PopupWindow;
 import com.example.kinagafuji.gocci.Activity.SlidingTabActivity;
 import com.example.kinagafuji.gocci.Base.BaseFragment;
 import com.example.kinagafuji.gocci.Base.CustomProgressDialog;
+import com.example.kinagafuji.gocci.BuildConfig;
 import com.example.kinagafuji.gocci.R;
 import com.example.kinagafuji.gocci.data.PopupHelper;
+import com.example.kinagafuji.gocci.data.ToukouPopup;
 import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.Session;
@@ -48,9 +51,9 @@ public class LoginFragment extends BaseFragment {
 
     private static final String TAG = "LoginFragment";
 
-    public String Dataurl = "https://codelecture.com/gocci/signup.php";
+    private static final String sDataurl = "http://api-gocci.jp/api/public/login/";
 
-    private CustomProgressDialog dialog;
+    private CustomProgressDialog mloginDialog;
 
     private Session.StatusCallback callback = new Session.StatusCallback() {
         @Override
@@ -63,18 +66,10 @@ public class LoginFragment extends BaseFragment {
 
     private static final String TAG_NAME = "name";
     private static final String TAG_ID = "id";
-    private static final String TAG_BIRTHDAY = "birthday";
-    private static final String TAG_MAIL = "email";
-    private static final String TAG_GENDER = "gender";
-    private static final String TAG_LOCATION = "location";
 
-    public String name;
-    public String id;
-    public String birthday;
-    public String mail;
-    public String gender;
-    public String location;
-    public String pictureImageUrl;
+    private String mName;
+    private String mId;
+    private String mPictureImageUrl;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -105,7 +100,7 @@ public class LoginFragment extends BaseFragment {
             public void onClick(View v) {
 
                 //win1.setAttributes(params1);	//ウインドウにパラメータを渡す
-                final PopupWindow window = PopupHelper.newBasicPopupWindow(getActivity(), width, height);
+                final PopupWindow window = PopupHelper.newBasicPopupWindow(getActivity(),width,height);
 
                 View inflateView = inflater.inflate(R.layout.fragment_account, container, false);
 
@@ -117,7 +112,8 @@ public class LoginFragment extends BaseFragment {
                     }
                 });
 
-                ImageButton mfacebookButtonm = (ImageButton) inflateView.findViewById(R.id.facebookButton);
+                LoginButton mfacebookButtonm = (LoginButton) inflateView.findViewById(R.id.authButton);
+                mfacebookButtonm.setFragment(LoginFragment.this);
                 mfacebookButtonm.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -128,7 +124,7 @@ public class LoginFragment extends BaseFragment {
                 window.setContentView(inflateView);
                 //int totalHeight = getActivity().getWindowManager().getDefaultDisplay().getHeight();
                 int[] location = new int[2];
-                v.getLocationOnScreen(location);
+                view.getLocationOnScreen(location);
 
                 PopupHelper.showLikeQuickAction(window, inflateView, v, getActivity().getWindowManager(), 0, 0);
             }
@@ -139,7 +135,7 @@ public class LoginFragment extends BaseFragment {
             @Override
             public void onClick(View v) {
 
-                final PopupWindow window = PopupHelper.newBasicPopupWindow(getActivity(), width, height);
+                final PopupWindow window = PopupHelper.newBasicPopupWindow(getActivity(),width,height);
 
                 View inflateView = inflater.inflate(R.layout.fragment_signup, container, false);
 
@@ -156,14 +152,14 @@ public class LoginFragment extends BaseFragment {
                     @Override
                     public void onClick(View v) {
                         uiHelper = new UiLifecycleHelper(getActivity(), callback);
-                        //loginFacebook();
+                        //PopupHelperloginFacebook();
                     }
                 });
 
                 window.setContentView(inflateView);
                 //int totalHeight = getWindowManager().getDefaultDisplay().getHeight();
                 int[] location = new int[2];
-                v.getLocationOnScreen(location);
+                view.getLocationOnScreen(location);
 
                 PopupHelper.showLikeQuickAction(window, inflateView, v, getActivity().getWindowManager(), 0, 0);
             }
@@ -172,6 +168,7 @@ public class LoginFragment extends BaseFragment {
     }
 
     private void loginFacebook() {
+
         // リクエストの生成
         Session.OpenRequest openRequest = new Session.OpenRequest(this)
                 .setCallback(callback);
@@ -188,6 +185,7 @@ public class LoginFragment extends BaseFragment {
 
     }
 
+
     private void onSessionStateChange(Session session, SessionState state, Exception exception) {
         if (state.isOpened()) {
             Log.i(TAG, "Logged in...");
@@ -200,48 +198,34 @@ public class LoginFragment extends BaseFragment {
                     try {
 
                         //必要なJSONデータを出力
-                        name = user.getInnerJSONObject().getString(TAG_NAME);
-                        id = user.getInnerJSONObject().getString(TAG_ID);
-                        birthday = user.getInnerJSONObject().getString(TAG_BIRTHDAY);
-                        gender = user.getInnerJSONObject().getString(TAG_GENDER);
-                        mail = user.getInnerJSONObject().getString(TAG_MAIL);
-                        JSONObject locale = user.getInnerJSONObject().getJSONObject(TAG_LOCATION);
-                        location = locale.getString("name");
+                        mName = user.getInnerJSONObject().getString(TAG_NAME);
+                        mId = user.getInnerJSONObject().getString(TAG_ID);
 
-                        Log.d("jsondata", name + "and" + birthday + "and" + gender + "and" + mail + "and" +
-                                location);
 
-                        pictureImageUrl = "https://graph.facebook.com/" + id + "/picture";
 
                     } catch (JSONException e) {
                         e.printStackTrace();
                         Log.d("error", String.valueOf(e));
                     }
 
-                    new SignupTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,Dataurl);
+                    mPictureImageUrl = "https://graph.facebook.com/" + mId + "/picture";
+
+                    new SignupTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,sDataurl);
 
 
                 }
             }).executeAsync();
 
-             Intent intent = new Intent(getActivity(), SlidingTabActivity.class);
+            Intent intent = new Intent(getActivity(), SlidingTabActivity.class);
             startActivity(intent);
+
 
         } else if (state.isClosed()) {
             Log.i(TAG, "Logged out...");
         }
     }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
 
-        if (savedInstanceState != null) {
-            // onSaveInstanceStateで保存されたデータを復元
-        }
-
-
-    }
 
     public class SignupTask extends AsyncTask<String, String, Integer> {
 
@@ -254,9 +238,9 @@ public class LoginFragment extends BaseFragment {
             HttpPost method = new HttpPost(param);
 
             ArrayList<NameValuePair> contents = new ArrayList<NameValuePair>();
-            contents.add(new BasicNameValuePair("user_name", name));
-            contents.add(new BasicNameValuePair("picture", pictureImageUrl));
-            Log.d("読み取り",name + "と" + pictureImageUrl);
+            contents.add(new BasicNameValuePair("user_name", mName));
+            contents.add(new BasicNameValuePair("picture", mPictureImageUrl));
+            Log.d("読み取り",mName + "と" + mPictureImageUrl);
 
             String body = null;
             try {
@@ -273,12 +257,9 @@ public class LoginFragment extends BaseFragment {
             SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = pref.edit();
 
-            editor.putString("name",name);
-            editor.putString("pictureImageUrl", pictureImageUrl);
-            editor.putString("birthday", birthday);
-            editor.putString("gender", gender);
-            editor.putString("mail", mail);
-            editor.putString("location",location);
+            editor.putString("name",mName);
+            editor.putString("pictureImageUrl", mPictureImageUrl);
+
 
             editor.apply();
 
@@ -287,6 +268,7 @@ public class LoginFragment extends BaseFragment {
 
         @Override
         protected void onPostExecute(Integer result) {
+
 
         }
     }
@@ -308,6 +290,9 @@ public class LoginFragment extends BaseFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if(BuildConfig.DEBUG) {
+            Log.d(TAG,"onActivityResult");
+        }
         uiHelper.onActivityResult(requestCode, resultCode, data);
         Session.getActiveSession().onActivityResult(getActivity(), requestCode, resultCode, data);
 
@@ -335,14 +320,14 @@ public class LoginFragment extends BaseFragment {
     public class FacebookGraphUserCallback implements Request.GraphUserCallback {
 
         public FacebookGraphUserCallback(String message) {
-            dialog = new CustomProgressDialog(getActivity());
-            dialog.setCancelable(false);
-            dialog.show();
+            mloginDialog = new CustomProgressDialog(getActivity());
+            mloginDialog.setCancelable(false);
+            mloginDialog.show();
         }
 
         @Override
         public void onCompleted(GraphUser user, Response response) {
-            dialog.dismiss();
+            mloginDialog.dismiss();
         }
     }
 

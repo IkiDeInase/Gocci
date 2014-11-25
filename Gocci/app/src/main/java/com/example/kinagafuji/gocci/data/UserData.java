@@ -19,6 +19,8 @@ public class UserData {
     private String comment_num;
     private String thumbnail;
     private String star_evaluation;
+    private Double mLatitude;
+    private Double mLongitude;
 
     public String getMovie() {
         return this.movie;
@@ -98,6 +100,21 @@ public class UserData {
 
     public void setLon(Double lon) {
         this.lon = lon;
+    }
+
+    public Double getmLatitude() {
+        return this.mLatitude;
+    }
+
+    public void setmLatitude(Double mLatitude) {
+        this.mLatitude = mLatitude;
+    }
+    public Double getmLongitude() {
+        return this.mLongitude;
+    }
+
+    public void setmLongitude(Double mLongitude) {
+        this.mLongitude = mLongitude;
     }
 
     public String getLocality() {

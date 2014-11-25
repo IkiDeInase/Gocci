@@ -7,22 +7,81 @@
     android:paddingLeft="@dimen/very_small"
     android:paddingRight="@dimen/very_small"
     >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/list_bg">
 <ScrollView
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/scrollView"
     android:fillViewport="false"
-    android:background="@drawable/list_bg">
+    >
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="人生で一番面白かった！"
+            android:text="これは人生で一番美味しかったんじゃないだろうか。まじで。"
             android:id="@+id/comment"
             android:paddingLeft="@dimen/small"
             android:paddingRight="@dimen/small"
             android:paddingBottom="@dimen/very_small"
             android:paddingTop="@dimen/small"
-            android:textSize="10sp" />
+            android:textSize="10sp"
+            android:maxLines="6" />
     </ScrollView>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:id="@+id/likesnumber"
+            android:padding="8dp"
+            android:layout_marginLeft="8dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Likes"
+            android:id="@+id/likes" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:id="@+id/commentsnumber"
+            android:padding="8dp"
+            android:layout_marginLeft="8dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/comments"
+            android:text="Comments" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:id="@+id/sharenumber"
+            android:layout_marginLeft="8dp"
+            android:padding="8dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Share"
+            android:id="@+id/share" />
+
+    </LinearLayout>
+    </LinearLayout>
 </LinearLayout>

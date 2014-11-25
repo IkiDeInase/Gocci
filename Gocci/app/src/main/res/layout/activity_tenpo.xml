@@ -1,86 +1,32 @@
-<RelativeLayout
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    android:layout_height="match_parent">
 
-
-    <ImageView
-        android:layout_width="fill_parent"
-        android:layout_height="130dp"
-        android:id="@+id/imageView2"
-        android:src="@drawable/ic_gradation" />
-
-    <ImageView
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:id="@+id/imageView"
-            android:src="@drawable/ic_login"
-        android:layout_alignBottom="@+id/TenpoView2"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginLeft="16dp" />
-
-
-            <TextView
-                android:layout_width="280dp"
-                android:layout_height="30dp"
-                android:text="店舗名"
-                android:id="@+id/TenpoView"
-                android:textColor="#f5f5f5"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                android:layout_alignParentTop="true"
-                android:layout_toRightOf="@+id/imageView"
-                android:layout_toEndOf="@+id/imageView"
-                android:layout_marginTop="36dp"
-                android:layout_marginLeft="8dp" />
-
-            <TextView
-                android:layout_width="280dp"
-                android:layout_height="30dp"
-                android:text="住所"
-                android:id="@+id/TenpoView2"
-                android:textColor="#f5f5f5"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                android:layout_above="@+id/toukoubutton"
-                android:layout_toRightOf="@+id/imageView"
-                android:layout_toEndOf="@+id/imageView"
-                android:layout_marginTop="8dp"
-                android:layout_marginLeft="8dp" />
-
-
-    <Button
-                    android:layout_width="50dp"
-                    android:layout_height="30dp"
-                    android:text="投稿"
-                    android:id="@+id/toukoubutton"
-                    android:background="#e51c23"
-                    android:textColor="#eeeeee"
-                    android:textSize="15sp"
-                    android:layout_alignBottom="@+id/imageView2"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentEnd="true"
-        android:layout_marginRight="32dp" />
-
-
-    <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/refresh"
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="128dp">
-        <ListView
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:id="@+id/mylistView3"
-            android:layout_marginBottom="179dp"
-            android:layout_alignParentBottom="true"
-            android:layout_alignLeft="@+id/post_mail"
-            android:layout_alignStart="@+id/post_mail" />
-
+        android:layout_height="wrap_content">
+    <android.support.v4.widget.SwipeRefreshLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/swipe_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tenpolist"
+        android:layout_centerHorizontal="true" />
     </android.support.v4.widget.SwipeRefreshLayout>
+    </LinearLayout>
 
-
-
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/toukouButton"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/ic_toukou_nuri"
+        android:layout_marginBottom="16dp" />
 
 </RelativeLayout>

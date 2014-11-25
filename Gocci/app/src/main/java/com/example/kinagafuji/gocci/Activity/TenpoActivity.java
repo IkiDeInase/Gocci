@@ -15,9 +15,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -45,9 +50,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
-public class TenpoActivity extends BaseActivity {
-
-    private SwipeRefreshLayout mSwipeRefreshLayout;
+public class TenpoActivity extends BaseActivity implements ListView.OnScrollListener {
 
     private static final String TAG_POST_ID = "post_id";
     private static final String TAG_USER_NAME = "user_name";
@@ -61,102 +64,189 @@ public class TenpoActivity extends BaseActivity {
     private static final String TAG_THUMBNAIL = "thumbnail";
     private static final String TAG_STAR_EVALUATION = "star_evaluation";
 
-    private CustomProgressDialog dialog;
+    private CustomProgressDialog mTenpoDialog;
+    private ArrayList<UserData> mTenpousers = new ArrayList<UserData>();
+    private ListView mTenpoListView;
+    private TenpoAdapter mTenpoAdapter;
+    private SwipeRefreshLayout mTenpoSwipe;
 
-    private String data;
+    private String mPost_restname;
+    private String mName;
+    private String mPictureImageUrl;
 
-    private ArrayList<UserData> users = new ArrayList<UserData>();
+    private String mEncoderestname;
 
-    private String restname1;
-    private String locality1;
-    private String tenpoUrl;
-    private String encoderestname;
+    private VideoHolder videoHolder;
+
+    private boolean mBusy = false;
+
+    private int mShowPosition;
 
 
-    private ListView tenpoListView;
-
-    public TenpoAdapter tenpoAdapter;
-
-    private int mCardLayoutIndex = 0;
-
-    private static boolean isMov = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tenpo);
 
-        // SwipeRefreshLayoutの設定
-        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh);
-        mSwipeRefreshLayout.setOnRefreshListener(mOnRefreshListener);
-        mSwipeRefreshLayout.setColorSchemeColors(Color.TRANSPARENT, Color.GRAY, Color.TRANSPARENT, Color.TRANSPARENT);
-
         Intent intent = getIntent();
-        restname1 = intent.getStringExtra("restname");
-        locality1 = intent.getStringExtra("locality");
+        mPost_restname = intent.getStringExtra("restname");
+        String mPost_locality = intent.getStringExtra("locality");
+        mName = intent.getStringExtra("name");
+        mPictureImageUrl = intent.getStringExtra("pictureImageUrl");
 
         try {
-            encoderestname = URLEncoder.encode(restname1, "UTF-8");
+            mEncoderestname = URLEncoder.encode(mPost_restname, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
 
-        tenpoUrl = "https://codelecture.com/gocci/submit/restpage.php?restname=" + encoderestname;
+        final String mTenpoUrl = "https://codelecture.com/gocci/submit/restpage.php?restname=" + mEncoderestname;
 
-        TextView TenpoView = (TextView) findViewById(R.id.TenpoView);
-        TenpoView.setText(restname1);
-        TextView TenpoView2 = (TextView) findViewById(R.id.TenpoView2);
-        TenpoView2.setText(locality1);
+        /*
+        TextView restname = (TextView) findViewById(R.id.restname);
+        restname.setText(mPost_restname);
+        TextView locality = (TextView) findViewById(R.id.locality);
+        locality.setText(mPost_locality);
 
-        Button button = (Button) findViewById(R.id.toukoubutton);
-        button.setOnClickListener(new View.OnClickListener() {
+        ImageView imageurl = (ImageView)findViewById(R.id.post_Imageurl);
+        */
+        /*Picasso.with(getApplicationContext())
+                .load()
+                .resize(80, 80)
+                .placeholder(R.drawable.ic_userpicture)
+                .centerCrop()
+                .transform(new RoundedTransformation())
+                .into(imageurl);*/
+
+        final ImageButton toukoubutton = (ImageButton) findViewById(R.id.toukouButton);
+        toukoubutton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(TenpoActivity.this, com.javacv.recorder.FFmpegRecorderActivity.class);
-                intent.putExtra("restname", restname1);
+            RotateAnimation animation = (RotateAnimation) AnimationUtils.loadAnimation(TenpoActivity.this, R.anim.rotate_repeat);
+                            animation.setInterpolator(new LinearInterpolator());
+                            toukoubutton.startAnimation(animation);
+                Intent intent = new Intent(TenpoActivity.this, IntentVineCamera.class);
+                intent.putExtra("restname", mPost_restname);
+                intent.putExtra("name", mName);
+                intent.putExtra("pictureImageUrl", mPictureImageUrl);
                 startActivity(intent);
             }
         });
 
 
-        new MyTenpoAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, tenpoUrl);
-        dialog = new CustomProgressDialog(this);
-        dialog.setCancelable(false);
-        dialog.show();
+        new TenpoAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mTenpoUrl);
+        mTenpoDialog = new CustomProgressDialog(this);
+        mTenpoDialog.setCancelable(false);
+        mTenpoDialog.show();
 
-        tenpoAdapter = new TenpoAdapter(this, 0, users);
+        mTenpoAdapter = new TenpoAdapter(this, 0, mTenpousers);
 
-        tenpoListView = (ListView) findViewById(R.id.mylistView3);
-        tenpoListView.setDivider(null);
+        mTenpoListView = (ListView) findViewById(R.id.tenpolist);
+        mTenpoListView.setDivider(null);
         // スクロールバーを表示しない
-        tenpoListView.setVerticalScrollBarEnabled(false);
+        mTenpoListView.setVerticalScrollBarEnabled(false);
         // カード部分をselectorにするので、リストのselectorは透明にする
-        tenpoListView.setSelector(android.R.color.transparent);
+        mTenpoListView.setSelector(android.R.color.transparent);
 
-        // 最後の余白分のビューを追加
-        if (mCardLayoutIndex > 0) {
-            tenpoListView.addFooterView(LayoutInflater.from(this).inflate(
-                    R.layout.card_footer, tenpoListView, false));
-        }
-        tenpoListView.setAdapter(tenpoAdapter);
+        mTenpoListView.setAdapter(mTenpoAdapter);
 
-        tenpoListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mTenpoListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                UserData country = mTenpousers.get(position);
+                int line = (position / 5) * 5;
+                int pos = position - line;
 
-                UserData country = users.get(pos);
+                switch(pos) {
+                    case 0:
+                        //名前部分のview　プロフィール画面へ
+                        //Signupを読み込みそう後回し
+                        break;
+                    case 1:
+                        //動画のview
+                        //クリックしたら止まるくらい
+                        break;
+                    case 2:
+                        //コメントのview
+                        //とくになんもしない
+                        break;
+                    case 3:
+                        //レストランのview
+                        //レストラン画面に飛ぼうか
+
+                        break;
+                    case 4:
+                        //いいね　コメント　シェア
+                        break;
+                }
+
             }
         });
+
+
+        mTenpoSwipe = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
+        mTenpoSwipe.setColorSchemeColors(R.color.main_color_light,R.color.gocci,R.color.main_color_dark,R.color.window_bg);
+        mTenpoSwipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+
+            @Override
+            public void onRefresh() {
+//Handle the refresh then call
+                new TenpoAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mTenpoUrl);
+                mTenpoDialog = new CustomProgressDialog(getApplication());
+                mTenpoDialog.setCancelable(false);
+                mTenpoDialog.show();
+                mTenpoSwipe.setRefreshing(false);
+
+            }
+        });
+
     }
 
-    public class MyTenpoAsync extends AsyncTask<String, String, Integer> {
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        videoHolder.movie.stopPlayback();
+    }
+
+    @Override
+    public void onScrollStateChanged(AbsListView view, int scrollState) {
+        switch (scrollState) {
+
+            // スクロールしていない
+            case AbsListView.OnScrollListener.SCROLL_STATE_IDLE:
+
+                mBusy = false;
+
+                break;
+
+            // スクロール中
+            case AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL:
+                mBusy = true;
+                break;
+
+            // はじいたとき
+            case AbsListView.OnScrollListener.SCROLL_STATE_FLING:
+                mBusy = true;
+                break;
+        }
+    }
+
+    @Override
+    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+
+    }
+
+    public class TenpoAsyncTask extends AsyncTask<String, String, Integer> {
 
         @Override
         protected Integer doInBackground(String... params) {
+            String param = params[0];
             HttpClient httpClient = new DefaultHttpClient();
 
-            HttpGet request = new HttpGet(tenpoUrl);
+            HttpGet request = new HttpGet(param);
             HttpResponse httpResponse = null;
 
             try {
@@ -168,17 +258,18 @@ public class TenpoActivity extends BaseActivity {
             int status = httpResponse.getStatusLine().getStatusCode();
 
             if (HttpStatus.SC_OK == status) {
+                String mTenpoData = null;
                 try {
                     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                     httpResponse.getEntity().writeTo(outputStream);
-                    data = outputStream.toString(); // JSONデータ
-                    Log.d("data", data);
+                    mTenpoData = outputStream.toString(); // JSONデータ
+                    Log.d("data", mTenpoData);
                 } catch (Exception e) {
                     Log.d("error", String.valueOf(e));
                 }
 
                 try {
-                    JSONArray jsonArray = new JSONArray(data);
+                    JSONArray jsonArray = new JSONArray(mTenpoData);
 
                     for (int i = 0; i < jsonArray.length(); i++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -195,21 +286,32 @@ public class TenpoActivity extends BaseActivity {
                         String thumbnail = jsonObject.getString(TAG_THUMBNAIL);
                         String star_evaluation = jsonObject.getString(TAG_STAR_EVALUATION);
 
-                        UserData user = new UserData();
+                        UserData user1 = new UserData();
+                        user1.setUser_name(user_name);
+                        user1.setPicture(picture);
+                        mTenpousers.add(user1);
 
-                        user.setPost_id(post_id);
-                        user.setMovie(movie);
-                        user.setPicture(picture);
-                        user.setUser_name(user_name);
-                        user.setRest_name(restname);
-                        user.setLocality(locality);
-                        user.setReview(review);
-                        user.setgoodnum(goodnum);
-                        user.setComment_num(comment_num);
-                        user.setThumbnail(thumbnail);
-                        user.setStar_evaluation(star_evaluation);
+                        UserData user2 = new UserData();
+                        user2.setMovie(movie);
+                        user2.setThumbnail(thumbnail);
+                        mTenpousers.add(user2);
 
-                        users.add(user);
+                        UserData user3 = new UserData();
+                        user3.setReview(review);
+                        user3.setComment_num(comment_num);
+                        user3.setgoodnum(goodnum);
+                        user3.setStar_evaluation(star_evaluation);
+                        mTenpousers.add(user3);
+
+                        UserData user4 = new UserData();
+                        user4.setRest_name(restname);
+                        //user4.setLocality(locality);
+                        mTenpousers.add(user4);
+
+                        UserData user5 = new UserData();
+                        user5.setPost_id(post_id);
+                        //user5.setUser_id(user_id);
+                        mTenpousers.add(user5);
 
                     }
                 } catch (JSONException e) {
@@ -228,131 +330,186 @@ public class TenpoActivity extends BaseActivity {
 
             if (result != null && result == HttpStatus.SC_OK) {
                 //ListViewの最読み込み
-                tenpoListView.invalidateViews();
-                tenpoAdapter.notifyDataSetChanged();
+                mTenpoListView.invalidateViews();
+                mTenpoAdapter.notifyDataSetChanged();
             } else {
                 //通信失敗した際のエラー処理
                 Toast.makeText(TenpoActivity.this, "タイムラインの取得に失敗しました。", Toast.LENGTH_SHORT).show();
             }
-            dialog.dismiss();
+            mTenpoDialog.dismiss();
         }
     }
 
-    private SwipeRefreshLayout.OnRefreshListener mOnRefreshListener = new SwipeRefreshLayout.OnRefreshListener() {
-        @Override
-        public void onRefresh() {
-            // 3秒待機
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mSwipeRefreshLayout.setRefreshing(false);
-                }
-            }, 3000);
-        }
-    };
-
-    private static class ViewHolder {
-        VideoView movie;
-        ImageView picture;
+    private static class NameHolder {
+        ImageView circleImage;
         TextView user_name;
-        TextView restname;
-        TextView post_id;
-        TextView locality;
-        TextView review;
-        TextView goodnum;
-        TextView comment_num;
-        TextView thumbnail;
-        TextView star_evaluation;
+        TextView time;
 
-        public ViewHolder(View view) {
-            this.movie = (VideoView) view.findViewById(R.id.movie);
-            this.picture = (ImageView) view.findViewById(R.id.picture);
+        public NameHolder(View view) {
+            this.circleImage = (ImageView) view.findViewById(R.id.circleImage);
             this.user_name = (TextView) view.findViewById(R.id.user_name);
-            this.post_id = (TextView) view.findViewById(R.id.post_id);
-            this.restname = (TextView) view.findViewById(R.id.restname);
+            this.time = (TextView) view.findViewById(R.id.time);
+        }
+    }
+
+    private static class VideoHolder {
+        VideoView movie;
+        ImageView mVideoThumbnail;
+
+        public VideoHolder(View view) {
+            this.movie = (VideoView) view.findViewById(R.id.videoView);
+            this.mVideoThumbnail = (ImageView) view.findViewById(R.id.video_thumbnail);
+        }
+    }
+
+    private static class CommentHolder {
+        TextView comment;
+        TextView likesnumber;
+        TextView likes;
+        TextView commentsnumber;
+        TextView comments;
+        TextView sharenumber;
+        TextView share;
+
+        public CommentHolder(View view) {
+            this.comment = (TextView) view.findViewById(R.id.comment);
+            this.likesnumber = (TextView) view.findViewById(R.id.likesnumber);
+            this.likes = (TextView) view.findViewById(R.id.likes);
+            this.commentsnumber = (TextView) view.findViewById(R.id.commentsnumber);
+            this.comments = (TextView) view.findViewById(R.id.comments);
+            this.sharenumber = (TextView) view.findViewById(R.id.sharenumber);
+            this.share = (TextView) view.findViewById(R.id.share);
+        }
+    }
+
+    private static class RestHolder {
+        ImageView restaurantImage;
+        TextView locality;
+        TextView rest_name;
+
+        public RestHolder(View view) {
+            this.restaurantImage = (ImageView) view.findViewById(R.id.restaurantImage);
+            this.rest_name = (TextView) view.findViewById(R.id.rest_name);
             this.locality = (TextView) view.findViewById(R.id.locality);
-            this.review = (TextView) view.findViewById(R.id.review);
-            this.goodnum = (TextView) view.findViewById(R.id.goodnum);
-            this.comment_num = (TextView) view.findViewById(R.id.comment_num);
-            this.thumbnail = (TextView) view.findViewById(R.id.thumbnail);
-            this.star_evaluation = (TextView) view.findViewById(R.id.star_evaluation);
+        }
+    }
+
+    private static class LikeCommentHolder {
+        ImageView likes;
+        ImageView comments;
+        ImageView share;
+
+        public LikeCommentHolder(View view) {
+            this.likes = (ImageView)view.findViewById(R.id.likes);
+            this.comments = (ImageView)view.findViewById(R.id.comments);
+            this.share = (ImageView)view.findViewById(R.id.share);
+
         }
     }
 
     public class TenpoAdapter extends ArrayAdapter<UserData> {
         private LayoutInflater layoutInflater;
-        int mAnimatedPosition = ListView.INVALID_POSITION;
 
-        public TenpoAdapter(Context context, int viewResourceId, ArrayList<UserData> users) {
-            super(context, viewResourceId, users);
+        public TenpoAdapter(Context context, int viewResourceId, ArrayList<UserData> tenpousers) {
+            super(context, viewResourceId, tenpousers);
             this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            final ViewHolder viewHolder;
+        public View getView(final int position, View convertView, ViewGroup parent) {
 
-            if (convertView == null) {
-                convertView = layoutInflater.inflate(R.layout.tenpolist, null);
-                viewHolder = new ViewHolder(convertView);
-                convertView.setTag(viewHolder);
-            } else {
-                viewHolder = (ViewHolder) convertView.getTag();
-            }
+            int line = (position/5)*5;
+            int pos = position - line;
 
             UserData user = this.getItem(position);
 
-            viewHolder.post_id.setText(user.getPost_id());
-            viewHolder.user_name.setText(user.getUser_name());
-            viewHolder.restname.setText(user.getRest_name());
-            viewHolder.locality.setText(user.getLocality());
-            viewHolder.review.setText(user.getReview());
-            viewHolder.goodnum.setText(user.getgoodnum());
-            viewHolder.comment_num.setText(user.getComment_num());
-            viewHolder.thumbnail.setText(user.getThumbnail());
-            viewHolder.star_evaluation.setText(user.getStar_evaluation());
-            Uri video = Uri.parse(user.getMovie());
-
-            viewHolder.movie.setVideoURI(video);
-            viewHolder.movie.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    viewHolder.movie.start();
-                    mp.setLooping(true);
-                }
-            });
-
-            viewHolder.movie.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                public void onCompletion(MediaPlayer mp) {
-                    isMov = false;
-                    viewHolder.movie.setVideoURI(null);
-                    //動画終了
-                }
-            });
-
-            if (!isMov) {
-                isMov = true;
-                viewHolder.movie.setVideoURI(video);
-                //viewHolder.movie.start();
+            switch (pos) {
+                case 0:
+                    convertView = layoutInflater.inflate(R.layout.name_picture_bar, null);
+                    break;
+                case 1:
+                    convertView = layoutInflater.inflate(R.layout.video_bar, null);
+                    break;
+                case 2:
+                    convertView = layoutInflater.inflate(R.layout.comment_bar, null);
+                    break;
+                case 3:
+                    convertView = layoutInflater.inflate(R.layout.restaurant_bar, null);
+                    break;
+                case 4:
+                    convertView = layoutInflater.inflate(R.layout.likes_comments_bar, null);
+                    break;
             }
 
-            Picasso.with(getContext())
-                    .load(user.getPicture())
-                    .resize(50, 50)
-                    .placeholder(R.drawable.ic_gocci)
-                    .centerCrop()
-                    .transform(new RoundedTransformation())
-                    .into(viewHolder.picture);
+            switch (pos) {
+                case 0:
+                    NameHolder nameHolder = new NameHolder(convertView);
 
-            if (mAnimatedPosition < position) {
-                // XMLからアニメーターを作成
-                Animator animator = AnimatorInflater.loadAnimator(getContext(),
-                        R.animator.card_slide_in);
-                // アニメーションさせるビューをセット
-                animator.setTarget(convertView);
-                // アニメーションを開始
-                animator.start();
-                mAnimatedPosition = position;
+                    nameHolder.user_name.setText(user.getUser_name());
+
+                    Picasso.with(getContext())
+                            .load(user.getPicture())
+                            .resize(50, 50)
+                            .placeholder(R.drawable.ic_userpicture)
+                            .centerCrop()
+                            .transform(new RoundedTransformation())
+                            .into(nameHolder.circleImage);
+                    break;
+
+                case 1:
+                    videoHolder = new VideoHolder(convertView);
+
+                    Picasso.with(getContext())
+                            .load(user.getThumbnail())
+                            .placeholder(R.color.videobackground)
+                            .into(videoHolder.mVideoThumbnail);
+                    videoHolder.mVideoThumbnail.setVisibility(View.VISIBLE);
+
+                    if (!mBusy) {
+
+                        videoHolder.movie.setVideoURI(Uri.parse(user.getMovie()));
+                        Log.e("読み込みました", user.getMovie());
+                        videoHolder.movie.requestFocus();
+                        videoHolder.movie.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                            @Override
+                            public void onPrepared(MediaPlayer mp) {
+
+                                VideoView nextVideo = (VideoView) mTenpoListView.findViewWithTag(mShowPosition);
+
+                                if (nextVideo != null) {
+                                    Log.e("TAG", "pause : " + mShowPosition);
+                                    nextVideo.stopPlayback();
+                                }
+
+                                videoHolder.mVideoThumbnail.setVisibility(View.GONE);
+                                videoHolder.movie.start();
+                                Log.e("TAG", "start : " + position);
+                                mp.setLooping(true);
+                                mShowPosition = position;
+                            }
+                        });
+                        videoHolder.movie.setTag(position);
+                    }
+
+                    break;
+
+                case 2:
+                    CommentHolder commentHolder = new CommentHolder(convertView);
+                    commentHolder.comment.setText(user.getReview());
+                    commentHolder.likesnumber.setText(user.getgoodnum());
+                    commentHolder.commentsnumber.setText(user.getComment_num());
+                    break;
+
+                case 3:
+                    RestHolder restHolder = new RestHolder(convertView);
+                    restHolder.rest_name.setText(user.getRest_name());
+                    //restHolder.locality.setText(user.getLocality());
+                    break;
+                case 4:
+                    LikeCommentHolder likeCommentHolder = new LikeCommentHolder(convertView);
+                    //クリックされた時の処理
+                    break;
+
             }
 
             return convertView;
