@@ -181,23 +181,7 @@ public class Search_mapFragment extends BaseFragment implements LocationListener
     public void onStart() {
         super.onStart();
 
-        // This verification should be done during onStart() because the system calls
-        // this method when the user returns to the activity, which ensures the desired
-        // location provider is enabled each time the activity resumes from the stopped state.
 
-        final boolean gpsEnabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-
-        if (!gpsEnabled) {
-            // Build an alert dialog here that requests that the user enable
-            // the location services, then when the user clicks the "OK" button,
-            enableLocationSettings();
-            Log.d("GPS設定","設定して下しあ");
-        }
-    }
-
-    private void enableLocationSettings() {
-        Intent settingsIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-        startActivity(settingsIntent);
     }
 
     @Override

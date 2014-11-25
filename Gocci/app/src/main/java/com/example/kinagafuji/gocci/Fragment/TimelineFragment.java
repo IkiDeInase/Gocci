@@ -52,6 +52,7 @@ public class TimelineFragment extends BaseFragment
         implements ListView.OnScrollListener {
 
     private static final String sTimelineUrl = "http://api-gocci.jp/api/public/timeline/";
+    private static final String sGoodUrl = "http://api-gocci.jp/api/public/goodinsert/";
 
     private CustomProgressDialog mTimelineDialog;
     private ListView mTimelineListView;
@@ -212,8 +213,6 @@ public class TimelineFragment extends BaseFragment
     @Override
     public void onPause() {
         super.onPause();
-
-        videoHolder.movie.stopPlayback();
 
     }
 
@@ -529,6 +528,18 @@ public class TimelineFragment extends BaseFragment
                 case 4:
                     LikeCommentHolder likeCommentHolder = new LikeCommentHolder(convertView);
                     //クリックされた時の処理
+                    likeCommentHolder.likes.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                                Log.e("いいねをクリック", "いいね！" + user.getPost_id());
+                        }
+                    });
+                    likeCommentHolder.comments.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Log.e("コメントをクリック","コメント！" + user.getPost_id());
+                        }
+                    });
                     break;
 
             }

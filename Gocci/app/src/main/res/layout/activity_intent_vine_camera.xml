@@ -61,7 +61,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/commentText"
-            android:hint="コメント"
+            android:hint="美味しかった！"
             android:textSize="14sp"
             android:layout_margin="16dp"
             android:padding="8dp" />

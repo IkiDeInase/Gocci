@@ -117,12 +117,6 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
         View view3 = getActivity().getLayoutInflater().inflate(R.layout.fragment_profile,
                 container, false);
 
-
-        new ProfTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        mProfDialog = new CustomProgressDialog(getActivity());
-        mProfDialog.setCancelable(false);
-        mProfDialog.show();
-
         /*mPost_name = (TextView) view3.findViewById(R.id.post_name);
         mPost_Imageurl = (ImageView) view3.findViewById(R.id.post_Imageurl);
         */
@@ -201,6 +195,12 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
         mName = args.getString(TAG_USER_NAME);
         mPictureImageUrl = args.getString(KEY_IMAGE_URL);
 
+        new ProfTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        mProfDialog = new CustomProgressDialog(getActivity());
+        mProfDialog.setCancelable(false);
+        mProfDialog.show();
+
+
         /*mPost_name.setText(mName);
 
         Picasso.with(getActivity())
@@ -230,8 +230,6 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
     @Override
     public void onPause() {
         super.onPause();
-
-        videoHolder.movie.stopPlayback();
 
     }
 

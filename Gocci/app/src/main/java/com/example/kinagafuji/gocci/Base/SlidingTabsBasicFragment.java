@@ -113,6 +113,7 @@ public class SlidingTabsBasicFragment extends BaseFragment {
         // Get the ViewPager and set it's PagerAdapter so that it can display items
         mViewPager = (ViewPager) view.findViewById(R.id.viewpager);
         //mViewPager.setBackgroundColor(R.color.main_color);
+        mViewPager.setOffscreenPageLimit(2);
         mViewPager.setAdapter(new SamplePagerAdapter(getFragmentManager()));
         // END_INCLUDE (setup_viewpager)
 
@@ -130,7 +131,7 @@ public class SlidingTabsBasicFragment extends BaseFragment {
 
 
 
-    class SamplePagerAdapter extends FragmentPagerAdapter implements ViewPager.OnPageChangeListener{
+    class SamplePagerAdapter extends FragmentStatePagerAdapter {
 
 
         public SamplePagerAdapter(FragmentManager fm) {
@@ -161,19 +162,6 @@ public class SlidingTabsBasicFragment extends BaseFragment {
         }
 
 
-        @Override
-        public void onPageScrolled(int i, float v, int i2) {
-            
-        }
 
-        @Override
-        public void onPageSelected(int i) {
-
-        }
-
-        @Override
-        public void onPageScrollStateChanged(int i) {
-
-        }
     }
 }
