@@ -25,6 +25,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -32,15 +33,23 @@ import android.widget.VideoView;
 import com.example.kinagafuji.gocci.Base.BaseActivity;
 import com.example.kinagafuji.gocci.Base.CustomProgressDialog;
 import com.example.kinagafuji.gocci.R;
+import com.example.kinagafuji.gocci.View.CommentView;
 import com.example.kinagafuji.gocci.data.RoundedTransformation;
+import com.example.kinagafuji.gocci.data.ToukouPopup;
 import com.example.kinagafuji.gocci.data.UserData;
 import com.squareup.picasso.Picasso;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -65,6 +74,7 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
     private static final String TAG_STAR_EVALUATION = "star_evaluation";
 
     private static final String sGoodUrl = "http://api-gocci.jp/goodinsert/";
+    private static final String sDataurl = "http://api-gocci.jp/login/";
 
     private CustomProgressDialog mTenpoDialog;
     private ArrayList<UserData> mTenpousers = new ArrayList<UserData>();
@@ -84,7 +94,10 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
 
     private int mShowPosition;
 
-
+    private CommentHolder commentHolder;
+    private LikeCommentHolder likeCommentHolder;
+    public String mNextGoodnum;
+    public String currentgoodnum;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -408,8 +421,6 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
 
     public class TenpoAdapter extends ArrayAdapter<UserData> {
         private LayoutInflater layoutInflater;
-        private CommentHolder commentHolder;
-        public String mNextGoodnum;
 
         public TenpoAdapter(Context context, int viewResourceId, ArrayList<UserData> tenpousers) {
             super(context, viewResourceId, tenpousers);
@@ -510,6 +521,7 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
                     commentHolder.commentsnumber.setText(String.valueOf(user.getComment_num()));
 
                     mNextGoodnum = String.valueOf(user.getgoodnum() + 1);
+                    currentgoodnum = String.valueOf((user.getgoodnum()));
                     break;
 
                 case 3:
@@ -518,7 +530,7 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
                     //restHolder.locality.setText(user.getLocality());
                     break;
                 case 4:
-                    final LikeCommentHolder likeCommentHolder = new LikeCommentHolder(convertView);
+                    likeCommentHolder = new LikeCommentHolder(convertView);
                     likeCommentHolder.likes.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -527,6 +539,9 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
                             likeCommentHolder.likes.setClickable(false);
                             commentHolder.likesnumber.setText(mNextGoodnum);
                             //画像差し込み
+                            likeCommentHolder.likes.setBackgroundResource(R.drawable.ic_like_orange);
+
+                            new TenpoGoodnumTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,user.getPost_id());
                         }
                     });
 
@@ -534,6 +549,16 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
                         @Override
                         public void onClick(View v) {
                             Log.e("コメントをクリック", "コメント！" + user.getPost_id());
+
+                            //引数に入れたい値を入れていく
+                            View commentView = new CommentView(TenpoActivity.this, mName, mPictureImageUrl, user.getPost_id());
+
+                            final PopupWindow window = ToukouPopup.newBasicPopupWindow(TenpoActivity.this);
+                            window.setContentView(commentView);
+                            //int totalHeight = getWindowManager().getDefaultDisplay().getHeight();
+                            int[] location = new int[2];
+                            v.getLocationOnScreen(location);
+                            ToukouPopup.showLikeQuickAction(window, commentView, v, TenpoActivity.this.getWindowManager(), 0, 0);
                         }
                     });
                     //クリックされた時の処理
@@ -543,5 +568,79 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
 
             return convertView;
         }
+    }
+
+    public class TenpoGoodnumTask extends AsyncTask<String, String, Integer> {
+        int status;
+        int status2;
+
+        @Override
+        protected Integer doInBackground(String... params) {
+            String param = params[0];
+
+            HttpClient client = new DefaultHttpClient();
+
+            HttpPost method = new HttpPost(sDataurl);
+
+            ArrayList<NameValuePair> contents = new ArrayList<NameValuePair>();
+            contents.add(new BasicNameValuePair("user_name", mName));
+            contents.add(new BasicNameValuePair("picture", mPictureImageUrl));
+            Log.d("読み取り", mName + "と" + mPictureImageUrl);
+
+            String body = null;
+            try {
+                method.setEntity(new UrlEncodedFormEntity(contents, "utf-8"));
+                HttpResponse res = client.execute(method);
+                status = res.getStatusLine().getStatusCode();
+                Log.d("TAGだよ", "反応");
+                HttpEntity entity = res.getEntity();
+                body = EntityUtils.toString(entity, "UTF-8");
+                Log.d("bodyの中身だよ", body);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            if (HttpStatus.SC_OK == status) {
+
+                HttpPost goodnummethod = new HttpPost(sGoodUrl);
+
+                ArrayList<NameValuePair> goodnumcontents = new ArrayList<NameValuePair>();
+                goodnumcontents.add(new BasicNameValuePair("post_id", param));
+                Log.d("読み取り", param);
+
+                String goodnumbody = null;
+                try {
+                    goodnummethod.setEntity(new UrlEncodedFormEntity(goodnumcontents, "utf-8"));
+                    HttpResponse goodnumres = client.execute(goodnummethod);
+                    status2 = goodnumres.getStatusLine().getStatusCode();
+                    Log.d("TAGだよ", "反応");
+                    HttpEntity goodnumentity = goodnumres.getEntity();
+                    goodnumbody = EntityUtils.toString(goodnumentity, "UTF-8");
+                    Log.d("bodyの中身だよ", goodnumbody);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            return status2;
+        }
+
+        @Override
+        protected void onPostExecute(Integer result) {
+            if (result != null && result == HttpStatus.SC_OK) {
+                //いいねが送れた処理　項目itemの更新
+                //View numberview = mTimelineListView.getChildAt(mTagPosition);
+                //mTimelineListView.getAdapter().getView(mTagPosition,numberview,mTimelineListView);
+                mTenpoAdapter.notifyDataSetChanged();
+            } else {
+                //失敗のため、いいね取り消し
+                commentHolder.likesnumber.setText(currentgoodnum);
+                likeCommentHolder.likes.setClickable(true);
+                likeCommentHolder.likes.setBackgroundResource(R.drawable.ic_like);
+                Toast.makeText(TenpoActivity.this, "いいね追加に失敗しました。", Toast.LENGTH_SHORT).show();
+            }
+
+        }
+
     }
 }

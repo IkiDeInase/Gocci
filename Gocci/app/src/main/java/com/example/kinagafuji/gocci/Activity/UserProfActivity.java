@@ -19,6 +19,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -26,7 +27,9 @@ import android.widget.VideoView;
 import com.example.kinagafuji.gocci.Base.BaseActivity;
 import com.example.kinagafuji.gocci.Base.CustomProgressDialog;
 import com.example.kinagafuji.gocci.R;
+import com.example.kinagafuji.gocci.View.CommentView;
 import com.example.kinagafuji.gocci.data.RoundedTransformation;
+import com.example.kinagafuji.gocci.data.ToukouPopup;
 import com.example.kinagafuji.gocci.data.UserData;
 import com.squareup.picasso.Picasso;
 
@@ -67,6 +70,11 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
 
     private int mShowPosition;
 
+    private CommentHolder commentHolder;
+    private LikeCommentHolder likeCommentHolder;
+    public String mNextGoodnum;
+    public String currentgoodnum;
+
     private boolean mBusy = false;
 
     private CustomProgressDialog mUserProfDialog;
@@ -84,6 +92,7 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
 
     private static final String sSignupUrl = "http://api-gocci.jp/login/";
     private static final String sGoodUrl = "http://api-gocci.jp/goodinsert/";
+    private static final String sDataurl = "http://api-gocci.jp/login/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -389,8 +398,6 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
 
     public class UserProfAdapter extends ArrayAdapter<UserData> {
         private LayoutInflater layoutInflater;
-        private CommentHolder commentHolder;
-        public String mNextGoodnum;
 
         public UserProfAdapter(Context context, int viewResourceId, ArrayList<UserData> userprofusers) {
             super(context, viewResourceId, userprofusers);
@@ -490,6 +497,7 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
                     commentHolder.commentsnumber.setText(String.valueOf(user.getComment_num()));
 
                     mNextGoodnum = String.valueOf(user.getgoodnum() + 1);
+                    currentgoodnum = String.valueOf((user.getgoodnum()));
                     break;
 
                 case 3:
@@ -499,7 +507,7 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
                     //restHolder.locality.setText(user.getLocality());
                     break;
                 case 4:
-                    final LikeCommentHolder likeCommentHolder = new LikeCommentHolder(convertView);
+                    likeCommentHolder = new LikeCommentHolder(convertView);
                     //クリックされた時の処理
                     likeCommentHolder.likes.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -509,6 +517,9 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
                             likeCommentHolder.likes.setClickable(false);
                             commentHolder.likesnumber.setText(mNextGoodnum);
                             //画像差し込み
+                            likeCommentHolder.likes.setBackgroundResource(R.drawable.ic_like_orange);
+
+                            new UserProfGoodnumTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,user.getPost_id());
                         }
                     });
 
@@ -516,6 +527,16 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
                         @Override
                         public void onClick(View v) {
                             Log.e("コメントをクリック", "コメント！" + user.getPost_id());
+
+                            //引数に入れたい値を入れていく
+                            View commentView = new CommentView(UserProfActivity.this, mName, mPictureImageUrl, user.getPost_id());
+
+                            final PopupWindow window = ToukouPopup.newBasicPopupWindow(UserProfActivity.this);
+                            window.setContentView(commentView);
+                            //int totalHeight = getWindowManager().getDefaultDisplay().getHeight();
+                            int[] location = new int[2];
+                            v.getLocationOnScreen(location);
+                            ToukouPopup.showLikeQuickAction(window, commentView, v, UserProfActivity.this.getWindowManager(), 0, 0);
                         }
                     });
                     //クリックされた時の処理
@@ -526,6 +547,80 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
 
             return convertView;
         }
+    }
+
+    public class UserProfGoodnumTask extends AsyncTask<String, String, Integer> {
+        int status;
+        int status2;
+
+        @Override
+        protected Integer doInBackground(String... params) {
+            String param = params[0];
+
+            HttpClient client = new DefaultHttpClient();
+
+            HttpPost method = new HttpPost(sDataurl);
+
+            ArrayList<NameValuePair> contents = new ArrayList<NameValuePair>();
+            contents.add(new BasicNameValuePair("user_name", mName));
+            contents.add(new BasicNameValuePair("picture", mPictureImageUrl));
+            Log.d("読み取り", mName + "と" + mPictureImageUrl);
+
+            String body = null;
+            try {
+                method.setEntity(new UrlEncodedFormEntity(contents, "utf-8"));
+                HttpResponse res = client.execute(method);
+                status = res.getStatusLine().getStatusCode();
+                Log.d("TAGだよ", "反応");
+                HttpEntity entity = res.getEntity();
+                body = EntityUtils.toString(entity, "UTF-8");
+                Log.d("bodyの中身だよ", body);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            if (HttpStatus.SC_OK == status) {
+
+                HttpPost goodnummethod = new HttpPost(sGoodUrl);
+
+                ArrayList<NameValuePair> goodnumcontents = new ArrayList<NameValuePair>();
+                goodnumcontents.add(new BasicNameValuePair("post_id", param));
+                Log.d("読み取り", param);
+
+                String goodnumbody = null;
+                try {
+                    goodnummethod.setEntity(new UrlEncodedFormEntity(goodnumcontents, "utf-8"));
+                    HttpResponse goodnumres = client.execute(goodnummethod);
+                    status2 = goodnumres.getStatusLine().getStatusCode();
+                    Log.d("TAGだよ", "反応");
+                    HttpEntity goodnumentity = goodnumres.getEntity();
+                    goodnumbody = EntityUtils.toString(goodnumentity, "UTF-8");
+                    Log.d("bodyの中身だよ", goodnumbody);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            return status2;
+        }
+
+        @Override
+        protected void onPostExecute(Integer result) {
+            if (result != null && result == HttpStatus.SC_OK) {
+                //いいねが送れた処理　項目itemの更新
+                //View numberview = mTimelineListView.getChildAt(mTagPosition);
+                //mTimelineListView.getAdapter().getView(mTagPosition,numberview,mTimelineListView);
+                mUserProfAdapter.notifyDataSetChanged();
+            } else {
+                //失敗のため、いいね取り消し
+                commentHolder.likesnumber.setText(currentgoodnum);
+                likeCommentHolder.likes.setClickable(true);
+                likeCommentHolder.likes.setBackgroundResource(R.drawable.ic_like);
+                Toast.makeText(UserProfActivity.this, "いいね追加に失敗しました。", Toast.LENGTH_SHORT).show();
+            }
+
+        }
+
     }
 
 }

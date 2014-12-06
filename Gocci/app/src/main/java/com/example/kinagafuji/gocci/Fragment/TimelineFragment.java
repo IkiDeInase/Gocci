@@ -78,7 +78,7 @@ public class TimelineFragment extends BaseFragment
     private boolean mBusy = false;
 
     private int mShowPosition;
-    private int mTagPosition;
+    public int mTagPosition;
 
     private CommentHolder commentHolder;
     private LikeCommentHolder likeCommentHolder;
@@ -566,7 +566,7 @@ public class TimelineFragment extends BaseFragment
                             //画像差し込み
                             likeCommentHolder.likes.setBackgroundResource(R.drawable.ic_like_orange);
 
-                            new GoodnumTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,user.getPost_id());
+                            new TimelineGoodnumTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,user.getPost_id());
 
 
                         }
@@ -598,7 +598,7 @@ public class TimelineFragment extends BaseFragment
 
     }
 
-    public class GoodnumTask extends AsyncTask<String, String, Integer> {
+    public class TimelineGoodnumTask extends AsyncTask<String, String, Integer> {
         int status;
         int status2;
 
