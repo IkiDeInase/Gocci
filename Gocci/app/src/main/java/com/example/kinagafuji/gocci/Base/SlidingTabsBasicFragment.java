@@ -22,6 +22,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.transition.Explode;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -109,12 +110,16 @@ public class SlidingTabsBasicFragment extends BaseFragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
+
         // BEGIN_INCLUDE (setup_viewpager)
         // Get the ViewPager and set it's PagerAdapter so that it can display items
         mViewPager = (ViewPager) view.findViewById(R.id.viewpager);
         //mViewPager.setBackgroundColor(R.color.main_color);
-        mViewPager.setOffscreenPageLimit(2);
+        mViewPager.setOffscreenPageLimit(3);
         mViewPager.setAdapter(new SamplePagerAdapter(getFragmentManager()));
+
+        //mViewPager.setOnPageChangeListener(new MyOnPageChangeListener());
+
         // END_INCLUDE (setup_viewpager)
 
         // BEGIN_INCLUDE (setup_slidingtablayout)
@@ -129,9 +134,7 @@ public class SlidingTabsBasicFragment extends BaseFragment {
 
     }
 
-
-
-    class SamplePagerAdapter extends FragmentStatePagerAdapter {
+    class SamplePagerAdapter extends FragmentPagerAdapter {
 
 
         public SamplePagerAdapter(FragmentManager fm) {

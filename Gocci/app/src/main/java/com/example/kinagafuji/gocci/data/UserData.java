@@ -5,7 +5,7 @@ public class UserData {
     private String movie;
     private String circleImage;
     private String post_id;
-    private String user_id;
+    private Integer user_id;
     private String user_name;
     private String rest_name;
     private String tell;
@@ -15,12 +15,13 @@ public class UserData {
     private String locality;
     private String distance;
     private String review;
-    private String goodnum;
-    private String comment_num;
+    private Integer goodnum;
+    private Integer comment_num;
     private String thumbnail;
-    private String star_evaluation;
+    private Integer star_evaluation;
     private Double mLatitude;
     private Double mLongitude;
+    private String comment;
 
     public String getMovie() {
         return this.movie;
@@ -46,11 +47,11 @@ public class UserData {
         this.post_id = post_id;
     }
 
-    public String getUser_id() {
+    public Integer getUser_id() {
         return this.user_id;
     }
 
-    public void setUser_id(String user_id) {
+    public void setUser_id(Integer user_id) {
         this.user_id = user_id;
     }
 
@@ -141,19 +142,19 @@ public class UserData {
         this.review = review;
     }
 
-    public String getgoodnum() {
+    public Integer getgoodnum() {
         return this.goodnum;
     }
 
-    public void setgoodnum(String goodnum) {
+    public void setgoodnum(Integer goodnum) {
         this.goodnum = goodnum;
     }
 
-    public String getComment_num() {
+    public Integer getComment_num() {
         return this.comment_num;
     }
 
-    public void setComment_num(String comment_num) {
+    public void setComment_num(Integer comment_num) {
         this.comment_num = comment_num;
     }
 
@@ -165,11 +166,20 @@ public class UserData {
         this.thumbnail = thumbnail;
     }
 
-    public String getStar_evaluation() {
+    public Integer getStar_evaluation() {
         return this.star_evaluation;
     }
 
-    public void setStar_evaluation(String star_evaluation) {
+    public void setStar_evaluation(Integer star_evaluation) {
         this.star_evaluation = star_evaluation;
     }
+
+    public String getComment() {
+        return this.comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
 }

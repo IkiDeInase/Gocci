@@ -60,16 +60,17 @@ public class ToukouView extends LinearLayout {
 
 
     //　コードからの生成用
-    public ToukouView(final Context context, final String name, final String pictureImageUrl) {
+    public ToukouView(final Context context, final String name, final String pictureImageUrl, double latitude, double longitude) {
         super(context);
 
         //listener.requestGpsParameter(mLatitude, mLongitude);
-        setGpsParameter(mLatitude, mLongitude);
+        Log.e("経度・緯度", latitude + "/" + longitude);
+        String mSearch_tenpoUrl = "http://api-gocci.jp/dist/?lat=" + String.valueOf(latitude) + "&lon=" + String.valueOf(longitude) + "&limit=30";
 
-        /*
-        *検索画面からgetLatitude getLongitude
-        *近くの３０件配列もやっておく
-         */
+        new SearchTenpoAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mSearch_tenpoUrl);
+        mSearchtenpoDialog = new CustomProgressDialog(getContext());
+        mSearchtenpoDialog.setCancelable(false);
+        mSearchtenpoDialog.show();
 
         View inflateView = LayoutInflater.from(context).inflate(R.layout.searchlist, this);
 
@@ -247,17 +248,6 @@ public class ToukouView extends LinearLayout {
         }
     }
 
-    public void setGpsParameter(double latitude, double longitude) {
-
-        Log.d("経度・緯度", latitude + "/" + longitude);
-        String mSearch_tenpoUrl = "http://api-gocci.jp/api/public/dist/?lat=" + String.valueOf(latitude) + "&lon=" + String.valueOf(longitude) + "&limit=30";
-
-        new SearchTenpoAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mSearch_tenpoUrl);
-        mSearchtenpoDialog = new CustomProgressDialog(getContext());
-        mSearchtenpoDialog.setCancelable(false);
-        mSearchtenpoDialog.show();
-
-    }
 }
 
 

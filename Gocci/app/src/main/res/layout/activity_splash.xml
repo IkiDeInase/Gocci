@@ -5,21 +5,20 @@
     android:background="@drawable/ic_splash_haikei">
 
     <ImageView
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
         android:id="@+id/imageView3"
-        android:src="@drawable/ic_gocci_white"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="240dp" />
+        android:layout_marginTop="240dp"
+        android:background="@drawable/ic_gocci_white" />
 
     <ImageView
         android:layout_width="200dp"
-        android:layout_height="200dp"
+        android:layout_height="180dp"
         android:id="@+id/imageView4"
         android:src="@drawable/ic_gocci_moji"
         android:layout_alignTop="@+id/imageView3"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="8dp" />
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

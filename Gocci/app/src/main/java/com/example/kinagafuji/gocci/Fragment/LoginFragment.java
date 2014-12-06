@@ -51,7 +51,7 @@ public class LoginFragment extends BaseFragment {
 
     private static final String TAG = "LoginFragment";
 
-    private static final String sDataurl = "http://api-gocci.jp/api/public/login/";
+    private static final String sDataurl = "http://api-gocci.jp/login/";
 
     private CustomProgressDialog mloginDialog;
 
@@ -82,9 +82,9 @@ public class LoginFragment extends BaseFragment {
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
         // FragmentのViewを返却
-        final View view =  inflater.inflate(R.layout.fragment_login, container, false);
+        final View view = inflater.inflate(R.layout.fragment_login, container, false);
 
-        WindowManager wm = (WindowManager)getActivity().getSystemService(Context.WINDOW_SERVICE);
+        WindowManager wm = (WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE);
         // ディスプレイのインスタンス生成
         Display disp = wm.getDefaultDisplay();
         Point size = new Point();
@@ -94,17 +94,17 @@ public class LoginFragment extends BaseFragment {
 
         Log.d("幅", String.valueOf(width + "と" + height));
 
-        ImageButton account = (ImageButton)view.findViewById(R.id.account);
+        ImageButton account = (ImageButton) view.findViewById(R.id.account);
         account.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 //win1.setAttributes(params1);	//ウインドウにパラメータを渡す
-                final PopupWindow window = PopupHelper.newBasicPopupWindow(getActivity(),width,height);
+                final PopupWindow window = PopupHelper.newBasicPopupWindow(getActivity(), width, height);
 
                 View inflateView = inflater.inflate(R.layout.fragment_account, container, false);
 
-                ImageButton closebutton = (ImageButton)inflateView.findViewById(R.id.closeButton);
+                ImageButton closebutton = (ImageButton) inflateView.findViewById(R.id.closeButton);
                 closebutton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -130,16 +130,18 @@ public class LoginFragment extends BaseFragment {
             }
         });
 
-        ImageButton signin = (ImageButton)view.findViewById(R.id.signin);
+        /*
+        ImageButton signin = (ImageButton) view.findViewById(R.id.signin);
+
         signin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                final PopupWindow window = PopupHelper.newBasicPopupWindow(getActivity(),width,height);
+                final PopupWindow window = PopupHelper.newBasicPopupWindow(getActivity(), width, height);
 
                 View inflateView = inflater.inflate(R.layout.fragment_signup, container, false);
 
-                ImageButton closebutton = (ImageButton)inflateView.findViewById(R.id.closeButton);
+                ImageButton closebutton = (ImageButton) inflateView.findViewById(R.id.closeButton);
                 closebutton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -164,6 +166,8 @@ public class LoginFragment extends BaseFragment {
                 PopupHelper.showLikeQuickAction(window, inflateView, v, getActivity().getWindowManager(), 0, 0);
             }
         });
+        */
+
         return view;
     }
 
@@ -189,7 +193,7 @@ public class LoginFragment extends BaseFragment {
     private void onSessionStateChange(Session session, SessionState state, Exception exception) {
         if (state.isOpened()) {
             Log.i(TAG, "Logged in...");
-            Request.newMeRequest(session, new FacebookGraphUserCallback("..Wait"){
+            Request.newMeRequest(session, new FacebookGraphUserCallback("..Wait") {
                 @Override
                 public void onCompleted(GraphUser user, Response response) {
                     super.onCompleted(user, response);
@@ -202,7 +206,6 @@ public class LoginFragment extends BaseFragment {
                         mId = user.getInnerJSONObject().getString(TAG_ID);
 
 
-
                     } catch (JSONException e) {
                         e.printStackTrace();
                         Log.d("error", String.valueOf(e));
@@ -210,7 +213,7 @@ public class LoginFragment extends BaseFragment {
 
                     mPictureImageUrl = "https://graph.facebook.com/" + mId + "/picture";
 
-                    new SignupTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,sDataurl);
+                    new SignupTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, sDataurl);
 
 
                 }
@@ -226,7 +229,6 @@ public class LoginFragment extends BaseFragment {
     }
 
 
-
     public class SignupTask extends AsyncTask<String, String, Integer> {
 
         @Override
@@ -240,7 +242,7 @@ public class LoginFragment extends BaseFragment {
             ArrayList<NameValuePair> contents = new ArrayList<NameValuePair>();
             contents.add(new BasicNameValuePair("user_name", mName));
             contents.add(new BasicNameValuePair("picture", mPictureImageUrl));
-            Log.d("読み取り",mName + "と" + mPictureImageUrl);
+            Log.d("読み取り", mName + "と" + mPictureImageUrl);
 
             String body = null;
             try {
@@ -257,7 +259,7 @@ public class LoginFragment extends BaseFragment {
             SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = pref.edit();
 
-            editor.putString("name",mName);
+            editor.putString("name", mName);
             editor.putString("pictureImageUrl", mPictureImageUrl);
 
 
@@ -280,7 +282,7 @@ public class LoginFragment extends BaseFragment {
 
         Session session = Session.getActiveSession();
         if (session != null &&
-                (session.isOpened() || session.isClosed()) ) {
+                (session.isOpened() || session.isClosed())) {
             onSessionStateChange(session, session.getState(), null);
         }
 
@@ -290,8 +292,8 @@ public class LoginFragment extends BaseFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(BuildConfig.DEBUG) {
-            Log.d(TAG,"onActivityResult");
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "onActivityResult");
         }
         uiHelper.onActivityResult(requestCode, resultCode, data);
         Session.getActiveSession().onActivityResult(getActivity(), requestCode, resultCode, data);

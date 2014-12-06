@@ -21,6 +21,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.RatingBar;
 import android.widget.Toast;
 import android.widget.VideoView;
 
@@ -62,17 +63,17 @@ public class IntentVineCamera extends Activity {
 
     private CustomProgressDialog mPostProgress;
 
-    private static final String sSignupUrl = "http://api-gocci.jp/api/public/login/";
-    private static final String sMovieurl = "http://api-gocci.jp/api/public/movie/";
-    private static final String sPostUrl = "http://api-gocci.jp/api/public/post_restname/";
-    private static final String sReviewUrl = "http://api-gocci.jp/api/public/submit/";
+    private static final String sSignupUrl = "http://api-gocci.jp/login/";
+    private static final String sMovieurl = "http://api-gocci.jp/movie/";
+    private static final String sPostUrl = "http://api-gocci.jp/post_restname/";
+    private static final String sRatingUrl = "http://api-gocci.jp/submit/";
 
     private String mRestname;
 
     private String mName;
     private String mPictureImageUrl;
 
-    private String mReviewText;
+    private String mRatingNumber;
 
     private int status;
     private int status1;
@@ -84,7 +85,7 @@ public class IntentVineCamera extends Activity {
     private ArrayList<NameValuePair> logininfo;
     private ArrayList<NameValuePair> restinfo;
     private MultipartEntity fileEntity;
-    private ArrayList<NameValuePair> reviewinfo;
+    private ArrayList<NameValuePair> rateinfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,25 +122,8 @@ public class IntentVineCamera extends Activity {
             case ACTION_TAKE_VIDEO: {
                 if (resultCode == RESULT_OK) {
 
-                    final EditText commentText = (EditText)findViewById(R.id.commentText);
-                    final InputMethodManager inputMethodManager =  (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-
-                    //EditTextにリスナーをセット
-                    commentText.setOnKeyListener(new View.OnKeyListener() {
-                        //コールバックとしてonKey()メソッドを定義
-                        @Override
-                        public boolean onKey(View v, int keyCode, KeyEvent event) {
-                            if((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)){
-                                inputMethodManager.hideSoftInputFromWindow(commentText.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
-                                SpannableStringBuilder sb = (SpannableStringBuilder)commentText.getText();
-                                mReviewText = sb.toString();
-                                Log.e("レビューの中身", mReviewText);
-                                return true;
-                            }
-                            return false;
-                        }
-                    });
-
+                    final RatingBar videoRating = (RatingBar)findViewById(R.id.videorating);
+                    videoRating.setStepSize(1);
 
                     final VideoView video = (VideoView) findViewById(R.id.video);
                     video.setVideoURI(mImageUri);
@@ -157,9 +141,11 @@ public class IntentVineCamera extends Activity {
                     ImageButton facebookshare = (ImageButton) findViewById(R.id.facebookShare);
                     ImageButton twitershare = (ImageButton) findViewById(R.id.twitterShare);
                     ImageButton toukoushare = (ImageButton) findViewById(R.id.toukoushare);
+
                     toukoushare.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                            mRatingNumber = String.valueOf(videoRating.getRating());
                             new UploadAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                             mPostProgress = new CustomProgressDialog(IntentVineCamera.this);
                             mPostProgress.setCancelable(false);
@@ -202,8 +188,8 @@ public class IntentVineCamera extends Activity {
         fileEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
         fileEntity.addPart("movie", fileBody);
 
-        reviewinfo = new ArrayList<NameValuePair>();
-        reviewinfo.add(new BasicNameValuePair("val", mReviewText));
+        rateinfo = new ArrayList<NameValuePair>();
+        rateinfo.add(new BasicNameValuePair("star_evaluation", mRatingNumber));
     }
 
     public class UploadAsyncTask extends AsyncTask<String, Integer, Integer> {
@@ -216,7 +202,7 @@ public class IntentVineCamera extends Activity {
             HttpPost loginpost = new HttpPost(sSignupUrl);
             HttpPost restpost = new HttpPost(sPostUrl);
             HttpPost moviepost = new HttpPost(sMovieurl);
-            HttpPost reviewpost = new HttpPost(sReviewUrl);
+            HttpPost ratingpost = new HttpPost(sRatingUrl);
 
 
             //ログイン処理
@@ -263,14 +249,14 @@ public class IntentVineCamera extends Activity {
 
             if (HttpStatus.SC_OK == status2) {
 
-                HttpResponse reviewres = null;
+                HttpResponse ratingres = null;
                 try {
-                    reviewpost.setEntity(new UrlEncodedFormEntity(reviewinfo, "utf-8"));
-                    reviewres = httpClient.execute(restpost);
-                    status3 = reviewres.getStatusLine().getStatusCode();
+                    ratingpost.setEntity(new UrlEncodedFormEntity(rateinfo, "utf-8"));
+                    ratingres = httpClient.execute(ratingpost);
+                    status3 = ratingres.getStatusLine().getStatusCode();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Log.e("失敗です","レビューポストでエラー");
+                    Log.e("失敗です","星ポストでエラー");
                 }
             } else {
                 Log.e("失敗です","動画ポストでエラー");

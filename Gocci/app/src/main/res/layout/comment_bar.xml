@@ -12,27 +12,8 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:background="@drawable/list_bg">
-<ScrollView
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:id="@+id/scrollView"
-    android:fillViewport="false"
-    >
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="これは人生で一番美味しかったんじゃないだろうか。まじで。"
-            android:id="@+id/comment"
-            android:paddingLeft="@dimen/small"
-            android:paddingRight="@dimen/small"
-            android:paddingBottom="@dimen/very_small"
-            android:paddingTop="@dimen/small"
-            android:textSize="10sp"
-            android:maxLines="6" />
-    </ScrollView>
-
-    <LinearLayout
+        <LinearLayout
         android:orientation="horizontal"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent">

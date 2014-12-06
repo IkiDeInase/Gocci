@@ -1,8 +1,9 @@
 package com.example.kinagafuji.gocci.Fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
+import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -27,20 +28,28 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.example.kinagafuji.gocci.Activity.TenpoActivity;
+import com.example.kinagafuji.gocci.Activity.UserProfActivity;
 import com.example.kinagafuji.gocci.Base.BaseFragment;
 import com.example.kinagafuji.gocci.Base.CustomProgressDialog;
 import com.example.kinagafuji.gocci.R;
+import com.example.kinagafuji.gocci.View.CommentView;
 import com.example.kinagafuji.gocci.View.ToukouView;
 import com.example.kinagafuji.gocci.data.RoundedTransformation;
 import com.example.kinagafuji.gocci.data.ToukouPopup;
 import com.example.kinagafuji.gocci.data.UserData;
 import com.squareup.picasso.Picasso;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -51,8 +60,9 @@ import java.util.ArrayList;
 public class TimelineFragment extends BaseFragment
         implements ListView.OnScrollListener {
 
-    private static final String sTimelineUrl = "http://api-gocci.jp/api/public/timeline/";
-    private static final String sGoodUrl = "http://api-gocci.jp/api/public/goodinsert/";
+    private static final String sTimelineUrl = "http://api-gocci.jp/timeline/";
+    private static final String sGoodUrl = "http://api-gocci.jp/goodinsert/";
+    private static final String sDataurl = "http://api-gocci.jp/login/";
 
     private CustomProgressDialog mTimelineDialog;
     private ListView mTimelineListView;
@@ -63,14 +73,17 @@ public class TimelineFragment extends BaseFragment
     private String mName;
     private String mPictureImageUrl;
 
-    public double mLatitude;
-    public double mLongitude;
-
-    private VideoHolder videoHolder;
+    public VideoHolder videoHolder;
 
     private boolean mBusy = false;
 
     private int mShowPosition;
+    private int mTagPosition;
+
+    private CommentHolder commentHolder;
+    private LikeCommentHolder likeCommentHolder;
+    public String mNextGoodnum;
+    public String currentgoodnum;
 
     private static final String KEY_IMAGE_URL = "image_url";
 
@@ -85,6 +98,8 @@ public class TimelineFragment extends BaseFragment
     private static final String TAG_THUMBNAIL = "thumbnail";
     private static final String TAG_STAR_EVALUATION = "star_evaluation";
     private static final String TAG_LOCALITY = "locality";
+
+    private static final String TAG = "TimelineFragment";
 
 
     public TimelineFragment newIntent(String name, String imageUrl) {
@@ -119,14 +134,24 @@ public class TimelineFragment extends BaseFragment
                 animation.setInterpolator(new LinearInterpolator());
                 toukouButton.startAnimation(animation);
 
-                    View inflateView = new ToukouView(getActivity(), mName, mPictureImageUrl);
+                SharedPreferences pref = getActivity().getSharedPreferences("latlon", Context.MODE_PRIVATE);
+                String latitude = pref.getString("latitude", null);
+                String longitude = pref.getString("longitude", null);
 
-                    final PopupWindow window = ToukouPopup.newBasicPopupWindow(getActivity());
-                    window.setContentView(inflateView);
-                    //int totalHeight = getWindowManager().getDefaultDisplay().getHeight();
-                    int[] location = new int[2];
-                    v.getLocationOnScreen(location);
-                    ToukouPopup.showLikeQuickAction(window, inflateView, v, getActivity().getWindowManager(), 0, 0);
+                double mLatitude = Double.parseDouble(latitude);
+                double mLongitude = Double.parseDouble(longitude);
+
+                //グローバル変数の経度緯度を持ってくる。
+
+                View inflateView = new ToukouView(getActivity(), mName, mPictureImageUrl, mLatitude, mLongitude);
+                Log.d("経度・緯度", mLatitude + "/" + mLongitude);
+
+                final PopupWindow window = ToukouPopup.newBasicPopupWindow(getActivity());
+                window.setContentView(inflateView);
+                //int totalHeight = getWindowManager().getDefaultDisplay().getHeight();
+                int[] location = new int[2];
+                v.getLocationOnScreen(location);
+                ToukouPopup.showLikeQuickAction(window, inflateView, v, getActivity().getWindowManager(), 0, 0);
 
             }
         });
@@ -147,10 +172,15 @@ public class TimelineFragment extends BaseFragment
                 int pos = position - line;
                 UserData country = mTimelineusers.get(position);
 
-                switch(pos) {
+                switch (pos) {
                     case 0:
                         //名前部分のview　プロフィール画面へ
                         //Signupを読み込みそう後回し
+                        Intent userintent = new Intent(getActivity(), UserProfActivity.class);
+                        userintent.putExtra("username", country.getUser_name());
+                        userintent.putExtra("name", mName);
+                        userintent.putExtra("pictureImageUrl", mPictureImageUrl);
+                        startActivity(userintent);
                         break;
                     case 1:
                         //動画のview
@@ -164,10 +194,10 @@ public class TimelineFragment extends BaseFragment
                         //レストランのview
                         //レストラン画面に飛ぼうか
                         Intent intent = new Intent(getActivity(), TenpoActivity.class);
-                        intent.putExtra("restname",country.getRest_name());
-                        intent.putExtra("name",mName);
-                        intent.putExtra("pictureImageUrl",mPictureImageUrl);
-                        intent.putExtra("locality",country.getLocality());
+                        intent.putExtra("restname", country.getRest_name());
+                        intent.putExtra("name", mName);
+                        intent.putExtra("pictureImageUrl", mPictureImageUrl);
+                        intent.putExtra("locality", country.getLocality());
                         startActivity(intent);
                         break;
                     case 4:
@@ -196,25 +226,6 @@ public class TimelineFragment extends BaseFragment
         return view;
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-
-
-    }
-
-    @Override
-    public void onResume() {
-
-        super.onResume();
-
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-
-    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -294,15 +305,15 @@ public class TimelineFragment extends BaseFragment
 
 
                         String post_id = jsonObject.getString(TAG_POST_ID);
-                        String user_id = jsonObject.getString(TAG_USER_ID);
+                        Integer user_id = jsonObject.getInt(TAG_USER_ID);
                         String user_name = jsonObject.getString(TAG_USER_NAME);
                         String picture = jsonObject.getString(TAG_PICTURE);
                         String movie = jsonObject.getString(TAG_MOVIE);
                         String rest_name = jsonObject.getString(TAG_RESTNAME);
-                        String goodnum = jsonObject.getString(TAG_GOODNUM);
-                        String comment_num = jsonObject.getString(TAG_COMMENT_NUM);
+                        Integer goodnum = jsonObject.getInt(TAG_GOODNUM);
+                        Integer comment_num = jsonObject.getInt(TAG_COMMENT_NUM);
                         String thumbnail = jsonObject.getString(TAG_THUMBNAIL);
-                        String star_evaluation = jsonObject.getString(TAG_STAR_EVALUATION);
+                        Integer star_evaluation = jsonObject.getInt(TAG_STAR_EVALUATION);
                         String locality = jsonObject.getString(TAG_LOCALITY);
 
                         UserData user1 = new UserData();
@@ -360,6 +371,7 @@ public class TimelineFragment extends BaseFragment
         }
     }
 
+
     private static class NameHolder {
         ImageView circleImage;
         TextView user_name;
@@ -383,7 +395,6 @@ public class TimelineFragment extends BaseFragment
     }
 
     private static class CommentHolder {
-        TextView comment;
         TextView likesnumber;
         TextView likes;
         TextView commentsnumber;
@@ -392,7 +403,6 @@ public class TimelineFragment extends BaseFragment
         TextView share;
 
         public CommentHolder(View view) {
-            this.comment = (TextView) view.findViewById(R.id.comment);
             this.likesnumber = (TextView) view.findViewById(R.id.likesnumber);
             this.likes = (TextView) view.findViewById(R.id.likes);
             this.commentsnumber = (TextView) view.findViewById(R.id.commentsnumber);
@@ -420,15 +430,16 @@ public class TimelineFragment extends BaseFragment
         ImageView share;
 
         public LikeCommentHolder(View view) {
-            this.likes = (ImageView)view.findViewById(R.id.likes);
-            this.comments = (ImageView)view.findViewById(R.id.comments);
-            this.share = (ImageView)view.findViewById(R.id.share);
+            this.likes = (ImageView) view.findViewById(R.id.likes);
+            this.comments = (ImageView) view.findViewById(R.id.comments);
+            this.share = (ImageView) view.findViewById(R.id.share);
 
         }
     }
 
     public class TimelineAdapter extends ArrayAdapter<UserData> {
         private LayoutInflater layoutInflater;
+
 
         public TimelineAdapter(Context context, int viewResourceId, ArrayList<UserData> timelineusers) {
             super(context, viewResourceId, timelineusers);
@@ -439,8 +450,9 @@ public class TimelineFragment extends BaseFragment
         public View getView(final int position, View convertView, ViewGroup parent) {
             int line = (position / 5) * 5;
             int pos = position - line;
+            mTagPosition = position;
 
-            final UserData user = this.getItem(position);
+            final UserData user = getItem(position);
 
             switch (pos) {
                 case 0:
@@ -502,20 +514,36 @@ public class TimelineFragment extends BaseFragment
 
                                 videoHolder.mVideoThumbnail.setVisibility(View.GONE);
                                 videoHolder.movie.start();
-                                Log.e("TAG", "start : " + position);
                                 mp.setLooping(true);
+                                Log.e("TAG", "start : " + position);
                                 mShowPosition = position;
                             }
                         });
                         videoHolder.movie.setTag(position);
+
+                        /*
+                        videoHolder.movie.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+
+                            @Override
+                            public void onCompletion(MediaPlayer mp) {
+                                videoHolder.movie.seekTo(0);
+                                videoHolder.movie.start();
+                            }
+                        });
+                        */
+
                     }
 
                     break;
 
                 case 2:
-                    CommentHolder commentHolder = new CommentHolder(convertView);
-                    commentHolder.likesnumber.setText(user.getgoodnum());
-                    commentHolder.commentsnumber.setText(user.getComment_num());
+                    commentHolder = new CommentHolder(convertView);
+                    commentHolder.likesnumber.setText(String.valueOf(user.getgoodnum()));
+                    commentHolder.commentsnumber.setText(String.valueOf(user.getComment_num()));
+
+                    mNextGoodnum = String.valueOf(user.getgoodnum() + 1);
+                    currentgoodnum = String.valueOf((user.getgoodnum()));
+
                     break;
 
                 case 3:
@@ -526,18 +554,38 @@ public class TimelineFragment extends BaseFragment
                     break;
 
                 case 4:
-                    LikeCommentHolder likeCommentHolder = new LikeCommentHolder(convertView);
+                    likeCommentHolder = new LikeCommentHolder(convertView);
                     //クリックされた時の処理
                     likeCommentHolder.likes.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                                Log.e("いいねをクリック", "いいね！" + user.getPost_id());
+                            Log.e("いいねをクリック", user.getPost_id() + sGoodUrl + mNextGoodnum);
+
+                            likeCommentHolder.likes.setClickable(false);
+                            commentHolder.likesnumber.setText(mNextGoodnum);
+                            //画像差し込み
+                            likeCommentHolder.likes.setBackgroundResource(R.drawable.ic_like_orange);
+
+                            new GoodnumTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,user.getPost_id());
+
+
                         }
                     });
+
                     likeCommentHolder.comments.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Log.e("コメントをクリック","コメント！" + user.getPost_id());
+                            Log.e("コメントをクリック", "コメント！" + user.getPost_id());
+
+                            //引数に入れたい値を入れていく
+                            View commentView = new CommentView(getActivity(), mName, mPictureImageUrl, user.getPost_id());
+
+                            final PopupWindow window = ToukouPopup.newBasicPopupWindow(getActivity());
+                            window.setContentView(commentView);
+                            //int totalHeight = getWindowManager().getDefaultDisplay().getHeight();
+                            int[] location = new int[2];
+                            v.getLocationOnScreen(location);
+                            ToukouPopup.showLikeQuickAction(window, commentView, v, getActivity().getWindowManager(), 0, 0);
                         }
                     });
                     break;
@@ -547,5 +595,137 @@ public class TimelineFragment extends BaseFragment
             return convertView;
 
         }
+
     }
+
+    public class GoodnumTask extends AsyncTask<String, String, Integer> {
+        int status;
+        int status2;
+
+        @Override
+        protected Integer doInBackground(String... params) {
+            String param = params[0];
+
+            HttpClient client = new DefaultHttpClient();
+
+            HttpPost method = new HttpPost(sDataurl);
+
+            ArrayList<NameValuePair> contents = new ArrayList<NameValuePair>();
+            contents.add(new BasicNameValuePair("user_name", mName));
+            contents.add(new BasicNameValuePair("picture", mPictureImageUrl));
+            Log.d("読み取り", mName + "と" + mPictureImageUrl);
+
+            String body = null;
+            try {
+                method.setEntity(new UrlEncodedFormEntity(contents, "utf-8"));
+                HttpResponse res = client.execute(method);
+                status = res.getStatusLine().getStatusCode();
+                Log.d("TAGだよ", "反応");
+                HttpEntity entity = res.getEntity();
+                body = EntityUtils.toString(entity, "UTF-8");
+                Log.d("bodyの中身だよ", body);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            if (HttpStatus.SC_OK == status) {
+
+                HttpPost goodnummethod = new HttpPost(sGoodUrl);
+
+                ArrayList<NameValuePair> goodnumcontents = new ArrayList<NameValuePair>();
+                goodnumcontents.add(new BasicNameValuePair("post_id", param));
+                Log.d("読み取り", param);
+
+                String goodnumbody = null;
+                try {
+                    goodnummethod.setEntity(new UrlEncodedFormEntity(goodnumcontents, "utf-8"));
+                    HttpResponse goodnumres = client.execute(goodnummethod);
+                    status2 = goodnumres.getStatusLine().getStatusCode();
+                    Log.d("TAGだよ", "反応");
+                    HttpEntity goodnumentity = goodnumres.getEntity();
+                    goodnumbody = EntityUtils.toString(goodnumentity, "UTF-8");
+                    Log.d("bodyの中身だよ", goodnumbody);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            return status2;
+        }
+
+        @Override
+        protected void onPostExecute(Integer result) {
+            if (result != null && result == HttpStatus.SC_OK) {
+                //いいねが送れた処理　項目itemの更新
+                //View numberview = mTimelineListView.getChildAt(mTagPosition);
+                //mTimelineListView.getAdapter().getView(mTagPosition,numberview,mTimelineListView);
+                mTimelineAdapter.notifyDataSetChanged();
+            } else {
+                //失敗のため、いいね取り消し
+                commentHolder.likesnumber.setText(currentgoodnum);
+                likeCommentHolder.likes.setClickable(true);
+                likeCommentHolder.likes.setBackgroundResource(R.drawable.ic_like);
+                Toast.makeText(getActivity().getApplicationContext(), "いいね追加に失敗しました。", Toast.LENGTH_SHORT).show();
+            }
+
+        }
+
+    }
+
+    @Override
+    public void onAttach(Activity act) {
+        super.onAttach(act);
+        Log.e(TAG, "Fragment-onAttach");
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Log.e(TAG, "Fragment-onCreate");
+    }
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Log.e(TAG, "Fragment-onStart");
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.e(TAG, "Fragment-onResume");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.e(TAG, "Fragment-onPause");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.e(TAG, "Fragment-onStop");
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Log.e(TAG, "Fragment-onDestroyView");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.e(TAG, "Fragment-onDestroy");
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        Log.e(TAG, "Fragment-onDetach");
+    }
+
+
 }

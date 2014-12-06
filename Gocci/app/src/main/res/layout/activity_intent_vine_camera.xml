@@ -12,61 +12,46 @@
         android:layout_gravity="center_horizontal"
         android:textSize="24sp"
         android:padding="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp" />
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp" />
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+
 
         <VideoView
-            android:layout_width="0dp"
-            android:layout_height="200dp"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
             android:id="@+id/video"
-            android:layout_weight="1"
-            android:layout_marginLeft="8dp" />
-
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_gravity="center_vertical">
-
-            <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/facebookShare"
-                android:background="@drawable/ic_facebook_share"
-                android:layout_margin="4dp" />
-
-            <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/twitterShare"
-                android:background="@drawable/ic_twitter_share"
-                android:layout_margin="4dp" />
-        </LinearLayout>
-    </LinearLayout>
+            android:layout_gravity="center_horizontal" />
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp">
+        android:layout_gravity="center_horizontal">
 
-
-        <EditText
-            android:layout_width="match_parent"
+        <ImageButton
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/commentText"
-            android:hint="美味しかった！"
-            android:textSize="14sp"
-            android:layout_margin="16dp"
-            android:padding="8dp" />
+            android:id="@+id/facebookShare"
+            android:background="@drawable/ic_facebook_share"
+            android:layout_margin="4dp" />
 
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/twitterShare"
+            android:background="@drawable/ic_twitter_share"
+            android:layout_margin="4dp" />
     </LinearLayout>
+
+    <RatingBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/videorating"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="4dp"
+            android:numStars="5"
+            android:rating="3" />
 
     <ImageButton
         android:layout_width="300dp"

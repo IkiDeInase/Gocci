@@ -64,6 +64,8 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
     private static final String TAG_THUMBNAIL = "thumbnail";
     private static final String TAG_STAR_EVALUATION = "star_evaluation";
 
+    private static final String sGoodUrl = "http://api-gocci.jp/goodinsert/";
+
     private CustomProgressDialog mTenpoDialog;
     private ArrayList<UserData> mTenpousers = new ArrayList<UserData>();
     private ListView mTenpoListView;
@@ -101,7 +103,7 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
             e.printStackTrace();
         }
 
-        final String mTenpoUrl = "https://codelecture.com/gocci/submit/restpage.php?restname=" + mEncoderestname;
+        final String mTenpoUrl = "http://api-gocci.jp/restpage/?restname=" + mEncoderestname;
 
         /*
         TextView restname = (TextView) findViewById(R.id.restname);
@@ -163,6 +165,11 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
                     case 0:
                         //名前部分のview　プロフィール画面へ
                         //Signupを読み込みそう後回し
+                        Intent userintent = new Intent(TenpoActivity.this, UserProfActivity.class);
+                        userintent.putExtra("user_name", country.getUser_name());
+                        userintent.putExtra("mName",mName);
+                        userintent.putExtra("mPictureImageUrl",mPictureImageUrl);
+                        startActivity(userintent);
                         break;
                     case 1:
                         //動画のview
@@ -204,12 +211,6 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
 
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        videoHolder.movie.stopPlayback();
-    }
 
     @Override
     public void onScrollStateChanged(AbsListView view, int scrollState) {
@@ -281,10 +282,10 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
                         String restname = jsonObject.getString(TAG_RESTNAME);
                         String locality = jsonObject.getString(TAG_LOCALITY);
                         String review = jsonObject.getString(TAG_REVIEW);
-                        String goodnum = jsonObject.getString(TAG_GOODNUM);
-                        String comment_num = jsonObject.getString(TAG_COMMENT_NUM);
+                        Integer goodnum = jsonObject.getInt(TAG_GOODNUM);
+                        Integer comment_num = jsonObject.getInt(TAG_COMMENT_NUM);
                         String thumbnail = jsonObject.getString(TAG_THUMBNAIL);
-                        String star_evaluation = jsonObject.getString(TAG_STAR_EVALUATION);
+                        Integer star_evaluation = jsonObject.getInt(TAG_STAR_EVALUATION);
 
                         UserData user1 = new UserData();
                         user1.setUser_name(user_name);
@@ -363,7 +364,6 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
     }
 
     private static class CommentHolder {
-        TextView comment;
         TextView likesnumber;
         TextView likes;
         TextView commentsnumber;
@@ -372,7 +372,6 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
         TextView share;
 
         public CommentHolder(View view) {
-            this.comment = (TextView) view.findViewById(R.id.comment);
             this.likesnumber = (TextView) view.findViewById(R.id.likesnumber);
             this.likes = (TextView) view.findViewById(R.id.likes);
             this.commentsnumber = (TextView) view.findViewById(R.id.commentsnumber);
@@ -409,6 +408,8 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
 
     public class TenpoAdapter extends ArrayAdapter<UserData> {
         private LayoutInflater layoutInflater;
+        private CommentHolder commentHolder;
+        public String mNextGoodnum;
 
         public TenpoAdapter(Context context, int viewResourceId, ArrayList<UserData> tenpousers) {
             super(context, viewResourceId, tenpousers);
@@ -421,7 +422,7 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
             int line = (position/5)*5;
             int pos = position - line;
 
-            UserData user = this.getItem(position);
+            final UserData user = this.getItem(position);
 
             switch (pos) {
                 case 0:
@@ -483,21 +484,32 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
 
                                 videoHolder.mVideoThumbnail.setVisibility(View.GONE);
                                 videoHolder.movie.start();
-                                Log.e("TAG", "start : " + position);
                                 mp.setLooping(true);
+                                Log.e("TAG", "start : " + position);
                                 mShowPosition = position;
                             }
                         });
                         videoHolder.movie.setTag(position);
+
+                        /*
+                        videoHolder.movie.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                            @Override
+                            public void onCompletion(MediaPlayer mp) {
+                                videoHolder.movie.seekTo(0);
+                                videoHolder.movie.start();
+                            }
+                        });
+                        */
                     }
 
                     break;
 
                 case 2:
-                    CommentHolder commentHolder = new CommentHolder(convertView);
-                    commentHolder.comment.setText(user.getReview());
-                    commentHolder.likesnumber.setText(user.getgoodnum());
-                    commentHolder.commentsnumber.setText(user.getComment_num());
+                    commentHolder = new CommentHolder(convertView);
+                    commentHolder.likesnumber.setText(String.valueOf(user.getgoodnum()));
+                    commentHolder.commentsnumber.setText(String.valueOf(user.getComment_num()));
+
+                    mNextGoodnum = String.valueOf(user.getgoodnum() + 1);
                     break;
 
                 case 3:
@@ -506,7 +518,24 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
                     //restHolder.locality.setText(user.getLocality());
                     break;
                 case 4:
-                    LikeCommentHolder likeCommentHolder = new LikeCommentHolder(convertView);
+                    final LikeCommentHolder likeCommentHolder = new LikeCommentHolder(convertView);
+                    likeCommentHolder.likes.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Log.e("いいねをクリック", user.getPost_id() + sGoodUrl + mNextGoodnum);
+
+                            likeCommentHolder.likes.setClickable(false);
+                            commentHolder.likesnumber.setText(mNextGoodnum);
+                            //画像差し込み
+                        }
+                    });
+
+                    likeCommentHolder.comments.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Log.e("コメントをクリック", "コメント！" + user.getPost_id());
+                        }
+                    });
                     //クリックされた時の処理
                     break;
 

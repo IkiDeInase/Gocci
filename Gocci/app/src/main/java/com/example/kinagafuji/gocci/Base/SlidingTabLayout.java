@@ -266,6 +266,7 @@ public class SlidingTabLayout extends HorizontalScrollView {
 
     private class InternalViewPagerListener implements ViewPager.OnPageChangeListener {
         private int mScrollState;
+        private static final String TAG = "OnPageChangeListener";
 
         @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -291,6 +292,28 @@ public class SlidingTabLayout extends HorizontalScrollView {
         @Override
         public void onPageScrollStateChanged(int state) {
             mScrollState = state;
+            switch (state) {
+                case ViewPager.SCROLL_STATE_IDLE:
+                    //ページ移動完了
+                    Log.e(TAG, "onPageScrollStateChanged" +
+                            " state: SCROLL_STATE_IDLE");
+                    break;
+                case ViewPager.SCROLL_STATE_SETTLING:
+                    //ドラッグ終了
+                    Log.e(TAG, "onPageScrollStateChanged" +
+                            " state: SCROLL_STATE_SETTLING");
+                    break;
+                case ViewPager.SCROLL_STATE_DRAGGING:
+                    //ドラッグ開始
+                    Log.e(TAG, "onPageScrollStateChanged" +
+                            " state: SCROLL_STATE_DRAGGING");
+
+                    break;
+                default:
+                    Log.e(TAG, "onPageScrollStateChanged" +
+                            " state: default");
+                    break;
+            }
 
             if (mViewPagerPageChangeListener != null) {
                 mViewPagerPageChangeListener.onPageScrollStateChanged(state);
@@ -299,6 +322,11 @@ public class SlidingTabLayout extends HorizontalScrollView {
 
         @Override
         public void onPageSelected(int position) {
+
+            //ドラッグ終了　ページ選択時
+            Log.e(TAG, "onPageSelected" +
+                    " position: " + position);
+
             if (mScrollState == ViewPager.SCROLL_STATE_IDLE) {
                 mTabStrip.onViewPagerPageChanged(position, 0f);
                 scrollToTab(position, 0);

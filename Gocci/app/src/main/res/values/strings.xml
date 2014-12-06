@@ -50,5 +50,6 @@
     <string name="title_activity_kanryo">KanryoActivity</string>
     <string name="title_activity_sliding_tab">SlidingTabActivity</string>
     <string name="title_activity_intent_vine_camera">IntentVineCamera</string>
+    <string name="title_activity_user_prof">UserProfActivity</string>
 
 </resources>

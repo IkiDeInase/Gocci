@@ -1,9 +1,8 @@
-package com.example.kinagafuji.gocci.Fragment;
+package com.example.kinagafuji.gocci.Activity;
 
-
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -11,28 +10,23 @@ import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
-import android.view.animation.LinearInterpolator;
-import android.view.animation.RotateAnimation;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
-import com.example.kinagafuji.gocci.Activity.TenpoActivity;
-import com.example.kinagafuji.gocci.Base.BaseFragment;
+import com.example.kinagafuji.gocci.Base.BaseActivity;
 import com.example.kinagafuji.gocci.Base.CustomProgressDialog;
 import com.example.kinagafuji.gocci.R;
 import com.example.kinagafuji.gocci.data.RoundedTransformation;
-import com.example.kinagafuji.gocci.data.ToukouPopup;
 import com.example.kinagafuji.gocci.data.UserData;
 import com.squareup.picasso.Picasso;
 
@@ -56,28 +50,26 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
-public class ProfileFragment extends BaseFragment implements ListView.OnScrollListener {
+public class UserProfActivity extends BaseActivity implements ListView.OnScrollListener {
 
-    private static final String sSignupUrl = "http://api-gocci.jp/login/";
-    private static final String sGoodUrl = "http://api-gocci.jp/goodinsert/";
-    private CustomProgressDialog mProfDialog;
-    private ListView mProfListView;
-    private ArrayList<UserData> mProfusers = new ArrayList<UserData>();
-    private ProfAdapter mProfAdapter;
-    private SwipeRefreshLayout mProfSwipe;
-
-    private String mEncode_user_name;
-
+    private String mUser_name;
     private String mName;
     private String mPictureImageUrl;
-
+    private ListView mUserProfListView;
+    private UserProfAdapter mUserProfAdapter;
+    private String mProfUrl;
     private VideoHolder videoHolder;
+    private SwipeRefreshLayout mUserProfSwipe;
+
+    private ArrayList<UserData> mUserProfusers = new ArrayList<UserData>();
+
+    private String mEncodeUser_name;
 
     private int mShowPosition;
 
     private boolean mBusy = false;
 
-    private static final String KEY_IMAGE_URL = "image_url";
+    private CustomProgressDialog mUserProfDialog;
 
     private static final String TAG_POST_ID = "post_id";
     private static final String TAG_USER_ID = "user_id";
@@ -89,62 +81,55 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
     private static final String TAG_COMMENT_NUM = "comment_num";
     private static final String TAG_THUMBNAIL = "thumbnail";
     private static final String TAG_STAR_EVALUATION = "star_evaluation";
-    private static final String TAG_TELL = "tell";
-    private static final String TAG_RESTNAME1 = "restname";
-    private static final String TAG_CATEGORY = "category";
-    private static final String TAG_LAT = "lat";
-    private static final String TAG_LON = "lon";
-    private static final String TAG_LOCALITY = "locality";
-    private static final String TAG_DISTANCE = "distance";
 
-    private TextView mPost_name;
-    private ImageView mPost_Imageurl;
-
-
-    public ProfileFragment newIntent(String name, String imageUrl) {
-        ProfileFragment fragment = new ProfileFragment();
-        Bundle args = new Bundle();
-        args.putString(TAG_USER_NAME, name);
-        if (imageUrl != null) {
-            args.putString(KEY_IMAGE_URL, imageUrl);
-        }
-        fragment.setArguments(args);
-        return fragment;
-    }
+    private static final String sSignupUrl = "http://api-gocci.jp/login/";
+    private static final String sGoodUrl = "http://api-gocci.jp/goodinsert/";
 
     @Override
-    public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
-        // FragmentのViewを返却
-        View view3 = getActivity().getLayoutInflater().inflate(R.layout.fragment_profile,
-                container, false);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_user_prof);
 
-        /*mPost_name = (TextView) view3.findViewById(R.id.post_name);
-        mPost_Imageurl = (ImageView) view3.findViewById(R.id.post_Imageurl);
-        */
+        Intent userintent = getIntent();
+        mUser_name = userintent.getStringExtra("username");
+        mName = userintent.getStringExtra("name");
+        mPictureImageUrl = userintent.getStringExtra("pictureImageUrl");
 
-        mProfListView = (ListView) view3.findViewById(R.id.proflist);
+        try {
+            mEncodeUser_name = URLEncoder.encode(mUser_name, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
 
-        mProfAdapter = new ProfAdapter(getActivity(), 0, mProfusers);
+        mProfUrl = "http://api-gocci.jp/mypage/?user_name=" + mEncodeUser_name;
 
-        mProfListView.setDivider(null);
+        new UserProfAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mProfUrl);
+        mUserProfDialog = new CustomProgressDialog(this);
+        mUserProfDialog.setCancelable(false);
+        mUserProfDialog.show();
+
+        mUserProfListView = (ListView) findViewById(R.id.userProfListView);
+
+        mUserProfAdapter = new UserProfAdapter(this, 0, mUserProfusers);
+
+        mUserProfListView.setDivider(null);
         // スクロールバーを表示しない
-        mProfListView.setVerticalScrollBarEnabled(false);
+        mUserProfListView.setVerticalScrollBarEnabled(false);
         // カード部分をselectorにするので、リストのselectorは透明にする
-        mProfListView.setSelector(android.R.color.transparent);
+        mUserProfListView.setSelector(android.R.color.transparent);
 
-        mProfListView.setAdapter(mProfAdapter);
+        mUserProfListView.setAdapter(mUserProfAdapter);
 
-        mProfListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mUserProfListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                UserData country = mProfusers.get(position);
+                UserData country = mUserProfusers.get(position);
                 int line = (position / 5) * 5;
                 int pos = position - line;
 
-                switch (pos) {
+                switch(pos) {
                     case 0:
                         //名前部分のview　プロフィール画面へ
-                        //Signupを読み込みそう後回し
                         break;
                     case 1:
                         //動画のview
@@ -157,9 +142,9 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                     case 3:
                         //レストランのview
                         //レストラン画面に飛ぼうか
-                        Intent intent = new Intent(getActivity(), TenpoActivity.class);
-                        intent.putExtra("restname", country.getRest_name());
-                        intent.putExtra("locality", country.getLocality());
+                        Intent intent = new Intent(UserProfActivity.this, TenpoActivity.class);
+                        intent.putExtra("restname",country.getRest_name());
+                        intent.putExtra("locality",country.getLocality());
                         startActivity(intent);
                         break;
                     case 4:
@@ -169,71 +154,23 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
             }
         });
 
-        mProfSwipe = (SwipeRefreshLayout) view3.findViewById(R.id.swipe_prof);
-        mProfSwipe.setColorSchemeColors(R.color.main_color_light, R.color.gocci, R.color.main_color_dark, R.color.window_bg);
-        mProfSwipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        mUserProfSwipe = (SwipeRefreshLayout)findViewById(R.id.swipe_user_prof);
+        mUserProfSwipe.setColorSchemeColors(R.color.main_color_light, R.color.gocci, R.color.main_color_dark, R.color.window_bg);
+        mUserProfSwipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 
             @Override
             public void onRefresh() {
 //Handle the refresh then call
-                new ProfTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                mProfDialog = new CustomProgressDialog(getActivity());
-                mProfDialog.setCancelable(false);
-                mProfDialog.show();
-                mProfSwipe.setRefreshing(false);
+                new UserProfAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mProfUrl);
+                mUserProfDialog = new CustomProgressDialog(UserProfActivity.this);
+                mUserProfDialog.setCancelable(false);
+                mUserProfDialog.show();
+                mUserProfSwipe.setRefreshing(false);
 
             }
         });
 
-        return view3;
     }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        // 引数を取得
-        Bundle args = getArguments();
-        mName = args.getString(TAG_USER_NAME);
-        mPictureImageUrl = args.getString(KEY_IMAGE_URL);
-
-        new ProfTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        mProfDialog = new CustomProgressDialog(getActivity());
-        mProfDialog.setCancelable(false);
-        mProfDialog.show();
-
-
-        /*mPost_name.setText(mName);
-
-        Picasso.with(getActivity())
-                .load(mPictureImageUrl)
-                .resize(80, 80)
-                .placeholder(R.drawable.ic_userpicture)
-                .centerCrop()
-                .transform(new RoundedTransformation())
-                .into(mPost_Imageurl);
-                */
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-
-
-    }
-
-    @Override
-    public void onResume() {
-
-        super.onResume();
-
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-
-    }
-
 
     @Override
     public void onScrollStateChanged(AbsListView view, int scrollState) {
@@ -256,6 +193,7 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                 mBusy = true;
                 break;
         }
+
     }
 
     @Override
@@ -263,11 +201,13 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
 
     }
 
-    public class ProfTask extends AsyncTask<String, String, Integer> {
+    public class UserProfAsyncTask extends AsyncTask<String,String,Integer> {
 
         @Override
-        protected Integer doInBackground(String... strings) {
-            HttpClient client1 = new DefaultHttpClient();
+        protected Integer doInBackground(String... params) {
+            String url = params[0];
+
+            HttpClient client = new DefaultHttpClient();
 
             HttpPost method = new HttpPost(sSignupUrl);
 
@@ -279,7 +219,7 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
             String body = null;
             try {
                 method.setEntity(new UrlEncodedFormEntity(contents, "utf-8"));
-                HttpResponse res = client1.execute(method);
+                HttpResponse res = client.execute(method);
                 Log.d("TAGだよ", "反応");
                 HttpEntity entity = res.getEntity();
                 body = EntityUtils.toString(entity, "UTF-8");
@@ -288,19 +228,11 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                 e.printStackTrace();
             }
 
-
-            try {
-                mEncode_user_name = URLEncoder.encode(mName, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-
-            String mProfUrl = "http://api-gocci.jp/mypage/?user_name=" + mEncode_user_name;
-            HttpGet request = new HttpGet(mProfUrl);
+            HttpGet request = new HttpGet(url);
             HttpResponse httpResponse = null;
 
             try {
-                httpResponse = client1.execute(request);
+                httpResponse = client.execute(request);
             } catch (Exception e) {
                 Log.d("error", String.valueOf(e));
             }
@@ -340,28 +272,28 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                         UserData user1 = new UserData();
                         user1.setUser_name(user_name);
                         user1.setPicture(picture);
-                        mProfusers.add(user1);
+                        mUserProfusers.add(user1);
 
                         UserData user2 = new UserData();
                         user2.setMovie(movie);
                         user2.setThumbnail(thumbnail);
-                        mProfusers.add(user2);
+                        mUserProfusers.add(user2);
 
                         UserData user3 = new UserData();
                         user3.setComment_num(comment_num);
                         user3.setgoodnum(goodnum);
                         user3.setStar_evaluation(star_evaluation);
-                        mProfusers.add(user3);
+                        mUserProfusers.add(user3);
 
                         UserData user4 = new UserData();
                         user4.setRest_name(restname);
                         //user4.setLocality(locality);
-                        mProfusers.add(user4);
+                        mUserProfusers.add(user4);
 
                         UserData user5 = new UserData();
                         user5.setPost_id(post_id);
                         user5.setUser_id(user_id);
-                        mProfusers.add(user5);
+                        mUserProfusers.add(user5);
 
                     }
                 } catch (JSONException e) {
@@ -379,13 +311,13 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
         protected void onPostExecute(Integer result) {
             if (result != null && result == HttpStatus.SC_OK) {
                 //ListViewの最読み込み
-                mProfListView.invalidateViews();
-                mProfAdapter.notifyDataSetChanged();
+                mUserProfListView.invalidateViews();
+                mUserProfAdapter.notifyDataSetChanged();
             } else {
                 //通信失敗した際のエラー処理
-                Toast.makeText(getActivity().getApplicationContext(), "タイムラインの取得に失敗しました。", Toast.LENGTH_SHORT).show();
+                Toast.makeText(UserProfActivity.this, "タイムラインの取得に失敗しました。", Toast.LENGTH_SHORT).show();
             }
-            mProfDialog.dismiss();
+            mUserProfDialog.dismiss();
         }
     }
 
@@ -448,20 +380,20 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
         ImageView share;
 
         public LikeCommentHolder(View view) {
-            this.likes = (ImageView) view.findViewById(R.id.likes);
-            this.comments = (ImageView) view.findViewById(R.id.comments);
-            this.share = (ImageView) view.findViewById(R.id.share);
+            this.likes = (ImageView)view.findViewById(R.id.likes);
+            this.comments = (ImageView)view.findViewById(R.id.comments);
+            this.share = (ImageView)view.findViewById(R.id.share);
 
         }
     }
 
-    public class ProfAdapter extends ArrayAdapter<UserData> {
+    public class UserProfAdapter extends ArrayAdapter<UserData> {
         private LayoutInflater layoutInflater;
         private CommentHolder commentHolder;
         public String mNextGoodnum;
 
-        public ProfAdapter(Context context, int viewResourceId, ArrayList<UserData> profusers) {
-            super(context, viewResourceId, profusers);
+        public UserProfAdapter(Context context, int viewResourceId, ArrayList<UserData> userprofusers) {
+            super(context, viewResourceId, userprofusers);
             this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
 
@@ -524,7 +456,7 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                             @Override
                             public void onPrepared(MediaPlayer mp) {
 
-                                VideoView nextVideo = (VideoView) mProfListView.findViewWithTag(mShowPosition);
+                                VideoView nextVideo = (VideoView) mUserProfListView.findViewWithTag(mShowPosition);
 
                                 if (nextVideo != null) {
                                     Log.e("TAG", "pause : " + mShowPosition);
@@ -595,5 +527,5 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
             return convertView;
         }
     }
-}
 
+}

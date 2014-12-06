@@ -1,15 +1,15 @@
 package com.example.kinagafuji.gocci.Fragment;
 
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.location.Criteria;
-import android.location.GpsStatus;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.location.LocationProvider;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -34,11 +34,12 @@ import com.example.kinagafuji.gocci.Base.CustomProgressDialog;
 import com.example.kinagafuji.gocci.R;
 import com.example.kinagafuji.gocci.data.UserData;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -57,9 +58,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
-public class Search_mapFragment extends BaseFragment implements LocationListener,GpsStatus.Listener{
+public class Search_mapFragment extends BaseFragment implements GooglePlayServicesClient.OnConnectionFailedListener, GooglePlayServicesClient.ConnectionCallbacks {
 
-    public String mSearch_mapUrl;
+    private String mSearch_mapUrl;
     private String mSearch_mapData;
     private CustomProgressDialog mSearchmapDialog;
     private ListView mSearch_mapListView;
@@ -87,7 +88,10 @@ public class Search_mapFragment extends BaseFragment implements LocationListener
     public String mName;
     public String mPictureImageUrl;
 
-    private LocationManager mLocationManager;
+    public LocationManager mLocationManager;
+    private LocationClient mLocationClient = null;
+    private Location currentLocation;
+    private Location lastlocation;
 
     private static final String KEY_IMAGE_URL = "image_url";
 
@@ -109,6 +113,8 @@ public class Search_mapFragment extends BaseFragment implements LocationListener
     private static final String TAG_LOCALITY = "locality";
     private static final String TAG_DISTANCE = "distance";
 
+    private static final String TAG = "Search_mapFragment";
+
     public Search_mapFragment newIntent(String name, String imageUrl) {
         Search_mapFragment fragment = new Search_mapFragment();
         Bundle args = new Bundle();
@@ -120,12 +126,12 @@ public class Search_mapFragment extends BaseFragment implements LocationListener
         return fragment;
     }
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
         // FragmentのViewを返却
         View view1 = getActivity().getLayoutInflater().inflate(R.layout.fragment_search_map,
                 container, false);
-        // Add the newly created View to the ViewPager
 
         mSearch_mapAdapter = new Search_mapAdapter(getActivity(), 0, mSearch_mapusers);
 
@@ -153,14 +159,14 @@ public class Search_mapFragment extends BaseFragment implements LocationListener
 
         mSearch_mapListView.setAdapter(mSearch_mapAdapter);
 
-        mSearchView = (SearchView)view1.findViewById(R.id.searchbar);
+        mSearchView = (SearchView) view1.findViewById(R.id.searchbar);
         mSearchView.setIconifiedByDefault(true);
         mSearchView.setSubmitButtonEnabled(true);
 
         mSearchView.setOnQueryTextListener(onQueryTextListener);
 
         mSearchmapSwipe = (SwipeRefreshLayout) view1.findViewById(R.id.swipe_searchmap);
-        mSearchmapSwipe.setColorSchemeColors(R.color.main_color_light,R.color.gocci,R.color.main_color_dark,R.color.window_bg);
+        mSearchmapSwipe.setColorSchemeColors(R.color.main_color_light, R.color.gocci, R.color.main_color_dark, R.color.window_bg);
         mSearchmapSwipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 
             @Override
@@ -171,36 +177,39 @@ public class Search_mapFragment extends BaseFragment implements LocationListener
             }
         });
 
+        int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getActivity());
 
+        if (status != ConnectionResult.SUCCESS) {
+            // Google Play Services が使えない場合
+            int requestCode = 10;
+            Dialog dialog = GooglePlayServicesUtil.getErrorDialog(status, getActivity(), requestCode);
+            dialog.show();
 
+        } else {
+            // Google Play Services が使える場合
+            //activity_main.xmlのSupportMapFragmentへの参照を取得
+            SupportMapFragment fm = (SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.map);
+
+            //fragmentからGoogleMap objectを取得
+            mMap = fm.getMap();
+
+            //Google MapのMyLocationレイヤーを使用可能にする
+            mMap.setMyLocationEnabled(true);
+            mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+
+            //システムサービスのLOCATION_SERVICEからLocationManager objectを取得
+            mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+            mLocationClient = new LocationClient(getActivity(), this, this); // ConnectionCallbacks, OnConnectionFailedListener
+            if (mLocationClient != null) {
+                // Google Play Servicesに接続
+                mLocationClient.connect();
+                Log.e("TAG", "グーグルサービスにコネクトされました");
+            }
+        }
 
         return view1;
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-
-
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if(mLocationManager!=null) {
-            mLocationManager.removeUpdates(Search_mapFragment.this);
-            mLocationManager.removeGpsStatusListener(Search_mapFragment.this);
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        if(mLocationManager!=null) {
-            mLocationManager.removeUpdates(Search_mapFragment.this);
-            mLocationManager.removeGpsStatusListener(Search_mapFragment.this);
-        }
-    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -210,61 +219,26 @@ public class Search_mapFragment extends BaseFragment implements LocationListener
         mName = args.getString(TAG_USER_NAME);
         mPictureImageUrl = args.getString(KEY_IMAGE_URL);
 
-        mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-        mLocationManager.addGpsStatusListener(this);
-
-        if (mLocationManager != null) {
-
-            Criteria criteria = new Criteria();
-            criteria.setAccuracy(Criteria.ACCURACY_COARSE);
-            criteria.setPowerRequirement(Criteria.POWER_HIGH);
-            criteria.setSpeedRequired(false);
-            criteria.setAltitudeRequired(false);
-            criteria.setBearingRequired(false);
-            criteria.setCostAllowed(false);
-            String provider = mLocationManager.getBestProvider(criteria, true);
-            mLocationManager.requestLocationUpdates(provider, 0, 0, Search_mapFragment.this);
-
-            SupportMapFragment fm = (SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.map);
-
-            mMap = fm.getMap();
-
-            mMap.setMyLocationEnabled(true);
-
-            LocationProvider mProvider =
-                    mLocationManager.getProvider(LocationManager.GPS_PROVIDER);
-
-            Log.d("経度・緯度", mLatitude + "/" + mLongitude);
-            mSearch_mapUrl = "http://api-gocci.jp/api/public/dist/?lat=" + String.valueOf(mLatitude) + "&lon=" + String.valueOf(mLongitude) + "&limit=30";
-
-            setUpMap();
-        }
-
-
     }
 
+
     private void setUpMap() {
-        UserData userData = new UserData();
 
-        /*if (mLatitude == 0.0) {
-            mLatitude = userData.getmLatitude();
-            mLongitude = userData.getmLongitude();
-            Log.d("経度・緯度", mLatitude + "/" + mLongitude);
-            mSearch_mapUrl = "http://api-gocci.jp/api/public/dist/?lat=" + String.valueOf(mLatitude) + "&lon=" + String.valueOf(mLongitude) + "&limit=30";
-        }*/
-
-
-        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        Log.e("TAG", "結局のセットアップ時経度" + mLatitude + "/" + "緯度" + mLongitude);
 
         LatLng latLng = new LatLng(mLatitude, mLongitude);
+
+        SharedPreferences latlon = getActivity().getSharedPreferences("latlon", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = latlon.edit();
+        editor.putString("latitude", String.valueOf(mLatitude));
+        editor.putString("longitude", String.valueOf(mLongitude));
+        editor.apply();
+
+        mSearch_mapUrl = "http://api-gocci.jp/dist/?lat=" + String.valueOf(mLatitude) + "&lon=" + String.valueOf(mLongitude) + "&limit=30";
 
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
 
         mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
-
-        // MyLocationButtonを有効に
-        UiSettings settings = mMap.getUiSettings();
-        settings.setMyLocationButtonEnabled(true);
 
         new SearchMapAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mSearch_mapUrl);
         mSearchmapDialog = new CustomProgressDialog(getActivity());
@@ -297,7 +271,7 @@ public class Search_mapFragment extends BaseFragment implements LocationListener
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
-            mSearch_keywordUrl = "http://api-gocci.jp/api/public/search/?restname=" + mEncode_searchword;
+            mSearch_keywordUrl = "http://api-gocci.jp/search/?restname=" + mEncode_searchword;
         } else {
             Toast.makeText(getActivity().getApplicationContext(), "文字を入力して下さい。", Toast.LENGTH_SHORT).show();
         }
@@ -319,33 +293,28 @@ public class Search_mapFragment extends BaseFragment implements LocationListener
     }
 
     @Override
-    public void onGpsStatusChanged(int event) {
+    public void onConnected(Bundle bundle) {
+
+        currentLocation = mLocationClient.getLastLocation();
+
+        mLatitude = currentLocation.getLatitude();
+        mLongitude = currentLocation.getLongitude();
+
+        setUpMap();
+
+        Log.e("TAG", "コネクト時経度"+ mLatitude+ "/" + "緯度"+ mLongitude);
+
 
     }
 
     @Override
-    public void onLocationChanged(Location location) {
-        mLatitude = location.getLatitude();
-        mLongitude = location.getLongitude();
-        UserData userData = new UserData();
-        userData.setmLatitude(mLatitude);
-        userData.setmLongitude(mLongitude);
-
+    public void onDisconnected() {
+        Log.e("TAG", "グーグルサービスにディスコネクトされました");
     }
 
     @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        Log.e("TAG", "グーグルサービスにコネクト失敗しました");
     }
 
 
@@ -393,7 +362,7 @@ public class Search_mapFragment extends BaseFragment implements LocationListener
                         String locality = jsonObject.getString(TAG_LOCALITY);
                         String distance = jsonObject.getString(TAG_DISTANCE);
 
-                        final LatLng mapLng = new LatLng(lat,lon);
+                        final LatLng mapLng = new LatLng(lat, lon);
 
                         UserData user = new UserData();
 
@@ -408,7 +377,7 @@ public class Search_mapFragment extends BaseFragment implements LocationListener
                         mSearch_mapusers.add(user);
 
                         Handler handler = new Handler(Looper.getMainLooper());
-                        handler.post(new Runnable(){
+                        handler.post(new Runnable() {
 
                             @Override
                             public void run() {
@@ -416,8 +385,6 @@ public class Search_mapFragment extends BaseFragment implements LocationListener
 
                             }
                         });
-
-
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -495,7 +462,7 @@ public class Search_mapFragment extends BaseFragment implements LocationListener
                         String locality = jsonObject.getString(TAG_LOCALITY);
                         String distance = jsonObject.getString(TAG_DISTANCE);
 
-                        final LatLng keywordLng = new LatLng(lat,lon);
+                        final LatLng keywordLng = new LatLng(lat, lon);
 
                         UserData user = new UserData();
 
@@ -510,7 +477,7 @@ public class Search_mapFragment extends BaseFragment implements LocationListener
                         mKeywordusers.add(user);
 
                         Handler handler = new Handler(Looper.getMainLooper());
-                        handler.post(new Runnable(){
+                        handler.post(new Runnable() {
 
                             @Override
                             public void run() {
@@ -635,4 +602,89 @@ public class Search_mapFragment extends BaseFragment implements LocationListener
             return convertView;
         }
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (!mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle("Location Manager");
+            builder.setMessage("位置情報を使いたいのですが、GPSが無効になっています。/n" + "設定を変更しますか？");
+            builder.setPositiveButton("はい", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent settingIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    startActivity(settingIntent);
+                }
+            });
+            builder.setNegativeButton("いいえ", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                }
+            });
+            builder.create().show();
+        }
+
+        updateDisplay();
+        int minTime = 5000;
+        float minDistance = 0;
+        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, listener);
+
+        Log.e("TAG", "経度緯度をResumeで読み込みました");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mLocationClient != null) {
+            // Google Play Servicesに接続
+            mLocationClient.disconnect();
+            Log.e("TAG", "ロケーションクライアントがディスコネクトされました");
+        }
+        mLocationManager.removeUpdates(listener);
+        Log.e("TAG", "ロケーションマネージャーがディスコネクトされました");
+    }
+
+    private void updateDisplay() {
+        if (currentLocation == null) {
+            Log.e("TAG","位置が測定できないので東京スカイツリーに移動します。");
+            mLatitude = 35.710057714926265;
+            mLongitude = 139.81071829999996;
+            //非同期を開始
+            //setUpMap();
+
+        } else {
+            Log.e("アップデートディスプレイ", currentLocation.getLatitude() + "/" + currentLocation.getLongitude());
+            //非同期を開始
+        }
+    }
+
+    private LocationListener listener = new LocationListener() {
+
+        @Override
+        public void onLocationChanged(Location location) {
+            currentLocation = location;
+            mLatitude = currentLocation.getLatitude();
+            mLongitude = currentLocation.getLongitude();
+
+            Log.e("TAG", "位置変更時経度" + mLatitude + "/" + "緯度" + mLongitude);
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+
+        }
+    };
+
 }
