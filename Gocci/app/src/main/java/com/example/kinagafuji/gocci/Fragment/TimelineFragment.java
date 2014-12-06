@@ -55,6 +55,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class TimelineFragment extends BaseFragment
@@ -357,17 +358,19 @@ public class TimelineFragment extends BaseFragment
 
         @Override
         protected void onPostExecute(Integer result) {
-            if (result != null && result == HttpStatus.SC_OK) {
-                //ListViewの最読み込み
-                mTimelineListView.invalidateViews();
-                mTimelineAdapter.notifyDataSetChanged();
 
-            } else {
-                //通信失敗した際のエラー処理
-                Toast.makeText(getActivity().getApplicationContext(), "タイムラインの取得に失敗しました。", Toast.LENGTH_SHORT).show();
+            if (!isDetached() && isAdded()) {
+                if (result != null && result == HttpStatus.SC_OK) {
+                    //ListViewの最読み込み
+                    mTimelineListView.invalidateViews();
+                    mTimelineAdapter.notifyDataSetChanged();
+
+                } else {
+                    //通信失敗した際のエラー処理
+                    Toast.makeText(getActivity().getApplicationContext(), "タイムラインの取得に失敗しました。", Toast.LENGTH_SHORT).show();
+                }
+                mTimelineDialog.dismiss();
             }
-
-            mTimelineDialog.dismiss();
         }
     }
 
@@ -440,7 +443,6 @@ public class TimelineFragment extends BaseFragment
     public class TimelineAdapter extends ArrayAdapter<UserData> {
         private LayoutInflater layoutInflater;
 
-
         public TimelineAdapter(Context context, int viewResourceId, ArrayList<UserData> timelineusers) {
             super(context, viewResourceId, timelineusers);
             this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -504,33 +506,35 @@ public class TimelineFragment extends BaseFragment
                         videoHolder.movie.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                             @Override
                             public void onPrepared(MediaPlayer mp) {
-
                                 VideoView nextVideo = (VideoView) mTimelineListView.findViewWithTag(mShowPosition);
 
                                 if (nextVideo != null) {
+                                    nextVideo.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                                        @Override
+                                        public void onPrepared(MediaPlayer mp) {
+                                            mp.stop();
+                                        }
+                                    });
                                     Log.e("TAG", "pause : " + mShowPosition);
-                                    nextVideo.stopPlayback();
                                 }
 
                                 videoHolder.mVideoThumbnail.setVisibility(View.GONE);
                                 videoHolder.movie.start();
-                                mp.setLooping(true);
+
+                                mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                    @Override
+                                    public void onCompletion(MediaPlayer mp) {
+                                        mp.start();
+                                        mp.setLooping(true);
+                                    }
+                                });
+
                                 Log.e("TAG", "start : " + position);
                                 mShowPosition = position;
                             }
                         });
+
                         videoHolder.movie.setTag(position);
-
-                        /*
-                        videoHolder.movie.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-
-                            @Override
-                            public void onCompletion(MediaPlayer mp) {
-                                videoHolder.movie.seekTo(0);
-                                videoHolder.movie.start();
-                            }
-                        });
-                        */
 
                     }
 
@@ -566,7 +570,7 @@ public class TimelineFragment extends BaseFragment
                             //画像差し込み
                             likeCommentHolder.likes.setBackgroundResource(R.drawable.ic_like_orange);
 
-                            new TimelineGoodnumTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,user.getPost_id());
+                            new TimelineGoodnumTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, user.getPost_id());
 
 
                         }

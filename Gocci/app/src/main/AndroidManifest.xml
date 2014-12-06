@@ -53,8 +53,7 @@
             android:label="@string/title_activity_tenpo" />
         <activity
             android:name="com.example.kinagafuji.gocci.Activity.SplashActivity"
-            android:label="@string/app_name"
-            android:process="com.example.kinagafuji.gocci.ACCESS_ALLOW" >
+            android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
