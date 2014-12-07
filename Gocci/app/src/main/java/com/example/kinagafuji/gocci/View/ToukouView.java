@@ -48,23 +48,10 @@ public class ToukouView extends LinearLayout {
     private static final String TAG_LOCALITY = "locality";
     private static final String TAG_DISTANCE = "distance";
 
-    public double mLatitude;
-    public double mLongitude;
-
-    //public interface ToukouViewListener {
-        /**
-         * GPSの値をActivityに要求する
-         */
-    //    public void requestGpsParameter(double latitude, double Longitude);
-    //}
-
-
     //　コードからの生成用
     public ToukouView(final Context context, final String name, final String pictureImageUrl, double latitude, double longitude) {
         super(context);
 
-        //listener.requestGpsParameter(mLatitude, mLongitude);
-        Log.e("経度・緯度", latitude + "/" + longitude);
         String mSearch_tenpoUrl = "http://api-gocci.jp/dist/?lat=" + String.valueOf(latitude) + "&lon=" + String.valueOf(longitude) + "&limit=30";
 
         new SearchTenpoAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mSearch_tenpoUrl);
@@ -99,7 +86,6 @@ public class ToukouView extends LinearLayout {
                 context.startActivity(intent);
             }
         });
-
     }
 
     //xmlからの生成用
@@ -110,7 +96,6 @@ public class ToukouView extends LinearLayout {
     public ToukouView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
-
 
     public class Search_tenpoAdapter extends ArrayAdapter<UserData> {
         private LayoutInflater layoutInflater;
@@ -247,7 +232,6 @@ public class ToukouView extends LinearLayout {
             this.distance = (TextView) view.findViewById(R.id.distance);
         }
     }
-
 }
 
 

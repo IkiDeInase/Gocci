@@ -74,4 +74,24 @@ public class LayoutHolder {
 
         }
     }
+
+    public static class Search_mapHolder {
+        public ImageView search1;
+        public ImageView search2;
+        public ImageView search3;
+        public TextView restname;
+        public TextView category;
+        public TextView locality;
+        public TextView distance;
+
+        public Search_mapHolder(View view) {
+            this.search1 = (ImageView) view.findViewById(R.id.search1);
+            this.search2 = (ImageView) view.findViewById(R.id.search2);
+            this.search3 = (ImageView) view.findViewById(R.id.search3);
+            this.restname = (TextView) view.findViewById(R.id.restname);
+            this.category = (TextView) view.findViewById(R.id.category);
+            this.locality = (TextView) view.findViewById(R.id.locality);
+            this.distance = (TextView) view.findViewById(R.id.distance);
+        }
+    }
 }
