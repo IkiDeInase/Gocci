@@ -29,12 +29,15 @@ import android.widget.VideoView;
 
 import com.example.kinagafuji.gocci.Activity.TenpoActivity;
 import com.example.kinagafuji.gocci.Base.BaseFragment;
+import com.example.kinagafuji.gocci.Base.BusHolder;
 import com.example.kinagafuji.gocci.Base.CustomProgressDialog;
+import com.example.kinagafuji.gocci.Base.PageChangeVideoStopEvent;
 import com.example.kinagafuji.gocci.R;
 import com.example.kinagafuji.gocci.View.CommentView;
 import com.example.kinagafuji.gocci.data.RoundedTransformation;
 import com.example.kinagafuji.gocci.data.ToukouPopup;
 import com.example.kinagafuji.gocci.data.UserData;
+import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 
 import org.apache.http.HttpEntity;
@@ -74,6 +77,9 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
     private String mName;
     private String mPictureImageUrl;
 
+    private VideoView nextVideo;
+
+    private VideoHolder videoHolder;
     private CommentHolder commentHolder;
     private LikeCommentHolder likeCommentHolder;
     public String mNextGoodnum;
@@ -82,6 +88,8 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
     private int mShowPosition;
 
     private boolean mBusy = false;
+
+    private final ProfileFragment self = this;
 
     private static final String KEY_IMAGE_URL = "image_url";
 
@@ -221,13 +229,36 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
     public void onResume() {
 
         super.onResume();
+        BusHolder.get().register(self);
 
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        BusHolder.get().unregister(self);
 
+    }
+
+    @Subscribe
+    public void subscribe(PageChangeVideoStopEvent event) {
+        if (event.position == 3) {
+            //タイムラインが呼ばれた時の処理
+            videoHolder.movie.start();
+
+            if (nextVideo != null)  {
+                nextVideo.start();
+            }
+            Log.e("Otto発動","動画再生復帰");
+        } else {
+            //タイムライン以外のfragmentが可視化している場合
+            videoHolder.movie.pause();
+
+            if (nextVideo != null)  {
+                nextVideo.pause();
+            }
+            Log.e("Otto発動","動画再生停止");
+        }
     }
 
 
@@ -501,7 +532,7 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                     break;
 
                 case 1:
-                    final VideoHolder videoHolder = new VideoHolder(convertView);
+                    videoHolder = new VideoHolder(convertView);
 
                     Picasso.with(getContext())
                             .load(user.getThumbnail())
@@ -518,7 +549,7 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                             @Override
                             public void onPrepared(MediaPlayer mp) {
 
-                                VideoView nextVideo = (VideoView) mProfListView.findViewWithTag(mShowPosition);
+                                nextVideo = (VideoView) mProfListView.findViewWithTag(mShowPosition);
 
                                 if (nextVideo != null) {
                                     Log.e("TAG", "pause : " + mShowPosition);

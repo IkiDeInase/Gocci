@@ -216,9 +216,7 @@ public class Search_mapFragment extends BaseFragment implements GooglePlayServic
 
         String mSearch_mapUrl = "http://api-gocci.jp/dist/?lat=" + String.valueOf(mLatitude) + "&lon=" + String.valueOf(mLongitude) + "&limit=30";
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
 
         new Search_mapAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mSearch_mapUrl);
         mSearchmapDialog = new CustomProgressDialog(getActivity());
@@ -454,6 +452,7 @@ public class Search_mapFragment extends BaseFragment implements GooglePlayServic
                                 mMap.addMarker(new MarkerOptions()
                                         .position(new LatLng(lat, lon))
                                         .title(rest_name));
+                                //snippetで詳細も表示できる
 
                             }
                         });

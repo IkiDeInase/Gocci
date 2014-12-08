@@ -76,6 +76,8 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
 
     public boolean mBusy = false;
 
+    private VideoView nextVideo;
+
     private VideoHolder videoHolder;
     public CommentHolder commentHolder;
     public LikeCommentHolder likeCommentHolder;
@@ -267,15 +269,20 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
         if (event.position == 0) {
             //タイムラインが呼ばれた時の処理
             videoHolder.movie.start();
+
+            if (nextVideo != null)  {
+                nextVideo.start();
+            }
             Log.e("Otto発動","動画再生復帰");
         } else {
             //タイムライン以外のfragmentが可視化している場合
             videoHolder.movie.pause();
+
+            if (nextVideo != null) {
+                nextVideo.pause();
+            }
             Log.e("Otto発動","動画再生停止");
         }
-
-
-
     }
 
     @Override
@@ -556,7 +563,7 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
                         videoHolder.movie.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                             @Override
                             public void onPrepared(MediaPlayer mp) {
-                                final VideoView nextVideo = (VideoView) mTimelineListView.findViewWithTag(mShowPosition);
+                                nextVideo = (VideoView) mTimelineListView.findViewWithTag(mShowPosition);
 
                                 if (nextVideo != null) {
                                     nextVideo.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
