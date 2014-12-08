@@ -21,20 +21,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.kinagafuji.gocci.Activity.TenpoActivity;
-import com.example.kinagafuji.gocci.Adapter.Search_keywordAdapter;
-import com.example.kinagafuji.gocci.Adapter.Search_mapAdapter;
-import com.example.kinagafuji.gocci.AsyncTask.KeywordSearchAsyncTask;
-import com.example.kinagafuji.gocci.AsyncTask.Search_mapAsyncTask;
-import com.example.kinagafuji.gocci.Base.AddMarkerEvent;
 import com.example.kinagafuji.gocci.Base.BaseFragment;
-import com.example.kinagafuji.gocci.Base.BusHolder;
 import com.example.kinagafuji.gocci.Base.CustomProgressDialog;
 import com.example.kinagafuji.gocci.R;
+import com.example.kinagafuji.gocci.data.LayoutHolder;
 import com.example.kinagafuji.gocci.data.UserData;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
@@ -44,10 +42,18 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.squareup.otto.Subscribe;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -291,7 +297,6 @@ public class Search_mapFragment extends BaseFragment implements GooglePlayServic
     @Override
     public void onResume() {
         super.onResume();
-        BusHolder.get().register(self);
 
         if (!mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -321,25 +326,9 @@ public class Search_mapFragment extends BaseFragment implements GooglePlayServic
         Log.e("TAG", "経度緯度をResumeで読み込みました");
     }
 
-    @Subscribe
-    public void subscribe(final AddMarkerEvent event) {
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.post(new Runnable() {
-
-            @Override
-            public void run() {
-                mMap.addMarker(new MarkerOptions()
-                        .position(new LatLng(event.lat, event.lon))
-                        .title(event.restname));
-
-            }
-        });
-    }
-
     @Override
     public void onPause() {
         super.onPause();
-        BusHolder.get().unregister(self);
 
         if (mLocationClient != null) {
             // Google Play Servicesに接続
@@ -390,5 +379,312 @@ public class Search_mapFragment extends BaseFragment implements GooglePlayServic
 
         }
     };
+
+    public class Search_mapAsyncTask extends AsyncTask<String, String, Integer> {
+
+        private static final String TAG_TELL = "tell";
+        private static final String TAG_RESTNAME = "restname";
+        private static final String TAG_CATEGORY = "category";
+        private static final String TAG_LAT = "lat";
+        private static final String TAG_LON = "lon";
+        private static final String TAG_LOCALITY = "locality";
+        private static final String TAG_DISTANCE = "distance";
+
+
+        @Override
+        protected Integer doInBackground(String... params) {
+            String param = params[0];
+
+            HttpClient httpClient = new DefaultHttpClient();
+
+            HttpGet request = new HttpGet(param);
+            HttpResponse httpResponse = null;
+
+            try {
+                httpResponse = httpClient.execute(request);
+            } catch (Exception e) {
+                Log.d("JSONSampleActivity", "Error Execute");
+            }
+
+            int status = httpResponse.getStatusLine().getStatusCode();
+
+            if (HttpStatus.SC_OK == status) {
+                String mSearch_mapData = null;
+                try {
+                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                    httpResponse.getEntity().writeTo(outputStream);
+                    mSearch_mapData = outputStream.toString(); // JSONデータ
+                    Log.d("data", mSearch_mapData);
+                } catch (Exception e) {
+                    Log.d("JSONSampleActivity", "Error");
+                }
+
+                try {
+
+                    JSONArray searchmapArray = new JSONArray(mSearch_mapData);
+
+                    for (int i = 0; i < searchmapArray.length(); i++) {
+                        JSONObject jsonObject = searchmapArray.getJSONObject(i);
+
+                        String tell = jsonObject.getString(TAG_TELL);
+                        final String rest_name = jsonObject.getString(TAG_RESTNAME);
+                        String category = jsonObject.getString(TAG_CATEGORY);
+                        final Double lat = jsonObject.getDouble(TAG_LAT);
+                        final Double lon = jsonObject.getDouble(TAG_LON);
+                        String locality = jsonObject.getString(TAG_LOCALITY);
+                        String distance = jsonObject.getString(TAG_DISTANCE);
+
+                        UserData user = new UserData();
+
+                        user.setTell(tell);
+                        user.setRest_name(rest_name);
+                        user.setCategory(category);
+                        user.setLat(lat);
+                        user.setLon(lon);
+                        user.setLocality(locality);
+                        user.setDistance(distance);
+
+                        mSearch_mapusers.add(user);
+
+                        Handler handler = new Handler(Looper.getMainLooper());
+                        handler.post(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                mMap.addMarker(new MarkerOptions()
+                                        .position(new LatLng(lat, lon))
+                                        .title(rest_name));
+
+                            }
+                        });
+                        //BusHolder.get().post(new AddMarkerEvent(lat,lon,rest_name));
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Log.d("えらー", String.valueOf(e));
+                }
+
+            } else {
+                Log.d("JSONSampleActivity", "Status" + status);
+            }
+
+            return status;
+
+        }
+
+        @Override
+        protected void onPostExecute(Integer result) {
+
+            if (result != null && result == HttpStatus.SC_OK) {
+                //ListViewの最読み込み
+                mSearch_mapAdapter.notifyDataSetChanged();
+                mSearch_mapListView.invalidateViews();
+
+            } else {
+                //通信失敗した際のエラー処理
+                Toast.makeText(getActivity().getApplicationContext(), "タイムラインの取得に失敗しました。", Toast.LENGTH_SHORT).show();
+            }
+
+            mSearchmapDialog.dismiss();
+
+        }
+    }
+
+    public class Search_mapAdapter extends ArrayAdapter<UserData> {
+        private LayoutInflater layoutInflater;
+        private Search_mapHolder search_mapHolder;
+
+        public Search_mapAdapter(Context context, int viewResourceId, ArrayList<UserData> search_mapusers) {
+            super(context, viewResourceId, search_mapusers);
+            this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                convertView = layoutInflater.inflate(R.layout.maplist, null);
+                search_mapHolder = new Search_mapHolder(convertView);
+                convertView.setTag(search_mapHolder);
+            } else {
+                search_mapHolder = (Search_mapHolder) convertView.getTag();
+            }
+
+            final UserData user = this.getItem(position);
+
+            search_mapHolder.restname.setText(user.getRest_name());
+            search_mapHolder.category.setText(user.getCategory());
+            search_mapHolder.distance.setText(user.getDistance());
+
+            LatLng markerlatLng = new LatLng(user.getLat(), user.getLon());
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(markerlatLng));
+
+            return convertView;
+        }
+    }
+
+    public class Search_keywordAdapter extends ArrayAdapter<UserData> {
+        private LayoutInflater layoutInflater;
+        private Search_mapHolder search_mapHolder;
+
+        public Search_keywordAdapter(Context context, int viewResourceId, ArrayList<UserData> search_keywordusers) {
+            super(context, viewResourceId, search_keywordusers);
+            this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                convertView = layoutInflater.inflate(R.layout.maplist, null);
+                search_mapHolder = new Search_mapHolder(convertView);
+                convertView.setTag(search_mapHolder);
+            } else {
+                search_mapHolder = (Search_mapHolder) convertView.getTag();
+            }
+
+            final UserData user = this.getItem(position);
+
+            search_mapHolder.restname.setText(user.getRest_name());
+            search_mapHolder.category.setText(user.getCategory());
+            search_mapHolder.distance.setText(user.getDistance());
+
+            LatLng markerlatLng = new LatLng(user.getLat(), user.getLon());
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(markerlatLng));
+
+            return convertView;
+        }
+    }
+
+    public class KeywordSearchAsyncTask extends AsyncTask<String, String, Integer> {
+
+        private static final String TAG_TELL = "tell";
+        private static final String TAG_RESTNAME = "restname";
+        private static final String TAG_CATEGORY = "category";
+        private static final String TAG_LAT = "lat";
+        private static final String TAG_LON = "lon";
+        private static final String TAG_LOCALITY = "locality";
+        private static final String TAG_DISTANCE = "distance";
+
+
+        @Override
+        protected Integer doInBackground(String... params) {
+            String param = params[0];
+
+            HttpClient httpClient = new DefaultHttpClient();
+
+            HttpGet request = new HttpGet(param);
+            HttpResponse httpResponse = null;
+
+            try {
+                httpResponse = httpClient.execute(request);
+            } catch (Exception e) {
+                Log.d("JSONSampleActivity", "Error Execute");
+            }
+
+            int status = httpResponse.getStatusLine().getStatusCode();
+
+            if (HttpStatus.SC_OK == status) {
+                String mKeywordData = null;
+                try {
+                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                    httpResponse.getEntity().writeTo(outputStream);
+                    mKeywordData = outputStream.toString(); // JSONデータ
+                    Log.d("data", mKeywordData);
+
+                } catch (Exception e) {
+                    Log.d("JSONSampleActivity", "Error");
+                }
+
+                try {
+
+                    JSONArray jsonArray = new JSONArray(mKeywordData);
+
+                    for (int i = 0; i < jsonArray.length(); i++) {
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                        String tell = jsonObject.getString(TAG_TELL);
+                        final String restname = jsonObject.getString(TAG_RESTNAME);
+                        String category = jsonObject.getString(TAG_CATEGORY);
+                        final Double lat = jsonObject.getDouble(TAG_LAT);
+                        final Double lon = jsonObject.getDouble(TAG_LON);
+                        String locality = jsonObject.getString(TAG_LOCALITY);
+                        String distance = jsonObject.getString(TAG_DISTANCE);
+
+                        UserData user = new UserData();
+
+                        user.setTell(tell);
+                        user.setRest_name(restname);
+                        user.setCategory(category);
+                        user.setLat(lat);
+                        user.setLon(lon);
+                        user.setLocality(locality);
+                        user.setDistance(distance);
+
+                        mKeywordusers.add(user);
+
+                        Handler handler = new Handler(Looper.getMainLooper());
+                        handler.post(new Runnable() {
+
+                            @Override
+                            public void run() {
+                              mMap.addMarker(new MarkerOptions()
+                                        .position(new LatLng(lat, lon))
+                                        .title(restname));
+
+                            }
+                        });
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    Log.d("えらー", String.valueOf(e));
+                }
+
+            } else {
+                Log.d("JSONSampleActivity", "Status" + status);
+
+            }
+
+            return status;
+        }
+
+        // このメソッドは非同期処理の終わった後に呼び出されます
+        @Override
+        protected void onPostExecute(Integer result) {
+
+            if (result != null && result == HttpStatus.SC_OK) {
+                //ListViewの最読み込み
+                mSearch_keywordAdapter = new Search_keywordAdapter(getActivity(), 0, mKeywordusers);
+                mSearch_mapListView.setAdapter(mSearch_keywordAdapter);
+
+
+            } else {
+                //通信失敗した際のエラー処理
+                Toast.makeText(getActivity(), "タイムラインの取得に失敗しました。", Toast.LENGTH_SHORT).show();
+            }
+
+            mKeywordDialog.dismiss();
+        }
+    }
+
+    public static class Search_mapHolder {
+        public ImageView search1;
+        public ImageView search2;
+        public ImageView search3;
+        public TextView restname;
+        public TextView category;
+        public TextView locality;
+        public TextView distance;
+
+        public Search_mapHolder(View view) {
+            this.search1 = (ImageView) view.findViewById(R.id.search1);
+            this.search2 = (ImageView) view.findViewById(R.id.search2);
+            this.search3 = (ImageView) view.findViewById(R.id.search3);
+            this.restname = (TextView) view.findViewById(R.id.restname);
+            this.category = (TextView) view.findViewById(R.id.category);
+            this.locality = (TextView) view.findViewById(R.id.locality);
+            this.distance = (TextView) view.findViewById(R.id.distance);
+        }
+    }
 
 }

@@ -121,6 +121,15 @@ public class LoginFragment extends BaseFragment {
                     }
                 });
 
+                ImageButton accountButton = (ImageButton)inflateView.findViewById(R.id.accountButton);
+                accountButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(getActivity(), SlidingTabActivity.class);
+                        startActivity(intent);
+                    }
+                });
+
                 window.setContentView(inflateView);
                 //int totalHeight = getActivity().getWindowManager().getDefaultDisplay().getHeight();
                 int[] location = new int[2];

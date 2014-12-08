@@ -61,7 +61,6 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
     private ListView mUserProfListView;
     private UserProfAdapter mUserProfAdapter;
     private String mProfUrl;
-    private VideoHolder videoHolder;
     private SwipeRefreshLayout mUserProfSwipe;
 
     private ArrayList<UserData> mUserProfusers = new ArrayList<UserData>();
@@ -446,7 +445,7 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
                     break;
 
                 case 1:
-                    videoHolder = new VideoHolder(convertView);
+                    final VideoHolder videoHolder = new VideoHolder(convertView);
 
                     Picasso.with(getContext())
                             .load(user.getThumbnail())
@@ -466,13 +465,27 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
                                 VideoView nextVideo = (VideoView) mUserProfListView.findViewWithTag(mShowPosition);
 
                                 if (nextVideo != null) {
-                                    Log.e("TAG", "pause : " + mShowPosition);
-                                    nextVideo.stopPlayback();
+                                    nextVideo.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                                        @Override
+                                        public void onPrepared(MediaPlayer mp) {
+                                            mp.stop();
+                                            Log.e("TAG", "pause : " + mShowPosition);
+                                            //nextVideo.stopPlayback();
+                                            //nextVideo.pause();
+                                        }
+                                    });
                                 }
 
                                 videoHolder.mVideoThumbnail.setVisibility(View.GONE);
                                 videoHolder.movie.start();
-                                mp.setLooping(true);
+
+                                mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                    @Override
+                                    public void onCompletion(MediaPlayer mp) {
+                                        mp.start();
+                                        mp.setLooping(true);
+                                    }
+                                });
                                 Log.e("TAG", "start : " + position);
                                 mShowPosition = position;
                             }

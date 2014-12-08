@@ -74,7 +74,6 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
     private String mName;
     private String mPictureImageUrl;
 
-    private VideoHolder videoHolder;
     private CommentHolder commentHolder;
     private LikeCommentHolder likeCommentHolder;
     public String mNextGoodnum;
@@ -96,16 +95,6 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
     private static final String TAG_COMMENT_NUM = "comment_num";
     private static final String TAG_THUMBNAIL = "thumbnail";
     private static final String TAG_STAR_EVALUATION = "star_evaluation";
-    private static final String TAG_TELL = "tell";
-    private static final String TAG_RESTNAME1 = "restname";
-    private static final String TAG_CATEGORY = "category";
-    private static final String TAG_LAT = "lat";
-    private static final String TAG_LON = "lon";
-    private static final String TAG_LOCALITY = "locality";
-    private static final String TAG_DISTANCE = "distance";
-
-    private TextView mPost_name;
-    private ImageView mPost_Imageurl;
 
 
     public ProfileFragment newIntent(String name, String imageUrl) {
@@ -512,7 +501,7 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                     break;
 
                 case 1:
-                    videoHolder = new VideoHolder(convertView);
+                    final VideoHolder videoHolder = new VideoHolder(convertView);
 
                     Picasso.with(getContext())
                             .load(user.getThumbnail())
@@ -533,27 +522,35 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
 
                                 if (nextVideo != null) {
                                     Log.e("TAG", "pause : " + mShowPosition);
-                                    nextVideo.stopPlayback();
+                                    //nextVideo.stopPlayback();
+                                    //この辺でエラーが出そう
+                                    nextVideo.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                                        @Override
+                                        public void onPrepared(MediaPlayer mp) {
+                                            mp.stop();
+                                            Log.e("TAG", "pause : " + mShowPosition);
+                                            //nextVideo.stopPlayback();
+                                            //nextVideo.pause();
+                                        }
+                                    });
                                 }
 
                                 videoHolder.mVideoThumbnail.setVisibility(View.GONE);
                                 videoHolder.movie.start();
-                                mp.setLooping(true);
+
+                                mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                    @Override
+                                    public void onCompletion(MediaPlayer mp) {
+                                        mp.start();
+                                        mp.setLooping(true);
+                                    }
+                                });
                                 Log.e("TAG", "start : " + position);
                                 mShowPosition = position;
                             }
                         });
                         videoHolder.movie.setTag(position);
 
-                        /*
-                        videoHolder.movie.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                            @Override
-                            public void onCompletion(MediaPlayer mp) {
-                                videoHolder.movie.seekTo(0);
-                                videoHolder.movie.start();
-                            }
-                        });
-                        */
                     }
                     break;
 

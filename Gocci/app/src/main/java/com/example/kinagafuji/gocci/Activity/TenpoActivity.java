@@ -88,8 +88,6 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
 
     private String mEncoderestname;
 
-    private VideoHolder videoHolder;
-
     private boolean mBusy = false;
 
     private int mShowPosition;
@@ -469,7 +467,7 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
                     break;
 
                 case 1:
-                    videoHolder = new VideoHolder(convertView);
+                    final VideoHolder videoHolder = new VideoHolder(convertView);
 
                     Picasso.with(getContext())
                             .load(user.getThumbnail())
@@ -489,13 +487,27 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
                                 VideoView nextVideo = (VideoView) mTenpoListView.findViewWithTag(mShowPosition);
 
                                 if (nextVideo != null) {
-                                    Log.e("TAG", "pause : " + mShowPosition);
-                                    nextVideo.stopPlayback();
+                                    nextVideo.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                                        @Override
+                                        public void onPrepared(MediaPlayer mp) {
+                                            mp.stop();
+                                            Log.e("TAG", "pause : " + mShowPosition);
+                                            //nextVideo.stopPlayback();
+                                            //nextVideo.pause();
+                                        }
+                                    });
                                 }
 
                                 videoHolder.mVideoThumbnail.setVisibility(View.GONE);
                                 videoHolder.movie.start();
-                                mp.setLooping(true);
+
+                                mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                    @Override
+                                    public void onCompletion(MediaPlayer mp) {
+                                        mp.start();
+                                        mp.setLooping(true);
+                                    }
+                                });
                                 Log.e("TAG", "start : " + position);
                                 mShowPosition = position;
                             }

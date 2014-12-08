@@ -32,6 +32,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.kinagafuji.gocci.R;
+import com.squareup.otto.Subscribe;
 
 /**
  * To be used with ViewPager to provide a tab indicator component which give constant feedback as to
@@ -266,6 +267,7 @@ public class SlidingTabLayout extends HorizontalScrollView {
 
     private class InternalViewPagerListener implements ViewPager.OnPageChangeListener {
         private int mScrollState;
+        private int mPosition;
         private static final String TAG = "OnPageChangeListener";
 
         @Override
@@ -297,6 +299,7 @@ public class SlidingTabLayout extends HorizontalScrollView {
                     //ページ移動完了
                     Log.e(TAG, "onPageScrollStateChanged" +
                             " state: SCROLL_STATE_IDLE");
+                    BusHolder.get().post(new PageChangeVideoStopEvent(mPosition));
                     break;
                 case ViewPager.SCROLL_STATE_SETTLING:
                     //ドラッグ終了
@@ -307,7 +310,6 @@ public class SlidingTabLayout extends HorizontalScrollView {
                     //ドラッグ開始
                     Log.e(TAG, "onPageScrollStateChanged" +
                             " state: SCROLL_STATE_DRAGGING");
-
                     break;
                 default:
                     Log.e(TAG, "onPageScrollStateChanged" +
@@ -322,6 +324,7 @@ public class SlidingTabLayout extends HorizontalScrollView {
 
         @Override
         public void onPageSelected(int position) {
+            mPosition = position;
 
             //ドラッグ終了　ページ選択時
             Log.e(TAG, "onPageSelected" +
