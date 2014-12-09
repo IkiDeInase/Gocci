@@ -32,7 +32,6 @@ import com.example.kinagafuji.gocci.Activity.TenpoActivity;
 import com.example.kinagafuji.gocci.Base.BaseFragment;
 import com.example.kinagafuji.gocci.Base.CustomProgressDialog;
 import com.example.kinagafuji.gocci.R;
-import com.example.kinagafuji.gocci.data.LayoutHolder;
 import com.example.kinagafuji.gocci.data.UserData;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
@@ -60,43 +59,71 @@ import java.util.ArrayList;
 
 public class Search_mapFragment extends BaseFragment implements GooglePlayServicesClient.OnConnectionFailedListener, GooglePlayServicesClient.ConnectionCallbacks {
 
+    private static final String KEY_IMAGE_URL = "image_url";
+    private static final String TAG_USER_NAME = "user_name";
+    private static final String TAG = "Search_mapFragment";
+    private final Search_mapFragment self = this;
     public CustomProgressDialog mSearchmapDialog;
     public ListView mSearch_mapListView;
     public ArrayList<UserData> mSearch_mapusers = new ArrayList<UserData>();
     public Search_mapAdapter mSearch_mapAdapter;
-
-    private SwipeRefreshLayout mSearchmapSwipe;
-
     public String mSearch_keywordUrl;
     public CustomProgressDialog mKeywordDialog;
     public ArrayList<UserData> mKeywordusers = new ArrayList<UserData>();
     public Search_keywordAdapter mSearch_keywordAdapter;
-
     public double mLatitude;
     public double mLongitude;
-
     public GoogleMap mMap;
-
     public SearchView mSearchView;
-
     public String mSearchword;
-    private String mEncode_searchword;
-
     public String mName;
     public String mPictureImageUrl;
-
     public LocationManager mLocationManager;
+    private SwipeRefreshLayout mSearchmapSwipe;
+    private String mEncode_searchword;
     private LocationClient mLocationClient = null;
     private Location currentLocation;
+    private LocationListener listener = new LocationListener() {
 
-    private static final String KEY_IMAGE_URL = "image_url";
+        @Override
+        public void onLocationChanged(Location location) {
+            currentLocation = location;
+            mLatitude = currentLocation.getLatitude();
+            mLongitude = currentLocation.getLongitude();
 
-    private static final String TAG_USER_NAME = "user_name";
+            Log.e("TAG", "位置変更時経度" + mLatitude + "/" + "緯度" + mLongitude);
+        }
 
-    private static final String TAG = "Search_mapFragment";
-    private final Search_mapFragment self = this;
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
 
-        public Search_mapFragment newIntent(String name, String imageUrl) {
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+
+        }
+    };
+    private SearchView.OnQueryTextListener onQueryTextListener = new SearchView.OnQueryTextListener() {
+        @Override
+        public boolean onQueryTextSubmit(String searchWord) {
+            // SubmitボタンorEnterKeyを押されたら呼び出されるメソッド
+            return setSearchWord(searchWord);
+        }
+
+        @Override
+        public boolean onQueryTextChange(String newText) {
+            // 入力される度に呼び出される
+            return false;
+        }
+    };
+
+    public Search_mapFragment newIntent(String name, String imageUrl) {
         Search_mapFragment fragment = new Search_mapFragment();
         Bundle args = new Bundle();
         args.putString(TAG_USER_NAME, name);
@@ -190,7 +217,6 @@ public class Search_mapFragment extends BaseFragment implements GooglePlayServic
         return view1;
     }
 
-
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -200,7 +226,6 @@ public class Search_mapFragment extends BaseFragment implements GooglePlayServic
         mPictureImageUrl = args.getString(KEY_IMAGE_URL);
 
     }
-
 
     private void setUpMap() {
 
@@ -223,21 +248,6 @@ public class Search_mapFragment extends BaseFragment implements GooglePlayServic
         mSearchmapDialog.setCancelable(false);
         mSearchmapDialog.show();
     }
-
-
-    private SearchView.OnQueryTextListener onQueryTextListener = new SearchView.OnQueryTextListener() {
-        @Override
-        public boolean onQueryTextSubmit(String searchWord) {
-            // SubmitボタンorEnterKeyを押されたら呼び出されるメソッド
-            return setSearchWord(searchWord);
-        }
-
-        @Override
-        public boolean onQueryTextChange(String newText) {
-            // 入力される度に呼び出される
-            return false;
-        }
-    };
 
     private boolean setSearchWord(String searchWord) {
         if (searchWord != null && !searchWord.equals("")) {
@@ -351,32 +361,25 @@ public class Search_mapFragment extends BaseFragment implements GooglePlayServic
         }
     }
 
-    private LocationListener listener = new LocationListener() {
+    public static class Search_mapHolder {
+        public ImageView search1;
+        public ImageView search2;
+        public ImageView search3;
+        public TextView restname;
+        public TextView category;
+        public TextView locality;
+        public TextView distance;
 
-        @Override
-        public void onLocationChanged(Location location) {
-            currentLocation = location;
-            mLatitude = currentLocation.getLatitude();
-            mLongitude = currentLocation.getLongitude();
-
-            Log.e("TAG", "位置変更時経度" + mLatitude + "/" + "緯度" + mLongitude);
+        public Search_mapHolder(View view) {
+            this.search1 = (ImageView) view.findViewById(R.id.search1);
+            this.search2 = (ImageView) view.findViewById(R.id.search2);
+            this.search3 = (ImageView) view.findViewById(R.id.search3);
+            this.restname = (TextView) view.findViewById(R.id.restname);
+            this.category = (TextView) view.findViewById(R.id.category);
+            this.locality = (TextView) view.findViewById(R.id.locality);
+            this.distance = (TextView) view.findViewById(R.id.distance);
         }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-
-        }
-    };
+    }
 
     public class Search_mapAsyncTask extends AsyncTask<String, String, Integer> {
 
@@ -626,7 +629,7 @@ public class Search_mapFragment extends BaseFragment implements GooglePlayServic
 
                             @Override
                             public void run() {
-                              mMap.addMarker(new MarkerOptions()
+                                mMap.addMarker(new MarkerOptions()
                                         .position(new LatLng(lat, lon))
                                         .title(restname));
 
@@ -663,26 +666,6 @@ public class Search_mapFragment extends BaseFragment implements GooglePlayServic
             }
 
             mKeywordDialog.dismiss();
-        }
-    }
-
-    public static class Search_mapHolder {
-        public ImageView search1;
-        public ImageView search2;
-        public ImageView search3;
-        public TextView restname;
-        public TextView category;
-        public TextView locality;
-        public TextView distance;
-
-        public Search_mapHolder(View view) {
-            this.search1 = (ImageView) view.findViewById(R.id.search1);
-            this.search2 = (ImageView) view.findViewById(R.id.search2);
-            this.search3 = (ImageView) view.findViewById(R.id.search3);
-            this.restname = (TextView) view.findViewById(R.id.restname);
-            this.category = (TextView) view.findViewById(R.id.category);
-            this.locality = (TextView) view.findViewById(R.id.locality);
-            this.distance = (TextView) view.findViewById(R.id.distance);
         }
     }
 

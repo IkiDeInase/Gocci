@@ -63,31 +63,6 @@ import java.util.ArrayList;
 public class TimelineFragment extends BaseFragment implements ListView.OnScrollListener {
 
     private static final String sTimelineUrl = "http://api-gocci.jp/timeline/";
-
-    public CustomProgressDialog mTimelineDialog;
-    public ListView mTimelineListView;
-    public ArrayList<UserData> mTimelineusers = new ArrayList<UserData>();
-    public TimelineAdapter mTimelineAdapter;
-
-    private SwipeRefreshLayout mTimelineSwipe;
-
-    public String mName;
-    public String mPictureImageUrl;
-
-    public boolean mBusy = false;
-
-    public int mGoodCommePosition;
-
-    private VideoView nextVideo;
-
-    private NameHolder nameHolder;
-    private RestHolder restHolder;
-    private VideoHolder videoHolder;
-    public CommentHolder commentHolder;
-    public LikeCommentHolder likeCommentHolder;
-
-    public String currentgoodnum;
-
     private static final String KEY_IMAGE_URL = "image_url";
     private static final String TAG_POST_ID = "post_id";
     private static final String TAG_USER_ID = "user_id";
@@ -101,8 +76,23 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
     private static final String TAG_STAR_EVALUATION = "star_evaluation";
     private static final String TAG_LOCALITY = "locality";
     private static final String TAG = "TimelineFragment";
-
     private final TimelineFragment self = this;
+    public CustomProgressDialog mTimelineDialog;
+    public ListView mTimelineListView;
+    public ArrayList<UserData> mTimelineusers = new ArrayList<UserData>();
+    public TimelineAdapter mTimelineAdapter;
+    public String mName;
+    public String mPictureImageUrl;
+    public boolean mBusy = false;
+    public int mGoodCommePosition;
+    public CommentHolder commentHolder;
+    public LikeCommentHolder likeCommentHolder;
+    public String currentgoodnum;
+    private SwipeRefreshLayout mTimelineSwipe;
+    private VideoView nextVideo;
+    private NameHolder nameHolder;
+    private RestHolder restHolder;
+    private VideoHolder videoHolder;
 
     public TimelineFragment newIntent(String name, String imageUrl) {
         TimelineFragment fragment = new TimelineFragment();
@@ -302,6 +292,35 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
     public void onDestroyView() {
         super.onDestroyView();
         Log.e(TAG, "Fragment-onDestroyView");
+    }
+
+    public static class NameHolder {
+        public ImageView circleImage;
+        public TextView user_name;
+    }
+
+    public static class VideoHolder {
+        public VideoView movie;
+        public ImageView mVideoThumbnail;
+    }
+
+    public static class CommentHolder {
+        public RatingBar star_evaluation;
+        public TextView likesnumber;
+        public TextView commentsnumber;
+        public TextView sharenumber;
+    }
+
+    public static class RestHolder {
+        public ImageView restaurantImage;
+        public TextView locality;
+        public TextView rest_name;
+    }
+
+    public static class LikeCommentHolder {
+        public ImageView likes;
+        public ImageView comments;
+        public ImageView share;
     }
 
     public class TimelineGoodAsyncTask extends AsyncTask<String, String, Integer> {
@@ -579,9 +598,9 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
     }
 
     public class TimelineAdapter extends ArrayAdapter<UserData> {
+        public String mNextCommentnum;
         private int mShowPosition;
         private String mNextGoodnum;
-        public String mNextCommentnum;
 
         public TimelineAdapter(Context context, int viewResourceId, ArrayList<UserData> timelineusers) {
             super(context, viewResourceId, timelineusers);
@@ -815,35 +834,6 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
             return convertView;
 
         }
-    }
-
-    public static class NameHolder {
-        public ImageView circleImage;
-        public TextView user_name;
-    }
-
-    public static class VideoHolder {
-        public VideoView movie;
-        public ImageView mVideoThumbnail;
-    }
-
-    public static class CommentHolder {
-        public RatingBar star_evaluation;
-        public TextView likesnumber;
-        public TextView commentsnumber;
-        public TextView sharenumber;
-    }
-
-    public static class RestHolder {
-        public ImageView restaurantImage;
-        public TextView locality;
-        public TextView rest_name;
-    }
-
-    public static class LikeCommentHolder {
-        public ImageView likes;
-        public ImageView comments;
-        public ImageView share;
     }
 
 }

@@ -61,41 +61,7 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
     private static final String sSignupUrl = "http://api-gocci.jp/login/";
     private static final String sGoodUrl = "http://api-gocci.jp/goodinsert/";
     private static final String sDataurl = "http://api-gocci.jp/login/";
-
-    private String mProfUrl;
-
-    private CustomProgressDialog mProfDialog;
-    private ListView mProfListView;
-    private ArrayList<UserData> mProfusers = new ArrayList<UserData>();
-    private ProfAdapter mProfAdapter;
-    private SwipeRefreshLayout mProfSwipe;
-
-    private String mEncode_user_name;
-
-    private String mName;
-    private String mPictureImageUrl;
-
-    private VideoView nextVideo;
-
-    public int mGoodCommePosition;
-
-    private NameHolder nameHolder;
-    private RestHolder restHolder;
-    private VideoHolder videoHolder;
-    private CommentHolder commentHolder;
-    private LikeCommentHolder likeCommentHolder;
-    public String mNextGoodnum;
-    public String currentgoodnum;
-    public String mNextCommentnum;
-
-    private int mShowPosition;
-
-    private boolean mBusy = false;
-
-    private final ProfileFragment self = this;
-
     private static final String KEY_IMAGE_URL = "image_url";
-
     private static final String TAG_POST_ID = "post_id";
     private static final String TAG_USER_ID = "user_id";
     private static final String TAG_USER_NAME = "user_name";
@@ -106,7 +72,28 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
     private static final String TAG_COMMENT_NUM = "comment_num";
     private static final String TAG_THUMBNAIL = "thumbnail";
     private static final String TAG_STAR_EVALUATION = "star_evaluation";
-
+    private final ProfileFragment self = this;
+    public int mGoodCommePosition;
+    public String mNextGoodnum;
+    public String currentgoodnum;
+    public String mNextCommentnum;
+    private String mProfUrl;
+    private CustomProgressDialog mProfDialog;
+    private ListView mProfListView;
+    private ArrayList<UserData> mProfusers = new ArrayList<UserData>();
+    private ProfAdapter mProfAdapter;
+    private SwipeRefreshLayout mProfSwipe;
+    private String mEncode_user_name;
+    private String mName;
+    private String mPictureImageUrl;
+    private VideoView nextVideo;
+    private NameHolder nameHolder;
+    private RestHolder restHolder;
+    private VideoHolder videoHolder;
+    private CommentHolder commentHolder;
+    private LikeCommentHolder likeCommentHolder;
+    private int mShowPosition;
+    private boolean mBusy = false;
 
     public ProfileFragment newIntent(String name, String imageUrl) {
         ProfileFragment fragment = new ProfileFragment();
@@ -293,6 +280,35 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
 
     }
 
+    private static class NameHolder {
+        ImageView circleImage;
+        TextView user_name;
+    }
+
+    private static class VideoHolder {
+        VideoView movie;
+        ImageView mVideoThumbnail;
+    }
+
+    private static class CommentHolder {
+        RatingBar star_evaluation;
+        TextView likesnumber;
+        TextView commentsnumber;
+        TextView sharenumber;
+    }
+
+    private static class RestHolder {
+        ImageView restaurantImage;
+        TextView locality;
+        TextView rest_name;
+    }
+
+    private static class LikeCommentHolder {
+        ImageView likes;
+        ImageView comments;
+        ImageView share;
+    }
+
     public class ProfTask extends AsyncTask<String, String, Integer> {
 
         @Override
@@ -419,35 +435,6 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
             }
             mProfDialog.dismiss();
         }
-    }
-
-    private static class NameHolder {
-        ImageView circleImage;
-        TextView user_name;
-    }
-
-    private static class VideoHolder {
-        VideoView movie;
-        ImageView mVideoThumbnail;
-    }
-
-    private static class CommentHolder {
-        RatingBar star_evaluation;
-        TextView likesnumber;
-        TextView commentsnumber;
-        TextView sharenumber;
-    }
-
-    private static class RestHolder {
-        ImageView restaurantImage;
-        TextView locality;
-        TextView rest_name;
-    }
-
-    private static class LikeCommentHolder {
-        ImageView likes;
-        ImageView comments;
-        ImageView share;
     }
 
     public class ProfAdapter extends ArrayAdapter<UserData> {
