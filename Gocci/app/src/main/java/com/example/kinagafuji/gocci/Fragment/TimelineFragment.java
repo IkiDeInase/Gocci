@@ -22,6 +22,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -76,6 +77,8 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
 
     public boolean mBusy = false;
 
+    public int mGoodCommePosition;
+
     private VideoView nextVideo;
 
     private VideoHolder videoHolder;
@@ -85,7 +88,17 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
     public String currentgoodnum;
 
     private static final String KEY_IMAGE_URL = "image_url";
+    private static final String TAG_POST_ID = "post_id";
+    private static final String TAG_USER_ID = "user_id";
     private static final String TAG_USER_NAME = "user_name";
+    private static final String TAG_PICTURE = "picture";
+    private static final String TAG_MOVIE = "movie";
+    private static final String TAG_RESTNAME = "restname";
+    private static final String TAG_GOODNUM = "goodnum";
+    private static final String TAG_COMMENT_NUM = "comment_num";
+    private static final String TAG_THUMBNAIL = "thumbnail";
+    private static final String TAG_STAR_EVALUATION = "star_evaluation";
+    private static final String TAG_LOCALITY = "locality";
     private static final String TAG = "TimelineFragment";
 
     private final TimelineFragment self = this;
@@ -298,6 +311,7 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
 
         private int mStatus;
         private int mStatus2;
+        private int mStatus3;
 
 
         @Override
@@ -348,16 +362,99 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
                 }
             }
 
-            return mStatus2;
+            if (HttpStatus.SC_OK == mStatus2) {
+                //TimelineJSONの読み込み
+                HttpGet request = new HttpGet(sTimelineUrl);
+                HttpResponse httpResponse = null;
+
+                try {
+                    httpResponse = client.execute(request);
+                } catch (Exception e) {
+                    Log.d("error", String.valueOf(e));
+                }
+
+                mStatus3 = httpResponse.getStatusLine().getStatusCode();
+
+                if (HttpStatus.SC_OK == mStatus3) {
+                    String timelineData = null;
+                    try {
+                        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                        httpResponse.getEntity().writeTo(outputStream);
+                        timelineData = outputStream.toString(); // JSONデータ
+                        Log.d("data", timelineData);
+                    } catch (Exception e) {
+                        Log.d("error", String.valueOf(e));
+                    }
+
+                    mTimelineusers.clear();
+
+                    try {
+                        JSONArray jsonArray = new JSONArray(timelineData);
+
+                        for (int i = 0; i < jsonArray.length(); i++) {
+
+                            JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                            String post_id = jsonObject.getString(TAG_POST_ID);
+                            Integer user_id = jsonObject.getInt(TAG_USER_ID);
+                            String user_name = jsonObject.getString(TAG_USER_NAME);
+                            String picture = jsonObject.getString(TAG_PICTURE);
+                            String movie = jsonObject.getString(TAG_MOVIE);
+                            String rest_name = jsonObject.getString(TAG_RESTNAME);
+                            Integer goodnum = jsonObject.getInt(TAG_GOODNUM);
+                            Integer comment_num = jsonObject.getInt(TAG_COMMENT_NUM);
+                            String thumbnail = jsonObject.getString(TAG_THUMBNAIL);
+                            Integer star_evaluation = jsonObject.getInt(TAG_STAR_EVALUATION);
+                            String locality = jsonObject.getString(TAG_LOCALITY);
+
+                            UserData user1 = new UserData();
+                            user1.setUser_name(user_name);
+                            user1.setPicture(picture);
+                            mTimelineusers.add(user1);
+
+                            UserData user2 = new UserData();
+                            user2.setMovie(movie);
+                            user2.setThumbnail(thumbnail);
+                            mTimelineusers.add(user2);
+
+                            UserData user3 = new UserData();
+                            user3.setComment_num(comment_num);
+                            user3.setgoodnum(goodnum);
+                            user3.setStar_evaluation(star_evaluation);
+                            mTimelineusers.add(user3);
+
+                            UserData user4 = new UserData();
+                            user4.setRest_name(rest_name);
+                            user4.setLocality(locality);
+                            mTimelineusers.add(user4);
+
+                            UserData user5 = new UserData();
+                            user5.setPost_id(post_id);
+                            user5.setUser_id(user_id);
+                            mTimelineusers.add(user5);
+
+
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        Log.d("error", String.valueOf(e));
+                    }
+                } else {
+                    Log.d("JSONSampleActivity", "Status" + mStatus3);
+                }
+            }
+
+            return mStatus3;
         }
 
         @Override
         protected void onPostExecute(Integer result) {
             if (result != null && result == HttpStatus.SC_OK) {
                 //いいねが送れた処理　項目itemの更新
-                //View numberview = mTimelineListView.getChildAt(mTagPosition);
-                //mTimelineListView.getAdapter().getView(mTagPosition,numberview,mTimelineListView);
-                mTimelineAdapter.notifyDataSetChanged();
+                View targetView = mTimelineListView.getChildAt( (mGoodCommePosition-2) );
+                mTimelineListView.getAdapter().getView( (mGoodCommePosition-2) , targetView, mTimelineListView);
+                Log.e("いいね追加成功","成功しました");
+
             } else {
                 //失敗のため、いいね取り消し
                 commentHolder.likesnumber.setText(currentgoodnum);
@@ -372,17 +469,7 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
 
     public class TimelineAsyncTask extends AsyncTask<String, String, Integer> {
 
-        private static final String TAG_POST_ID = "post_id";
-        private static final String TAG_USER_ID = "user_id";
-        private static final String TAG_USER_NAME = "user_name";
-        private static final String TAG_PICTURE = "picture";
-        private static final String TAG_MOVIE = "movie";
-        private static final String TAG_RESTNAME = "restname";
-        private static final String TAG_GOODNUM = "goodnum";
-        private static final String TAG_COMMENT_NUM = "comment_num";
-        private static final String TAG_THUMBNAIL = "thumbnail";
-        private static final String TAG_STAR_EVALUATION = "star_evaluation";
-        private static final String TAG_LOCALITY = "locality";
+
 
         @Override
         protected Integer doInBackground(String... strings) {
@@ -411,6 +498,9 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
                 } catch (Exception e) {
                     Log.d("error", String.valueOf(e));
                 }
+
+                mTimelineusers.clear();
+
 
                 try {
                     JSONArray jsonArray = new JSONArray(timelineData);
@@ -493,6 +583,7 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
         private LayoutInflater layoutInflater;
         private int mShowPosition;
         private String mNextGoodnum;
+        public String mNextCommentnum;
 
         public TimelineAdapter(Context context, int viewResourceId, ArrayList<UserData> timelineusers) {
             super(context, viewResourceId, timelineusers);
@@ -602,8 +693,13 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
                     commentHolder.likesnumber.setText(String.valueOf(user.getgoodnum()));
                     commentHolder.commentsnumber.setText(String.valueOf(user.getComment_num()));
 
+                    commentHolder.star_evaluation.setIsIndicator(true);
+                    commentHolder.star_evaluation.setRating((float)user.getStar_evaluation());
+
                     mNextGoodnum = String.valueOf(user.getgoodnum() + 1);
                     currentgoodnum = String.valueOf((user.getgoodnum()));
+                    mNextCommentnum = String.valueOf((user.getComment_num()+1));
+
 
                     break;
 
@@ -617,10 +713,16 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
                 case 4:
                     likeCommentHolder = new LikeCommentHolder(convertView);
                     //クリックされた時の処理
+                    if (mGoodCommePosition == position ){
+                        likeCommentHolder.likes.setClickable(false);
+                        likeCommentHolder.likes.setBackgroundResource(R.drawable.ic_like_orange);
+                    }
+
                     likeCommentHolder.likes.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             Log.e("いいねをクリック", user.getPost_id() + mNextGoodnum);
+                            mGoodCommePosition = position;
 
                             likeCommentHolder.likes.setClickable(false);
                             commentHolder.likesnumber.setText(mNextGoodnum);
@@ -635,6 +737,7 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
                         @Override
                         public void onClick(View v) {
                             Log.e("コメントをクリック", "コメント！" + user.getPost_id());
+                            commentHolder.commentsnumber.setText(mNextCommentnum);
 
                             //引数に入れたい値を入れていく
                             View commentView = new CommentView(getActivity(), mName, mPictureImageUrl, user.getPost_id());
@@ -679,6 +782,7 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
     }
 
     public static class CommentHolder {
+        public RatingBar star_evaluation;
         public TextView likesnumber;
         public TextView likes;
         public TextView commentsnumber;
@@ -687,6 +791,7 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
         public TextView share;
 
         public CommentHolder(View view) {
+            this.star_evaluation = (RatingBar) view.findViewById(R.id.star_evaluation);
             this.likesnumber = (TextView) view.findViewById(R.id.likesnumber);
             this.likes = (TextView) view.findViewById(R.id.likes);
             this.commentsnumber = (TextView) view.findViewById(R.id.commentsnumber);

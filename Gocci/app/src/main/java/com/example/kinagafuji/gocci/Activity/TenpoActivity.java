@@ -1,15 +1,11 @@
 package com.example.kinagafuji.gocci.Activity;
 
-import android.animation.Animator;
-import android.animation.AnimatorInflater;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,11 +17,11 @@ import android.view.animation.RotateAnimation;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -76,6 +72,8 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
     private static final String sGoodUrl = "http://api-gocci.jp/goodinsert/";
     private static final String sDataurl = "http://api-gocci.jp/login/";
 
+    private String mTenpoUrl;
+
     private CustomProgressDialog mTenpoDialog;
     private ArrayList<UserData> mTenpousers = new ArrayList<UserData>();
     private ListView mTenpoListView;
@@ -92,10 +90,14 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
 
     private int mShowPosition;
 
+    public int mGoodCommePosition;
+
+    private VideoHolder videoHolder;
     private CommentHolder commentHolder;
     private LikeCommentHolder likeCommentHolder;
     public String mNextGoodnum;
     public String currentgoodnum;
+    public String mNextCommentnum;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,7 +116,7 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
             e.printStackTrace();
         }
 
-        final String mTenpoUrl = "http://api-gocci.jp/restpage/?restname=" + mEncoderestname;
+        mTenpoUrl = "http://api-gocci.jp/restpage/?restname=" + mEncoderestname;
 
         /*
         TextView restname = (TextView) findViewById(R.id.restname);
@@ -137,9 +139,9 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
 
             @Override
             public void onClick(View v) {
-            RotateAnimation animation = (RotateAnimation) AnimationUtils.loadAnimation(TenpoActivity.this, R.anim.rotate_repeat);
-                            animation.setInterpolator(new LinearInterpolator());
-                            toukoubutton.startAnimation(animation);
+                RotateAnimation animation = (RotateAnimation) AnimationUtils.loadAnimation(TenpoActivity.this, R.anim.rotate_repeat);
+                animation.setInterpolator(new LinearInterpolator());
+                toukoubutton.startAnimation(animation);
                 Intent intent = new Intent(TenpoActivity.this, IntentVineCamera.class);
                 intent.putExtra("restname", mPost_restname);
                 intent.putExtra("name", mName);
@@ -172,14 +174,14 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
                 int line = (position / 5) * 5;
                 int pos = position - line;
 
-                switch(pos) {
+                switch (pos) {
                     case 0:
                         //名前部分のview　プロフィール画面へ
                         //Signupを読み込みそう後回し
                         Intent userintent = new Intent(TenpoActivity.this, UserProfActivity.class);
                         userintent.putExtra("user_name", country.getUser_name());
-                        userintent.putExtra("mName",mName);
-                        userintent.putExtra("mPictureImageUrl",mPictureImageUrl);
+                        userintent.putExtra("mName", mName);
+                        userintent.putExtra("mPictureImageUrl", mPictureImageUrl);
                         startActivity(userintent);
                         break;
                     case 1:
@@ -205,7 +207,7 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
 
 
         mTenpoSwipe = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
-        mTenpoSwipe.setColorSchemeColors(R.color.main_color_light,R.color.gocci,R.color.main_color_dark,R.color.window_bg);
+        mTenpoSwipe.setColorSchemeColors(R.color.main_color_light, R.color.gocci, R.color.main_color_dark, R.color.window_bg);
         mTenpoSwipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 
             @Override
@@ -279,6 +281,8 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
                 } catch (Exception e) {
                     Log.d("error", String.valueOf(e));
                 }
+
+                mTenpousers.clear();
 
                 try {
                     JSONArray jsonArray = new JSONArray(mTenpoData);
@@ -375,6 +379,7 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
     }
 
     private static class CommentHolder {
+        RatingBar star_evaluation;
         TextView likesnumber;
         TextView likes;
         TextView commentsnumber;
@@ -383,6 +388,7 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
         TextView share;
 
         public CommentHolder(View view) {
+            this.star_evaluation = (RatingBar) view.findViewById(R.id.star_evaluation);
             this.likesnumber = (TextView) view.findViewById(R.id.likesnumber);
             this.likes = (TextView) view.findViewById(R.id.likes);
             this.commentsnumber = (TextView) view.findViewById(R.id.commentsnumber);
@@ -410,9 +416,9 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
         ImageView share;
 
         public LikeCommentHolder(View view) {
-            this.likes = (ImageView)view.findViewById(R.id.likes);
-            this.comments = (ImageView)view.findViewById(R.id.comments);
-            this.share = (ImageView)view.findViewById(R.id.share);
+            this.likes = (ImageView) view.findViewById(R.id.likes);
+            this.comments = (ImageView) view.findViewById(R.id.comments);
+            this.share = (ImageView) view.findViewById(R.id.share);
 
         }
     }
@@ -428,7 +434,7 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
 
-            int line = (position/5)*5;
+            int line = (position / 5) * 5;
             int pos = position - line;
 
             final UserData user = this.getItem(position);
@@ -467,7 +473,7 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
                     break;
 
                 case 1:
-                    final VideoHolder videoHolder = new VideoHolder(convertView);
+                    videoHolder = new VideoHolder(convertView);
 
                     Picasso.with(getContext())
                             .load(user.getThumbnail())
@@ -514,15 +520,7 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
                         });
                         videoHolder.movie.setTag(position);
 
-                        /*
-                        videoHolder.movie.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                            @Override
-                            public void onCompletion(MediaPlayer mp) {
-                                videoHolder.movie.seekTo(0);
-                                videoHolder.movie.start();
-                            }
-                        });
-                        */
+
                     }
 
                     break;
@@ -532,8 +530,13 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
                     commentHolder.likesnumber.setText(String.valueOf(user.getgoodnum()));
                     commentHolder.commentsnumber.setText(String.valueOf(user.getComment_num()));
 
+                    commentHolder.star_evaluation.setIsIndicator(true);
+                    commentHolder.star_evaluation.setRating((float) user.getStar_evaluation());
+
                     mNextGoodnum = String.valueOf(user.getgoodnum() + 1);
                     currentgoodnum = String.valueOf((user.getgoodnum()));
+                    mNextCommentnum = String.valueOf((user.getComment_num() + 1));
+
                     break;
 
                 case 3:
@@ -543,17 +546,24 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
                     break;
                 case 4:
                     likeCommentHolder = new LikeCommentHolder(convertView);
+
+                    if (mGoodCommePosition == position) {
+                        likeCommentHolder.likes.setClickable(false);
+                        likeCommentHolder.likes.setBackgroundResource(R.drawable.ic_like_orange);
+                    }
+
                     likeCommentHolder.likes.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             Log.e("いいねをクリック", user.getPost_id() + sGoodUrl + mNextGoodnum);
+                            mGoodCommePosition = position;
 
                             likeCommentHolder.likes.setClickable(false);
                             commentHolder.likesnumber.setText(mNextGoodnum);
                             //画像差し込み
                             likeCommentHolder.likes.setBackgroundResource(R.drawable.ic_like_orange);
 
-                            new TenpoGoodnumTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,user.getPost_id());
+                            new TenpoGoodnumTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, user.getPost_id());
                         }
                     });
 
@@ -561,6 +571,7 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
                         @Override
                         public void onClick(View v) {
                             Log.e("コメントをクリック", "コメント！" + user.getPost_id());
+                            commentHolder.commentsnumber.setText(mNextCommentnum);
 
                             //引数に入れたい値を入れていく
                             View commentView = new CommentView(TenpoActivity.this, mName, mPictureImageUrl, user.getPost_id());
@@ -583,8 +594,9 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
     }
 
     public class TenpoGoodnumTask extends AsyncTask<String, String, Integer> {
-        int status;
-        int status2;
+        private int mStatus;
+        private int mStatus2;
+        private int mStatus3;
 
         @Override
         protected Integer doInBackground(String... params) {
@@ -603,7 +615,7 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
             try {
                 method.setEntity(new UrlEncodedFormEntity(contents, "utf-8"));
                 HttpResponse res = client.execute(method);
-                status = res.getStatusLine().getStatusCode();
+                mStatus = res.getStatusLine().getStatusCode();
                 Log.d("TAGだよ", "反応");
                 HttpEntity entity = res.getEntity();
                 body = EntityUtils.toString(entity, "UTF-8");
@@ -612,7 +624,7 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
                 e.printStackTrace();
             }
 
-            if (HttpStatus.SC_OK == status) {
+            if (HttpStatus.SC_OK == mStatus) {
 
                 HttpPost goodnummethod = new HttpPost(sGoodUrl);
 
@@ -624,7 +636,7 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
                 try {
                     goodnummethod.setEntity(new UrlEncodedFormEntity(goodnumcontents, "utf-8"));
                     HttpResponse goodnumres = client.execute(goodnummethod);
-                    status2 = goodnumres.getStatusLine().getStatusCode();
+                    mStatus2 = goodnumres.getStatusLine().getStatusCode();
                     Log.d("TAGだよ", "反応");
                     HttpEntity goodnumentity = goodnumres.getEntity();
                     goodnumbody = EntityUtils.toString(goodnumentity, "UTF-8");
@@ -634,16 +646,97 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
                 }
             }
 
-            return status2;
+            if (HttpStatus.SC_OK == mStatus2) {
+
+                HttpGet request = new HttpGet(mTenpoUrl);
+                HttpResponse httpResponse = null;
+
+                try {
+                    httpResponse = client.execute(request);
+                } catch (Exception e) {
+                    Log.d("error", String.valueOf(e));
+                }
+
+                mStatus3 = httpResponse.getStatusLine().getStatusCode();
+
+                if (HttpStatus.SC_OK == mStatus3) {
+                    String mTenpoData = null;
+                    try {
+                        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                        httpResponse.getEntity().writeTo(outputStream);
+                        mTenpoData = outputStream.toString(); // JSONデータ
+                        Log.d("data", mTenpoData);
+                    } catch (Exception e) {
+                        Log.d("error", String.valueOf(e));
+                    }
+
+                    mTenpousers.clear();
+
+                    try {
+                        JSONArray jsonArray = new JSONArray(mTenpoData);
+
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                            String post_id = jsonObject.getString(TAG_POST_ID);
+                            String user_name = jsonObject.getString(TAG_USER_NAME);
+                            String picture = jsonObject.getString(TAG_PICTURE);
+                            String movie = jsonObject.getString(TAG_MOVIE);
+                            String restname = jsonObject.getString(TAG_RESTNAME);
+                            String locality = jsonObject.getString(TAG_LOCALITY);
+                            String review = jsonObject.getString(TAG_REVIEW);
+                            Integer goodnum = jsonObject.getInt(TAG_GOODNUM);
+                            Integer comment_num = jsonObject.getInt(TAG_COMMENT_NUM);
+                            String thumbnail = jsonObject.getString(TAG_THUMBNAIL);
+                            Integer star_evaluation = jsonObject.getInt(TAG_STAR_EVALUATION);
+
+                            UserData user1 = new UserData();
+                            user1.setUser_name(user_name);
+                            user1.setPicture(picture);
+                            mTenpousers.add(user1);
+
+                            UserData user2 = new UserData();
+                            user2.setMovie(movie);
+                            user2.setThumbnail(thumbnail);
+                            mTenpousers.add(user2);
+
+                            UserData user3 = new UserData();
+                            user3.setReview(review);
+                            user3.setComment_num(comment_num);
+                            user3.setgoodnum(goodnum);
+                            user3.setStar_evaluation(star_evaluation);
+                            mTenpousers.add(user3);
+
+                            UserData user4 = new UserData();
+                            user4.setRest_name(restname);
+                            //user4.setLocality(locality);
+                            mTenpousers.add(user4);
+
+                            UserData user5 = new UserData();
+                            user5.setPost_id(post_id);
+                            //user5.setUser_id(user_id);
+                            mTenpousers.add(user5);
+
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        Log.d("error", String.valueOf(e));
+                    }
+                } else {
+                    Log.d("JSONSampleActivity", "Status" + mStatus3);
+                }
+            }
+
+            return mStatus3;
         }
 
         @Override
         protected void onPostExecute(Integer result) {
             if (result != null && result == HttpStatus.SC_OK) {
                 //いいねが送れた処理　項目itemの更新
-                //View numberview = mTimelineListView.getChildAt(mTagPosition);
-                //mTimelineListView.getAdapter().getView(mTagPosition,numberview,mTimelineListView);
-                mTenpoAdapter.notifyDataSetChanged();
+                View targetView = mTenpoListView.getChildAt((mGoodCommePosition - 2));
+                mTenpoListView.getAdapter().getView((mGoodCommePosition - 2), targetView, mTenpoListView);
+                Log.e("いいね追加成功", "成功しました");
             } else {
                 //失敗のため、いいね取り消し
                 commentHolder.likesnumber.setText(currentgoodnum);

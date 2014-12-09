@@ -17,8 +17,6 @@
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
-    <permission android:name="com.example.kinagafuji.gocci.ACCESS_ALLOW" />
-    <permission android:name="com.example.kinagafuji.gocci.permission.MAPS_RECEIVE" />
     <permission
         android:name="android.permission.FLASHLIGHT"
         android:permissionGroup="android.permission-group.HARDWARE_CONTROLS" />

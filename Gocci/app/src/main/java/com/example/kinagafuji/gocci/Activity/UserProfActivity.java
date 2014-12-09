@@ -1,6 +1,5 @@
 package com.example.kinagafuji.gocci.Activity;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
@@ -10,8 +9,6 @@ import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -20,6 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -69,10 +67,14 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
 
     private int mShowPosition;
 
+    public int mGoodCommePosition;
+
+    private VideoHolder videoHolder;
     private CommentHolder commentHolder;
     private LikeCommentHolder likeCommentHolder;
     public String mNextGoodnum;
     public String currentgoodnum;
+    public String mNextCommentnum;
 
     private boolean mBusy = false;
 
@@ -135,7 +137,7 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
                 int line = (position / 5) * 5;
                 int pos = position - line;
 
-                switch(pos) {
+                switch (pos) {
                     case 0:
                         //名前部分のview　プロフィール画面へ
                         break;
@@ -151,8 +153,8 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
                         //レストランのview
                         //レストラン画面に飛ぼうか
                         Intent intent = new Intent(UserProfActivity.this, TenpoActivity.class);
-                        intent.putExtra("restname",country.getRest_name());
-                        intent.putExtra("locality",country.getLocality());
+                        intent.putExtra("restname", country.getRest_name());
+                        intent.putExtra("locality", country.getLocality());
                         startActivity(intent);
                         break;
                     case 4:
@@ -162,7 +164,7 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
             }
         });
 
-        mUserProfSwipe = (SwipeRefreshLayout)findViewById(R.id.swipe_user_prof);
+        mUserProfSwipe = (SwipeRefreshLayout) findViewById(R.id.swipe_user_prof);
         mUserProfSwipe.setColorSchemeColors(R.color.main_color_light, R.color.gocci, R.color.main_color_dark, R.color.window_bg);
         mUserProfSwipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 
@@ -209,7 +211,7 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
 
     }
 
-    public class UserProfAsyncTask extends AsyncTask<String,String,Integer> {
+    public class UserProfAsyncTask extends AsyncTask<String, String, Integer> {
 
         @Override
         protected Integer doInBackground(String... params) {
@@ -257,6 +259,8 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
                 } catch (Exception e) {
                     Log.d("error", String.valueOf(e));
                 }
+
+                mUserProfusers.clear();
 
                 try {
                     JSONArray jsonArray = new JSONArray(mProfData);
@@ -353,6 +357,7 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
     }
 
     private static class CommentHolder {
+        RatingBar star_evaluation;
         TextView likesnumber;
         TextView likes;
         TextView commentsnumber;
@@ -361,6 +366,7 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
         TextView share;
 
         public CommentHolder(View view) {
+            this.star_evaluation = (RatingBar) view.findViewById(R.id.star_evaluation);
             this.likesnumber = (TextView) view.findViewById(R.id.likesnumber);
             this.likes = (TextView) view.findViewById(R.id.likes);
             this.commentsnumber = (TextView) view.findViewById(R.id.commentsnumber);
@@ -388,9 +394,9 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
         ImageView share;
 
         public LikeCommentHolder(View view) {
-            this.likes = (ImageView)view.findViewById(R.id.likes);
-            this.comments = (ImageView)view.findViewById(R.id.comments);
-            this.share = (ImageView)view.findViewById(R.id.share);
+            this.likes = (ImageView) view.findViewById(R.id.likes);
+            this.comments = (ImageView) view.findViewById(R.id.comments);
+            this.share = (ImageView) view.findViewById(R.id.share);
 
         }
     }
@@ -445,7 +451,7 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
                     break;
 
                 case 1:
-                    final VideoHolder videoHolder = new VideoHolder(convertView);
+                    videoHolder = new VideoHolder(convertView);
 
                     Picasso.with(getContext())
                             .load(user.getThumbnail())
@@ -492,15 +498,7 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
                         });
                         videoHolder.movie.setTag(position);
 
-                        /*
-                        videoHolder.movie.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                            @Override
-                            public void onCompletion(MediaPlayer mp) {
-                                videoHolder.movie.seekTo(0);
-                                videoHolder.movie.start();
-                            }
-                        });
-                        */
+
                     }
                     break;
 
@@ -509,8 +507,13 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
                     commentHolder.likesnumber.setText(String.valueOf(user.getgoodnum()));
                     commentHolder.commentsnumber.setText(String.valueOf(user.getComment_num()));
 
+                    commentHolder.star_evaluation.setIsIndicator(true);
+                    commentHolder.star_evaluation.setRating((float) user.getStar_evaluation());
+
                     mNextGoodnum = String.valueOf(user.getgoodnum() + 1);
                     currentgoodnum = String.valueOf((user.getgoodnum()));
+                    mNextCommentnum = String.valueOf((user.getComment_num() + 1));
+
                     break;
 
                 case 3:
@@ -521,18 +524,25 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
                     break;
                 case 4:
                     likeCommentHolder = new LikeCommentHolder(convertView);
+
+                    if (mGoodCommePosition == position) {
+                        likeCommentHolder.likes.setClickable(false);
+                        likeCommentHolder.likes.setBackgroundResource(R.drawable.ic_like_orange);
+                    }
+
                     //クリックされた時の処理
                     likeCommentHolder.likes.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             Log.e("いいねをクリック", user.getPost_id() + sGoodUrl + mNextGoodnum);
+                            mGoodCommePosition = position;
 
                             likeCommentHolder.likes.setClickable(false);
                             commentHolder.likesnumber.setText(mNextGoodnum);
                             //画像差し込み
                             likeCommentHolder.likes.setBackgroundResource(R.drawable.ic_like_orange);
 
-                            new UserProfGoodnumTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,user.getPost_id());
+                            new UserProfGoodnumTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, user.getPost_id());
                         }
                     });
 
@@ -540,6 +550,7 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
                         @Override
                         public void onClick(View v) {
                             Log.e("コメントをクリック", "コメント！" + user.getPost_id());
+                            commentHolder.commentsnumber.setText(mNextCommentnum);
 
                             //引数に入れたい値を入れていく
                             View commentView = new CommentView(UserProfActivity.this, mName, mPictureImageUrl, user.getPost_id());
@@ -563,8 +574,9 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
     }
 
     public class UserProfGoodnumTask extends AsyncTask<String, String, Integer> {
-        int status;
-        int status2;
+        private int mStatus;
+        private int mStatus2;
+        private int mStatus3;
 
         @Override
         protected Integer doInBackground(String... params) {
@@ -583,7 +595,7 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
             try {
                 method.setEntity(new UrlEncodedFormEntity(contents, "utf-8"));
                 HttpResponse res = client.execute(method);
-                status = res.getStatusLine().getStatusCode();
+                mStatus = res.getStatusLine().getStatusCode();
                 Log.d("TAGだよ", "反応");
                 HttpEntity entity = res.getEntity();
                 body = EntityUtils.toString(entity, "UTF-8");
@@ -592,7 +604,7 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
                 e.printStackTrace();
             }
 
-            if (HttpStatus.SC_OK == status) {
+            if (HttpStatus.SC_OK == mStatus) {
 
                 HttpPost goodnummethod = new HttpPost(sGoodUrl);
 
@@ -604,7 +616,7 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
                 try {
                     goodnummethod.setEntity(new UrlEncodedFormEntity(goodnumcontents, "utf-8"));
                     HttpResponse goodnumres = client.execute(goodnummethod);
-                    status2 = goodnumres.getStatusLine().getStatusCode();
+                    mStatus2 = goodnumres.getStatusLine().getStatusCode();
                     Log.d("TAGだよ", "反応");
                     HttpEntity goodnumentity = goodnumres.getEntity();
                     goodnumbody = EntityUtils.toString(goodnumentity, "UTF-8");
@@ -614,16 +626,97 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
                 }
             }
 
-            return status2;
+            if (HttpStatus.SC_OK == mStatus2) {
+
+                HttpGet request = new HttpGet(mProfUrl);
+                HttpResponse httpResponse = null;
+
+                try {
+                    httpResponse = client.execute(request);
+                } catch (Exception e) {
+                    Log.d("error", String.valueOf(e));
+                }
+
+                mStatus3 = httpResponse.getStatusLine().getStatusCode();
+
+                if (HttpStatus.SC_OK == mStatus3) {
+                    String mProfData = null;
+                    try {
+                        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                        httpResponse.getEntity().writeTo(outputStream);
+                        mProfData = outputStream.toString(); // JSONデータ
+                        Log.d("data", mProfData);
+                    } catch (Exception e) {
+                        Log.d("error", String.valueOf(e));
+                    }
+
+                    mUserProfusers.clear();
+
+                    try {
+                        JSONArray jsonArray = new JSONArray(mProfData);
+
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                            String post_id = jsonObject.getString(TAG_POST_ID);
+                            Integer user_id = jsonObject.getInt(TAG_USER_ID);
+                            String user_name = jsonObject.getString(TAG_USER_NAME);
+                            String picture = jsonObject.getString(TAG_PICTURE);
+                            String movie = jsonObject.getString(TAG_MOVIE);
+                            String restname = jsonObject.getString(TAG_RESTNAME);
+                            Integer goodnum = jsonObject.getInt(TAG_GOODNUM);
+                            Integer comment_num = jsonObject.getInt(TAG_COMMENT_NUM);
+                            String thumbnail = jsonObject.getString(TAG_THUMBNAIL);
+                            Integer star_evaluation = jsonObject.getInt(TAG_STAR_EVALUATION);
+                            //String locality = jsonObject.getString(TAG_LOCALITY);
+
+
+                            UserData user1 = new UserData();
+                            user1.setUser_name(user_name);
+                            user1.setPicture(picture);
+                            mUserProfusers.add(user1);
+
+                            UserData user2 = new UserData();
+                            user2.setMovie(movie);
+                            user2.setThumbnail(thumbnail);
+                            mUserProfusers.add(user2);
+
+                            UserData user3 = new UserData();
+                            user3.setComment_num(comment_num);
+                            user3.setgoodnum(goodnum);
+                            user3.setStar_evaluation(star_evaluation);
+                            mUserProfusers.add(user3);
+
+                            UserData user4 = new UserData();
+                            user4.setRest_name(restname);
+                            //user4.setLocality(locality);
+                            mUserProfusers.add(user4);
+
+                            UserData user5 = new UserData();
+                            user5.setPost_id(post_id);
+                            user5.setUser_id(user_id);
+                            mUserProfusers.add(user5);
+
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        Log.d("error", String.valueOf(e));
+                    }
+                } else {
+                    Log.d("JSONSampleActivity", "Status" + mStatus3);
+                }
+            }
+
+            return mStatus3;
         }
 
         @Override
         protected void onPostExecute(Integer result) {
             if (result != null && result == HttpStatus.SC_OK) {
                 //いいねが送れた処理　項目itemの更新
-                //View numberview = mTimelineListView.getChildAt(mTagPosition);
-                //mTimelineListView.getAdapter().getView(mTagPosition,numberview,mTimelineListView);
-                mUserProfAdapter.notifyDataSetChanged();
+                View targetView = mUserProfListView.getChildAt((mGoodCommePosition - 2));
+                mUserProfListView.getAdapter().getView((mGoodCommePosition - 2), targetView, mUserProfListView);
+                Log.e("いいね追加成功", "成功しました");
             } else {
                 //失敗のため、いいね取り消し
                 commentHolder.likesnumber.setText(currentgoodnum);
