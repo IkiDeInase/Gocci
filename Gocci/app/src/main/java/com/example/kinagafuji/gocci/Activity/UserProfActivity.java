@@ -69,6 +69,10 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
 
     public int mGoodCommePosition;
 
+    private VideoView nextVideo;
+
+    private NameHolder nameHolder;
+    private RestHolder restHolder;
     private VideoHolder videoHolder;
     private CommentHolder commentHolder;
     private LikeCommentHolder likeCommentHolder;
@@ -336,108 +340,83 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
     private static class NameHolder {
         ImageView circleImage;
         TextView user_name;
-        TextView time;
-
-        public NameHolder(View view) {
-            this.circleImage = (ImageView) view.findViewById(R.id.circleImage);
-            this.user_name = (TextView) view.findViewById(R.id.user_name);
-            this.time = (TextView) view.findViewById(R.id.time);
-        }
     }
 
     private static class VideoHolder {
         VideoView movie;
         ImageView mVideoThumbnail;
-
-        public VideoHolder(View view) {
-            this.movie = (VideoView) view.findViewById(R.id.videoView);
-            this.mVideoThumbnail = (ImageView) view.findViewById(R.id.video_thumbnail);
-
-        }
     }
 
     private static class CommentHolder {
         RatingBar star_evaluation;
         TextView likesnumber;
-        TextView likes;
         TextView commentsnumber;
-        TextView comments;
         TextView sharenumber;
-        TextView share;
-
-        public CommentHolder(View view) {
-            this.star_evaluation = (RatingBar) view.findViewById(R.id.star_evaluation);
-            this.likesnumber = (TextView) view.findViewById(R.id.likesnumber);
-            this.likes = (TextView) view.findViewById(R.id.likes);
-            this.commentsnumber = (TextView) view.findViewById(R.id.commentsnumber);
-            this.comments = (TextView) view.findViewById(R.id.comments);
-            this.sharenumber = (TextView) view.findViewById(R.id.sharenumber);
-            this.share = (TextView) view.findViewById(R.id.share);
-        }
     }
 
     private static class RestHolder {
         ImageView restaurantImage;
         TextView locality;
         TextView rest_name;
-
-        public RestHolder(View view) {
-            this.restaurantImage = (ImageView) view.findViewById(R.id.restaurantImage);
-            this.rest_name = (TextView) view.findViewById(R.id.rest_name);
-            this.locality = (TextView) view.findViewById(R.id.locality);
-        }
     }
 
     private static class LikeCommentHolder {
         ImageView likes;
         ImageView comments;
         ImageView share;
-
-        public LikeCommentHolder(View view) {
-            this.likes = (ImageView) view.findViewById(R.id.likes);
-            this.comments = (ImageView) view.findViewById(R.id.comments);
-            this.share = (ImageView) view.findViewById(R.id.share);
-
-        }
     }
 
     public class UserProfAdapter extends ArrayAdapter<UserData> {
-        private LayoutInflater layoutInflater;
 
         public UserProfAdapter(Context context, int viewResourceId, ArrayList<UserData> userprofusers) {
             super(context, viewResourceId, userprofusers);
-            this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            int line = (position / 5) * 5;
+            int pos = position - line;
+            Log.e("どんなposition/どのタイミングで帰ってくるのか？", String.valueOf(position));
+
+            switch (pos) {
+                case 0:
+                    return 0;
+                case 1:
+                    return 1;
+                case 2:
+                    return 2;
+                case 3:
+                    return 3;
+                default:
+                    return 4;
+            }
+        }
+
+        @Override
+        public int getViewTypeCount() {
+            return 5;
         }
 
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
 
-            int line = (position / 5) * 5;
-            int pos = position - line;
-
             final UserData user = this.getItem(position);
 
-            switch (pos) {
-                case 0:
-                    convertView = layoutInflater.inflate(R.layout.name_picture_bar, null);
-                    break;
-                case 1:
-                    convertView = layoutInflater.inflate(R.layout.video_bar, null);
-                    break;
-                case 2:
-                    convertView = layoutInflater.inflate(R.layout.comment_bar, null);
-                    break;
-                case 3:
-                    convertView = layoutInflater.inflate(R.layout.restaurant_bar, null);
-                    break;
-                case 4:
-                    convertView = layoutInflater.inflate(R.layout.likes_comments_bar, null);
-                    break;
-            }
+            switch (getItemViewType(position)) {
 
-            switch (pos) {
                 case 0:
-                    NameHolder nameHolder = new NameHolder(convertView);
+                    if (convertView == null) {
+                        LayoutInflater inflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                        convertView = inflater.inflate(R.layout.name_picture_bar, null);
+
+                        nameHolder = new NameHolder();
+                        nameHolder.circleImage = (ImageView) convertView.findViewById(R.id.circleImage);
+                        nameHolder.user_name = (TextView) convertView.findViewById(R.id.user_name);
+
+                        convertView.setTag(nameHolder);
+                    } else {
+                        nameHolder = (NameHolder) convertView.getTag();
+                    }
 
                     nameHolder.user_name.setText(user.getUser_name());
 
@@ -448,10 +427,22 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
                             .centerCrop()
                             .transform(new RoundedTransformation())
                             .into(nameHolder.circleImage);
+
                     break;
 
                 case 1:
-                    videoHolder = new VideoHolder(convertView);
+                    if (convertView == null) {
+                        LayoutInflater inflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                        convertView = inflater.inflate(R.layout.video_bar, null);
+
+                        videoHolder = new VideoHolder();
+                        videoHolder.movie = (VideoView) convertView.findViewById(R.id.videoView);
+                        videoHolder.mVideoThumbnail = (ImageView) convertView.findViewById(R.id.video_thumbnail);
+
+                        convertView.setTag(videoHolder);
+                    } else {
+                        videoHolder = (VideoHolder) convertView.getTag();
+                    }
 
                     Picasso.with(getContext())
                             .load(user.getThumbnail())
@@ -467,8 +458,7 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
                         videoHolder.movie.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                             @Override
                             public void onPrepared(MediaPlayer mp) {
-
-                                VideoView nextVideo = (VideoView) mUserProfListView.findViewWithTag(mShowPosition);
+                                nextVideo = (VideoView) mUserProfListView.findViewWithTag(mShowPosition);
 
                                 if (nextVideo != null) {
                                     nextVideo.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
@@ -492,18 +482,32 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
                                         mp.setLooping(true);
                                     }
                                 });
+
                                 Log.e("TAG", "start : " + position);
                                 mShowPosition = position;
                             }
                         });
-                        videoHolder.movie.setTag(position);
-
 
                     }
+
                     break;
 
                 case 2:
-                    commentHolder = new CommentHolder(convertView);
+                    if (convertView == null) {
+                        LayoutInflater inflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                        convertView = inflater.inflate(R.layout.comment_bar, null);
+
+                        commentHolder = new CommentHolder();
+                        commentHolder.star_evaluation = (RatingBar) convertView.findViewById(R.id.star_evaluation);
+                        commentHolder.likesnumber = (TextView) convertView.findViewById(R.id.likesnumber);
+                        commentHolder.commentsnumber = (TextView) convertView.findViewById(R.id.commentsnumber);
+                        commentHolder.sharenumber = (TextView) convertView.findViewById(R.id.sharenumber);
+
+                        convertView.setTag(commentHolder);
+                    } else {
+                        commentHolder = (CommentHolder) convertView.getTag();
+                    }
+
                     commentHolder.likesnumber.setText(String.valueOf(user.getgoodnum()));
                     commentHolder.commentsnumber.setText(String.valueOf(user.getComment_num()));
 
@@ -517,24 +521,50 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
                     break;
 
                 case 3:
-                    RestHolder restHolder = new RestHolder(convertView);
+                    if (convertView == null) {
+                        LayoutInflater inflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                        convertView = inflater.inflate(R.layout.restaurant_bar, null);
+
+                        restHolder = new RestHolder();
+                        restHolder.restaurantImage = (ImageView) convertView.findViewById(R.id.restaurantImage);
+                        restHolder.rest_name = (TextView) convertView.findViewById(R.id.rest_name);
+                        restHolder.locality = (TextView) convertView.findViewById(R.id.locality);
+
+                        convertView.setTag(restHolder);
+                    } else {
+                        restHolder = (RestHolder) convertView.getTag();
+                    }
 
                     restHolder.rest_name.setText(user.getRest_name());
-                    //restHolder.locality.setText(user.getLocality());
-                    break;
-                case 4:
-                    likeCommentHolder = new LikeCommentHolder(convertView);
+                    restHolder.locality.setText(user.getLocality());
 
+                    break;
+
+                default:
+                    if (convertView == null) {
+                        LayoutInflater inflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                        convertView = inflater.inflate(R.layout.likes_comments_bar, null);
+
+                        likeCommentHolder = new LikeCommentHolder();
+                        likeCommentHolder.likes = (ImageView) convertView.findViewById(R.id.likes);
+                        likeCommentHolder.comments = (ImageView) convertView.findViewById(R.id.comments);
+                        likeCommentHolder.share = (ImageView) convertView.findViewById(R.id.share);
+
+                        convertView.setTag(likeCommentHolder);
+                    } else {
+                        likeCommentHolder = (LikeCommentHolder) convertView.getTag();
+                    }
+
+                    //クリックされた時の処理
                     if (mGoodCommePosition == position) {
                         likeCommentHolder.likes.setClickable(false);
                         likeCommentHolder.likes.setBackgroundResource(R.drawable.ic_like_orange);
                     }
 
-                    //クリックされた時の処理
                     likeCommentHolder.likes.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Log.e("いいねをクリック", user.getPost_id() + sGoodUrl + mNextGoodnum);
+                            Log.e("いいねをクリック", user.getPost_id() + mNextGoodnum);
                             mGoodCommePosition = position;
 
                             likeCommentHolder.likes.setClickable(false);
@@ -563,13 +593,12 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
                             ToukouPopup.showLikeQuickAction(window, commentView, v, UserProfActivity.this.getWindowManager(), 0, 0);
                         }
                     });
-                    //クリックされた時の処理
+
                     break;
-
-
             }
 
             return convertView;
+
         }
     }
 

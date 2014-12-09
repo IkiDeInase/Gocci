@@ -145,7 +145,8 @@ public class IntentVineCamera extends Activity {
                     toukoushare.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            mRatingNumber = String.valueOf(videoRating.getRating());
+                            mRatingNumber = String.valueOf((int)videoRating.getRating());
+                            Log.e("星数",mRatingNumber);
                             new UploadAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                             mPostProgress = new CustomProgressDialog(IntentVineCamera.this);
                             mPostProgress.setCancelable(false);
