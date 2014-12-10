@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
@@ -22,7 +21,6 @@ import com.example.kinagafuji.gocci.Base.CustomProgressDialog;
 import com.example.kinagafuji.gocci.BuildConfig;
 import com.example.kinagafuji.gocci.R;
 import com.example.kinagafuji.gocci.data.PopupHelper;
-import com.example.kinagafuji.gocci.data.ToukouPopup;
 import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.Session;
@@ -33,7 +31,6 @@ import com.facebook.widget.LoginButton;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -42,7 +39,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,21 +48,16 @@ public class LoginFragment extends BaseFragment {
     private static final String TAG = "LoginFragment";
 
     private static final String sDataurl = "http://api-gocci.jp/login/";
-
+    private static final String TAG_NAME = "name";
+    private static final String TAG_ID = "id";
     private CustomProgressDialog mloginDialog;
-
     private Session.StatusCallback callback = new Session.StatusCallback() {
         @Override
         public void call(Session session, SessionState state, Exception exception) {
             onSessionStateChange(session, state, exception);
         }
     };
-
     private UiLifecycleHelper uiHelper;
-
-    private static final String TAG_NAME = "name";
-    private static final String TAG_ID = "id";
-
     private String mName;
     private String mId;
     private String mPictureImageUrl;
@@ -118,6 +109,15 @@ public class LoginFragment extends BaseFragment {
                     @Override
                     public void onClick(View v) {
                         loginFacebook();
+                    }
+                });
+
+                ImageButton accountButton = (ImageButton) inflateView.findViewById(R.id.accountButton);
+                accountButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(getActivity(), SlidingTabActivity.class);
+                        startActivity(intent);
                     }
                 });
 
@@ -228,6 +228,48 @@ public class LoginFragment extends BaseFragment {
         }
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        Session session = Session.getActiveSession();
+        if (session != null &&
+                (session.isOpened() || session.isClosed())) {
+            onSessionStateChange(session, session.getState(), null);
+        }
+
+        uiHelper.onResume();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "onActivityResult");
+        }
+        uiHelper.onActivityResult(requestCode, resultCode, data);
+        Session.getActiveSession().onActivityResult(getActivity(), requestCode, resultCode, data);
+
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        uiHelper.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        uiHelper.onDestroy();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        uiHelper.onSaveInstanceState(outState);
+    }
 
     public class SignupTask extends AsyncTask<String, String, Integer> {
 
@@ -273,50 +315,6 @@ public class LoginFragment extends BaseFragment {
 
 
         }
-    }
-
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        Session session = Session.getActiveSession();
-        if (session != null &&
-                (session.isOpened() || session.isClosed())) {
-            onSessionStateChange(session, session.getState(), null);
-        }
-
-        uiHelper.onResume();
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "onActivityResult");
-        }
-        uiHelper.onActivityResult(requestCode, resultCode, data);
-        Session.getActiveSession().onActivityResult(getActivity(), requestCode, resultCode, data);
-
-
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        uiHelper.onPause();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        uiHelper.onDestroy();
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        uiHelper.onSaveInstanceState(outState);
     }
 
     public class FacebookGraphUserCallback implements Request.GraphUserCallback {

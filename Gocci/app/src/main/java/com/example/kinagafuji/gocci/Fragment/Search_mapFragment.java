@@ -1,12 +1,9 @@
 package com.example.kinagafuji.gocci.Fragment;
 
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -22,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SearchView;
@@ -29,19 +27,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.kinagafuji.gocci.Activity.TenpoActivity;
+import com.example.kinagafuji.gocci.Base.ArrayListGetEvent;
 import com.example.kinagafuji.gocci.Base.BaseFragment;
+import com.example.kinagafuji.gocci.Base.BusHolder;
 import com.example.kinagafuji.gocci.Base.CustomProgressDialog;
 import com.example.kinagafuji.gocci.R;
 import com.example.kinagafuji.gocci.data.UserData;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.apache.http.HttpResponse;
@@ -58,62 +57,76 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
-public class Search_mapFragment extends BaseFragment implements GooglePlayServicesClient.OnConnectionFailedListener, GooglePlayServicesClient.ConnectionCallbacks {
+import me.drakeet.materialdialog.MaterialDialog;
 
-    private String mSearch_mapUrl;
-    private String mSearch_mapData;
-    private CustomProgressDialog mSearchmapDialog;
-    private ListView mSearch_mapListView;
-    private ArrayList<UserData> mSearch_mapusers = new ArrayList<UserData>();
-    private Search_mapAdapter mSearch_mapAdapter;
-    public SwipeRefreshLayout mSearchmapSwipe;
-
-    private String mKeywordData;
-    public String mSearch_keywordUrl;
-    private CustomProgressDialog mKeywordDialog;
-    public ArrayList<UserData> mKeywordusers = new ArrayList<UserData>();
-    public Search_keywordAdapter mSearch_keywordAdapter;
-
-    public double mLatitude;
-    public double mLongitude;
-
-    private GoogleMap mMap = null;
-    public Marker mMarker = null;
-
-    public SearchView mSearchView;
-
-    public String mSearchword;
-    private String mEncode_searchword;
-
-    public String mName;
-    public String mPictureImageUrl;
-
-    public LocationManager mLocationManager;
-    private LocationClient mLocationClient = null;
-    private Location currentLocation;
-    private Location lastlocation;
+public class Search_mapFragment extends BaseFragment
+        implements GooglePlayServicesClient.OnConnectionFailedListener,
+        GooglePlayServicesClient.ConnectionCallbacks, OnMapReadyCallback {
 
     private static final String KEY_IMAGE_URL = "image_url";
-
-    private static final String TAG_POST_ID = "post_id";
-    private static final String TAG_USER_ID = "user_id";
     private static final String TAG_USER_NAME = "user_name";
-    private static final String TAG_PICTURE = "picture";
-    private static final String TAG_MOVIE = "movie";
-    private static final String TAG_RESTNAME = "restname";
-    private static final String TAG_GOODNUM = "goodnum";
-    private static final String TAG_COMMENT_NUM = "comment_num";
-    private static final String TAG_THUMBNAIL = "thumbnail";
-    private static final String TAG_STAR_EVALUATION = "star_evaluation";
-    private static final String TAG_TELL = "tell";
-    private static final String TAG_RESTNAME1 = "restname";
-    private static final String TAG_CATEGORY = "category";
-    private static final String TAG_LAT = "lat";
-    private static final String TAG_LON = "lon";
-    private static final String TAG_LOCALITY = "locality";
-    private static final String TAG_DISTANCE = "distance";
-
     private static final String TAG = "Search_mapFragment";
+    private final Search_mapFragment self = this;
+    public CustomProgressDialog mSearchmapDialog;
+    public ListView mSearch_mapListView;
+    public ArrayList<UserData> mSearch_mapusers = new ArrayList<UserData>();
+    public Search_mapAdapter mSearch_mapAdapter;
+    public String mSearch_keywordUrl;
+    public CustomProgressDialog mKeywordDialog;
+    public Search_keywordAdapter mSearch_keywordAdapter;
+    public double mLatitude;
+    public double mLongitude;
+    public GoogleMap mMap;
+    public SearchView mSearchView;
+    public String mSearchword;
+    public String mName;
+    public String mPictureImageUrl;
+    public LocationManager mLocationManager;
+    private SwipeRefreshLayout mSearchmapSwipe;
+    private String mEncode_searchword;
+    private Location currentLocation = null;
+    private MaterialDialog mMaterialDialog;
+    private MaterialDialog mSearchDialog;
+    private LocationListener listener = new LocationListener() {
+
+        @Override
+        public void onLocationChanged(Location location) {
+            currentLocation = location;
+            mLatitude = currentLocation.getLatitude();
+            mLongitude = currentLocation.getLongitude();
+
+            Log.e("パート１０","経度緯度変更されたお");
+            Log.e("TAG", "位置変更時経度" + mLatitude + "/" + "緯度" + mLongitude);
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+
+        }
+    };
+    private SupportMapFragment fm;
+    private SearchView.OnQueryTextListener onQueryTextListener = new SearchView.OnQueryTextListener() {
+        @Override
+        public boolean onQueryTextSubmit(String searchWord) {
+            // SubmitボタンorEnterKeyを押されたら呼び出されるメソッド
+            return setSearchWord(searchWord);
+        }
+
+        @Override
+        public boolean onQueryTextChange(String newText) {
+            return false;
+        }
+    };
 
     public Search_mapFragment newIntent(String name, String imageUrl) {
         Search_mapFragment fragment = new Search_mapFragment();
@@ -125,7 +138,6 @@ public class Search_mapFragment extends BaseFragment implements GooglePlayServic
         fragment.setArguments(args);
         return fragment;
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
@@ -141,6 +153,9 @@ public class Search_mapFragment extends BaseFragment implements GooglePlayServic
         mSearch_mapListView.setVerticalScrollBarEnabled(false);
         // カード部分をselectorにするので、リストのselectorは透明にする
         mSearch_mapListView.setSelector(android.R.color.transparent);
+
+
+        mSearch_mapListView.addHeaderView(makeHeaderView());
 
         mSearch_mapListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -159,12 +174,6 @@ public class Search_mapFragment extends BaseFragment implements GooglePlayServic
 
         mSearch_mapListView.setAdapter(mSearch_mapAdapter);
 
-        mSearchView = (SearchView) view1.findViewById(R.id.searchbar);
-        mSearchView.setIconifiedByDefault(true);
-        mSearchView.setSubmitButtonEnabled(true);
-
-        mSearchView.setOnQueryTextListener(onQueryTextListener);
-
         mSearchmapSwipe = (SwipeRefreshLayout) view1.findViewById(R.id.swipe_searchmap);
         mSearchmapSwipe.setColorSchemeColors(R.color.main_color_light, R.color.gocci, R.color.main_color_dark, R.color.window_bg);
         mSearchmapSwipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -172,7 +181,7 @@ public class Search_mapFragment extends BaseFragment implements GooglePlayServic
             @Override
             public void onRefresh() {
 //Handle the refresh then call
-                setUpMap();
+                updateDisplay();
                 mSearchmapSwipe.setRefreshing(false);
             }
         });
@@ -188,28 +197,40 @@ public class Search_mapFragment extends BaseFragment implements GooglePlayServic
         } else {
             // Google Play Services が使える場合
             //activity_main.xmlのSupportMapFragmentへの参照を取得
-            SupportMapFragment fm = (SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.map);
-
-            //fragmentからGoogleMap objectを取得
-            mMap = fm.getMap();
-
-            //Google MapのMyLocationレイヤーを使用可能にする
-            mMap.setMyLocationEnabled(true);
-            mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+            fm = (SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.map);
+            fm.getMapAsync(this);
 
             //システムサービスのLOCATION_SERVICEからLocationManager objectを取得
             mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-            mLocationClient = new LocationClient(getActivity(), this, this); // ConnectionCallbacks, OnConnectionFailedListener
-            if (mLocationClient != null) {
-                // Google Play Servicesに接続
-                mLocationClient.connect();
-                Log.e("TAG", "グーグルサービスにコネクトされました");
-            }
+
+            Log.e("パート１","googleserviceにつなぎました");
+
+
         }
 
         return view1;
     }
 
+    public View makeHeaderView() {
+        LayoutInflater inflater = (LayoutInflater)getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final View countView = inflater.inflate(R.layout.search_header, null);
+        ImageButton searchButton = (ImageButton)countView.findViewById(R.id.searchButton);
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mSearchView = new SearchView(getActivity());
+                mSearchView.setOnQueryTextListener(onQueryTextListener);
+                mSearchView.setQueryHint("検索");
+                mSearchDialog = new MaterialDialog(getActivity()).setContentView(mSearchView)
+                .setCanceledOnTouchOutside(true);
+
+                mSearchDialog.show();
+
+            }
+        });
+
+        return countView;
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -221,45 +242,21 @@ public class Search_mapFragment extends BaseFragment implements GooglePlayServic
 
     }
 
-
     private void setUpMap() {
 
-        Log.e("TAG", "結局のセットアップ時経度" + mLatitude + "/" + "緯度" + mLongitude);
+        Log.e("パート８", "結局のセットアップ時経度" + mLatitude + "/" + "緯度" + mLongitude);
 
         LatLng latLng = new LatLng(mLatitude, mLongitude);
 
-        SharedPreferences latlon = getActivity().getSharedPreferences("latlon", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = latlon.edit();
-        editor.putString("latitude", String.valueOf(mLatitude));
-        editor.putString("longitude", String.valueOf(mLongitude));
-        editor.apply();
+        String mSearch_mapUrl = "http://api-gocci.jp/dist/?lat=" + String.valueOf(mLatitude) + "&lon=" + String.valueOf(mLongitude) + "&limit=30";
 
-        mSearch_mapUrl = "http://api-gocci.jp/dist/?lat=" + String.valueOf(mLatitude) + "&lon=" + String.valueOf(mLongitude) + "&limit=30";
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
-
-        new SearchMapAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mSearch_mapUrl);
+        new Search_mapAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mSearch_mapUrl);
         mSearchmapDialog = new CustomProgressDialog(getActivity());
         mSearchmapDialog.setCancelable(false);
         mSearchmapDialog.show();
     }
-
-
-    private SearchView.OnQueryTextListener onQueryTextListener = new SearchView.OnQueryTextListener() {
-        @Override
-        public boolean onQueryTextSubmit(String searchWord) {
-            // SubmitボタンorEnterKeyを押されたら呼び出されるメソッド
-            return setSearchWord(searchWord);
-        }
-
-        @Override
-        public boolean onQueryTextChange(String newText) {
-            // 入力される度に呼び出される
-            return false;
-        }
-    };
 
     private boolean setSearchWord(String searchWord) {
         if (searchWord != null && !searchWord.equals("")) {
@@ -272,22 +269,19 @@ public class Search_mapFragment extends BaseFragment implements GooglePlayServic
                 e.printStackTrace();
             }
             mSearch_keywordUrl = "http://api-gocci.jp/search/?restname=" + mEncode_searchword;
+
+            mSearchDialog.dismiss();
+
+            mMap.clear();
+
+            new KeywordSearchAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mSearch_keywordUrl);
+            mKeywordDialog = new CustomProgressDialog(getActivity());
+            mKeywordDialog.setCancelable(false);
+            mKeywordDialog.show();
+
         } else {
             Toast.makeText(getActivity().getApplicationContext(), "文字を入力して下さい。", Toast.LENGTH_SHORT).show();
         }
-        // 虫眼鏡アイコンを隠す
-        mSearchView.setIconified(false);
-        // SearchViewを隠す
-        mSearchView.onActionViewCollapsed();
-        // Focusを外す
-        mSearchView.clearFocus();
-
-        mMap.clear();
-
-        new KeywordSearchAsync().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mSearch_keywordUrl);
-        mKeywordDialog = new CustomProgressDialog(getActivity());
-        mKeywordDialog.setCancelable(false);
-        mKeywordDialog.show();
 
         return false;
     }
@@ -295,16 +289,7 @@ public class Search_mapFragment extends BaseFragment implements GooglePlayServic
     @Override
     public void onConnected(Bundle bundle) {
 
-        currentLocation = mLocationClient.getLastLocation();
-
-        mLatitude = currentLocation.getLatitude();
-        mLongitude = currentLocation.getLongitude();
-
-        setUpMap();
-
-        Log.e("TAG", "コネクト時経度"+ mLatitude+ "/" + "緯度"+ mLongitude);
-
-
+        Log.e("TAG","グーグルサービスにコネクトされました");
     }
 
     @Override
@@ -317,8 +302,137 @@ public class Search_mapFragment extends BaseFragment implements GooglePlayServic
         Log.e("TAG", "グーグルサービスにコネクト失敗しました");
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.e("パート2","resumeを読み込むよ");
 
-    public class SearchMapAsyncTask extends AsyncTask<String, String, Integer> {
+        if (!mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+
+            mMaterialDialog = new MaterialDialog(getActivity())
+                    .setTitle("位置情報取得について")
+                    .setMessage("位置情報を使いたいのですが、GPSが無効になっています。" + "設定を変更しますか？")
+                    .setPositiveButton("はい", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mMaterialDialog.dismiss();
+                            Intent settingIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                            startActivity(settingIntent);
+
+                        }
+                    })
+                    .setNegativeButton("いいえ", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mMaterialDialog.dismiss();
+                            Toast.makeText(getActivity(), "ネット回線で位置情報取得を行います。", Toast.LENGTH_SHORT).show();
+                            int minTime = 5000;
+                            float minDistance = 0;
+                            mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTime, minDistance, listener);
+                            //updateDisplay();
+                        }
+                    });
+
+            mMaterialDialog.show();
+        } else {
+            int minTime = 5000;
+            float minDistance = 0;
+            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, listener);
+
+            //updateDisplay();
+
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mLocationManager.removeUpdates(listener);
+        Log.e("TAG", "ロケーションマネージャーがディスコネクトされました");
+    }
+
+    private void updateDisplay() {
+        if (currentLocation == null) {
+            Log.e("位置情報が空だよ", "スカイツリーの位置情報を入れておく");
+            mLatitude = 35.710057714926265;
+            mLongitude = 139.81071829999996;
+
+            LatLng firstLocation = new LatLng(mLatitude,mLongitude);
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(firstLocation,15));
+            Log.e("パート６","位置なかったよ");
+            //非同期を開始
+            //setUpMap();
+
+        } else {
+            Log.e("パート６","位置あったから読み込むよ");
+
+            if (mLatitude == 35.710057714926265 && mLongitude == 139.81071829999996) {
+                Toast.makeText(getActivity(), "まだ位置情報が無いので、一旦東京スカイツリーに移動します。", Toast.LENGTH_SHORT).show();
+                Log.e("パート７","位置あったけど仕方なくスカイツリー");
+                setUpMap();
+            }
+
+            mLatitude = currentLocation.getLatitude();
+            mLongitude = currentLocation.getLongitude();
+
+            setUpMap();
+
+            //非同期を開始
+        }
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        Log.e("パート3","地図の用意できたのでいろいろカスタマイズ");
+        mMap = googleMap;
+
+        //fragmentからGoogleMap objectを取得
+        mMap = fm.getMap();
+
+        //Google MapのMyLocationレイヤーを使用可能にする
+        mMap.setMyLocationEnabled(true);
+        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+
+        currentLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+        if (currentLocation == null) {
+            currentLocation = mLocationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        }
+
+        updateDisplay();
+
+    }
+
+    public static class Search_mapHolder {
+        public ImageView search1;
+        public ImageView search2;
+        public ImageView search3;
+        public TextView restname;
+        public TextView category;
+        public TextView locality;
+        public TextView distance;
+
+        public Search_mapHolder(View view) {
+            this.search1 = (ImageView) view.findViewById(R.id.search1);
+            this.search2 = (ImageView) view.findViewById(R.id.search2);
+            this.search3 = (ImageView) view.findViewById(R.id.search3);
+            this.restname = (TextView) view.findViewById(R.id.restname);
+            this.category = (TextView) view.findViewById(R.id.category);
+            this.locality = (TextView) view.findViewById(R.id.locality);
+            this.distance = (TextView) view.findViewById(R.id.distance);
+        }
+    }
+
+    public class Search_mapAsyncTask extends AsyncTask<String, String, Integer> {
+
+        private static final String TAG_TELL = "tell";
+        private static final String TAG_RESTNAME = "restname";
+        private static final String TAG_CATEGORY = "category";
+        private static final String TAG_LAT = "lat";
+        private static final String TAG_LON = "lon";
+        private static final String TAG_LOCALITY = "locality";
+        private static final String TAG_DISTANCE = "distance";
+
 
         @Override
         protected Integer doInBackground(String... params) {
@@ -338,6 +452,7 @@ public class Search_mapFragment extends BaseFragment implements GooglePlayServic
             int status = httpResponse.getStatusLine().getStatusCode();
 
             if (HttpStatus.SC_OK == status) {
+                String mSearch_mapData = null;
                 try {
                     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                     httpResponse.getEntity().writeTo(outputStream);
@@ -346,6 +461,7 @@ public class Search_mapFragment extends BaseFragment implements GooglePlayServic
                 } catch (Exception e) {
                     Log.d("JSONSampleActivity", "Error");
                 }
+                mSearch_mapusers.clear();
 
                 try {
 
@@ -355,14 +471,12 @@ public class Search_mapFragment extends BaseFragment implements GooglePlayServic
                         JSONObject jsonObject = searchmapArray.getJSONObject(i);
 
                         String tell = jsonObject.getString(TAG_TELL);
-                        final String rest_name = jsonObject.getString(TAG_RESTNAME1);
+                        final String rest_name = jsonObject.getString(TAG_RESTNAME);
                         String category = jsonObject.getString(TAG_CATEGORY);
-                        Double lat = jsonObject.getDouble(TAG_LAT);
-                        Double lon = jsonObject.getDouble(TAG_LON);
+                        final Double lat = jsonObject.getDouble(TAG_LAT);
+                        final Double lon = jsonObject.getDouble(TAG_LON);
                         String locality = jsonObject.getString(TAG_LOCALITY);
                         String distance = jsonObject.getString(TAG_DISTANCE);
-
-                        final LatLng mapLng = new LatLng(lat, lon);
 
                         UserData user = new UserData();
 
@@ -381,10 +495,15 @@ public class Search_mapFragment extends BaseFragment implements GooglePlayServic
 
                             @Override
                             public void run() {
-                                mMarker = mMap.addMarker(new MarkerOptions().position(mapLng).title(rest_name));
+                                mMap.addMarker(new MarkerOptions()
+                                        .position(new LatLng(lat, lon))
+                                        .title(rest_name));
+                                //snippetで詳細も表示できる
 
                             }
                         });
+                        //BusHolder.get().post(new AddMarkerEvent(lat,lon,rest_name));
+
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -406,6 +525,7 @@ public class Search_mapFragment extends BaseFragment implements GooglePlayServic
                 //ListViewの最読み込み
                 mSearch_mapAdapter.notifyDataSetChanged();
                 mSearch_mapListView.invalidateViews();
+                BusHolder.get().post(new ArrayListGetEvent(mSearch_mapusers));
 
             } else {
                 //通信失敗した際のエラー処理
@@ -417,7 +537,80 @@ public class Search_mapFragment extends BaseFragment implements GooglePlayServic
         }
     }
 
-    public class KeywordSearchAsync extends AsyncTask<String, String, Integer> {
+    public class Search_mapAdapter extends ArrayAdapter<UserData> {
+        private LayoutInflater layoutInflater;
+        private Search_mapHolder search_mapHolder;
+
+        public Search_mapAdapter(Context context, int viewResourceId, ArrayList<UserData> search_mapusers) {
+            super(context, viewResourceId, search_mapusers);
+            this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                convertView = layoutInflater.inflate(R.layout.maplist, null);
+                search_mapHolder = new Search_mapHolder(convertView);
+                convertView.setTag(search_mapHolder);
+            } else {
+                search_mapHolder = (Search_mapHolder) convertView.getTag();
+            }
+
+            final UserData user = this.getItem(position);
+
+            search_mapHolder.restname.setText(user.getRest_name());
+            search_mapHolder.category.setText(user.getCategory());
+            search_mapHolder.distance.setText(user.getDistance());
+
+            LatLng markerlatLng = new LatLng(user.getLat(), user.getLon());
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(markerlatLng));
+
+            return convertView;
+        }
+    }
+
+    public class Search_keywordAdapter extends ArrayAdapter<UserData> {
+        private LayoutInflater layoutInflater;
+        private Search_mapHolder search_mapHolder;
+
+        public Search_keywordAdapter(Context context, int viewResourceId, ArrayList<UserData> search_keywordusers) {
+            super(context, viewResourceId, search_keywordusers);
+            this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if (convertView == null) {
+                convertView = layoutInflater.inflate(R.layout.maplist, null);
+                search_mapHolder = new Search_mapHolder(convertView);
+                convertView.setTag(search_mapHolder);
+            } else {
+                search_mapHolder = (Search_mapHolder) convertView.getTag();
+            }
+
+            final UserData user = this.getItem(position);
+
+            search_mapHolder.restname.setText(user.getRest_name());
+            search_mapHolder.category.setText(user.getCategory());
+            search_mapHolder.distance.setText(user.getDistance());
+
+            LatLng markerlatLng = new LatLng(user.getLat(), user.getLon());
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(markerlatLng));
+
+            return convertView;
+        }
+    }
+
+    public class KeywordSearchAsyncTask extends AsyncTask<String, String, Integer> {
+
+        private static final String TAG_TELL = "tell";
+        private static final String TAG_RESTNAME = "restname";
+        private static final String TAG_CATEGORY = "category";
+        private static final String TAG_LAT = "lat";
+        private static final String TAG_LON = "lon";
+        private static final String TAG_LOCALITY = "locality";
+        private static final String TAG_DISTANCE = "distance";
+
 
         @Override
         protected Integer doInBackground(String... params) {
@@ -437,6 +630,7 @@ public class Search_mapFragment extends BaseFragment implements GooglePlayServic
             int status = httpResponse.getStatusLine().getStatusCode();
 
             if (HttpStatus.SC_OK == status) {
+                String mKeywordData = null;
                 try {
                     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                     httpResponse.getEntity().writeTo(outputStream);
@@ -447,6 +641,7 @@ public class Search_mapFragment extends BaseFragment implements GooglePlayServic
                     Log.d("JSONSampleActivity", "Error");
                 }
 
+                mSearch_mapusers.clear();
                 try {
 
                     JSONArray jsonArray = new JSONArray(mKeywordData);
@@ -455,14 +650,12 @@ public class Search_mapFragment extends BaseFragment implements GooglePlayServic
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
 
                         String tell = jsonObject.getString(TAG_TELL);
-                        final String restname = jsonObject.getString(TAG_RESTNAME1);
+                        final String restname = jsonObject.getString(TAG_RESTNAME);
                         String category = jsonObject.getString(TAG_CATEGORY);
-                        Double lat = jsonObject.getDouble(TAG_LAT);
-                        Double lon = jsonObject.getDouble(TAG_LON);
+                        final Double lat = jsonObject.getDouble(TAG_LAT);
+                        final Double lon = jsonObject.getDouble(TAG_LON);
                         String locality = jsonObject.getString(TAG_LOCALITY);
                         String distance = jsonObject.getString(TAG_DISTANCE);
-
-                        final LatLng keywordLng = new LatLng(lat, lon);
 
                         UserData user = new UserData();
 
@@ -474,14 +667,16 @@ public class Search_mapFragment extends BaseFragment implements GooglePlayServic
                         user.setLocality(locality);
                         user.setDistance(distance);
 
-                        mKeywordusers.add(user);
+                        mSearch_mapusers.add(user);
 
                         Handler handler = new Handler(Looper.getMainLooper());
                         handler.post(new Runnable() {
 
                             @Override
                             public void run() {
-                                mMarker = mMap.addMarker(new MarkerOptions().position(keywordLng).title(restname));
+                                mMap.addMarker(new MarkerOptions()
+                                        .position(new LatLng(lat, lon))
+                                        .title(restname));
 
                             }
                         });
@@ -506,185 +701,16 @@ public class Search_mapFragment extends BaseFragment implements GooglePlayServic
 
             if (result != null && result == HttpStatus.SC_OK) {
                 //ListViewの最読み込み
-                mSearch_keywordAdapter = new Search_keywordAdapter(getActivity(), 0, mKeywordusers);
+                mSearch_keywordAdapter = new Search_keywordAdapter(getActivity(), 0, mSearch_mapusers);
                 mSearch_mapListView.setAdapter(mSearch_keywordAdapter);
-
 
             } else {
                 //通信失敗した際のエラー処理
-                Toast.makeText(getActivity().getApplicationContext(), "タイムラインの取得に失敗しました。", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "タイムラインの取得に失敗しました。", Toast.LENGTH_SHORT).show();
             }
 
             mKeywordDialog.dismiss();
         }
     }
-
-    public static class SearchMapHolder {
-        ImageView search1;
-        ImageView search2;
-        ImageView search3;
-        TextView restname;
-        TextView category;
-        TextView locality;
-        TextView distance;
-
-        public SearchMapHolder(View view) {
-            this.search1 = (ImageView) view.findViewById(R.id.search1);
-            this.search2 = (ImageView) view.findViewById(R.id.search2);
-            this.search3 = (ImageView) view.findViewById(R.id.search3);
-            this.restname = (TextView) view.findViewById(R.id.restname);
-            this.category = (TextView) view.findViewById(R.id.category);
-            this.locality = (TextView) view.findViewById(R.id.locality);
-            this.distance = (TextView) view.findViewById(R.id.distance);
-        }
-    }
-
-    public class Search_mapAdapter extends ArrayAdapter<UserData> {
-        private LayoutInflater layoutInflater;
-        private SearchMapHolder searchMapHolder;
-
-        public Search_mapAdapter(Context context, int viewResourceId, ArrayList<UserData> search_mapusers) {
-            super(context, viewResourceId, search_mapusers);
-            this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            if (convertView == null) {
-                convertView = layoutInflater.inflate(R.layout.maplist, null);
-                searchMapHolder = new SearchMapHolder(convertView);
-                convertView.setTag(searchMapHolder);
-            } else {
-                searchMapHolder = (SearchMapHolder) convertView.getTag();
-            }
-
-            final UserData user = this.getItem(position);
-
-            searchMapHolder.restname.setText(user.getRest_name());
-            searchMapHolder.category.setText(user.getCategory());
-            searchMapHolder.distance.setText(user.getDistance());
-
-            LatLng markerlatLng = new LatLng(user.getLat(), user.getLon());
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(markerlatLng));
-
-            return convertView;
-        }
-    }
-
-    public class Search_keywordAdapter extends ArrayAdapter<UserData> {
-        private LayoutInflater layoutInflater;
-        private SearchMapHolder searchMapHolder;
-
-        public Search_keywordAdapter(Context context, int viewResourceId, ArrayList<UserData> search_keywordusers) {
-            super(context, viewResourceId, search_keywordusers);
-            this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            if (convertView == null) {
-                convertView = layoutInflater.inflate(R.layout.maplist, null);
-                searchMapHolder = new SearchMapHolder(convertView);
-                convertView.setTag(searchMapHolder);
-            } else {
-                searchMapHolder = (SearchMapHolder) convertView.getTag();
-            }
-
-            final UserData user = this.getItem(position);
-
-            searchMapHolder.restname.setText(user.getRest_name());
-            searchMapHolder.category.setText(user.getCategory());
-            searchMapHolder.distance.setText(user.getDistance());
-
-            LatLng markerlatLng = new LatLng(user.getLat(), user.getLon());
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(markerlatLng));
-
-            return convertView;
-        }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (!mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle("Location Manager");
-            builder.setMessage("位置情報を使いたいのですが、GPSが無効になっています。/n" + "設定を変更しますか？");
-            builder.setPositiveButton("はい", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    Intent settingIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                    startActivity(settingIntent);
-                }
-            });
-            builder.setNegativeButton("いいえ", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-
-                }
-            });
-            builder.create().show();
-        }
-
-        updateDisplay();
-        int minTime = 5000;
-        float minDistance = 0;
-        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, listener);
-
-        Log.e("TAG", "経度緯度をResumeで読み込みました");
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        if (mLocationClient != null) {
-            // Google Play Servicesに接続
-            mLocationClient.disconnect();
-            Log.e("TAG", "ロケーションクライアントがディスコネクトされました");
-        }
-        mLocationManager.removeUpdates(listener);
-        Log.e("TAG", "ロケーションマネージャーがディスコネクトされました");
-    }
-
-    private void updateDisplay() {
-        if (currentLocation == null) {
-            Log.e("TAG","位置が測定できないので東京スカイツリーに移動します。");
-            mLatitude = 35.710057714926265;
-            mLongitude = 139.81071829999996;
-            //非同期を開始
-            //setUpMap();
-
-        } else {
-            Log.e("アップデートディスプレイ", currentLocation.getLatitude() + "/" + currentLocation.getLongitude());
-            //非同期を開始
-        }
-    }
-
-    private LocationListener listener = new LocationListener() {
-
-        @Override
-        public void onLocationChanged(Location location) {
-            currentLocation = location;
-            mLatitude = currentLocation.getLatitude();
-            mLongitude = currentLocation.getLongitude();
-
-            Log.e("TAG", "位置変更時経度" + mLatitude + "/" + "緯度" + mLongitude);
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-
-        }
-    };
 
 }

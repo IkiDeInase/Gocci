@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    xmlns:ripple="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingLeft="@dimen/very_small"
     android:paddingRight="@dimen/very_small"
-    android:paddingBottom="@dimen/very_small"
-    >
+    android:paddingBottom="@dimen/very_small">
 
     <LinearLayout
         android:orientation="horizontal"
@@ -18,19 +19,34 @@
         android:paddingRight="4dp"
         android:paddingBottom="2dp">
 
-        <ImageView
+        <com.andexert.library.RippleView
             android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            ripple:rv_color="@android:color/black"
+            android:layout_weight="1"
+            >
+        <ImageView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/likes"
             android:background="@drawable/ic_like"
-            android:layout_weight="1" />
+             />
+        </com.andexert.library.RippleView>
+
+        <com.andexert.library.RippleView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            ripple:rv_color="@android:color/black"
+            android:layout_weight="1"
+            >
 
         <ImageView
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/comments"
             android:background="@drawable/ic_comment"
-            android:layout_weight="1" />
+             />
+        </com.andexert.library.RippleView>
 
         <ImageView
             android:layout_width="0dp"

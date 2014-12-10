@@ -7,23 +7,32 @@
     android:paddingLeft="@dimen/very_small"
     android:paddingRight="@dimen/very_small"
     >
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:background="@drawable/list_bg">
+
+        <RatingBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/star_evaluation"
+            android:layout_gravity="center_horizontal"
+            android:numStars="5"
+            android:stepSize="1"
+            android:layout_centerHorizontal="true" />
 
         <LinearLayout
         android:orientation="horizontal"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:paddingBottom="8dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="0"
             android:id="@+id/likesnumber"
-            android:padding="8dp"
             android:layout_marginLeft="8dp" />
 
         <TextView
@@ -31,14 +40,14 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="Likes"
-            android:id="@+id/likes" />
+            android:id="@+id/likes"
+            android:layout_marginLeft="8dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="0"
             android:id="@+id/commentsnumber"
-            android:padding="8dp"
             android:layout_marginLeft="8dp" />
 
         <TextView
@@ -46,7 +55,8 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:id="@+id/comments"
-            android:text="Comments" />
+            android:text="Comments"
+            android:layout_marginLeft="8dp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -54,15 +64,17 @@
             android:text="0"
             android:id="@+id/sharenumber"
             android:layout_marginLeft="8dp"
-            android:padding="8dp" />
+            />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="Share"
-            android:id="@+id/share" />
+            android:id="@+id/share"
+            android:layout_marginLeft="8dp" />
 
     </LinearLayout>
-    </LinearLayout>
+
+    </RelativeLayout>
 </LinearLayout>

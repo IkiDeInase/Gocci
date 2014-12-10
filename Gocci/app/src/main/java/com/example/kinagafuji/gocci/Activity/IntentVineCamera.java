@@ -11,15 +11,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.text.SpannableStringBuilder;
 import android.util.Log;
-import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.RatingBar;
 import android.widget.Toast;
@@ -27,14 +20,7 @@ import android.widget.VideoView;
 
 import com.example.kinagafuji.gocci.Base.CustomProgressDialog;
 import com.example.kinagafuji.gocci.R;
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.DataAsyncHttpResponseHandler;
-import com.loopj.android.http.FileAsyncHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
 
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
@@ -46,28 +32,19 @@ import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.List;
 
 public class IntentVineCamera extends Activity {
 
     private static final int ACTION_TAKE_VIDEO = 1;
-    private Uri mImageUri;
-
-    private CustomProgressDialog mPostProgress;
-
     private static final String sSignupUrl = "http://api-gocci.jp/login/";
     private static final String sMovieurl = "http://api-gocci.jp/movie/";
     private static final String sPostUrl = "http://api-gocci.jp/post_restname/";
     private static final String sRatingUrl = "http://api-gocci.jp/submit/";
-
+    private Uri mImageUri;
+    private CustomProgressDialog mPostProgress;
     private String mRestname;
 
     private String mName;
@@ -122,7 +99,7 @@ public class IntentVineCamera extends Activity {
             case ACTION_TAKE_VIDEO: {
                 if (resultCode == RESULT_OK) {
 
-                    final RatingBar videoRating = (RatingBar)findViewById(R.id.videorating);
+                    final RatingBar videoRating = (RatingBar) findViewById(R.id.videorating);
                     videoRating.setStepSize(1);
 
                     final VideoView video = (VideoView) findViewById(R.id.video);
@@ -145,7 +122,8 @@ public class IntentVineCamera extends Activity {
                     toukoushare.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            mRatingNumber = String.valueOf(videoRating.getRating());
+                            mRatingNumber = String.valueOf((int) videoRating.getRating());
+                            Log.e("星数", mRatingNumber);
                             new UploadAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                             mPostProgress = new CustomProgressDialog(IntentVineCamera.this);
                             mPostProgress.setCancelable(false);
@@ -213,7 +191,7 @@ public class IntentVineCamera extends Activity {
                 status = loginres.getStatusLine().getStatusCode();
             } catch (Exception e) {
                 e.printStackTrace();
-                Log.e("失敗です","サインアップでエラー");
+                Log.e("失敗です", "サインアップでエラー");
             }
 
             //店舗名ポスト処理
@@ -226,10 +204,10 @@ public class IntentVineCamera extends Activity {
                     status1 = restres.getStatusLine().getStatusCode();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Log.e("失敗です","店舗名ポストでエラー");
+                    Log.e("失敗です", "店舗名ポストでエラー");
                 }
             } else {
-                Log.e("失敗です","サインアップでエラー");
+                Log.e("失敗です", "サインアップでエラー");
             }
 
             if (HttpStatus.SC_OK == status1) {
@@ -241,10 +219,10 @@ public class IntentVineCamera extends Activity {
                     status2 = movieres.getStatusLine().getStatusCode();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Log.e("失敗です","動画ポストでエラー");
+                    Log.e("失敗です", "動画ポストでエラー");
                 }
             } else {
-                Log.e("失敗です","店舗名ポストでエラー");
+                Log.e("失敗です", "店舗名ポストでエラー");
             }
 
             if (HttpStatus.SC_OK == status2) {
@@ -256,10 +234,10 @@ public class IntentVineCamera extends Activity {
                     status3 = ratingres.getStatusLine().getStatusCode();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Log.e("失敗です","星ポストでエラー");
+                    Log.e("失敗です", "星ポストでエラー");
                 }
             } else {
-                Log.e("失敗です","動画ポストでエラー");
+                Log.e("失敗です", "動画ポストでエラー");
             }
 
             return status3;
