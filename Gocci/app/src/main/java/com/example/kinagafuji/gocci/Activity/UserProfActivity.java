@@ -16,7 +16,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.PopupWindow;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,7 +26,6 @@ import com.example.kinagafuji.gocci.Base.CustomProgressDialog;
 import com.example.kinagafuji.gocci.R;
 import com.example.kinagafuji.gocci.View.CommentView;
 import com.example.kinagafuji.gocci.data.RoundedTransformation;
-import com.example.kinagafuji.gocci.data.ToukouPopup;
 import com.example.kinagafuji.gocci.data.UserData;
 import com.squareup.picasso.Picasso;
 
@@ -51,38 +49,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
+import me.drakeet.materialdialog.MaterialDialog;
+
 public class UserProfActivity extends BaseActivity implements ListView.OnScrollListener {
-
-    private String mUser_name;
-    private String mName;
-    private String mPictureImageUrl;
-    private ListView mUserProfListView;
-    private UserProfAdapter mUserProfAdapter;
-    private String mProfUrl;
-    private SwipeRefreshLayout mUserProfSwipe;
-
-    private ArrayList<UserData> mUserProfusers = new ArrayList<UserData>();
-
-    private String mEncodeUser_name;
-
-    private int mShowPosition;
-
-    public int mGoodCommePosition;
-
-    private VideoView nextVideo;
-
-    private NameHolder nameHolder;
-    private RestHolder restHolder;
-    private VideoHolder videoHolder;
-    private CommentHolder commentHolder;
-    private LikeCommentHolder likeCommentHolder;
-    public String mNextGoodnum;
-    public String currentgoodnum;
-    public String mNextCommentnum;
-
-    private boolean mBusy = false;
-
-    private CustomProgressDialog mUserProfDialog;
 
     private static final String TAG_POST_ID = "post_id";
     private static final String TAG_USER_ID = "user_id";
@@ -94,10 +63,31 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
     private static final String TAG_COMMENT_NUM = "comment_num";
     private static final String TAG_THUMBNAIL = "thumbnail";
     private static final String TAG_STAR_EVALUATION = "star_evaluation";
-
     private static final String sSignupUrl = "http://api-gocci.jp/login/";
     private static final String sGoodUrl = "http://api-gocci.jp/goodinsert/";
     private static final String sDataurl = "http://api-gocci.jp/login/";
+    public int mGoodCommePosition;
+    public String mNextGoodnum;
+    public String currentgoodnum;
+    public String mNextCommentnum;
+    private String mUser_name;
+    private String mName;
+    private String mPictureImageUrl;
+    private ListView mUserProfListView;
+    private UserProfAdapter mUserProfAdapter;
+    private String mProfUrl;
+    private SwipeRefreshLayout mUserProfSwipe;
+    private ArrayList<UserData> mUserProfusers = new ArrayList<UserData>();
+    private String mEncodeUser_name;
+    private int mShowPosition;
+    private VideoView nextVideo;
+    private NameHolder nameHolder;
+    private RestHolder restHolder;
+    private VideoHolder videoHolder;
+    private CommentHolder commentHolder;
+    private LikeCommentHolder likeCommentHolder;
+    private boolean mBusy = false;
+    private CustomProgressDialog mUserProfDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -213,6 +203,35 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
 
+    }
+
+    private static class NameHolder {
+        ImageView circleImage;
+        TextView user_name;
+    }
+
+    private static class VideoHolder {
+        VideoView movie;
+        ImageView mVideoThumbnail;
+    }
+
+    private static class CommentHolder {
+        RatingBar star_evaluation;
+        TextView likesnumber;
+        TextView commentsnumber;
+        TextView sharenumber;
+    }
+
+    private static class RestHolder {
+        ImageView restaurantImage;
+        TextView locality;
+        TextView rest_name;
+    }
+
+    private static class LikeCommentHolder {
+        ImageView likes;
+        ImageView comments;
+        ImageView share;
     }
 
     public class UserProfAsyncTask extends AsyncTask<String, String, Integer> {
@@ -335,35 +354,6 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
             }
             mUserProfDialog.dismiss();
         }
-    }
-
-    private static class NameHolder {
-        ImageView circleImage;
-        TextView user_name;
-    }
-
-    private static class VideoHolder {
-        VideoView movie;
-        ImageView mVideoThumbnail;
-    }
-
-    private static class CommentHolder {
-        RatingBar star_evaluation;
-        TextView likesnumber;
-        TextView commentsnumber;
-        TextView sharenumber;
-    }
-
-    private static class RestHolder {
-        ImageView restaurantImage;
-        TextView locality;
-        TextView rest_name;
-    }
-
-    private static class LikeCommentHolder {
-        ImageView likes;
-        ImageView comments;
-        ImageView share;
     }
 
     public class UserProfAdapter extends ArrayAdapter<UserData> {
@@ -585,12 +575,10 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
                             //引数に入れたい値を入れていく
                             View commentView = new CommentView(UserProfActivity.this, mName, mPictureImageUrl, user.getPost_id());
 
-                            final PopupWindow window = ToukouPopup.newBasicPopupWindow(UserProfActivity.this);
-                            window.setContentView(commentView);
-                            //int totalHeight = getWindowManager().getDefaultDisplay().getHeight();
-                            int[] location = new int[2];
-                            v.getLocationOnScreen(location);
-                            ToukouPopup.showLikeQuickAction(window, commentView, v, UserProfActivity.this.getWindowManager(), 0, 0);
+                            MaterialDialog mMaterialDialog = new MaterialDialog(UserProfActivity.this)
+                                    .setContentView(commentView)
+                                    .setCanceledOnTouchOutside(true);
+                            mMaterialDialog.show();
                         }
                     });
 

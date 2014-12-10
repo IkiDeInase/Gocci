@@ -29,6 +29,7 @@ import android.widget.VideoView;
 
 import com.example.kinagafuji.gocci.Activity.TenpoActivity;
 import com.example.kinagafuji.gocci.Activity.UserProfActivity;
+import com.example.kinagafuji.gocci.Base.ArrayListGetEvent;
 import com.example.kinagafuji.gocci.Base.BaseFragment;
 import com.example.kinagafuji.gocci.Base.BusHolder;
 import com.example.kinagafuji.gocci.Base.CustomProgressDialog;
@@ -39,6 +40,7 @@ import com.example.kinagafuji.gocci.View.ToukouView;
 import com.example.kinagafuji.gocci.data.RoundedTransformation;
 import com.example.kinagafuji.gocci.data.ToukouPopup;
 import com.example.kinagafuji.gocci.data.UserData;
+import com.melnykov.fab.FloatingActionButton;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 
@@ -60,6 +62,8 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
+import me.drakeet.materialdialog.MaterialDialog;
+
 public class TimelineFragment extends BaseFragment implements ListView.OnScrollListener {
 
     private static final String sTimelineUrl = "http://api-gocci.jp/timeline/";
@@ -80,6 +84,7 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
     public CustomProgressDialog mTimelineDialog;
     public ListView mTimelineListView;
     public ArrayList<UserData> mTimelineusers = new ArrayList<UserData>();
+    public ArrayList<UserData> mTenpousers;
     public TimelineAdapter mTimelineAdapter;
     public String mName;
     public String mPictureImageUrl;
@@ -118,23 +123,17 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
 
         mTimelineListView = (ListView) view.findViewById(R.id.mylistView2);
 
-        final ImageButton toukouButton = (ImageButton) view.findViewById(R.id.toukouButton);
-        toukouButton.setOnClickListener(new View.OnClickListener() {
+        final FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.toukouButton);
+        fab.attachToListView(mTimelineListView);
+
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 RotateAnimation animation = (RotateAnimation) AnimationUtils.loadAnimation(getActivity(), R.anim.rotate_repeat);
                 animation.setInterpolator(new LinearInterpolator());
-                toukouButton.startAnimation(animation);
+                fab.startAnimation(animation);
 
-                SharedPreferences pref = getActivity().getSharedPreferences("latlon", Context.MODE_PRIVATE);
-                String latitude = pref.getString("latitude", null);
-                String longitude = pref.getString("longitude", null);
-
-                double mLatitude = Double.parseDouble(latitude);
-                double mLongitude = Double.parseDouble(longitude);
-
-                View inflateView = new ToukouView(getActivity(), mName, mPictureImageUrl, mLatitude, mLongitude);
-                Log.d("経度・緯度", mLatitude + "/" + mLongitude);
+                View inflateView = new ToukouView(getActivity(), mName, mPictureImageUrl, mTenpousers);
 
                 final PopupWindow window = ToukouPopup.newBasicPopupWindow(getActivity());
                 window.setContentView(inflateView);
@@ -286,6 +285,11 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
             }
             Log.e("Otto発動", "動画再生停止");
         }
+    }
+
+    @Subscribe
+    public void subscribe(ArrayListGetEvent event) {
+        mTenpousers = event.users;
     }
 
     @Override
@@ -610,7 +614,6 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
         public int getItemViewType(int position) {
             int line = (position / 5) * 5;
             int pos = position - line;
-            Log.e("どんなposition/どのタイミングで帰ってくるのか？", String.valueOf(position));
 
             switch (pos) {
                 case 0:
@@ -814,17 +817,21 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
                         @Override
                         public void onClick(View v) {
                             Log.e("コメントをクリック", "コメント！" + user.getPost_id());
-                            commentHolder.commentsnumber.setText(mNextCommentnum);
 
-                            //引数に入れたい値を入れていく
                             View commentView = new CommentView(getActivity(), mName, mPictureImageUrl, user.getPost_id());
 
+                            /*
                             final PopupWindow window = ToukouPopup.newBasicPopupWindow(getActivity());
                             window.setContentView(commentView);
                             //int totalHeight = getWindowManager().getDefaultDisplay().getHeight();
                             int[] location = new int[2];
                             v.getLocationOnScreen(location);
                             ToukouPopup.showLikeQuickAction(window, commentView, v, getActivity().getWindowManager(), 0, 0);
+                            */
+                            MaterialDialog mMaterialDialog = new MaterialDialog(getActivity())
+                            .setContentView(commentView)
+                                    .setCanceledOnTouchOutside(true);
+                            mMaterialDialog.show();
                         }
                     });
 

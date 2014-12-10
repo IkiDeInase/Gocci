@@ -17,10 +17,8 @@ import android.view.animation.RotateAnimation;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.PopupWindow;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,8 +29,8 @@ import com.example.kinagafuji.gocci.Base.CustomProgressDialog;
 import com.example.kinagafuji.gocci.R;
 import com.example.kinagafuji.gocci.View.CommentView;
 import com.example.kinagafuji.gocci.data.RoundedTransformation;
-import com.example.kinagafuji.gocci.data.ToukouPopup;
 import com.example.kinagafuji.gocci.data.UserData;
+import com.melnykov.fab.FloatingActionButton;
 import com.squareup.picasso.Picasso;
 
 import org.apache.http.HttpEntity;
@@ -55,6 +53,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
+import me.drakeet.materialdialog.MaterialDialog;
+
 public class TenpoActivity extends BaseActivity implements ListView.OnScrollListener {
 
     private static final String TAG_POST_ID = "post_id";
@@ -71,38 +71,28 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
 
     private static final String sGoodUrl = "http://api-gocci.jp/goodinsert/";
     private static final String sDataurl = "http://api-gocci.jp/login/";
-
+    public int mGoodCommePosition;
+    public String mNextGoodnum;
+    public String currentgoodnum;
+    public String mNextCommentnum;
     private String mTenpoUrl;
-
     private CustomProgressDialog mTenpoDialog;
     private ArrayList<UserData> mTenpousers = new ArrayList<UserData>();
     private ListView mTenpoListView;
     private TenpoAdapter mTenpoAdapter;
     private SwipeRefreshLayout mTenpoSwipe;
-
     private String mPost_restname;
     private String mName;
     private String mPictureImageUrl;
-
     private String mEncoderestname;
-
     private boolean mBusy = false;
-
     private int mShowPosition;
-
-    public int mGoodCommePosition;
-
     private VideoView nextVideo;
-
     private NameHolder nameHolder;
     private RestHolder restHolder;
     private VideoHolder videoHolder;
     private CommentHolder commentHolder;
     private LikeCommentHolder likeCommentHolder;
-
-    public String mNextGoodnum;
-    public String currentgoodnum;
-    public String mNextCommentnum;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,22 +128,6 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
                 .centerCrop()
                 .transform(new RoundedTransformation())
                 .into(imageurl);*/
-
-        final ImageButton toukoubutton = (ImageButton) findViewById(R.id.toukouButton);
-        toukoubutton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                RotateAnimation animation = (RotateAnimation) AnimationUtils.loadAnimation(TenpoActivity.this, R.anim.rotate_repeat);
-                animation.setInterpolator(new LinearInterpolator());
-                toukoubutton.startAnimation(animation);
-                Intent intent = new Intent(TenpoActivity.this, IntentVineCamera.class);
-                intent.putExtra("restname", mPost_restname);
-                intent.putExtra("name", mName);
-                intent.putExtra("pictureImageUrl", mPictureImageUrl);
-                startActivity(intent);
-            }
-        });
 
 
         new TenpoAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mTenpoUrl);
@@ -210,6 +184,25 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
             }
         });
 
+        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.toukouButton);
+        fab.attachToListView(mTenpoListView);
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RotateAnimation animation = (RotateAnimation) AnimationUtils.loadAnimation(TenpoActivity.this, R.anim.rotate_repeat);
+                animation.setInterpolator(new LinearInterpolator());
+                fab.startAnimation(animation);
+
+                Intent intent = new Intent(TenpoActivity.this, IntentVineCamera.class);
+                intent.putExtra("restname", mPost_restname);
+                intent.putExtra("name", mName);
+                intent.putExtra("pictureImageUrl", mPictureImageUrl);
+                startActivity(intent);
+
+            }
+        });
+
 
         mTenpoSwipe = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
         mTenpoSwipe.setColorSchemeColors(R.color.main_color_light, R.color.gocci, R.color.main_color_dark, R.color.window_bg);
@@ -256,6 +249,35 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
 
+    }
+
+    private static class NameHolder {
+        ImageView circleImage;
+        TextView user_name;
+    }
+
+    private static class VideoHolder {
+        VideoView movie;
+        ImageView mVideoThumbnail;
+    }
+
+    private static class CommentHolder {
+        RatingBar star_evaluation;
+        TextView likesnumber;
+        TextView commentsnumber;
+        TextView sharenumber;
+    }
+
+    private static class RestHolder {
+        ImageView restaurantImage;
+        TextView locality;
+        TextView rest_name;
+    }
+
+    private static class LikeCommentHolder {
+        ImageView likes;
+        ImageView comments;
+        ImageView share;
     }
 
     public class TenpoAsyncTask extends AsyncTask<String, String, Integer> {
@@ -361,35 +383,6 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
         }
     }
 
-    private static class NameHolder {
-        ImageView circleImage;
-        TextView user_name;
-    }
-
-    private static class VideoHolder {
-        VideoView movie;
-        ImageView mVideoThumbnail;
-    }
-
-    private static class CommentHolder {
-        RatingBar star_evaluation;
-        TextView likesnumber;
-        TextView commentsnumber;
-        TextView sharenumber;
-    }
-
-    private static class RestHolder {
-        ImageView restaurantImage;
-        TextView locality;
-        TextView rest_name;
-    }
-
-    private static class LikeCommentHolder {
-        ImageView likes;
-        ImageView comments;
-        ImageView share;
-    }
-
     public class TenpoAdapter extends ArrayAdapter<UserData> {
 
         public TenpoAdapter(Context context, int viewResourceId, ArrayList<UserData> tenpousers) {
@@ -424,7 +417,7 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
 
-           final UserData user = this.getItem(position);
+            final UserData user = this.getItem(position);
             switch (getItemViewType(position)) {
 
                 case 0:
@@ -608,12 +601,10 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
                             //引数に入れたい値を入れていく
                             View commentView = new CommentView(TenpoActivity.this, mName, mPictureImageUrl, user.getPost_id());
 
-                            final PopupWindow window = ToukouPopup.newBasicPopupWindow(TenpoActivity.this);
-                            window.setContentView(commentView);
-                            //int totalHeight = getWindowManager().getDefaultDisplay().getHeight();
-                            int[] location = new int[2];
-                            v.getLocationOnScreen(location);
-                            ToukouPopup.showLikeQuickAction(window, commentView, v, TenpoActivity.this.getWindowManager(), 0, 0);
+                            MaterialDialog mMaterialDialog = new MaterialDialog(TenpoActivity.this)
+                                    .setContentView(commentView)
+                                    .setCanceledOnTouchOutside(true);
+                            mMaterialDialog.show();
                         }
                     });
 

@@ -1,54 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content" android:layout_height="wrap_content"
-    android:background="@color/window_bg"
-    android:gravity="center_vertical|left" android:orientation="vertical">
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <ListView
+        android:id="@+id/commentList"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_gravity="center_horizontal"
+        />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#c5c6c9"
+        android:layout_margin="8dp" />
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical|center_horizontal"
-        android:orientation="vertical"
-        android:paddingBottom="3dp"
-        android:background="@color/window_bg"
-        xmlns:android="http://schemas.android.com/apk/res/android">
+        android:orientation="horizontal">
 
-        <ListView
-            android:layout_width="330dp"
-            android:layout_height="350dp"
-            android:id="@+id/commentList"
-            android:layout_gravity="center_horizontal"
-            android:paddingBottom="4dp" />
-
-        <android.support.v7.widget.CardView
-            android:layout_width="match_parent"
+        <EditText
+            android:id="@+id/commentText"
+            android:layout_width="180dp"
             android:layout_height="wrap_content"
-            android:background="@color/window_bg"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp">
+            android:hint="コメント"
+            android:textSize="14sp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp" />
 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+        <ImageButton
+            android:id="@+id/commentButton"
+            android:layout_width="60dp"
+            android:layout_height="30dp"
+            android:background="@drawable/ic_commebutton"
+            android:textSize="16sp" />
 
-            <EditText
-                android:layout_width="220dp"
-                android:layout_height="wrap_content"
-                android:id="@+id/commentText"
-                android:hint="コメント"
-                android:padding="8dp"
-                android:textSize="14sp"
-                android:layout_marginLeft="8dp" />
-
-            <ImageButton
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/commentButton"
-                android:textSize="16sp"
-                android:background="@drawable/ic_commebutton" />
-
-        </LinearLayout>
-        </android.support.v7.widget.CardView>
     </LinearLayout>
-    </LinearLayout>
+</LinearLayout>

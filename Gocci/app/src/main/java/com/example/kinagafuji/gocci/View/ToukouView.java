@@ -35,29 +35,12 @@ import java.util.ArrayList;
 
 public class ToukouView extends LinearLayout {
 
-    private CustomProgressDialog mSearchtenpoDialog;
     private ListView mTimeline_search_mapListView;
     private Search_tenpoAdapter mSearch_tenpoAdapter;
-    private ArrayList<UserData> mSearch_tenpousers = new ArrayList<UserData>();
-
-    private static final String TAG_TELL = "tell";
-    private static final String TAG_RESTNAME1 = "restname";
-    private static final String TAG_CATEGORY = "category";
-    private static final String TAG_LAT = "lat";
-    private static final String TAG_LON = "lon";
-    private static final String TAG_LOCALITY = "locality";
-    private static final String TAG_DISTANCE = "distance";
 
     //　コードからの生成用
-    public ToukouView(final Context context, final String name, final String pictureImageUrl, double latitude, double longitude) {
+    public ToukouView(final Context context, final String name, final String pictureImageUrl, final ArrayList<UserData> users) {
         super(context);
-
-        String mSearch_tenpoUrl = "http://api-gocci.jp/dist/?lat=" + String.valueOf(latitude) + "&lon=" + String.valueOf(longitude) + "&limit=30";
-
-        new SearchTenpoAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mSearch_tenpoUrl);
-        mSearchtenpoDialog = new CustomProgressDialog(getContext());
-        mSearchtenpoDialog.setCancelable(false);
-        mSearchtenpoDialog.show();
 
         View inflateView = LayoutInflater.from(context).inflate(R.layout.searchlist, this);
 
@@ -69,7 +52,7 @@ public class ToukouView extends LinearLayout {
         // カード部分をselectorにするので、リストのselectorは透明にする
         mTimeline_search_mapListView.setSelector(android.R.color.transparent);
 
-        mSearch_tenpoAdapter = new Search_tenpoAdapter(context, 0, mSearch_tenpousers);
+        mSearch_tenpoAdapter = new Search_tenpoAdapter(context, 0, users);
 
         mTimeline_search_mapListView.setAdapter(mSearch_tenpoAdapter);
 
@@ -77,7 +60,7 @@ public class ToukouView extends LinearLayout {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int pos, long id) {
 
-                UserData country = mSearch_tenpousers.get(pos);
+                UserData country = users.get(pos);
 
                 Intent intent = new Intent(context.getApplicationContext(), IntentVineCamera.class);
                 intent.putExtra("restname", country.getRest_name());
@@ -126,92 +109,7 @@ public class ToukouView extends LinearLayout {
         }
     }
 
-    public class SearchTenpoAsyncTask extends AsyncTask<String, String, Integer> {
 
-        @Override
-        protected Integer doInBackground(String... params) {
-            String param = params[0];
-
-            HttpClient httpClient = new DefaultHttpClient();
-
-            HttpGet request = new HttpGet(param);
-            HttpResponse httpResponse = null;
-
-            try {
-                httpResponse = httpClient.execute(request);
-            } catch (Exception e) {
-                Log.d("JSONSampleActivity", "Error Execute");
-            }
-
-            int status = httpResponse.getStatusLine().getStatusCode();
-
-            if (HttpStatus.SC_OK == status) {
-                String search_tenpoData = null;
-                try {
-                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                    httpResponse.getEntity().writeTo(outputStream);
-                    search_tenpoData = outputStream.toString(); // JSONデータ
-                    Log.d("data", search_tenpoData);
-                } catch (Exception e) {
-                    Log.d("JSONSampleActivity", "Error");
-                }
-
-                try {
-
-                    JSONArray jsonArray = new JSONArray(search_tenpoData);
-
-                    for (int i = 0; i < jsonArray.length(); i++) {
-                        JSONObject jsonObject = jsonArray.getJSONObject(i);
-
-                        String tell = jsonObject.getString(TAG_TELL);
-                        String rest_name = jsonObject.getString(TAG_RESTNAME1);
-                        String category = jsonObject.getString(TAG_CATEGORY);
-                        Double lat = jsonObject.getDouble(TAG_LAT);
-                        Double lon = jsonObject.getDouble(TAG_LON);
-                        String locality = jsonObject.getString(TAG_LOCALITY);
-                        String distance = jsonObject.getString(TAG_DISTANCE);
-
-                        UserData user = new UserData();
-
-                        user.setTell(tell);
-                        user.setRest_name(rest_name);
-                        user.setCategory(category);
-                        user.setLat(lat);
-                        user.setLon(lon);
-                        user.setLocality(locality);
-                        user.setDistance(distance);
-
-                        mSearch_tenpousers.add(user);
-
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    Log.d("えらー", String.valueOf(e));
-                }
-
-            } else {
-                Log.d("JSONSampleActivity", "Status" + status);
-            }
-
-            return status;
-
-        }
-
-        @Override
-        protected void onPostExecute(Integer result) {
-
-            if (result != null && result == HttpStatus.SC_OK) {
-                //ListViewの最読み込み
-                mSearch_tenpoAdapter.notifyDataSetChanged();
-                mTimeline_search_mapListView.invalidateViews();
-            } else {
-                //通信失敗した際のエラー処理
-                Toast.makeText(getContext().getApplicationContext(), "タイムラインの取得に失敗しました。", Toast.LENGTH_SHORT).show();
-            }
-
-            mSearchtenpoDialog.dismiss();
-        }
-    }
 
     public static class SearchTenpoHolder {
         ImageView search1;

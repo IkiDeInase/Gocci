@@ -1,13 +1,9 @@
 package com.example.kinagafuji.gocci.Activity;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.view.Menu;
-import android.view.MenuItem;
 
 import com.example.kinagafuji.gocci.Fragment.LoginFragment;
-import com.example.kinagafuji.gocci.R;
 
 public class LoginActivity2 extends FragmentActivity {
 

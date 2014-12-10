@@ -12,6 +12,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -24,15 +27,18 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.example.kinagafuji.gocci.Activity.TenpoActivity;
+import com.example.kinagafuji.gocci.Base.ArrayListGetEvent;
 import com.example.kinagafuji.gocci.Base.BaseFragment;
 import com.example.kinagafuji.gocci.Base.BusHolder;
 import com.example.kinagafuji.gocci.Base.CustomProgressDialog;
 import com.example.kinagafuji.gocci.Base.PageChangeVideoStopEvent;
 import com.example.kinagafuji.gocci.R;
 import com.example.kinagafuji.gocci.View.CommentView;
+import com.example.kinagafuji.gocci.View.ToukouView;
 import com.example.kinagafuji.gocci.data.RoundedTransformation;
 import com.example.kinagafuji.gocci.data.ToukouPopup;
 import com.example.kinagafuji.gocci.data.UserData;
+import com.melnykov.fab.FloatingActionButton;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 
@@ -55,6 +61,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+
+import me.drakeet.materialdialog.MaterialDialog;
 
 public class ProfileFragment extends BaseFragment implements ListView.OnScrollListener {
 
@@ -81,6 +89,7 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
     private CustomProgressDialog mProfDialog;
     private ListView mProfListView;
     private ArrayList<UserData> mProfusers = new ArrayList<UserData>();
+    public ArrayList<UserData> mTenpousers;
     private ProfAdapter mProfAdapter;
     private SwipeRefreshLayout mProfSwipe;
     private String mEncode_user_name;
@@ -160,6 +169,28 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                         //いいね　コメント　シェア
                         break;
                 }
+            }
+        });
+
+        final FloatingActionButton fab = (FloatingActionButton) view3.findViewById(R.id.toukouButton);
+        fab.attachToListView(mProfListView);
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RotateAnimation animation = (RotateAnimation) AnimationUtils.loadAnimation(getActivity(), R.anim.rotate_repeat);
+                animation.setInterpolator(new LinearInterpolator());
+                fab.startAnimation(animation);
+
+                View inflateView = new ToukouView(getActivity(), mName, mPictureImageUrl, mTenpousers);
+
+                final PopupWindow window = ToukouPopup.newBasicPopupWindow(getActivity());
+                window.setContentView(inflateView);
+                //int totalHeight = getWindowManager().getDefaultDisplay().getHeight();
+                int[] location = new int[2];
+                v.getLocationOnScreen(location);
+                ToukouPopup.showLikeQuickAction(window, inflateView, v, getActivity().getWindowManager(), 0, 0);
+
             }
         });
 
@@ -249,6 +280,11 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
             }
             Log.e("Otto発動", "動画再生停止");
         }
+    }
+
+    @Subscribe
+    public void subscribe(ArrayListGetEvent event) {
+        mTenpousers = event.users;
     }
 
 
@@ -656,12 +692,10 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                             //引数に入れたい値を入れていく
                             View commentView = new CommentView(getActivity(), mName, mPictureImageUrl, user.getPost_id());
 
-                            final PopupWindow window = ToukouPopup.newBasicPopupWindow(getActivity());
-                            window.setContentView(commentView);
-                            //int totalHeight = getWindowManager().getDefaultDisplay().getHeight();
-                            int[] location = new int[2];
-                            v.getLocationOnScreen(location);
-                            ToukouPopup.showLikeQuickAction(window, commentView, v, getActivity().getWindowManager(), 0, 0);
+                            MaterialDialog mMaterialDialog = new MaterialDialog(getActivity())
+                                    .setContentView(commentView)
+                                    .setCanceledOnTouchOutside(true);
+                            mMaterialDialog.show();
                         }
                     });
 
