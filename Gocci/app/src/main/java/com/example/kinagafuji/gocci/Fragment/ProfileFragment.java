@@ -267,17 +267,11 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
             //タイムラインが呼ばれた時の処理
             videoHolder.movie.start();
 
-            if (nextVideo != null) {
-                nextVideo.start();
-            }
             Log.e("Otto発動", "動画再生復帰");
         } else {
             //タイムライン以外のfragmentが可視化している場合
             videoHolder.movie.pause();
 
-            if (nextVideo != null) {
-                nextVideo.pause();
-            }
             Log.e("Otto発動", "動画再生停止");
         }
     }
@@ -698,6 +692,7 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                             mMaterialDialog.show();
                         }
                     });
+                    videoHolder.movie.setTag(mShowPosition);
 
                     break;
             }

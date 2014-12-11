@@ -477,6 +477,7 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
                                 mShowPosition = position;
                             }
                         });
+                        videoHolder.movie.setTag(mShowPosition);
 
                     }
 

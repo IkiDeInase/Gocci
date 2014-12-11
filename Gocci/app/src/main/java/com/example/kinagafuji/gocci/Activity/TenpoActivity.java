@@ -503,6 +503,7 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
                                 mShowPosition = position;
                             }
                         });
+                        videoHolder.movie.setTag(mShowPosition);
 
                     }
 
