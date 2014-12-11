@@ -235,6 +235,9 @@ public class IntentVineCamera extends Activity {
                 } catch (Exception e) {
                     e.printStackTrace();
                     Log.e("失敗です", "星ポストでエラー");
+                }finally {
+                    // shutdownすると通信できなくなる
+                    httpClient.getConnectionManager().shutdown();
                 }
             } else {
                 Log.e("失敗です", "動画ポストでエラー");
@@ -251,7 +254,7 @@ public class IntentVineCamera extends Activity {
                 Toast.makeText(getApplicationContext(), "完了しました。", Toast.LENGTH_LONG).show();
             } else {
                 //通信失敗した際のエラー処理
-                Toast.makeText(IntentVineCamera.this.getApplicationContext(), "失敗しました。", Toast.LENGTH_SHORT).show();
+                Toast.makeText(IntentVineCamera.this, "失敗しました。", Toast.LENGTH_SHORT).show();
             }
             mPostProgress.dismiss();
 

@@ -296,6 +296,9 @@ public class LoginFragment extends BaseFragment {
                 Log.d("bodyの中身だよ", body);
             } catch (Exception e) {
                 e.printStackTrace();
+            }finally {
+                // shutdownすると通信できなくなる
+                client.getConnectionManager().shutdown();
             }
 
             SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);

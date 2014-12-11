@@ -92,8 +92,8 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
     public CommentHolder commentHolder;
     public LikeCommentHolder likeCommentHolder;
     private SwipeRefreshLayout mTimelineSwipe;
-    private VideoView nextVideo;
     private VideoHolder videoHolder;
+    private VideoView nextVideo;
     public String mName;
     public String mPictureImageUrl;
 
@@ -258,12 +258,50 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        try {
+            if (videoHolder.movie != null) {
+                if (videoHolder.movie.isPlaying()) {
+                    videoHolder.movie.pause();
+                }
+            }
+
+            if (nextVideo != null) {
+                if (nextVideo.isPlaying()) {
+                    nextVideo.pause();
+                }
+            }
+        }catch (NullPointerException e) {
+            Log.e("ぬるぽだよ〜","ぬるぽちゃん");
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public void onResume() {
         super.onResume();
         Log.e(TAG, "Fragment-onResume");
         BusHolder.get().register(self);
+
+        try {
+            if (videoHolder.movie != null) {
+                if (!videoHolder.movie.isPlaying()) {
+                    videoHolder.movie.start();
+                }
+            }
+
+            if (nextVideo != null) {
+                if (!nextVideo.isPlaying()) {
+                    nextVideo.start();
+                }
+            }
+        }catch (NullPointerException e) {
+            Log.e("ぬるぽだよ〜","ぬるぽちゃん");
+            e.printStackTrace();
+        }
+
     }
 
     @Override
@@ -271,18 +309,45 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
         super.onPause();
         Log.e(TAG, "Fragment-onPause");
         BusHolder.get().unregister(self);
+
+        try {
+            if (videoHolder.movie != null) {
+                if (videoHolder.movie.isPlaying()) {
+                    videoHolder.movie.pause();
+                }
+            }
+
+            if (nextVideo != null) {
+                if (nextVideo.isPlaying()) {
+                    nextVideo.pause();
+                }
+            }
+        }catch (NullPointerException e) {
+            Log.e("ぬるぽだよ〜","ぬるぽちゃん");
+            e.printStackTrace();
+        }
     }
 
     @Subscribe
     public void subscribe(PageChangeVideoStopEvent event) {
         if (event.position == 0) {
             //タイムラインが呼ばれた時の処理
-            videoHolder.movie.start();
+            if (!videoHolder.movie.isPlaying()) {
+                videoHolder.movie.start();
+            }
+            if (nextVideo != null && !nextVideo.isPlaying()) {
+                nextVideo.start();
+            }
 
             Log.e("Otto発動", "動画再生復帰");
         } else {
             //タイムライン以外のfragmentが可視化している場合
-            videoHolder.movie.pause();
+            if (videoHolder.movie.isPlaying()) {
+                videoHolder.movie.pause();
+            }
+            if (nextVideo != null && nextVideo.isPlaying()) {
+                nextVideo.pause();
+            }
 
             Log.e("Otto発動", "動画再生停止");
         }
@@ -291,12 +356,6 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
     @Subscribe
     public void subscribe(ArrayListGetEvent event) {
         mTenpousers = event.users;
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        Log.e(TAG, "Fragment-onDestroyView");
     }
 
     public static class NameHolder {
@@ -462,6 +521,9 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
                     } catch (JSONException e) {
                         e.printStackTrace();
                         Log.d("error", String.valueOf(e));
+                    }finally {
+                        // shutdownすると通信できなくなる
+                        client.getConnectionManager().shutdown();
                     }
                 } else {
                     Log.d("JSONSampleActivity", "Status" + mStatus3);
@@ -482,7 +544,7 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
 
                 View targetView = mTimelineListView.getChildAt(mGoodNumberPosition);
                 mTimelineListView.getAdapter().getView(mGoodNumberPosition, targetView, mTimelineListView);
-                Log.e("いいね追加成功", "成功しました");
+                Log.e("いいね追加成功", "成功しました"+"/"+"位置" + mGoodNumberPosition);
 
 
             } else {
@@ -583,6 +645,9 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
                 } catch (JSONException e) {
                     e.printStackTrace();
                     Log.d("error", String.valueOf(e));
+                }finally {
+                    // shutdownすると通信できなくなる
+                    httpClient.getConnectionManager().shutdown();
                 }
             } else {
                 Log.d("JSONSampleActivity", "Status" + status);
@@ -708,9 +773,6 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
                         videoHolder.movie.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                             @Override
                             public void onPrepared(MediaPlayer mp) {
-                                videoHolder.mVideoThumbnail.setVisibility(View.GONE);
-                                videoHolder.movie.start();
-
                                 nextVideo = (VideoView) mTimelineListView.findViewWithTag(mShowPosition);
 
                                 if (nextVideo != null) {
@@ -718,17 +780,13 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
                                         @Override
                                         public void onPrepared(MediaPlayer mp) {
                                             mp.stop();
-                                            Log.e("TAG", "pause : " + mShowPosition);
-                                            //nextVideo.stopPlayback();
-                                            //nextVideo.pause();
                                         }
                                     });
+                                    Log.e("TAG", "pause : " + mShowPosition);
                                 }
 
-                                /*
                                 videoHolder.mVideoThumbnail.setVisibility(View.GONE);
                                 videoHolder.movie.start();
-                                */
 
                                 mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                                     @Override
@@ -743,7 +801,6 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
                             }
                         });
                         videoHolder.movie.setTag(mShowPosition);
-
                     }
 
                     break;
@@ -773,8 +830,8 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
                     commentHolder.commentsnumber.setText(currentcommentnum);
 
                     commentHolder.star_evaluation.setIsIndicator(true);
-                    commentHolder.star_evaluation.setRating((float) user.getStar_evaluation());
-                    Log.e("星を読み込んだよ",String.valueOf((float)user.getStar_evaluation()));
+                    commentHolder.star_evaluation.setRating(user.getStar_evaluation());
+                    Log.e("星を読み込んだよ",String.valueOf(user.getStar_evaluation()));
 
                     break;
 
@@ -815,8 +872,13 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
 
                     //クリックされた時の処理
                     if (position == mGoodCommePosition) {
+                        Log.e("いいね入れ替え部分", "通ったよ"+ "/" + position + "/" + mGoodCommePosition);
                         likeCommentHolder.likes.setClickable(false);
                         likeCommentHolder.likes.setBackgroundResource(R.drawable.ic_like_orange);
+                    } else {
+                        likeCommentHolder.likes.setClickable(true);
+                        likeCommentHolder.likes.setBackgroundResource(R.drawable.ic_like);
+
                     }
 
                     likeCommentHolder.likes.setOnClickListener(new View.OnClickListener() {
@@ -843,14 +905,6 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
 
                             View commentView = new CommentView(getActivity(), mName, mPictureImageUrl, user.getPost_id());
 
-                            /*
-                            final PopupWindow window = ToukouPopup.newBasicPopupWindow(getActivity());
-                            window.setContentView(commentView);
-                            //int totalHeight = getWindowManager().getDefaultDisplay().getHeight();
-                            int[] location = new int[2];
-                            v.getLocationOnScreen(location);
-                            ToukouPopup.showLikeQuickAction(window, commentView, v, getActivity().getWindowManager(), 0, 0);
-                            */
                             MaterialDialog mMaterialDialog = new MaterialDialog(getActivity())
                             .setContentView(commentView)
                                     .setCanceledOnTouchOutside(true);

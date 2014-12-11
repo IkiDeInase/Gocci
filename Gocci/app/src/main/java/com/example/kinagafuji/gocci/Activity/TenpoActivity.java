@@ -72,8 +72,12 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
     private static final String sGoodUrl = "http://api-gocci.jp/goodinsert/";
     private static final String sDataurl = "http://api-gocci.jp/login/";
     public int mGoodCommePosition;
+    public int mGoodNumberPosition;
+
     public String mNextGoodnum;
     public String currentgoodnum;
+    public String currentcommentnum;
+
     public String mNextCommentnum;
     private String mTenpoUrl;
     private CustomProgressDialog mTenpoDialog;
@@ -87,10 +91,10 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
     private String mEncoderestname;
     private boolean mBusy = false;
     private int mShowPosition;
-    private VideoView nextVideo;
     private NameHolder nameHolder;
     private RestHolder restHolder;
     private VideoHolder videoHolder;
+    private VideoView nextVideo;
     private CommentHolder commentHolder;
     private LikeCommentHolder likeCommentHolder;
 
@@ -222,6 +226,66 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        try {
+            if (videoHolder.movie != null) {
+                if (!videoHolder.movie.isPlaying()) {
+                    videoHolder.movie.start();
+                }
+            }
+
+            if (nextVideo != null) {
+                if (!nextVideo.isPlaying()) {
+                    nextVideo.start();
+                }
+            }
+        }catch (NullPointerException e) {
+            Log.e("ぬるぽだよ〜","ぬるぽちゃん");
+            e.printStackTrace();
+        }
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        try {
+            if (videoHolder.movie != null) {
+                if (videoHolder.movie.isPlaying()) {
+                    videoHolder.movie.pause();
+                }
+            }
+
+            if (nextVideo != null) {
+                if (nextVideo.isPlaying()) {
+                    nextVideo.pause();
+                }
+            }
+        }catch (NullPointerException e) {
+            Log.e("ぬるぽだよ〜","ぬるぽちゃん");
+            e.printStackTrace();
+        }
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        try {
+            if (videoHolder.movie != null) {
+                if (videoHolder.movie.isPlaying()) {
+                    videoHolder.movie.pause();
+                }
+            }
+
+            if (nextVideo != null) {
+                if (nextVideo.isPlaying()) {
+                    nextVideo.pause();
+                }
+            }
+        }catch (NullPointerException e) {
+            Log.e("ぬるぽだよ〜","ぬるぽちゃん");
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public void onScrollStateChanged(AbsListView view, int scrollState) {
@@ -360,6 +424,9 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
                 } catch (JSONException e) {
                     e.printStackTrace();
                     Log.d("error", String.valueOf(e));
+                }finally {
+                    // shutdownすると通信できなくなる
+                    httpClient.getConnectionManager().shutdown();
                 }
             } else {
                 Log.d("JSONSampleActivity", "Status" + status);
@@ -525,15 +592,18 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
                         commentHolder = (CommentHolder) convertView.getTag();
                     }
 
-                    commentHolder.likesnumber.setText(String.valueOf(user.getgoodnum()));
-                    commentHolder.commentsnumber.setText(String.valueOf(user.getComment_num()));
+
+                    currentgoodnum = String.valueOf((user.getgoodnum()));
+                    currentcommentnum = String.valueOf(user.getComment_num());
+                    mNextGoodnum = String.valueOf(user.getgoodnum()+1);
+                    mNextCommentnum = String.valueOf((user.getComment_num()+1));
+
+                    commentHolder.likesnumber.setText(currentgoodnum);
+                    commentHolder.commentsnumber.setText(currentcommentnum);
 
                     commentHolder.star_evaluation.setIsIndicator(true);
-                    commentHolder.star_evaluation.setRating((float) user.getStar_evaluation());
-
-                    mNextGoodnum = String.valueOf(user.getgoodnum() + 1);
-                    currentgoodnum = String.valueOf((user.getgoodnum()));
-                    mNextCommentnum = String.valueOf((user.getComment_num() + 1));
+                    commentHolder.star_evaluation.setRating(user.getStar_evaluation());
+                    Log.e("星を読み込んだよ",String.valueOf(user.getStar_evaluation()));
 
                     break;
 
@@ -573,9 +643,14 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
                     }
 
                     //クリックされた時の処理
-                    if (mGoodCommePosition == position) {
+                    if (position == mGoodCommePosition) {
+                        Log.e("いいね入れ替え部分", "通ったよ"+ "/" + position + "/" + mGoodCommePosition);
                         likeCommentHolder.likes.setClickable(false);
                         likeCommentHolder.likes.setBackgroundResource(R.drawable.ic_like_orange);
+                    } else {
+                        likeCommentHolder.likes.setClickable(true);
+                        likeCommentHolder.likes.setBackgroundResource(R.drawable.ic_like);
+
                     }
 
                     likeCommentHolder.likes.setOnClickListener(new View.OnClickListener() {
@@ -583,11 +658,13 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
                         public void onClick(View v) {
                             Log.e("いいねをクリック", user.getPost_id() + mNextGoodnum);
                             mGoodCommePosition = position;
+                            mGoodNumberPosition = (position-2);
 
-                            likeCommentHolder.likes.setClickable(false);
-                            commentHolder.likesnumber.setText(mNextGoodnum);
-                            //画像差し込み
                             likeCommentHolder.likes.setBackgroundResource(R.drawable.ic_like_orange);
+                            likeCommentHolder.likes.setClickable(false);
+                            likeCommentHolder.likes.setTag(mGoodCommePosition);
+                            commentHolder.likesnumber.setText(mNextGoodnum);
+                            commentHolder.likesnumber.setTag(mGoodNumberPosition);
 
                             new TenpoGoodnumTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, user.getPost_id());
                         }
@@ -745,6 +822,9 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
                     } catch (JSONException e) {
                         e.printStackTrace();
                         Log.d("error", String.valueOf(e));
+                    }finally {
+                        // shutdownすると通信できなくなる
+                        client.getConnectionManager().shutdown();
                     }
                 } else {
                     Log.d("JSONSampleActivity", "Status" + mStatus3);
@@ -758,14 +838,15 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
         protected void onPostExecute(Integer result) {
             if (result != null && result == HttpStatus.SC_OK) {
                 //いいねが送れた処理　項目itemの更新
-                View targetView = mTenpoListView.getChildAt((mGoodCommePosition - 2));
-                mTenpoListView.getAdapter().getView((mGoodCommePosition - 2), targetView, mTenpoListView);
+                View targetView = mTenpoListView.getChildAt(mGoodNumberPosition);
+                mTenpoListView.getAdapter().getView(mGoodNumberPosition, targetView, mTenpoListView);
                 Log.e("いいね追加成功", "成功しました");
             } else {
-                //失敗のため、いいね取り消し
-                commentHolder.likesnumber.setText(currentgoodnum);
-                likeCommentHolder.likes.setClickable(true);
-                likeCommentHolder.likes.setBackgroundResource(R.drawable.ic_like);
+                ImageView likesView = (ImageView)mTenpoListView.findViewWithTag(mGoodCommePosition);
+                TextView likesnumberView = (TextView)mTenpoListView.findViewWithTag(mGoodNumberPosition);
+                likesnumberView.setText(currentgoodnum);
+                likesView.setClickable(true);
+                likesView.setBackgroundResource(R.drawable.ic_like);
                 Toast.makeText(TenpoActivity.this, "いいね追加に失敗しました。", Toast.LENGTH_SHORT).show();
             }
 

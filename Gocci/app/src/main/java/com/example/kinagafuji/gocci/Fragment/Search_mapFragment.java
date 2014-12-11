@@ -508,6 +508,9 @@ public class Search_mapFragment extends BaseFragment
                 } catch (JSONException e) {
                     e.printStackTrace();
                     Log.d("えらー", String.valueOf(e));
+                }finally {
+                    // shutdownすると通信できなくなる
+                    httpClient.getConnectionManager().shutdown();
                 }
 
             } else {
@@ -685,6 +688,9 @@ public class Search_mapFragment extends BaseFragment
                 } catch (JSONException e) {
                     e.printStackTrace();
                     Log.d("えらー", String.valueOf(e));
+                }finally {
+                    // shutdownすると通信できなくなる
+                    httpClient.getConnectionManager().shutdown();
                 }
 
             } else {

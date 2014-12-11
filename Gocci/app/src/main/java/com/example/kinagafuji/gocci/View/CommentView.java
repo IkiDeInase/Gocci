@@ -217,6 +217,9 @@ public class CommentView extends LinearLayout {
                 } catch (JSONException e) {
                     e.printStackTrace();
                     Log.d("えらー", String.valueOf(e));
+                }finally {
+                    // shutdownすると通信できなくなる
+                    httpClient.getConnectionManager().shutdown();
                 }
 
             } else {

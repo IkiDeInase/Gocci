@@ -82,8 +82,12 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
     private static final String TAG_STAR_EVALUATION = "star_evaluation";
     private final ProfileFragment self = this;
     public int mGoodCommePosition;
+    public int mGoodNumberPosition;
+
     public String mNextGoodnum;
     public String currentgoodnum;
+    public String currentcommentnum;
+
     public String mNextCommentnum;
     private String mProfUrl;
     private CustomProgressDialog mProfDialog;
@@ -95,10 +99,10 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
     private String mEncode_user_name;
     private String mName;
     private String mPictureImageUrl;
-    private VideoView nextVideo;
     private NameHolder nameHolder;
     private RestHolder restHolder;
     private VideoHolder videoHolder;
+    private VideoView nextVideo;
     private CommentHolder commentHolder;
     private LikeCommentHolder likeCommentHolder;
     private int mShowPosition;
@@ -242,15 +246,45 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        try {
+            if (videoHolder.movie != null) {
+                if (videoHolder.movie.isPlaying()) {
+                    videoHolder.movie.pause();
+                }
+            }
 
-
+            if (nextVideo != null) {
+                if (nextVideo.isPlaying()) {
+                    nextVideo.pause();
+                }
+            }
+        }catch (NullPointerException e) {
+            Log.e("ぬるぽだよ〜","ぬるぽちゃん");
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void onResume() {
-
         super.onResume();
         BusHolder.get().register(self);
+
+        try {
+            if (videoHolder.movie != null) {
+                if (!videoHolder.movie.isPlaying()) {
+                    videoHolder.movie.start();
+                }
+            }
+
+            if (nextVideo != null) {
+                if (!nextVideo.isPlaying()) {
+                    nextVideo.start();
+                }
+            }
+        }catch (NullPointerException e) {
+            Log.e("ぬるぽだよ〜","ぬるぽちゃん");
+            e.printStackTrace();
+        }
 
     }
 
@@ -259,18 +293,44 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
         super.onPause();
         BusHolder.get().unregister(self);
 
+        try {
+            if (videoHolder.movie != null) {
+                if (videoHolder.movie.isPlaying()) {
+                    videoHolder.movie.pause();
+                }
+            }
+
+            if (nextVideo != null) {
+                if (nextVideo.isPlaying()) {
+                    nextVideo.pause();
+                }
+            }
+        }catch (NullPointerException e) {
+            Log.e("ぬるぽだよ〜","ぬるぽちゃん");
+            e.printStackTrace();
+        }
     }
 
     @Subscribe
     public void subscribe(PageChangeVideoStopEvent event) {
         if (event.position == 3) {
             //タイムラインが呼ばれた時の処理
-            videoHolder.movie.start();
+            if (!videoHolder.movie.isPlaying()) {
+                videoHolder.movie.start();
+            }
+            if (nextVideo != null && !nextVideo.isPlaying()) {
+                nextVideo.start();
+            }
 
             Log.e("Otto発動", "動画再生復帰");
         } else {
             //タイムライン以外のfragmentが可視化している場合
-            videoHolder.movie.pause();
+            if (videoHolder.movie.isPlaying()) {
+                videoHolder.movie.pause();
+            }
+            if (nextVideo != null && nextVideo.isPlaying()) {
+                nextVideo.pause();
+            }
 
             Log.e("Otto発動", "動画再生停止");
         }
@@ -445,6 +505,9 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                 } catch (JSONException e) {
                     e.printStackTrace();
                     Log.d("error", String.valueOf(e));
+                }finally {
+                    // shutdownすると通信できなくなる
+                    client1.getConnectionManager().shutdown();
                 }
             } else {
                 Log.d("JSONSampleActivity", "Status" + status);
@@ -477,7 +540,6 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
         public int getItemViewType(int position) {
             int line = (position / 5) * 5;
             int pos = position - line;
-            Log.e("どんなposition/どのタイミングで帰ってくるのか？", String.valueOf(position));
 
             switch (pos) {
                 case 0:
@@ -588,6 +650,7 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                                 mShowPosition = position;
                             }
                         });
+                        videoHolder.movie.setTag(mShowPosition);
 
                     }
 
@@ -609,15 +672,17 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                         commentHolder = (CommentHolder) convertView.getTag();
                     }
 
-                    commentHolder.likesnumber.setText(String.valueOf(user.getgoodnum()));
-                    commentHolder.commentsnumber.setText(String.valueOf(user.getComment_num()));
+                    currentgoodnum = String.valueOf((user.getgoodnum()));
+                    currentcommentnum = String.valueOf(user.getComment_num());
+                    mNextGoodnum = String.valueOf(user.getgoodnum()+1);
+                    mNextCommentnum = String.valueOf((user.getComment_num()+1));
+
+                    commentHolder.likesnumber.setText(currentgoodnum);
+                    commentHolder.commentsnumber.setText(currentcommentnum);
 
                     commentHolder.star_evaluation.setIsIndicator(true);
-                    commentHolder.star_evaluation.setRating((float) user.getStar_evaluation());
-
-                    mNextGoodnum = String.valueOf(user.getgoodnum() + 1);
-                    currentgoodnum = String.valueOf((user.getgoodnum()));
-                    mNextCommentnum = String.valueOf((user.getComment_num() + 1));
+                    commentHolder.star_evaluation.setRating(user.getStar_evaluation());
+                    Log.e("星を読み込んだよ",String.valueOf(user.getStar_evaluation()));
 
                     break;
 
@@ -657,9 +722,14 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                     }
 
                     //クリックされた時の処理
-                    if (mGoodCommePosition == position) {
+                    if (position == mGoodCommePosition) {
+                        Log.e("いいね入れ替え部分", "通ったよ"+ "/" + position + "/" + mGoodCommePosition);
                         likeCommentHolder.likes.setClickable(false);
                         likeCommentHolder.likes.setBackgroundResource(R.drawable.ic_like_orange);
+                    } else {
+                        likeCommentHolder.likes.setClickable(true);
+                        likeCommentHolder.likes.setBackgroundResource(R.drawable.ic_like);
+
                     }
 
                     likeCommentHolder.likes.setOnClickListener(new View.OnClickListener() {
@@ -667,11 +737,13 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                         public void onClick(View v) {
                             Log.e("いいねをクリック", user.getPost_id() + mNextGoodnum);
                             mGoodCommePosition = position;
+                            mGoodNumberPosition = (position-2);
 
-                            likeCommentHolder.likes.setClickable(false);
-                            commentHolder.likesnumber.setText(mNextGoodnum);
-                            //画像差し込み
                             likeCommentHolder.likes.setBackgroundResource(R.drawable.ic_like_orange);
+                            likeCommentHolder.likes.setClickable(false);
+                            likeCommentHolder.likes.setTag(mGoodCommePosition);
+                            commentHolder.likesnumber.setText(mNextGoodnum);
+                            commentHolder.likesnumber.setTag(mGoodNumberPosition);
 
                             new ProfGoodnumTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, user.getPost_id());
                         }
@@ -830,6 +902,9 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                     } catch (JSONException e) {
                         e.printStackTrace();
                         Log.d("error", String.valueOf(e));
+                    }finally {
+                        // shutdownすると通信できなくなる
+                        client.getConnectionManager().shutdown();
                     }
                 } else {
                     Log.d("JSONSampleActivity", "Status" + mStatus3);
@@ -844,15 +919,16 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
         protected void onPostExecute(Integer result) {
             if (result != null && result == HttpStatus.SC_OK) {
                 //いいねが送れた処理　項目itemの更新
-                View targetView = mProfListView.getChildAt((mGoodCommePosition - 2));
-                mProfListView.getAdapter().getView((mGoodCommePosition - 2), targetView, mProfListView);
+                View targetView = mProfListView.getChildAt(mGoodNumberPosition);
+                mProfListView.getAdapter().getView(mGoodNumberPosition, targetView, mProfListView);
                 Log.e("いいね追加成功", "成功しました");
             } else {
-                //失敗のため、いいね取り消し
-                commentHolder.likesnumber.setText(currentgoodnum);
-                likeCommentHolder.likes.setClickable(true);
-                likeCommentHolder.likes.setBackgroundResource(R.drawable.ic_like);
-                Toast.makeText(getActivity().getApplicationContext(), "いいね追加に失敗しました。", Toast.LENGTH_SHORT).show();
+                ImageView likesView = (ImageView)mProfListView.findViewWithTag(mGoodCommePosition);
+                TextView likesnumberView = (TextView)mProfListView.findViewWithTag(mGoodNumberPosition);
+                likesnumberView.setText(currentgoodnum);
+                likesView.setClickable(true);
+                likesView.setBackgroundResource(R.drawable.ic_like);
+                Toast.makeText(getActivity(), "いいね追加に失敗しました。", Toast.LENGTH_SHORT).show();
             }
 
         }
