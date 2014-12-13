@@ -27,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.kinagafuji.gocci.Activity.TenpoActivity;
+import com.example.kinagafuji.gocci.Application_Gocci;
 import com.example.kinagafuji.gocci.Base.ArrayListGetEvent;
 import com.example.kinagafuji.gocci.Base.BaseFragment;
 import com.example.kinagafuji.gocci.Base.BusHolder;
@@ -62,6 +63,8 @@ import me.drakeet.materialdialog.MaterialDialog;
 public class Search_mapFragment extends BaseFragment
         implements GooglePlayServicesClient.OnConnectionFailedListener,
         GooglePlayServicesClient.ConnectionCallbacks, OnMapReadyCallback {
+
+    private Application_Gocci application_gocci;
 
     private static final String KEY_IMAGE_URL = "image_url";
     private static final String TAG_USER_NAME = "user_name";
@@ -144,6 +147,8 @@ public class Search_mapFragment extends BaseFragment
         // FragmentのViewを返却
         View view1 = getActivity().getLayoutInflater().inflate(R.layout.fragment_search_map,
                 container, false);
+
+        application_gocci = (Application_Gocci) getActivity().getApplication();
 
         mSearch_mapAdapter = new Search_mapAdapter(getActivity(), 0, mSearch_mapusers);
 
@@ -438,13 +443,13 @@ public class Search_mapFragment extends BaseFragment
         protected Integer doInBackground(String... params) {
             String param = params[0];
 
-            HttpClient httpClient = new DefaultHttpClient();
+            HttpClient client = application_gocci.getHttpClient();
 
             HttpGet request = new HttpGet(param);
             HttpResponse httpResponse = null;
 
             try {
-                httpResponse = httpClient.execute(request);
+                httpResponse = client.execute(request);
             } catch (Exception e) {
                 Log.d("JSONSampleActivity", "Error Execute");
             }
@@ -508,11 +513,7 @@ public class Search_mapFragment extends BaseFragment
                 } catch (JSONException e) {
                     e.printStackTrace();
                     Log.d("えらー", String.valueOf(e));
-                }finally {
-                    // shutdownすると通信できなくなる
-                    httpClient.getConnectionManager().shutdown();
                 }
-
             } else {
                 Log.d("JSONSampleActivity", "Status" + status);
             }
@@ -619,13 +620,13 @@ public class Search_mapFragment extends BaseFragment
         protected Integer doInBackground(String... params) {
             String param = params[0];
 
-            HttpClient httpClient = new DefaultHttpClient();
+            HttpClient client = application_gocci.getHttpClient();
 
             HttpGet request = new HttpGet(param);
             HttpResponse httpResponse = null;
 
             try {
-                httpResponse = httpClient.execute(request);
+                httpResponse = client.execute(request);
             } catch (Exception e) {
                 Log.d("JSONSampleActivity", "Error Execute");
             }
@@ -688,11 +689,7 @@ public class Search_mapFragment extends BaseFragment
                 } catch (JSONException e) {
                     e.printStackTrace();
                     Log.d("えらー", String.valueOf(e));
-                }finally {
-                    // shutdownすると通信できなくなる
-                    httpClient.getConnectionManager().shutdown();
                 }
-
             } else {
                 Log.d("JSONSampleActivity", "Status" + status);
 

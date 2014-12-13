@@ -27,6 +27,7 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.example.kinagafuji.gocci.Activity.TenpoActivity;
+import com.example.kinagafuji.gocci.Application_Gocci;
 import com.example.kinagafuji.gocci.Base.ArrayListGetEvent;
 import com.example.kinagafuji.gocci.Base.BaseFragment;
 import com.example.kinagafuji.gocci.Base.BusHolder;
@@ -66,9 +67,12 @@ import me.drakeet.materialdialog.MaterialDialog;
 
 public class ProfileFragment extends BaseFragment implements ListView.OnScrollListener {
 
+    private Application_Gocci application_gocci;
+
     private static final String sSignupUrl = "http://api-gocci.jp/login/";
     private static final String sGoodUrl = "http://api-gocci.jp/goodinsert/";
     private static final String sDataurl = "http://api-gocci.jp/login/";
+    private static final String sPostDeleteUrl = "http://api-gocci.jp/delete/";
     private static final String KEY_IMAGE_URL = "image_url";
     private static final String TAG_POST_ID = "post_id";
     private static final String TAG_USER_ID = "user_id";
@@ -80,7 +84,7 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
     private static final String TAG_COMMENT_NUM = "comment_num";
     private static final String TAG_THUMBNAIL = "thumbnail";
     private static final String TAG_STAR_EVALUATION = "star_evaluation";
-    private final ProfileFragment self = this;
+    private final ProfileFragment profileself = this;
     public int mGoodCommePosition;
     public int mGoodNumberPosition;
 
@@ -91,6 +95,7 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
     public String mNextCommentnum;
     private String mProfUrl;
     private CustomProgressDialog mProfDialog;
+    private CustomProgressDialog mPostDeleteDialog;
     private ListView mProfListView;
     private ArrayList<UserData> mProfusers = new ArrayList<UserData>();
     public ArrayList<UserData> mTenpousers;
@@ -107,6 +112,7 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
     private LikeCommentHolder likeCommentHolder;
     private int mShowPosition;
     private boolean mBusy = false;
+    private MaterialDialog mMaterialDialog;
 
     public ProfileFragment newIntent(String name, String imageUrl) {
         ProfileFragment fragment = new ProfileFragment();
@@ -125,21 +131,15 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
         View view3 = getActivity().getLayoutInflater().inflate(R.layout.fragment_profile,
                 container, false);
 
-        /*mPost_name = (TextView) view3.findViewById(R.id.post_name);
-        mPost_Imageurl = (ImageView) view3.findViewById(R.id.post_Imageurl);
-        */
+        application_gocci = (Application_Gocci) getActivity().getApplication();
 
         mProfListView = (ListView) view3.findViewById(R.id.proflist);
-
-        mProfAdapter = new ProfAdapter(getActivity(), 0, mProfusers);
 
         mProfListView.setDivider(null);
         // スクロールバーを表示しない
         mProfListView.setVerticalScrollBarEnabled(false);
         // カード部分をselectorにするので、リストのselectorは透明にする
         mProfListView.setSelector(android.R.color.transparent);
-
-        mProfListView.setAdapter(mProfAdapter);
 
         mProfListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -173,6 +173,50 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                         //いいね　コメント　シェア
                         break;
                 }
+            }
+        });
+
+        mProfListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                int line = (position / 5) * 5;
+                int pos = position - line;
+
+                switch (pos) {
+                    case 0:
+                        UserData delete0 = mProfusers.get(position+4);
+                        setDeleteDialog(delete0.getPost_id());
+
+                        //名前部分のview　プロフィール画面へ
+                        //Signupを読み込みそう後回し
+                        break;
+                    case 1:
+                        UserData delete1 = mProfusers.get(position+3);
+                        setDeleteDialog(delete1.getPost_id());
+                        //動画のview
+                        //クリックしたら止まるくらい
+                        break;
+                    case 2:
+                        UserData delete2 = mProfusers.get(position+2);
+                        setDeleteDialog(delete2.getPost_id());
+                        //コメントのview
+                        //とくになんもしない
+                        break;
+                    case 3:
+                        UserData delete3 = mProfusers.get(position+1);
+                        setDeleteDialog(delete3.getPost_id());
+                        //レストランのview
+                        //レストラン画面に飛ぼうか
+
+                        break;
+                    case 4:
+                        UserData delete4 = mProfusers.get(position);
+                        setDeleteDialog(delete4.getPost_id());
+                        //いいね　コメント　シェア
+                        break;
+                }
+
+                return true;
             }
         });
 
@@ -214,6 +258,11 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
             }
         });
 
+        mProfAdapter = new ProfAdapter(getActivity(), 0, mProfusers);
+
+        mProfListView.setAdapter(mProfAdapter);
+
+
         return view3;
     }
 
@@ -244,30 +293,9 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        try {
-            if (videoHolder.movie != null) {
-                if (videoHolder.movie.isPlaying()) {
-                    videoHolder.movie.pause();
-                }
-            }
-
-            if (nextVideo != null) {
-                if (nextVideo.isPlaying()) {
-                    nextVideo.pause();
-                }
-            }
-        }catch (NullPointerException e) {
-            Log.e("ぬるぽだよ〜","ぬるぽちゃん");
-            e.printStackTrace();
-        }
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
-        BusHolder.get().register(self);
+        BusHolder.get().register(profileself);
 
         try {
             if (videoHolder.movie != null) {
@@ -291,7 +319,7 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
     @Override
     public void onPause() {
         super.onPause();
-        BusHolder.get().unregister(self);
+        BusHolder.get().unregister(profileself);
 
         try {
             if (videoHolder.movie != null) {
@@ -315,21 +343,41 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
     public void subscribe(PageChangeVideoStopEvent event) {
         if (event.position == 3) {
             //タイムラインが呼ばれた時の処理
-            if (!videoHolder.movie.isPlaying()) {
-                videoHolder.movie.start();
-            }
-            if (nextVideo != null && !nextVideo.isPlaying()) {
-                nextVideo.start();
+            try {
+                if (videoHolder.movie != null) {
+                    if (!videoHolder.movie.isPlaying()) {
+                        videoHolder.movie.start();
+                    }
+                }
+
+                if (nextVideo != null) {
+                    if (!nextVideo.isPlaying()) {
+                        nextVideo.start();
+                    }
+                }
+            }catch (NullPointerException e) {
+                Log.e("再生ぬるぽだよ〜","ぬるぽちゃん");
+                e.printStackTrace();
             }
 
             Log.e("Otto発動", "動画再生復帰");
         } else {
             //タイムライン以外のfragmentが可視化している場合
-            if (videoHolder.movie.isPlaying()) {
-                videoHolder.movie.pause();
-            }
-            if (nextVideo != null && nextVideo.isPlaying()) {
-                nextVideo.pause();
+            try {
+                if (videoHolder.movie != null) {
+                    if (videoHolder.movie.isPlaying()) {
+                        videoHolder.movie.pause();
+                    }
+                }
+
+                if (nextVideo != null) {
+                    if (nextVideo.isPlaying()) {
+                        nextVideo.pause();
+                    }
+                }
+            }catch (NullPointerException e) {
+                Log.e("中止ぬるぽだよ〜","ぬるぽちゃん");
+                e.printStackTrace();
             }
 
             Log.e("Otto発動", "動画再生停止");
@@ -370,6 +418,30 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
 
     }
 
+    private void setDeleteDialog(final String post_id) {
+        mMaterialDialog = new MaterialDialog(getActivity())
+                .setTitle("投稿の削除")
+                .setMessage("この投稿を削除しますか？")
+                .setPositiveButton("はい", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //mMaterialDialog.dismiss();
+                        new PostDeleteAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,post_id);
+                        mPostDeleteDialog = new CustomProgressDialog(getActivity());
+                        mPostDeleteDialog.setCancelable(false);
+                        mPostDeleteDialog.show();
+                    }
+                })
+                .setNegativeButton("いいえ", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mMaterialDialog.dismiss();
+                    }
+                });
+
+        mMaterialDialog.show();
+    }
+
     private static class NameHolder {
         ImageView circleImage;
         TextView user_name;
@@ -402,29 +474,7 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
     public class ProfTask extends AsyncTask<String, String, Integer> {
 
         @Override
-        protected Integer doInBackground(String... strings) {
-            HttpClient client1 = new DefaultHttpClient();
-
-            HttpPost method = new HttpPost(sSignupUrl);
-
-            ArrayList<NameValuePair> contents = new ArrayList<NameValuePair>();
-            contents.add(new BasicNameValuePair("user_name", mName));
-            contents.add(new BasicNameValuePair("picture", mPictureImageUrl));
-            Log.d("読み取り", mName + "と" + mPictureImageUrl);
-
-            String body = null;
-            try {
-                method.setEntity(new UrlEncodedFormEntity(contents, "utf-8"));
-                HttpResponse res = client1.execute(method);
-                Log.d("TAGだよ", "反応");
-                HttpEntity entity = res.getEntity();
-                body = EntityUtils.toString(entity, "UTF-8");
-                Log.d("bodyの中身だよ", body);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-
+        protected void onPreExecute() {
             try {
                 mEncode_user_name = URLEncoder.encode(mName, "UTF-8");
             } catch (UnsupportedEncodingException e) {
@@ -432,11 +482,18 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
             }
 
             mProfUrl = "http://api-gocci.jp/mypage/?user_name=" + mEncode_user_name;
+        }
+
+        @Override
+        protected Integer doInBackground(String... strings) {
+
+            HttpClient client = application_gocci.getHttpClient();
+
             HttpGet request = new HttpGet(mProfUrl);
             HttpResponse httpResponse = null;
 
             try {
-                httpResponse = client1.execute(request);
+                httpResponse = client.execute(request);
             } catch (Exception e) {
                 Log.d("error", String.valueOf(e));
             }
@@ -505,9 +562,6 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                 } catch (JSONException e) {
                     e.printStackTrace();
                     Log.d("error", String.valueOf(e));
-                }finally {
-                    // shutdownすると通信できなくなる
-                    client1.getConnectionManager().shutdown();
                 }
             } else {
                 Log.d("JSONSampleActivity", "Status" + status);
@@ -783,29 +837,7 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
         protected Integer doInBackground(String... params) {
             String param = params[0];
 
-            HttpClient client = new DefaultHttpClient();
-
-            HttpPost method = new HttpPost(sDataurl);
-
-            ArrayList<NameValuePair> contents = new ArrayList<NameValuePair>();
-            contents.add(new BasicNameValuePair("user_name", mName));
-            contents.add(new BasicNameValuePair("picture", mPictureImageUrl));
-            Log.d("読み取り", mName + "と" + mPictureImageUrl);
-
-            String body = null;
-            try {
-                method.setEntity(new UrlEncodedFormEntity(contents, "utf-8"));
-                HttpResponse res = client.execute(method);
-                mStatus = res.getStatusLine().getStatusCode();
-                Log.d("TAGだよ", "反応");
-                HttpEntity entity = res.getEntity();
-                body = EntityUtils.toString(entity, "UTF-8");
-                Log.d("bodyの中身だよ", body);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            if (HttpStatus.SC_OK == mStatus) {
+            HttpClient client = application_gocci.getHttpClient();
 
                 HttpPost goodnummethod = new HttpPost(sGoodUrl);
 
@@ -825,7 +857,6 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            }
 
             if (HttpStatus.SC_OK == mStatus2) {
 
@@ -902,9 +933,6 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                     } catch (JSONException e) {
                         e.printStackTrace();
                         Log.d("error", String.valueOf(e));
-                    }finally {
-                        // shutdownすると通信できなくなる
-                        client.getConnectionManager().shutdown();
                     }
                 } else {
                     Log.d("JSONSampleActivity", "Status" + mStatus3);
@@ -934,5 +962,142 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
         }
 
     }
+
+    public class PostDeleteAsyncTask extends AsyncTask<String, String, Integer> {
+        private int mStatus;
+        private int mStatus2;
+        private int mStatus3;
+
+        @Override
+        protected Integer doInBackground(String... params) {
+            String param = params[0];
+
+            HttpClient client = application_gocci.getHttpClient();
+
+                HttpPost goodnummethod = new HttpPost(sPostDeleteUrl);
+
+                ArrayList<NameValuePair> goodnumcontents = new ArrayList<NameValuePair>();
+                goodnumcontents.add(new BasicNameValuePair("post_id", param));
+                Log.d("読み取り", param);
+
+                String goodnumbody = null;
+                try {
+                    goodnummethod.setEntity(new UrlEncodedFormEntity(goodnumcontents, "utf-8"));
+                    HttpResponse goodnumres = client.execute(goodnummethod);
+                    mStatus2 = goodnumres.getStatusLine().getStatusCode();
+                    Log.d("TAGだよ", "反応");
+                    HttpEntity goodnumentity = goodnumres.getEntity();
+                    goodnumbody = EntityUtils.toString(goodnumentity, "UTF-8");
+                    Log.d("bodyの中身だよ", goodnumbody);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            if (HttpStatus.SC_OK == mStatus2) {
+
+                HttpGet request = new HttpGet(mProfUrl);
+                HttpResponse httpResponse = null;
+
+                try {
+                    httpResponse = client.execute(request);
+                } catch (Exception e) {
+                    Log.d("error", String.valueOf(e));
+                }
+
+                mStatus3 = httpResponse.getStatusLine().getStatusCode();
+
+                if (HttpStatus.SC_OK == mStatus3) {
+                    String mProfData = null;
+                    try {
+                        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                        httpResponse.getEntity().writeTo(outputStream);
+                        mProfData = outputStream.toString(); // JSONデータ
+                        Log.d("data", mProfData);
+                    } catch (Exception e) {
+                        Log.d("error", String.valueOf(e));
+                    }
+
+                    mProfusers.clear();
+
+                    try {
+                        JSONArray jsonArray = new JSONArray(mProfData);
+
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                            String post_id = jsonObject.getString(TAG_POST_ID);
+                            Integer user_id = jsonObject.getInt(TAG_USER_ID);
+                            String user_name = jsonObject.getString(TAG_USER_NAME);
+                            String picture = jsonObject.getString(TAG_PICTURE);
+                            String movie = jsonObject.getString(TAG_MOVIE);
+                            String restname = jsonObject.getString(TAG_RESTNAME);
+                            Integer goodnum = jsonObject.getInt(TAG_GOODNUM);
+                            Integer comment_num = jsonObject.getInt(TAG_COMMENT_NUM);
+                            String thumbnail = jsonObject.getString(TAG_THUMBNAIL);
+                            Integer star_evaluation = jsonObject.getInt(TAG_STAR_EVALUATION);
+                            //String locality = jsonObject.getString(TAG_LOCALITY);
+
+
+                            UserData user1 = new UserData();
+                            user1.setUser_name(user_name);
+                            user1.setPicture(picture);
+                            mProfusers.add(user1);
+
+                            UserData user2 = new UserData();
+                            user2.setMovie(movie);
+                            user2.setThumbnail(thumbnail);
+                            mProfusers.add(user2);
+
+                            UserData user3 = new UserData();
+                            user3.setComment_num(comment_num);
+                            user3.setgoodnum(goodnum);
+                            user3.setStar_evaluation(star_evaluation);
+                            mProfusers.add(user3);
+
+                            UserData user4 = new UserData();
+                            user4.setRest_name(restname);
+                            //user4.setLocality(locality);
+                            mProfusers.add(user4);
+
+                            UserData user5 = new UserData();
+                            user5.setPost_id(post_id);
+                            user5.setUser_id(user_id);
+                            mProfusers.add(user5);
+
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        Log.d("error", String.valueOf(e));
+                    }
+                } else {
+                    Log.d("JSONSampleActivity", "Status" + mStatus3);
+                }
+            }
+
+            return mStatus3;
+        }
+
+
+        @Override
+        protected void onPostExecute(Integer result) {
+            if (result != null && result == HttpStatus.SC_OK) {
+                //いいねが送れた処理　項目itemの更新
+                mMaterialDialog.dismiss();
+                mProfAdapter.notifyDataSetChanged();
+                mProfListView.invalidateViews();
+
+                //タイムラインのListViewも更新必要か
+
+            } else {
+
+                Toast.makeText(getActivity(), "削除に失敗しました。", Toast.LENGTH_SHORT).show();
+            }
+
+            mPostDeleteDialog.dismiss();
+
+        }
+
+    }
+
 }
 

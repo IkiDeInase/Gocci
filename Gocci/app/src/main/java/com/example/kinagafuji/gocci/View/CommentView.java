@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import com.example.kinagafuji.gocci.Activity.IntentVineCamera;
 import com.example.kinagafuji.gocci.Activity.UserProfActivity;
+import com.example.kinagafuji.gocci.Application_Gocci;
 import com.example.kinagafuji.gocci.Base.CustomProgressDialog;
 import com.example.kinagafuji.gocci.R;
 import com.example.kinagafuji.gocci.data.RoundedTransformation;
@@ -54,6 +55,8 @@ import java.util.ArrayList;
 
 public class CommentView extends LinearLayout {
 
+    private Application_Gocci application_gocci;
+
     private ListView mCommentList;
     private EditText mCommenttext;
     private ImageButton mCommentButton;
@@ -82,6 +85,9 @@ public class CommentView extends LinearLayout {
 
     public CommentView(final Context context, final String name, final String pictureImageUrl, String post_id) {
         super(context);
+
+        application_gocci = (Application_Gocci)context.getApplicationContext();
+
         mName = name;
         mPictureImageUrl = pictureImageUrl;
         mPost_id = post_id;
@@ -170,13 +176,13 @@ public class CommentView extends LinearLayout {
         protected Integer doInBackground(String... params) {
             String param = params[0];
 
-            HttpClient httpClient = new DefaultHttpClient();
+            HttpClient client = application_gocci.getHttpClient();
 
             HttpGet request = new HttpGet(param);
             HttpResponse httpResponse = null;
 
             try {
-                httpResponse = httpClient.execute(request);
+                httpResponse = client.execute(request);
             } catch (Exception e) {
                 Log.d("JSONSampleActivity", "Error Execute");
             }
@@ -217,11 +223,7 @@ public class CommentView extends LinearLayout {
                 } catch (JSONException e) {
                     e.printStackTrace();
                     Log.d("えらー", String.valueOf(e));
-                }finally {
-                    // shutdownすると通信できなくなる
-                    httpClient.getConnectionManager().shutdown();
                 }
-
             } else {
                 Log.d("JSONSampleActivity", "Status" + status);
             }
@@ -303,29 +305,7 @@ public class CommentView extends LinearLayout {
         protected Integer doInBackground(String... params) {
             String param = params[0];
 
-            HttpClient client = new DefaultHttpClient();
-
-            HttpPost method = new HttpPost(sDataurl);
-
-            ArrayList<NameValuePair> contents = new ArrayList<NameValuePair>();
-            contents.add(new BasicNameValuePair("user_name", mName));
-            contents.add(new BasicNameValuePair("picture", mPictureImageUrl));
-            Log.d("読み取り", mName + "と" + mPictureImageUrl);
-
-            String body = null;
-            try {
-                method.setEntity(new UrlEncodedFormEntity(contents, "utf-8"));
-                HttpResponse res = client.execute(method);
-                status = res.getStatusLine().getStatusCode();
-                Log.d("TAGだよ", "反応");
-                HttpEntity entity = res.getEntity();
-                body = EntityUtils.toString(entity, "UTF-8");
-                Log.d("bodyの中身だよ", body);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            if (HttpStatus.SC_OK == status) {
+            HttpClient client = application_gocci.getHttpClient();
 
                 HttpPost commentmethod = new HttpPost(sPostCommentUrl);
 
@@ -347,8 +327,6 @@ public class CommentView extends LinearLayout {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
-            }
 
             return status2;
         }

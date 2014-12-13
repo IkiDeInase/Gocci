@@ -36,6 +36,7 @@
         android:label="@string/app_name"
         android:largeHeap="true"
         android:theme="@style/AppTheme"
+        android:name=".Application_Gocci"
         >
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"

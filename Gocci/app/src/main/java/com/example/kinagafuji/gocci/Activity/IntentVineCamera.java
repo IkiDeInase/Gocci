@@ -18,6 +18,7 @@ import android.widget.RatingBar;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import com.example.kinagafuji.gocci.Application_Gocci;
 import com.example.kinagafuji.gocci.Base.CustomProgressDialog;
 import com.example.kinagafuji.gocci.R;
 
@@ -37,6 +38,8 @@ import java.io.File;
 import java.util.ArrayList;
 
 public class IntentVineCamera extends Activity {
+
+    private Application_Gocci application_gocci;
 
     private static final int ACTION_TAKE_VIDEO = 1;
     private static final String sSignupUrl = "http://api-gocci.jp/login/";
@@ -68,6 +71,8 @@ public class IntentVineCamera extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_intent_vine_camera);
+
+        application_gocci = (Application_Gocci) this.getApplication();
 
         String fileName = String.valueOf(System.currentTimeMillis());
 
@@ -175,47 +180,30 @@ public class IntentVineCamera extends Activity {
         @Override
         protected Integer doInBackground(String... params) {
 
-            HttpClient httpClient = new DefaultHttpClient();
+            HttpClient client = application_gocci.getHttpClient();
 
-            HttpPost loginpost = new HttpPost(sSignupUrl);
             HttpPost restpost = new HttpPost(sPostUrl);
             HttpPost moviepost = new HttpPost(sMovieurl);
             HttpPost ratingpost = new HttpPost(sRatingUrl);
 
-
-            //ログイン処理
-            HttpResponse loginres = null;
-            try {
-                loginpost.setEntity(new UrlEncodedFormEntity(logininfo, "utf-8"));
-                loginres = httpClient.execute(loginpost);
-                status = loginres.getStatusLine().getStatusCode();
-            } catch (Exception e) {
-                e.printStackTrace();
-                Log.e("失敗です", "サインアップでエラー");
-            }
-
             //店舗名ポスト処理
-            if (HttpStatus.SC_OK == status) {
-
                 HttpResponse restres = null;
                 try {
                     restpost.setEntity(new UrlEncodedFormEntity(restinfo, "utf-8"));
-                    restres = httpClient.execute(restpost);
+                    restres = client.execute(restpost);
                     status1 = restres.getStatusLine().getStatusCode();
                 } catch (Exception e) {
                     e.printStackTrace();
                     Log.e("失敗です", "店舗名ポストでエラー");
                 }
-            } else {
-                Log.e("失敗です", "サインアップでエラー");
-            }
+
 
             if (HttpStatus.SC_OK == status1) {
 
                 HttpResponse movieres = null;
                 try {
                     moviepost.setEntity(fileEntity);
-                    movieres = httpClient.execute(moviepost);
+                    movieres = client.execute(moviepost);
                     status2 = movieres.getStatusLine().getStatusCode();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -230,14 +218,11 @@ public class IntentVineCamera extends Activity {
                 HttpResponse ratingres = null;
                 try {
                     ratingpost.setEntity(new UrlEncodedFormEntity(rateinfo, "utf-8"));
-                    ratingres = httpClient.execute(ratingpost);
+                    ratingres = client.execute(ratingpost);
                     status3 = ratingres.getStatusLine().getStatusCode();
                 } catch (Exception e) {
                     e.printStackTrace();
                     Log.e("失敗です", "星ポストでエラー");
-                }finally {
-                    // shutdownすると通信できなくなる
-                    httpClient.getConnectionManager().shutdown();
                 }
             } else {
                 Log.e("失敗です", "動画ポストでエラー");

@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import com.example.kinagafuji.gocci.Application_Gocci;
 import com.example.kinagafuji.gocci.Base.BaseActivity;
 import com.example.kinagafuji.gocci.Base.CustomProgressDialog;
 import com.example.kinagafuji.gocci.R;
@@ -52,6 +53,8 @@ import java.util.ArrayList;
 import me.drakeet.materialdialog.MaterialDialog;
 
 public class UserProfActivity extends BaseActivity implements ListView.OnScrollListener {
+
+    private Application_Gocci application_gocci;
 
     private static final String TAG_POST_ID = "post_id";
     private static final String TAG_USER_ID = "user_id";
@@ -97,6 +100,8 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_prof);
+
+        application_gocci = (Application_Gocci) this.getApplication();
 
         Intent userintent = getIntent();
         mUser_name = userintent.getStringExtra("username");
@@ -305,26 +310,7 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
         protected Integer doInBackground(String... params) {
             String url = params[0];
 
-            HttpClient client = new DefaultHttpClient();
-
-            HttpPost method = new HttpPost(sSignupUrl);
-
-            ArrayList<NameValuePair> contents = new ArrayList<NameValuePair>();
-            contents.add(new BasicNameValuePair("user_name", mName));
-            contents.add(new BasicNameValuePair("picture", mPictureImageUrl));
-            Log.d("読み取り", mName + "と" + mPictureImageUrl);
-
-            String body = null;
-            try {
-                method.setEntity(new UrlEncodedFormEntity(contents, "utf-8"));
-                HttpResponse res = client.execute(method);
-                Log.d("TAGだよ", "反応");
-                HttpEntity entity = res.getEntity();
-                body = EntityUtils.toString(entity, "UTF-8");
-                Log.d("bodyの中身だよ", body);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            HttpClient client = application_gocci.getHttpClient();
 
             HttpGet request = new HttpGet(url);
             HttpResponse httpResponse = null;
@@ -399,9 +385,6 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
                 } catch (JSONException e) {
                     e.printStackTrace();
                     Log.d("error", String.valueOf(e));
-                }finally {
-                    // shutdownすると通信できなくなる
-                    client.getConnectionManager().shutdown();
                 }
             } else {
                 Log.d("JSONSampleActivity", "Status" + status);
@@ -677,29 +660,7 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
         protected Integer doInBackground(String... params) {
             String param = params[0];
 
-            HttpClient client = new DefaultHttpClient();
-
-            HttpPost method = new HttpPost(sDataurl);
-
-            ArrayList<NameValuePair> contents = new ArrayList<NameValuePair>();
-            contents.add(new BasicNameValuePair("user_name", mName));
-            contents.add(new BasicNameValuePair("picture", mPictureImageUrl));
-            Log.d("読み取り", mName + "と" + mPictureImageUrl);
-
-            String body = null;
-            try {
-                method.setEntity(new UrlEncodedFormEntity(contents, "utf-8"));
-                HttpResponse res = client.execute(method);
-                mStatus = res.getStatusLine().getStatusCode();
-                Log.d("TAGだよ", "反応");
-                HttpEntity entity = res.getEntity();
-                body = EntityUtils.toString(entity, "UTF-8");
-                Log.d("bodyの中身だよ", body);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            if (HttpStatus.SC_OK == mStatus) {
+            HttpClient client = application_gocci.getHttpClient();
 
                 HttpPost goodnummethod = new HttpPost(sGoodUrl);
 
@@ -719,7 +680,7 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            }
+
 
             if (HttpStatus.SC_OK == mStatus2) {
 
@@ -796,9 +757,6 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
                     } catch (JSONException e) {
                         e.printStackTrace();
                         Log.d("error", String.valueOf(e));
-                    }finally {
-                        // shutdownすると通信できなくなる
-                        client.getConnectionManager().shutdown();
                     }
                 } else {
                     Log.d("JSONSampleActivity", "Status" + mStatus3);

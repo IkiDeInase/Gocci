@@ -24,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import com.example.kinagafuji.gocci.Application_Gocci;
 import com.example.kinagafuji.gocci.Base.BaseActivity;
 import com.example.kinagafuji.gocci.Base.CustomProgressDialog;
 import com.example.kinagafuji.gocci.R;
@@ -56,6 +57,8 @@ import java.util.ArrayList;
 import me.drakeet.materialdialog.MaterialDialog;
 
 public class TenpoActivity extends BaseActivity implements ListView.OnScrollListener {
+
+    private Application_Gocci application_gocci;
 
     private static final String TAG_POST_ID = "post_id";
     private static final String TAG_USER_NAME = "user_name";
@@ -102,6 +105,8 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tenpo);
+
+        application_gocci = (Application_Gocci) this.getApplication();
 
         Intent intent = getIntent();
         mPost_restname = intent.getStringExtra("restname");
@@ -349,13 +354,13 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
         @Override
         protected Integer doInBackground(String... params) {
             String param = params[0];
-            HttpClient httpClient = new DefaultHttpClient();
+            HttpClient client = application_gocci.getHttpClient();
 
             HttpGet request = new HttpGet(param);
             HttpResponse httpResponse = null;
 
             try {
-                httpResponse = httpClient.execute(request);
+                httpResponse = client.execute(request);
             } catch (Exception e) {
                 Log.d("error", String.valueOf(e));
             }
@@ -424,9 +429,6 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
                 } catch (JSONException e) {
                     e.printStackTrace();
                     Log.d("error", String.valueOf(e));
-                }finally {
-                    // shutdownすると通信できなくなる
-                    httpClient.getConnectionManager().shutdown();
                 }
             } else {
                 Log.d("JSONSampleActivity", "Status" + status);
@@ -703,29 +705,7 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
         protected Integer doInBackground(String... params) {
             String param = params[0];
 
-            HttpClient client = new DefaultHttpClient();
-
-            HttpPost method = new HttpPost(sDataurl);
-
-            ArrayList<NameValuePair> contents = new ArrayList<NameValuePair>();
-            contents.add(new BasicNameValuePair("user_name", mName));
-            contents.add(new BasicNameValuePair("picture", mPictureImageUrl));
-            Log.d("読み取り", mName + "と" + mPictureImageUrl);
-
-            String body = null;
-            try {
-                method.setEntity(new UrlEncodedFormEntity(contents, "utf-8"));
-                HttpResponse res = client.execute(method);
-                mStatus = res.getStatusLine().getStatusCode();
-                Log.d("TAGだよ", "反応");
-                HttpEntity entity = res.getEntity();
-                body = EntityUtils.toString(entity, "UTF-8");
-                Log.d("bodyの中身だよ", body);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            if (HttpStatus.SC_OK == mStatus) {
+            HttpClient client = application_gocci.getHttpClient();
 
                 HttpPost goodnummethod = new HttpPost(sGoodUrl);
 
@@ -745,7 +725,6 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            }
 
             if (HttpStatus.SC_OK == mStatus2) {
 
@@ -822,9 +801,6 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
                     } catch (JSONException e) {
                         e.printStackTrace();
                         Log.d("error", String.valueOf(e));
-                    }finally {
-                        // shutdownすると通信できなくなる
-                        client.getConnectionManager().shutdown();
                     }
                 } else {
                     Log.d("JSONSampleActivity", "Status" + mStatus3);

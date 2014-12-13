@@ -29,6 +29,7 @@ import android.widget.VideoView;
 
 import com.example.kinagafuji.gocci.Activity.TenpoActivity;
 import com.example.kinagafuji.gocci.Activity.UserProfActivity;
+import com.example.kinagafuji.gocci.Application_Gocci;
 import com.example.kinagafuji.gocci.Base.ArrayListGetEvent;
 import com.example.kinagafuji.gocci.Base.BaseFragment;
 import com.example.kinagafuji.gocci.Base.BusHolder;
@@ -66,6 +67,8 @@ import me.drakeet.materialdialog.MaterialDialog;
 
 public class TimelineFragment extends BaseFragment implements ListView.OnScrollListener {
 
+    private Application_Gocci application_gocci;
+
     private static final String sTimelineUrl = "http://api-gocci.jp/timeline/";
 
     private static final String KEY_IMAGE_URL = "image_url";
@@ -82,7 +85,7 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
     private static final String TAG_LOCALITY = "locality";
 
     private static final String TAG = "TimelineFragment";
-    private final TimelineFragment self = this;
+    private final TimelineFragment timelineself = this;
 
     public CustomProgressDialog mTimelineDialog;
     public ListView mTimelineListView;
@@ -122,6 +125,8 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
         // FragmentのViewを返却
         final View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_timeline,
                 container, false);
+
+        application_gocci = (Application_Gocci) getActivity().getApplication();
 
         new TimelineAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, sTimelineUrl);
         mTimelineDialog = new CustomProgressDialog(getActivity());
@@ -258,32 +263,12 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        try {
-            if (videoHolder.movie != null) {
-                if (videoHolder.movie.isPlaying()) {
-                    videoHolder.movie.pause();
-                }
-            }
-
-            if (nextVideo != null) {
-                if (nextVideo.isPlaying()) {
-                    nextVideo.pause();
-                }
-            }
-        }catch (NullPointerException e) {
-            Log.e("ぬるぽだよ〜","ぬるぽちゃん");
-            e.printStackTrace();
-        }
-    }
 
     @Override
     public void onResume() {
         super.onResume();
         Log.e(TAG, "Fragment-onResume");
-        BusHolder.get().register(self);
+        BusHolder.get().register(timelineself);
 
         try {
             if (videoHolder.movie != null) {
@@ -298,7 +283,7 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
                 }
             }
         }catch (NullPointerException e) {
-            Log.e("ぬるぽだよ〜","ぬるぽちゃん");
+            Log.e("resumeぬるぽだよ〜","ぬるぽちゃん");
             e.printStackTrace();
         }
 
@@ -308,7 +293,7 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
     public void onPause() {
         super.onPause();
         Log.e(TAG, "Fragment-onPause");
-        BusHolder.get().unregister(self);
+        BusHolder.get().unregister(timelineself);
 
         try {
             if (videoHolder.movie != null) {
@@ -323,7 +308,7 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
                 }
             }
         }catch (NullPointerException e) {
-            Log.e("ぬるぽだよ〜","ぬるぽちゃん");
+            Log.e("pauseぬるぽだよ〜","ぬるぽちゃん");
             e.printStackTrace();
         }
     }
@@ -331,22 +316,42 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
     @Subscribe
     public void subscribe(PageChangeVideoStopEvent event) {
         if (event.position == 0) {
-            //タイムラインが呼ばれた時の処理
-            if (!videoHolder.movie.isPlaying()) {
-                videoHolder.movie.start();
-            }
-            if (nextVideo != null && !nextVideo.isPlaying()) {
-                nextVideo.start();
+           //タイムラインが呼ばれた時の処理
+            try {
+                if (videoHolder.movie != null) {
+                    if (!videoHolder.movie.isPlaying()) {
+                        videoHolder.movie.start();
+                    }
+                }
+
+                if (nextVideo != null) {
+                    if (!nextVideo.isPlaying()) {
+                        nextVideo.start();
+                    }
+                }
+            }catch (NullPointerException e) {
+                Log.e("再生ぬるぽだよ〜","ぬるぽちゃん");
+                e.printStackTrace();
             }
 
             Log.e("Otto発動", "動画再生復帰");
         } else {
             //タイムライン以外のfragmentが可視化している場合
-            if (videoHolder.movie.isPlaying()) {
-                videoHolder.movie.pause();
-            }
-            if (nextVideo != null && nextVideo.isPlaying()) {
-                nextVideo.pause();
+            try {
+                if (videoHolder.movie != null) {
+                    if (videoHolder.movie.isPlaying()) {
+                        videoHolder.movie.pause();
+                    }
+                }
+
+                if (nextVideo != null) {
+                    if (nextVideo.isPlaying()) {
+                        nextVideo.pause();
+                    }
+                }
+            }catch (NullPointerException e) {
+                Log.e("中止ぬるぽだよ〜","ぬるぽちゃん");
+                e.printStackTrace();
             }
 
             Log.e("Otto発動", "動画再生停止");
@@ -401,29 +406,7 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
         protected Integer doInBackground(String... params) {
             String param = params[0];
 
-            HttpClient client = new DefaultHttpClient();
-
-            HttpPost method = new HttpPost(sDataurl);
-
-            ArrayList<NameValuePair> contents = new ArrayList<NameValuePair>();
-            contents.add(new BasicNameValuePair("user_name", mName));
-            contents.add(new BasicNameValuePair("picture", mPictureImageUrl));
-            Log.d("読み取り", mName + "と" + mPictureImageUrl);
-
-            String body = null;
-            try {
-                method.setEntity(new UrlEncodedFormEntity(contents, "utf-8"));
-                HttpResponse res = client.execute(method);
-                mStatus = res.getStatusLine().getStatusCode();
-                Log.d("TAGだよ", "反応");
-                HttpEntity entity = res.getEntity();
-                body = EntityUtils.toString(entity, "UTF-8");
-                Log.d("bodyの中身だよ", body);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            if (HttpStatus.SC_OK == mStatus) {
+            HttpClient client = application_gocci.getHttpClient();
 
                 HttpPost goodnummethod = new HttpPost(sGoodUrl);
 
@@ -443,7 +426,7 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            }
+
 
             if (HttpStatus.SC_OK == mStatus2) {
                 //TimelineJSONの読み込み
@@ -521,9 +504,6 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
                     } catch (JSONException e) {
                         e.printStackTrace();
                         Log.d("error", String.valueOf(e));
-                    }finally {
-                        // shutdownすると通信できなくなる
-                        client.getConnectionManager().shutdown();
                     }
                 } else {
                     Log.d("JSONSampleActivity", "Status" + mStatus3);
@@ -568,13 +548,13 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
         protected Integer doInBackground(String... strings) {
             String string = strings[0];
 
-            HttpClient httpClient = new DefaultHttpClient();
+            HttpClient client = application_gocci.getHttpClient();
 
             HttpGet request = new HttpGet(string);
             HttpResponse httpResponse = null;
 
             try {
-                httpResponse = httpClient.execute(request);
+                httpResponse = client.execute(request);
             } catch (Exception e) {
                 Log.d("error", String.valueOf(e));
             }
@@ -645,9 +625,6 @@ public class TimelineFragment extends BaseFragment implements ListView.OnScrollL
                 } catch (JSONException e) {
                     e.printStackTrace();
                     Log.d("error", String.valueOf(e));
-                }finally {
-                    // shutdownすると通信できなくなる
-                    httpClient.getConnectionManager().shutdown();
                 }
             } else {
                 Log.d("JSONSampleActivity", "Status" + status);

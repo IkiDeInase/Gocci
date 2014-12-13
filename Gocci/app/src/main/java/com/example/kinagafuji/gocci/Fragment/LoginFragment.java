@@ -16,6 +16,7 @@ import android.widget.ImageButton;
 import android.widget.PopupWindow;
 
 import com.example.kinagafuji.gocci.Activity.SlidingTabActivity;
+import com.example.kinagafuji.gocci.Application_Gocci;
 import com.example.kinagafuji.gocci.Base.BaseFragment;
 import com.example.kinagafuji.gocci.Base.CustomProgressDialog;
 import com.example.kinagafuji.gocci.BuildConfig;
@@ -40,10 +41,14 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class LoginFragment extends BaseFragment {
+
+    private Application_Gocci application_gocci;
 
     private static final String TAG = "LoginFragment";
 
@@ -65,6 +70,8 @@ public class LoginFragment extends BaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        application_gocci = (Application_Gocci) getActivity().getApplication();
+
         uiHelper = new UiLifecycleHelper(getActivity(), callback);
         uiHelper.onCreate(savedInstanceState);
     }
@@ -74,6 +81,7 @@ public class LoginFragment extends BaseFragment {
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
         // FragmentのViewを返却
         final View view = inflater.inflate(R.layout.fragment_login, container, false);
+
 
         WindowManager wm = (WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE);
         // ディスプレイのインスタンス生成
@@ -213,6 +221,7 @@ public class LoginFragment extends BaseFragment {
 
                     mPictureImageUrl = "https://graph.facebook.com/" + mId + "/picture";
 
+
                     new SignupTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, sDataurl);
 
 
@@ -277,7 +286,7 @@ public class LoginFragment extends BaseFragment {
         protected Integer doInBackground(String... params) {
             String param = params[0];
 
-            HttpClient client = new DefaultHttpClient();
+            HttpClient client = application_gocci.getHttpClient();
 
             HttpPost method = new HttpPost(param);
 
@@ -286,20 +295,17 @@ public class LoginFragment extends BaseFragment {
             contents.add(new BasicNameValuePair("picture", mPictureImageUrl));
             Log.d("読み取り", mName + "と" + mPictureImageUrl);
 
-            String body = null;
             try {
                 method.setEntity(new UrlEncodedFormEntity(contents, "utf-8"));
-                HttpResponse res = client.execute(method);
-                Log.d("TAGだよ", "反応");
-                HttpEntity entity = res.getEntity();
-                body = EntityUtils.toString(entity, "UTF-8");
-                Log.d("bodyの中身だよ", body);
-            } catch (Exception e) {
+            } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
-            }finally {
-                // shutdownすると通信できなくなる
-                client.getConnectionManager().shutdown();
             }
+            try {
+                HttpResponse res = client.execute(method);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
 
             SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = pref.edit();
@@ -313,11 +319,6 @@ public class LoginFragment extends BaseFragment {
             return null;
         }
 
-        @Override
-        protected void onPostExecute(Integer result) {
-
-
-        }
     }
 
     public class FacebookGraphUserCallback implements Request.GraphUserCallback {
