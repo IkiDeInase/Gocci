@@ -373,6 +373,7 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
                     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                     httpResponse.getEntity().writeTo(outputStream);
                     mTenpoData = outputStream.toString(); // JSONデータ
+                    httpResponse.getEntity().consumeContent();
                     Log.d("data", mTenpoData);
                 } catch (Exception e) {
                     Log.d("error", String.valueOf(e));
@@ -721,6 +722,7 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
                     Log.d("TAGだよ", "反応");
                     HttpEntity goodnumentity = goodnumres.getEntity();
                     goodnumbody = EntityUtils.toString(goodnumentity, "UTF-8");
+                    goodnumres.getEntity().consumeContent();
                     Log.d("bodyの中身だよ", goodnumbody);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -745,6 +747,7 @@ public class TenpoActivity extends BaseActivity implements ListView.OnScrollList
                         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                         httpResponse.getEntity().writeTo(outputStream);
                         mTenpoData = outputStream.toString(); // JSONデータ
+                        httpResponse.getEntity().consumeContent();
                         Log.d("data", mTenpoData);
                     } catch (Exception e) {
                         Log.d("error", String.valueOf(e));

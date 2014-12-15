@@ -5,6 +5,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -71,8 +72,14 @@ public class IntentVineCamera extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_intent_vine_camera);
-
         application_gocci = (Application_Gocci) this.getApplication();
+
+        Intent intent = getIntent();
+        mRestname = intent.getStringExtra("restname");
+        mName = intent.getStringExtra("name");
+        mPictureImageUrl = intent.getStringExtra("pictureImageUrl");
+
+        Log.d("ゲットしたデータ", mRestname + "/" + mName + "/" + mPictureImageUrl);
 
         String fileName = String.valueOf(System.currentTimeMillis());
 
@@ -82,18 +89,11 @@ public class IntentVineCamera extends Activity {
         ContentResolver contentResolver = getContentResolver();
         mImageUri = contentResolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
 
-        Intent intent = getIntent();
-        mRestname = intent.getStringExtra("restname");
-        mName = intent.getStringExtra("name");
-        mPictureImageUrl = intent.getStringExtra("pictureImageUrl");
-
-        Log.d("ゲットしたデータ", mRestname + "/" + mName + "/" + mPictureImageUrl);
-
         Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-
         takeVideoIntent.putExtra(MediaStore.EXTRA_OUTPUT, mImageUri);
         takeVideoIntent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, 6);
         takeVideoIntent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
+        takeVideoIntent.putExtra(MediaStore.EXTRA_SCREEN_ORIENTATION, ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         startActivityForResult(takeVideoIntent, ACTION_TAKE_VIDEO);
     }
 
@@ -103,6 +103,8 @@ public class IntentVineCamera extends Activity {
 
             case ACTION_TAKE_VIDEO: {
                 if (resultCode == RESULT_OK) {
+
+                    getRealPathFromURI(IntentVineCamera.this, mImageUri);
 
                     final RatingBar videoRating = (RatingBar) findViewById(R.id.videorating);
                     videoRating.setStepSize(1);
@@ -118,7 +120,6 @@ public class IntentVineCamera extends Activity {
                         }
                     });
 
-                    getRealPathFromURI(IntentVineCamera.this, mImageUri);
 
                     ImageButton facebookshare = (ImageButton) findViewById(R.id.facebookShare);
                     ImageButton twitershare = (ImageButton) findViewById(R.id.twitterShare);
@@ -130,6 +131,7 @@ public class IntentVineCamera extends Activity {
                             mRatingNumber = String.valueOf((int) videoRating.getRating());
                             Log.e("星数", mRatingNumber);
                             new UploadAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                            Log.e("星送信","開始");
                             mPostProgress = new CustomProgressDialog(IntentVineCamera.this);
                             mPostProgress.setCancelable(false);
                             mPostProgress.show();
@@ -139,6 +141,8 @@ public class IntentVineCamera extends Activity {
 
                     //getContentResolver().delete(mImageUri, null, null);
                     //mImageUri = null;
+                } else {
+                    Toast.makeText(IntentVineCamera.this,"撮影失敗です",Toast.LENGTH_SHORT).show();
                 }
                 break;
             }
@@ -159,20 +163,58 @@ public class IntentVineCamera extends Activity {
             }
         }
 
-        logininfo = new ArrayList<NameValuePair>();
-        logininfo.add(new BasicNameValuePair("user_name", mName));
-        logininfo.add(new BasicNameValuePair("picture", mPictureImageUrl));
+        new PostMovieAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,cursorUrl);
+        Log.e("動画送信","開始");
+    }
 
-        restinfo = new ArrayList<NameValuePair>();
-        restinfo.add(new BasicNameValuePair("restname", mRestname));
+    public class PostMovieAsyncTask extends AsyncTask<String,String,Integer> {
 
-        File file = new File(cursorUrl);
-        FileBody fileBody = new FileBody(file);
-        fileEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
-        fileEntity.addPart("movie", fileBody);
+        @Override
+        protected Integer doInBackground(String... params) {
+            String url = params[0];
+            HttpClient client = application_gocci.getHttpClient();
 
-        rateinfo = new ArrayList<NameValuePair>();
-        rateinfo.add(new BasicNameValuePair("star_evaluation", mRatingNumber));
+            HttpPost restpost = new HttpPost(sPostUrl);
+
+            restinfo = new ArrayList<NameValuePair>();
+            restinfo.add(new BasicNameValuePair("restname", mRestname));
+
+            //店舗名ポスト処理
+            HttpResponse restres = null;
+            try {
+                restpost.setEntity(new UrlEncodedFormEntity(restinfo, "utf-8"));
+                restres = client.execute(restpost);
+                status1 = restres.getStatusLine().getStatusCode();
+                restres.getEntity().consumeContent();
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.e("失敗です", "店舗名ポストでエラー");
+            }
+
+            if (HttpStatus.SC_OK == status1) {
+
+                File file = new File(url);
+                FileBody fileBody = new FileBody(file);
+                fileEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
+                fileEntity.addPart("movie", fileBody);
+
+                HttpPost moviepost = new HttpPost(sMovieurl);
+
+                HttpResponse movieres = null;
+                try {
+                    moviepost.setEntity(fileEntity);
+                    movieres = client.execute(moviepost);
+                    status2 = movieres.getStatusLine().getStatusCode();
+                    movieres.getEntity().consumeContent();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Log.e("失敗です", "動画ポストでエラー");
+                }
+            }
+
+            Log.e("動画送信","終了");
+            return status2;
+        }
     }
 
     public class UploadAsyncTask extends AsyncTask<String, Integer, Integer> {
@@ -182,51 +224,18 @@ public class IntentVineCamera extends Activity {
 
             HttpClient client = application_gocci.getHttpClient();
 
-            HttpPost restpost = new HttpPost(sPostUrl);
-            HttpPost moviepost = new HttpPost(sMovieurl);
             HttpPost ratingpost = new HttpPost(sRatingUrl);
-
-            //店舗名ポスト処理
-                HttpResponse restres = null;
-                try {
-                    restpost.setEntity(new UrlEncodedFormEntity(restinfo, "utf-8"));
-                    restres = client.execute(restpost);
-                    status1 = restres.getStatusLine().getStatusCode();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Log.e("失敗です", "店舗名ポストでエラー");
-                }
-
-
-            if (HttpStatus.SC_OK == status1) {
-
-                HttpResponse movieres = null;
-                try {
-                    moviepost.setEntity(fileEntity);
-                    movieres = client.execute(moviepost);
-                    status2 = movieres.getStatusLine().getStatusCode();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Log.e("失敗です", "動画ポストでエラー");
-                }
-            } else {
-                Log.e("失敗です", "店舗名ポストでエラー");
-            }
-
-            if (HttpStatus.SC_OK == status2) {
 
                 HttpResponse ratingres = null;
                 try {
                     ratingpost.setEntity(new UrlEncodedFormEntity(rateinfo, "utf-8"));
                     ratingres = client.execute(ratingpost);
                     status3 = ratingres.getStatusLine().getStatusCode();
+                    ratingres.getEntity().consumeContent();
                 } catch (Exception e) {
                     e.printStackTrace();
                     Log.e("失敗です", "星ポストでエラー");
                 }
-            } else {
-                Log.e("失敗です", "動画ポストでエラー");
-            }
 
             return status3;
 
@@ -235,8 +244,8 @@ public class IntentVineCamera extends Activity {
         @Override
         protected void onPostExecute(Integer result) {
 
-            if (result != null && result == 200) {
-                Toast.makeText(getApplicationContext(), "完了しました。", Toast.LENGTH_LONG).show();
+            if (result != null && result == HttpStatus.SC_OK) {
+                Toast.makeText(IntentVineCamera.this, "完了しました。", Toast.LENGTH_LONG).show();
             } else {
                 //通信失敗した際のエラー処理
                 Toast.makeText(IntentVineCamera.this, "失敗しました。", Toast.LENGTH_SHORT).show();

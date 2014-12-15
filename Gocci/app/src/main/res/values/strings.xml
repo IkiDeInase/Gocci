@@ -9,7 +9,6 @@
     <string name="title_activity_toukou">Toukou</string>
     <string name="title_activity_splash">SplashActivity</string>
     <string name="title_activity_login">LoginActivity</string>
-    <string name="app_id">673123156062598</string>
     <string name="map_key">AIzaSyAGSbxYvWNh136FcFzELekR_OLTOA5Oglk</string>
     <string name="user_id">ユーザーID</string>
     <string name="user_name">ユーザー名</string>
@@ -51,5 +50,16 @@
     <string name="title_activity_sliding_tab">SlidingTabActivity</string>
     <string name="title_activity_intent_vine_camera">IntentVineCamera</string>
     <string name="title_activity_user_prof">UserProfActivity</string>
+
+    <string name="parse_app_id">StFdxRqTENcS6HyQXgQJhVipNlp9QYeMufGYJdqk</string>
+    <string name="parse_client_key">TdxNRFEIQ7z2STum8vVPPkvK4Ce79OrJBlLUX8ER</string>
+    <string name="facebook_app_id">673123156062598</string>
+        <string name="profile_logo_content_description">Logo</string>
+    <string name="profile_title_logged_in">Your are logged in as</string>
+    <string name="profile_logout_button_label">Log out</string>
+
+    <string-array name="my_facebook_permissions">
+        <item>public_profile</item>
+    </string-array>
 
 </resources>

@@ -329,6 +329,7 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
                     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                     httpResponse.getEntity().writeTo(outputStream);
                     mProfData = outputStream.toString(); // JSONデータ
+                    httpResponse.getEntity().consumeContent();
                     Log.d("data", mProfData);
                 } catch (Exception e) {
                     Log.d("error", String.valueOf(e));
@@ -676,6 +677,7 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
                     Log.d("TAGだよ", "反応");
                     HttpEntity goodnumentity = goodnumres.getEntity();
                     goodnumbody = EntityUtils.toString(goodnumentity, "UTF-8");
+                    goodnumres.getEntity().consumeContent();
                     Log.d("bodyの中身だよ", goodnumbody);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -701,6 +703,7 @@ public class UserProfActivity extends BaseActivity implements ListView.OnScrollL
                         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                         httpResponse.getEntity().writeTo(outputStream);
                         mProfData = outputStream.toString(); // JSONデータ
+                        httpResponse.getEntity().consumeContent();
                         Log.d("data", mProfData);
                     } catch (Exception e) {
                         Log.d("error", String.valueOf(e));

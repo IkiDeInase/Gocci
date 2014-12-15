@@ -48,7 +48,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -98,7 +97,7 @@ public class Search_mapFragment extends BaseFragment
             mLatitude = currentLocation.getLatitude();
             mLongitude = currentLocation.getLongitude();
 
-            Log.e("パート１０","経度緯度変更されたお");
+            Log.e("パート１０", "経度緯度変更されたお");
             Log.e("TAG", "位置変更時経度" + mLatitude + "/" + "緯度" + mLongitude);
         }
 
@@ -208,7 +207,7 @@ public class Search_mapFragment extends BaseFragment
             //システムサービスのLOCATION_SERVICEからLocationManager objectを取得
             mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
-            Log.e("パート１","googleserviceにつなぎました");
+            Log.e("パート１", "googleserviceにつなぎました");
 
 
         }
@@ -217,9 +216,9 @@ public class Search_mapFragment extends BaseFragment
     }
 
     public View makeHeaderView() {
-        LayoutInflater inflater = (LayoutInflater)getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View countView = inflater.inflate(R.layout.search_header, null);
-        ImageButton searchButton = (ImageButton)countView.findViewById(R.id.searchButton);
+        ImageButton searchButton = (ImageButton) countView.findViewById(R.id.searchButton);
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -227,7 +226,7 @@ public class Search_mapFragment extends BaseFragment
                 mSearchView.setOnQueryTextListener(onQueryTextListener);
                 mSearchView.setQueryHint("検索");
                 mSearchDialog = new MaterialDialog(getActivity()).setContentView(mSearchView)
-                .setCanceledOnTouchOutside(true);
+                        .setCanceledOnTouchOutside(true);
 
                 mSearchDialog.show();
 
@@ -294,7 +293,7 @@ public class Search_mapFragment extends BaseFragment
     @Override
     public void onConnected(Bundle bundle) {
 
-        Log.e("TAG","グーグルサービスにコネクトされました");
+        Log.e("TAG", "グーグルサービスにコネクトされました");
     }
 
     @Override
@@ -310,7 +309,7 @@ public class Search_mapFragment extends BaseFragment
     @Override
     public void onResume() {
         super.onResume();
-        Log.e("パート2","resumeを読み込むよ");
+        Log.e("パート2", "resumeを読み込むよ");
 
         if (!mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
 
@@ -362,18 +361,18 @@ public class Search_mapFragment extends BaseFragment
             mLatitude = 35.710057714926265;
             mLongitude = 139.81071829999996;
 
-            LatLng firstLocation = new LatLng(mLatitude,mLongitude);
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(firstLocation,15));
-            Log.e("パート６","位置なかったよ");
+            LatLng firstLocation = new LatLng(mLatitude, mLongitude);
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(firstLocation, 15));
+            Log.e("パート６", "位置なかったよ");
             //非同期を開始
             //setUpMap();
 
         } else {
-            Log.e("パート６","位置あったから読み込むよ");
+            Log.e("パート６", "位置あったから読み込むよ");
 
             if (mLatitude == 35.710057714926265 && mLongitude == 139.81071829999996) {
                 Toast.makeText(getActivity(), "まだ位置情報が無いので、一旦東京スカイツリーに移動します。", Toast.LENGTH_SHORT).show();
-                Log.e("パート７","位置あったけど仕方なくスカイツリー");
+                Log.e("パート７", "位置あったけど仕方なくスカイツリー");
                 setUpMap();
             }
 
@@ -388,7 +387,7 @@ public class Search_mapFragment extends BaseFragment
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        Log.e("パート3","地図の用意できたのでいろいろカスタマイズ");
+        Log.e("パート3", "地図の用意できたのでいろいろカスタマイズ");
         mMap = googleMap;
 
         //fragmentからGoogleMap objectを取得
@@ -462,6 +461,7 @@ public class Search_mapFragment extends BaseFragment
                     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                     httpResponse.getEntity().writeTo(outputStream);
                     mSearch_mapData = outputStream.toString(); // JSONデータ
+                    httpResponse.getEntity().consumeContent();
                     Log.d("data", mSearch_mapData);
                 } catch (Exception e) {
                     Log.d("JSONSampleActivity", "Error");
@@ -639,6 +639,7 @@ public class Search_mapFragment extends BaseFragment
                     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                     httpResponse.getEntity().writeTo(outputStream);
                     mKeywordData = outputStream.toString(); // JSONデータ
+                    httpResponse.getEntity().consumeContent();
                     Log.d("data", mKeywordData);
 
                 } catch (Exception e) {

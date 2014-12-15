@@ -51,7 +51,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
@@ -184,26 +183,26 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
 
                 switch (pos) {
                     case 0:
-                        UserData delete0 = mProfusers.get(position+4);
+                        UserData delete0 = mProfusers.get(position + 4);
                         setDeleteDialog(delete0.getPost_id());
 
                         //名前部分のview　プロフィール画面へ
                         //Signupを読み込みそう後回し
                         break;
                     case 1:
-                        UserData delete1 = mProfusers.get(position+3);
+                        UserData delete1 = mProfusers.get(position + 3);
                         setDeleteDialog(delete1.getPost_id());
                         //動画のview
                         //クリックしたら止まるくらい
                         break;
                     case 2:
-                        UserData delete2 = mProfusers.get(position+2);
+                        UserData delete2 = mProfusers.get(position + 2);
                         setDeleteDialog(delete2.getPost_id());
                         //コメントのview
                         //とくになんもしない
                         break;
                     case 3:
-                        UserData delete3 = mProfusers.get(position+1);
+                        UserData delete3 = mProfusers.get(position + 1);
                         setDeleteDialog(delete3.getPost_id());
                         //レストランのview
                         //レストラン画面に飛ぼうか
@@ -274,6 +273,14 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
         mName = args.getString(TAG_USER_NAME);
         mPictureImageUrl = args.getString(KEY_IMAGE_URL);
 
+        try {
+            mEncode_user_name = URLEncoder.encode(mName, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        mProfUrl = "http://api-gocci.jp/mypage/?user_name=" + mEncode_user_name;
+
         new ProfTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         mProfDialog = new CustomProgressDialog(getActivity());
         mProfDialog.setCancelable(false);
@@ -309,8 +316,8 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                     nextVideo.start();
                 }
             }
-        }catch (NullPointerException e) {
-            Log.e("ぬるぽだよ〜","ぬるぽちゃん");
+        } catch (NullPointerException e) {
+            Log.e("ぬるぽだよ〜", "ぬるぽちゃん");
             e.printStackTrace();
         }
 
@@ -333,8 +340,8 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                     nextVideo.pause();
                 }
             }
-        }catch (NullPointerException e) {
-            Log.e("ぬるぽだよ〜","ぬるぽちゃん");
+        } catch (NullPointerException e) {
+            Log.e("ぬるぽだよ〜", "ぬるぽちゃん");
             e.printStackTrace();
         }
     }
@@ -355,8 +362,8 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                         nextVideo.start();
                     }
                 }
-            }catch (NullPointerException e) {
-                Log.e("再生ぬるぽだよ〜","ぬるぽちゃん");
+            } catch (NullPointerException e) {
+                Log.e("再生ぬるぽだよ〜", "ぬるぽちゃん");
                 e.printStackTrace();
             }
 
@@ -375,8 +382,8 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                         nextVideo.pause();
                     }
                 }
-            }catch (NullPointerException e) {
-                Log.e("中止ぬるぽだよ〜","ぬるぽちゃん");
+            } catch (NullPointerException e) {
+                Log.e("中止ぬるぽだよ〜", "ぬるぽちゃん");
                 e.printStackTrace();
             }
 
@@ -426,7 +433,7 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                     @Override
                     public void onClick(View v) {
                         //mMaterialDialog.dismiss();
-                        new PostDeleteAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,post_id);
+                        new PostDeleteAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, post_id);
                         mPostDeleteDialog = new CustomProgressDialog(getActivity());
                         mPostDeleteDialog.setCancelable(false);
                         mPostDeleteDialog.show();
@@ -474,17 +481,6 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
     public class ProfTask extends AsyncTask<String, String, Integer> {
 
         @Override
-        protected void onPreExecute() {
-            try {
-                mEncode_user_name = URLEncoder.encode(mName, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-
-            mProfUrl = "http://api-gocci.jp/mypage/?user_name=" + mEncode_user_name;
-        }
-
-        @Override
         protected Integer doInBackground(String... strings) {
 
             HttpClient client = application_gocci.getHttpClient();
@@ -506,6 +502,7 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                     httpResponse.getEntity().writeTo(outputStream);
                     mProfData = outputStream.toString(); // JSONデータ
+                    httpResponse.getEntity().consumeContent();
                     Log.d("data", mProfData);
                 } catch (Exception e) {
                     Log.d("error", String.valueOf(e));
@@ -728,15 +725,15 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
 
                     currentgoodnum = String.valueOf((user.getgoodnum()));
                     currentcommentnum = String.valueOf(user.getComment_num());
-                    mNextGoodnum = String.valueOf(user.getgoodnum()+1);
-                    mNextCommentnum = String.valueOf((user.getComment_num()+1));
+                    mNextGoodnum = String.valueOf(user.getgoodnum() + 1);
+                    mNextCommentnum = String.valueOf((user.getComment_num() + 1));
 
                     commentHolder.likesnumber.setText(currentgoodnum);
                     commentHolder.commentsnumber.setText(currentcommentnum);
 
                     commentHolder.star_evaluation.setIsIndicator(true);
                     commentHolder.star_evaluation.setRating(user.getStar_evaluation());
-                    Log.e("星を読み込んだよ",String.valueOf(user.getStar_evaluation()));
+                    Log.e("星を読み込んだよ", String.valueOf(user.getStar_evaluation()));
 
                     break;
 
@@ -777,7 +774,7 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
 
                     //クリックされた時の処理
                     if (position == mGoodCommePosition) {
-                        Log.e("いいね入れ替え部分", "通ったよ"+ "/" + position + "/" + mGoodCommePosition);
+                        Log.e("いいね入れ替え部分", "通ったよ" + "/" + position + "/" + mGoodCommePosition);
                         likeCommentHolder.likes.setClickable(false);
                         likeCommentHolder.likes.setBackgroundResource(R.drawable.ic_like_orange);
                     } else {
@@ -791,7 +788,7 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                         public void onClick(View v) {
                             Log.e("いいねをクリック", user.getPost_id() + mNextGoodnum);
                             mGoodCommePosition = position;
-                            mGoodNumberPosition = (position-2);
+                            mGoodNumberPosition = (position - 2);
 
                             likeCommentHolder.likes.setBackgroundResource(R.drawable.ic_like_orange);
                             likeCommentHolder.likes.setClickable(false);
@@ -839,24 +836,25 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
 
             HttpClient client = application_gocci.getHttpClient();
 
-                HttpPost goodnummethod = new HttpPost(sGoodUrl);
+            HttpPost goodnummethod = new HttpPost(sGoodUrl);
 
-                ArrayList<NameValuePair> goodnumcontents = new ArrayList<NameValuePair>();
-                goodnumcontents.add(new BasicNameValuePair("post_id", param));
-                Log.d("読み取り", param);
+            ArrayList<NameValuePair> goodnumcontents = new ArrayList<NameValuePair>();
+            goodnumcontents.add(new BasicNameValuePair("post_id", param));
+            Log.d("読み取り", param);
 
-                String goodnumbody = null;
-                try {
-                    goodnummethod.setEntity(new UrlEncodedFormEntity(goodnumcontents, "utf-8"));
-                    HttpResponse goodnumres = client.execute(goodnummethod);
-                    mStatus2 = goodnumres.getStatusLine().getStatusCode();
-                    Log.d("TAGだよ", "反応");
-                    HttpEntity goodnumentity = goodnumres.getEntity();
-                    goodnumbody = EntityUtils.toString(goodnumentity, "UTF-8");
-                    Log.d("bodyの中身だよ", goodnumbody);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            String goodnumbody = null;
+            try {
+                goodnummethod.setEntity(new UrlEncodedFormEntity(goodnumcontents, "utf-8"));
+                HttpResponse goodnumres = client.execute(goodnummethod);
+                mStatus2 = goodnumres.getStatusLine().getStatusCode();
+                Log.d("TAGだよ", "反応");
+                HttpEntity goodnumentity = goodnumres.getEntity();
+                goodnumbody = EntityUtils.toString(goodnumentity, "UTF-8");
+                goodnumres.getEntity().consumeContent();
+                Log.d("bodyの中身だよ", goodnumbody);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
             if (HttpStatus.SC_OK == mStatus2) {
 
@@ -877,6 +875,7 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                         httpResponse.getEntity().writeTo(outputStream);
                         mProfData = outputStream.toString(); // JSONデータ
+                        httpResponse.getEntity().consumeContent();
                         Log.d("data", mProfData);
                     } catch (Exception e) {
                         Log.d("error", String.valueOf(e));
@@ -951,8 +950,8 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                 mProfListView.getAdapter().getView(mGoodNumberPosition, targetView, mProfListView);
                 Log.e("いいね追加成功", "成功しました");
             } else {
-                ImageView likesView = (ImageView)mProfListView.findViewWithTag(mGoodCommePosition);
-                TextView likesnumberView = (TextView)mProfListView.findViewWithTag(mGoodNumberPosition);
+                ImageView likesView = (ImageView) mProfListView.findViewWithTag(mGoodCommePosition);
+                TextView likesnumberView = (TextView) mProfListView.findViewWithTag(mGoodNumberPosition);
                 likesnumberView.setText(currentgoodnum);
                 likesView.setClickable(true);
                 likesView.setBackgroundResource(R.drawable.ic_like);
@@ -974,24 +973,25 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
 
             HttpClient client = application_gocci.getHttpClient();
 
-                HttpPost goodnummethod = new HttpPost(sPostDeleteUrl);
+            HttpPost goodnummethod = new HttpPost(sPostDeleteUrl);
 
-                ArrayList<NameValuePair> goodnumcontents = new ArrayList<NameValuePair>();
-                goodnumcontents.add(new BasicNameValuePair("post_id", param));
-                Log.d("読み取り", param);
+            ArrayList<NameValuePair> goodnumcontents = new ArrayList<NameValuePair>();
+            goodnumcontents.add(new BasicNameValuePair("post_id", param));
+            Log.d("読み取り", param);
 
-                String goodnumbody = null;
-                try {
-                    goodnummethod.setEntity(new UrlEncodedFormEntity(goodnumcontents, "utf-8"));
-                    HttpResponse goodnumres = client.execute(goodnummethod);
-                    mStatus2 = goodnumres.getStatusLine().getStatusCode();
-                    Log.d("TAGだよ", "反応");
-                    HttpEntity goodnumentity = goodnumres.getEntity();
-                    goodnumbody = EntityUtils.toString(goodnumentity, "UTF-8");
-                    Log.d("bodyの中身だよ", goodnumbody);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            String goodnumbody = null;
+            try {
+                goodnummethod.setEntity(new UrlEncodedFormEntity(goodnumcontents, "utf-8"));
+                HttpResponse goodnumres = client.execute(goodnummethod);
+                mStatus2 = goodnumres.getStatusLine().getStatusCode();
+                Log.d("TAGだよ", "反応");
+                HttpEntity goodnumentity = goodnumres.getEntity();
+                goodnumbody = EntityUtils.toString(goodnumentity, "UTF-8");
+                goodnumres.getEntity().consumeContent();
+                Log.d("bodyの中身だよ", goodnumbody);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
             if (HttpStatus.SC_OK == mStatus2) {
 
@@ -1012,6 +1012,7 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                         httpResponse.getEntity().writeTo(outputStream);
                         mProfData = outputStream.toString(); // JSONデータ
+                        httpResponse.getEntity().consumeContent();
                         Log.d("data", mProfData);
                     } catch (Exception e) {
                         Log.d("error", String.valueOf(e));

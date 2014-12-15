@@ -195,6 +195,7 @@ public class CommentView extends LinearLayout {
                     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                     httpResponse.getEntity().writeTo(outputStream);
                     commentdata = outputStream.toString(); // JSONデータ
+                    httpResponse.getEntity().consumeContent();
                     Log.d("data", commentdata);
                 } catch (Exception e) {
                     Log.d("JSONSampleActivity", "Error");
@@ -323,6 +324,7 @@ public class CommentView extends LinearLayout {
                     Log.d("TAGだよ", "反応");
                     HttpEntity commententity = commentres.getEntity();
                     commentbody = EntityUtils.toString(commententity, "UTF-8");
+                    commentres.getEntity().consumeContent();
                     Log.d("bodyの中身だよ", commentbody);
                 } catch (Exception e) {
                     e.printStackTrace();

@@ -19,7 +19,6 @@ import com.example.kinagafuji.gocci.Activity.SlidingTabActivity;
 import com.example.kinagafuji.gocci.Application_Gocci;
 import com.example.kinagafuji.gocci.Base.BaseFragment;
 import com.example.kinagafuji.gocci.Base.CustomProgressDialog;
-import com.example.kinagafuji.gocci.BuildConfig;
 import com.example.kinagafuji.gocci.R;
 import com.example.kinagafuji.gocci.data.PopupHelper;
 import com.facebook.Request;
@@ -30,15 +29,12 @@ import com.facebook.UiLifecycleHelper;
 import com.facebook.model.GraphUser;
 import com.facebook.widget.LoginButton;
 
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 
 import java.io.IOException;
@@ -56,12 +52,14 @@ public class LoginFragment extends BaseFragment {
     private static final String TAG_NAME = "name";
     private static final String TAG_ID = "id";
     private CustomProgressDialog mloginDialog;
+
     private Session.StatusCallback callback = new Session.StatusCallback() {
         @Override
         public void call(Session session, SessionState state, Exception exception) {
             onSessionStateChange(session, state, exception);
         }
     };
+
     private UiLifecycleHelper uiHelper;
     private String mName;
     private String mId;
@@ -70,10 +68,12 @@ public class LoginFragment extends BaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         application_gocci = (Application_Gocci) getActivity().getApplication();
 
         uiHelper = new UiLifecycleHelper(getActivity(), callback);
         uiHelper.onCreate(savedInstanceState);
+
     }
 
 
@@ -81,7 +81,6 @@ public class LoginFragment extends BaseFragment {
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
         // FragmentのViewを返却
         final View view = inflater.inflate(R.layout.fragment_login, container, false);
-
 
         WindowManager wm = (WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE);
         // ディスプレイのインスタンス生成
@@ -138,6 +137,7 @@ public class LoginFragment extends BaseFragment {
             }
         });
 
+
         /*
         ImageButton signin = (ImageButton) view.findViewById(R.id.signin);
 
@@ -179,6 +179,7 @@ public class LoginFragment extends BaseFragment {
         return view;
     }
 
+
     private void loginFacebook() {
 
         // リクエストの生成
@@ -196,6 +197,7 @@ public class LoginFragment extends BaseFragment {
         session.openForRead(openRequest);
 
     }
+
 
 
     private void onSessionStateChange(Session session, SessionState state, Exception exception) {
@@ -237,10 +239,10 @@ public class LoginFragment extends BaseFragment {
         }
     }
 
+
     @Override
     public void onResume() {
         super.onResume();
-
         Session session = Session.getActiveSession();
         if (session != null &&
                 (session.isOpened() || session.isClosed())) {
@@ -248,19 +250,17 @@ public class LoginFragment extends BaseFragment {
         }
 
         uiHelper.onResume();
+
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "onActivityResult");
-        }
         uiHelper.onActivityResult(requestCode, resultCode, data);
         Session.getActiveSession().onActivityResult(getActivity(), requestCode, resultCode, data);
 
-
     }
+
 
     @Override
     public void onPause() {
@@ -321,6 +321,7 @@ public class LoginFragment extends BaseFragment {
 
     }
 
+
     public class FacebookGraphUserCallback implements Request.GraphUserCallback {
 
         public FacebookGraphUserCallback(String message) {
@@ -334,5 +335,6 @@ public class LoginFragment extends BaseFragment {
             mloginDialog.dismiss();
         }
     }
+
 
 }

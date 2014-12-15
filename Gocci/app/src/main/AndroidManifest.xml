@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.kinagafuji.gocci" >
+    package="com.example.kinagafuji.gocci">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -44,9 +44,6 @@
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
-        <meta-data
-            android:name="com.facebook.sdk.ApplicationId"
-            android:value="@string/app_id" />
 
         <activity
             android:name="com.example.kinagafuji.gocci.Activity.TenpoActivity"
@@ -60,11 +57,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.facebook.LoginActivity" />
-
-        <meta-data
-            android:name="com.facebook.sdk.ApplicationId"
-            android:value="@string/app_id" />
 
         <activity
             android:name="com.example.kinagafuji.gocci.Activity.LoginActivity2"
@@ -74,10 +66,66 @@
             android:label="@string/title_activity_sliding_tab" />
         <activity
             android:name="com.example.kinagafuji.gocci.Activity.IntentVineCamera"
-            android:label="@string/title_activity_intent_vine_camera" />
+            android:label="@string/title_activity_intent_vine_camera"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"/>
         <activity
             android:name="com.example.kinagafuji.gocci.Activity.UserProfActivity"
             android:label="@string/title_activity_user_prof" />
+
+        <activity
+            android:name="com.facebook.LoginActivity"
+            android:label="@string/app_name"
+            />
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id"/>
+
+        <activity
+            android:name=".Activity.GocciDispatchActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTop"/>
+
+        <activity
+            android:name="com.parse.ui.ParseLoginActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTop">
+
+            <meta-data
+                android:name="com.parse.ui.ParseLoginActivity.PARSE_LOGIN_ENABLED"
+                android:value="true"/>
+            <meta-data
+                android:name="com.parse.ui.ParseLoginActivity.PARSE_LOGIN_BUTTON_TEXT"
+                android:value="ログイン"/>
+            <meta-data
+                android:name="com.parse.ui.ParseLoginActivity.PARSE_SIGNUP_BUTTON_TEXT"
+                android:value="サインアップ"/>
+            <meta-data
+                android:name="com.parse.ui.ParseLoginActivity.PARSE_LOGIN_INVALID_CREDENTIALS_TEXT"
+                android:value="名前かパスワードが間違っています"/>
+            <meta-data
+                android:name="com.parse.ui.ParseLoginActivity.PARSE_LOGIN_HELP_TEXT"
+                android:value="パスワードを忘れた"/>
+            <meta-data
+                android:name="com.parse.ui.ParseLoginActivity.PARSE_SIGNUP_SUBMIT_BUTTON_TEXT"
+                android:value="送信"/>
+            <meta-data
+                android:name="com.parse.ui.ParseLoginActivity.PARSE_LOGIN_EMAIL_AS_USERNAME"
+                android:value="false"/>
+            <meta-data
+                android:name="com.parse.ui.ParseLoginActivity.FACEBOOK_LOGIN_ENABLED"
+                android:value="true"/>
+            <meta-data
+                android:name="com.parse.ui.ParseLoginActivity.FACEBOOK_LOGIN_BUTTON_TEXT"
+                android:value="フェイスブックでログイン"/>
+            <meta-data
+                android:name="com.parse.ui.ParseLoginActivity.FACEBOOK_LOGIN_PERMISSIONS"
+                android:resource="@array/my_facebook_permissions"/>
+            <meta-data
+                android:name="com.parse.ui.ParseLoginActivity.TWITTER_LOGIN_ENABLED"
+                android:value="false"/>
+        </activity>
+
     </application>
 
 </manifest>
