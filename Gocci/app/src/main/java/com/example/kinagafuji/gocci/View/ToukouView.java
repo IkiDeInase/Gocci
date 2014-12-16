@@ -39,7 +39,7 @@ public class ToukouView extends LinearLayout {
     private Search_tenpoAdapter mSearch_tenpoAdapter;
 
     //　コードからの生成用
-    public ToukouView(final Context context, final String name, final String pictureImageUrl, final ArrayList<UserData> users) {
+    public ToukouView(final Context context, final String name, final ArrayList<UserData> users) {
         super(context);
 
         View inflateView = LayoutInflater.from(context).inflate(R.layout.searchlist, this);
@@ -65,7 +65,6 @@ public class ToukouView extends LinearLayout {
                 Intent intent = new Intent(context.getApplicationContext(), IntentVineCamera.class);
                 intent.putExtra("restname", country.getRest_name());
                 intent.putExtra("name", name);
-                intent.putExtra("pictureImageUrl", pictureImageUrl);
                 context.startActivity(intent);
             }
         });
@@ -109,8 +108,6 @@ public class ToukouView extends LinearLayout {
         }
     }
 
-
-
     public static class SearchTenpoHolder {
         ImageView search1;
         ImageView search2;
@@ -130,6 +127,7 @@ public class ToukouView extends LinearLayout {
             this.distance = (TextView) view.findViewById(R.id.distance);
         }
     }
+
 }
 
 

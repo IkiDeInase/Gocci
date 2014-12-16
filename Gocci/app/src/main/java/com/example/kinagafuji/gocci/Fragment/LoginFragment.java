@@ -34,6 +34,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 
@@ -286,7 +287,7 @@ public class LoginFragment extends BaseFragment {
         protected Integer doInBackground(String... params) {
             String param = params[0];
 
-            HttpClient client = application_gocci.getHttpClient();
+            HttpClient client = new DefaultHttpClient();
 
             HttpPost method = new HttpPost(param);
 

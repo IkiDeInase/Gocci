@@ -39,10 +39,16 @@ import com.example.kinagafuji.gocci.View.ToukouView;
 import com.example.kinagafuji.gocci.data.RoundedTransformation;
 import com.example.kinagafuji.gocci.data.ToukouPopup;
 import com.example.kinagafuji.gocci.data.UserData;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 import com.melnykov.fab.FloatingActionButton;
+import com.parse.ParseUser;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -66,13 +72,12 @@ import me.drakeet.materialdialog.MaterialDialog;
 
 public class ProfileFragment extends BaseFragment implements ListView.OnScrollListener {
 
-    private Application_Gocci application_gocci;
-
     private static final String sSignupUrl = "http://api-gocci.jp/login/";
     private static final String sGoodUrl = "http://api-gocci.jp/goodinsert/";
-    private static final String sDataurl = "http://api-gocci.jp/login/";
     private static final String sPostDeleteUrl = "http://api-gocci.jp/delete/";
+
     private static final String KEY_IMAGE_URL = "image_url";
+
     private static final String TAG_POST_ID = "post_id";
     private static final String TAG_USER_ID = "user_id";
     private static final String TAG_USER_NAME = "user_name";
@@ -83,35 +88,49 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
     private static final String TAG_COMMENT_NUM = "comment_num";
     private static final String TAG_THUMBNAIL = "thumbnail";
     private static final String TAG_STAR_EVALUATION = "star_evaluation";
+
     private final ProfileFragment profileself = this;
-    public int mGoodCommePosition;
-    public int mGoodNumberPosition;
 
-    public String mNextGoodnum;
-    public String currentgoodnum;
-    public String currentcommentnum;
+    private int mGoodCommePosition;
+    private int mGoodNumberPosition;
+    private int mShowPosition;
 
-    public String mNextCommentnum;
+    private String mNextGoodnum;
+    private String currentgoodnum;
+    private String currentcommentnum;
+    private String mNextCommentnum;
     private String mProfUrl;
-    private CustomProgressDialog mProfDialog;
-    private CustomProgressDialog mPostDeleteDialog;
-    private ListView mProfListView;
-    private ArrayList<UserData> mProfusers = new ArrayList<UserData>();
-    public ArrayList<UserData> mTenpousers;
-    private ProfAdapter mProfAdapter;
-    private SwipeRefreshLayout mProfSwipe;
     private String mEncode_user_name;
     private String mName;
     private String mPictureImageUrl;
+
+    private CustomProgressDialog mProfDialog;
+    private CustomProgressDialog mPostDeleteDialog;
+    private CustomProgressDialog mRefreshProfDialog;
+    private ListView mProfListView;
+    private ArrayList<UserData> mProfusers = new ArrayList<UserData>();
+    private ArrayList<UserData> mTenpousers;
+    private ProfAdapter mProfAdapter;
+    private SwipeRefreshLayout mProfSwipe;
+
     private NameHolder nameHolder;
     private RestHolder restHolder;
-    private VideoHolder videoHolder;
     private VideoView nextVideo;
+    private VideoHolder videoHolder;
     private CommentHolder commentHolder;
     private LikeCommentHolder likeCommentHolder;
-    private int mShowPosition;
+
     private boolean mBusy = false;
+
     private MaterialDialog mMaterialDialog;
+
+    private AsyncHttpClient httpClient;
+    private AsyncHttpClient httpClient2;
+    private AsyncHttpClient httpClient3;
+    private AsyncHttpClient httpClient4;
+    private RequestParams loginParam;
+    private RequestParams goodParam;
+    private RequestParams deleteParam;
 
     public ProfileFragment newIntent(String name, String imageUrl) {
         ProfileFragment fragment = new ProfileFragment();
@@ -127,18 +146,36 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
         // FragmentのViewを返却
-        View view3 = getActivity().getLayoutInflater().inflate(R.layout.fragment_profile,
-                container, false);
+        View view3 = getActivity().getLayoutInflater().inflate(R.layout.fragment_profile,container, false);
 
-        application_gocci = (Application_Gocci) getActivity().getApplication();
+        httpClient = new AsyncHttpClient();
+        httpClient2 = new AsyncHttpClient();
+        httpClient3 = new AsyncHttpClient();
+        httpClient4 = new AsyncHttpClient();
+
+        ParseUser user = ParseUser.getCurrentUser();
+        mName = user.getString("name");
+
+        loginParam = new RequestParams("user_name", mName);
+
+        try {
+            mEncode_user_name = URLEncoder.encode(mName, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        mProfUrl = "http://api-gocci.jp/mypage/?user_name=" + mEncode_user_name;
 
         mProfListView = (ListView) view3.findViewById(R.id.proflist);
-
         mProfListView.setDivider(null);
         // スクロールバーを表示しない
         mProfListView.setVerticalScrollBarEnabled(false);
         // カード部分をselectorにするので、リストのselectorは透明にする
         mProfListView.setSelector(android.R.color.transparent);
+
+        mProfAdapter = new ProfAdapter(getActivity(), 0, mProfusers);
+
+        getSignupAsync(getActivity());//サインアップとJSON
 
         mProfListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -146,7 +183,6 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                 UserData country = mProfusers.get(position);
                 int line = (position / 5) * 5;
                 int pos = position - line;
-
                 switch (pos) {
                     case 0:
                         //名前部分のview　プロフィール画面へ
@@ -165,6 +201,7 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                         //レストラン画面に飛ぼうか
                         Intent intent = new Intent(getActivity(), TenpoActivity.class);
                         intent.putExtra("restname", country.getRest_name());
+                        intent.putExtra("name", mName);
                         intent.putExtra("locality", country.getLocality());
                         startActivity(intent);
                         break;
@@ -180,41 +217,28 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 int line = (position / 5) * 5;
                 int pos = position - line;
-
                 switch (pos) {
                     case 0:
                         UserData delete0 = mProfusers.get(position + 4);
                         setDeleteDialog(delete0.getPost_id());
-
-                        //名前部分のview　プロフィール画面へ
-                        //Signupを読み込みそう後回し
                         break;
                     case 1:
                         UserData delete1 = mProfusers.get(position + 3);
                         setDeleteDialog(delete1.getPost_id());
-                        //動画のview
-                        //クリックしたら止まるくらい
                         break;
                     case 2:
                         UserData delete2 = mProfusers.get(position + 2);
                         setDeleteDialog(delete2.getPost_id());
-                        //コメントのview
-                        //とくになんもしない
                         break;
                     case 3:
                         UserData delete3 = mProfusers.get(position + 1);
                         setDeleteDialog(delete3.getPost_id());
-                        //レストランのview
-                        //レストラン画面に飛ぼうか
-
                         break;
                     case 4:
                         UserData delete4 = mProfusers.get(position);
                         setDeleteDialog(delete4.getPost_id());
-                        //いいね　コメント　シェア
                         break;
                 }
-
                 return true;
             }
         });
@@ -229,7 +253,7 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                 animation.setInterpolator(new LinearInterpolator());
                 fab.startAnimation(animation);
 
-                View inflateView = new ToukouView(getActivity(), mName, mPictureImageUrl, mTenpousers);
+                View inflateView = new ToukouView(getActivity(), mName, mTenpousers);
 
                 final PopupWindow window = ToukouPopup.newBasicPopupWindow(getActivity());
                 window.setContentView(inflateView);
@@ -237,7 +261,6 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                 int[] location = new int[2];
                 v.getLocationOnScreen(location);
                 ToukouPopup.showLikeQuickAction(window, inflateView, v, getActivity().getWindowManager(), 0, 0);
-
             }
         });
 
@@ -247,20 +270,10 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
 
             @Override
             public void onRefresh() {
-//Handle the refresh then call
-                new ProfTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                mProfDialog = new CustomProgressDialog(getActivity());
-                mProfDialog.setCancelable(false);
-                mProfDialog.show();
+                getRefreshAsync(getActivity());
                 mProfSwipe.setRefreshing(false);
-
             }
         });
-
-        mProfAdapter = new ProfAdapter(getActivity(), 0, mProfusers);
-
-        mProfListView.setAdapter(mProfAdapter);
-
 
         return view3;
     }
@@ -272,31 +285,6 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
         Bundle args = getArguments();
         mName = args.getString(TAG_USER_NAME);
         mPictureImageUrl = args.getString(KEY_IMAGE_URL);
-
-        try {
-            mEncode_user_name = URLEncoder.encode(mName, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
-        mProfUrl = "http://api-gocci.jp/mypage/?user_name=" + mEncode_user_name;
-
-        new ProfTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        mProfDialog = new CustomProgressDialog(getActivity());
-        mProfDialog.setCancelable(false);
-        mProfDialog.show();
-
-
-        /*mPost_name.setText(mName);
-
-        Picasso.with(getActivity())
-                .load(mPictureImageUrl)
-                .resize(80, 80)
-                .placeholder(R.drawable.ic_userpicture)
-                .centerCrop()
-                .transform(new RoundedTransformation())
-                .into(mPost_Imageurl);
-                */
     }
 
     @Override
@@ -320,7 +308,6 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
             Log.e("ぬるぽだよ〜", "ぬるぽちゃん");
             e.printStackTrace();
         }
-
     }
 
     @Override
@@ -366,7 +353,6 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                 Log.e("再生ぬるぽだよ〜", "ぬるぽちゃん");
                 e.printStackTrace();
             }
-
             Log.e("Otto発動", "動画再生復帰");
         } else {
             //タイムライン以外のfragmentが可視化している場合
@@ -386,7 +372,6 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                 Log.e("中止ぬるぽだよ〜", "ぬるぽちゃん");
                 e.printStackTrace();
             }
-
             Log.e("Otto発動", "動画再生停止");
         }
     }
@@ -396,23 +381,17 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
         mTenpousers = event.users;
     }
 
-
     @Override
     public void onScrollStateChanged(AbsListView view, int scrollState) {
         switch (scrollState) {
-
             // スクロールしていない
             case AbsListView.OnScrollListener.SCROLL_STATE_IDLE:
-
                 mBusy = false;
-
                 break;
-
             // スクロール中
             case AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL:
                 mBusy = true;
                 break;
-
             // はじいたとき
             case AbsListView.OnScrollListener.SCROLL_STATE_FLING:
                 mBusy = true;
@@ -421,9 +400,7 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
     }
 
     @Override
-    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-
-    }
+    public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {}
 
     private void setDeleteDialog(final String post_id) {
         mMaterialDialog = new MaterialDialog(getActivity())
@@ -433,10 +410,7 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                     @Override
                     public void onClick(View v) {
                         //mMaterialDialog.dismiss();
-                        new PostDeleteAsyncTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, post_id);
-                        mPostDeleteDialog = new CustomProgressDialog(getActivity());
-                        mPostDeleteDialog.setCancelable(false);
-                        mPostDeleteDialog.show();
+                        deleteSignupAsync(getActivity(), post_id);
                     }
                 })
                 .setNegativeButton("いいえ", new View.OnClickListener() {
@@ -445,7 +419,6 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                         mMaterialDialog.dismiss();
                     }
                 });
-
         mMaterialDialog.show();
     }
 
@@ -478,43 +451,37 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
         ImageView share;
     }
 
-    public class ProfTask extends AsyncTask<String, String, Integer> {
+    private void getSignupAsync(final Context context) {
+        httpClient.post(context, sSignupUrl, loginParam, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                Log.e("サインアップ成功", "status=" + statusCode);
+                getProfileJson(context);
 
-        @Override
-        protected Integer doInBackground(String... strings) {
-
-            HttpClient client = application_gocci.getHttpClient();
-
-            HttpGet request = new HttpGet(mProfUrl);
-            HttpResponse httpResponse = null;
-
-            try {
-                httpResponse = client.execute(request);
-            } catch (Exception e) {
-                Log.d("error", String.valueOf(e));
             }
 
-            int status = httpResponse.getStatusLine().getStatusCode();
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                Toast.makeText(getActivity(), "サインアップに失敗しました", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
-            if (HttpStatus.SC_OK == status) {
-                String mProfData = null;
+    private void getProfileJson(Context context) {
+        httpClient.get(context, mProfUrl, new JsonHttpResponseHandler() {
+            @Override
+            public void onStart() {
+                mProfDialog = new CustomProgressDialog(getActivity());
+                mProfDialog.setCancelable(false);
+                mProfDialog.show();
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray timeline) {
+                // Pull out the first event on the public timeline
                 try {
-                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                    httpResponse.getEntity().writeTo(outputStream);
-                    mProfData = outputStream.toString(); // JSONデータ
-                    httpResponse.getEntity().consumeContent();
-                    Log.d("data", mProfData);
-                } catch (Exception e) {
-                    Log.d("error", String.valueOf(e));
-                }
-
-                mProfusers.clear();
-
-                try {
-                    JSONArray jsonArray = new JSONArray(mProfData);
-
-                    for (int i = 0; i < jsonArray.length(); i++) {
-                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    for (int i = 0; i < timeline.length(); i++) {
+                        JSONObject jsonObject = timeline.getJSONObject(i);
 
                         String post_id = jsonObject.getString(TAG_POST_ID);
                         Integer user_id = jsonObject.getInt(TAG_USER_ID);
@@ -527,7 +494,6 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                         String thumbnail = jsonObject.getString(TAG_THUMBNAIL);
                         Integer star_evaluation = jsonObject.getInt(TAG_STAR_EVALUATION);
                         //String locality = jsonObject.getString(TAG_LOCALITY);
-
 
                         UserData user1 = new UserData();
                         user1.setUser_name(user_name);
@@ -554,31 +520,320 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                         user5.setPost_id(post_id);
                         user5.setUser_id(user_id);
                         mProfusers.add(user5);
-
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    Log.d("error", String.valueOf(e));
                 }
-            } else {
-                Log.d("JSONSampleActivity", "Status" + status);
+
+                mProfListView.setAdapter(mProfAdapter);
             }
 
-            return status;
-        }
+            @Override
+            public void onFailure(int statusCode, org.apache.http.Header[] headers, java.lang.Throwable throwable, org.json.JSONObject errorResponse) {
+                Toast.makeText(getActivity(), "読み取りに失敗しました", Toast.LENGTH_SHORT).show();
+            }
 
-        @Override
-        protected void onPostExecute(Integer result) {
-            if (result != null && result == HttpStatus.SC_OK) {
-                //ListViewの最読み込み
-                mProfListView.invalidateViews();
+            @Override
+        public void onFinish() {
+                mProfDialog.dismiss();
+            }
+        });
+    }
+
+    private void postSignupAsync(final Context context, final String post_id) {
+        httpClient2.post(context, sSignupUrl, loginParam, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                Log.e("サインアップ成功", "status=" + statusCode);
+                postGoodAsync(context, post_id);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                Toast.makeText(getActivity(), "サインアップに失敗しました", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void postGoodAsync(final Context context, String post_id) {
+        goodParam = new RequestParams("post_id", post_id);
+        httpClient2.post(context, sGoodUrl, goodParam, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                getProfileGoodJson(context);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                Toast.makeText(getActivity(), "いいね送信に失敗しました", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void getProfileGoodJson(Context context) {
+        httpClient2.get(context, mProfUrl, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray timeline) {
+                // Pull out the first event on the public timeline
+                try {
+                    for (int i = 0; i < timeline.length(); i++) {
+                        JSONObject jsonObject = timeline.getJSONObject(i);
+
+                        String post_id = jsonObject.getString(TAG_POST_ID);
+                        Integer user_id = jsonObject.getInt(TAG_USER_ID);
+                        String user_name = jsonObject.getString(TAG_USER_NAME);
+                        String picture = jsonObject.getString(TAG_PICTURE);
+                        String movie = jsonObject.getString(TAG_MOVIE);
+                        String restname = jsonObject.getString(TAG_RESTNAME);
+                        Integer goodnum = jsonObject.getInt(TAG_GOODNUM);
+                        Integer comment_num = jsonObject.getInt(TAG_COMMENT_NUM);
+                        String thumbnail = jsonObject.getString(TAG_THUMBNAIL);
+                        Integer star_evaluation = jsonObject.getInt(TAG_STAR_EVALUATION);
+                        //String locality = jsonObject.getString(TAG_LOCALITY);
+
+                        UserData user1 = new UserData();
+                        user1.setUser_name(user_name);
+                        user1.setPicture(picture);
+                        mProfusers.add(user1);
+
+                        UserData user2 = new UserData();
+                        user2.setMovie(movie);
+                        user2.setThumbnail(thumbnail);
+                        mProfusers.add(user2);
+
+                        UserData user3 = new UserData();
+                        user3.setComment_num(comment_num);
+                        user3.setgoodnum(goodnum);
+                        user3.setStar_evaluation(star_evaluation);
+                        mProfusers.add(user3);
+
+                        UserData user4 = new UserData();
+                        user4.setRest_name(restname);
+                        //user4.setLocality(locality);
+                        mProfusers.add(user4);
+
+                        UserData user5 = new UserData();
+                        user5.setPost_id(post_id);
+                        user5.setUser_id(user_id);
+                        mProfusers.add(user5);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                View targetView = mProfListView.getChildAt(mGoodNumberPosition);
+                mProfListView.getAdapter().getView(mGoodNumberPosition, targetView, mProfListView);
+            }
+
+            @Override
+            public void onFailure(int statusCode, org.apache.http.Header[] headers, java.lang.Throwable throwable, org.json.JSONObject errorResponse) {
+                ImageView likesView = (ImageView) mProfListView.findViewWithTag(mGoodCommePosition);
+                TextView likesnumberView = (TextView) mProfListView.findViewWithTag(mGoodNumberPosition);
+                likesnumberView.setText(currentgoodnum);
+                likesView.setClickable(true);
+                likesView.setBackgroundResource(R.drawable.ic_like);
+                Toast.makeText(getActivity(), "更新に失敗しました", Toast.LENGTH_SHORT).show();
+            }
+
+        });
+    }
+
+    private void getRefreshAsync(final Context context) {
+        httpClient3.post(context, sSignupUrl, loginParam, new AsyncHttpResponseHandler() {
+            @Override
+            public void onStart() {
+                mRefreshProfDialog = new CustomProgressDialog(getActivity());
+                mRefreshProfDialog.setCancelable(false);
+                mRefreshProfDialog.show();
+            }
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                Log.e("サインアップ成功", "status=" + statusCode);
+                getRefreshProfileJson(context);
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                mRefreshProfDialog.dismiss();
+                Toast.makeText(getActivity(), "サインアップに失敗しました", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void getRefreshProfileJson(Context context) {
+        httpClient3.get(context, mProfUrl, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray timeline) {
+                // Pull out the first event on the public timeline
+                try {
+                    for (int i = 0; i < timeline.length(); i++) {
+                        JSONObject jsonObject = timeline.getJSONObject(i);
+
+                        String post_id = jsonObject.getString(TAG_POST_ID);
+                        Integer user_id = jsonObject.getInt(TAG_USER_ID);
+                        String user_name = jsonObject.getString(TAG_USER_NAME);
+                        String picture = jsonObject.getString(TAG_PICTURE);
+                        String movie = jsonObject.getString(TAG_MOVIE);
+                        String restname = jsonObject.getString(TAG_RESTNAME);
+                        Integer goodnum = jsonObject.getInt(TAG_GOODNUM);
+                        Integer comment_num = jsonObject.getInt(TAG_COMMENT_NUM);
+                        String thumbnail = jsonObject.getString(TAG_THUMBNAIL);
+                        Integer star_evaluation = jsonObject.getInt(TAG_STAR_EVALUATION);
+                        //String locality = jsonObject.getString(TAG_LOCALITY);
+
+                        UserData user1 = new UserData();
+                        user1.setUser_name(user_name);
+                        user1.setPicture(picture);
+                        mProfusers.add(user1);
+
+                        UserData user2 = new UserData();
+                        user2.setMovie(movie);
+                        user2.setThumbnail(thumbnail);
+                        mProfusers.add(user2);
+
+                        UserData user3 = new UserData();
+                        user3.setComment_num(comment_num);
+                        user3.setgoodnum(goodnum);
+                        user3.setStar_evaluation(star_evaluation);
+                        mProfusers.add(user3);
+
+                        UserData user4 = new UserData();
+                        user4.setRest_name(restname);
+                        //user4.setLocality(locality);
+                        mProfusers.add(user4);
+
+                        UserData user5 = new UserData();
+                        user5.setPost_id(post_id);
+                        user5.setUser_id(user_id);
+                        mProfusers.add(user5);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
                 mProfAdapter.notifyDataSetChanged();
-            } else {
-                //通信失敗した際のエラー処理
-                Toast.makeText(getActivity().getApplicationContext(), "タイムラインの取得に失敗しました。", Toast.LENGTH_SHORT).show();
             }
-            mProfDialog.dismiss();
-        }
+
+            @Override
+            public void onFailure(int statusCode, org.apache.http.Header[] headers, java.lang.Throwable throwable, org.json.JSONObject errorResponse) {
+                Toast.makeText(getActivity(), "読み取りに失敗しました", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+        public void onFinish() {
+                mRefreshProfDialog.dismiss();
+            }
+        });
+    }
+
+    private void deleteSignupAsync(final Context context, final String post_id) {
+        httpClient4.post(context, sSignupUrl, loginParam, new AsyncHttpResponseHandler() {
+            @Override
+            public void onStart() {
+                mPostDeleteDialog = new CustomProgressDialog(getActivity());
+                mPostDeleteDialog.setCancelable(false);
+                mPostDeleteDialog.show();
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                Log.e("サインアップ成功", "status=" + statusCode);
+                postDeleteAsync(context, post_id);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                mMaterialDialog.dismiss();
+                mPostDeleteDialog.dismiss();
+                Toast.makeText(getActivity(), "サインアップに失敗しました", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void postDeleteAsync(final Context context, String post_id) {
+        deleteParam = new RequestParams("post_id", post_id);
+        httpClient4.post(context, sPostDeleteUrl, deleteParam, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                getDeleteProfileJson(context);
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                mMaterialDialog.dismiss();
+                mPostDeleteDialog.dismiss();
+                Toast.makeText(getActivity(), "いいね送信に失敗しました", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void getDeleteProfileJson(Context context) {
+        httpClient4.get(context, mProfUrl, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray timeline) {
+                // Pull out the first event on the public timeline
+                try {
+                    for (int i = 0; i < timeline.length(); i++) {
+                        JSONObject jsonObject = timeline.getJSONObject(i);
+
+                        String post_id = jsonObject.getString(TAG_POST_ID);
+                        Integer user_id = jsonObject.getInt(TAG_USER_ID);
+                        String user_name = jsonObject.getString(TAG_USER_NAME);
+                        String picture = jsonObject.getString(TAG_PICTURE);
+                        String movie = jsonObject.getString(TAG_MOVIE);
+                        String restname = jsonObject.getString(TAG_RESTNAME);
+                        Integer goodnum = jsonObject.getInt(TAG_GOODNUM);
+                        Integer comment_num = jsonObject.getInt(TAG_COMMENT_NUM);
+                        String thumbnail = jsonObject.getString(TAG_THUMBNAIL);
+                        Integer star_evaluation = jsonObject.getInt(TAG_STAR_EVALUATION);
+                        //String locality = jsonObject.getString(TAG_LOCALITY);
+
+                        UserData user1 = new UserData();
+                        user1.setUser_name(user_name);
+                        user1.setPicture(picture);
+                        mProfusers.add(user1);
+
+                        UserData user2 = new UserData();
+                        user2.setMovie(movie);
+                        user2.setThumbnail(thumbnail);
+                        mProfusers.add(user2);
+
+                        UserData user3 = new UserData();
+                        user3.setComment_num(comment_num);
+                        user3.setgoodnum(goodnum);
+                        user3.setStar_evaluation(star_evaluation);
+                        mProfusers.add(user3);
+
+                        UserData user4 = new UserData();
+                        user4.setRest_name(restname);
+                        //user4.setLocality(locality);
+                        mProfusers.add(user4);
+
+                        UserData user5 = new UserData();
+                        user5.setPost_id(post_id);
+                        user5.setUser_id(user_id);
+                        mProfusers.add(user5);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                mProfAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onFailure(int statusCode, org.apache.http.Header[] headers, java.lang.Throwable throwable, org.json.JSONObject errorResponse) {
+                Toast.makeText(getActivity(), "読み取りに失敗しました", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+        public void onFinish() {
+            mMaterialDialog.dismiss();
+            mRefreshProfDialog.dismiss();
+            }
+        });
     }
 
     public class ProfAdapter extends ArrayAdapter<UserData> {
@@ -591,7 +846,6 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
         public int getItemViewType(int position) {
             int line = (position / 5) * 5;
             int pos = position - line;
-
             switch (pos) {
                 case 0:
                     return 0;
@@ -613,11 +867,8 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
 
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
-
             final UserData user = this.getItem(position);
-
             switch (getItemViewType(position)) {
-
                 case 0:
                     if (convertView == null) {
                         LayoutInflater inflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -631,7 +882,6 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                     } else {
                         nameHolder = (NameHolder) convertView.getTag();
                     }
-
                     nameHolder.user_name.setText(user.getUser_name());
 
                     Picasso.with(getContext())
@@ -641,9 +891,7 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                             .centerCrop()
                             .transform(new RoundedTransformation())
                             .into(nameHolder.circleImage);
-
                     break;
-
                 case 1:
                     if (convertView == null) {
                         LayoutInflater inflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -657,7 +905,6 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                     } else {
                         videoHolder = (VideoHolder) convertView.getTag();
                     }
-
                     Picasso.with(getContext())
                             .load(user.getThumbnail())
                             .placeholder(R.color.videobackground)
@@ -665,7 +912,6 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                     videoHolder.mVideoThumbnail.setVisibility(View.VISIBLE);
 
                     if (!mBusy) {
-
                         videoHolder.movie.setVideoURI(Uri.parse(user.getMovie()));
                         Log.e("読み込みました", user.getMovie());
                         videoHolder.movie.requestFocus();
@@ -702,11 +948,8 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                             }
                         });
                         videoHolder.movie.setTag(mShowPosition);
-
                     }
-
                     break;
-
                 case 2:
                     if (convertView == null) {
                         LayoutInflater inflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -722,7 +965,6 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                     } else {
                         commentHolder = (CommentHolder) convertView.getTag();
                     }
-
                     currentgoodnum = String.valueOf((user.getgoodnum()));
                     currentcommentnum = String.valueOf(user.getComment_num());
                     mNextGoodnum = String.valueOf(user.getgoodnum() + 1);
@@ -734,9 +976,7 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                     commentHolder.star_evaluation.setIsIndicator(true);
                     commentHolder.star_evaluation.setRating(user.getStar_evaluation());
                     Log.e("星を読み込んだよ", String.valueOf(user.getStar_evaluation()));
-
                     break;
-
                 case 3:
                     if (convertView == null) {
                         LayoutInflater inflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -751,12 +991,9 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                     } else {
                         restHolder = (RestHolder) convertView.getTag();
                     }
-
                     restHolder.rest_name.setText(user.getRest_name());
                     restHolder.locality.setText(user.getLocality());
-
                     break;
-
                 default:
                     if (convertView == null) {
                         LayoutInflater inflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -771,7 +1008,6 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                     } else {
                         likeCommentHolder = (LikeCommentHolder) convertView.getTag();
                     }
-
                     //クリックされた時の処理
                     if (position == mGoodCommePosition) {
                         Log.e("いいね入れ替え部分", "通ったよ" + "/" + position + "/" + mGoodCommePosition);
@@ -782,7 +1018,6 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                         likeCommentHolder.likes.setBackgroundResource(R.drawable.ic_like);
 
                     }
-
                     likeCommentHolder.likes.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -796,7 +1031,7 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                             commentHolder.likesnumber.setText(mNextGoodnum);
                             commentHolder.likesnumber.setTag(mGoodNumberPosition);
 
-                            new ProfGoodnumTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, user.getPost_id());
+                            postSignupAsync(getActivity(), user.getPost_id());
                         }
                     });
 
@@ -807,7 +1042,7 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                             commentHolder.commentsnumber.setText(mNextCommentnum);
 
                             //引数に入れたい値を入れていく
-                            View commentView = new CommentView(getActivity(), mName, mPictureImageUrl, user.getPost_id());
+                            View commentView = new CommentView(getActivity(), mName, user.getPost_id());
 
                             MaterialDialog mMaterialDialog = new MaterialDialog(getActivity())
                                     .setContentView(commentView)
@@ -816,289 +1051,10 @@ public class ProfileFragment extends BaseFragment implements ListView.OnScrollLi
                         }
                     });
                     videoHolder.movie.setTag(mShowPosition);
-
                     break;
             }
-
             return convertView;
-
         }
     }
-
-    public class ProfGoodnumTask extends AsyncTask<String, String, Integer> {
-        private int mStatus;
-        private int mStatus2;
-        private int mStatus3;
-
-        @Override
-        protected Integer doInBackground(String... params) {
-            String param = params[0];
-
-            HttpClient client = application_gocci.getHttpClient();
-
-            HttpPost goodnummethod = new HttpPost(sGoodUrl);
-
-            ArrayList<NameValuePair> goodnumcontents = new ArrayList<NameValuePair>();
-            goodnumcontents.add(new BasicNameValuePair("post_id", param));
-            Log.d("読み取り", param);
-
-            String goodnumbody = null;
-            try {
-                goodnummethod.setEntity(new UrlEncodedFormEntity(goodnumcontents, "utf-8"));
-                HttpResponse goodnumres = client.execute(goodnummethod);
-                mStatus2 = goodnumres.getStatusLine().getStatusCode();
-                Log.d("TAGだよ", "反応");
-                HttpEntity goodnumentity = goodnumres.getEntity();
-                goodnumbody = EntityUtils.toString(goodnumentity, "UTF-8");
-                goodnumres.getEntity().consumeContent();
-                Log.d("bodyの中身だよ", goodnumbody);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            if (HttpStatus.SC_OK == mStatus2) {
-
-                HttpGet request = new HttpGet(mProfUrl);
-                HttpResponse httpResponse = null;
-
-                try {
-                    httpResponse = client.execute(request);
-                } catch (Exception e) {
-                    Log.d("error", String.valueOf(e));
-                }
-
-                mStatus3 = httpResponse.getStatusLine().getStatusCode();
-
-                if (HttpStatus.SC_OK == mStatus3) {
-                    String mProfData = null;
-                    try {
-                        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                        httpResponse.getEntity().writeTo(outputStream);
-                        mProfData = outputStream.toString(); // JSONデータ
-                        httpResponse.getEntity().consumeContent();
-                        Log.d("data", mProfData);
-                    } catch (Exception e) {
-                        Log.d("error", String.valueOf(e));
-                    }
-
-                    mProfusers.clear();
-
-                    try {
-                        JSONArray jsonArray = new JSONArray(mProfData);
-
-                        for (int i = 0; i < jsonArray.length(); i++) {
-                            JSONObject jsonObject = jsonArray.getJSONObject(i);
-
-                            String post_id = jsonObject.getString(TAG_POST_ID);
-                            Integer user_id = jsonObject.getInt(TAG_USER_ID);
-                            String user_name = jsonObject.getString(TAG_USER_NAME);
-                            String picture = jsonObject.getString(TAG_PICTURE);
-                            String movie = jsonObject.getString(TAG_MOVIE);
-                            String restname = jsonObject.getString(TAG_RESTNAME);
-                            Integer goodnum = jsonObject.getInt(TAG_GOODNUM);
-                            Integer comment_num = jsonObject.getInt(TAG_COMMENT_NUM);
-                            String thumbnail = jsonObject.getString(TAG_THUMBNAIL);
-                            Integer star_evaluation = jsonObject.getInt(TAG_STAR_EVALUATION);
-                            //String locality = jsonObject.getString(TAG_LOCALITY);
-
-
-                            UserData user1 = new UserData();
-                            user1.setUser_name(user_name);
-                            user1.setPicture(picture);
-                            mProfusers.add(user1);
-
-                            UserData user2 = new UserData();
-                            user2.setMovie(movie);
-                            user2.setThumbnail(thumbnail);
-                            mProfusers.add(user2);
-
-                            UserData user3 = new UserData();
-                            user3.setComment_num(comment_num);
-                            user3.setgoodnum(goodnum);
-                            user3.setStar_evaluation(star_evaluation);
-                            mProfusers.add(user3);
-
-                            UserData user4 = new UserData();
-                            user4.setRest_name(restname);
-                            //user4.setLocality(locality);
-                            mProfusers.add(user4);
-
-                            UserData user5 = new UserData();
-                            user5.setPost_id(post_id);
-                            user5.setUser_id(user_id);
-                            mProfusers.add(user5);
-
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        Log.d("error", String.valueOf(e));
-                    }
-                } else {
-                    Log.d("JSONSampleActivity", "Status" + mStatus3);
-                }
-            }
-
-            return mStatus3;
-        }
-
-
-        @Override
-        protected void onPostExecute(Integer result) {
-            if (result != null && result == HttpStatus.SC_OK) {
-                //いいねが送れた処理　項目itemの更新
-                View targetView = mProfListView.getChildAt(mGoodNumberPosition);
-                mProfListView.getAdapter().getView(mGoodNumberPosition, targetView, mProfListView);
-                Log.e("いいね追加成功", "成功しました");
-            } else {
-                ImageView likesView = (ImageView) mProfListView.findViewWithTag(mGoodCommePosition);
-                TextView likesnumberView = (TextView) mProfListView.findViewWithTag(mGoodNumberPosition);
-                likesnumberView.setText(currentgoodnum);
-                likesView.setClickable(true);
-                likesView.setBackgroundResource(R.drawable.ic_like);
-                Toast.makeText(getActivity(), "いいね追加に失敗しました。", Toast.LENGTH_SHORT).show();
-            }
-
-        }
-
-    }
-
-    public class PostDeleteAsyncTask extends AsyncTask<String, String, Integer> {
-        private int mStatus;
-        private int mStatus2;
-        private int mStatus3;
-
-        @Override
-        protected Integer doInBackground(String... params) {
-            String param = params[0];
-
-            HttpClient client = application_gocci.getHttpClient();
-
-            HttpPost goodnummethod = new HttpPost(sPostDeleteUrl);
-
-            ArrayList<NameValuePair> goodnumcontents = new ArrayList<NameValuePair>();
-            goodnumcontents.add(new BasicNameValuePair("post_id", param));
-            Log.d("読み取り", param);
-
-            String goodnumbody = null;
-            try {
-                goodnummethod.setEntity(new UrlEncodedFormEntity(goodnumcontents, "utf-8"));
-                HttpResponse goodnumres = client.execute(goodnummethod);
-                mStatus2 = goodnumres.getStatusLine().getStatusCode();
-                Log.d("TAGだよ", "反応");
-                HttpEntity goodnumentity = goodnumres.getEntity();
-                goodnumbody = EntityUtils.toString(goodnumentity, "UTF-8");
-                goodnumres.getEntity().consumeContent();
-                Log.d("bodyの中身だよ", goodnumbody);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            if (HttpStatus.SC_OK == mStatus2) {
-
-                HttpGet request = new HttpGet(mProfUrl);
-                HttpResponse httpResponse = null;
-
-                try {
-                    httpResponse = client.execute(request);
-                } catch (Exception e) {
-                    Log.d("error", String.valueOf(e));
-                }
-
-                mStatus3 = httpResponse.getStatusLine().getStatusCode();
-
-                if (HttpStatus.SC_OK == mStatus3) {
-                    String mProfData = null;
-                    try {
-                        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                        httpResponse.getEntity().writeTo(outputStream);
-                        mProfData = outputStream.toString(); // JSONデータ
-                        httpResponse.getEntity().consumeContent();
-                        Log.d("data", mProfData);
-                    } catch (Exception e) {
-                        Log.d("error", String.valueOf(e));
-                    }
-
-                    mProfusers.clear();
-
-                    try {
-                        JSONArray jsonArray = new JSONArray(mProfData);
-
-                        for (int i = 0; i < jsonArray.length(); i++) {
-                            JSONObject jsonObject = jsonArray.getJSONObject(i);
-
-                            String post_id = jsonObject.getString(TAG_POST_ID);
-                            Integer user_id = jsonObject.getInt(TAG_USER_ID);
-                            String user_name = jsonObject.getString(TAG_USER_NAME);
-                            String picture = jsonObject.getString(TAG_PICTURE);
-                            String movie = jsonObject.getString(TAG_MOVIE);
-                            String restname = jsonObject.getString(TAG_RESTNAME);
-                            Integer goodnum = jsonObject.getInt(TAG_GOODNUM);
-                            Integer comment_num = jsonObject.getInt(TAG_COMMENT_NUM);
-                            String thumbnail = jsonObject.getString(TAG_THUMBNAIL);
-                            Integer star_evaluation = jsonObject.getInt(TAG_STAR_EVALUATION);
-                            //String locality = jsonObject.getString(TAG_LOCALITY);
-
-
-                            UserData user1 = new UserData();
-                            user1.setUser_name(user_name);
-                            user1.setPicture(picture);
-                            mProfusers.add(user1);
-
-                            UserData user2 = new UserData();
-                            user2.setMovie(movie);
-                            user2.setThumbnail(thumbnail);
-                            mProfusers.add(user2);
-
-                            UserData user3 = new UserData();
-                            user3.setComment_num(comment_num);
-                            user3.setgoodnum(goodnum);
-                            user3.setStar_evaluation(star_evaluation);
-                            mProfusers.add(user3);
-
-                            UserData user4 = new UserData();
-                            user4.setRest_name(restname);
-                            //user4.setLocality(locality);
-                            mProfusers.add(user4);
-
-                            UserData user5 = new UserData();
-                            user5.setPost_id(post_id);
-                            user5.setUser_id(user_id);
-                            mProfusers.add(user5);
-
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        Log.d("error", String.valueOf(e));
-                    }
-                } else {
-                    Log.d("JSONSampleActivity", "Status" + mStatus3);
-                }
-            }
-
-            return mStatus3;
-        }
-
-
-        @Override
-        protected void onPostExecute(Integer result) {
-            if (result != null && result == HttpStatus.SC_OK) {
-                //いいねが送れた処理　項目itemの更新
-                mMaterialDialog.dismiss();
-                mProfAdapter.notifyDataSetChanged();
-                mProfListView.invalidateViews();
-
-                //タイムラインのListViewも更新必要か
-
-            } else {
-
-                Toast.makeText(getActivity(), "削除に失敗しました。", Toast.LENGTH_SHORT).show();
-            }
-
-            mPostDeleteDialog.dismiss();
-
-        }
-
-    }
-
 }
 
