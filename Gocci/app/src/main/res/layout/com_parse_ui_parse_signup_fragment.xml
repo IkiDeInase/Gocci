@@ -1,0 +1,25 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/com_parse_ui_horizontal_margin"
+    android:paddingRight="@dimen/com_parse_ui_horizontal_margin"
+    android:paddingBottom="@dimen/com_parse_ui_vertical_margin"
+    android:gravity="center"
+    android:background="@drawable/ic_cafe">
+
+    <ImageView
+        android:layout_width="250dp"
+        android:layout_height="350dp"
+        android:id="@+id/imageView"
+        android:background="@drawable/ic_gocci_moji"
+        android:layout_centerHorizontal="true" />
+
+    <include
+        layout="@layout/com_parse_ui_parse_signup_form"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.5"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="32dp" />
+
+</RelativeLayout>

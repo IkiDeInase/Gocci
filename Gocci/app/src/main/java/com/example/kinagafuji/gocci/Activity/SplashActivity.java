@@ -30,7 +30,7 @@ public class SplashActivity extends Activity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent mainIntent = new Intent(SplashActivity.this, LoginActivity2.class);
+                Intent mainIntent = new Intent(SplashActivity.this, GocciDispatchActivity.class);
                 SplashActivity.this.startActivity(mainIntent);
                 overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
                 SplashActivity.this.finish();
