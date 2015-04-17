@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.andexert.library.RippleView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ripple="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    ripple:rv_color="@android:color/black"
+    android:id="@+id/commentRipple">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:id="@+id/commentUserImage"
+                android:src="@drawable/ic_userpicture"
+                android:layout_margin="8dp" />
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="User_name"
+                    android:id="@+id/user_name"
+                    android:textStyle="bold"
+                    android:textSize="12sp"
+                    android:maxLength="20"
+                    android:textColor="@color/nameblack" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Comment"
+                    android:id="@+id/usercomment"
+                    android:textSize="10sp"
+                    android:maxLength="40" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</com.andexert.library.RippleView>

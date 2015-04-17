@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:wheel="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/swipe_timeline"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.github.ksoichiro.android.observablescrollview.ObservableListView
+                android:id="@+id/list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </android.support.v4.widget.SwipeRefreshLayout>
+    </LinearLayout>
+
+    <com.pnikosis.materialishprogress.ProgressWheel
+        android:id="@+id/progress_wheel"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        wheel:matProg_barColor="@color/gocci_header"
+        wheel:matProg_progressIndeterminate="true"
+        android:layout_gravity="center" />
+
+    <com.melnykov.fab.FloatingActionButton
+        android:id="@+id/toukouButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="32dp"
+        android:layout_gravity="bottom|right"
+        android:src="@drawable/ic_userpicture"
+        android:visibility="gone"/>
+
+
+</FrameLayout>

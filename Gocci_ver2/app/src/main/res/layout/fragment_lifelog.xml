@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@color/gocci_header">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="S"
+            android:layout_gravity="center_vertical"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:layout_marginLeft="24dp"
+            android:layout_weight="1" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="M"
+            android:layout_gravity="center_vertical"
+            android:textColor="@color/white"
+            android:layout_weight="1" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="T"
+            android:layout_gravity="center_vertical"
+            android:textColor="@color/white"
+            android:layout_weight="1" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="W"
+            android:layout_gravity="center_vertical"
+            android:textColor="@color/white"
+            android:layout_weight="1" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="T"
+            android:layout_gravity="center_vertical"
+            android:textColor="@color/white"
+            android:layout_weight="1" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="F"
+            android:layout_gravity="center_vertical"
+            android:textColor="@color/white"
+            android:layout_weight="1" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="S"
+            android:layout_gravity="center_vertical"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:layout_marginRight="24dp" />
+    </LinearLayout>
+
+    <com.squareup.timessquare.CalendarPickerView
+        android:id="@+id/calendar_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbarStyle="outsideOverlay"
+        android:clipToPadding="false"
+        android:background="@color/backgroung_grey"
+        app:dayBackground="@drawable/custom_calendar_bg_selector"
+        app:dayTextColor="@color/custom_calendar_text_selector"
+        app:dividerColor="@color/transparent"
+        app:titleTextColor="@color/gocci_header"
+        app:headerTextColor="@color/gocci_header"
+        app:displayHeader="false" />
+
+</LinearLayout>

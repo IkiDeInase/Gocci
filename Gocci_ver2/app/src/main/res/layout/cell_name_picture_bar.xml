@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ripple="http://schemas.android.com/apk/res-auto">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/list_bg">
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:id="@+id/circleImage"
+                android:src="@drawable/ic_userpicture"
+                android:contentDescription="@string/picture"
+                android:layout_marginLeft="12dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginBottom="12dp" />
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="GOCCI_MAN"
+                    android:id="@+id/user_name"
+                    android:textSize="18sp"
+                    android:maxLength="20"
+                    android:textColor="@color/nameblack"
+                    android:layout_marginBottom="2dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="１時間前"
+                    android:id="@+id/time_text"
+                    android:layout_marginTop="2dp"
+                    android:textStyle="bold"
+                    android:textSize="12sp"
+                    android:textColor="@color/timecolor" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <com.andexert.library.RippleView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@drawable/ic_delete_button"
+            ripple:rv_color="@android:color/black"
+            ripple:rv_centered="true"
+            android:id="@+id/menuRipple"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_margin="16dp" />
+    </RelativeLayout>
+
+</LinearLayout>
+

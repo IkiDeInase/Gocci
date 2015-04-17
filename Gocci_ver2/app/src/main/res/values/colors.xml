@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 色を定義-->
+    <color name="window_bg">#ebedf0</color>
+    <drawable name="window_bg">@color/window_bg</drawable>
+    <color name="main_color_light">#EB9152</color>
+    <color name="main_color_dark">#E2694A</color>
+    <color name="selector_transparent1">#22000000</color>
+    <color name="selector_transparent2">#11000000</color>
+    <color name="gocci">#f52b00</color>
+    <color name="gocci_button">#f3553b</color>
+    <color name="gocci_header">#f3643b</color>
+    <color name="gocci_nannda">#f4563b</color>
+    <color name="gocci_progress">#f2614d</color>
+    <color name="videobackground">#ffc5c6c9</color>
+    <color name="tab_background">#555555</color>
+
+    <color name="likecolor">#ff995845</color>
+
+    <color name="twitter_background">#6babdc</color>
+    <color name="facebook_background">#3c5a96</color>
+
+    <color name="primary">#ff099688</color>
+    <color name="primaryDark">#ff06796b</color>
+    <color name="accent">#ffeeff41</color>
+    <color name="accentLight">#fff4ff81</color>
+
+    <color name="transparent">#00000000</color>
+
+    <color name="custom_header_text">#607d8b</color>
+    <color name="custom_selected">#aed581</color>
+    <color name="custom_background">#eeeeee</color>
+    <color name="custom_background_today">#f3553b</color>
+    <color name="custom_background_disabled">#eeeeee</color>
+    <color name="custom_text_selected">#ffffff</color>
+    <color name="custom_text_inactive">#7f778088</color>
+
+    <color name="gocci_light">#ffab91</color>
+    <color name="gocci_dark">#ff8a65</color>
+    <color name="gocci2">#ff7043</color>
+
+    <color name="blue_button">#4aa5e0</color>
+
+    <!--Activityカラー-->
+    <color name="header_myprof">#009688</color>
+    <color name="header_tenpo">#ec407a</color>
+    <color name="header_userprof">#00bcd4</color>
+    <color name="backgroung_grey">#eeeeee</color>
+
+    <!--カメラ画面-->
+    <color name="solid_black">#ff000000</color>
+    <color name="bg_capture_progress">#ff000000</color>
+    <color name="capture_background">#ff000000</color>
+
+    <!--テキストカラー-->
+    <color name="nameblack">#7d7d7d</color>
+    <color name="timecolor">#999999</color>
+    <color name="namegrey">#4d4d4d</color>
+
+    <!--ホワイト-->
+    <color name="white">#ffffff</color>
+    <color name="materialwhite">#fafafa</color>
+
+    <color name="view_background">#f8f8f8</color>
+
+    <!-- Material DEFAULT colors -->
+    <color name="material_drawer_primary">#f3643b</color>
+    <color name="material_drawer_primary_dark">#f3543b</color>
+    <color name="material_drawer_primary_light">#f3743b</color>
+    <color name="material_drawer_accent">#f8f8f8</color>
+
+    <!-- OVERWRITE THESE COLORS FOR A LIGHT THEME -->
+    <!-- MaterialDrawer DEFAULT colors -->
+    <color name="material_drawer_window_background">#f8f8f8</color>
+    <color name="material_drawer_background">#555555</color>
+    <!-- Material DEFAULT text / items colors -->
+    <color name="material_drawer_icons">#ffffff</color>
+    <color name="material_drawer_primary_text">#ffffff</color>
+    <color name="material_drawer_primary_icon">#ffffff</color>
+    <color name="material_drawer_secondary_text">#f8f8f8</color>
+    <color name="material_drawer_hint_text">#f8f8f8</color>
+    <color name="material_drawer_divider">#1F000000</color>
+    <!-- Material DEFAULT drawer colors -->
+    <color name="material_drawer_selected">#555555</color>
+    <color name="material_drawer_selected_text">#f3643b</color>
+    <color name="material_drawer_header_selection_text">#555555</color>
+
+    <!-- OVERWRITE THESE COLORS FOR A DARK THEME -->
+    <!-- MaterialDrawer DEFAULT DARK colors -->
+    <color name="material_drawer_dark_window_background">#f8f8f8</color>
+    <color name="material_drawer_dark_background">#555555</color>
+    <!-- MaterialDrawer DEFAULT DARK text / items colors -->
+    <color name="material_drawer_dark_icons">#ffffff</color>
+    <color name="material_drawer_dark_primary_text">#ffffff</color>
+    <color name="material_drawer_dark_primary_icon">#ffffff</color>
+    <color name="material_drawer_dark_secondary_text">#f8f8f8</color>
+    <color name="material_drawer_dark_hint_text">#f8f8f8</color>
+    <color name="material_drawer_dark_divider">#1F000000</color>
+    <!-- MaterialDrawer DEFAULT DARK drawer colors -->
+    <color name="material_drawer_dark_selected">#555555</color>
+    <color name="material_drawer_dark_selected_text">#f3643b</color>
+    <color name="material_drawer_dark_header_selection_text">#555555</color>
+
+    <color name="Transparent">#BF000000</color>
+    <color name="black">#000000</color>
+</resources>

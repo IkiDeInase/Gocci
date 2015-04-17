@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/list_bg"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="サインイン"
+        android:layout_gravity="center_horizontal"
+        android:textSize="24sp"
+        android:layout_marginTop="16dp"
+        android:textColor="@color/nameblack" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SNS でサインイン"
+        android:textSize="14sp"
+        android:textColor="@color/nameblack"
+        android:textStyle="bold"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp" />
+
+    <com.andexert.library.RippleView
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:id="@+id/signin_twitter_Ripple"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="8dp"
+        android:background="@color/twitter_background"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="twitter アカウントでサインイン"
+            android:textColor="#ffffff"
+            android:alpha="0.9"
+            android:textSize="16sp" />
+
+    </com.andexert.library.RippleView>
+
+    <com.andexert.library.RippleView
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:id="@+id/signin_facebook_Ripple"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="8dp"
+        android:background="@color/facebook_background"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="facebook アカウントでサインイン"
+            android:textColor="#ffffff"
+            android:alpha="0.9"
+            android:textSize="16sp" />
+
+    </com.andexert.library.RippleView>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ユーザーネームでサインイン"
+        android:layout_gravity="center_horizontal"
+        android:textStyle="bold"
+        android:textColor="@color/nameblack"
+        android:textSize="14sp"
+        android:layout_marginTop="24dp" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:id="@+id/signinusernameEdit"
+        android:layout_gravity="center_horizontal"
+        android:background="#f5f5f5"
+        android:hint="ユーザー名"
+        android:padding="8dp"
+        android:textSize="14sp"
+        android:layout_marginRight="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="8dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:background="@drawable/list_shadow" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:ems="10"
+        android:id="@+id/signinpassEdit"
+        android:layout_gravity="center_horizontal"
+        android:background="#f5f5f5"
+        android:padding="8dp"
+        android:hint="パスワード"
+        android:textSize="14sp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:background="@drawable/list_shadow" />
+
+    <com.andexert.library.RippleView
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:id="@+id/signin_login_Ripple"
+        android:layout_gravity="center_horizontal"
+        android:background="@color/gocci_header"
+        android:gravity="center"
+        android:layout_margin="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ユーザー名でサインイン"
+            android:textSize="16sp"
+            android:alpha="0.9"
+            android:textColor="#ffffff" />
+
+    </com.andexert.library.RippleView>
+
+</LinearLayout>

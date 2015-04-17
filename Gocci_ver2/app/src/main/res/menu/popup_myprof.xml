@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/facebook_share"
+        android:title="facebook シェアする"
+        android:icon="@drawable/ic_icon_facebook" />
+    <item
+        android:id="@+id/twitter_share"
+        android:title="twitter シェアする"
+        android:icon="@drawable/ic_icon_twitter" />
+    <item
+        android:id="@+id/delete"
+        android:title="この投稿を削除する"
+        android:icon="@drawable/ic_icon_delete" />
+    <divider />
+    <item
+        android:id="@+id/close"
+        android:title="閉じる"
+        android:icon="@drawable/ic_icon_close" />
+</menu>

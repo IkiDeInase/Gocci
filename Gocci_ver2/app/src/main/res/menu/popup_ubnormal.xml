@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/person_down"
+        android:title="このユーザーフォロー解除する"
+        android:icon="@drawable/ic_account_remove" />
+    <item
+        android:id="@+id/facebook_share"
+        android:title="facebook シェアする"
+        android:icon="@drawable/ic_icon_facebook" />
+    <item
+        android:id="@+id/twitter_share"
+        android:title="twitter シェアする"
+        android:icon="@drawable/ic_icon_twitter" />
+    <item
+        android:id="@+id/violation"
+        android:title="この投稿を違反報告する"
+        android:icon="@drawable/ic_icon_violation" />
+    <divider />
+    <item
+        android:id="@+id/close"
+        android:title="閉じる"
+        android:icon="@drawable/ic_icon_close" />
+</menu>

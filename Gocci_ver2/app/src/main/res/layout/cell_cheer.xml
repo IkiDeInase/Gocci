@@ -1,0 +1,54 @@
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ImageView
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:id="@+id/cheer_picture"
+        android:src="@drawable/ic_userpicture"
+        android:layout_margin="8dp" />
+
+    <com.andexert.library.RippleView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/cheerButton"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:padding="12dp">
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/deleteCheerButton"
+        android:src="@drawable/ic_cheer_icon"
+        />
+
+    </com.andexert.library.RippleView>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/cheer_picture">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Restname"
+            android:id="@+id/restname"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:maxLength="20"
+            android:textColor="@color/nameblack"
+            android:layout_gravity="center_vertical" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="locality"
+            android:id="@+id/locality" />
+    </LinearLayout>
+
+</RelativeLayout>
