@@ -16,6 +16,7 @@ public class Const {
     public static final String URL_VIOLATE_API = "http://api-gocci.jp/violation/";
     public static final String URL_FAVORITE_API = "http://api-gocci.jp/favorites/";
     public static final String URL_UNFAVORITE_API = "http://api-gocci.jp/unfavorites/";
+    public static final String URL_ADVICE_API = "http://api-gocci.jp/feedback/";
 
     // 動画ファイルのキャッシュファイルの接頭辞
     public static final String MOVIE_CACHE_PREFIX = "movie_cache_";

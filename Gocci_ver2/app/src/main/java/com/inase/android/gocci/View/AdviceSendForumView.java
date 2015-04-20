@@ -43,21 +43,6 @@ public class AdviceSendForumView extends LinearLayout {
 
     public AdviceSendForumView(Context context, String name) {
         super(context);
-        mName = name;
-        //チュートリアル・使い方ガイドを実装しようとしているクラス(未完成)
-
-        View inflateView = LayoutInflater.from(context).inflate(R.layout.view_advice, this);
-
-        loginParam = new RequestParams("user_name", mName);
-        sendParams = new RequestParams();
-
-        adviceEdit = (EditText) inflateView.findViewById(R.id.adviceEdit);
-        adviceSendButton = (Button) inflateView.findViewById(R.id.adviceSendButton);
-        category = (Spinner) inflateView.findViewById(R.id.category);
-        final ArrayAdapter<String> adapter = new ArrayAdapter<String>(context,
-                android.R.layout.simple_spinner_item, CATEGORY_ADVICE);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        category.setAdapter(adapter);
 
         adviceSendButton.setOnClickListener(new OnClickListener() {
             @Override

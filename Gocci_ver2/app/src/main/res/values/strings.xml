@@ -40,9 +40,20 @@
     <string name="profile_logout_button_label">Log out</string>
 
     <string name="tab_near">近くの店</string>
-    <string name="tab_follow_cheer">フォロー/応援</string>
+    <string name="tab_follow_cheer">フォロー</string>
     <string name="tab_map">近くの店</string>
     <string name="tab_map2">検索する</string>
+
+    <string name="youbou">ご要望</string>
+    <string name="kujou">苦情</string>
+    <string name="ikenn">ご意見</string>
+
+    <string name="no30">30件</string>
+    <string name="no100">100件</string>
+    <string name="no500">500件</string>
+    <string name="no1000">1000件</string>
+    <string name="no2500">2500件</string>
+    <string name="no5000">5000件</string>
 
     <string-array name="my_facebook_permissions">
         <item>public_profile</item>

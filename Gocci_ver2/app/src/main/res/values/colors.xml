@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- 色を定義-->
     <color name="window_bg">#ebedf0</color>
@@ -19,11 +18,6 @@
 
     <color name="twitter_background">#6babdc</color>
     <color name="facebook_background">#3c5a96</color>
-
-    <color name="primary">#ff099688</color>
-    <color name="primaryDark">#ff06796b</color>
-    <color name="accent">#ffeeff41</color>
-    <color name="accentLight">#fff4ff81</color>
 
     <color name="transparent">#00000000</color>
 
@@ -67,7 +61,7 @@
     <color name="material_drawer_primary">#f3643b</color>
     <color name="material_drawer_primary_dark">#f3543b</color>
     <color name="material_drawer_primary_light">#f3743b</color>
-    <color name="material_drawer_accent">#f8f8f8</color>
+    <color name="material_drawer_accent">#f3643b</color>
 
     <!-- OVERWRITE THESE COLORS FOR A LIGHT THEME -->
     <!-- MaterialDrawer DEFAULT colors -->

@@ -44,4 +44,5 @@
         android:layout_height="2dp"
         android:background="#c5c6c9"
         android:layout_gravity="bottom" />
+
 </FrameLayout>

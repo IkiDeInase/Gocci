@@ -21,6 +21,7 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.andexert.library.RippleView;
 import com.github.ksoichiro.android.observablescrollview.ObservableListView;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
@@ -38,14 +39,17 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.inase.android.gocci.Activity.FlexibleTenpoActivity;
 import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.Base.BaseFragment;
+import com.inase.android.gocci.Base.ToukouPopup;
 import com.inase.android.gocci.Event.ArrayListGetEvent;
 import com.inase.android.gocci.Event.BusHolder;
 import com.inase.android.gocci.Event.SearchKeywordPostEvent;
 import com.inase.android.gocci.Event.SiboriNumberEvent;
 import com.inase.android.gocci.R;
+import com.inase.android.gocci.View.SiboriSearchView;
 import com.inase.android.gocci.data.UserData;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.melnykov.fab.FloatingActionButton;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.squareup.otto.Subscribe;
 
@@ -60,7 +64,6 @@ import java.util.ArrayList;
 
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
-import me.drakeet.materialdialog.MaterialDialog;
 
 public class Search_mapFragment extends BaseFragment
         implements OnMapReadyCallback, ObservableScrollViewCallbacks {
@@ -87,7 +90,7 @@ public class Search_mapFragment extends BaseFragment
     private ArrayList<String> tenpo_string_users = new ArrayList<>();
     private Search_mapAdapter mSearch_mapAdapter;
     private SwipeRefreshLayout mSearchmapSwipe;
-    //private FloatingActionButton fab;
+    private FloatingActionButton fab;
 
     private ProgressWheel mapprogress;
 
@@ -111,8 +114,6 @@ public class Search_mapFragment extends BaseFragment
     private double mLatitude;
     private double mLongitude;
 
-    private MaterialDialog mMaterialDialog;
-
     private AsyncHttpClient httpClient;
     private AsyncHttpClient httpClient2;
     private AsyncHttpClient httpClient3;
@@ -125,8 +126,6 @@ public class Search_mapFragment extends BaseFragment
 
     private Application_Gocci gocci;
     private Location firstLocation = null;
-
-    private PopupWindow window;
 
     public Search_mapFragment newIntent(String name, String imageUrl) {
         Search_mapFragment fragment = new Search_mapFragment();
@@ -155,22 +154,6 @@ public class Search_mapFragment extends BaseFragment
         mName = pref.getString("name", null);
 
         mapprogress = (ProgressWheel) view1.findViewById(R.id.mapprogress_wheel);
-        //fab = (FloatingActionButton) view1.findViewById(R.id.siboriButton);
-
-        /*
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                View inflateView = new SiboriSearchView(getActivity());
-                window = ToukouPopup.newBasicPopupWindow(getActivity());
-                window.setContentView(inflateView);
-                //int totalHeight = getWindowManager().getDefaultDisplay().getHeight();
-                int[] location = new int[2];
-                v.getLocationOnScreen(location);
-                ToukouPopup.showLikeQuickAction2(window, inflateView, v, getActivity().getWindowManager(), 0, 0);
-            }
-        });
-        */
 
         mSearch_mapListView = (ObservableListView) view1.findViewById(R.id.list);
         mSearch_mapListView.setDivider(null);
@@ -192,6 +175,70 @@ public class Search_mapFragment extends BaseFragment
                     refreshLocation();
                 }
 
+            }
+        });
+
+        fab = (FloatingActionButton) view1.findViewById(R.id.siboriButton);
+        fab.attachToListView(mSearch_mapListView);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SmartLocation.with(getActivity()).location().oneFix().start(new OnLocationUpdatedListener() {
+                    @Override
+                    public void onLocationUpdated(Location location) {
+                        if (location != null) {
+                            mLatitude = location.getLatitude();
+                            mLongitude = location.getLongitude();
+                        } else {
+                            Log.e("からでしたー", "locationupdated");
+                        }
+                    }
+                });
+                new MaterialDialog.Builder(getActivity())
+                        .title("表示件数を変更する")
+                        .items(R.array.single_choice_limit)
+                        .itemsCallbackSingleChoice(0, new MaterialDialog.ListCallbackSingleChoice() {
+                            @Override
+                            public boolean onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                                /**
+                                 * If you use alwaysCallSingleChoiceCallback(), which is discussed below,
+                                 * returning false here won't allow the newly selected radio button to actually be selected.
+                                 **/
+                                return true;
+                            }
+                        })
+                        .positiveText("OK")
+                        .callback(new MaterialDialog.ButtonCallback() {
+                            @Override
+                            public void onPositive(MaterialDialog dialog) {
+                                super.onPositive(dialog);
+                                int number = 30;
+                                switch (dialog.getSelectedIndex()) {
+                                    case 0:
+                                        number = 30;
+                                        break;
+                                    case 1:
+                                        number = 100;
+                                        break;
+                                    case 2:
+                                        number = 500;
+                                        break;
+                                    case 3:
+                                        number = 1000;
+                                        break;
+                                    case 4:
+                                        number = 2500;
+                                        break;
+                                    case 5:
+                                        number = 5000;
+                                        break;
+                                }
+                                mMap.clear();
+                                mapprogress.setVisibility(View.VISIBLE);
+                                setUpMap(FUNCTION_FIRST, mLatitude, mLongitude, number);
+                            }
+                        })
+                        .show();
             }
         });
 
@@ -269,25 +316,27 @@ public class Search_mapFragment extends BaseFragment
 
         //GPSかネットワーク経由から位置情報を取ってくるかの条件分岐
         if (!mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            mMaterialDialog = new MaterialDialog(getActivity())
-                    .setTitle("位置情報取得について")
-                    .setMessage("位置情報を使いたいのですが、GPSが無効になっています。" + "設定を変更してください")
-                    .setPositiveButton("はい", new View.OnClickListener() {
+            new MaterialDialog.Builder(getActivity())
+                    .title("位置情報取得について")
+                    .content("位置情報を使いたいのですが、GPSが無効になっています。" + "設定を変更してください")
+                    .positiveText("はい")
+                    .positiveColorRes(R.color.gocci_header)
+                    .negativeText("いいえ")
+                    .negativeColorRes(R.color.material_drawer_primary_light)
+                    .callback(new MaterialDialog.ButtonCallback() {
                         @Override
-                        public void onClick(View v) {
-                            mMaterialDialog.dismiss();
+                        public void onPositive(MaterialDialog dialog) {
+                            super.onPositive(dialog);
                             Intent settingIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                             startActivity(settingIntent);
                         }
-                    })
-                    .setNegativeButton("いいえ", new View.OnClickListener() {
                         @Override
-                        public void onClick(View v) {
-                            mMaterialDialog.dismiss();
+                        public void onNegative(MaterialDialog dialog) {
+                            super.onNegative(dialog);
                             Toast.makeText(getActivity(), "近くの店舗表示ができなくなります", Toast.LENGTH_LONG).show();
                         }
-                    });
-            mMaterialDialog.show();
+                    }).show();
+
         } else {
             if (!isCapturingLocation) {
                 startLocation();
@@ -359,14 +408,6 @@ public class Search_mapFragment extends BaseFragment
         setSearchWord(event.searchWord, event.mLat, event.mLon);
     }
 
-    @Subscribe
-    public void subscribe(SiboriNumberEvent event) {
-        mMap.clear();
-        mapprogress.setVisibility(View.VISIBLE);
-        window.dismiss();
-        setUpMap(FUNCTION_FIRST, mLatitude, mLongitude, event.Number);
-    }
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -406,17 +447,6 @@ public class Search_mapFragment extends BaseFragment
 
     @Override
     public void onUpOrCancelMotionEvent(ScrollState scrollState) {
-        /*
-        if (scrollState == ScrollState.UP) {
-            if (fab.isVisible()) {
-                fab.hide();
-            }
-        } else if (scrollState == ScrollState.DOWN) {
-            if (!fab.isVisible()) {
-                fab.show();
-            }
-        }
-        */
     }
 
     public static class Search_mapHolder {

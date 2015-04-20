@@ -4,53 +4,14 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="ご意見・ご要望投稿画面"
-        android:textSize="18sp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="8dp"
-        android:textColor="#64b5f6" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="あなたの意見を、"
-        android:layout_gravity="center_horizontal"
-        android:textStyle="bold"
-        android:textSize="14sp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="ぜひGocciに反映させて下さい"
-        android:layout_gravity="center_horizontal"
-        android:textStyle="bold"
-        android:textSize="14sp" />
-
-    <Spinner
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/category"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="8dp" />
 
     <EditText
+        android:id="@+id/adviceEdit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/adviceEdit"
-        android:hint="ご意見・ご要望"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="16dp" />
+        android:textSize="12sp"
+        android:layout_marginTop="4dp"
+        android:textColor="#000000"
+        android:inputType="textLongMessage" />
 
-    <Button
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:text="送信する"
-        android:id="@+id/adviceSendButton"
-        android:background="@color/gocci_header"
-        android:textColor="@color/white"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="8dp" />
 </LinearLayout>

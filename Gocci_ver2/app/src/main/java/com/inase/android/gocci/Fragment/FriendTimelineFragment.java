@@ -161,22 +161,6 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
         mPlayBlockFlag = false;
         View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_timeline, container, false);
 
-        EventDateRecorder recorder = EventDateRecorder.load(getActivity(), "use_first_friend_timeline");
-        if (!recorder.didRecorded()) {
-            // 機能が１度も利用されてない時のみ実行したい処理を書く
-            //タイムラインです紹介
-            NiftyDialogBuilder dialogBuilder = NiftyDialogBuilder.getInstance(getActivity());
-            Effectstype effect = Effectstype.SlideBottom;
-            dialogBuilder
-                    .withTitle("フレンドタイムライン画面")
-                    .withMessage("気になったユーザーの最近の投稿をチェックしましょう")
-                    .withDuration(500)                                          //def
-                    .withEffect(effect)
-                    .isCancelableOnTouchOutside(true)
-                    .show();
-            recorder.record();
-        }
-
         // 初期化処理
         mPlayingPostId = null;
         mViewHolderHash = new ConcurrentHashMap<>();

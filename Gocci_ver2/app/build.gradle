@@ -87,6 +87,7 @@ dependencies {
     compile 'com.ogaclejapan.smarttablayout:utils-v4:1.1.0@aar'
     compile 'com.r0adkll:slidableactivity:2.0.2'
     compile 'com.github.ppamorim:Dragger:v1.0'
+    compile 'com.afollestad:material-dialogs:0.7.2.2'
 }
 
 repositories{

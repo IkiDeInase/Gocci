@@ -556,18 +556,6 @@ public class FollowerFolloweeCheerListActivity extends ActionBarActivity {
                 }
             });
 
-            final CheerViewHolder finalViewHolder = viewHolder;
-            viewHolder.cheerRipple.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //店舗追加削除
-                    if (finalViewHolder.deletecheerButton.isShown()) {
-                        finalViewHolder.deletecheerButton.setVisibility(View.INVISIBLE);
-                        Log.e("送る店舗", user.getRest_name());
-                    }
-                }
-            });
-
             return convertView;
         }
     }

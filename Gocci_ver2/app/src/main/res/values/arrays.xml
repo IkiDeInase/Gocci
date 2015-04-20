@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="single_choice_array">
+        <item>@string/youbou</item>
+        <item>@string/kujou</item>
+        <item>@string/ikenn</item>
+    </array>
+
+    <array name="single_choice_limit">
+        <item>@string/no30</item>
+        <item>@string/no100</item>
+        <item>@string/no500</item>
+        <item>@string/no1000</item>
+        <item>@string/no2500</item>
+        <item>@string/no5000</item>
+    </array>
+</resources>
