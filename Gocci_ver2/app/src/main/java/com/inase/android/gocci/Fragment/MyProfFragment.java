@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -765,6 +766,7 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
         public TextView comments;
         public RippleView likes_ripple;
         public RippleView comments_ripple;
+        public FrameLayout videoFrame;
     }
 
     public class MyProfAdapter extends ArrayAdapter<UserData> {
@@ -801,6 +803,7 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
                 viewHolder.comments = (TextView) convertView.findViewById(R.id.comments_Number);
                 viewHolder.likes_ripple = (RippleView) convertView.findViewById(R.id.likes_ripple);
                 viewHolder.comments_ripple = (RippleView) convertView.findViewById(R.id.comments_ripple);
+                viewHolder.videoFrame = (FrameLayout) convertView.findViewById(R.id.videoFrame);
                 convertView.setTag(viewHolder);
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();
@@ -880,8 +883,19 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
             if (viewHolder.movie.isPlaying()) {
                 Log.e("DEBUG", "getView 動画再生停止");
                 stopMovie(viewHolder);
-
             }
+
+            final ViewHolder videoClickViewHolder = viewHolder;
+            viewHolder.videoFrame.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (videoClickViewHolder.movie.isPlaying()) {
+                        videoClickViewHolder.movie.pause();
+                    } else {
+                        videoClickViewHolder.movie.start();
+                    }
+                }
+            });
 
             viewHolder.rest_name.setText(user.getRest_name());
             viewHolder.locality.setText(user.getLocality());

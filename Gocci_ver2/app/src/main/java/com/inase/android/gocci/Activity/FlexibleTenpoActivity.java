@@ -1,6 +1,7 @@
 package com.inase.android.gocci.Activity;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Point;
 import android.media.MediaPlayer;
@@ -20,12 +21,14 @@ import android.view.ViewTreeObserver;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar;
 import com.andexert.library.RippleView;
+import com.cocosw.bottomsheet.BottomSheet;
 import com.github.ksoichiro.android.observablescrollview.ObservableListView;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
@@ -111,6 +114,8 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
 
     private MapView mMapView;
     private GoogleMap mMap;
+
+    private MaterialDialog mViolationDialog;
 
     private AttributeSet mVideoAttr;
     private Point mDisplaySize;
@@ -561,6 +566,51 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
         });
     }
 
+    private void violateSignupAsync(final Context context, final String post_id) {
+        final AsyncHttpClient httpClient5 = new AsyncHttpClient();
+        httpClient5.post(context, Const.URL_SIGNUP_API, loginParam, new AsyncHttpResponseHandler() {
+            @Override
+            public void onStart() {
+                tenpoprogress.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                Log.e("サインアップ成功", "status=" + statusCode);
+                postViolateAsync(context, post_id, httpClient5);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                //mMaterialDialog.dismiss();
+                tenpoprogress.setVisibility(View.GONE);
+                Toast.makeText(context, "サインアップに失敗しました", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void postViolateAsync(final Context context, final String post_id, AsyncHttpClient httpClient5) {
+        RequestParams violateParam = new RequestParams("post_id", post_id);
+        httpClient5.post(context, Const.URL_VIOLATE_API, violateParam, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                Toast.makeText(context, "違反報告が完了しました", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                //mMaterialDialog.dismiss();
+                Toast.makeText(context, "違反報告に失敗しました", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFinish() {
+                //mMaterialDialog.dismiss();
+                tenpoprogress.setVisibility(View.GONE);
+            }
+        });
+    }
+
     @Override
     public void movieCacheCreated(boolean success, String postId) {
         if (success && mPlayingPostId == postId && getApplicationContext() != null) {
@@ -693,6 +743,29 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
 
     }
 
+    private void setViolateDialog(final Context context, final String post_id) {
+        mViolationDialog = new MaterialDialog(FlexibleTenpoActivity.this);
+        mViolationDialog.setTitle("投稿の違反報告");
+        mViolationDialog.setMessage("本当にこの投稿を違反報告しますか？");
+        mViolationDialog.setCanceledOnTouchOutside(true);
+        mViolationDialog.setPositiveButton("はい", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mViolationDialog.dismiss();
+                violateSignupAsync(context, post_id);
+            }
+        });
+        mViolationDialog.setNegativeButton("いいえ", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mViolationDialog.dismiss();
+            }
+        });
+
+        mViolationDialog.show();
+    }
+
+
     /**
      * 現在再生中のViewHolderを取得
      *
@@ -746,6 +819,7 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
         public ImageView circleImage;
         public TextView user_name;
         public TextView datetime;
+        public RippleView menuRipple;
         public SquareVideoView movie;
         public RoundCornerProgressBar movieProgress;
         public ImageView mVideoThumbnail;
@@ -758,6 +832,7 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
         public TextView comments;
         public RippleView likes_ripple;
         public RippleView comments_ripple;
+        public FrameLayout videoFrame;
     }
 
     public class TenpoAdapter extends ArrayAdapter<UserData> {
@@ -781,6 +856,7 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
                 viewHolder.circleImage = (ImageView) convertView.findViewById(R.id.circleImage);
                 viewHolder.user_name = (TextView) convertView.findViewById(R.id.user_name);
                 viewHolder.datetime = (TextView) convertView.findViewById(R.id.time_text);
+                viewHolder.menuRipple = (RippleView) convertView.findViewById(R.id.menuRipple);
                 viewHolder.movie = (SquareVideoView) convertView.findViewById(R.id.videoView);
                 viewHolder.movieProgress = (RoundCornerProgressBar) convertView.findViewById(R.id.video_progress);
                 viewHolder.mVideoThumbnail = (ImageView) convertView.findViewById(R.id.video_thumbnail);
@@ -793,6 +869,7 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
                 viewHolder.comments = (TextView) convertView.findViewById(R.id.comments_Number);
                 viewHolder.likes_ripple = (RippleView) convertView.findViewById(R.id.likes_ripple);
                 viewHolder.comments_ripple = (RippleView) convertView.findViewById(R.id.comments_ripple);
+                viewHolder.videoFrame = (FrameLayout) convertView.findViewById(R.id.videoFrame);
                 convertView.setTag(viewHolder);
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();
@@ -832,6 +909,24 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
                 }
             });
 
+            viewHolder.menuRipple.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    new BottomSheet.Builder(FlexibleTenpoActivity.this, R.style.BottomSheet_StyleDialog).sheet(R.menu.popup_ubnormal).listener(new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            switch (which) {
+                                case R.id.violation:
+                                    setViolateDialog(FlexibleTenpoActivity.this, user.getPost_id());
+                                    break;
+                                case R.id.close:
+                                    dialog.dismiss();
+                            }
+                        }
+                    }).show();
+                }
+            });
+
             Picasso.with(getContext())
                     .load(user.getThumbnail())
                     .placeholder(R.color.videobackground)
@@ -843,8 +938,19 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
             if (viewHolder.movie.isPlaying()) {
                 Log.e("DEBUG", "getView 動画再生停止");
                 stopMovie(viewHolder);
-
             }
+
+            final ViewHolder videoClickViewHolder = viewHolder;
+            viewHolder.videoFrame.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (videoClickViewHolder.movie.isPlaying()) {
+                        videoClickViewHolder.movie.pause();
+                    } else {
+                        videoClickViewHolder.movie.start();
+                    }
+                }
+            });
 
             viewHolder.rest_name.setText(user.getRest_name());
             viewHolder.locality.setText(user.getLocality());
@@ -918,6 +1024,7 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
             Intent intent = new Intent(FlexibleTenpoActivity.this, GocciTimelineActivity.class);
             startActivity(intent);
             overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+            finish();
         }
     }
 
@@ -926,6 +1033,7 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
             Intent intent = new Intent(FlexibleTenpoActivity.this, GocciLifelogActivity.class);
             startActivity(intent);
             overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+            finish();
         }
     }
 
@@ -934,6 +1042,7 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
             Intent intent = new Intent(FlexibleTenpoActivity.this, GocciSearchTenpoActivity.class);
             startActivity(intent);
             overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+            finish();
         }
     }
 
@@ -942,6 +1051,7 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
             Intent intent = new Intent(FlexibleTenpoActivity.this, GocciMyprofActivity.class);
             startActivity(intent);
             overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+            finish();
         }
     }
 

@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -552,6 +553,7 @@ public class LifelogVideoFragment2 extends SupportBlurDialogFragment implements 
         public TextView locality;
         public TextView rest_name;
         public RippleView tenpoRipple;
+        public FrameLayout videoFrame;
     }
 
     public class LifelogVideoAdapter extends ArrayAdapter<UserData> {
@@ -579,6 +581,7 @@ public class LifelogVideoFragment2 extends SupportBlurDialogFragment implements 
                 viewHolder.rest_name = (TextView) convertView.findViewById(R.id.rest_name);
                 viewHolder.locality = (TextView) convertView.findViewById(R.id.locality);
                 viewHolder.tenpoRipple = (RippleView) convertView.findViewById(R.id.tenpoRipple);
+                viewHolder.videoFrame = (FrameLayout) convertView.findViewById(R.id.videoFrame);
                 convertView.setTag(viewHolder);
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();
@@ -599,8 +602,19 @@ public class LifelogVideoFragment2 extends SupportBlurDialogFragment implements 
             if (viewHolder.movie.isPlaying()) {
                 Log.e("DEBUG", "getView 動画再生停止");
                 stopMovie(viewHolder);
-
             }
+
+            final ViewHolder videoClickViewHolder = viewHolder;
+            viewHolder.videoFrame.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (videoClickViewHolder.movie.isPlaying()) {
+                        videoClickViewHolder.movie.pause();
+                    } else {
+                        videoClickViewHolder.movie.start();
+                    }
+                }
+            });
 
             viewHolder.rest_name.setText(user.getRest_name());
             viewHolder.locality.setText(user.getLocality());

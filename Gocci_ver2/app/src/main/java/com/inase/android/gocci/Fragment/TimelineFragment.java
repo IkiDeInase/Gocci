@@ -1132,10 +1132,6 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             switch (which) {
-                                case R.id.person_plus:
-                                    //お気に入り追加するときの処理
-                                    favoriteSignupAsync(getActivity(), user.getUser_name());
-                                    break;
                                 case R.id.facebook_share:
 
                                     if (FacebookDialog.canPresentShareDialog(getActivity().getApplicationContext(),

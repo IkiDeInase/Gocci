@@ -114,6 +114,7 @@ public class GocciMyprofActivity extends ActionBarActivity {
             Intent intent = new Intent(GocciMyprofActivity.this, GocciTimelineActivity.class);
             startActivity(intent);
             overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+            finish();
         }
     }
 
@@ -122,6 +123,7 @@ public class GocciMyprofActivity extends ActionBarActivity {
             Intent intent = new Intent(GocciMyprofActivity.this, GocciLifelogActivity.class);
             startActivity(intent);
             overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+            finish();
         }
     }
 
@@ -130,6 +132,7 @@ public class GocciMyprofActivity extends ActionBarActivity {
             Intent intent = new Intent(GocciMyprofActivity.this, GocciSearchTenpoActivity.class);
             startActivity(intent);
             overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+            finish();
         }
     }
 

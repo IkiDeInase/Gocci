@@ -1,6 +1,7 @@
 package com.inase.android.gocci.Activity;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Point;
 import android.media.MediaPlayer;
@@ -20,12 +21,15 @@ import android.view.ViewTreeObserver;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar;
 import com.andexert.library.RippleView;
+import com.cocosw.bottomsheet.BottomSheet;
+import com.facebook.widget.FacebookDialog;
 import com.github.ksoichiro.android.observablescrollview.ObservableListView;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
@@ -45,6 +49,7 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.TextHttpResponseHandler;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
@@ -54,12 +59,14 @@ import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.squareup.picasso.Picasso;
+import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -108,6 +115,10 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
 
     private Application_Gocci gocci;
 
+    private TextView followText;
+
+    private MaterialDialog mViolationDialog;
+
     private ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
         @Override
         public void onGlobalLayout() {
@@ -155,7 +166,7 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
             e.printStackTrace();
         }
 
-        mProfUrl = "http://api-gocci.jp/mypage/?user_name=" + mEncodeUser_name;
+        mProfUrl = "http://api-gocci.jp/android_mypage/?user_name=" + mEncodeUser_name;
 
         EventDateRecorder profilerecorder = EventDateRecorder.load(FlexibleUserProfActivity.this, "use_first_userprofile");
         if (!profilerecorder.didRecorded()) {
@@ -255,12 +266,7 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
         TextView userprof_username = (TextView) findViewById(R.id.userprof_username);
         ImageView userprof_picture = (ImageView) findViewById(R.id.userprof_picture);
         RippleView userprof_follow = (RippleView) findViewById(R.id.userprof_follow);
-        TextView followText = (TextView) findViewById(R.id.followText);
-
-        if (mUser_name.equals(mName)) {
-            followText.setText("これはあなたです");
-            userprof_follow.setClickable(false);
-        }
+        followText = (TextView) findViewById(R.id.followText);
 
         userprof_username.setText(mUser_name);
         Picasso.with(FlexibleUserProfActivity.this)
@@ -274,7 +280,17 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
             @Override
             public void onClick(View v) {
                 //お気に入りするときの処理
-                favoriteSignupAsync(FlexibleUserProfActivity.this, mUser_name);
+                switch (followText.getText().toString()) {
+                    case "このユーザーをフォローする":
+                        favoriteSignupAsync(FlexibleUserProfActivity.this, mUser_name);
+                        break;
+                    case "このユーザーをフォロー解除する":
+                        unFavoriteSignupAsync(FlexibleUserProfActivity.this, mUser_name);
+                        break;
+                    case "これはあなたです":
+                        break;
+                }
+
             }
         });
 
@@ -372,15 +388,34 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
     }
 
     private void getUserProfJson(final Context context, AsyncHttpClient httpClient) {
-        httpClient.get(context, mProfUrl, new JsonHttpResponseHandler() {
+        httpClient.get(context, mProfUrl, new TextHttpResponseHandler() {
+
 
             @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray timeline) {
-                // Pull out the first event on the public timeline
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                Toast.makeText(FlexibleUserProfActivity.this, "読み取りに失敗しました", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
                 try {
-                    for (int i = 0; i < timeline.length(); i++) {
-                        JSONObject jsonObject = timeline.getJSONObject(i);
+                    JSONObject json = new JSONObject(responseString);
+                    String flag = json.getString("flag");
+                    JSONArray array = new JSONArray(json.getString("mypage"));
+
+                    for (int i = 0; i < array.length(); i++) {
+                        JSONObject jsonObject = array.getJSONObject(i);
                         mUserProfusers.add(UserData.createUserData(jsonObject));
+                    }
+
+                    if (flag.equals("0")) {
+                        followText.setText("このユーザーをフォローする");
+                    } else {
+                        followText.setText("このユーザーをフォロー解除する");
+                    }
+
+                    if (mUser_name.equals(mName)) {
+                        followText.setText("これはあなたです");
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -388,12 +423,6 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
 
                 mUserProfListView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
                 mUserProfListView.setAdapter(mUserProfAdapter);
-
-            }
-
-            @Override
-            public void onFailure(int statusCode, org.apache.http.Header[] headers, java.lang.Throwable throwable, org.json.JSONObject errorResponse) {
-                Toast.makeText(FlexibleUserProfActivity.this, "読み取りに失敗しました", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -461,14 +490,33 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
     }
 
     private void getRefreshUserProfJson(final Context context, AsyncHttpClient httpClient3) {
-        httpClient3.get(context, mProfUrl, new JsonHttpResponseHandler() {
+        httpClient3.get(context, mProfUrl, new TextHttpResponseHandler() {
             @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray timeline) {
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                Toast.makeText(FlexibleUserProfActivity.this, "読み取りに失敗しました", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
                 mUserProfusers.clear();
                 try {
-                    for (int i = 0; i < timeline.length(); i++) {
-                        JSONObject jsonObject = timeline.getJSONObject(i);
+                    JSONObject json = new JSONObject(responseString);
+                    String flag = json.getString("flag");
+                    JSONArray array = new JSONArray(json.getString("mypage"));
+
+                    for (int i = 0; i < array.length(); i++) {
+                        JSONObject jsonObject = array.getJSONObject(i);
                         mUserProfusers.add(UserData.createUserData(jsonObject));
+                    }
+
+                    if (flag.equals("0")) {
+                        followText.setText("このユーザーをフォローする");
+                    } else {
+                        followText.setText("このユーザーをフォロー解除する");
+                    }
+
+                    if (mUser_name.equals(mName)) {
+                        followText.setText("これはあなたです");
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -478,11 +526,6 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
                 mViewHolderHash.clear();
                 mUserProfListView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
                 mUserProfAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onFailure(int statusCode, org.apache.http.Header[] headers, java.lang.Throwable throwable, org.json.JSONObject errorResponse) {
-                Toast.makeText(FlexibleUserProfActivity.this, "読み取りに失敗しました", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -527,6 +570,8 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
 
                     if (message.equals("ユーザーをお気に入りしました")) {
                         gocci.addFollower();
+                        followText.setText("このユーザーをフォロー解除する");
+                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                     }
@@ -582,6 +627,8 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
 
                     if (message.equals("フォロー解除しました")) {
                         gocci.downFollower();
+                        followText.setText("このユーザーをフォローする");
+                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                     }
@@ -593,6 +640,50 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 Toast.makeText(context, "処理に失敗しました", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFinish() {
+                userprofprogress.setVisibility(View.GONE);
+            }
+        });
+    }
+
+    private void violateSignupAsync(final Context context, final String post_id) {
+        final AsyncHttpClient httpClient5 = new AsyncHttpClient();
+        httpClient5.post(context, Const.URL_SIGNUP_API, loginParam, new AsyncHttpResponseHandler() {
+            @Override
+            public void onStart() {
+                userprofprogress.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                Log.e("サインアップ成功", "status=" + statusCode);
+                postViolateAsync(context, post_id, httpClient5);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                //mMaterialDialog.dismiss();
+                userprofprogress.setVisibility(View.GONE);
+                Toast.makeText(context, "サインアップに失敗しました", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void postViolateAsync(final Context context, final String post_id, AsyncHttpClient httpClient5) {
+        RequestParams violateParam = new RequestParams("post_id", post_id);
+        httpClient5.post(context, Const.URL_VIOLATE_API, violateParam, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                Toast.makeText(context, "違反報告が完了しました", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                //mMaterialDialog.dismiss();
+                Toast.makeText(context, "違反報告に失敗しました", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -731,6 +822,29 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
 
     }
 
+    private void setViolateDialog(final Context context, final String post_id) {
+        mViolationDialog = new MaterialDialog(FlexibleUserProfActivity.this);
+        mViolationDialog.setTitle("投稿の違反報告");
+        mViolationDialog.setMessage("本当にこの投稿を違反報告しますか？");
+        mViolationDialog.setCanceledOnTouchOutside(true);
+        mViolationDialog.setPositiveButton("はい", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mViolationDialog.dismiss();
+                violateSignupAsync(context, post_id);
+            }
+        });
+        mViolationDialog.setNegativeButton("いいえ", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mViolationDialog.dismiss();
+            }
+        });
+
+        mViolationDialog.show();
+    }
+
+
     /**
      * 現在再生中のViewHolderを取得
      *
@@ -784,6 +898,7 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
         public ImageView circleImage;
         public TextView user_name;
         public TextView datetime;
+        public RippleView menuRipple;
         public SquareVideoView movie;
         public RoundCornerProgressBar movieProgress;
         public ImageView mVideoThumbnail;
@@ -796,6 +911,7 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
         public TextView comments;
         public RippleView likes_ripple;
         public RippleView comments_ripple;
+        public FrameLayout videoFrame;
     }
 
     public class UserProfAdapter extends ArrayAdapter<UserData> {
@@ -819,6 +935,7 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
                 viewHolder.circleImage = (ImageView) convertView.findViewById(R.id.circleImage);
                 viewHolder.user_name = (TextView) convertView.findViewById(R.id.user_name);
                 viewHolder.datetime = (TextView) convertView.findViewById(R.id.time_text);
+                viewHolder.menuRipple = (RippleView) convertView.findViewById(R.id.menuRipple);
                 viewHolder.movie = (SquareVideoView) convertView.findViewById(R.id.videoView);
                 viewHolder.movieProgress = (RoundCornerProgressBar) convertView.findViewById(R.id.video_progress);
                 viewHolder.mVideoThumbnail = (ImageView) convertView.findViewById(R.id.video_thumbnail);
@@ -831,6 +948,7 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
                 viewHolder.comments = (TextView) convertView.findViewById(R.id.comments_Number);
                 viewHolder.likes_ripple = (RippleView) convertView.findViewById(R.id.likes_ripple);
                 viewHolder.comments_ripple = (RippleView) convertView.findViewById(R.id.comments_ripple);
+                viewHolder.videoFrame = (FrameLayout) convertView.findViewById(R.id.videoFrame);
                 convertView.setTag(viewHolder);
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();
@@ -848,6 +966,23 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
                     .transform(new RoundedTransformation())
                     .into(viewHolder.circleImage);
 
+            viewHolder.menuRipple.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    new BottomSheet.Builder(FlexibleUserProfActivity.this, R.style.BottomSheet_StyleDialog).sheet(R.menu.popup_ubnormal).listener(new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            switch (which) {
+                                case R.id.violation:
+                                    setViolateDialog(FlexibleUserProfActivity.this, user.getPost_id());
+                                    break;
+                                case R.id.close:
+                                    dialog.dismiss();
+                            }
+                        }
+                    }).show();
+                }
+            });
 
             Picasso.with(getContext())
                     .load(user.getThumbnail())
@@ -860,8 +995,19 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
             if (viewHolder.movie.isPlaying()) {
                 Log.e("DEBUG", "getView 動画再生停止");
                 stopMovie(viewHolder);
-
             }
+
+            final ViewHolder videoClickViewHolder = viewHolder;
+            viewHolder.videoFrame.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (videoClickViewHolder.movie.isPlaying()) {
+                        videoClickViewHolder.movie.pause();
+                    } else {
+                        videoClickViewHolder.movie.start();
+                    }
+                }
+            });
 
             viewHolder.rest_name.setText(user.getRest_name());
             viewHolder.locality.setText(user.getLocality());
@@ -953,6 +1099,7 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
             Intent intent = new Intent(FlexibleUserProfActivity.this, GocciTimelineActivity.class);
             startActivity(intent);
             overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+            finish();
         }
     }
 
@@ -961,6 +1108,7 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
             Intent intent = new Intent(FlexibleUserProfActivity.this, GocciLifelogActivity.class);
             startActivity(intent);
             overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+            finish();
         }
     }
 
@@ -969,6 +1117,7 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
             Intent intent = new Intent(FlexibleUserProfActivity.this, GocciSearchTenpoActivity.class);
             startActivity(intent);
             overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+            finish();
         }
     }
 
@@ -977,6 +1126,7 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
             Intent intent = new Intent(FlexibleUserProfActivity.this, GocciMyprofActivity.class);
             startActivity(intent);
             overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+            finish();
         }
     }
 

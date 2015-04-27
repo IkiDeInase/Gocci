@@ -2,7 +2,9 @@ package com.inase.android.gocci.Application;
 
 
 import android.app.Application;
+import android.content.Context;
 import android.location.Location;
+import android.support.multidex.MultiDex;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
@@ -24,6 +26,12 @@ public class Application_Gocci extends Application {
     private int mFollower;
     private int mFollowee;
     private int mCheer;
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
+    }
 
     @Override
     public void onCreate() {

@@ -517,6 +517,7 @@ public class FollowerFolloweeCheerListActivity extends ActionBarActivity {
             final UserData user = this.getItem(position);
 
             viewHolder.restname.setText(user.getRest_name());
+            viewHolder.locality.setText(user.getLocality());
 
             Picasso.with(getContext())
                     .load(user.getPicture())

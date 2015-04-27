@@ -188,47 +188,9 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
         if (Util.getConnectedState(getActivity()) != Util.NetworkStatus.OFF) {
             if (Util.getConnectedState(getActivity()) == Util.NetworkStatus.MOBILE) {
                 Toast.makeText(getActivity(), "回線が悪いので、動画が流れなくなります", Toast.LENGTH_LONG).show();
-                if (gocci.getFirstLocation() != null) {
-                    mLocation = gocci.getFirstLocation();
-                    Log.e("DEBUG", "アプリから位置とったよ");
-
                     getSignupAsync(getActivity());//サインアップとJSON
-
-                } else {
-                    SmartLocation.with(getActivity()).location().oneFix().start(new OnLocationUpdatedListener() {
-                        @Override
-                        public void onLocationUpdated(Location location) {
-                            if (location != null) {
-                                mLocation = location;
-                                Log.e("とったどー", "いえい！");
-                                getSignupAsync(getActivity());
-                            } else {
-                                Toast.makeText(getActivity(), "位置情報が読み取れませんでした", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
-                }
             } else {
-                if (gocci.getFirstLocation() != null) {
-                    mLocation = gocci.getFirstLocation();
-                    Log.e("DEBUG", "アプリから位置とったよ");
-
                     getSignupAsync(getActivity());//サインアップとJSON
-
-                } else {
-                    SmartLocation.with(getActivity()).location().oneFix().start(new OnLocationUpdatedListener() {
-                        @Override
-                        public void onLocationUpdated(Location location) {
-                            if (location != null) {
-                                mLocation = location;
-                                Log.e("とったどー", "いえい！");
-                                getSignupAsync(getActivity());
-                            } else {
-                                Toast.makeText(getActivity(), "位置情報が読み取れませんでした", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
-                }
             }
         } else {
             Toast.makeText(getActivity(), "通信に失敗しました", Toast.LENGTH_LONG).show();
@@ -241,19 +203,7 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
             public void onRefresh() {
                 mTimelineSwipe.setRefreshing(true);
                 if (Util.getConnectedState(getActivity()) != Util.NetworkStatus.OFF) {
-                    SmartLocation.with(getActivity()).location().oneFix().start(new OnLocationUpdatedListener() {
-                        @Override
-                        public void onLocationUpdated(Location location) {
-                            if (location != null) {
-                                mLocation = location;
-                                Log.e("とったどー", "いえい！");
                                 getRefreshAsync(getActivity());
-                            } else {
-                                Toast.makeText(getActivity(), "位置情報が読み取れませんでした", Toast.LENGTH_SHORT).show();
-                                mTimelineSwipe.setRefreshing(false);
-                            }
-                        }
-                    });
                 } else {
                     Toast.makeText(getActivity(), "通信に失敗しました", Toast.LENGTH_LONG).show();
                 }
@@ -387,9 +337,7 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 Log.e("サインアップ成功", "status=" + statusCode);
-                mTimelineUrl = "http://api-gocci.jp/timeline_near/?lat=" + mLocation.getLatitude() + "&lon=" +
-                        mLocation.getLongitude() + "&limit=" + mNowNumber;
-                getTimelineJson(context, mTimelineUrl, httpClient);
+                getTimelineJson(context, Const.URL_FAVORITES_TIMELINE_API, httpClient);
             }
 
             @Override
@@ -415,13 +363,11 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
                     e.printStackTrace();
                 }
 
-                if (mTimelineusers.size() != 0) {
+                if (!mTimelineusers.isEmpty()) {
                     mTimelineListView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
                     mTimelineListView.setAdapter(mTimelineAdapter);
-                    //getTimelineDateJson(context);
                 } else {
-                    getTimelineJson(getActivity(), Const.URL_TIMELINE_API, httpClient);
-                    Toast.makeText(getActivity(), "近くの投稿がないので、全体のタイムラインを読み込みます", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "お気に入りユーザーの投稿がありません！", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -483,8 +429,7 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 Log.e("サインアップ成功", "status=" + statusCode);
-                mTimelineUrl = "http://api-gocci.jp/timeline_near/?lat=" + mLocation.getLatitude() + "&lon=" +
-                        mLocation.getLongitude() + "&limit=" + mNowNumber;
+                mTimelineUrl = "http://api-gocci.jp/favorites_timeline/?limit=" + mNowNumber;
                 getRefreshTimelineJson(context, mTimelineUrl, httpClient3);
 
             }
@@ -503,7 +448,6 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
         httpClient3.get(context, url, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray timeline) {
-
                 mTimelineusers.clear();
                 try {
                     for (int i = 0; i < timeline.length(); i++) {
@@ -514,14 +458,13 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
                     e.printStackTrace();
                 }
 
-                if (mTimelineusers.size() != 0) {
+                if (!mTimelineusers.isEmpty()) {
                     mPlayingPostId = null;
                     mViewHolderHash.clear();
                     mTimelineListView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
                     mTimelineAdapter.notifyDataSetChanged();
                 } else {
-                    getRefreshTimelineJson(getActivity(), Const.URL_TIMELINE_API, httpClient3);
-                    Toast.makeText(getActivity(), "近くの投稿がないので、全体のタイムラインを読み込みます", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "お気に入りユーザーの投稿がありません！", Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -739,8 +682,7 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
 
             mNowNumber = refreshNumber * Const.TIMELINE_LIMIT;
 
-            String TimelineUrl = "http://api-gocci.jp/timeline_near/?lat=" + mLocation.getLatitude() + "&lon=" +
-                    mLocation.getLongitude() + "&limit=" + mNowNumber;
+            String TimelineUrl = "http://api-gocci.jp/favorites_timeline/?limit=" + mNowNumber;
 
             getAddJsonAsync(getActivity(), TimelineUrl);
 
@@ -1097,10 +1039,6 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             switch (which) {
-                                case R.id.person_plus:
-                                    //お気に入り追加するときの処理
-                                    favoriteSignupAsync(getActivity(), user.getUser_name());
-                                    break;
                                 case R.id.facebook_share:
 
                                     if (FacebookDialog.canPresentShareDialog(getActivity().getApplicationContext(),
