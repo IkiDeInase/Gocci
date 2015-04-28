@@ -14,4 +14,10 @@
         <item>@string/no2500</item>
         <item>@string/no5000</item>
     </array>
+
+    <array name="single_choice_limit2">
+        <item>@string/no30</item>
+        <item>@string/no50</item>
+        <item>@string/no100</item>
+    </array>
 </resources>
