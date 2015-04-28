@@ -5,7 +5,7 @@
     <string name="title_activity_search__map">Search</string>
     <string name="title_activity_toukou">Toukou</string>
     <string name="title_activity_splash">SplashActivity</string>
-    <string name="map_key">AIzaSyBHYT0dtZUDaiId_WXPtjdQr-t3BlzHXGg</string>
+    <string name="map_key">AIzaSyCdJXmgncMEUoEmNflVqHkSIJwA7Mmtuc0</string>
     <string name="user_id">ユーザーID</string>
     <string name="user_name">ユーザー名</string>
     <string name="picture">写真URL</string>

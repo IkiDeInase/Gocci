@@ -142,8 +142,6 @@ public class LoginActivity extends ActionBarActivity {
             Toast.makeText(LoginActivity.this, "通信に失敗しました", Toast.LENGTH_LONG).show();
         }
 
-        loginParams = new RequestParams();
-
         createAccount = (RippleView) findViewById(R.id.createAccountRipple);
         signinAccount = (RippleView) findViewById(R.id.signinAccountRipple);
         facebookLoginButton = (LoginButton) findViewById(R.id.login_button);
@@ -237,6 +235,7 @@ public class LoginActivity extends ActionBarActivity {
     }
 
     private void postLoginAsync(final Context context, final String name, final String url, final String judge) {
+        loginParams = new RequestParams();
         loginParams.put("user_name", name);
         loginParams.put("picture", url);
         httpClient = new AsyncHttpClient();

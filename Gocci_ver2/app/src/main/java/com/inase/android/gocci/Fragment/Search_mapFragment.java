@@ -196,7 +196,7 @@ public class Search_mapFragment extends BaseFragment
                 });
                 new MaterialDialog.Builder(getActivity())
                         .title("表示件数を変更する")
-                        .items(R.array.single_choice_limit)
+                        .items(R.array.single_choice_limit2)
                         .itemsCallbackSingleChoice(0, new MaterialDialog.ListCallbackSingleChoice() {
                             @Override
                             public boolean onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
@@ -218,19 +218,10 @@ public class Search_mapFragment extends BaseFragment
                                         number = 30;
                                         break;
                                     case 1:
-                                        number = 100;
+                                        number = 50;
                                         break;
                                     case 2:
-                                        number = 500;
-                                        break;
-                                    case 3:
-                                        number = 1000;
-                                        break;
-                                    case 4:
-                                        number = 2500;
-                                        break;
-                                    case 5:
-                                        number = 5000;
+                                        number = 100;
                                         break;
                                 }
                                 mMap.clear();
