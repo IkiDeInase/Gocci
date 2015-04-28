@@ -40,6 +40,7 @@ import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.gitonway.lee.niftymodaldialogeffects.lib.Effectstype;
 import com.gitonway.lee.niftymodaldialogeffects.lib.NiftyDialogBuilder;
 import com.hatenablog.shoma2da.eventdaterecorderlib.EventDateRecorder;
+import com.inase.android.gocci.Activity.CameraActivity;
 import com.inase.android.gocci.Activity.FlexibleTenpoActivity;
 import com.inase.android.gocci.Activity.FlexibleUserProfActivity;
 import com.inase.android.gocci.Application.Application_Gocci;
@@ -90,7 +91,7 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
     private ArrayList<UserData> mTimelineusers = new ArrayList<>();
     private SwipeRefreshLayout mTimelineSwipe;
     private FriendTimelineAdapter mTimelineAdapter;
-    //private FloatingActionButton fab;
+    private FloatingActionButton fab;
 
     private String mName;
     public String mPictureImageUrl;
@@ -175,7 +176,16 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
         progressWheel = (ProgressWheel) view.findViewById(R.id.progress_wheel);
         mTimelineListView = (ObservableListView) view.findViewById(R.id.list);
         mTimelineSwipe = (SwipeRefreshLayout) view.findViewById(R.id.swipe_timeline);
-        //fab = (FloatingActionButton) view.findViewById(R.id.toukouButton);
+        fab = (FloatingActionButton) view.findViewById(R.id.toukouButton);
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), CameraActivity.class);
+                intent.putExtra("name", mName);
+                startActivity(intent);
+            }
+        });
 
         mTimelineListView.setOnScrollListener(this);
         mTimelineListView.setScrollViewCallbacks(this);
@@ -354,6 +364,7 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray timeline) {
                 // Pull out the first event on the public timeline
+                Log.e("ジェイソン", String.valueOf(timeline));
                 try {
                     for (int i = 0; i < timeline.length(); i++) {
                         JSONObject jsonObject = timeline.getJSONObject(i);
@@ -429,8 +440,7 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 Log.e("サインアップ成功", "status=" + statusCode);
-                mTimelineUrl = "http://api-gocci.jp/favorites_timeline/?limit=" + mNowNumber;
-                getRefreshTimelineJson(context, mTimelineUrl, httpClient3);
+                getRefreshTimelineJson(context, Const.URL_FAVORITES_TIMELINE_API, httpClient3);
 
             }
 
@@ -448,6 +458,7 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
         httpClient3.get(context, url, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray timeline) {
+                Log.e("ジェイソン", String.valueOf(timeline));
                 mTimelineusers.clear();
                 try {
                     for (int i = 0; i < timeline.length(); i++) {
@@ -894,7 +905,7 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
 
     @Override
     public void onUpOrCancelMotionEvent(ScrollState scrollState) {
-        /*
+
         if (scrollState == ScrollState.UP) {
             if (fab.isVisible()) {
                 fab.hide();
@@ -904,7 +915,7 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
                 fab.show();
             }
         }
-        */
+
     }
 
     public Uri getLocalBitmapUri(ImageView imageView) {

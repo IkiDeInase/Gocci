@@ -2,6 +2,7 @@ package com.inase.android.gocci.Fragment;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -10,12 +11,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.inase.android.gocci.Activity.CameraActivity;
 import com.inase.android.gocci.Base.BaseFragment;
 import com.inase.android.gocci.R;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.SyncHttpClient;
+import com.melnykov.fab.FloatingActionButton;
 import com.squareup.timessquare.CalendarPickerView;
 
 import org.apache.http.Header;
@@ -59,6 +62,8 @@ public class LifelogFragment extends BaseFragment {
 
     private Calendar thisYear = Calendar.getInstance();
     private Calendar lastYear = Calendar.getInstance();
+
+    private FloatingActionButton fab;
 
     public LifelogFragment newIntent(String name, String imageUrl) {
         LifelogFragment fragment = new LifelogFragment();
@@ -155,6 +160,17 @@ public class LifelogFragment extends BaseFragment {
         calendar.init(lastYear.getTime(), thisYear.getTime()) //
                 .inMode(CalendarPickerView.SelectionMode.MULTIPLE) //
                 .withSelectedDate(new Date());
+
+        fab = (FloatingActionButton) view2.findViewById(R.id.toukouButton);
+        fab.attachToListView(calendar);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), CameraActivity.class);
+                intent.putExtra("name", mName);
+                startActivity(intent);
+            }
+        });
 
         return view2;
     }

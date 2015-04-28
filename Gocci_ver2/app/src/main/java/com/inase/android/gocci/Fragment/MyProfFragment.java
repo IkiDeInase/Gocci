@@ -38,6 +38,7 @@ import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.gitonway.lee.niftymodaldialogeffects.lib.Effectstype;
 import com.gitonway.lee.niftymodaldialogeffects.lib.NiftyDialogBuilder;
 import com.hatenablog.shoma2da.eventdaterecorderlib.EventDateRecorder;
+import com.inase.android.gocci.Activity.CameraActivity;
 import com.inase.android.gocci.Activity.FlexibleTenpoActivity;
 import com.inase.android.gocci.Base.BaseFragment;
 import com.inase.android.gocci.Base.RoundedTransformation;
@@ -52,6 +53,7 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.melnykov.fab.FloatingActionButton;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.squareup.picasso.Picasso;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
@@ -93,6 +95,8 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
     private ArrayList<UserData> mProfusers = new ArrayList<>();
     private MyProfAdapter mProfAdapter;
     private SwipeRefreshLayout mProfSwipe;
+
+    private FloatingActionButton fab;
 
     private MaterialDialog mMaterialDialog;
 
@@ -181,6 +185,17 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
         mProfUrl = "http://api-gocci.jp/mypage/?user_name=" + mEncodeUser_name;
 
         loginParam = new RequestParams("user_name", mName);
+
+        fab = (FloatingActionButton) view.findViewById(R.id.toukouButton);
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), CameraActivity.class);
+                intent.putExtra("name", mName);
+                startActivity(intent);
+            }
+        });
 
         mEmptyView = (ImageView) view.findViewById(R.id.myprof_emptyView);
         myprofprogress = (ProgressWheel) view.findViewById(R.id.myprofprogress_wheel);
@@ -317,6 +332,16 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
 
     @Override
     public void onUpOrCancelMotionEvent(ScrollState scrollState) {
+
+        if (scrollState == ScrollState.UP) {
+            if (fab.isVisible()) {
+                fab.hide();
+            }
+        } else if (scrollState == ScrollState.DOWN) {
+            if (!fab.isVisible()) {
+                fab.show();
+            }
+        }
     }
 
     private void setDeleteDialog(final String post_id, final int position) {

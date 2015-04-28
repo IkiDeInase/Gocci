@@ -254,29 +254,4 @@ public class GocciLifelogActivity extends ActionBarActivity {
             overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
         }
     }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        // いつものUPナビゲーションの処理
-        switch (id) {
-            case R.id.videocam:
-                Log.e("通知押したよ", "クリック");
-                return true;
-            case R.id.videocam2:
-                Intent intent = new Intent(GocciLifelogActivity.this, CameraActivity.class);
-                intent.putExtra("name", mName);
-                startActivity(intent);
-
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
 }

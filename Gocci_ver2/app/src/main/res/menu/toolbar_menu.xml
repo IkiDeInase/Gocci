@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:support="http://schemas.android.com/apk/res-auto"
-    tools:context="com.inase.android.gocci.Activity.IconTabActivity">
-    <item
-        android:id="@+id/videocam"
-        android:title="カメラ"
-        android:icon="@drawable/ic_notifications_white_36dp"
-        support:showAsAction="ifRoom" />
+    xmlns:support="http://schemas.android.com/apk/res-auto" >
     <item
         android:id="@+id/videocam2"
         android:title="カメラ"

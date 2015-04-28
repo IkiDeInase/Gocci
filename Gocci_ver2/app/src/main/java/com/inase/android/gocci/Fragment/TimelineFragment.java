@@ -40,6 +40,7 @@ import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.gitonway.lee.niftymodaldialogeffects.lib.Effectstype;
 import com.gitonway.lee.niftymodaldialogeffects.lib.NiftyDialogBuilder;
 import com.hatenablog.shoma2da.eventdaterecorderlib.EventDateRecorder;
+import com.inase.android.gocci.Activity.CameraActivity;
 import com.inase.android.gocci.Activity.FlexibleTenpoActivity;
 import com.inase.android.gocci.Activity.FlexibleUserProfActivity;
 import com.inase.android.gocci.Application.Application_Gocci;
@@ -94,7 +95,7 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
     private ArrayList<UserData> mTenpousers = new ArrayList<>();
     private SwipeRefreshLayout mTimelineSwipe;
     private TimelineAdapter mTimelineAdapter;
-    //private FloatingActionButton fab;
+    private FloatingActionButton fab;
 
     private String mName;
     public String mPictureImageUrl;
@@ -206,7 +207,16 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
         progressWheel = (ProgressWheel) view.findViewById(R.id.progress_wheel);
         mTimelineListView = (ObservableListView) view.findViewById(R.id.list);
         mTimelineSwipe = (SwipeRefreshLayout) view.findViewById(R.id.swipe_timeline);
-        //fab = (FloatingActionButton) view.findViewById(R.id.toukouButton);
+        fab = (FloatingActionButton) view.findViewById(R.id.toukouButton);
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), CameraActivity.class);
+                intent.putExtra("name", mName);
+                startActivity(intent);
+            }
+        });
 
         mTimelineListView.setOnScrollListener(this);
         mTimelineListView.setScrollViewCallbacks(this);
@@ -987,7 +997,7 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
 
     @Override
     public void onUpOrCancelMotionEvent(ScrollState scrollState) {
-        /*
+
         if (scrollState == ScrollState.UP) {
             if (fab.isVisible()) {
                 fab.hide();
@@ -997,7 +1007,7 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
                 fab.show();
             }
         }
-        */
+
     }
 
     public Uri getLocalBitmapUri(ImageView imageView) {
