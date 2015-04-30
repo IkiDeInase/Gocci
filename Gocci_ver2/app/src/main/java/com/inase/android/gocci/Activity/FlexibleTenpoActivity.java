@@ -270,7 +270,7 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
         tenpo_category.setText(mCategory);
         tenpo_locality.setText(mPost_locality);
         tenpo_phonenumber.setText(mPhoneNumber);
-        
+
         tenpo_homepage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
