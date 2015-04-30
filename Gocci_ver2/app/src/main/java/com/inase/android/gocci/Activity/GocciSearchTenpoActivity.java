@@ -12,8 +12,6 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Toast;
@@ -28,13 +26,11 @@ import com.inase.android.gocci.common.Const;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
-import com.melnykov.fab.FloatingActionButton;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
-import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import org.apache.http.Header;
@@ -43,14 +39,6 @@ import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
 
 public class GocciSearchTenpoActivity extends ActionBarActivity {
-
-    private String mName;
-    private String mPicureImageurl;
-    private Integer mFolloweeNumber; //フォローされている
-    private Integer mFollowerNumber; //フォローしている
-    private Integer mCheerNumber;
-
-    private Application_Gocci gocci;
 
     private Toolbar toolbar;
     private CardView search_card;
@@ -64,13 +52,6 @@ public class GocciSearchTenpoActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gocci_search_tenpo);
-
-        gocci = (Application_Gocci) getApplication();
-        mName = gocci.getName();
-        mPicureImageurl = gocci.getPicture();
-        mFollowerNumber = gocci.getFollower();
-        mFolloweeNumber = gocci.getFollowee();
-        mCheerNumber = gocci.getCheer();
 
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
         toolbar.inflateMenu(R.menu.search);
@@ -118,7 +99,7 @@ public class GocciSearchTenpoActivity extends ActionBarActivity {
         search_card.setCardElevation(4);
         search_card.setRadius(4);
 
-        View header = new DrawerProfHeader(this, mName, mPicureImageurl, mFollowerNumber, mFolloweeNumber, mCheerNumber);
+        View header = new DrawerProfHeader(this);
 
         Drawer.Result result = new Drawer()
                 .withActivity(this)
@@ -168,7 +149,6 @@ public class GocciSearchTenpoActivity extends ActionBarActivity {
             Intent intent = new Intent(GocciSearchTenpoActivity.this, GocciTimelineActivity.class);
             startActivity(intent);
             overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-            finish();
         }
     }
 
@@ -177,7 +157,6 @@ public class GocciSearchTenpoActivity extends ActionBarActivity {
             Intent intent = new Intent(GocciSearchTenpoActivity.this, GocciLifelogActivity.class);
             startActivity(intent);
             overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-            finish();
         }
     }
 
@@ -186,7 +165,6 @@ public class GocciSearchTenpoActivity extends ActionBarActivity {
             Intent intent = new Intent(GocciSearchTenpoActivity.this, GocciMyprofActivity.class);
             startActivity(intent);
             overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-            finish();
         }
     }
 
@@ -263,7 +241,7 @@ public class GocciSearchTenpoActivity extends ActionBarActivity {
 
         private void postSignupAsync(final Context context, final String category, final String message) {
             final AsyncHttpClient httpClient = new AsyncHttpClient();
-            RequestParams params = new RequestParams("user_name", mName);
+            RequestParams params = new RequestParams("user_name", Application_Gocci.mName);
             httpClient.post(context, Const.URL_SIGNUP_API, params, new AsyncHttpResponseHandler() {
 
                 @Override

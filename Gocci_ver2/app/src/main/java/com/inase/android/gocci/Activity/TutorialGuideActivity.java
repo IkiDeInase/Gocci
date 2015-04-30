@@ -13,11 +13,13 @@ import android.view.View;
 import android.widget.Button;
 
 import com.hatenablog.shoma2da.eventdaterecorderlib.EventDateRecorder;
+import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.Tutorial.TutorialView1;
 import com.inase.android.gocci.Tutorial.TutorialView2;
 import com.inase.android.gocci.Tutorial.TutorialView3;
 import com.inase.android.gocci.Tutorial.TutorialView4;
+import com.inase.android.gocci.common.Const;
 import com.viewpagerindicator.CirclePageIndicator;
 
 public class TutorialGuideActivity extends ActionBarActivity {
@@ -28,11 +30,9 @@ public class TutorialGuideActivity extends ActionBarActivity {
         setContentView(R.layout.activity_tutorial_guide);
 
         Intent intent = getIntent();
-        final String name = intent.getStringExtra("name");
-        final String picture = intent.getStringExtra("picture");
         final String judge = intent.getStringExtra("judge");
 
-        EventDateRecorder recorder = EventDateRecorder.load(this, "use_first_gocci");
+        EventDateRecorder recorder = EventDateRecorder.load(this, "use_first_gocci_tutorial");
         if (!recorder.didRecorded()) {
             // 機能が１度も利用されてない時のみ実行したい処理を書く
             recorder.record();
@@ -42,13 +42,14 @@ public class TutorialGuideActivity extends ActionBarActivity {
             SharedPreferences pref = getSharedPreferences("pref", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = pref.edit();
 
-            editor.putString("name", name);
-            editor.putString("pictureImageUrl", picture);
+            editor.putString("name", Application_Gocci.mName);
+            editor.putString("pictureImageUrl", Application_Gocci.mPicture);
             editor.putString("judge", judge);
             editor.apply();
 
             ViewPager tutorialViewpager = (ViewPager) findViewById(R.id.viewpager_tutorial);
             tutorialViewpager.setAdapter(new TutorialPagerAdapter(getSupportFragmentManager()));
+            tutorialViewpager.setOffscreenPageLimit(4);
             CirclePageIndicator circlePageIndicator = (CirclePageIndicator) findViewById(R.id.circles);
             circlePageIndicator.setViewPager(tutorialViewpager);
 

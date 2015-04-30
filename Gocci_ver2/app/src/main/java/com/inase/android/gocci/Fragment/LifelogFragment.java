@@ -1,9 +1,7 @@
 package com.inase.android.gocci.Fragment;
 
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,8 +10,10 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.inase.android.gocci.Activity.CameraActivity;
+import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.Base.BaseFragment;
 import com.inase.android.gocci.R;
+import com.inase.android.gocci.common.Const;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -37,13 +37,7 @@ public class LifelogFragment extends BaseFragment {
     private static final String KEY_IMAGE_URL = "image_url";
     private static final String TAG_USER_NAME = "name";
 
-    private static final String sSignupUrl = "http://api-gocci.jp/login/";
-    private static final String sLifelogUrl = "http://api-gocci.jp/lifelogs/";
-
     private ArrayList<String> users = new ArrayList<>();
-
-    public String mName;
-    public String pictureImageUrl;
 
     private String updateYear;
 
@@ -122,7 +116,6 @@ public class LifelogFragment extends BaseFragment {
                         true,
                         false,
                         false,
-                        mName,
                         users.get(number)
                 );
                 fragment.show(getActivity().getSupportFragmentManager(), "blur_sample");
@@ -139,10 +132,7 @@ public class LifelogFragment extends BaseFragment {
         View view2 = getActivity().getLayoutInflater().inflate(R.layout.fragment_lifelog,
                 container, false);
 
-        SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
-        mName = pref.getString("name", null);
-
-        loginParam = new RequestParams("user_name", mName);
+        loginParam = new RequestParams("user_name", Application_Gocci.mName);
 
         thisYear.add(Calendar.YEAR, 0);
         thisYear.add(Calendar.MONTH, 0);
@@ -167,7 +157,6 @@ public class LifelogFragment extends BaseFragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), CameraActivity.class);
-                intent.putExtra("name", mName);
                 startActivity(intent);
             }
         });
@@ -194,10 +183,10 @@ public class LifelogFragment extends BaseFragment {
         @Override
         protected ArrayList<Date> doInBackground(String... params) {
             httpClient = new SyncHttpClient();
-            httpClient.post(getActivity(), sSignupUrl, loginParam, new AsyncHttpResponseHandler() {
+            httpClient.post(getActivity(), Const.URL_SIGNUP_API, loginParam, new AsyncHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                    httpClient.get(getActivity(), sLifelogUrl, new JsonHttpResponseHandler() {
+                    httpClient.get(getActivity(), Const.URL_LIFELOG_API, new JsonHttpResponseHandler() {
                         @Override
                         public void onSuccess(int statusCode, Header[] headers, JSONArray timeline) {
                             users.clear();

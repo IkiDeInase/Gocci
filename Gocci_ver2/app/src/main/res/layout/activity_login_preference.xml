@@ -1,0 +1,95 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <FrameLayout xmlns:wheel="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1.3"
+        android:background="@drawable/ic_background_login">
+
+        <ImageView
+            android:layout_width="150dp"
+            android:layout_height="200dp"
+            android:layout_gravity="center|bottom"
+            android:src="@drawable/ic_gocci_moji_white45" />
+
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/ic_gocci_white"
+            android:layout_gravity="center"
+            android:layout_marginBottom="8dp" />
+
+        <com.pnikosis.materialishprogress.ProgressWheel
+            android:id="@+id/progress_wheel"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            wheel:matProg_barColor="@color/gocci_header"
+            wheel:matProg_progressIndeterminate="true"
+            android:layout_gravity="center_horizontal|bottom"
+            android:visibility="visible" />
+
+    </FrameLayout>
+
+    <LinearLayout xmlns:ripple="http://schemas.android.com/apk/res-auto"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="食を楽しもう"
+            android:textStyle="bold"
+            android:layout_gravity="center_horizontal|top"
+            android:textSize="20sp"
+            android:layout_marginTop="32dp"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="グルメ動画アプリ「Gocci」"
+            android:layout_gravity="center_horizontal|top"
+            android:layout_marginTop="4dp" />
+
+        <com.andexert.library.RippleView
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="24dp"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/createAccountRipple">
+
+            <ImageButton
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_create_account" />
+        </com.andexert.library.RippleView>
+
+
+        <com.andexert.library.RippleView
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_gravity="center_horizontal"
+            ripple:rv_color="@android:color/black"
+            android:id="@+id/signinAccountRipple">
+
+            <ImageButton
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_signin" />
+
+        </com.andexert.library.RippleView>
+
+    </LinearLayout>
+
+</LinearLayout>
+

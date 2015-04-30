@@ -4,7 +4,6 @@ package com.inase.android.gocci.Fragment;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -17,7 +16,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,13 +37,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.inase.android.gocci.Activity.FlexibleTenpoActivity;
 import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.Base.BaseFragment;
-import com.inase.android.gocci.Base.ToukouPopup;
 import com.inase.android.gocci.Event.ArrayListGetEvent;
 import com.inase.android.gocci.Event.BusHolder;
 import com.inase.android.gocci.Event.SearchKeywordPostEvent;
-import com.inase.android.gocci.Event.SiboriNumberEvent;
 import com.inase.android.gocci.R;
-import com.inase.android.gocci.View.SiboriSearchView;
 import com.inase.android.gocci.data.UserData;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -98,8 +93,6 @@ public class Search_mapFragment extends BaseFragment
 
     private String mSearch_keywordUrl;
     private String mSearchword;
-    private String mName;
-    public String mPictureImageUrl;
     private String mEncode_searchword;
     private String mSearch_mapUrl;
 
@@ -124,7 +117,6 @@ public class Search_mapFragment extends BaseFragment
 
     private boolean isCapturingLocation = false;
 
-    private Application_Gocci gocci;
     private Location firstLocation = null;
 
     public Search_mapFragment newIntent(String name, String imageUrl) {
@@ -144,14 +136,10 @@ public class Search_mapFragment extends BaseFragment
         View view1 = getActivity().getLayoutInflater().inflate(R.layout.fragment_search_map,
                 container, false);
 
-        gocci = (Application_Gocci) getActivity().getApplication();
-        if (gocci.getFirstLocation() != null) {
-            firstLocation = gocci.getFirstLocation();
+        if (Application_Gocci.getFirstLocation() != null) {
+            firstLocation = Application_Gocci.getFirstLocation();
             Log.e("DEBUG", "アプリから位置とったよ");
         }
-
-        SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
-        mName = pref.getString("name", null);
 
         mapprogress = (ProgressWheel) view1.findViewById(R.id.mapprogress_wheel);
 
@@ -321,6 +309,7 @@ public class Search_mapFragment extends BaseFragment
                             Intent settingIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                             startActivity(settingIntent);
                         }
+
                         @Override
                         public void onNegative(MaterialDialog dialog) {
                             super.onNegative(dialog);
@@ -352,6 +341,7 @@ public class Search_mapFragment extends BaseFragment
                 if (location != null) {
                     mLatitude = location.getLatitude();
                     mLongitude = location.getLongitude();
+                    Application_Gocci.setFirstLocation(location);
                 } else {
                     Log.e("からでしたー", "locationupdated");
                 }
@@ -367,6 +357,7 @@ public class Search_mapFragment extends BaseFragment
                     mLatitude = location.getLatitude();
                     mLongitude = location.getLongitude();
                     setUpMap(FUNCTION_FIRST, mLatitude, mLongitude, 30);
+                    Application_Gocci.setFirstLocation(location);
                 } else {
                     Log.e("からでしたー", "locationupdated");
                 }
@@ -381,6 +372,7 @@ public class Search_mapFragment extends BaseFragment
                 if (location != null) {
                     mLatitude = location.getLatitude();
                     mLongitude = location.getLongitude();
+                    Application_Gocci.setFirstLocation(location);
                     setUpMap(FUNCTION_REFRESH, mLatitude, mLongitude, 30);
                 } else {
                     Log.e("からでしたー", "locationupdated");

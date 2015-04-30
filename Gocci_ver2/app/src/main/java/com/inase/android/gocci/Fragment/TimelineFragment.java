@@ -3,7 +3,6 @@ package com.inase.android.gocci.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
@@ -15,7 +14,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.Toolbar;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -47,7 +45,6 @@ import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.Base.BaseFragment;
 import com.inase.android.gocci.Base.RoundedTransformation;
 import com.inase.android.gocci.Base.SquareVideoView;
-import com.inase.android.gocci.Event.ArrayListGetEvent;
 import com.inase.android.gocci.Event.BusHolder;
 import com.inase.android.gocci.Event.PageChangeVideoStopEvent;
 import com.inase.android.gocci.R;
@@ -97,9 +94,6 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
     private TimelineAdapter mTimelineAdapter;
     private FloatingActionButton fab;
 
-    private String mName;
-    public String mPictureImageUrl;
-
     private String clickedUsername;
     private String clickedUserpicture;
     private String clickedRestname;
@@ -128,12 +122,9 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
     private boolean mPlayBlockFlag;
     private ConcurrentHashMap<ViewHolder, String> mViewHolderHash;  // Value: PosterId
 
-    private Application_Gocci gocci;
     private MaterialDialog mViolationDialog;
 
     private UiLifecycleHelper uiHelper;
-
-    private Toolbar toolbar;
 
     private ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
         @Override
@@ -197,13 +188,8 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
         mPlayingPostId = null;
         mViewHolderHash = new ConcurrentHashMap<>();
 
-        SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
-        mName = pref.getString("name", null);
-        mPictureImageUrl = pref.getString("pictureImageUrl", null);
+        loginParam = new RequestParams("user_name", Application_Gocci.mName);
 
-        loginParam = new RequestParams("user_name", mName);
-
-        gocci = (Application_Gocci) getActivity().getApplication();
         progressWheel = (ProgressWheel) view.findViewById(R.id.progress_wheel);
         mTimelineListView = (ObservableListView) view.findViewById(R.id.list);
         mTimelineSwipe = (SwipeRefreshLayout) view.findViewById(R.id.swipe_timeline);
@@ -213,7 +199,6 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), CameraActivity.class);
-                intent.putExtra("name", mName);
                 startActivity(intent);
             }
         });
@@ -226,12 +211,11 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
 
         mTimelineAdapter = new TimelineAdapter(getActivity(), 0, mTimelineusers);
 
-
         if (Util.getConnectedState(getActivity()) != Util.NetworkStatus.OFF) {
             if (Util.getConnectedState(getActivity()) == Util.NetworkStatus.MOBILE) {
                 Toast.makeText(getActivity(), "回線が悪いので、動画が流れなくなります", Toast.LENGTH_LONG).show();
-                if (gocci.getFirstLocation() != null) {
-                    mLocation = gocci.getFirstLocation();
+                if (Application_Gocci.getFirstLocation() != null) {
+                    mLocation = Application_Gocci.getFirstLocation();
                     Log.e("DEBUG", "アプリから位置とったよ");
 
                     getSignupAsync(getActivity());//サインアップとJSON
@@ -242,8 +226,8 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
                         public void onLocationUpdated(Location location) {
                             if (location != null) {
                                 mLocation = location;
-                                Log.e("とったどー", "いえい！");
                                 getSignupAsync(getActivity());
+                                Application_Gocci.setFirstLocation(location);
                             } else {
                                 Toast.makeText(getActivity(), "位置情報が読み取れませんでした", Toast.LENGTH_SHORT).show();
                             }
@@ -251,8 +235,8 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
                     });
                 }
             } else {
-                if (gocci.getFirstLocation() != null) {
-                    mLocation = gocci.getFirstLocation();
+                if (Application_Gocci.getFirstLocation() != null) {
+                    mLocation = Application_Gocci.getFirstLocation();
                     Log.e("DEBUG", "アプリから位置とったよ");
 
                     getSignupAsync(getActivity());//サインアップとJSON
@@ -263,8 +247,8 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
                         public void onLocationUpdated(Location location) {
                             if (location != null) {
                                 mLocation = location;
-                                Log.e("とったどー", "いえい！");
                                 getSignupAsync(getActivity());
+                                Application_Gocci.setFirstLocation(location);
                             } else {
                                 Toast.makeText(getActivity(), "位置情報が読み取れませんでした", Toast.LENGTH_SHORT).show();
                             }
@@ -290,6 +274,7 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
                                 mLocation = location;
                                 Log.e("とったどー", "いえい！");
                                 getRefreshAsync(getActivity());
+                                Application_Gocci.setFirstLocation(location);
                             } else {
                                 Toast.makeText(getActivity(), "位置情報が読み取れませんでした", Toast.LENGTH_SHORT).show();
                                 mTimelineSwipe.setRefreshing(false);
@@ -326,9 +311,11 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         // 引数を取得
+        /*
         Bundle args = getArguments();
         mName = args.getString(TAG_USER_NAME);
         mPictureImageUrl = args.getString(KEY_IMAGE_URL);
+        */
     }
 
     @Override
@@ -682,65 +669,6 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
                 Toast.makeText(getActivity(), "違反報告に失敗しました", Toast.LENGTH_SHORT).show();
             }
 
-            @Override
-            public void onFinish() {
-                //mMaterialDialog.dismiss();
-                progressWheel.setVisibility(View.GONE);
-            }
-        });
-    }
-
-    private void favoriteSignupAsync(final Context context, final String username) {
-        final AsyncHttpClient httpClient6 = new AsyncHttpClient();
-        httpClient6.post(context, Const.URL_SIGNUP_API, loginParam, new AsyncHttpResponseHandler() {
-            @Override
-            public void onStart() {
-                progressWheel.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                Log.e("サインアップ成功", "status=" + statusCode);
-                if (username.equals(mName)) {
-                    Toast.makeText(getActivity(), "それはあなたです", Toast.LENGTH_SHORT).show();
-                } else {
-                    postFavoriteAsync(context, username, httpClient6);
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                //mMaterialDialog.dismiss();
-                progressWheel.setVisibility(View.GONE);
-                Toast.makeText(getActivity(), "サインアップに失敗しました", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void postFavoriteAsync(final Context context, final String username, AsyncHttpClient httpClient6) {
-        favoriteParam = new RequestParams("user_name", username);
-        httpClient6.post(context, Const.URL_FAVORITE_API, favoriteParam, new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                Log.e("ジェイソン成功", String.valueOf(response));
-                try {
-                    String message = response.getString("message");
-
-                    if (message.equals("ユーザーをお気に入りしました")) {
-                        gocci.addFollower();
-                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Toast.makeText(context, "処理に失敗しました", Toast.LENGTH_SHORT).show();
-            }
             @Override
             public void onFinish() {
                 //mMaterialDialog.dismiss();
@@ -1264,7 +1192,7 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
                     Log.e("コメントをクリック", "コメント！" + user.getPost_id());
 
                     //投稿に対するコメントが見れるダイアログを表示
-                    View commentView = new CommentView(getActivity(), mName, user.getPost_id());
+                    View commentView = new CommentView(getActivity(), user.getPost_id());
 
                     MaterialDialog mMaterialDialog = new MaterialDialog(getActivity())
                             .setContentView(commentView)
@@ -1281,14 +1209,11 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
     //名前部分のViewをクリックした時の処理
     class nameClickHandler implements Runnable {
         public void run() {
-            if (!clickedUsername.equals(mName)) {
-                Intent userintent = new Intent(getActivity(), FlexibleUserProfActivity.class);
-                userintent.putExtra("username", clickedUsername);
-                userintent.putExtra("name", mName);
-                userintent.putExtra("picture", clickedUserpicture);
-                startActivity(userintent);
-                getActivity().overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-            }
+            Intent userintent = new Intent(getActivity(), FlexibleUserProfActivity.class);
+            userintent.putExtra("username", clickedUsername);
+            userintent.putExtra("picture", clickedUserpicture);
+            startActivity(userintent);
+            getActivity().overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
         }
     }
 
@@ -1297,7 +1222,6 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
         public void run() {
             Intent intent = new Intent(getActivity(), FlexibleTenpoActivity.class);
             intent.putExtra("restname", clickedRestname);
-            intent.putExtra("name", mName);
             intent.putExtra("locality", clickedLocality);
             intent.putExtra("lat", clickedLat);
             intent.putExtra("lon", clickedLon);

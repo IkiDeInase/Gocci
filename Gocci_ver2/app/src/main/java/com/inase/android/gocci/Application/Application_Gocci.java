@@ -19,13 +19,48 @@ import io.nlopez.smartlocation.SmartLocation;
 public class Application_Gocci extends Application {
 
     private final String TAG = "Gocci";
-    private Location mLocation = null;
 
-    private String mName;
-    private String mPicture;
-    private int mFollower;
-    private int mFollowee;
-    private int mCheer;
+    //アカウント等はここで管理
+    public static String mName;
+    public static String mPicture;
+    public static int mFollower;
+    public static int mFollowee;
+    public static int mCheer;
+
+    //経度緯度情報
+    public static Location mLocation;
+
+    public static void addFollower() {
+        mFollower++;
+    }
+
+    public static void addFollowee() {
+        mFollowee++;
+    }
+
+    public static void addCheer() {
+        mCheer++;
+    }
+
+    public static void downFollower() {
+        mFollower--;
+    }
+
+    public static void downFollowee() {
+        mFollowee--;
+    }
+
+    public static void downCheer() {
+        mCheer--;
+    }
+
+    public static void setFirstLocation(Location location) {
+        mLocation = location;
+    }
+
+    public static Location getFirstLocation() {
+        return mLocation;
+    }
 
     @Override
     protected void attachBaseContext(Context base) {
@@ -42,8 +77,6 @@ public class Application_Gocci extends Application {
                 new TwitterAuthConfig("kurJalaArRFtwhnZCoMxB2kKU",
                         "oOCDmf29DyJyfxOPAaj8tSASzSPAHNepvbxcfVLkA9dJw7inYa");
 
-        //Fabric.with(this, new Twitter(authConfig));
-
         // Example: multiple kits
         Fabric.with(this, new Twitter(authConfig),
                 new Crashlytics(),
@@ -51,70 +84,9 @@ public class Application_Gocci extends Application {
 
     }
 
-    public void setFirstLocation(Location location) {
-        mLocation = location;
-    }
-
-    public Location getFirstLocation() {
-        return mLocation;
-    }
-
-    public void setAccount(String name, String picture, Integer follower, Integer followee, Integer cheer) {
-        mName = name;
-        mPicture = picture;
-        mFollower = follower;
-        mFollowee = followee;
-        mCheer = cheer;
-    }
-
-    public String getName() {
-        return mName;
-    }
-
-    public String getPicture() {
-        return mPicture;
-    }
-
-    public int getFollower() {
-        return mFollower;
-    }
-
-    public int getFollowee() {
-        return mFollowee;
-    }
-
-    public int getCheer() {
-        return mCheer;
-    }
-
-    public void addFollower() {
-        mFollower++;
-    }
-
-    public void addFollowee() {
-        mFollowee++;
-    }
-
-    public void addCheer() {
-        mCheer++;
-    }
-
-    public void downFollower() {
-        mFollower--;
-    }
-
-    public void downFollowee() {
-        mFollowee--;
-    }
-
-    public void downCheer() {
-        mCheer--;
-    }
-
     @Override
     public void onTerminate() {
         Log.v(TAG, "Gocci終了");
         SmartLocation.with(getApplicationContext()).location().stop();
     }
-
 }

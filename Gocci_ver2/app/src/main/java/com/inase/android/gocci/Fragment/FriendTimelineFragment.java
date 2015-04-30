@@ -3,19 +3,16 @@ package com.inase.android.gocci.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.location.Location;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.Toolbar;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -37,9 +34,6 @@ import com.facebook.widget.FacebookDialog;
 import com.github.ksoichiro.android.observablescrollview.ObservableListView;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
-import com.gitonway.lee.niftymodaldialogeffects.lib.Effectstype;
-import com.gitonway.lee.niftymodaldialogeffects.lib.NiftyDialogBuilder;
-import com.hatenablog.shoma2da.eventdaterecorderlib.EventDateRecorder;
 import com.inase.android.gocci.Activity.CameraActivity;
 import com.inase.android.gocci.Activity.FlexibleTenpoActivity;
 import com.inase.android.gocci.Activity.FlexibleUserProfActivity;
@@ -78,8 +72,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.fabric.sdk.android.Fabric;
-import io.nlopez.smartlocation.OnLocationUpdatedListener;
-import io.nlopez.smartlocation.SmartLocation;
 import me.drakeet.materialdialog.MaterialDialog;
 
 public class FriendTimelineFragment extends BaseFragment implements ObservableScrollViewCallbacks, AbsListView.OnScrollListener, CacheManager.ICacheManagerListener {
@@ -92,9 +84,6 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
     private SwipeRefreshLayout mTimelineSwipe;
     private FriendTimelineAdapter mTimelineAdapter;
     private FloatingActionButton fab;
-
-    private String mName;
-    public String mPictureImageUrl;
 
     private String clickedUsername;
     private String clickedUserpicture;
@@ -109,9 +98,6 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
     private boolean mScrolled = false;
     private int refreshNumber = 1;
 
-    private Location mLocation = null;
-    private String mTimelineUrl = null;
-
     private RequestParams loginParam;
     private RequestParams goodParam;
     private RequestParams violateParam;
@@ -124,12 +110,9 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
     private boolean mPlayBlockFlag;
     private ConcurrentHashMap<ViewHolder, String> mViewHolderHash;  // Value: PosterId
 
-    private Application_Gocci gocci;
     private MaterialDialog mViolationDialog;
 
     private UiLifecycleHelper uiHelper;
-
-    private Toolbar toolbar;
 
     private ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
         @Override
@@ -166,13 +149,8 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
         mPlayingPostId = null;
         mViewHolderHash = new ConcurrentHashMap<>();
 
-        SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
-        mName = pref.getString("name", null);
-        mPictureImageUrl = pref.getString("pictureImageUrl", null);
+        loginParam = new RequestParams("user_name", Application_Gocci.mName);
 
-        loginParam = new RequestParams("user_name", mName);
-
-        gocci = (Application_Gocci) getActivity().getApplication();
         progressWheel = (ProgressWheel) view.findViewById(R.id.progress_wheel);
         mTimelineListView = (ObservableListView) view.findViewById(R.id.list);
         mTimelineSwipe = (SwipeRefreshLayout) view.findViewById(R.id.swipe_timeline);
@@ -182,7 +160,6 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), CameraActivity.class);
-                intent.putExtra("name", mName);
                 startActivity(intent);
             }
         });
@@ -198,9 +175,9 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
         if (Util.getConnectedState(getActivity()) != Util.NetworkStatus.OFF) {
             if (Util.getConnectedState(getActivity()) == Util.NetworkStatus.MOBILE) {
                 Toast.makeText(getActivity(), "回線が悪いので、動画が流れなくなります", Toast.LENGTH_LONG).show();
-                    getSignupAsync(getActivity());//サインアップとJSON
+                getSignupAsync(getActivity());//サインアップとJSON
             } else {
-                    getSignupAsync(getActivity());//サインアップとJSON
+                getSignupAsync(getActivity());//サインアップとJSON
             }
         } else {
             Toast.makeText(getActivity(), "通信に失敗しました", Toast.LENGTH_LONG).show();
@@ -213,7 +190,7 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
             public void onRefresh() {
                 mTimelineSwipe.setRefreshing(true);
                 if (Util.getConnectedState(getActivity()) != Util.NetworkStatus.OFF) {
-                                getRefreshAsync(getActivity());
+                    getRefreshAsync(getActivity());
                 } else {
                     Toast.makeText(getActivity(), "通信に失敗しました", Toast.LENGTH_LONG).show();
                 }
@@ -591,65 +568,6 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
                 Toast.makeText(getActivity(), "違反報告に失敗しました", Toast.LENGTH_SHORT).show();
             }
 
-            @Override
-            public void onFinish() {
-                //mMaterialDialog.dismiss();
-                progressWheel.setVisibility(View.GONE);
-            }
-        });
-    }
-
-    private void favoriteSignupAsync(final Context context, final String username) {
-        final AsyncHttpClient httpClient6 = new AsyncHttpClient();
-        httpClient6.post(context, Const.URL_SIGNUP_API, loginParam, new AsyncHttpResponseHandler() {
-            @Override
-            public void onStart() {
-                progressWheel.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                Log.e("サインアップ成功", "status=" + statusCode);
-                if (username.equals(mName)) {
-                    Toast.makeText(getActivity(), "それはあなたです", Toast.LENGTH_SHORT).show();
-                } else {
-                    postFavoriteAsync(context, username, httpClient6);
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                //mMaterialDialog.dismiss();
-                progressWheel.setVisibility(View.GONE);
-                Toast.makeText(getActivity(), "サインアップに失敗しました", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void postFavoriteAsync(final Context context, final String username, AsyncHttpClient httpClient6) {
-        favoriteParam = new RequestParams("user_name", username);
-        httpClient6.post(context, Const.URL_FAVORITE_API, favoriteParam, new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                Log.e("ジェイソン成功", String.valueOf(response));
-                try {
-                    String message = response.getString("message");
-
-                    if (message.equals("ユーザーをお気に入りしました")) {
-                        gocci.addFollower();
-                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Toast.makeText(context, "処理に失敗しました", Toast.LENGTH_SHORT).show();
-            }
             @Override
             public void onFinish() {
                 //mMaterialDialog.dismiss();
@@ -1172,7 +1090,7 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
                     Log.e("コメントをクリック", "コメント！" + user.getPost_id());
 
                     //投稿に対するコメントが見れるダイアログを表示
-                    View commentView = new CommentView(getActivity(), mName, user.getPost_id());
+                    View commentView = new CommentView(getActivity(), user.getPost_id());
 
                     MaterialDialog mMaterialDialog = new MaterialDialog(getActivity())
                             .setContentView(commentView)
@@ -1189,14 +1107,11 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
     //名前部分のViewをクリックした時の処理
     class nameClickHandler implements Runnable {
         public void run() {
-            if (!clickedUsername.equals(mName)) {
-                Intent userintent = new Intent(getActivity(), FlexibleUserProfActivity.class);
-                userintent.putExtra("username", clickedUsername);
-                userintent.putExtra("name", mName);
-                userintent.putExtra("picture", clickedUserpicture);
-                startActivity(userintent);
-                getActivity().overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-            }
+            Intent userintent = new Intent(getActivity(), FlexibleUserProfActivity.class);
+            userintent.putExtra("username", clickedUsername);
+            userintent.putExtra("picture", clickedUserpicture);
+            startActivity(userintent);
+            getActivity().overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
         }
     }
 
@@ -1205,7 +1120,6 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
         public void run() {
             Intent intent = new Intent(getActivity(), FlexibleTenpoActivity.class);
             intent.putExtra("restname", clickedRestname);
-            intent.putExtra("name", mName);
             intent.putExtra("locality", clickedLocality);
             intent.putExtra("lat", clickedLat);
             intent.putExtra("lon", clickedLon);

@@ -20,6 +20,7 @@ import com.inase.android.gocci.Activity.LoginActivity;
 import com.inase.android.gocci.Activity.TutorialGuideActivity;
 import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.R;
+import com.inase.android.gocci.common.Const;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -45,8 +46,6 @@ public class CreateAccountView extends SupportBlurDialogFragment implements View
 
     private CheckBox checkPolicy;
 
-    private String postAccountUrl = "http://api-gocci.jp/register/";
-
     private static final String BUNDLE_KEY_DOWN_SCALE_FACTOR = "bundle_key_down_scale_factor";
     private static final String BUNDLE_KEY_BLUR_RADIUS = "bundle_key_blur_radius";
     private static final String BUNDLE_KEY_DIMMING = "bundle_key_dimming_effect";
@@ -60,8 +59,6 @@ public class CreateAccountView extends SupportBlurDialogFragment implements View
     private boolean mBlurredActionBar;
 
     private AsyncHttpClient httpClient;
-
-    private Application_Gocci gocci;
 
     private static final String emailPattern = "^[a-zA-Z0-9\\._\\-\\+]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z\\.]+[a-zA-Z]$";
 
@@ -120,7 +117,6 @@ public class CreateAccountView extends SupportBlurDialogFragment implements View
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        gocci = (Application_Gocci) getActivity().getApplication();
     }
 
     @NonNull
@@ -205,9 +201,9 @@ public class CreateAccountView extends SupportBlurDialogFragment implements View
         return mRadius;
     }
 
-    private void postAccountAsync(final Context context, RequestParams params, final String username) {
+    private void postAccountAsync(final Context context, RequestParams params) {
         httpClient = new AsyncHttpClient();
-        httpClient.post(context, postAccountUrl, params, new JsonHttpResponseHandler() {
+        httpClient.post(context, Const.URL_REGISTER_API, params, new JsonHttpResponseHandler() {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject timeline) {
@@ -218,18 +214,17 @@ public class CreateAccountView extends SupportBlurDialogFragment implements View
                     String message = timeline.getString("message");
 
                     if (message.equals("movie api")) {
-                        String username = timeline.getString("user_name");
-                        String picture = timeline.getString("picture");
-                        int follower = timeline.getInt("follower_num");
-                        int followee = timeline.getInt("followee_num");
-                        int cheer = timeline.getInt("cheer_num");
-                        gocci.setAccount(username, picture, follower, followee, cheer);
+                        Application_Gocci.mName = timeline.getString("user_name");
+                        Application_Gocci.mPicture = timeline.getString("picture");
+                        Application_Gocci.mFollower = timeline.getInt("follower_num");
+                        Application_Gocci.mFollowee = timeline.getInt("followee_num");
+                        Application_Gocci.mCheer = timeline.getInt("cheer_num");
 
                         Toast.makeText(getActivity(), "アカウントを作成しました！", Toast.LENGTH_SHORT).show();
 
                         Intent intent = new Intent(getActivity(), TutorialGuideActivity.class);
-                        intent.putExtra("name", username);
-                        intent.putExtra("picture", picture);
+                        intent.putExtra("name", Application_Gocci.mName);
+                        intent.putExtra("picture", Application_Gocci.mPicture);
                         intent.putExtra("judge", "auth");
                         startActivity(intent);
                     } else {
@@ -269,7 +264,7 @@ public class CreateAccountView extends SupportBlurDialogFragment implements View
                         accountParam.put("email", email);
                         accountParam.put("password", password);
 
-                        postAccountAsync(getActivity(), accountParam, username);
+                        postAccountAsync(getActivity(), accountParam);
                     } else {
                         Toast.makeText(getActivity(), "利用規約を確認してください", Toast.LENGTH_SHORT).show();
                     }

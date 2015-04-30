@@ -11,8 +11,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.inase.android.gocci.Activity.FollowerFolloweeCheerListActivity;
+import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.Base.RoundedTransformation;
 import com.inase.android.gocci.R;
+import com.inase.android.gocci.common.Const;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.ogaclejapan.smarttablayout.utils.ViewPagerItem;
 import com.ogaclejapan.smarttablayout.utils.ViewPagerItemAdapter;
@@ -21,35 +23,22 @@ import com.squareup.picasso.Picasso;
 
 public class DrawerProfHeader extends LinearLayout {
 
-    private String mName;
-    private String mPictureImageUrl;
-
     private ViewPager viewPager;
     private ViewPagerItemAdapter adapter;
 
-    private int followeeNumber;
-    private int followerNumber;
-    private int cheerNumber;
-
     private boolean isFirst = true;
 
-    public DrawerProfHeader(final Context context, String name, String picture, final Integer follower, Integer followee, Integer cheer) {
+    public DrawerProfHeader(final Context context) {
         super(context);
-
-        mName = name;
-        mPictureImageUrl = picture;
-        followerNumber = follower;
-        followeeNumber = followee;
-        cheerNumber = cheer;
 
         View inflateView = LayoutInflater.from(context).inflate(R.layout.header_drawer_prof, this);
 
         TextView username = (TextView) inflateView.findViewById(R.id.header_username);
         ImageView userpicture = (ImageView) inflateView.findViewById(R.id.header_userpicture);
 
-        username.setText(mName);
+        username.setText(Application_Gocci.mName);
         Picasso.with(context)
-                .load(mPictureImageUrl)
+                .load(Application_Gocci.mPicture)
                 .placeholder(R.drawable.ic_userpicture)
                 .transform(new RoundedTransformation())
                 .into(userpicture);
@@ -71,12 +60,11 @@ public class DrawerProfHeader extends LinearLayout {
                 if (isFirst && position == 0) {
                     View page = adapter.getPage(position);
                     final TextView text = (TextView) page.findViewById(R.id.numberTani);
-                    text.setText(followerNumber + "人");
+                    text.setText(Application_Gocci.mFollower + "人");
                     text.setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             Intent followerIntent = new Intent(context, FollowerFolloweeCheerListActivity.class);
-                            followerIntent.putExtra("name", mName);
                             followerIntent.putExtra("category", "follower");
                             context.startActivity(followerIntent);
                         }
@@ -92,36 +80,33 @@ public class DrawerProfHeader extends LinearLayout {
 
                 switch (position) {
                     case 0:
-                        text.setText(followerNumber + "人");
+                        text.setText(Application_Gocci.mFollower + "人");
                         text.setOnClickListener(new OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 Intent followerIntent = new Intent(context, FollowerFolloweeCheerListActivity.class);
-                                followerIntent.putExtra("name", mName);
                                 followerIntent.putExtra("category", "follower");
                                 context.startActivity(followerIntent);
                             }
                         });
                         break;
                     case 1:
-                        text.setText(followeeNumber + "人");
+                        text.setText(Application_Gocci.mFollowee + "人");
                         text.setOnClickListener(new OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 Intent followeeIntent = new Intent(context, FollowerFolloweeCheerListActivity.class);
-                                followeeIntent.putExtra("name", mName);
                                 followeeIntent.putExtra("category", "followee");
                                 context.startActivity(followeeIntent);
                             }
                         });
                         break;
                     case 2:
-                        text.setText(cheerNumber + "店");
+                        text.setText(Application_Gocci.mCheer + "店");
                         text.setOnClickListener(new OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 Intent cheerIntent = new Intent(context, FollowerFolloweeCheerListActivity.class);
-                                cheerIntent.putExtra("name", mName);
                                 cheerIntent.putExtra("category", "cheer");
                                 context.startActivity(cheerIntent);
                             }

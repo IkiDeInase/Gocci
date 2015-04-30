@@ -10,13 +10,10 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.gitonway.lee.niftymodaldialogeffects.lib.Effectstype;
 import com.gitonway.lee.niftymodaldialogeffects.lib.NiftyDialogBuilder;
@@ -37,7 +34,6 @@ import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
-import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
@@ -47,37 +43,22 @@ import org.apache.http.Header;
 
 public class GocciTimelineActivity extends ActionBarActivity {
 
-    private String mName;
-    private String mPicureImageurl;
-    private Integer mFolloweeNumber; //フォローされている
-    private Integer mFollowerNumber; //フォローしている
-    private Integer mCheerNumber;
-
     private Toolbar toolbar;
     private ViewPager viewPager;
 
     private FragmentPagerItemAdapter adapter;
-
-    private Application_Gocci gocci;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gocci_timeline);
 
-        gocci = (Application_Gocci) getApplication();
-        mName = gocci.getName();
-        mPicureImageurl = gocci.getPicture();
-        mFollowerNumber = gocci.getFollower();
-        mFolloweeNumber = gocci.getFollowee();
-        mCheerNumber = gocci.getCheer();
-
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
         toolbar.setLogo(R.drawable.ic_gocci_moji_white45);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("");
 
-        View header = new DrawerProfHeader(this, mName, mPicureImageurl, mFollowerNumber, mFolloweeNumber, mCheerNumber);
+        View header = new DrawerProfHeader(this);
 
         final Drawer.Result result = new Drawer()
                 .withActivity(this)
@@ -173,7 +154,6 @@ public class GocciTimelineActivity extends ActionBarActivity {
             Intent intent = new Intent(GocciTimelineActivity.this, GocciLifelogActivity.class);
             startActivity(intent);
             overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-            finish();
         }
     }
 
@@ -182,7 +162,6 @@ public class GocciTimelineActivity extends ActionBarActivity {
             Intent intent = new Intent(GocciTimelineActivity.this, GocciSearchTenpoActivity.class);
             startActivity(intent);
             overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-            finish();
         }
     }
 
@@ -191,7 +170,6 @@ public class GocciTimelineActivity extends ActionBarActivity {
             Intent intent = new Intent(GocciTimelineActivity.this, GocciMyprofActivity.class);
             startActivity(intent);
             overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-            finish();
         }
     }
 
@@ -270,7 +248,7 @@ public class GocciTimelineActivity extends ActionBarActivity {
 
         private void postSignupAsync(final Context context, final String category, final String message) {
             final AsyncHttpClient httpClient = new AsyncHttpClient();
-            RequestParams params = new RequestParams("user_name", mName);
+            RequestParams params = new RequestParams("user_name", Application_Gocci.mName);
             httpClient.post(context, Const.URL_SIGNUP_API, params, new AsyncHttpResponseHandler() {
 
                 @Override

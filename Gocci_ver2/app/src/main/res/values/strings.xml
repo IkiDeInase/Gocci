@@ -77,5 +77,6 @@
     <string name="title_activity_select_shop">SelectShopActivity</string>
     <string name="title_activity_follower_followee_cheer_list">FollowerFolloweeCheerListActivity
     </string>
+    <string name="title_activity_login_preference">LoginPreferenceActivity</string>
 
 </resources>

@@ -67,8 +67,8 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".Activity.CameraActivity"
-            android:screenOrientation="portrait"
             android:launchMode="singleTask"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.NoTitleBar" />
         <activity
             android:name=".Activity.LoginActivity"
@@ -113,6 +113,11 @@
             android:name=".Activity.FollowerFolloweeCheerListActivity"
             android:label="@string/title_activity_follower_followee_cheer_list"
             android:theme="@style/AppThemeNoActionBar" />
+        <activity
+            android:name=".Activity.LoginPreferenceActivity"
+            android:label="@string/title_activity_login_preference"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

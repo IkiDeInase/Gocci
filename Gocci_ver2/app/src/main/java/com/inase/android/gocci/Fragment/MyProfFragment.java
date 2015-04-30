@@ -3,7 +3,6 @@ package com.inase.android.gocci.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
@@ -16,12 +15,15 @@ import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -40,6 +42,7 @@ import com.gitonway.lee.niftymodaldialogeffects.lib.NiftyDialogBuilder;
 import com.hatenablog.shoma2da.eventdaterecorderlib.EventDateRecorder;
 import com.inase.android.gocci.Activity.CameraActivity;
 import com.inase.android.gocci.Activity.FlexibleTenpoActivity;
+import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.Base.BaseFragment;
 import com.inase.android.gocci.Base.RoundedTransformation;
 import com.inase.android.gocci.Base.SquareVideoView;
@@ -77,10 +80,8 @@ import me.drakeet.materialdialog.MaterialDialog;
 
 public class MyProfFragment extends BaseFragment implements ObservableScrollViewCallbacks, AbsListView.OnScrollListener, CacheManager.ICacheManagerListener {
 
-    private String mName;
     private String mProfUrl;
     private String mEncodeUser_name;
-    private String mPictureImageUrl;
 
     private String clickedRestname;
     private String clickedLocality;
@@ -120,6 +121,11 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
 
     private UiLifecycleHelper uiHelper;
 
+    private ImageView edit_background;
+    private ImageView edit_picture;
+    private TextView edit_username;
+    private EditText edit_username_edit;
+
     private ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
         @Override
         public void onGlobalLayout() {
@@ -153,12 +159,8 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
         View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_myprof,
                 container, false);
 
-        SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
-        mName = pref.getString("name", null);
-        mPictureImageUrl = pref.getString("pictureImageUrl", null);
-
         try {
-            mEncodeUser_name = URLEncoder.encode(mName, "UTF-8");
+            mEncodeUser_name = URLEncoder.encode(Application_Gocci.mName, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -184,7 +186,7 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
 
         mProfUrl = "http://api-gocci.jp/mypage/?user_name=" + mEncodeUser_name;
 
-        loginParam = new RequestParams("user_name", mName);
+        loginParam = new RequestParams("user_name", Application_Gocci.mName);
 
         fab = (FloatingActionButton) view.findViewById(R.id.toukouButton);
 
@@ -192,7 +194,6 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), CameraActivity.class);
-                intent.putExtra("name", mName);
                 startActivity(intent);
             }
         });
@@ -212,15 +213,91 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
 
         mProfListView.addHeaderView(inflater.inflate(R.layout.view_header_myprof, null));
 
+        final InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         TextView myprof_username = (TextView) view.findViewById(R.id.myprof_username);
         ImageView myprof_picture = (ImageView) view.findViewById(R.id.myprof_picture);
-        myprof_username.setText(mName);
+        ImageView myprof_background = (ImageView) view.findViewById(R.id.myprof_background);
+        RippleView editRipple = (RippleView) view.findViewById(R.id.editProfile);
+        myprof_username.setText(Application_Gocci.mName);
         Picasso.with(getActivity())
-                .load(mPictureImageUrl)
+                .load(Application_Gocci.mPicture)
                 .fit()
                 .placeholder(R.drawable.ic_userpicture)
                 .transform(new RoundedTransformation())
                 .into(myprof_picture);
+
+        editRipple.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                com.afollestad.materialdialogs.MaterialDialog dialog = new com.afollestad.materialdialogs.MaterialDialog.Builder(getActivity())
+                        .title("変えたい箇所を押しみよう")
+                        .customView(R.layout.view_header_myprof_edit, false)
+                        .positiveText("完了")
+                        .callback(new com.afollestad.materialdialogs.MaterialDialog.ButtonCallback() {
+                            @Override
+                            public void onPositive(com.afollestad.materialdialogs.MaterialDialog dialog) {
+                                super.onPositive(dialog);
+                            }
+                        })
+                        .build();
+
+                edit_background = (ImageView) dialog.getCustomView().findViewById(R.id.myprof_background);
+                edit_picture = (ImageView) dialog.getCustomView().findViewById(R.id.myprof_picture);
+                edit_username = (TextView) dialog.getCustomView().findViewById(R.id.myprof_username);
+                edit_username_edit = (EditText) dialog.getCustomView().findViewById(R.id.myprof_username_edit);
+
+                Picasso.with(getActivity())
+                        .load(Application_Gocci.mPicture)
+                        .fit()
+                        .placeholder(R.drawable.ic_userpicture)
+                        .transform(new RoundedTransformation())
+                        .into(edit_picture);
+
+                edit_username.setText(Application_Gocci.mName);
+                edit_username_edit.setHint(Application_Gocci.mName);
+
+                edit_background.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent();
+                        intent.setType("image/*");
+                        intent.setAction(Intent.ACTION_PICK);
+                        startActivityForResult(intent, 0);
+                    }
+                });
+                edit_picture.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent();
+                        intent.setType("image/*");
+                        intent.setAction(Intent.ACTION_PICK);
+                        startActivityForResult(intent, 1);
+                    }
+                });
+                edit_username.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        edit_username.setVisibility(View.GONE);
+                        edit_username_edit.setVisibility(View.VISIBLE);
+                        edit_username_edit.setOnKeyListener(new View.OnKeyListener() {
+                            @Override
+                            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                                if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                                    inputMethodManager.hideSoftInputFromWindow(edit_username_edit.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
+                                    edit_username.setText(edit_username_edit.getText().toString());
+                                    edit_username.setVisibility(View.VISIBLE);
+                                    edit_username_edit.setVisibility(View.GONE);
+                                    return true;
+                                }
+                                return false;
+                            }
+                        });
+                    }
+                });
+
+                dialog.show();
+            }
+        });
 
         getSignupAsync(getActivity());//サインアップとJSON
 
@@ -242,6 +319,25 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        if (data != null) {
+            Uri uri = data.getData();
+            switch (requestCode) {
+                case 0:
+                    Picasso.with(getActivity())
+                            .load(uri)
+                            .fit()
+                            .into(edit_background);
+                    break;
+                case 1:
+                    Picasso.with(getActivity())
+                            .load(uri)
+                            .fit()
+                            .placeholder(R.drawable.ic_userpicture)
+                            .transform(new RoundedTransformation())
+                            .into(edit_picture);
+                    break;
+            }
+        }
         uiHelper.onActivityResult(requestCode, resultCode, data, new FacebookDialog.Callback() {
             @Override
             public void onError(FacebookDialog.PendingCall pendingCall, Exception error, Bundle data) {
@@ -978,7 +1074,7 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
                     Log.e("コメントをクリック", "コメント！" + user.getPost_id());
 
                     //投稿に対するコメントが見れるダイアログを表示
-                    View commentView = new CommentView(getActivity(), mName, user.getPost_id());
+                    View commentView = new CommentView(getActivity(), user.getPost_id());
 
                     MaterialDialog mMaterialDialog = new MaterialDialog(getActivity())
                             .setContentView(commentView)

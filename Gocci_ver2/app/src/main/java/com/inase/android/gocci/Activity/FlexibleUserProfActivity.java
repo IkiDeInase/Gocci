@@ -29,7 +29,6 @@ import android.widget.Toast;
 import com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar;
 import com.andexert.library.RippleView;
 import com.cocosw.bottomsheet.BottomSheet;
-import com.facebook.widget.FacebookDialog;
 import com.github.ksoichiro.android.observablescrollview.ObservableListView;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
@@ -55,18 +54,15 @@ import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
-import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.squareup.picasso.Picasso;
-import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -78,15 +74,9 @@ import me.drakeet.materialdialog.MaterialDialog;
 public class FlexibleUserProfActivity extends ActionBarActivity implements ObservableScrollViewCallbacks, AbsListView.OnScrollListener, CacheManager.ICacheManagerListener {
 
     private String mUser_name;
-    private String mName;
     private String mProfUrl;
     private String mEncodeUser_name;
-    private String mPictureImageUrl;
     private String mUserPictureImageUrl;
-
-    private int mFollowerNumber;
-    private int mFolloweeNumber;
-    private int mCheerNumber;
 
     private String clickedRestname;
     private String clickedLocality;
@@ -113,8 +103,6 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
     private boolean mPlayBlockFlag;
     private ConcurrentHashMap<ViewHolder, String> mViewHolderHash;  // Value: PosterId
 
-    private Application_Gocci gocci;
-
     private TextView followText;
 
     private MaterialDialog mViolationDialog;
@@ -135,8 +123,6 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        gocci = (Application_Gocci) getApplication();
-
         mCacheManager = CacheManager.getInstance(getApplicationContext());
         // 画面回転に対応するならonResumeが安全かも
         mDisplaySize = new Point();
@@ -149,12 +135,6 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
         // 初期化処理
         mPlayingPostId = null;
         mViewHolderHash = new ConcurrentHashMap<>();
-
-        mName = gocci.getName();
-        mPictureImageUrl = gocci.getPicture();
-        mFollowerNumber = gocci.getFollower();
-        mFolloweeNumber = gocci.getFollowee();
-        mCheerNumber = gocci.getCheer();
 
         Intent userintent = getIntent();
         mUser_name = userintent.getStringExtra("username");
@@ -190,7 +170,7 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
 
-        View header = new DrawerProfHeader(this, mName, mPictureImageUrl, mFollowerNumber, mFolloweeNumber, mCheerNumber);
+        View header = new DrawerProfHeader(this);
 
         final Drawer.Result result = new Drawer()
                 .withActivity(this)
@@ -246,7 +226,7 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
         result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        loginParam = new RequestParams("user_name", mName);
+        loginParam = new RequestParams("user_name", Application_Gocci.mName);
 
         userprofprogress = (ProgressWheel) findViewById(R.id.userprofprogress_wheel);
 
@@ -414,7 +394,7 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
                         followText.setText("このユーザーをフォロー解除する");
                     }
 
-                    if (mUser_name.equals(mName)) {
+                    if (mUser_name.equals(Application_Gocci.mName)) {
                         followText.setText("これはあなたです");
                     }
                 } catch (JSONException e) {
@@ -515,7 +495,7 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
                         followText.setText("このユーザーをフォロー解除する");
                     }
 
-                    if (mUser_name.equals(mName)) {
+                    if (mUser_name.equals(Application_Gocci.mName)) {
                         followText.setText("これはあなたです");
                     }
                 } catch (JSONException e) {
@@ -569,7 +549,8 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
                     String message = response.getString("message");
 
                     if (message.equals("ユーザーをお気に入りしました")) {
-                        gocci.addFollower();
+                        //gocci.addFollower();
+                        Application_Gocci.addFollower();
                         followText.setText("このユーザーをフォロー解除する");
                         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                     } else {
@@ -626,7 +607,8 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
                     String message = response.getString("message");
 
                     if (message.equals("フォロー解除しました")) {
-                        gocci.downFollower();
+                        //gocci.downFollower();
+                        Application_Gocci.downFollower();
                         followText.setText("このユーザーをフォローする");
                         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                     } else {
@@ -1064,7 +1046,7 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
                     Log.e("コメントをクリック", "コメント！" + user.getPost_id());
 
                     //投稿に対するコメントが見れるダイアログを表示
-                    View commentView = new CommentView(FlexibleUserProfActivity.this, mName, user.getPost_id());
+                    View commentView = new CommentView(FlexibleUserProfActivity.this, user.getPost_id());
 
                     MaterialDialog mMaterialDialog = new MaterialDialog(FlexibleUserProfActivity.this)
                             .setContentView(commentView)
@@ -1099,7 +1081,6 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
             Intent intent = new Intent(FlexibleUserProfActivity.this, GocciTimelineActivity.class);
             startActivity(intent);
             overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-            finish();
         }
     }
 
@@ -1108,7 +1089,6 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
             Intent intent = new Intent(FlexibleUserProfActivity.this, GocciLifelogActivity.class);
             startActivity(intent);
             overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-            finish();
         }
     }
 
@@ -1117,7 +1097,6 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
             Intent intent = new Intent(FlexibleUserProfActivity.this, GocciSearchTenpoActivity.class);
             startActivity(intent);
             overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-            finish();
         }
     }
 
@@ -1126,7 +1105,6 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
             Intent intent = new Intent(FlexibleUserProfActivity.this, GocciMyprofActivity.class);
             startActivity(intent);
             overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-            finish();
         }
     }
 
@@ -1203,8 +1181,7 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
 
         private void postSignupAsync(final Context context, final String category, final String message) {
             final AsyncHttpClient httpClient = new AsyncHttpClient();
-            RequestParams params = new RequestParams("user_name", mName);
-            httpClient.post(context, Const.URL_SIGNUP_API, params, new AsyncHttpResponseHandler() {
+            httpClient.post(context, Const.URL_SIGNUP_API, loginParam, new AsyncHttpResponseHandler() {
 
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {

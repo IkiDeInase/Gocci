@@ -50,23 +50,18 @@ public class LoginActivity extends ActionBarActivity {
 
     private ProgressWheel progress;
 
-    private String mName;
-    private String mId;
-    private String mPictureImageUrl;
-    private Integer mCheer_num;
-    private Integer mFollowee_num; //フォローされた人
-    private Integer mFollower_num; //フォローしている人
-
     private static final String TAG_FOLLOWEE = "followee_num";
     private static final String TAG_FOLLOWER = "follower_num";
     private static final String TAG_CHEER = "cheer_num";
     private static final String TAG_USER_NAME = "user_name";
     private static final String TAG_PICTURE = "picture";
 
+    private static final String TAG_AUTH = "auth";
+    private static final String TAG_SNS = "SNS";
+    private static final String TAG_NO_JUDGE = "no judge";
+
     private AsyncHttpClient httpClient;
     private RequestParams loginParams;
-
-    private Application_Gocci gocci;
 
     private Session.StatusCallback callback = new Session.StatusCallback() {
         @Override
@@ -92,9 +87,9 @@ public class LoginActivity extends ActionBarActivity {
                 @Override
                 public void onCompleted(GraphUser me, Response response) {
                     if (response.getRequest().getSession() == session) {
-                        mName = me.getName();
-                        mId = me.getId();
-                        mPictureImageUrl = "https://graph.facebook.com/" + mId + "/picture";
+                        String mName = me.getName();
+                        String mId = me.getId();
+                        String mPictureImageUrl = "https://graph.facebook.com/" + mId + "/picture";
 
                         postLoginAsync(LoginActivity.this, mName, mPictureImageUrl, "SNS");
                     }
@@ -117,68 +112,52 @@ public class LoginActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        progress = (ProgressWheel) findViewById(R.id.progress_wheel);
-
-        gocci = (Application_Gocci) getApplication();
-
-        SharedPreferences pref = getSharedPreferences("pref", Context.MODE_PRIVATE);
-        String name = pref.getString("name", "dummy");
-        String picture = pref.getString("picture", "http://api-gocci.jp/img/s_1.png");
-        String judge = pref.getString("judge", "no judge");
-
-        if (judge.equals("auth")) {
-            Log.e("入ったデー", "auth");
-            progress.setVisibility(View.VISIBLE);
-            postLoginAsync(LoginActivity.this, name, picture, judge);
-        } else if (judge.equals("SNS")) {
-            Log.e("入ったデー", "sns");
-            progress.setVisibility(View.VISIBLE);
-        }
-
         uiHelper = new UiLifecycleHelper(this, null);
         uiHelper.onCreate(savedInstanceState);
 
-        if (Util.getConnectedState(LoginActivity.this) == Util.NetworkStatus.OFF) {
-            Toast.makeText(LoginActivity.this, "通信に失敗しました", Toast.LENGTH_LONG).show();
-        }
+        progress = (ProgressWheel) findViewById(R.id.progress_wheel);
 
-        createAccount = (RippleView) findViewById(R.id.createAccountRipple);
-        signinAccount = (RippleView) findViewById(R.id.signinAccountRipple);
-        facebookLoginButton = (LoginButton) findViewById(R.id.login_button);
-        twitterLoginButton = (GocciTwitterLoginButton) findViewById(R.id.twitter_login_button);
-
-        createAccount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Handler handler = new Handler();
-                handler.postDelayed(new LoginClickHandler(), 750);
-            }
-        });
-        signinAccount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Handler handler = new Handler();
-                handler.postDelayed(new SigninClickHandler(), 750);
-            }
-        });
-
-        facebookLoginButton.setReadPermissions("public_profile");
-        twitterLoginButton.setCallback(new Callback<TwitterSession>() {
-            @Override
-            public void success(Result<TwitterSession> result) {
-                Log.e("twitterユーザー", "user=" + result.data.getUserName());
-                mName = result.data.getUserName();
-                mPictureImageUrl = "http://www.paper-glasses.com/api/twipi/" + mName;
-
-                postLoginAsync(LoginActivity.this, mName, mPictureImageUrl, "SNS");
+            if (Util.getConnectedState(LoginActivity.this) == Util.NetworkStatus.OFF) {
+                Toast.makeText(LoginActivity.this, "通信に失敗しました", Toast.LENGTH_LONG).show();
             }
 
-            @Override
-            public void failure(TwitterException exception) {
-                // Do something on failure
-                Toast.makeText(LoginActivity.this, "ログインに失敗しました", Toast.LENGTH_SHORT).show();
-            }
-        });
+            createAccount = (RippleView) findViewById(R.id.createAccountRipple);
+            signinAccount = (RippleView) findViewById(R.id.signinAccountRipple);
+            facebookLoginButton = (LoginButton) findViewById(R.id.login_button);
+            twitterLoginButton = (GocciTwitterLoginButton) findViewById(R.id.twitter_login_button);
+
+            createAccount.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Handler handler = new Handler();
+                    handler.postDelayed(new LoginClickHandler(), 750);
+                }
+            });
+            signinAccount.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Handler handler = new Handler();
+                    handler.postDelayed(new SigninClickHandler(), 750);
+                }
+            });
+
+            facebookLoginButton.setReadPermissions("public_profile");
+            twitterLoginButton.setCallback(new Callback<TwitterSession>() {
+                @Override
+                public void success(Result<TwitterSession> result) {
+                    String mName = result.data.getUserName();
+                    String mPictureImageUrl = "http://www.paper-glasses.com/api/twipi/" + mName;
+
+                    postLoginAsync(LoginActivity.this, mName, mPictureImageUrl, "SNS");
+                }
+
+                @Override
+                public void failure(TwitterException exception) {
+                    // Do something on failure
+                    Toast.makeText(LoginActivity.this, "ログインに失敗しました", Toast.LENGTH_SHORT).show();
+                }
+            });
+
     }
 
     @Override
@@ -187,7 +166,6 @@ public class LoginActivity extends ActionBarActivity {
         uiHelper.onResume();
 
         if (Util.getConnectedState(LoginActivity.this) != Util.NetworkStatus.OFF) {
-
 
             Session session = Session.getActiveSession();
             if (session != null &&
@@ -199,8 +177,8 @@ public class LoginActivity extends ActionBarActivity {
             TwitterSession twisession =
                     Twitter.getSessionManager().getActiveSession();
             try {
-                mName = twisession.getUserName();
-                mPictureImageUrl = "http://www.paper-glasses.com/api/twipi/" + mName;
+                String mName = twisession.getUserName();
+                String mPictureImageUrl = "http://www.paper-glasses.com/api/twipi/" + mName;
 
                 postLoginAsync(LoginActivity.this, mName, mPictureImageUrl, "SNS");
             } catch (NullPointerException e) {
@@ -250,11 +228,11 @@ public class LoginActivity extends ActionBarActivity {
                     String code = response.getString("code");
 
                     if (message.equals("movie api") && code.equals("200")) {
-                        mName = response.getString(TAG_USER_NAME);
-                        mPictureImageUrl = response.getString(TAG_PICTURE);
-                        mFollowee_num = response.getInt(TAG_FOLLOWEE);
-                        mFollower_num = response.getInt(TAG_FOLLOWER);
-                        mCheer_num = response.getInt(TAG_CHEER);
+                        Application_Gocci.mName = response.getString(TAG_USER_NAME);
+                        Application_Gocci.mPicture = response.getString(TAG_PICTURE);
+                        Application_Gocci.mFollowee = response.getInt(TAG_FOLLOWEE);
+                        Application_Gocci.mFollower = response.getInt(TAG_FOLLOWER);
+                        Application_Gocci.mCheer = response.getInt(TAG_CHEER);
                     } else {
                         Toast.makeText(LoginActivity.this, "ログインに失敗しました", Toast.LENGTH_SHORT).show();
                     }
@@ -263,11 +241,7 @@ public class LoginActivity extends ActionBarActivity {
                     e.printStackTrace();
                 }
 
-                gocci.setAccount(mName, mPictureImageUrl, mFollower_num, mFollowee_num, mCheer_num);
-
                 Intent intent = new Intent(LoginActivity.this, TutorialGuideActivity.class);
-                intent.putExtra("name", mName);
-                intent.putExtra("picture", mPictureImageUrl);
                 intent.putExtra("judge", judge);
                 startActivity(intent);
 

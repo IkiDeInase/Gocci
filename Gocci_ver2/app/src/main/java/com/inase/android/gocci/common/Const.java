@@ -10,6 +10,9 @@ public class Const {
 
     // 動画ファイルのキャッシュファイルの接頭辞
     public static final String URL_SIGNUP_API = "http://api-gocci.jp/login/";
+    public static final String URL_REGISTER_API = "http://api-gocci.jp/register/";
+    public static final String URL_AUTH_API = "http://api-gocci.jp/auth/";
+
     public static final String URL_TIMELINE_API = "http://api-gocci.jp/timeline/?limit=" + String.valueOf(TIMELINE_LIMIT);
     public static final String URL_FAVORITES_TIMELINE_API = "http://api-gocci.jp/favorites_timeline/?limit=" + String.valueOf(TIMELINE_LIMIT);
     public static final String URL_GOOD_API = "http://api-gocci.jp/goodinsert/";
@@ -18,6 +21,8 @@ public class Const {
     public static final String URL_FAVORITE_API = "http://api-gocci.jp/favorites/";
     public static final String URL_UNFAVORITE_API = "http://api-gocci.jp/unfavorites/";
     public static final String URL_ADVICE_API = "http://api-gocci.jp/feedback/";
+    public static final String URL_LIFELOG_API = "http://api-gocci.jp/lifelogs/";
+    public static final String URL_POST_COMMENT_API = "http://api-gocci.jp/comment/";
 
     // 動画ファイルのキャッシュファイルの接頭辞
     public static final String MOVIE_CACHE_PREFIX = "movie_cache_";

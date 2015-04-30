@@ -27,6 +27,7 @@ import android.widget.Toast;
 import com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar;
 import com.andexert.library.RippleView;
 import com.inase.android.gocci.Activity.FlexibleTenpoActivity;
+import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.Base.SquareVideoView;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.common.CacheManager;
@@ -57,7 +58,6 @@ public class LifelogVideoFragment2 extends SupportBlurDialogFragment implements 
     private static final String BUNDLE_KEY_DIMMING = "bundle_key_dimming_effect";
     private static final String BUNDLE_KEY_DEBUG = "bundle_key_debug_effect";
     private static final String BUNDLE_KEY_BLURRED_ACTION_BAR = "bundle_key_blurred_action_bar";
-    private static final String BUNDLE_KEY_NAME = "bundle_key_name";
     private static final String BUNDLE_KEY_DATE = "bundle_key_date";
 
     private int mRadius;
@@ -87,7 +87,6 @@ public class LifelogVideoFragment2 extends SupportBlurDialogFragment implements 
 
     private ArrayList<UserData> videolifelogusers = new ArrayList<>();
 
-    private String mName;
     private String mDate;
 
     private AsyncHttpClient httpClient;
@@ -121,7 +120,6 @@ public class LifelogVideoFragment2 extends SupportBlurDialogFragment implements 
                                                     boolean dimming,
                                                     boolean debug,
                                                     boolean mBlurredActionBar,
-                                                    String name,
                                                     String date) {
         LifelogVideoFragment2 fragment = new LifelogVideoFragment2();
         Bundle args = new Bundle();
@@ -146,10 +144,6 @@ public class LifelogVideoFragment2 extends SupportBlurDialogFragment implements 
                 mBlurredActionBar
         );
         args.putString(
-                BUNDLE_KEY_NAME,
-                name
-        );
-        args.putString(
                 BUNDLE_KEY_DATE,
                 date
         );
@@ -166,7 +160,6 @@ public class LifelogVideoFragment2 extends SupportBlurDialogFragment implements 
         mDimming = args.getBoolean(BUNDLE_KEY_DIMMING);
         mDebug = args.getBoolean(BUNDLE_KEY_DEBUG);
         mBlurredActionBar = args.getBoolean(BUNDLE_KEY_BLURRED_ACTION_BAR);
-        mName = args.getString(BUNDLE_KEY_NAME);
         mDate = args.getString(BUNDLE_KEY_DATE);
 
     }
@@ -174,7 +167,7 @@ public class LifelogVideoFragment2 extends SupportBlurDialogFragment implements 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        loginParam = new RequestParams("user_name", mName);
+        loginParam = new RequestParams("user_name", Application_Gocci.mName);
 
         getSignupAsync(getActivity(), mDate);
     }

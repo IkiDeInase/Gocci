@@ -22,8 +22,10 @@ import android.widget.Toast;
 
 import com.andexert.library.RippleView;
 import com.inase.android.gocci.Activity.FlexibleUserProfActivity;
+import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.Base.RoundedTransformation;
 import com.inase.android.gocci.R;
+import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.data.UserData;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -54,14 +56,10 @@ public class CommentView extends LinearLayout {
     private String mEncodePost_id;
     private String mCommentJsonUrl;
     private String mCommentString;
-    private String mName;
     private String mPost_id;
 
     private String clickedUsername;
     private String clickedUserPicture;
-
-    private static final String sPostCommentUrl = "http://api-gocci.jp/comment/";
-    private static final String sSignupUrl = "http://api-gocci.jp/login/";
 
     private static final String TAG_COMMENT = "comment";
     private static final String TAG_USER_NAME = "user_name";
@@ -72,13 +70,12 @@ public class CommentView extends LinearLayout {
     private RequestParams loginParam;
     private RequestParams commentPostParam;
 
-    public CommentView(final Context context, final String name, String post_id) {
+    public CommentView(final Context context, String post_id) {
         super(context);
 
-        mName = name;
         mPost_id = post_id;
 
-        loginParam = new RequestParams("user_name", mName);
+        loginParam = new RequestParams("user_name", Application_Gocci.mName);
 
         try {
             mEncodePost_id = URLEncoder.encode(mPost_id, "UTF-8");
@@ -148,7 +145,7 @@ public class CommentView extends LinearLayout {
 
     private void getSignupAsync(final Context context) {
         httpClient = new AsyncHttpClient();
-        httpClient.post(context, sSignupUrl, loginParam, new AsyncHttpResponseHandler() {
+        httpClient.post(context, Const.URL_SIGNUP_API, loginParam, new AsyncHttpResponseHandler() {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
@@ -213,7 +210,7 @@ public class CommentView extends LinearLayout {
 
     private void postSignupAsync(final Context context) {
         httpClient2 = new AsyncHttpClient();
-        httpClient2.post(context, sSignupUrl, loginParam, new AsyncHttpResponseHandler() {
+        httpClient2.post(context, Const.URL_SIGNUP_API, loginParam, new AsyncHttpResponseHandler() {
             @Override
             public void onStart() {
                 mCommentProgress.setVisibility(VISIBLE);
@@ -234,7 +231,7 @@ public class CommentView extends LinearLayout {
     }
 
     private void postCommentAsync(final Context context) {
-        httpClient2.post(context, sPostCommentUrl, commentPostParam, new AsyncHttpResponseHandler() {
+        httpClient2.post(context, Const.URL_POST_COMMENT_API, commentPostParam, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 postCommentJson(context);

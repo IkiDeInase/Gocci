@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.andexert.library.RippleView;
 import com.inase.android.gocci.Activity.GocciTimelineActivity;
+import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.Base.SquareVideoView;
 import com.inase.android.gocci.R;
 import com.loopj.android.http.AsyncHttpClient;
@@ -52,7 +53,6 @@ public class CameraPreviewView extends BlurDialogFragment {
     private boolean mDebug;
     private boolean mBlurredActionBar;
 
-    private String mName;
     private String mRestname;
     private String mVideoPath = null;
 
@@ -71,7 +71,6 @@ public class CameraPreviewView extends BlurDialogFragment {
                                                 boolean dimming,
                                                 boolean debug,
                                                 boolean mBlurredActionBar,
-                                                String name,
                                                 String restname,
                                                 String videoPath
     ) {
@@ -98,10 +97,6 @@ public class CameraPreviewView extends BlurDialogFragment {
                 mBlurredActionBar
         );
         args.putString(
-                BUNDLE_KEY_NAME,
-                name
-        );
-        args.putString(
                 BUNDLE_KEY_RESTNAME,
                 restname
         );
@@ -123,7 +118,6 @@ public class CameraPreviewView extends BlurDialogFragment {
         mDimming = args.getBoolean(BUNDLE_KEY_DIMMING);
         mDebug = args.getBoolean(BUNDLE_KEY_DEBUG);
         mBlurredActionBar = args.getBoolean(BUNDLE_KEY_BLURRED_ACTION_BAR);
-        mName = args.getString(BUNDLE_KEY_NAME);
         mRestname = args.getString(BUNDLE_KEY_RESTNAME);
         mVideoPath = args.getString(BUNDLE_KEY_VIDEOPATH);
         mVideoFile = new File(mVideoPath);
@@ -133,7 +127,7 @@ public class CameraPreviewView extends BlurDialogFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        loginParam = new RequestParams("user_name", mName);
+        loginParam = new RequestParams("user_name", Application_Gocci.mName);
         toukouParam = new RequestParams();
         toukouParam.put("restname", mRestname);
 
@@ -247,7 +241,6 @@ public class CameraPreviewView extends BlurDialogFragment {
                 mPostProgress.setVisibility(View.GONE);
                 //成功しても失敗してもホーム画面に戻る。
                 Intent intent = new Intent(context, GocciTimelineActivity.class);
-                intent.putExtra("name", mName);
                 startActivity(intent);
                 getActivity().finish();
             }

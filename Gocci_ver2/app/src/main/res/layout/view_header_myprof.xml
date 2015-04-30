@@ -2,19 +2,20 @@
 <FrameLayout
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="200dp"
+    android:layout_height="250dp"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="125dp"
         android:scaleType="centerCrop"
-        android:src="@drawable/ic_background_login" />
+        android:src="@drawable/ic_background_login"
+        android:id="@+id/myprof_background" />
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:layout_marginTop="100dp"
+        android:layout_height="125dp"
+        android:layout_marginTop="125dp"
         android:orientation="vertical"
         android:background="#ffffff"
         android:gravity="bottom">
@@ -28,7 +29,29 @@
             android:textSize="20sp"
             android:textColor="@color/namegrey"
             android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="34dp" />
+             />
+
+        <com.andexert.library.RippleView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/editProfile"
+            android:background="@drawable/button_follow"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="14dp"
+            android:layout_marginTop="8dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="プロフィールを編集する"
+                android:textColor="#ffffff"
+                android:paddingLeft="12dp"
+                android:paddingTop="8dp"
+                android:paddingRight="12dp"
+                android:paddingBottom="8dp"
+                android:textSize="14sp"
+                android:id="@+id/editText" />
+        </com.andexert.library.RippleView>
 
     </LinearLayout>
 

@@ -10,8 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,7 +37,6 @@ import java.util.ArrayList;
 
 public class FollowerFolloweeCheerListActivity extends ActionBarActivity {
 
-    private String mName;
     private String mCategory;
 
     private ArrayList<UserData> users = new ArrayList<UserData>();
@@ -52,8 +49,6 @@ public class FollowerFolloweeCheerListActivity extends ActionBarActivity {
 
     private RequestParams loginParam;
 
-    private Application_Gocci gocci;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,12 +57,9 @@ public class FollowerFolloweeCheerListActivity extends ActionBarActivity {
         Slidr.attach(this);
 
         Intent intent = getIntent();
-        mName = intent.getStringExtra("name");
         mCategory = intent.getStringExtra("category");
 
-        gocci = (Application_Gocci)getApplication();
-
-        loginParam = new RequestParams("user_name", mName);
+        loginParam = new RequestParams("user_name", Application_Gocci.mName);
 
         listView = (ObservableListView) findViewById(R.id.list);
         refresh = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
@@ -77,7 +69,7 @@ public class FollowerFolloweeCheerListActivity extends ActionBarActivity {
         followerFolloweeAdapter = new FollowerFolloweeAdapter(this, 0, users);
         cheerAdapter = new CheerAdapter(this, 0, users);
 
-        final String url = "http://api-gocci.jp/favorites_list/?user_name=" + mName + "&get=" + mCategory;
+        final String url = "http://api-gocci.jp/favorites_list/?user_name=" + Application_Gocci.mName + "&get=" + mCategory;
 
         getJSON(url, mCategory);
 
@@ -562,7 +554,7 @@ public class FollowerFolloweeCheerListActivity extends ActionBarActivity {
     }
 
     private void postFollower(final Context context, String username) {
-        final AsyncHttpClient client  = new AsyncHttpClient();
+        final AsyncHttpClient client = new AsyncHttpClient();
         Log.e("送る名前", username);
         final RequestParams favoriteParam = new RequestParams("user_name", username);
         client.post(context, Const.URL_SIGNUP_API, loginParam, new AsyncHttpResponseHandler() {
@@ -577,7 +569,8 @@ public class FollowerFolloweeCheerListActivity extends ActionBarActivity {
                             String message = response.getString("message");
 
                             if (message.equals("ユーザーをお気に入りしました")) {
-                                gocci.addFollower();
+                                //gocci.addFollower();
+                                Application_Gocci.addFollower();
                             } else {
                                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                             }
@@ -601,7 +594,7 @@ public class FollowerFolloweeCheerListActivity extends ActionBarActivity {
     }
 
     private void postUnFollower(final Context context, String username) {
-        final AsyncHttpClient client  = new AsyncHttpClient();
+        final AsyncHttpClient client = new AsyncHttpClient();
         Log.e("送る名前", username);
         final RequestParams unFavoriteParam = new RequestParams("user_name", username);
         client.post(context, Const.URL_SIGNUP_API, loginParam, new AsyncHttpResponseHandler() {
@@ -616,7 +609,8 @@ public class FollowerFolloweeCheerListActivity extends ActionBarActivity {
                             String message = response.getString("message");
 
                             if (message.equals("フォロー解除しました")) {
-                                gocci.downFollower();
+                                //gocci.downFollower();
+                                Application_Gocci.downFollower();
                             } else {
                                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                             }

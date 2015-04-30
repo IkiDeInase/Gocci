@@ -15,7 +15,6 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -76,7 +75,6 @@ public class CameraActivity extends Activity {
     private ProgressWheel cameraProgress;
 
     private String mRestname;
-    private String mName;
     private String mFinalVideoUrl;
     private String timeStamp;
 
@@ -99,10 +97,6 @@ public class CameraActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
-
-        Intent intent = getIntent();
-        //mRestname = intent.getStringExtra("restname");
-        mName = intent.getStringExtra("name");
 
         getLocation(this);
 
@@ -348,7 +342,6 @@ public class CameraActivity extends Activity {
                     true,
                     false,
                     false,
-                    mName,
                     mRestname,
                     mFinalVideoUrl
             );

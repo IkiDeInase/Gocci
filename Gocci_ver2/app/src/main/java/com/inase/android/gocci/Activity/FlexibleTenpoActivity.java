@@ -60,7 +60,6 @@ import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
-import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.squareup.picasso.Picasso;
@@ -86,15 +85,9 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
     private String mPhoneNumber;
     private String mHomepage;
     private String mCategory;
-    private String mName;
-    private String mPictureImageUrl;
     private String mEncoderestname;
     private String clickedUsername;
     private String clickedUserpicture;
-
-    private int mFollowerNumber;
-    private int mFolloweeNumber;
-    private int mCheerNumber;
 
     private double mLat;
     private double mLon;
@@ -124,8 +117,6 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
     private boolean mPlayBlockFlag;
     private ConcurrentHashMap<ViewHolder, String> mViewHolderHash;  // Value: PosterId
 
-    private Application_Gocci gocci;
-
     private ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
         @Override
         public void onGlobalLayout() {
@@ -142,8 +133,6 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
     public final void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        gocci = (Application_Gocci) getApplication();
-
         mCacheManager = CacheManager.getInstance(getApplicationContext());
         // 画面回転に対応するならonResumeが安全かも
         mDisplaySize = new Point();
@@ -156,12 +145,6 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
         mViewHolderHash = new ConcurrentHashMap<>();
 
         setContentView(R.layout.activity_flexible_tenpo);
-
-        mName = gocci.getName();
-        mPictureImageUrl = gocci.getPicture();
-        mFollowerNumber = gocci.getFollower();
-        mFolloweeNumber = gocci.getFollowee();
-        mCheerNumber = gocci.getCheer();
 
         Intent intent = getIntent();
         mPost_restname = intent.getStringExtra("restname");
@@ -200,7 +183,7 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
 
-        View header = new DrawerProfHeader(this, mName, mPictureImageUrl, mFollowerNumber, mFolloweeNumber, mCheerNumber);
+        View header = new DrawerProfHeader(this);
 
         final Drawer.Result result = new Drawer()
                 .withActivity(this)
@@ -258,7 +241,7 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
 
         mTenpoUrl = "http://api-gocci.jp/restpage/?restname=" + mEncoderestname;
 
-        loginParam = new RequestParams("user_name", mName);
+        loginParam = new RequestParams("user_name", Application_Gocci.mName);
 
         mEmptyView = (ImageView) findViewById(R.id.tenpo_emptyView);
         tenpoprogress = (ProgressWheel) findViewById(R.id.tenpoprogress_wheel);
@@ -287,7 +270,7 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
         tenpo_category.setText(mCategory);
         tenpo_locality.setText(mPost_locality);
         tenpo_phonenumber.setText(mPhoneNumber);
-
+        
         tenpo_homepage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -299,6 +282,11 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
             @Override
             public void onClick(View v) {
                 //電話するときの処理
+                Log.e("phonenumber", mPhoneNumber);
+                /*
+                Intent i = new Intent(Intent.ACTION_DIAL,
+                        Uri.parse("tel:0123456789"));
+                        */
             }
         });
 
@@ -992,7 +980,7 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
                     Log.e("コメントをクリック", "コメント！" + user.getPost_id());
 
                     //投稿に対するコメントが見れるダイアログを表示
-                    View commentView = new CommentView(FlexibleTenpoActivity.this, mName, user.getPost_id());
+                    View commentView = new CommentView(FlexibleTenpoActivity.this, user.getPost_id());
 
                     MaterialDialog mMaterialDialog = new MaterialDialog(FlexibleTenpoActivity.this)
                             .setContentView(commentView)
@@ -1009,13 +997,11 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
 
     class nameClickHandler implements Runnable {
         public void run() {
-            if (!clickedUsername.equals(mName)) {
-                Intent userintent = new Intent(FlexibleTenpoActivity.this, FlexibleUserProfActivity.class);
-                userintent.putExtra("username", clickedUsername);
-                userintent.putExtra("picture", clickedUserpicture);
-                startActivity(userintent);
-                overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-            }
+            Intent userintent = new Intent(FlexibleTenpoActivity.this, FlexibleUserProfActivity.class);
+            userintent.putExtra("username", clickedUsername);
+            userintent.putExtra("picture", clickedUserpicture);
+            startActivity(userintent);
+            overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
         }
     }
 
@@ -1024,7 +1010,6 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
             Intent intent = new Intent(FlexibleTenpoActivity.this, GocciTimelineActivity.class);
             startActivity(intent);
             overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-            finish();
         }
     }
 
@@ -1033,7 +1018,6 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
             Intent intent = new Intent(FlexibleTenpoActivity.this, GocciLifelogActivity.class);
             startActivity(intent);
             overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-            finish();
         }
     }
 
@@ -1042,7 +1026,6 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
             Intent intent = new Intent(FlexibleTenpoActivity.this, GocciSearchTenpoActivity.class);
             startActivity(intent);
             overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-            finish();
         }
     }
 
@@ -1051,7 +1034,6 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
             Intent intent = new Intent(FlexibleTenpoActivity.this, GocciMyprofActivity.class);
             startActivity(intent);
             overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-            finish();
         }
     }
 
@@ -1128,8 +1110,7 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
 
         private void postSignupAsync(final Context context, final String category, final String message) {
             final AsyncHttpClient httpClient = new AsyncHttpClient();
-            RequestParams params = new RequestParams("user_name", mName);
-            httpClient.post(context, Const.URL_SIGNUP_API, params, new AsyncHttpResponseHandler() {
+            httpClient.post(context, Const.URL_SIGNUP_API, loginParam, new AsyncHttpResponseHandler() {
 
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
