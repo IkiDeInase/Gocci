@@ -415,7 +415,7 @@ public class Search_mapFragment extends BaseFragment
             public void onMapLongClick(LatLng latLng) {
                 mLatitude = latLng.latitude;
                 mLongitude = latLng.longitude;
-                setUpMap(FUNCTION_REFRESH, mLatitude, mLongitude, 30);
+                setUpMap(FUNCTION_FIRST, mLatitude, mLongitude, 30);
             }
         });
 

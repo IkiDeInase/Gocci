@@ -401,6 +401,8 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
                     if (viewHolder.movie.isPlaying()) {
                         stopMovie(viewHolder);
                         Log.e("DEBUG", "subscribe 動画再生停止");
+                    } else {
+                        viewHolder.mVideoThumbnail.setVisibility(View.VISIBLE);
                     }
                 }
                 Log.e("Otto発動", "動画再生停止");
@@ -775,6 +777,7 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
                     // 動画DL開始
                     Log.d("DEBUG", "MOVIE::changeMovie  [ProgressBar VISIBLE] 動画DL処理開始 postId:" + mPlayingPostId);
                     currentViewHolder.movieProgress.setVisibility(View.VISIBLE);
+                    currentViewHolder.videoFrame.setClickable(false);
                     mCacheManager.requestMovieCacheCreate(getActivity(), userData.getMovie(), userData.getPost_id(), TimelineFragment.this, currentViewHolder.movieProgress);
 
                 }
@@ -822,8 +825,9 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
                 Log.d("DEBUG", "MOVIE::onPrepared postId: " + postId);
                 if (mPlayingPostId == postId && !mPlayBlockFlag) {
                     Log.d("DEBUG", "MOVIE::onPrepared 再生開始");
-                    viewHolder.mVideoThumbnail.setVisibility(View.INVISIBLE);
-                    viewHolder.movie.start();
+                    //viewHolder.mVideoThumbnail.setVisibility(View.INVISIBLE);
+                    //viewHolder.movie.start();
+                    viewHolder.videoFrame.setClickable(true);
                     Log.e("DEBUG", "onPrepared 動画再生開始: " + userData.getMovie());
 
                     mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -861,7 +865,7 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
             viewHolder = getPlayingViewHolder();
         }
         viewHolder.movie.pause();
-
+        viewHolder.mVideoThumbnail.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -1132,6 +1136,7 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
                         videoClickViewHolder.movie.pause();
                     } else {
                         videoClickViewHolder.movie.start();
+                        videoClickViewHolder.mVideoThumbnail.setVisibility(View.INVISIBLE);
                     }
                 }
             });

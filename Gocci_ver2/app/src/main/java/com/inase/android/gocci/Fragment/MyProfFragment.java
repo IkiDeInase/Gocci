@@ -776,6 +776,7 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
                 // 動画DL開始
                 Log.d("DEBUG", "MOVIE::changeMovie  [ProgressBar VISIBLE] 動画DL処理開始 postId:" + mPlayingPostId);
                 currentViewHolder.movieProgress.setVisibility(View.VISIBLE);
+                currentViewHolder.videoFrame.setClickable(false);
                 mCacheManager.requestMovieCacheCreate(getActivity(), userData.getMovie(), userData.getPost_id(), MyProfFragment.this, currentViewHolder.movieProgress);
 
             }
@@ -821,8 +822,9 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
                 Log.d("DEBUG", "MOVIE::onPrepared postId: " + postId);
                 if (mPlayingPostId == postId && !mPlayBlockFlag) {
                     Log.d("DEBUG", "MOVIE::onPrepared 再生開始");
-                    viewHolder.mVideoThumbnail.setVisibility(View.INVISIBLE);
-                    viewHolder.movie.start();
+                    //viewHolder.mVideoThumbnail.setVisibility(View.INVISIBLE);
+                    //viewHolder.movie.start();
+                    viewHolder.videoFrame.setClickable(true);
                     Log.e("DEBUG", "onPrepared 動画再生開始: " + userData.getMovie());
 
                     mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -885,7 +887,7 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
             viewHolder = getPlayingViewHolder();
         }
         viewHolder.movie.pause();
-
+        viewHolder.mVideoThumbnail.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -1081,6 +1083,7 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
                         videoClickViewHolder.movie.pause();
                     } else {
                         videoClickViewHolder.movie.start();
+                        videoClickViewHolder.mVideoThumbnail.setVisibility(View.INVISIBLE);
                     }
                 }
             });
