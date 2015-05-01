@@ -56,6 +56,7 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.TextHttpResponseHandler;
 import com.melnykov.fab.FloatingActionButton;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.squareup.picasso.Picasso;
@@ -67,6 +68,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -125,6 +127,12 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
     private ImageView edit_picture;
     private TextView edit_username;
     private EditText edit_username_edit;
+
+    private File backgroundFile;
+    private File userpictureFile;
+
+    private boolean isBackground = false;
+    private boolean isPicture = false;
 
     private ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
         @Override
@@ -230,13 +238,67 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
             @Override
             public void onClick(View v) {
                 com.afollestad.materialdialogs.MaterialDialog dialog = new com.afollestad.materialdialogs.MaterialDialog.Builder(getActivity())
-                        .title("変えたい箇所を押しみよう")
+                        .title("変えたい箇所を押してみよう")
                         .customView(R.layout.view_header_myprof_edit, false)
                         .positiveText("完了")
                         .callback(new com.afollestad.materialdialogs.MaterialDialog.ButtonCallback() {
                             @Override
                             public void onPositive(com.afollestad.materialdialogs.MaterialDialog dialog) {
                                 super.onPositive(dialog);
+
+                                RequestParams params = new RequestParams();
+
+                                if (isBackground && isPicture) {
+                                    //どっちも変更した
+                                    try {
+                                        params.put("user_name", edit_username.getText().toString());
+                                        params.put("new_img1", backgroundFile);
+                                        params.put("new_img2", userpictureFile);
+                                    } catch (FileNotFoundException e) {
+                                        e.printStackTrace();
+                                    }
+                                    isBackground = false;
+                                    isPicture = false;
+                                } else if (isBackground) {
+                                    //背景だけ変更
+                                    try {
+                                        params.put("user_name", edit_username.getText().toString());
+                                        params.put("new_img1", backgroundFile);
+                                        params.put("new_img2", Application_Gocci.mPicture);
+                                    } catch (FileNotFoundException e) {
+                                        e.printStackTrace();
+                                    }
+                                    isBackground = false;
+                                } else if (isPicture) {
+                                    //写真だけ
+                                    try {
+                                        params.put("user_name", edit_username.getText().toString());
+                                        params.put("new_img1", Application_Gocci.mPicture);
+                                        params.put("new_img2", userpictureFile);
+                                    } catch (FileNotFoundException e) {
+                                        e.printStackTrace();
+                                    }
+                                    isPicture = false;
+                                } else {
+                                    //どっちも変更なし
+                                    params.put("user_name", edit_username.getText().toString());
+                                    params.put("new_img1", Application_Gocci.mPicture);
+                                    params.put("new_img2", Application_Gocci.mPicture);
+                                }
+
+                                AsyncHttpClient client = new AsyncHttpClient();
+                                client.post(getActivity(), Const.URL_POST_PROFILE_EDIT_API, params, new TextHttpResponseHandler() {
+
+                                    @Override
+                                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                                        Log.e("失敗", responseString);
+                                    }
+
+                                    @Override
+                                    public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                                        Log.e("成功", responseString);
+                                    }
+                                });
                             }
                         })
                         .build();
@@ -327,6 +389,9 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
                             .load(uri)
                             .fit()
                             .into(edit_background);
+
+                    backgroundFile = new File(String.valueOf(uri));
+                    isBackground = true;
                     break;
                 case 1:
                     Picasso.with(getActivity())
@@ -335,6 +400,8 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
                             .placeholder(R.drawable.ic_userpicture)
                             .transform(new RoundedTransformation())
                             .into(edit_picture);
+                    userpictureFile = new File(String.valueOf(uri));
+                    isPicture = true;
                     break;
             }
         }

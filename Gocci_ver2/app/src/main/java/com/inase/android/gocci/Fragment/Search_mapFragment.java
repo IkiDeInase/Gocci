@@ -410,6 +410,15 @@ public class Search_mapFragment extends BaseFragment
             }
         });
 
+        mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+            @Override
+            public void onMapLongClick(LatLng latLng) {
+                mLatitude = latLng.latitude;
+                mLongitude = latLng.longitude;
+                setUpMap(FUNCTION_REFRESH, mLatitude, mLongitude, 30);
+            }
+        });
+
         Log.d("DEBUG", "ProgressDialog show [mSearchmapDialog]");
         if (firstLocation == null) {
             firstLocation();
@@ -436,6 +445,8 @@ public class Search_mapFragment extends BaseFragment
         public RippleView searchRipple;
         public TextView restname;
         public TextView distance;
+        public TextView category;
+        public TextView locality;
     }
 
     private void getSearchMapJson(Context context, String url) {
@@ -678,6 +689,8 @@ public class Search_mapFragment extends BaseFragment
                 mapHolder.searchRipple = (RippleView) convertView.findViewById(R.id.searchRipple);
                 mapHolder.restname = (TextView) convertView.findViewById(R.id.restname);
                 mapHolder.distance = (TextView) convertView.findViewById(R.id.distance);
+                mapHolder.category = (TextView) convertView.findViewById(R.id.category);
+                mapHolder.locality = (TextView) convertView.findViewById(R.id.locality);
                 convertView.setTag(mapHolder);
             } else {
                 mapHolder = (Search_mapHolder) convertView.getTag();
@@ -686,6 +699,8 @@ public class Search_mapFragment extends BaseFragment
 
             mapHolder.restname.setText(user.getRest_name());
             mapHolder.distance.setText(user.getDistance());
+            mapHolder.category.setText(user.getCategory());
+            mapHolder.locality.setText(user.getLocality());
 
             mapHolder.searchRipple.setOnClickListener(new View.OnClickListener() {
                 @Override

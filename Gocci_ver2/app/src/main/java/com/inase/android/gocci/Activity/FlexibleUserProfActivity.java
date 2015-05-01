@@ -3,6 +3,7 @@ package com.inase.android.gocci.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -29,6 +30,7 @@ import android.widget.Toast;
 import com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar;
 import com.andexert.library.RippleView;
 import com.cocosw.bottomsheet.BottomSheet;
+import com.facebook.Session;
 import com.github.ksoichiro.android.observablescrollview.ObservableListView;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
@@ -57,6 +59,7 @@ import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.squareup.picasso.Picasso;
+import com.twitter.sdk.android.Twitter;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
@@ -183,7 +186,8 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
                         new PrimaryDrawerItem().withName("マイプロフィール").withIcon(GoogleMaterial.Icon.gmd_person).withIdentifier(4).withCheckable(false),
                         new DividerDrawerItem(),
                         new SecondaryDrawerItem().withName("アプリに関する要望を送る").withCheckable(false).withIdentifier(5),
-                        new SecondaryDrawerItem().withName("プライバシーポリシー").withCheckable(false).withIdentifier(6)
+                        new SecondaryDrawerItem().withName("プライバシーポリシー").withCheckable(false).withIdentifier(6),
+                        new SecondaryDrawerItem().withName("ログアウト").withCheckable(false).withIdentifier(7)
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
@@ -208,6 +212,9 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
                             } else if (drawerItem.getIdentifier() == 6) {
                                 Handler handler = new Handler();
                                 handler.postDelayed(new policyClickHandler(), 500);
+                            } else if (drawerItem.getIdentifier() == 7) {
+                                Handler handler = new Handler();
+                                handler.postDelayed(new logoutClickHandler(), 500);
                             }
                         }
                     }
@@ -1223,6 +1230,58 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
             Intent i = new Intent(Intent.ACTION_VIEW, uri);
             startActivity(i);
             overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+        }
+    }
+
+    class logoutClickHandler implements Runnable {
+        public void run() {
+            new com.afollestad.materialdialogs.MaterialDialog.Builder(FlexibleUserProfActivity.this)
+                    .title("確認")
+                    .content("本当にログアウトしますか？")
+                    .positiveText("はい")
+                    .negativeText("いいえ")
+                    .callback(new com.afollestad.materialdialogs.MaterialDialog.ButtonCallback() {
+                        @Override
+                        public void onPositive(com.afollestad.materialdialogs.MaterialDialog dialog) {
+                            super.onPositive(dialog);
+
+                            SharedPreferences pref = getSharedPreferences("pref", Context.MODE_PRIVATE);
+                            String judge = pref.getString("judge", "no judge");
+
+                            switch (judge) {
+                                case "facebook":
+                                    Session session = Session.getActiveSession();
+                                    if (session != null) {
+                                        if (!session.isClosed()) {
+                                            session.closeAndClearTokenInformation();
+                                            //clear your preferences if saved
+                                        }
+                                    } else {
+                                        session = new Session(FlexibleUserProfActivity.this);
+                                        Session.setActiveSession(session);
+
+                                        session.closeAndClearTokenInformation();
+                                        //clear your preferences if saved
+                                    }
+                                    break;
+                                case "twitter":
+                                    Twitter.logOut();
+                                    break;
+                                case "auth":
+                                    break;
+                                default:
+                                    break;
+                            }
+
+                            SharedPreferences.Editor editor = pref.edit();
+                            editor.remove("name").remove("pictureImageUrl").remove("judge").apply();
+
+                            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+
+                        }
+                    }).show();
         }
     }
 }

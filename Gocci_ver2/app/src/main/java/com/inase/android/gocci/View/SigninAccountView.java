@@ -177,7 +177,7 @@ public class SigninAccountView extends SupportBlurDialogFragment implements View
 
                     if (message.equals("movie api")) {
                         Application_Gocci.mName = timeline.getString("user_name");
-                        Application_Gocci.mName = timeline.getString("picture");
+                        Application_Gocci.mPicture = timeline.getString("picture");
                         Application_Gocci.mFollower = timeline.getInt("follower_num");
                         Application_Gocci.mFollowee = timeline.getInt("followee_num");
                         Application_Gocci.mCheer = timeline.getInt("cheer_num");
@@ -185,8 +185,6 @@ public class SigninAccountView extends SupportBlurDialogFragment implements View
                         Toast.makeText(getActivity(), "ログインに成功しました", Toast.LENGTH_SHORT).show();
 
                         Intent intent = new Intent(getActivity(), TutorialGuideActivity.class);
-                        intent.putExtra("name", Application_Gocci.mName);
-                        intent.putExtra("picture", Application_Gocci.mPicture);
                         intent.putExtra("judge", "auth");
                         startActivity(intent);
                     } else {

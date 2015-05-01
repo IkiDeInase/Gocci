@@ -2,6 +2,7 @@ package com.inase.android.gocci.Activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.facebook.Session;
 import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.View.DrawerProfHeader;
@@ -27,6 +29,7 @@ import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.twitter.sdk.android.Twitter;
 
 import org.apache.http.Header;
 
@@ -57,7 +60,8 @@ public class GocciMyprofActivity extends ActionBarActivity {
                         new PrimaryDrawerItem().withName("マイプロフィール").withIcon(GoogleMaterial.Icon.gmd_person).withIdentifier(4).withCheckable(false),
                         new DividerDrawerItem(),
                         new SecondaryDrawerItem().withName("アプリに関する要望を送る").withCheckable(false).withIdentifier(5),
-                        new SecondaryDrawerItem().withName("利用規約とポリシー").withCheckable(false).withIdentifier(6)
+                        new SecondaryDrawerItem().withName("利用規約とポリシー").withCheckable(false).withIdentifier(6),
+                        new SecondaryDrawerItem().withName("ログアウト").withCheckable(false).withIdentifier(7)
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
@@ -80,6 +84,9 @@ public class GocciMyprofActivity extends ActionBarActivity {
                             } else if (drawerItem.getIdentifier() == 6) {
                                 Handler handler = new Handler();
                                 handler.postDelayed(new policyClickHandler(), 500);
+                            } else if (drawerItem.getIdentifier() == 7) {
+                                Handler handler = new Handler();
+                                handler.postDelayed(new logoutClickHandler(), 500);
                             }
                         }
 
@@ -231,6 +238,58 @@ public class GocciMyprofActivity extends ActionBarActivity {
             Intent i = new Intent(Intent.ACTION_VIEW, uri);
             startActivity(i);
             overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+        }
+    }
+
+    class logoutClickHandler implements Runnable {
+        public void run() {
+            new MaterialDialog.Builder(GocciMyprofActivity.this)
+                    .title("確認")
+                    .content("本当にログアウトしますか？")
+                    .positiveText("はい")
+                    .negativeText("いいえ")
+                    .callback(new MaterialDialog.ButtonCallback() {
+                        @Override
+                        public void onPositive(MaterialDialog dialog) {
+                            super.onPositive(dialog);
+
+                            SharedPreferences pref = getSharedPreferences("pref", Context.MODE_PRIVATE);
+                            String judge = pref.getString("judge", "no judge");
+
+                            switch (judge) {
+                                case "facebook":
+                                    Session session = Session.getActiveSession();
+                                    if (session != null) {
+                                        if (!session.isClosed()) {
+                                            session.closeAndClearTokenInformation();
+                                            //clear your preferences if saved
+                                        }
+                                    } else {
+                                        session = new Session(GocciMyprofActivity.this);
+                                        Session.setActiveSession(session);
+
+                                        session.closeAndClearTokenInformation();
+                                        //clear your preferences if saved
+                                    }
+                                    break;
+                                case "twitter":
+                                    Twitter.logOut();
+                                    break;
+                                case "auth":
+                                    break;
+                                default:
+                                    break;
+                            }
+
+                            SharedPreferences.Editor editor = pref.edit();
+                            editor.remove("name").remove("pictureImageUrl").remove("judge").apply();
+
+                            Intent intent = new Intent(getApplicationContext(),  LoginActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+
+                        }
+                    }).show();
         }
     }
 }

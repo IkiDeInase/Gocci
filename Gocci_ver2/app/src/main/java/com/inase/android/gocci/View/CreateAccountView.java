@@ -223,8 +223,6 @@ public class CreateAccountView extends SupportBlurDialogFragment implements View
                         Toast.makeText(getActivity(), "アカウントを作成しました！", Toast.LENGTH_SHORT).show();
 
                         Intent intent = new Intent(getActivity(), TutorialGuideActivity.class);
-                        intent.putExtra("name", Application_Gocci.mName);
-                        intent.putExtra("picture", Application_Gocci.mPicture);
                         intent.putExtra("judge", "auth");
                         startActivity(intent);
                     } else {

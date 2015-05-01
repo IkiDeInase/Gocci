@@ -30,46 +30,6 @@
 
         <com.andexert.library.RippleView
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:id="@+id/share_twitter_Ripple"
-            android:gravity="center"
-            android:background="@color/twitter_background"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginTop="8dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="twitter でシェア"
-                android:textColor="#ffffff"
-                android:alpha="0.9"
-                android:textSize="16sp" />
-
-        </com.andexert.library.RippleView>
-
-        <com.andexert.library.RippleView
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:gravity="center"
-            android:background="@color/facebook_background"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginTop="8dp"
-            android:id="@+id/share_facebook_Ripple">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="facebook でシェア"
-                android:textColor="#ffffff"
-                android:alpha="0.9"
-                android:textSize="16sp" />
-
-        </com.andexert.library.RippleView>
-
-        <com.andexert.library.RippleView
-            android:layout_width="match_parent"
             android:layout_height="56dp"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"

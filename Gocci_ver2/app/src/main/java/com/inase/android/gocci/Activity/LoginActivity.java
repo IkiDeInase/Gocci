@@ -57,7 +57,8 @@ public class LoginActivity extends ActionBarActivity {
     private static final String TAG_PICTURE = "picture";
 
     private static final String TAG_AUTH = "auth";
-    private static final String TAG_SNS = "SNS";
+    private static final String TAG_SNS_FACEBOOK = "facebook";
+    private static final String TAG_SNS_TWITTER = "twitter";
     private static final String TAG_NO_JUDGE = "no judge";
 
     private AsyncHttpClient httpClient;
@@ -91,7 +92,7 @@ public class LoginActivity extends ActionBarActivity {
                         String mId = me.getId();
                         String mPictureImageUrl = "https://graph.facebook.com/" + mId + "/picture";
 
-                        postLoginAsync(LoginActivity.this, mName, mPictureImageUrl, "SNS");
+                        postLoginAsync(LoginActivity.this, mName, mPictureImageUrl, TAG_SNS_FACEBOOK);
                     }
                 }
             });
@@ -148,7 +149,7 @@ public class LoginActivity extends ActionBarActivity {
                     String mName = result.data.getUserName();
                     String mPictureImageUrl = "http://www.paper-glasses.com/api/twipi/" + mName;
 
-                    postLoginAsync(LoginActivity.this, mName, mPictureImageUrl, "SNS");
+                    postLoginAsync(LoginActivity.this, mName, mPictureImageUrl, TAG_SNS_TWITTER);
                 }
 
                 @Override
@@ -180,7 +181,7 @@ public class LoginActivity extends ActionBarActivity {
                 String mName = twisession.getUserName();
                 String mPictureImageUrl = "http://www.paper-glasses.com/api/twipi/" + mName;
 
-                postLoginAsync(LoginActivity.this, mName, mPictureImageUrl, "SNS");
+                postLoginAsync(LoginActivity.this, mName, mPictureImageUrl, TAG_SNS_TWITTER);
             } catch (NullPointerException e) {
                 e.printStackTrace();
             }

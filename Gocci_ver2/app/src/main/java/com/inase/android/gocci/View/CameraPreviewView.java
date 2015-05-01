@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.andexert.library.RippleView;
@@ -32,8 +33,6 @@ import fr.tvbarthel.lib.blurdialogfragment.BlurDialogFragment;
 
 public class CameraPreviewView extends BlurDialogFragment {
 
-    private RippleView facebookShareButton;
-    private RippleView twitterShareButton;
     private RippleView toukouButton;
 
     private SquareVideoView previewVideo;
@@ -147,8 +146,6 @@ public class CameraPreviewView extends BlurDialogFragment {
         View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_camera_preview, null);
 
         toukouButton = (RippleView) view.findViewById(R.id.toukou_button_Ripple);
-        facebookShareButton = (RippleView) view.findViewById(R.id.share_facebook_Ripple);
-        twitterShareButton = (RippleView) view.findViewById(R.id.share_twitter_Ripple);
         mPostProgress = (ProgressWheel) view.findViewById(R.id.cameraprogress_wheel);
         previewVideo = (SquareVideoView) view.findViewById(R.id.previewVideoView);
 
@@ -169,7 +166,6 @@ public class CameraPreviewView extends BlurDialogFragment {
                 postSignupAsync(getActivity());
             }
         });
-
 
         builder.setView(view);
         return builder.create();

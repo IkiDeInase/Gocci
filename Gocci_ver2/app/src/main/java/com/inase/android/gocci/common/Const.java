@@ -23,6 +23,7 @@ public class Const {
     public static final String URL_ADVICE_API = "http://api-gocci.jp/feedback/";
     public static final String URL_LIFELOG_API = "http://api-gocci.jp/lifelogs/";
     public static final String URL_POST_COMMENT_API = "http://api-gocci.jp/comment/";
+    public static final String URL_POST_PROFILE_EDIT_API = "http://api-gocci.jp/file_test/";
 
     // 動画ファイルのキャッシュファイルの接頭辞
     public static final String MOVIE_CACHE_PREFIX = "movie_cache_";

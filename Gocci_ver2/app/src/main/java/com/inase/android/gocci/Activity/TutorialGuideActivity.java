@@ -66,6 +66,14 @@ public class TutorialGuideActivity extends ActionBarActivity {
             });
 
         } else {
+            SharedPreferences pref = getSharedPreferences("pref", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = pref.edit();
+
+            editor.putString("name", Application_Gocci.mName);
+            editor.putString("pictureImageUrl", Application_Gocci.mPicture);
+            editor.putString("judge", judge);
+            editor.apply();
+
             Intent goIntent = new Intent(TutorialGuideActivity.this, GocciTimelineActivity.class);
             startActivity(goIntent);
             TutorialGuideActivity.this.finish();

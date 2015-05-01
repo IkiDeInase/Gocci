@@ -66,6 +66,7 @@ public class LoginPreferenceActivity extends ActionBarActivity {
             Log.e("ダミだったよじゃ無いよ", name);
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
+            finish();
         }
 
     }
@@ -92,6 +93,8 @@ public class LoginPreferenceActivity extends ActionBarActivity {
                         Application_Gocci.mCheer = response.getInt(TAG_CHEER);
                     } else {
                         Toast.makeText(LoginPreferenceActivity.this, "ログインに失敗しました", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(LoginPreferenceActivity.this, LoginActivity.class);
+                        startActivity(intent);
                     }
 
                 } catch (JSONException e) {
@@ -107,6 +110,8 @@ public class LoginPreferenceActivity extends ActionBarActivity {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 Toast.makeText(LoginPreferenceActivity.this, "ログインに失敗しました", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(LoginPreferenceActivity.this, LoginActivity.class);
+                startActivity(intent);
             }
 
             @Override
