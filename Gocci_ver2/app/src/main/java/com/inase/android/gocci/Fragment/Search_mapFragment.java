@@ -297,7 +297,7 @@ public class Search_mapFragment extends BaseFragment
         if (!mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             new MaterialDialog.Builder(getActivity())
                     .title("位置情報取得について")
-                    .content("位置情報を使いたいのですが、GPSが無効になっています。" + "設定を変更してください")
+                    .content("位置情報を使いたいのですが、GPSが無効になっています。" + "設定を変更しますか？")
                     .positiveText("はい")
                     .positiveColorRes(R.color.gocci_header)
                     .negativeText("いいえ")

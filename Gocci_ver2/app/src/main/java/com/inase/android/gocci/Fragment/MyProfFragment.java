@@ -246,14 +246,14 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
                             public void onPositive(com.afollestad.materialdialogs.MaterialDialog dialog) {
                                 super.onPositive(dialog);
 
-                                RequestParams params = new RequestParams();
+                                final RequestParams params = new RequestParams();
 
                                 if (isBackground && isPicture) {
                                     //どっちも変更した
                                     try {
                                         params.put("user_name", edit_username.getText().toString());
-                                        params.put("new_img1", backgroundFile);
-                                        params.put("new_img2", userpictureFile);
+                                        params.put("new_img1", new File(getLocalBitmapUri(edit_background).getPath()));
+                                        params.put("new_img2", new File(getLocalBitmapUri(edit_picture).getPath()));
                                     } catch (FileNotFoundException e) {
                                         e.printStackTrace();
                                     }
@@ -264,7 +264,7 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
                                     try {
                                         params.put("user_name", edit_username.getText().toString());
                                         params.put("new_img1", backgroundFile);
-                                        params.put("new_img2", Application_Gocci.mPicture);
+                                        //params.put("new_img2", Application_Gocci.mPicture);
                                     } catch (FileNotFoundException e) {
                                         e.printStackTrace();
                                     }
@@ -273,7 +273,7 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
                                     //写真だけ
                                     try {
                                         params.put("user_name", edit_username.getText().toString());
-                                        params.put("new_img1", Application_Gocci.mPicture);
+                                        //params.put("new_img1", Application_Gocci.mPicture);
                                         params.put("new_img2", userpictureFile);
                                     } catch (FileNotFoundException e) {
                                         e.printStackTrace();
@@ -282,21 +282,31 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
                                 } else {
                                     //どっちも変更なし
                                     params.put("user_name", edit_username.getText().toString());
-                                    params.put("new_img1", Application_Gocci.mPicture);
-                                    params.put("new_img2", Application_Gocci.mPicture);
+                                    //params.put("new_img1", Application_Gocci.mPicture);
+                                    //params.put("new_img2", Application_Gocci.mPicture);
                                 }
 
-                                AsyncHttpClient client = new AsyncHttpClient();
-                                client.post(getActivity(), Const.URL_POST_PROFILE_EDIT_API, params, new TextHttpResponseHandler() {
+                                final AsyncHttpClient client = new AsyncHttpClient();
+                                client.post(getActivity(), Const.URL_SIGNUP_API, loginParam, new AsyncHttpResponseHandler() {
 
                                     @Override
-                                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                                        Log.e("失敗", responseString);
+                                    public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                                        client.post(getActivity(), Const.URL_POST_PROFILE_EDIT_API, params, new TextHttpResponseHandler() {
+                                            @Override
+                                            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                                                Log.e("失敗", responseString);
+                                            }
+
+                                            @Override
+                                            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                                                Log.e("成功", responseString);
+                                            }
+                                        });
                                     }
 
                                     @Override
-                                    public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                                        Log.e("成功", responseString);
+                                    public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                                        Log.e("失敗", "失敗");
                                     }
                                 });
                             }
@@ -390,7 +400,6 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
                             .fit()
                             .into(edit_background);
 
-                    backgroundFile = new File(String.valueOf(uri));
                     isBackground = true;
                     break;
                 case 1:
@@ -400,7 +409,7 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
                             .placeholder(R.drawable.ic_userpicture)
                             .transform(new RoundedTransformation())
                             .into(edit_picture);
-                    userpictureFile = new File(String.valueOf(uri));
+
                     isPicture = true;
                     break;
             }
