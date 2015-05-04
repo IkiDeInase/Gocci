@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.facebook.Session;
+import com.hatenablog.shoma2da.eventdaterecorderlib.EventDateRecorder;
 import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.Event.BusHolder;
 import com.inase.android.gocci.Event.SearchKeywordPostEvent;
@@ -335,7 +336,11 @@ public class GocciSearchTenpoActivity extends ActionBarActivity {
                             }
 
                             SharedPreferences.Editor editor = pref.edit();
-                            editor.remove("name").remove("pictureImageUrl").remove("judge").apply();
+                            editor.clear();
+                            editor.apply();
+
+                            EventDateRecorder recorder = EventDateRecorder.load(GocciSearchTenpoActivity.this, "use_first_gocci_android");
+                            recorder.clear();
 
                             Intent intent = new Intent(getApplicationContext(), SplashActivity.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

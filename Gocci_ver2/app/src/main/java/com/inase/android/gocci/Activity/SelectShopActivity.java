@@ -3,15 +3,16 @@ package com.inase.android.gocci.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Gravity;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.andexert.library.RippleView;
 import com.github.ppamorim.library.DraggerActivity;
 import com.inase.android.gocci.R;
@@ -25,7 +26,6 @@ public class SelectShopActivity extends DraggerActivity {
     private Search_tenpoAdapter mSearch_tenpoAdapter;
 
     private String clickedRestname;
-    private String clickedLocality;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,13 +37,34 @@ public class SelectShopActivity extends DraggerActivity {
         // スクロールバーを表示しない
         selectList.setVerticalScrollBarEnabled(false);
 
-        TextView subscribeText = new TextView(this);
-        subscribeText.setText("撮影するお店を選択してください");
-        subscribeText.setBackgroundResource(R.color.backgroung_grey);
-        subscribeText.setTextSize(18);
-        subscribeText.setPadding(8, 16, 8, 16);
-        subscribeText.setGravity(Gravity.CENTER_HORIZONTAL);
-        selectList.addHeaderView(subscribeText);
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        selectList.addFooterView(inflater.inflate(R.layout.cell_no_exist_shop, null));
+
+        RippleView noexistRipple = (RippleView) findViewById(R.id.noexistRipple);
+
+        noexistRipple.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new MaterialDialog.Builder(SelectShopActivity.this)
+                        .title("店舗追加")
+                        .content("あなたのいるお店の名前を入力してください。※位置情報は現在の位置を使います")
+                        .input("店舗名", null, new MaterialDialog.InputCallback() {
+                            @Override
+                            public void onInput(MaterialDialog materialDialog, CharSequence charSequence) {
+
+                            }
+                        })
+                        .positiveText("送信する")
+                        .callback(new MaterialDialog.ButtonCallback() {
+                            @Override
+                            public void onPositive(MaterialDialog dialog) {
+                                super.onPositive(dialog);
+
+                                Toast.makeText(SelectShopActivity.this, dialog.getInputEditText().getText().toString(), Toast.LENGTH_SHORT).show();
+                            }
+                        }).show();
+            }
+        });
 
         // カード部分をselectorにするので、リストのselectorは透明にする
         selectList.setSelector(android.R.color.transparent);
@@ -56,9 +77,7 @@ public class SelectShopActivity extends DraggerActivity {
     public static class Search_tenpoHolder {
         public RippleView searchRipple;
         public TextView restname;
-        public TextView distance;
         public TextView subscribeText;
-        public LinearLayout paintBackground;
     }
 
     public class Search_tenpoAdapter extends ArrayAdapter<UserData> {
@@ -73,13 +92,11 @@ public class SelectShopActivity extends DraggerActivity {
         public View getView(int position, View convertView, ViewGroup parent) {
             Search_tenpoHolder tenpoHolder = null;
             if (convertView == null || convertView.getTag() == null) {
-                convertView = layoutInflater.inflate(R.layout.cell_search, null);
+                convertView = layoutInflater.inflate(R.layout.cell_select_shop, null);
                 tenpoHolder = new Search_tenpoHolder();
                 tenpoHolder.searchRipple = (RippleView) convertView.findViewById(R.id.searchRipple);
                 tenpoHolder.restname = (TextView) convertView.findViewById(R.id.restname);
-                tenpoHolder.distance = (TextView) convertView.findViewById(R.id.distance);
                 tenpoHolder.subscribeText = (TextView) convertView.findViewById(R.id.subscribeText);
-                tenpoHolder.paintBackground = (LinearLayout) convertView.findViewById(R.id.paintBackground);
 
                 convertView.setTag(tenpoHolder);
             } else {
@@ -88,26 +105,32 @@ public class SelectShopActivity extends DraggerActivity {
             final UserData user = this.getItem(position);
 
             tenpoHolder.restname.setText(user.getRest_name());
-            tenpoHolder.distance.setText(user.getDistance());
             tenpoHolder.subscribeText.setText("この店舗を撮影する");
 
             tenpoHolder.searchRipple.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     clickedRestname = user.getRest_name();
-                    clickedLocality = user.getLocality();
 
-                    Intent data = new Intent();
-                    Bundle bundle = new Bundle();
-                    bundle.putString("restname", clickedRestname);
-                    data.putExtras(bundle);
+                    Handler handler = new Handler();
+                    handler.postDelayed(new searchClickHandler(), 750);
 
-                    setResult(RESULT_OK, data);
-                    finish();
                 }
             });
 
             return convertView;
+        }
+    }
+
+    class searchClickHandler implements Runnable {
+        public void run() {
+            Intent data = new Intent();
+            Bundle bundle = new Bundle();
+            bundle.putString("restname", clickedRestname);
+            data.putExtras(bundle);
+
+            setResult(RESULT_OK, data);
+            finish();
         }
     }
 }

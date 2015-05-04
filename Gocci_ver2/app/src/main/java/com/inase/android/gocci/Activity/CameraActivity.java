@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -81,7 +82,11 @@ public class CameraActivity extends Activity {
     private boolean isPlaying = false;
 
     private RippleView selectShopButton;
+    private RippleView infoButton;
     private ImageView shopImage;
+    private ImageView infoImage;
+
+    private ImageButton toukouButton;
 
     private double latitude;
     private double longitude;
@@ -108,7 +113,7 @@ public class CameraActivity extends Activity {
             Effectstype effect = Effectstype.SlideBottom;
             dialogBuilder
                     .withTitle("Gocciカメラ")
-                    .withMessage("このカメラ画面をタップしている間だけ再生されます。自分の撮りたい場所だけを、７秒で記録しましょう！")
+                    .withMessage("このカメラはボタンをタップしている間だけ再生されます。自分の撮りたい場所だけを、７秒で記録しましょう！")
                     .withDuration(500)                                          //def
                     .withEffect(effect)
                     .isCancelableOnTouchOutside(true)
@@ -123,9 +128,13 @@ public class CameraActivity extends Activity {
         videoSurface = (MySurfaceView) findViewById(R.id.cameraView);
         progressView = (ProgressView) findViewById(R.id.progress);
         shopImage = (ImageView) findViewById(R.id.shopImage);
+        infoImage = (ImageView) findViewById(R.id.infoImage);
         cameraManager = getCameraManager();
         recorderManager = new RecorderManager(getCameraManager(), videoSurface, this);
         selectShopButton = (RippleView) findViewById(R.id.selectShopButton);
+        infoButton = (RippleView) findViewById(R.id.infoButton);
+
+        toukouButton = (ImageButton) findViewById(R.id.toukouButton);
 
         selectShopButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -141,7 +150,26 @@ public class CameraActivity extends Activity {
             }
         });
 
-        videoSurface.setOnTouchListener(new View.OnTouchListener() {
+        infoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                /*
+                new MaterialDialog.Builder(CameraActivity.this)
+                        .title("追加情報")
+                        .content("追加したい情報を入力してください")
+                        .positiveText("完了")
+                        .callback(new MaterialDialog.ButtonCallback() {
+                            @Override
+                            public void onPositive(MaterialDialog dialog) {
+                                super.onPositive(dialog);
+                                infoImage.setBackgroundResource(R.drawable.ic_done_white_24dp);
+                            }
+                        }).show();
+                        */
+            }
+        });
+
+        toukouButton.setOnTouchListener(new View.OnTouchListener() {
 
             @Override
             public boolean onTouch(View arg0, MotionEvent motionEvent) {
@@ -210,7 +238,7 @@ public class CameraActivity extends Activity {
                 if (resultCode == RESULT_OK) {
                     Bundle bundle = data.getExtras();
                     mRestname = bundle.getString("restname");
-                    shopImage.setBackgroundResource(R.drawable.ic_done_white_36dp);
+                    shopImage.setBackgroundResource(R.drawable.ic_done_white_24dp);
                 } else if (resultCode == RESULT_CANCELED) {
 
                 }
@@ -219,7 +247,7 @@ public class CameraActivity extends Activity {
                 if (resultCode == RESULT_OK) {
                     Bundle bundle = data.getExtras();
                     mRestname = bundle.getString("restname");
-                    shopImage.setBackgroundResource(R.drawable.ic_done_white_36dp);
+                    shopImage.setBackgroundResource(R.drawable.ic_done_white_24dp);
                     startPlay();
                 } else if (resultCode == RESULT_CANCELED) {
 

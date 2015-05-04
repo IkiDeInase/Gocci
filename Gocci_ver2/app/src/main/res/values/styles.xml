@@ -6,7 +6,9 @@
     </style>
 
     <style name="AppTheme.Toolbar" parent="Theme.AppCompat.Light.NoActionBar">
-
+        <item name="colorPrimary">@color/material_drawer_primary</item>
+        <item name="colorPrimaryDark">@color/material_drawer_primary_dark</item>
+        <item name="colorAccent">@color/material_drawer_window_background</item>
     </style>
 
     <style name="Toolbar" parent="Theme.AppCompat">
@@ -37,7 +39,9 @@
         <item name="android:layout_gravity">center_horizontal</item>
     </style>
 
-    <style name="Theme.NoTitleBar" parent="@android:style/Theme.NoTitleBar" />
+    <style name="Theme.NoTitleBar" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowNoTitle">true</item>
+    </style>
 
     <style name="CustomCirclePageIndicator">
         <item name="fillColor">#757575</item>

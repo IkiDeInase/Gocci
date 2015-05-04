@@ -3,16 +3,12 @@ package com.inase.android.gocci.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Handler;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import com.andexert.library.RippleView;
 import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.common.Const;
@@ -91,6 +87,10 @@ public class LoginPreferenceActivity extends ActionBarActivity {
                         Application_Gocci.mFollowee = response.getInt(TAG_FOLLOWEE);
                         Application_Gocci.mFollower = response.getInt(TAG_FOLLOWER);
                         Application_Gocci.mCheer = response.getInt(TAG_CHEER);
+
+                        Intent intent = new Intent(LoginPreferenceActivity.this, TutorialGuideActivity.class);
+                        intent.putExtra("judge", judge);
+                        startActivity(intent);
                     } else {
                         Toast.makeText(LoginPreferenceActivity.this, "ログインに失敗しました", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(LoginPreferenceActivity.this, LoginActivity.class);
@@ -100,10 +100,6 @@ public class LoginPreferenceActivity extends ActionBarActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
-                Intent intent = new Intent(LoginPreferenceActivity.this, TutorialGuideActivity.class);
-                intent.putExtra("judge", judge);
-                startActivity(intent);
 
             }
 

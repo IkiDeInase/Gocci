@@ -14,7 +14,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.andexert.library.RippleView;
 import com.github.ksoichiro.android.observablescrollview.ObservableListView;
 import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.Base.RoundedTransformation;
@@ -70,7 +69,7 @@ public class FollowerFolloweeCheerListActivity extends ActionBarActivity {
         cheerAdapter = new CheerAdapter(this, 0, users);
 
         final String url = "http://api-gocci.jp/favorites_list/?user_name=" + Application_Gocci.mName + "&get=" + mCategory;
-
+        Log.e("ログ", url);
         getJSON(url, mCategory);
 
         refresh = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
@@ -124,8 +123,8 @@ public class FollowerFolloweeCheerListActivity extends ActionBarActivity {
                 try {
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject jsonObject = response.getJSONObject(i);
-                        String username = jsonObject.getString("update_user_name");
-                        String picture = jsonObject.getString("update_picture");
+                        String username = jsonObject.getString("user_name");
+                        String picture = jsonObject.getString("picture");
 
                         UserData user = new UserData();
                         user.setUser_name(username);
@@ -159,8 +158,8 @@ public class FollowerFolloweeCheerListActivity extends ActionBarActivity {
                 try {
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject jsonObject = response.getJSONObject(i);
-                        String username = jsonObject.getString("update_user_name");
-                        String picture = jsonObject.getString("update_picture");
+                        String username = jsonObject.getString("user_name");
+                        String picture = jsonObject.getString("picture");
 
                         UserData user = new UserData();
                         user.setUser_name(username);
@@ -240,8 +239,8 @@ public class FollowerFolloweeCheerListActivity extends ActionBarActivity {
                 try {
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject jsonObject = response.getJSONObject(i);
-                        String username = jsonObject.getString("update_user_name");
-                        String picture = jsonObject.getString("update_picture");
+                        String username = jsonObject.getString("user_name");
+                        String picture = jsonObject.getString("picture");
 
                         UserData user = new UserData();
                         user.setUser_name(username);
@@ -281,8 +280,8 @@ public class FollowerFolloweeCheerListActivity extends ActionBarActivity {
                 try {
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject jsonObject = response.getJSONObject(i);
-                        String username = jsonObject.getString("update_user_name");
-                        String picture = jsonObject.getString("update_picture");
+                        String username = jsonObject.getString("user_name");
+                        String picture = jsonObject.getString("picture");
 
                         UserData user = new UserData();
                         user.setUser_name(username);
@@ -364,16 +363,16 @@ public class FollowerFolloweeCheerListActivity extends ActionBarActivity {
     public static class FollowerFolloweeViewHolder {
         ImageView userpicture;
         TextView username;
-        ImageView addfollowButton;
-        ImageView deletefollowButton;
-        RippleView accountRipple;
+        //ImageView addfollowButton;
+        //ImageView deletefollowButton;
+        //RippleView accountRipple;
 
         public FollowerFolloweeViewHolder(View view) {
             this.userpicture = (ImageView) view.findViewById(R.id.follower_followee_picture);
             this.username = (TextView) view.findViewById(R.id.username);
-            this.addfollowButton = (ImageView) view.findViewById(R.id.addfollowButton);
-            this.deletefollowButton = (ImageView) view.findViewById(R.id.deletefollowButton);
-            this.accountRipple = (RippleView) view.findViewById(R.id.accountButton);
+            //this.addfollowButton = (ImageView) view.findViewById(R.id.addfollowButton);
+            //this.deletefollowButton = (ImageView) view.findViewById(R.id.deletefollowButton);
+            //this.accountRipple = (RippleView) view.findViewById(R.id.accountButton);
         }
     }
 
@@ -381,15 +380,15 @@ public class FollowerFolloweeCheerListActivity extends ActionBarActivity {
         ImageView restpicture;
         TextView restname;
         TextView locality;
-        ImageView deletecheerButton;
-        RippleView cheerRipple;
+        //ImageView deletecheerButton;
+        //RippleView cheerRipple;
 
         public CheerViewHolder(View view) {
             this.restpicture = (ImageView) view.findViewById(R.id.cheer_picture);
             this.restname = (TextView) view.findViewById(R.id.restname);
             this.locality = (TextView) view.findViewById(R.id.locality);
-            this.deletecheerButton = (ImageView) view.findViewById(R.id.deleteCheerButton);
-            this.cheerRipple = (RippleView) view.findViewById(R.id.cheerButton);
+            //this.deletecheerButton = (ImageView) view.findViewById(R.id.deleteCheerButton);
+            //this.cheerRipple = (RippleView) view.findViewById(R.id.cheerButton);
         }
     }
 
@@ -444,6 +443,7 @@ public class FollowerFolloweeCheerListActivity extends ActionBarActivity {
                 }
             });
 
+            /*
             switch (mCategory) {
                 case "follower":
                     viewHolder.deletefollowButton.setVisibility(View.VISIBLE);
@@ -482,6 +482,7 @@ public class FollowerFolloweeCheerListActivity extends ActionBarActivity {
                     });
                     break;
             }
+            */
 
             return convertView;
         }

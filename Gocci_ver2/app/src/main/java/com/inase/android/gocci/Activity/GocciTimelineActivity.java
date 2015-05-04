@@ -47,13 +47,10 @@ import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
 import com.twitter.sdk.android.Twitter;
-import com.twitter.sdk.android.core.TwitterAuthToken;
-import com.twitter.sdk.android.core.TwitterSession;
 
 import org.apache.http.Header;
 
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class GocciTimelineActivity extends ActionBarActivity {
 
@@ -379,9 +376,13 @@ public class GocciTimelineActivity extends ActionBarActivity {
                             }
 
                             SharedPreferences.Editor editor = pref.edit();
-                            editor.remove("name").remove("pictureImageUrl").remove("judge").apply();
+                            editor.clear();
+                            editor.apply();
 
-                            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                            EventDateRecorder recorder = EventDateRecorder.load(GocciTimelineActivity.this, "use_first_gocci_android");
+                            recorder.clear();
+
+                            Intent intent = new Intent(getApplicationContext(), SplashActivity.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(intent);
 
@@ -499,6 +500,6 @@ public class GocciTimelineActivity extends ActionBarActivity {
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(PROPERTY_REG_ID, regId);
         editor.putInt(PROPERTY_APP_VERSION, appVersion);
-        editor.commit();
+        editor.apply();
     }
 }

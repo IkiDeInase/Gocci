@@ -42,18 +42,48 @@
 
         <com.inase.android.gocci.View.MySurfaceView
             android:id="@+id/cameraView"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_below="@id/top_mask"
-            android:layout_centerInParent="true" />
+            android:layout_centerInParent="true"
+            android:layout_marginBottom="150dp" />
 
         <RelativeLayout
             android:id="@+id/bottom_mask"
             android:layout_width="fill_parent"
-            android:layout_height="100.0dip"
+            android:layout_height="150.0dip"
             android:layout_alignParentBottom="true"
             android:layout_gravity="bottom"
             android:background="@color/capture_background">
+
+            <com.andexert.library.RippleView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/infoButton"
+                android:layout_centerVertical="true"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="32dp">
+
+                <ImageView
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/ic_radio_button_off_white_36dp" />
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:id="@+id/infoImage"
+                    android:background="@drawable/ic_edit_white_24dp"
+                    />
+            </com.andexert.library.RippleView>
+
+            <ImageButton
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:background="@drawable/ic_toukou_circle"
+                android:id="@+id/toukouButton"
+                android:layout_centerInParent="true" />
 
             <com.andexert.library.RippleView
                 android:layout_width="wrap_content"
@@ -64,16 +94,16 @@
                 android:layout_marginRight="32dp">
 
                 <ImageView
-                    android:layout_width="75dp"
-                    android:layout_height="75dp"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
                     android:layout_centerInParent="true"
-                    android:src="@drawable/ic_radio_button_off_white_48dp" />
+                    android:src="@drawable/ic_radio_button_off_white_36dp" />
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
                     android:id="@+id/shopImage"
-                    android:src="@drawable/ic_store_mall_directory_white_36dp"
+                    android:background="@drawable/ic_store_mall_directory_white_24dp"
                     />
             </com.andexert.library.RippleView>
 

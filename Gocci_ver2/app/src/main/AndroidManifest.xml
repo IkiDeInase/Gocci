@@ -78,7 +78,6 @@
         <activity
             android:name=".Activity.TutorialGuideActivity"
             android:label="@string/title_activity_tutorial_guide"
-            android:launchMode="singleTask"
             android:screenOrientation="portrait" />
         <activity
             android:name=".Activity.CameraActivity"
@@ -103,22 +102,22 @@
         <activity
             android:name=".Activity.GocciTimelineActivity"
             android:label="@string/title_activity_gocci_timeline"
-            android:launchMode="singleTop"
+            android:launchMode="singleTask"
             android:theme="@style/CustomTheme" />
         <activity
             android:name=".Activity.GocciSearchTenpoActivity"
             android:label="@string/title_activity_gocci_search_tenpo"
-            android:launchMode="singleTop"
+            android:launchMode="singleTask"
             android:theme="@style/MaterialDrawerTheme.Light" />
         <activity
             android:name=".Activity.GocciLifelogActivity"
             android:label="@string/title_activity_gocci_lifelog"
-            android:launchMode="singleTop"
+            android:launchMode="singleTask"
             android:theme="@style/CustomTheme" />
         <activity
             android:name=".Activity.GocciMyprofActivity"
             android:label="@string/title_activity_gocci_myprof"
-            android:launchMode="singleTop"
+            android:launchMode="singleTask"
             android:theme="@style/CustomTheme" />
         <activity
             android:name=".Activity.SelectShopActivity"

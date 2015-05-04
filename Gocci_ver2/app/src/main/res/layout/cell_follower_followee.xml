@@ -23,6 +23,7 @@
         android:layout_centerVertical="true"
         android:layout_toRightOf="@+id/follower_followee_picture" />
 
+    <!--
     <com.andexert.library.RippleView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -43,5 +44,6 @@
             android:src="@drawable/ic_account_check"
             android:visibility="gone" />
     </com.andexert.library.RippleView>
+    -->
 
 </RelativeLayout>

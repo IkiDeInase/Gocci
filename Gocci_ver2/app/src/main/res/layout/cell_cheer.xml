@@ -10,6 +10,7 @@
         android:src="@drawable/ic_userpicture"
         android:layout_margin="8dp" />
 
+    <!--
     <com.andexert.library.RippleView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -25,6 +26,7 @@
         />
 
     </com.andexert.library.RippleView>
+    -->
 
     <LinearLayout
         android:orientation="vertical"

@@ -83,12 +83,24 @@ public class SplashActivity extends Activity {
                     EventDateRecorder recorder = EventDateRecorder.load(SplashActivity.this, "use_first_gocci_android");
                     if (!recorder.didRecorded()) {
                         // 機能が１度も利用されてない時のみ実行したい処理を書く
+
+                        /*
+                        //初回起動時
+                        //一度アンインストールして再びインストールした
+                        //ログアウトして再びログインしたい
+                         */
+                        Log.e("DEBUG", "LoginActivitへ");
                         Intent mainIntent = new Intent(SplashActivity.this, LoginActivity.class);
                         SplashActivity.this.startActivity(mainIntent);
                         overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
                         SplashActivity.this.finish();
                         recorder.record();
                     } else {
+
+                        /*
+                        //２回目以降の起動
+                         */
+                        Log.e("DEBUG", "LoginPreferenceActivitへ");
                         Intent mainIntent2 = new Intent(SplashActivity.this, LoginPreferenceActivity.class);
                         SplashActivity.this.startActivity(mainIntent2);
                         overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);

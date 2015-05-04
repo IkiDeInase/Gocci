@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -19,7 +20,6 @@ import com.inase.android.gocci.Tutorial.TutorialView1;
 import com.inase.android.gocci.Tutorial.TutorialView2;
 import com.inase.android.gocci.Tutorial.TutorialView3;
 import com.inase.android.gocci.Tutorial.TutorialView4;
-import com.inase.android.gocci.common.Const;
 import com.viewpagerindicator.CirclePageIndicator;
 
 public class TutorialGuideActivity extends ActionBarActivity {
@@ -36,6 +36,7 @@ public class TutorialGuideActivity extends ActionBarActivity {
         if (!recorder.didRecorded()) {
             // 機能が１度も利用されてない時のみ実行したい処理を書く
             recorder.record();
+            Log.e("DEBUG", "TutorialGuideActivit　チュートあり");
 
             //Gocciへようこそ　このアプリは・・・・的な感じで考えている。
 
@@ -66,6 +67,8 @@ public class TutorialGuideActivity extends ActionBarActivity {
             });
 
         } else {
+            Log.e("DEBUG", "TutorialGuideActivit　チュートなし");
+            /*
             SharedPreferences pref = getSharedPreferences("pref", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = pref.edit();
 
@@ -73,6 +76,7 @@ public class TutorialGuideActivity extends ActionBarActivity {
             editor.putString("pictureImageUrl", Application_Gocci.mPicture);
             editor.putString("judge", judge);
             editor.apply();
+            */
 
             Intent goIntent = new Intent(TutorialGuideActivity.this, GocciTimelineActivity.class);
             startActivity(goIntent);

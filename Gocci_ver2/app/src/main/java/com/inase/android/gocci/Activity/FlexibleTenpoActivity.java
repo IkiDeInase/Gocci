@@ -342,16 +342,19 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
     public void onScrollChanged(int scrollY, boolean firstScroll, boolean dragging) {
     }
 
+    @Override
     public final void onDestroy() {
         mMapView.onDestroy();
         super.onDestroy();
     }
 
+    @Override
     public final void onLowMemory() {
         super.onLowMemory();
         mMapView.onLowMemory();
     }
 
+    @Override
     public final void onPause() {
         mMapView.onPause();
         super.onPause();
@@ -362,6 +365,7 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
         }
     }
 
+    @Override
     public final void onResume() {
         super.onResume();
         mMapView.onResume();
@@ -369,6 +373,7 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
         startMovie();
     }
 
+    @Override
     public final void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         mMapView.onSaveInstanceState(outState);
@@ -1206,9 +1211,13 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
                             }
 
                             SharedPreferences.Editor editor = pref.edit();
-                            editor.remove("name").remove("pictureImageUrl").remove("judge").apply();
+                            editor.clear();
+                            editor.apply();
 
-                            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                            EventDateRecorder recorder = EventDateRecorder.load(FlexibleTenpoActivity.this, "use_first_gocci_android");
+                            recorder.clear();
+
+                            Intent intent = new Intent(getApplicationContext(), SplashActivity.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(intent);
 

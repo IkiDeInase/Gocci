@@ -3,6 +3,7 @@ package com.inase.android.gocci.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
@@ -42,6 +43,8 @@ import com.gitonway.lee.niftymodaldialogeffects.lib.NiftyDialogBuilder;
 import com.hatenablog.shoma2da.eventdaterecorderlib.EventDateRecorder;
 import com.inase.android.gocci.Activity.CameraActivity;
 import com.inase.android.gocci.Activity.FlexibleTenpoActivity;
+import com.inase.android.gocci.Activity.GocciMyprofActivity;
+import com.inase.android.gocci.Activity.SplashActivity;
 import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.Base.BaseFragment;
 import com.inase.android.gocci.Base.RoundedTransformation;
@@ -222,9 +225,9 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
         mProfListView.addHeaderView(inflater.inflate(R.layout.view_header_myprof, null));
 
         final InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        TextView myprof_username = (TextView) view.findViewById(R.id.myprof_username);
-        ImageView myprof_picture = (ImageView) view.findViewById(R.id.myprof_picture);
-        ImageView myprof_background = (ImageView) view.findViewById(R.id.myprof_background);
+        final TextView myprof_username = (TextView) view.findViewById(R.id.myprof_username);
+        final ImageView myprof_picture = (ImageView) view.findViewById(R.id.myprof_picture);
+        final ImageView myprof_background = (ImageView) view.findViewById(R.id.myprof_background);
         RippleView editRipple = (RippleView) view.findViewById(R.id.editProfile);
         myprof_username.setText(Application_Gocci.mName);
         Picasso.with(getActivity())
@@ -252,8 +255,8 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
                                     //どっちも変更した
                                     try {
                                         params.put("user_name", edit_username.getText().toString());
-                                        params.put("new_img1", new File(getLocalBitmapUri(edit_background).getPath()));
-                                        params.put("new_img2", new File(getLocalBitmapUri(edit_picture).getPath()));
+                                        params.put("background", new File(getLocalBitmapUri(edit_background).getPath()));
+                                        params.put("picture", new File(getLocalBitmapUri(edit_picture).getPath()));
                                     } catch (FileNotFoundException e) {
                                         e.printStackTrace();
                                     }
@@ -263,8 +266,7 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
                                     //背景だけ変更
                                     try {
                                         params.put("user_name", edit_username.getText().toString());
-                                        params.put("new_img1", backgroundFile);
-                                        //params.put("new_img2", Application_Gocci.mPicture);
+                                        params.put("background", new File(getLocalBitmapUri(edit_background).getPath()));
                                     } catch (FileNotFoundException e) {
                                         e.printStackTrace();
                                     }
@@ -273,8 +275,7 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
                                     //写真だけ
                                     try {
                                         params.put("user_name", edit_username.getText().toString());
-                                        //params.put("new_img1", Application_Gocci.mPicture);
-                                        params.put("new_img2", userpictureFile);
+                                        params.put("picture", new File(getLocalBitmapUri(edit_picture).getPath()));
                                     } catch (FileNotFoundException e) {
                                         e.printStackTrace();
                                     }
@@ -282,31 +283,68 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
                                 } else {
                                     //どっちも変更なし
                                     params.put("user_name", edit_username.getText().toString());
-                                    //params.put("new_img1", Application_Gocci.mPicture);
-                                    //params.put("new_img2", Application_Gocci.mPicture);
                                 }
 
                                 final AsyncHttpClient client = new AsyncHttpClient();
                                 client.post(getActivity(), Const.URL_SIGNUP_API, loginParam, new AsyncHttpResponseHandler() {
 
                                     @Override
+                                    public void onStart() {
+                                        myprofprogress.setVisibility(View.VISIBLE);
+                                    }
+
+                                    @Override
                                     public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                                        client.post(getActivity(), Const.URL_POST_PROFILE_EDIT_API, params, new TextHttpResponseHandler() {
+                                        client.post(getActivity(), Const.URL_POST_PROFILE_EDIT_API, params, new JsonHttpResponseHandler() {
                                             @Override
-                                            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                                                Log.e("失敗", responseString);
+                                            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                                                Toast.makeText(getActivity(), "プロフィール変更に失敗しました", Toast.LENGTH_SHORT).show();
                                             }
 
                                             @Override
-                                            public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                                                Log.e("成功", responseString);
+                                            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                                                try {
+                                                    String message = response.getString("message");
+
+                                                    if (message.equals("変更しました")) {
+                                                        Toast.makeText(getActivity(), "プロフィールを変更しました", Toast.LENGTH_SHORT).show();
+                                                        String background_image = response.getString("background_image");
+                                                        Application_Gocci.mName = response.getString("user_name");
+                                                        Application_Gocci.mPicture = response.getString("picture");
+
+                                                        SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
+                                                        SharedPreferences.Editor editor = pref.edit();
+
+                                                        editor.putString("name", Application_Gocci.mName);
+                                                        editor.putString("pictureImageUrl", Application_Gocci.mPicture);
+                                                        editor.apply();
+
+                                                        Intent intent = getActivity().getIntent();
+                                                        getActivity().overridePendingTransition(0, 0);
+                                                        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                                        getActivity().finish();
+
+                                                        getActivity().overridePendingTransition(0, 0);
+                                                        startActivity(intent);
+                                                    } else {
+                                                        Toast.makeText(getActivity(), "プロフィール変更に失敗しました", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                } catch (JSONException e) {
+                                                    e.printStackTrace();
+                                                }
                                             }
                                         });
                                     }
 
                                     @Override
                                     public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                                        Log.e("失敗", "失敗");
+                                        Toast.makeText(getActivity(), "プロフィール変更に失敗しました", Toast.LENGTH_SHORT).show();
+                                    }
+
+                                    @Override
+                                    public void onFinish() {
+                                        myprofprogress.setVisibility(View.GONE);
                                     }
                                 });
                             }

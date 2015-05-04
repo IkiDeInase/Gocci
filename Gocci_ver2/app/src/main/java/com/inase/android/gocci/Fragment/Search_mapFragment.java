@@ -30,6 +30,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -77,6 +78,7 @@ public class Search_mapFragment extends BaseFragment
 
     private static final String FUNCTION_FIRST = "first";
     private static final String FUNCTION_REFRESH = "refresh";
+    private static final String FUNCTION_LONGCLICK = "longclick";
 
     private SupportMapFragment fm;
 
@@ -254,6 +256,7 @@ public class Search_mapFragment extends BaseFragment
         LatLng latLng = new LatLng(latitude, longitude);
         mSearch_mapUrl = "http://api-gocci.jp/dist/?lat=" + String.valueOf(latitude) + "&lon=" + String.valueOf(longitude) + "&limit=" + number;
         Log.e("経度緯度", mSearch_mapUrl);
+        mMap.clear();
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
 
         switch (function) {
@@ -262,6 +265,13 @@ public class Search_mapFragment extends BaseFragment
                 break;
             case FUNCTION_REFRESH:
                 getRefreshMapJson(getActivity(), mSearch_mapUrl);
+                break;
+            case FUNCTION_LONGCLICK:
+                mMap.addMarker(new MarkerOptions()
+                        .position(new LatLng(mLatitude, mLongitude))
+                        .title("現在地")
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
+                getLongClickJson(getActivity(), mSearch_mapUrl);
         }
 
     }
@@ -415,7 +425,7 @@ public class Search_mapFragment extends BaseFragment
             public void onMapLongClick(LatLng latLng) {
                 mLatitude = latLng.latitude;
                 mLongitude = latLng.longitude;
-                setUpMap(FUNCTION_FIRST, mLatitude, mLongitude, 30);
+                setUpMap(FUNCTION_LONGCLICK, mLatitude, mLongitude, 30);
             }
         });
 
@@ -668,6 +678,84 @@ public class Search_mapFragment extends BaseFragment
                 mapprogress.setVisibility(View.GONE);
             }
 
+        });
+    }
+
+    private void getLongClickJson(Context context, String url) {
+        AsyncHttpClient httpClient = new AsyncHttpClient();
+        httpClient.get(context, url, new JsonHttpResponseHandler() {
+
+            @Override
+            public void onStart() {
+                mapprogress.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray timeline) {
+                // Pull out the first event on the public timeline
+                mSearch_mapusers.clear();
+                tenpo_string_users.clear();
+
+                try {
+                    for (int i = 0; i < timeline.length(); i++) {
+                        JSONObject jsonObject = timeline.getJSONObject(i);
+
+                        String tell = jsonObject.getString(TAG_TELL);
+                        final String rest_name = jsonObject.getString(TAG_RESTNAME);
+                        String category = jsonObject.getString(TAG_CATEGORY);
+                        final Double lat = jsonObject.getDouble(TAG_LAT);
+                        final Double lon = jsonObject.getDouble(TAG_LON);
+                        final String locality = jsonObject.getString(TAG_LOCALITY);
+                        String distance = jsonObject.getString(TAG_DISTANCE);
+                        String homepage = jsonObject.getString(TAG_HOMEPAGE);
+
+                        UserData user = new UserData();
+
+                        user.setTell(tell);
+                        user.setRest_name(rest_name);
+                        user.setCategory(category);
+                        user.setLat(lat);
+                        user.setLon(lon);
+                        user.setLocality(locality);
+                        user.setDistance(distance);
+                        user.setHomepage(homepage);
+
+                        mSearch_mapusers.add(user);
+                        tenpo_string_users.add(rest_name);
+
+                        Handler handler = new Handler(Looper.getMainLooper());
+                        handler.post(new Runnable() {
+
+                            @Override
+                            public void run() {
+                                mMap.addMarker(new MarkerOptions()
+                                        .position(new LatLng(lat, lon))
+                                        .snippet(locality)
+                                        .title(rest_name));
+
+                            }
+                        });
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                mSearch_mapAdapter.notifyDataSetChanged();
+                BusHolder.get().post(new ArrayListGetEvent(mSearch_mapusers));
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, org.apache.http.Header[] headers, java.lang.Throwable throwable, org.json.JSONObject errorResponse) {
+                Toast.makeText(getActivity(), "読み取りに失敗しました", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFinish() {
+                Log.d("DEBUG", "ProgressDialog dismiss [mSearchmapDialog]");
+                //mSearchmapDialog.dismiss();
+                mapprogress.setVisibility(View.GONE);
+            }
         });
     }
 

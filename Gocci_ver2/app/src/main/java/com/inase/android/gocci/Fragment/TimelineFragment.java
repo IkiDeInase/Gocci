@@ -420,9 +420,9 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                Log.e("サインアップ成功", "status=" + statusCode);
                 mTimelineUrl = "http://api-gocci.jp/timeline_near/?lat=" + mLocation.getLatitude() + "&lon=" +
                         mLocation.getLongitude() + "&limit=" + mNowNumber;
+                Log.e("サインアップ成功", mTimelineUrl);
                 getTimelineJson(context, mTimelineUrl, httpClient);
             }
 
