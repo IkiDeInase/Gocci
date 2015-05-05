@@ -15,6 +15,7 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.andexert.library.RippleView;
+import com.inase.android.gocci.Activity.CameraActivity;
 import com.inase.android.gocci.Activity.GocciTimelineActivity;
 import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.Base.SquareVideoView;
@@ -64,6 +65,8 @@ public class CameraPreviewView extends BlurDialogFragment {
     private static final String sSignupUrl = "http://api-gocci.jp/login/";
     private static final String sMovieurl = "http://api-gocci.jp/android_movie/";
     private ProgressWheel mPostProgress;
+
+    private Application_Gocci gocci;
 
     public static CameraPreviewView newInstance(int radius,
                                                 float downScaleFactor,
@@ -126,7 +129,10 @@ public class CameraPreviewView extends BlurDialogFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        loginParam = new RequestParams("user_name", Application_Gocci.mName);
+        gocci = (Application_Gocci) getActivity().getApplication();
+        loginParam = new RequestParams();
+        loginParam.put("user_name",gocci.getLoginName());
+        loginParam.put("picture", gocci.getLoginPicture());
         toukouParam = new RequestParams();
         toukouParam.put("restname", mRestname);
 

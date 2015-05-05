@@ -22,6 +22,7 @@ import com.facebook.Session;
 import com.hatenablog.shoma2da.eventdaterecorderlib.EventDateRecorder;
 import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.Event.BusHolder;
+import com.inase.android.gocci.Event.DrawerHeaderRefreshEvent;
 import com.inase.android.gocci.Event.SearchKeywordPostEvent;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.View.DrawerProfHeader;
@@ -35,6 +36,7 @@ import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.squareup.otto.Subscribe;
 import com.twitter.sdk.android.Twitter;
 
 import org.apache.http.Header;
@@ -51,6 +53,10 @@ public class GocciSearchTenpoActivity extends ActionBarActivity {
 
     private double mLat = 0.0;
     private double mLon = 0.0;
+
+    private Drawer.Result result;
+
+    private Application_Gocci gocci;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,9 +109,10 @@ public class GocciSearchTenpoActivity extends ActionBarActivity {
         search_card.setCardElevation(4);
         search_card.setRadius(4);
 
-        View header = new DrawerProfHeader(this);
+        gocci = (Application_Gocci)getApplication();
+        View header = new DrawerProfHeader(this, gocci.getMyName(), gocci.getMypicture(), gocci.getMyBackground(), gocci.getMyFollower(), gocci.getMyFollowee(), gocci.getMyCheer());
 
-        Drawer.Result result = new Drawer()
+        result = new Drawer()
                 .withActivity(this)
                 .withToolbar(toolbar)
                 .withHeader(header)
@@ -147,8 +154,30 @@ public class GocciSearchTenpoActivity extends ActionBarActivity {
                     }
                 })
                 .withSavedInstance(savedInstanceState)
+                .withSelectedItem(2)
                 .build();
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Subscriberとして登録する
+        BusHolder.get().register(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Subscriberの登録を解除する
+        BusHolder.get().unregister(this);
+    }
+
+    @Subscribe
+    public void subscribe(DrawerHeaderRefreshEvent event) {
+        View refreshHeader = new DrawerProfHeader(this, event.refreshName, event.refreshPicture, event.refreshBackground,
+                event.refreshFollower, event.refreshFollowee, event.refreshCheer);
+        result.setHeader(refreshHeader);
         result.setSelectionByIdentifier(3);
     }
 
@@ -249,7 +278,9 @@ public class GocciSearchTenpoActivity extends ActionBarActivity {
 
         private void postSignupAsync(final Context context, final String category, final String message) {
             final AsyncHttpClient httpClient = new AsyncHttpClient();
-            RequestParams params = new RequestParams("user_name", Application_Gocci.mName);
+            RequestParams params = new RequestParams();
+            params.put("user_name", gocci.getLoginName());
+            params.put("picture", gocci.getLoginPicture());
             httpClient.post(context, Const.URL_SIGNUP_API, params, new AsyncHttpResponseHandler() {
 
                 @Override
@@ -342,8 +373,9 @@ public class GocciSearchTenpoActivity extends ActionBarActivity {
                             EventDateRecorder recorder = EventDateRecorder.load(GocciSearchTenpoActivity.this, "use_first_gocci_android");
                             recorder.clear();
 
-                            Intent intent = new Intent(getApplicationContext(), SplashActivity.class);
+                            Intent intent = new Intent(GocciSearchTenpoActivity.this, LoginActivity.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(intent);
 
                         }

@@ -48,17 +48,22 @@ public class FollowerFolloweeCheerListActivity extends ActionBarActivity {
 
     private RequestParams loginParam;
 
+    private Application_Gocci gocci;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_follower_followee_cheer_list);
 
+        gocci = (Application_Gocci)getApplication();
         Slidr.attach(this);
 
         Intent intent = getIntent();
         mCategory = intent.getStringExtra("category");
 
-        loginParam = new RequestParams("user_name", Application_Gocci.mName);
+        loginParam = new RequestParams();
+        loginParam.put("user_name", gocci.getLoginName());
+        loginParam.put("picture", gocci.getLoginPicture());
 
         listView = (ObservableListView) findViewById(R.id.list);
         refresh = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
@@ -68,7 +73,7 @@ public class FollowerFolloweeCheerListActivity extends ActionBarActivity {
         followerFolloweeAdapter = new FollowerFolloweeAdapter(this, 0, users);
         cheerAdapter = new CheerAdapter(this, 0, users);
 
-        final String url = "http://api-gocci.jp/favorites_list/?user_name=" + Application_Gocci.mName + "&get=" + mCategory;
+        final String url = "http://api-gocci.jp/favorites_list/?user_name=" + gocci.getMyName() + "&get=" + mCategory;
         Log.e("ログ", url);
         getJSON(url, mCategory);
 
@@ -571,7 +576,7 @@ public class FollowerFolloweeCheerListActivity extends ActionBarActivity {
 
                             if (message.equals("ユーザーをお気に入りしました")) {
                                 //gocci.addFollower();
-                                Application_Gocci.addFollower();
+                                gocci.addFollower();
                             } else {
                                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                             }
@@ -611,7 +616,7 @@ public class FollowerFolloweeCheerListActivity extends ActionBarActivity {
 
                             if (message.equals("フォロー解除しました")) {
                                 //gocci.downFollower();
-                                Application_Gocci.downFollower();
+                                gocci.downFollower();
                             } else {
                                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                             }

@@ -38,7 +38,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.inase.android.gocci.Activity.FlexibleTenpoActivity;
 import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.Base.BaseFragment;
-import com.inase.android.gocci.Event.ArrayListGetEvent;
 import com.inase.android.gocci.Event.BusHolder;
 import com.inase.android.gocci.Event.SearchKeywordPostEvent;
 import com.inase.android.gocci.R;
@@ -121,6 +120,8 @@ public class Search_mapFragment extends BaseFragment
 
     private Location firstLocation = null;
 
+    private Application_Gocci gocci;
+
     public Search_mapFragment newIntent(String name, String imageUrl) {
         Search_mapFragment fragment = new Search_mapFragment();
         Bundle args = new Bundle();
@@ -138,8 +139,10 @@ public class Search_mapFragment extends BaseFragment
         View view1 = getActivity().getLayoutInflater().inflate(R.layout.fragment_search_map,
                 container, false);
 
-        if (Application_Gocci.getFirstLocation() != null) {
-            firstLocation = Application_Gocci.getFirstLocation();
+        gocci = (Application_Gocci) getActivity().getApplication();
+
+        if (gocci.getFirstLocation() != null) {
+            firstLocation = gocci.getFirstLocation();
             Log.e("DEBUG", "アプリから位置とったよ");
         }
 
@@ -351,7 +354,7 @@ public class Search_mapFragment extends BaseFragment
                 if (location != null) {
                     mLatitude = location.getLatitude();
                     mLongitude = location.getLongitude();
-                    Application_Gocci.setFirstLocation(location);
+                    gocci.setFirstLocation(location);
                 } else {
                     Log.e("からでしたー", "locationupdated");
                 }
@@ -367,7 +370,7 @@ public class Search_mapFragment extends BaseFragment
                     mLatitude = location.getLatitude();
                     mLongitude = location.getLongitude();
                     setUpMap(FUNCTION_FIRST, mLatitude, mLongitude, 30);
-                    Application_Gocci.setFirstLocation(location);
+                    gocci.setFirstLocation(location);
                 } else {
                     Log.e("からでしたー", "locationupdated");
                 }
@@ -382,7 +385,7 @@ public class Search_mapFragment extends BaseFragment
                 if (location != null) {
                     mLatitude = location.getLatitude();
                     mLongitude = location.getLongitude();
-                    Application_Gocci.setFirstLocation(location);
+                    gocci.setFirstLocation(location);
                     setUpMap(FUNCTION_REFRESH, mLatitude, mLongitude, 30);
                 } else {
                     Log.e("からでしたー", "locationupdated");
@@ -518,8 +521,6 @@ public class Search_mapFragment extends BaseFragment
 
                 mSearch_mapAdapter = new Search_mapAdapter(getActivity(), 0, mSearch_mapusers);
                 mSearch_mapListView.setAdapter(mSearch_mapAdapter);
-                BusHolder.get().post(new ArrayListGetEvent(mSearch_mapusers));
-
             }
 
             @Override
@@ -590,8 +591,6 @@ public class Search_mapFragment extends BaseFragment
                 }
 
                 mSearch_mapAdapter.notifyDataSetChanged();
-                BusHolder.get().post(new ArrayListGetEvent(mSearch_mapusers));
-
             }
 
             @Override
@@ -741,8 +740,6 @@ public class Search_mapFragment extends BaseFragment
                 }
 
                 mSearch_mapAdapter.notifyDataSetChanged();
-                BusHolder.get().post(new ArrayListGetEvent(mSearch_mapusers));
-
             }
 
             @Override

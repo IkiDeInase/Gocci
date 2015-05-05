@@ -14,6 +14,7 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.google.android.gms.appindexing.AppIndex;
 import com.hatenablog.shoma2da.eventdaterecorderlib.EventDateRecorder;
 import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.R;
@@ -26,9 +27,13 @@ public class SplashActivity extends Activity {
 
     private LocationManager mLocationManager;
 
+    private Application_Gocci gocci;
+
     @Override
     protected void onCreate(Bundle icicle) {
         super.onCreate(icicle);
+
+        gocci  = (Application_Gocci) getApplication();
 
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
@@ -77,7 +82,7 @@ public class SplashActivity extends Activity {
             @Override
             public void onLocationUpdated(Location location) {
                 if (location != null) {
-                    Application_Gocci.setFirstLocation(location);
+                    gocci.setFirstLocation(location);
                     Log.e("とったどー", "いえい！");
 
                     EventDateRecorder recorder = EventDateRecorder.load(SplashActivity.this, "use_first_gocci_android");

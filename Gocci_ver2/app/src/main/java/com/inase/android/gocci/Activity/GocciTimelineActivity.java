@@ -28,6 +28,7 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.hatenablog.shoma2da.eventdaterecorderlib.EventDateRecorder;
 import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.Event.BusHolder;
+import com.inase.android.gocci.Event.DrawerHeaderRefreshEvent;
 import com.inase.android.gocci.Event.PageChangeVideoStopEvent;
 import com.inase.android.gocci.Fragment.FriendTimelineFragment;
 import com.inase.android.gocci.Fragment.TimelineFragment;
@@ -46,6 +47,7 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
+import com.squareup.otto.Subscribe;
 import com.twitter.sdk.android.Twitter;
 
 import org.apache.http.Header;
@@ -72,6 +74,10 @@ public class GocciTimelineActivity extends ActionBarActivity {
 
     private String regid;
 
+    private Drawer.Result result;
+
+    private Application_Gocci gocci;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,9 +101,10 @@ public class GocciTimelineActivity extends ActionBarActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("");
 
-        View header = new DrawerProfHeader(this);
+        gocci = (Application_Gocci)getApplication();
+        View header = new DrawerProfHeader(this, gocci.getMyName(), gocci.getMypicture(), gocci.getMyBackground(), gocci.getMyFollower(), gocci.getMyFollowee(), gocci.getMyCheer());
 
-        final Drawer.Result result = new Drawer()
+        result = new Drawer()
                 .withActivity(this)
                 .withToolbar(toolbar)
                 .withHeader(header)
@@ -138,10 +145,9 @@ public class GocciTimelineActivity extends ActionBarActivity {
                         }
                     }
                 })
+                .withSelectedItem(0)
                 .withSavedInstance(savedInstanceState)
                 .build();
-
-        result.setSelectionByIdentifier(1);
 
         adapter = new FragmentPagerItemAdapter(
                 getSupportFragmentManager(), FragmentPagerItems.with(this)
@@ -188,6 +194,28 @@ public class GocciTimelineActivity extends ActionBarActivity {
 
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Subscriberとして登録する
+        BusHolder.get().register(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Subscriberの登録を解除する
+        BusHolder.get().unregister(this);
+    }
+
+    @Subscribe
+    public void subscribe(DrawerHeaderRefreshEvent event) {
+        View refreshHeader = new DrawerProfHeader(this, event.refreshName, event.refreshPicture, event.refreshBackground,
+                event.refreshFollower, event.refreshFollowee, event.refreshCheer);
+        result.setHeader(refreshHeader);
+        result.setSelectionByIdentifier(1);
     }
 
     class lifelogClickHandler implements Runnable {
@@ -289,7 +317,9 @@ public class GocciTimelineActivity extends ActionBarActivity {
 
         private void postSignupAsync(final Context context, final String category, final String message) {
             final AsyncHttpClient httpClient = new AsyncHttpClient();
-            RequestParams params = new RequestParams("user_name", Application_Gocci.mName);
+            RequestParams params = new RequestParams();
+            params.put("user_name", gocci.getLoginName());
+            params.put("picture", gocci.getLoginPicture());
             httpClient.post(context, Const.URL_SIGNUP_API, params, new AsyncHttpResponseHandler() {
 
                 @Override
@@ -382,8 +412,9 @@ public class GocciTimelineActivity extends ActionBarActivity {
                             EventDateRecorder recorder = EventDateRecorder.load(GocciTimelineActivity.this, "use_first_gocci_android");
                             recorder.clear();
 
-                            Intent intent = new Intent(getApplicationContext(), SplashActivity.class);
+                            Intent intent = new Intent(GocciTimelineActivity.this, LoginActivity.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(intent);
 
                         }

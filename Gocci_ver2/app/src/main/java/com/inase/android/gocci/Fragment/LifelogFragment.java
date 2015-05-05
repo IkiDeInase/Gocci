@@ -59,6 +59,8 @@ public class LifelogFragment extends BaseFragment {
 
     private FloatingActionButton fab;
 
+    private Application_Gocci gocci;
+
     public LifelogFragment newIntent(String name, String imageUrl) {
         LifelogFragment fragment = new LifelogFragment();
         Bundle args = new Bundle();
@@ -116,6 +118,8 @@ public class LifelogFragment extends BaseFragment {
                         true,
                         false,
                         false,
+                        gocci.getLoginName(),
+                        gocci.getLoginPicture(),
                         users.get(number)
                 );
                 fragment.show(getActivity().getSupportFragmentManager(), "blur_sample");
@@ -132,7 +136,11 @@ public class LifelogFragment extends BaseFragment {
         View view2 = getActivity().getLayoutInflater().inflate(R.layout.fragment_lifelog,
                 container, false);
 
-        loginParam = new RequestParams("user_name", Application_Gocci.mName);
+        gocci = (Application_Gocci)getActivity().getApplication();
+
+        loginParam = new RequestParams();
+        loginParam.put("user_name", gocci.getLoginName());
+        loginParam.put("picture", gocci.getLoginPicture());
 
         thisYear.add(Calendar.YEAR, 0);
         thisYear.add(Calendar.MONTH, 0);

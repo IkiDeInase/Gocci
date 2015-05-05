@@ -28,20 +28,26 @@ public class DrawerProfHeader extends LinearLayout {
 
     private boolean isFirst = true;
 
-    public DrawerProfHeader(final Context context) {
+    public DrawerProfHeader(final Context context, String name, String picture, String background, final int follower, final int followee, final int cheer) {
         super(context);
 
         View inflateView = LayoutInflater.from(context).inflate(R.layout.header_drawer_prof, this);
 
         TextView username = (TextView) inflateView.findViewById(R.id.header_username);
         ImageView userpicture = (ImageView) inflateView.findViewById(R.id.header_userpicture);
+        ImageView userbackground = (ImageView) inflateView.findViewById(R.id.header_userbackground);
 
-        username.setText(Application_Gocci.mName);
+        username.setText(name);
         Picasso.with(context)
-                .load(Application_Gocci.mPicture)
+                .load(picture)
                 .placeholder(R.drawable.ic_userpicture)
                 .transform(new RoundedTransformation())
                 .into(userpicture);
+
+        Picasso.with(context)
+                .load(background)
+                .fit()
+                .into(userbackground);
 
         adapter = new ViewPagerItemAdapter(ViewPagerItems.with(context)
                 .add(ViewPagerItem.of("フォロー", R.layout.viewpager_prof_header))
@@ -60,7 +66,7 @@ public class DrawerProfHeader extends LinearLayout {
                 if (isFirst && position == 0) {
                     View page = adapter.getPage(position);
                     final TextView text = (TextView) page.findViewById(R.id.numberTani);
-                    text.setText(Application_Gocci.mFollower + "人");
+                    text.setText(follower + "人");
                     text.setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -80,7 +86,7 @@ public class DrawerProfHeader extends LinearLayout {
 
                 switch (position) {
                     case 0:
-                        text.setText(Application_Gocci.mFollower + "人");
+                        text.setText(follower + "人");
                         text.setOnClickListener(new OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -91,7 +97,7 @@ public class DrawerProfHeader extends LinearLayout {
                         });
                         break;
                     case 1:
-                        text.setText(Application_Gocci.mFollowee + "人");
+                        text.setText(followee + "人");
                         text.setOnClickListener(new OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -102,7 +108,7 @@ public class DrawerProfHeader extends LinearLayout {
                         });
                         break;
                     case 2:
-                        text.setText(Application_Gocci.mCheer + "店");
+                        text.setText(cheer + "店");
                         text.setOnClickListener(new OnClickListener() {
                             @Override
                             public void onClick(View v) {

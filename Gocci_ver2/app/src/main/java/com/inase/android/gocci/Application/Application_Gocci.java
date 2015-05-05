@@ -20,45 +20,102 @@ public class Application_Gocci extends Application {
 
     private final String TAG = "Gocci";
 
-    //アカウント等はここで管理
-    public static String mName;
-    public static String mPicture;
-    public static int mFollower;
-    public static int mFollowee;
-    public static int mCheer;
+    //端末内で使うやつ
+    private String mName;
+    private String mPicture;
+    private String mBackground;
+    private int mFollower;
+    private int mFollowee;
+    private int mCheer;
+
+    //ログイン時に投げるやつ
+    private String mLoginName;
+    private String mLoginPicture;
 
     //経度緯度情報
-    public static Location mLocation;
+    private Location mLocation;
 
-    public static void addFollower() {
+    public void setAccount(String name, String picture, String background, int followee, int follower, int cheer) {
+        mName = name;
+        mPicture = picture;
+        mBackground = background;
+        mFollowee = followee;
+        mFollower = follower;
+        mCheer = cheer;
+    }
+
+    public void setLoginParam(String name, String picture) {
+        mLoginName = name;
+        mLoginPicture = picture;
+    }
+
+    public void changeProfile(String name, String picture, String background) {
+        mName = name;
+        mPicture = picture;
+        mBackground = background;
+    }
+
+    public String getMyName() {
+        return mName;
+    }
+
+    public String getMypicture() {
+        return mPicture;
+    }
+
+    public String getMyBackground() {
+        return mBackground;
+    }
+
+    public int getMyFollower() {
+        return mFollower;
+    }
+
+    public int getMyFollowee() {
+        return mFollowee;
+    }
+
+    public int getMyCheer() {
+        return mCheer;
+    }
+
+    public String getLoginName() {
+        return mLoginName;
+    }
+
+    public String getLoginPicture() {
+        return mLoginPicture;
+    }
+
+    public void addFollower() {
         mFollower++;
     }
 
-    public static void addFollowee() {
+    public void addFollowee() {
         mFollowee++;
     }
 
-    public static void addCheer() {
+    public void addCheer() {
         mCheer++;
     }
 
-    public static void downFollower() {
+    public void downFollower() {
         mFollower--;
     }
 
-    public static void downFollowee() {
+    public void downFollowee() {
         mFollowee--;
     }
 
-    public static void downCheer() {
+    public void downCheer() {
         mCheer--;
     }
 
-    public static void setFirstLocation(Location location) {
+    public void setFirstLocation(Location location) {
         mLocation = location;
     }
 
-    public static Location getFirstLocation() {
+    public Location getFirstLocation() {
         return mLocation;
     }
 

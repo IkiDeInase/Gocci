@@ -40,6 +40,8 @@ import com.hatenablog.shoma2da.eventdaterecorderlib.EventDateRecorder;
 import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.Base.RoundedTransformation;
 import com.inase.android.gocci.Base.SquareVideoView;
+import com.inase.android.gocci.Event.BusHolder;
+import com.inase.android.gocci.Event.DrawerHeaderRefreshEvent;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.View.CommentView;
 import com.inase.android.gocci.View.DrawerProfHeader;
@@ -58,6 +60,7 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.pnikosis.materialishprogress.ProgressWheel;
+import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 import com.twitter.sdk.android.Twitter;
 
@@ -110,6 +113,10 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
 
     private MaterialDialog mViolationDialog;
 
+    private Application_Gocci gocci;
+
+    private Drawer.Result result;
+
     private ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
         @Override
         public void onGlobalLayout() {
@@ -149,6 +156,8 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
             e.printStackTrace();
         }
 
+        gocci = (Application_Gocci)getApplication();
+
         mProfUrl = "http://api-gocci.jp/android_mypage/?user_name=" + mEncodeUser_name;
 
         EventDateRecorder profilerecorder = EventDateRecorder.load(FlexibleUserProfActivity.this, "use_first_userprofile");
@@ -173,9 +182,9 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
 
-        View header = new DrawerProfHeader(this);
+        View header = new DrawerProfHeader(this, gocci.getMyName(), gocci.getMypicture(), gocci.getMyBackground(), gocci.getMyFollower(), gocci.getMyFollowee(), gocci.getMyCheer());
 
-        final Drawer.Result result = new Drawer()
+        result = new Drawer()
                 .withActivity(this)
                 .withToolbar(toolbar)
                 .withHeader(header)
@@ -233,7 +242,9 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
         result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        loginParam = new RequestParams("user_name", Application_Gocci.mName);
+        loginParam = new RequestParams();
+        loginParam.put("user_name", gocci.getLoginName());
+        loginParam.put("picture", gocci.getLoginPicture());
 
         userprofprogress = (ProgressWheel) findViewById(R.id.userprofprogress_wheel);
 
@@ -299,6 +310,7 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
     @Override
     protected void onPause() {
         super.onPause();
+        BusHolder.get().unregister(this);
         ViewHolder viewHolder = getPlayingViewHolder();
         if (viewHolder != null) {
             stopMovie(viewHolder);
@@ -308,7 +320,15 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
     @Override
     protected void onResume() {
         super.onResume();
+        BusHolder.get().register(this);
         startMovie();
+    }
+
+    @Subscribe
+    public void subscribe(DrawerHeaderRefreshEvent event) {
+        View refreshHeader = new DrawerProfHeader(this, event.refreshName, event.refreshPicture, event.refreshBackground,
+                event.refreshFollower, event.refreshFollowee, event.refreshCheer);
+        result.setHeader(refreshHeader);
     }
 
     @Override
@@ -386,6 +406,7 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
             @Override
             public void onSuccess(int statusCode, Header[] headers, String responseString) {
                 try {
+                    Log.e("ろぐ", responseString);
                     JSONObject json = new JSONObject(responseString);
                     String flag = json.getString("flag");
                     JSONArray array = new JSONArray(json.getString("mypage"));
@@ -401,7 +422,7 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
                         followText.setText("このユーザーをフォロー解除する");
                     }
 
-                    if (mUser_name.equals(Application_Gocci.mName)) {
+                    if (mUser_name.equals(gocci.getMyName())) {
                         followText.setText("これはあなたです");
                     }
                 } catch (JSONException e) {
@@ -502,7 +523,7 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
                         followText.setText("このユーザーをフォロー解除する");
                     }
 
-                    if (mUser_name.equals(Application_Gocci.mName)) {
+                    if (mUser_name.equals(gocci.getMyName())) {
                         followText.setText("これはあなたです");
                     }
                 } catch (JSONException e) {
@@ -557,7 +578,7 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
 
                     if (message.equals("ユーザーをお気に入りしました")) {
                         //gocci.addFollower();
-                        Application_Gocci.addFollower();
+                        gocci.addFollower();
                         followText.setText("このユーザーをフォロー解除する");
                         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                     } else {
@@ -615,7 +636,7 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
 
                     if (message.equals("フォロー解除しました")) {
                         //gocci.downFollower();
-                        Application_Gocci.downFollower();
+                        gocci.downFollower();
                         followText.setText("このユーザーをフォローする");
                         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                     } else {
@@ -1056,7 +1077,7 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
                     Log.e("コメントをクリック", "コメント！" + user.getPost_id());
 
                     //投稿に対するコメントが見れるダイアログを表示
-                    View commentView = new CommentView(FlexibleUserProfActivity.this, user.getPost_id());
+                    View commentView = new CommentView(FlexibleUserProfActivity.this, user.getPost_id(), loginParam);
 
                     MaterialDialog mMaterialDialog = new MaterialDialog(FlexibleUserProfActivity.this)
                             .setContentView(commentView)
@@ -1283,8 +1304,9 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
                             EventDateRecorder recorder = EventDateRecorder.load(FlexibleUserProfActivity.this, "use_first_gocci_android");
                             recorder.clear();
 
-                            Intent intent = new Intent(getApplicationContext(), SplashActivity.class);
+                            Intent intent = new Intent(FlexibleUserProfActivity.this, LoginActivity.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(intent);
 
                         }

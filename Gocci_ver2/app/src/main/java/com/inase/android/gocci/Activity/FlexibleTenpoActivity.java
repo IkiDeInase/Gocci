@@ -47,6 +47,8 @@ import com.hatenablog.shoma2da.eventdaterecorderlib.EventDateRecorder;
 import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.Base.RoundedTransformation;
 import com.inase.android.gocci.Base.SquareVideoView;
+import com.inase.android.gocci.Event.BusHolder;
+import com.inase.android.gocci.Event.DrawerHeaderRefreshEvent;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.View.CommentView;
 import com.inase.android.gocci.View.DrawerProfHeader;
@@ -64,6 +66,7 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.pnikosis.materialishprogress.ProgressWheel;
+import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 import com.twitter.sdk.android.Twitter;
 
@@ -113,6 +116,8 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
 
     private MaterialDialog mViolationDialog;
 
+    private Application_Gocci gocci;
+
     private AttributeSet mVideoAttr;
     private Point mDisplaySize;
     private CacheManager mCacheManager;
@@ -131,6 +136,8 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
             }
         }
     };
+
+    private Drawer.Result result;
 
     @Override
     public final void onCreate(Bundle savedInstanceState) {
@@ -164,6 +171,8 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
             e.printStackTrace();
         }
 
+        gocci = (Application_Gocci)getApplication();
+
         EventDateRecorder profilerecorder = EventDateRecorder.load(FlexibleTenpoActivity.this, "use_first_tenpo");
         if (!profilerecorder.didRecorded()) {
             // 機能が１度も利用されてない時のみ実行したい処理を書く
@@ -186,9 +195,9 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
 
-        View header = new DrawerProfHeader(this);
+        View header = new DrawerProfHeader(this, gocci.getMyName(), gocci.getMypicture(), gocci.getMyBackground(), gocci.getMyFollower(), gocci.getMyFollowee(), gocci.getMyCheer());
 
-        final Drawer.Result result = new Drawer()
+        result = new Drawer()
                 .withActivity(this)
                 .withToolbar(toolbar)
                 .withHeader(header)
@@ -248,7 +257,9 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
 
         mTenpoUrl = "http://api-gocci.jp/restpage/?restname=" + mEncoderestname;
 
-        loginParam = new RequestParams("user_name", Application_Gocci.mName);
+        loginParam = new RequestParams();
+        loginParam.put("user_name", gocci.getLoginName());
+        loginParam.put("picture", gocci.getLoginPicture());
 
         mEmptyView = (ImageView) findViewById(R.id.tenpo_emptyView);
         tenpoprogress = (ProgressWheel) findViewById(R.id.tenpoprogress_wheel);
@@ -358,6 +369,7 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
     public final void onPause() {
         mMapView.onPause();
         super.onPause();
+        BusHolder.get().unregister(this);
 
         ViewHolder viewHolder = getPlayingViewHolder();
         if (viewHolder != null) {
@@ -368,9 +380,17 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
     @Override
     public final void onResume() {
         super.onResume();
+        BusHolder.get().register(this);
         mMapView.onResume();
 
         startMovie();
+    }
+
+    @Subscribe
+    public void subscribe(DrawerHeaderRefreshEvent event) {
+        View refreshHeader = new DrawerProfHeader(this, event.refreshName, event.refreshPicture, event.refreshBackground,
+                event.refreshFollower, event.refreshFollowee, event.refreshCheer);
+        result.setHeader(refreshHeader);
     }
 
     @Override
@@ -995,7 +1015,7 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
                     Log.e("コメントをクリック", "コメント！" + user.getPost_id());
 
                     //投稿に対するコメントが見れるダイアログを表示
-                    View commentView = new CommentView(FlexibleTenpoActivity.this, user.getPost_id());
+                    View commentView = new CommentView(FlexibleTenpoActivity.this, user.getPost_id(), loginParam);
 
                     MaterialDialog mMaterialDialog = new MaterialDialog(FlexibleTenpoActivity.this)
                             .setContentView(commentView)
@@ -1217,8 +1237,9 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
                             EventDateRecorder recorder = EventDateRecorder.load(FlexibleTenpoActivity.this, "use_first_gocci_android");
                             recorder.clear();
 
-                            Intent intent = new Intent(getApplicationContext(), SplashActivity.class);
+                            Intent intent = new Intent(FlexibleTenpoActivity.this, LoginActivity.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(intent);
 
                         }

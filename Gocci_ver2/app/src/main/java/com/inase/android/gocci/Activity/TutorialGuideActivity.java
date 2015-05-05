@@ -24,6 +24,8 @@ import com.viewpagerindicator.CirclePageIndicator;
 
 public class TutorialGuideActivity extends ActionBarActivity {
 
+    private Application_Gocci gocci;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +33,11 @@ public class TutorialGuideActivity extends ActionBarActivity {
 
         Intent intent = getIntent();
         final String judge = intent.getStringExtra("judge");
+        String name = intent.getStringExtra("name");
+        String picture = intent.getStringExtra("picture");
+
+        gocci = (Application_Gocci) getApplication();
+        gocci.setLoginParam(name, picture);
 
         EventDateRecorder recorder = EventDateRecorder.load(this, "use_first_gocci_tutorial");
         if (!recorder.didRecorded()) {
@@ -43,8 +50,8 @@ public class TutorialGuideActivity extends ActionBarActivity {
             SharedPreferences pref = getSharedPreferences("pref", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = pref.edit();
 
-            editor.putString("name", Application_Gocci.mName);
-            editor.putString("pictureImageUrl", Application_Gocci.mPicture);
+            editor.putString("name", name);
+            editor.putString("picture", picture);
             editor.putString("judge", judge);
             editor.apply();
 
@@ -68,15 +75,6 @@ public class TutorialGuideActivity extends ActionBarActivity {
 
         } else {
             Log.e("DEBUG", "TutorialGuideActivit　チュートなし");
-            /*
-            SharedPreferences pref = getSharedPreferences("pref", Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = pref.edit();
-
-            editor.putString("name", Application_Gocci.mName);
-            editor.putString("pictureImageUrl", Application_Gocci.mPicture);
-            editor.putString("judge", judge);
-            editor.apply();
-            */
 
             Intent goIntent = new Intent(TutorialGuideActivity.this, GocciTimelineActivity.class);
             startActivity(goIntent);

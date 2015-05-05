@@ -62,7 +62,8 @@
                 android:id="@+id/infoButton"
                 android:layout_centerVertical="true"
                 android:layout_alignParentLeft="true"
-                android:layout_marginLeft="32dp">
+                android:layout_marginLeft="32dp"
+                android:visibility="invisible">
 
                 <ImageView
                     android:layout_width="45dp"

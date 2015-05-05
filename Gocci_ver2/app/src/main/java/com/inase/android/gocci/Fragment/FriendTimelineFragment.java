@@ -114,6 +114,8 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
 
     private UiLifecycleHelper uiHelper;
 
+    private Application_Gocci gocci;
+
     private ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
         @Override
         public void onGlobalLayout() {
@@ -138,6 +140,8 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
         uiHelper.onCreate(savedInstanceState);
 
         Fabric.with(getActivity(), new TweetComposer());
+
+        gocci = (Application_Gocci) getActivity().getApplication();
     }
 
     @Override
@@ -149,7 +153,9 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
         mPlayingPostId = null;
         mViewHolderHash = new ConcurrentHashMap<>();
 
-        loginParam = new RequestParams("user_name", Application_Gocci.mName);
+        loginParam = new RequestParams();
+        loginParam.put("user_name", gocci.getLoginName());
+        loginParam.put("picture", gocci.getLoginPicture());
 
         progressWheel = (ProgressWheel) view.findViewById(R.id.progress_wheel);
         mTimelineListView = (ObservableListView) view.findViewById(R.id.list);
@@ -1095,7 +1101,7 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
                     Log.e("コメントをクリック", "コメント！" + user.getPost_id());
 
                     //投稿に対するコメントが見れるダイアログを表示
-                    View commentView = new CommentView(getActivity(), user.getPost_id());
+                    View commentView = new CommentView(getActivity(), user.getPost_id(), loginParam);
 
                     MaterialDialog mMaterialDialog = new MaterialDialog(getActivity())
                             .setContentView(commentView)

@@ -52,6 +52,13 @@ public class CreateAccountView extends SupportBlurDialogFragment implements View
     private static final String BUNDLE_KEY_DEBUG = "bundle_key_debug_effect";
     private static final String BUNDLE_KEY_BLURRED_ACTION_BAR = "bundle_key_blurred_action_bar";
 
+    private static final String TAG_FOLLOWEE = "followee_num";
+    private static final String TAG_FOLLOWER = "follower_num";
+    private static final String TAG_CHEER = "cheer_num";
+    private static final String TAG_USER_NAME = "user_name";
+    private static final String TAG_PICTURE = "picture";
+    private static final String TAG_BACKGROUND = "background_picture";
+
     private int mRadius;
     private float mDownScaleFactor;
     private boolean mDimming;
@@ -59,6 +66,8 @@ public class CreateAccountView extends SupportBlurDialogFragment implements View
     private boolean mBlurredActionBar;
 
     private AsyncHttpClient httpClient;
+
+    private Application_Gocci gocci;
 
     private static final String emailPattern = "^[a-zA-Z0-9\\._\\-\\+]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z\\.]+[a-zA-Z]$";
 
@@ -127,6 +136,8 @@ public class CreateAccountView extends SupportBlurDialogFragment implements View
         usernameEdit = (EditText) view.findViewById(R.id.usernameEdit);
         emailEdit = (EditText) view.findViewById(R.id.emailEdit);
         passEdit = (EditText) view.findViewById(R.id.passEdit);
+
+        gocci = (Application_Gocci) getActivity().getApplication();
 
         checkPolicy = (CheckBox) view.findViewById(R.id.checkPolicy);
 
@@ -214,17 +225,23 @@ public class CreateAccountView extends SupportBlurDialogFragment implements View
                     String message = timeline.getString("message");
 
                     if (message.equals("movie api")) {
-                        Application_Gocci.mName = timeline.getString("user_name");
-                        Application_Gocci.mPicture = timeline.getString("picture");
-                        Application_Gocci.mFollower = timeline.getInt("follower_num");
-                        Application_Gocci.mFollowee = timeline.getInt("followee_num");
-                        Application_Gocci.mCheer = timeline.getInt("cheer_num");
+                        String mName = timeline.getString(TAG_USER_NAME);
+                        String mPicture = timeline.getString(TAG_PICTURE);
+                        String mBackground = timeline.getString(TAG_BACKGROUND);
+                        int mFollowee = timeline.getInt(TAG_FOLLOWEE);
+                        int mFollower = timeline.getInt(TAG_FOLLOWER);
+                        int mCheer = timeline.getInt(TAG_CHEER);
+
+                        gocci.setAccount(mName, mPicture, mBackground, mFollowee, mFollower, mCheer);
 
                         Toast.makeText(getActivity(), "アカウントを作成しました！", Toast.LENGTH_SHORT).show();
 
                         Intent intent = new Intent(getActivity(), TutorialGuideActivity.class);
                         intent.putExtra("judge", "auth");
+                        intent.putExtra("name", mName);
+                        intent.putExtra("picture", mPicture);
                         startActivity(intent);
+                        dismiss();
                     } else {
                         Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
                     }
@@ -278,12 +295,14 @@ public class CreateAccountView extends SupportBlurDialogFragment implements View
     class FacebookClickHandler implements Runnable {
         public void run() {
             ((LoginActivity) getActivity()).onFacebookButtonClicked();
+            dismiss();
         }
     }
 
     class TwitterClickHandler implements Runnable {
         public void run() {
             ((LoginActivity) getActivity()).onTwitterButtonClicked();
+            dismiss();
         }
     }
 }

@@ -12,7 +12,7 @@
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="175dp"
-            android:id="@+id/imageView"
+            android:id="@+id/header_userbackground"
             android:src="@drawable/ic_background_cafe"
             android:scaleType="fitXY" />
 

@@ -59,12 +59,16 @@ public class LifelogVideoFragment2 extends SupportBlurDialogFragment implements 
     private static final String BUNDLE_KEY_DEBUG = "bundle_key_debug_effect";
     private static final String BUNDLE_KEY_BLURRED_ACTION_BAR = "bundle_key_blurred_action_bar";
     private static final String BUNDLE_KEY_DATE = "bundle_key_date";
+    private static final String BUNDLE_KEY_NAME = "bundle_key_name";
+    private static final String BUNDLE_KEY_PICTURE = "bundle_key_picture";
 
     private int mRadius;
     private float mDownScaleFactor;
     private boolean mDimming;
     private boolean mDebug;
     private boolean mBlurredActionBar;
+    private String mName;
+    private String mPicture;
 
     private String clickedRestname;
     private String clickedLocality;
@@ -120,6 +124,8 @@ public class LifelogVideoFragment2 extends SupportBlurDialogFragment implements 
                                                     boolean dimming,
                                                     boolean debug,
                                                     boolean mBlurredActionBar,
+                                                    String name,
+                                                    String picture,
                                                     String date) {
         LifelogVideoFragment2 fragment = new LifelogVideoFragment2();
         Bundle args = new Bundle();
@@ -144,6 +150,14 @@ public class LifelogVideoFragment2 extends SupportBlurDialogFragment implements 
                 mBlurredActionBar
         );
         args.putString(
+                BUNDLE_KEY_NAME,
+                name
+        );
+        args.putString(
+                BUNDLE_KEY_PICTURE,
+                picture
+        );
+        args.putString(
                 BUNDLE_KEY_DATE,
                 date
         );
@@ -160,6 +174,8 @@ public class LifelogVideoFragment2 extends SupportBlurDialogFragment implements 
         mDimming = args.getBoolean(BUNDLE_KEY_DIMMING);
         mDebug = args.getBoolean(BUNDLE_KEY_DEBUG);
         mBlurredActionBar = args.getBoolean(BUNDLE_KEY_BLURRED_ACTION_BAR);
+        mName = args.getString(BUNDLE_KEY_NAME);
+        mPicture = args.getString(BUNDLE_KEY_PICTURE);
         mDate = args.getString(BUNDLE_KEY_DATE);
 
     }
@@ -167,9 +183,11 @@ public class LifelogVideoFragment2 extends SupportBlurDialogFragment implements 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        loginParam = new RequestParams("user_name", Application_Gocci.mName);
+        loginParam = new RequestParams();
+        loginParam.put("user_name", mName);
+        loginParam.put("picture", mPicture);
 
-        getSignupAsync(getActivity(), mDate);
+        getSignupAsync(getActivity(), mDate, loginParam);
     }
 
     @NonNull
@@ -274,9 +292,9 @@ public class LifelogVideoFragment2 extends SupportBlurDialogFragment implements 
         startMovie();
     }
 
-    private void getSignupAsync(final Context context, final String date) {
+    private void getSignupAsync(final Context context, final String date, RequestParams params) {
         httpClient = new AsyncHttpClient();
-        httpClient.post(context, Const.URL_SIGNUP_API, loginParam, new AsyncHttpResponseHandler() {
+        httpClient.post(context, Const.URL_SIGNUP_API, params, new AsyncHttpResponseHandler() {
             @Override
             public void onStart() {
                 Log.d("DEBUG", "ProgressDialog show");

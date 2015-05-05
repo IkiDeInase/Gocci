@@ -26,6 +26,7 @@
     <application
         android:name=".Application.Application_Gocci"
         android:allowBackup="true"
+        android:largeHeap="true"
         android:icon="@drawable/ic_gocci"
         android:label="@string/app_name"
         android:screenOrientation="portrait"
@@ -49,7 +50,6 @@
 
         <activity
             android:name=".Activity.SplashActivity"
-            android:label="@string/app_name"
             android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -59,7 +59,7 @@
         </activity>
         <activity
             android:name="com.facebook.LoginActivity"
-            android:label="@string/app_name" />
+             />
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
@@ -67,26 +67,21 @@
 
         <activity
             android:name=".Activity.FlexibleTenpoActivity"
-            android:label="@string/title_activity_flexible_list_view"
             android:screenOrientation="portrait"
             android:theme="@style/CustomTheme" />
         <activity
             android:name=".Activity.FlexibleUserProfActivity"
-            android:label="@string/title_activity_flexible_user_prof"
             android:screenOrientation="portrait"
             android:theme="@style/CustomTheme" />
         <activity
             android:name=".Activity.TutorialGuideActivity"
-            android:label="@string/title_activity_tutorial_guide"
             android:screenOrientation="portrait" />
         <activity
             android:name=".Activity.CameraActivity"
-            android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.NoTitleBar" />
         <activity
             android:name=".Activity.LoginActivity"
-            android:label="@string/title_activity_login"
             android:launchMode="singleTask"
             android:screenOrientation="portrait" />
 
@@ -101,35 +96,24 @@
 
         <activity
             android:name=".Activity.GocciTimelineActivity"
-            android:label="@string/title_activity_gocci_timeline"
-            android:launchMode="singleTask"
             android:theme="@style/CustomTheme" />
         <activity
             android:name=".Activity.GocciSearchTenpoActivity"
-            android:label="@string/title_activity_gocci_search_tenpo"
-            android:launchMode="singleTask"
             android:theme="@style/MaterialDrawerTheme.Light" />
         <activity
             android:name=".Activity.GocciLifelogActivity"
-            android:label="@string/title_activity_gocci_lifelog"
-            android:launchMode="singleTask"
             android:theme="@style/CustomTheme" />
         <activity
             android:name=".Activity.GocciMyprofActivity"
-            android:label="@string/title_activity_gocci_myprof"
-            android:launchMode="singleTask"
             android:theme="@style/CustomTheme" />
         <activity
             android:name=".Activity.SelectShopActivity"
-            android:label="@string/title_activity_select_shop"
             android:theme="@style/AppThemeNoActionBar" />
         <activity
             android:name=".Activity.FollowerFolloweeCheerListActivity"
-            android:label="@string/title_activity_follower_followee_cheer_list"
             android:theme="@style/AppThemeNoActionBar" />
         <activity
             android:name=".Activity.LoginPreferenceActivity"
-            android:label="@string/title_activity_login_preference"
             android:launchMode="singleTask"
             android:screenOrientation="portrait" />
     </application>

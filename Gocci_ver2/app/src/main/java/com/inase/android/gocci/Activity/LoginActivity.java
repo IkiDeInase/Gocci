@@ -54,6 +54,7 @@ public class LoginActivity extends ActionBarActivity {
     private static final String TAG_CHEER = "cheer_num";
     private static final String TAG_USER_NAME = "user_name";
     private static final String TAG_PICTURE = "picture";
+    private static final String TAG_BACKGROUND = "background_picture";
 
     private static final String TAG_AUTH = "auth";
     private static final String TAG_SNS_FACEBOOK = "facebook";
@@ -62,6 +63,8 @@ public class LoginActivity extends ActionBarActivity {
 
     private AsyncHttpClient httpClient;
     private RequestParams loginParams;
+
+    private Application_Gocci gocci;
 
     private Session.StatusCallback callback = new Session.StatusCallback() {
         @Override
@@ -114,6 +117,8 @@ public class LoginActivity extends ActionBarActivity {
         setContentView(R.layout.activity_login);
         uiHelper = new UiLifecycleHelper(this, null);
         uiHelper.onCreate(savedInstanceState);
+
+        gocci = (Application_Gocci) getApplication();
 
         progress = (ProgressWheel) findViewById(R.id.progress_wheel);
 
@@ -228,14 +233,19 @@ public class LoginActivity extends ActionBarActivity {
                     String code = response.getString("code");
 
                     if (message.equals("movie api") && code.equals("200")) {
-                        Application_Gocci.mName = response.getString(TAG_USER_NAME);
-                        Application_Gocci.mPicture = response.getString(TAG_PICTURE);
-                        Application_Gocci.mFollowee = response.getInt(TAG_FOLLOWEE);
-                        Application_Gocci.mFollower = response.getInt(TAG_FOLLOWER);
-                        Application_Gocci.mCheer = response.getInt(TAG_CHEER);
+                        String mName = response.getString(TAG_USER_NAME);
+                        String mPicture = response.getString(TAG_PICTURE);
+                        String mBackground = response.getString(TAG_BACKGROUND);
+                        int mFollowee = response.getInt(TAG_FOLLOWEE);
+                        int mFollower = response.getInt(TAG_FOLLOWER);
+                        int mCheer = response.getInt(TAG_CHEER);
+
+                        gocci.setAccount(mName, mPicture, mBackground, mFollowee, mFollower, mCheer);
 
                         Intent intent = new Intent(LoginActivity.this, TutorialGuideActivity.class);
                         intent.putExtra("judge", judge);
+                        intent.putExtra("name", name);
+                        intent.putExtra("picture", url);
                         startActivity(intent);
                     } else {
                         Toast.makeText(LoginActivity.this, "ログインに失敗しました", Toast.LENGTH_SHORT).show();

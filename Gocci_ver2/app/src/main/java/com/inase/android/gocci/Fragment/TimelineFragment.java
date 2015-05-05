@@ -126,6 +126,8 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
 
     private UiLifecycleHelper uiHelper;
 
+    private Application_Gocci gocci;
+
     private ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
         @Override
         public void onGlobalLayout() {
@@ -161,6 +163,8 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
         uiHelper.onCreate(savedInstanceState);
 
         Fabric.with(getActivity(), new TweetComposer());
+
+        gocci = (Application_Gocci) getActivity().getApplication();
     }
 
     @Override
@@ -188,7 +192,9 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
         mPlayingPostId = null;
         mViewHolderHash = new ConcurrentHashMap<>();
 
-        loginParam = new RequestParams("user_name", Application_Gocci.mName);
+        loginParam = new RequestParams();
+        loginParam.put("user_name", gocci.getLoginName());
+        loginParam.put("picture", gocci.getLoginPicture());
 
         progressWheel = (ProgressWheel) view.findViewById(R.id.progress_wheel);
         mTimelineListView = (ObservableListView) view.findViewById(R.id.list);
@@ -214,8 +220,8 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
         if (Util.getConnectedState(getActivity()) != Util.NetworkStatus.OFF) {
             if (Util.getConnectedState(getActivity()) == Util.NetworkStatus.MOBILE) {
                 Toast.makeText(getActivity(), "回線が悪いので、動画が流れなくなります", Toast.LENGTH_LONG).show();
-                if (Application_Gocci.getFirstLocation() != null) {
-                    mLocation = Application_Gocci.getFirstLocation();
+                if (gocci.getFirstLocation() != null) {
+                    mLocation = gocci.getFirstLocation();
                     Log.e("DEBUG", "アプリから位置とったよ");
 
                     getSignupAsync(getActivity());//サインアップとJSON
@@ -227,7 +233,7 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
                             if (location != null) {
                                 mLocation = location;
                                 getSignupAsync(getActivity());
-                                Application_Gocci.setFirstLocation(location);
+                                gocci.setFirstLocation(location);
                             } else {
                                 Toast.makeText(getActivity(), "位置情報が読み取れませんでした", Toast.LENGTH_SHORT).show();
                             }
@@ -235,8 +241,8 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
                     });
                 }
             } else {
-                if (Application_Gocci.getFirstLocation() != null) {
-                    mLocation = Application_Gocci.getFirstLocation();
+                if (gocci.getFirstLocation() != null) {
+                    mLocation = gocci.getFirstLocation();
                     Log.e("DEBUG", "アプリから位置とったよ");
 
                     getSignupAsync(getActivity());//サインアップとJSON
@@ -248,7 +254,7 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
                             if (location != null) {
                                 mLocation = location;
                                 getSignupAsync(getActivity());
-                                Application_Gocci.setFirstLocation(location);
+                                gocci.setFirstLocation(location);
                             } else {
                                 Toast.makeText(getActivity(), "位置情報が読み取れませんでした", Toast.LENGTH_SHORT).show();
                             }
@@ -274,7 +280,7 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
                                 mLocation = location;
                                 Log.e("とったどー", "いえい！");
                                 getRefreshAsync(getActivity());
-                                Application_Gocci.setFirstLocation(location);
+                                gocci.setFirstLocation(location);
                             } else {
                                 Toast.makeText(getActivity(), "位置情報が読み取れませんでした", Toast.LENGTH_SHORT).show();
                                 mTimelineSwipe.setRefreshing(false);
@@ -1197,7 +1203,7 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
                     Log.e("コメントをクリック", "コメント！" + user.getPost_id());
 
                     //投稿に対するコメントが見れるダイアログを表示
-                    View commentView = new CommentView(getActivity(), user.getPost_id());
+                    View commentView = new CommentView(getActivity(), user.getPost_id(), loginParam);
 
                     MaterialDialog mMaterialDialog = new MaterialDialog(getActivity())
                             .setContentView(commentView)

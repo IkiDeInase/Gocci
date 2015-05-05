@@ -44,12 +44,12 @@ import com.hatenablog.shoma2da.eventdaterecorderlib.EventDateRecorder;
 import com.inase.android.gocci.Activity.CameraActivity;
 import com.inase.android.gocci.Activity.FlexibleTenpoActivity;
 import com.inase.android.gocci.Activity.GocciMyprofActivity;
-import com.inase.android.gocci.Activity.SplashActivity;
 import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.Base.BaseFragment;
 import com.inase.android.gocci.Base.RoundedTransformation;
 import com.inase.android.gocci.Base.SquareVideoView;
 import com.inase.android.gocci.Event.BusHolder;
+import com.inase.android.gocci.Event.DrawerHeaderRefreshEvent;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.View.CommentView;
 import com.inase.android.gocci.common.CacheManager;
@@ -59,7 +59,6 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
-import com.loopj.android.http.TextHttpResponseHandler;
 import com.melnykov.fab.FloatingActionButton;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.squareup.picasso.Picasso;
@@ -137,6 +136,8 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
     private boolean isBackground = false;
     private boolean isPicture = false;
 
+    private Application_Gocci gocci;
+
     private ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
         @Override
         public void onGlobalLayout() {
@@ -161,6 +162,8 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
         uiHelper.onCreate(savedInstanceState);
 
         Fabric.with(getActivity(), new TweetComposer());
+
+        gocci = (Application_Gocci) getActivity().getApplication();
     }
 
     @Override
@@ -171,7 +174,7 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
                 container, false);
 
         try {
-            mEncodeUser_name = URLEncoder.encode(Application_Gocci.mName, "UTF-8");
+            mEncodeUser_name = URLEncoder.encode(gocci.getMyName(), "UTF-8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -197,7 +200,9 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
 
         mProfUrl = "http://api-gocci.jp/mypage/?user_name=" + mEncodeUser_name;
 
-        loginParam = new RequestParams("user_name", Application_Gocci.mName);
+        loginParam = new RequestParams();
+        loginParam.put("user_name", gocci.getLoginName());
+        loginParam.put("picture", gocci.getLoginPicture());
 
         fab = (FloatingActionButton) view.findViewById(R.id.toukouButton);
 
@@ -229,13 +234,18 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
         final ImageView myprof_picture = (ImageView) view.findViewById(R.id.myprof_picture);
         final ImageView myprof_background = (ImageView) view.findViewById(R.id.myprof_background);
         RippleView editRipple = (RippleView) view.findViewById(R.id.editProfile);
-        myprof_username.setText(Application_Gocci.mName);
+        myprof_username.setText(gocci.getMyName());
         Picasso.with(getActivity())
-                .load(Application_Gocci.mPicture)
+                .load(gocci.getMypicture())
                 .fit()
                 .placeholder(R.drawable.ic_userpicture)
                 .transform(new RoundedTransformation())
                 .into(myprof_picture);
+
+        Picasso.with(getActivity())
+                .load(gocci.getMyBackground())
+                .fit()
+                .into(myprof_background);
 
         editRipple.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -309,24 +319,23 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
                                                     if (message.equals("変更しました")) {
                                                         Toast.makeText(getActivity(), "プロフィールを変更しました", Toast.LENGTH_SHORT).show();
                                                         String background_image = response.getString("background_image");
-                                                        Application_Gocci.mName = response.getString("user_name");
-                                                        Application_Gocci.mPicture = response.getString("picture");
+                                                        String name = response.getString("user_name");
+                                                        String picture = response.getString("picture");
 
-                                                        SharedPreferences pref = getActivity().getSharedPreferences("pref", Context.MODE_PRIVATE);
-                                                        SharedPreferences.Editor editor = pref.edit();
+                                                        gocci.changeProfile(name, picture, background_image);
 
-                                                        editor.putString("name", Application_Gocci.mName);
-                                                        editor.putString("pictureImageUrl", Application_Gocci.mPicture);
-                                                        editor.apply();
+                                                        BusHolder.get().post(new DrawerHeaderRefreshEvent(name, picture, background_image, gocci.getMyFollower(), gocci.getMyFollowee(), gocci.getMyCheer()));
 
                                                         Intent intent = getActivity().getIntent();
                                                         getActivity().overridePendingTransition(0, 0);
                                                         intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                                                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                                         getActivity().finish();
 
                                                         getActivity().overridePendingTransition(0, 0);
                                                         startActivity(intent);
+
                                                     } else {
                                                         Toast.makeText(getActivity(), "プロフィール変更に失敗しました", Toast.LENGTH_SHORT).show();
                                                     }
@@ -357,14 +366,19 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
                 edit_username_edit = (EditText) dialog.getCustomView().findViewById(R.id.myprof_username_edit);
 
                 Picasso.with(getActivity())
-                        .load(Application_Gocci.mPicture)
+                        .load(gocci.getMypicture())
                         .fit()
                         .placeholder(R.drawable.ic_userpicture)
                         .transform(new RoundedTransformation())
                         .into(edit_picture);
 
-                edit_username.setText(Application_Gocci.mName);
-                edit_username_edit.setHint(Application_Gocci.mName);
+                Picasso.with(getActivity())
+                        .load(gocci.getMyBackground())
+                        .fit()
+                        .into(edit_background);
+
+                edit_username.setText(gocci.getMyName());
+                edit_username_edit.setHint(gocci.getMyName());
 
                 edit_background.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -1191,7 +1205,7 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
                     Log.e("コメントをクリック", "コメント！" + user.getPost_id());
 
                     //投稿に対するコメントが見れるダイアログを表示
-                    View commentView = new CommentView(getActivity(), user.getPost_id());
+                    View commentView = new CommentView(getActivity(), user.getPost_id(), loginParam);
 
                     MaterialDialog mMaterialDialog = new MaterialDialog(getActivity())
                             .setContentView(commentView)
