@@ -94,6 +94,7 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
     private String mEncoderestname;
     private String clickedUsername;
     private String clickedUserpicture;
+    private String clickedUserbackground;
 
     private double mLat;
     private double mLon;
@@ -914,6 +915,7 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
                 public void onClick(View v) {
                     clickedUsername = user.getUser_name();
                     clickedUserpicture = user.getPicture();
+                    clickedUserbackground = user.getBackground();
                     Handler handler = new Handler();
                     handler.postDelayed(new nameClickHandler(), 750);
 
@@ -925,6 +927,7 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
                 public void onClick(View v) {
                     clickedUsername = user.getUser_name();
                     clickedUserpicture = user.getPicture();
+                    clickedUserbackground = user.getBackground();
                     Handler handler = new Handler();
                     handler.postDelayed(new nameClickHandler(), 750);
 
@@ -1035,6 +1038,7 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
             Intent userintent = new Intent(FlexibleTenpoActivity.this, FlexibleUserProfActivity.class);
             userintent.putExtra("username", clickedUsername);
             userintent.putExtra("picture", clickedUserpicture);
+            userintent.putExtra("background", clickedUserbackground);
             startActivity(userintent);
             overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
         }

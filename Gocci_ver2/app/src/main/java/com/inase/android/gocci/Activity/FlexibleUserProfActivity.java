@@ -83,6 +83,7 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
     private String mProfUrl;
     private String mEncodeUser_name;
     private String mUserPictureImageUrl;
+    private String mUserBackground;
 
     private String clickedRestname;
     private String clickedLocality;
@@ -149,6 +150,7 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
         Intent userintent = getIntent();
         mUser_name = userintent.getStringExtra("username");
         mUserPictureImageUrl = userintent.getStringExtra("picture");
+        mUserBackground = userintent.getStringExtra("background");
 
         try {
             mEncodeUser_name = URLEncoder.encode(mUser_name, "UTF-8");
@@ -263,6 +265,7 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
 
         TextView userprof_username = (TextView) findViewById(R.id.userprof_username);
         ImageView userprof_picture = (ImageView) findViewById(R.id.userprof_picture);
+        ImageView userprof_background = (ImageView) findViewById(R.id.userprof_background);
         RippleView userprof_follow = (RippleView) findViewById(R.id.userprof_follow);
         followText = (TextView) findViewById(R.id.followText);
 
@@ -273,6 +276,10 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
                 .placeholder(R.drawable.ic_userpicture)
                 .transform(new RoundedTransformation())
                 .into(userprof_picture);
+        Picasso.with(FlexibleUserProfActivity.this)
+                .load(mUserBackground)
+                .fit()
+                .into(userprof_background);
 
         userprof_follow.setOnClickListener(new View.OnClickListener() {
             @Override

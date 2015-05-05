@@ -60,10 +60,12 @@ public class CommentView extends LinearLayout {
 
     private String clickedUsername;
     private String clickedUserPicture;
+    private String clickedUserbackground;
 
     private static final String TAG_COMMENT = "comment";
     private static final String TAG_USER_NAME = "user_name";
     private static final String TAG_PICTURE_URL = "picture";
+    private static final String TAG_BACKGROUND_PICTURE = "background_picture";
 
     private AsyncHttpClient httpClient;
     private AsyncHttpClient httpClient2;
@@ -173,12 +175,14 @@ public class CommentView extends LinearLayout {
                         String comment = jsonObject.getString(TAG_COMMENT);
                         String user_name = jsonObject.getString(TAG_USER_NAME);
                         String picture_url = jsonObject.getString(TAG_PICTURE_URL);
+                        String background = jsonObject.getString(TAG_BACKGROUND_PICTURE);
 
                         UserData user = new UserData();
 
                         user.setComment(comment);
                         user.setUser_name(user_name);
                         user.setPicture(picture_url);
+                        user.setBackground(background);
 
                         mCommentusers.add(user);
                     }
@@ -256,12 +260,14 @@ public class CommentView extends LinearLayout {
                         String comment = jsonObject.getString(TAG_COMMENT);
                         String user_name = jsonObject.getString(TAG_USER_NAME);
                         String picture_url = jsonObject.getString(TAG_PICTURE_URL);
+                        String background = jsonObject.getString(TAG_BACKGROUND_PICTURE);
 
                         UserData user = new UserData();
 
                         user.setComment(comment);
                         user.setUser_name(user_name);
                         user.setPicture(picture_url);
+                        user.setBackground(background);
 
                         mCommentusers.add(user);
                     }
@@ -335,6 +341,7 @@ public class CommentView extends LinearLayout {
                 public void onClick(View v) {
                     clickedUsername = user.getUser_name();
                     clickedUserPicture = user.getPicture();
+                    clickedUserbackground = user.getBackground();
 
                     //リップルエフェクトを見せるために、すこし遅らせる。
                     Handler handler = new Handler();
@@ -351,6 +358,7 @@ public class CommentView extends LinearLayout {
             Intent intent = new Intent(getContext(), FlexibleUserProfActivity.class);
             intent.putExtra("username", clickedUsername);
             intent.putExtra("picture", clickedUserPicture);
+            intent.putExtra("background", clickedUserbackground);
             getContext().startActivity(intent);
         }
     }

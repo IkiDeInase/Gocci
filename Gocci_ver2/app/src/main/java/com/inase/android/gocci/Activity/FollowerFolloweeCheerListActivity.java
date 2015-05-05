@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.andexert.library.RippleView;
 import com.github.ksoichiro.android.observablescrollview.ObservableListView;
 import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.Base.RoundedTransformation;
@@ -130,10 +131,14 @@ public class FollowerFolloweeCheerListActivity extends ActionBarActivity {
                         JSONObject jsonObject = response.getJSONObject(i);
                         String username = jsonObject.getString("user_name");
                         String picture = jsonObject.getString("picture");
+                        String background = jsonObject.getString("background_picture");
+                        int personal_id = jsonObject.getInt("personal_id");
 
                         UserData user = new UserData();
                         user.setUser_name(username);
                         user.setPicture(picture);
+                        user.setBackground(background);
+                        user.setPersonal_id(personal_id);
 
                         users.add(user);
                     }
@@ -165,10 +170,14 @@ public class FollowerFolloweeCheerListActivity extends ActionBarActivity {
                         JSONObject jsonObject = response.getJSONObject(i);
                         String username = jsonObject.getString("user_name");
                         String picture = jsonObject.getString("picture");
+                        String background = jsonObject.getString("background_picture");
+                        int personal_id = jsonObject.getInt("personal_id");
 
                         UserData user = new UserData();
                         user.setUser_name(username);
                         user.setPicture(picture);
+                        user.setBackground(background);
+                        user.setPersonal_id(personal_id);
 
                         users.add(user);
                     }
@@ -246,10 +255,14 @@ public class FollowerFolloweeCheerListActivity extends ActionBarActivity {
                         JSONObject jsonObject = response.getJSONObject(i);
                         String username = jsonObject.getString("user_name");
                         String picture = jsonObject.getString("picture");
+                        String background = jsonObject.getString("background_picture");
+                        int personal_id = jsonObject.getInt("personal_id");
 
                         UserData user = new UserData();
                         user.setUser_name(username);
                         user.setPicture(picture);
+                        user.setBackground(background);
+                        user.setPersonal_id(personal_id);
 
                         users.add(user);
                     }
@@ -287,10 +300,14 @@ public class FollowerFolloweeCheerListActivity extends ActionBarActivity {
                         JSONObject jsonObject = response.getJSONObject(i);
                         String username = jsonObject.getString("user_name");
                         String picture = jsonObject.getString("picture");
+                        String background = jsonObject.getString("background_picture");
+                        int personal_id = jsonObject.getInt("personal_id");
 
                         UserData user = new UserData();
                         user.setUser_name(username);
                         user.setPicture(picture);
+                        user.setBackground(background);
+                        user.setPersonal_id(personal_id);
 
                         users.add(user);
                     }
@@ -368,16 +385,16 @@ public class FollowerFolloweeCheerListActivity extends ActionBarActivity {
     public static class FollowerFolloweeViewHolder {
         ImageView userpicture;
         TextView username;
-        //ImageView addfollowButton;
-        //ImageView deletefollowButton;
-        //RippleView accountRipple;
+        ImageView addfollowButton;
+        ImageView deletefollowButton;
+        RippleView accountRipple;
 
         public FollowerFolloweeViewHolder(View view) {
             this.userpicture = (ImageView) view.findViewById(R.id.follower_followee_picture);
             this.username = (TextView) view.findViewById(R.id.username);
-            //this.addfollowButton = (ImageView) view.findViewById(R.id.addfollowButton);
-            //this.deletefollowButton = (ImageView) view.findViewById(R.id.deletefollowButton);
-            //this.accountRipple = (RippleView) view.findViewById(R.id.accountButton);
+            this.addfollowButton = (ImageView) view.findViewById(R.id.addfollowButton);
+            this.deletefollowButton = (ImageView) view.findViewById(R.id.deletefollowButton);
+            this.accountRipple = (RippleView) view.findViewById(R.id.accountButton);
         }
     }
 
@@ -432,6 +449,7 @@ public class FollowerFolloweeCheerListActivity extends ActionBarActivity {
                     Intent intent = new Intent(FollowerFolloweeCheerListActivity.this, FlexibleUserProfActivity.class);
                     intent.putExtra("username", user.getUser_name());
                     intent.putExtra("picture", user.getPicture());
+                    intent.putExtra("background", user.getBackground());
                     getContext().startActivity(intent);
                     overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
                 }
@@ -443,12 +461,13 @@ public class FollowerFolloweeCheerListActivity extends ActionBarActivity {
                     Intent intent = new Intent(FollowerFolloweeCheerListActivity.this, FlexibleUserProfActivity.class);
                     intent.putExtra("username", user.getUser_name());
                     intent.putExtra("picture", user.getPicture());
+                    intent.putExtra("background", user.getBackground());
                     getContext().startActivity(intent);
                     overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
                 }
             });
 
-            /*
+
             switch (mCategory) {
                 case "follower":
                     viewHolder.deletefollowButton.setVisibility(View.VISIBLE);
@@ -457,37 +476,41 @@ public class FollowerFolloweeCheerListActivity extends ActionBarActivity {
                         @Override
                         public void onClick(View v) {
                             if (finalViewHolder.deletefollowButton.isShown()) {
-                                finalViewHolder.deletefollowButton.setVisibility(View.GONE);
+                                finalViewHolder.deletefollowButton.setVisibility(View.INVISIBLE);
                                 finalViewHolder.addfollowButton.setVisibility(View.VISIBLE);
                                 postUnFollower(FollowerFolloweeCheerListActivity.this, user.getUser_name());
                             } else {
                                 finalViewHolder.deletefollowButton.setVisibility(View.VISIBLE);
-                                finalViewHolder.addfollowButton.setVisibility(View.GONE);
+                                finalViewHolder.addfollowButton.setVisibility(View.INVISIBLE);
                                 postFollower(FollowerFolloweeCheerListActivity.this, user.getUser_name());
                             }
                         }
                     });
                     break;
                 case "followee":
-                    viewHolder.addfollowButton.setVisibility(View.VISIBLE);
+                    if (user.getPersonal_id() == 0) {
+                        viewHolder.addfollowButton.setVisibility(View.VISIBLE);
+                    } else {
+                        viewHolder.deletefollowButton.setVisibility(View.VISIBLE);
+                    }
                     final FollowerFolloweeViewHolder finalViewHolder1 = viewHolder;
                     viewHolder.accountRipple.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             if (finalViewHolder1.addfollowButton.isShown()) {
-                                finalViewHolder1.addfollowButton.setVisibility(View.GONE);
+                                finalViewHolder1.addfollowButton.setVisibility(View.INVISIBLE);
                                 finalViewHolder1.deletefollowButton.setVisibility(View.VISIBLE);
                                 postFollower(FollowerFolloweeCheerListActivity.this, user.getUser_name());
                             } else {
                                 finalViewHolder1.addfollowButton.setVisibility(View.VISIBLE);
-                                finalViewHolder1.deletefollowButton.setVisibility(View.GONE);
+                                finalViewHolder1.deletefollowButton.setVisibility(View.INVISIBLE);
                                 postUnFollower(FollowerFolloweeCheerListActivity.this, user.getUser_name());
                             }
                         }
                     });
                     break;
             }
-            */
+
 
             return convertView;
         }
@@ -576,6 +599,7 @@ public class FollowerFolloweeCheerListActivity extends ActionBarActivity {
 
                             if (message.equals("ユーザーをお気に入りしました")) {
                                 //gocci.addFollower();
+                                Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                                 gocci.addFollower();
                             } else {
                                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
@@ -617,6 +641,7 @@ public class FollowerFolloweeCheerListActivity extends ActionBarActivity {
                             if (message.equals("フォロー解除しました")) {
                                 //gocci.downFollower();
                                 gocci.downFollower();
+                                Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                             } else {
                                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                             }

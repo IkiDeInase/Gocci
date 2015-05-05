@@ -59,11 +59,6 @@ import java.util.List;
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
 
-/**
- * Main Activity that used to show all the actions.
- *
- * @author xiaodong
- */
 public class CameraActivity extends Activity {
 
     private MySurfaceView videoSurface = null;
@@ -80,6 +75,8 @@ public class CameraActivity extends Activity {
     private String timeStamp;
 
     private boolean isPlaying = false;
+
+    private boolean isNormalMode = true;
 
     private RippleView selectShopButton;
     private RippleView infoButton;
@@ -237,7 +234,9 @@ public class CameraActivity extends Activity {
             case 123:
                 if (resultCode == RESULT_OK) {
                     Bundle bundle = data.getExtras();
+                    isNormalMode = bundle.getBoolean("isExist");
                     mRestname = bundle.getString("restname");
+                    Log.e("インプット店舗", mRestname);
                     shopImage.setBackgroundResource(R.drawable.ic_done_white_24dp);
                 } else if (resultCode == RESULT_CANCELED) {
 
@@ -246,7 +245,9 @@ public class CameraActivity extends Activity {
             case 125:
                 if (resultCode == RESULT_OK) {
                     Bundle bundle = data.getExtras();
+                    isNormalMode = bundle.getBoolean("isExist");
                     mRestname = bundle.getString("restname");
+                    Log.e("インプット店舗", mRestname);
                     shopImage.setBackgroundResource(R.drawable.ic_done_white_24dp);
                     startPlay();
                 } else if (resultCode == RESULT_CANCELED) {
@@ -371,6 +372,9 @@ public class CameraActivity extends Activity {
                     false,
                     false,
                     mRestname,
+                    isNormalMode,
+                    latitude,
+                    longitude,
                     mFinalVideoUrl
             );
             fragment.setCancelable(false);

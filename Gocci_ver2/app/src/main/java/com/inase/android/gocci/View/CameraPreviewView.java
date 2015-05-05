@@ -43,7 +43,9 @@ public class CameraPreviewView extends BlurDialogFragment {
     private static final String BUNDLE_KEY_DIMMING = "bundle_key_dimming_effect";
     private static final String BUNDLE_KEY_DEBUG = "bundle_key_debug_effect";
     private static final String BUNDLE_KEY_BLURRED_ACTION_BAR = "bundle_key_blurred_action_bar";
-    private static final String BUNDLE_KEY_NAME = "name";
+    private static final String BUNDLE_KEY_ISEXIST = "bundle_key_isExist";
+    private static final String BUNDLE_KEY_LATITUDE = "bundle_key_latitude";
+    private static final String BUNDLE_KEY_LONGITUDE = "bundle_key_longitude";
     private static final String BUNDLE_KEY_RESTNAME = "restname";
     private static final String BUNDLE_KEY_VIDEOPATH = "videopath";
 
@@ -54,6 +56,10 @@ public class CameraPreviewView extends BlurDialogFragment {
     private boolean mBlurredActionBar;
 
     private String mRestname;
+    private boolean isNormal;
+    private double mLatitude;
+    private double mLongitude;
+
     private String mVideoPath = null;
 
     private File mVideoFile;
@@ -74,6 +80,9 @@ public class CameraPreviewView extends BlurDialogFragment {
                                                 boolean debug,
                                                 boolean mBlurredActionBar,
                                                 String restname,
+                                                boolean isNormal,
+                                                double latitude,
+                                                double longitude,
                                                 String videoPath
     ) {
         CameraPreviewView fragment = new CameraPreviewView();
@@ -102,6 +111,18 @@ public class CameraPreviewView extends BlurDialogFragment {
                 BUNDLE_KEY_RESTNAME,
                 restname
         );
+        args.putBoolean(
+                BUNDLE_KEY_ISEXIST,
+                isNormal
+        );
+        args.putDouble(
+                BUNDLE_KEY_LATITUDE,
+                latitude
+        );
+        args.putDouble(
+                BUNDLE_KEY_LONGITUDE,
+                longitude
+        );
         args.putString(
                 BUNDLE_KEY_VIDEOPATH,
                 videoPath
@@ -121,6 +142,9 @@ public class CameraPreviewView extends BlurDialogFragment {
         mDebug = args.getBoolean(BUNDLE_KEY_DEBUG);
         mBlurredActionBar = args.getBoolean(BUNDLE_KEY_BLURRED_ACTION_BAR);
         mRestname = args.getString(BUNDLE_KEY_RESTNAME);
+        isNormal = args.getBoolean(BUNDLE_KEY_ISEXIST);
+        mLatitude = args.getDouble(BUNDLE_KEY_LATITUDE);
+        mLongitude = args.getDouble(BUNDLE_KEY_LONGITUDE);
         mVideoPath = args.getString(BUNDLE_KEY_VIDEOPATH);
         mVideoFile = new File(mVideoPath);
     }
@@ -133,6 +157,7 @@ public class CameraPreviewView extends BlurDialogFragment {
         loginParam = new RequestParams();
         loginParam.put("user_name",gocci.getLoginName());
         loginParam.put("picture", gocci.getLoginPicture());
+
         toukouParam = new RequestParams();
         toukouParam.put("restname", mRestname);
 
@@ -142,6 +167,12 @@ public class CameraPreviewView extends BlurDialogFragment {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             Log.e("失敗ファイル", String.valueOf(mVideoFile));
+        }
+
+        if (!isNormal) {
+            //店舗情報あり
+            toukouParam.put("latitude", mLatitude);
+            toukouParam.put("longitude", mLongitude);
         }
     }
 

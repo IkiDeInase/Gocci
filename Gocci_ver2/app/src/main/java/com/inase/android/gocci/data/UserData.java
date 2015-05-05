@@ -9,6 +9,7 @@ public class UserData {
     private static final String TAG_POST_ID = "post_id";
     private static final String TAG_USER_NAME = "user_name";
     private static final String TAG_PICTURE = "picture";
+    private static final String TAG_BACKGROUND = "background_picture";
     private static final String TAG_MOVIE = "movie";
     private static final String TAG_RESTNAME = "restname";
     private static final String TAG_GOODNUM = "goodnum";
@@ -27,6 +28,7 @@ public class UserData {
 
     private String movie;
     private String circleImage;
+    private String background;
     private String post_id;
     private String user_name;
     private String restname;
@@ -45,13 +47,15 @@ public class UserData {
     private String homepage;
 
     private String comment;
+    private int personal_id;
 
     public UserData() {
     }
 
-    public UserData(String movie, String circleImage, String post_id, String user_name, String restname, String tell, String category, Double lat, Double lon, String locality, Integer goodnum, Integer comment_num, String thumbnail, Integer star_evaluation, Integer pushed_at, String homepage, String datetime) {
+    public UserData(String movie, String circleImage, String background, String post_id, String user_name, String restname, String tell, String category, Double lat, Double lon, String locality, Integer goodnum, Integer comment_num, String thumbnail, Integer star_evaluation, Integer pushed_at, String homepage, String datetime) {
         this.movie = movie;
         this.circleImage = circleImage;
+        this.background = background;
         this.post_id = post_id;
         this.user_name = user_name;
         this.restname = restname;
@@ -83,6 +87,14 @@ public class UserData {
 
     public void setPicture(String circleImage) {
         this.circleImage = circleImage;
+    }
+
+    public String getBackground() {
+        return this.background;
+    }
+
+    public void setBackground(String background) {
+        this.background = background;
     }
 
     public String getPost_id() {
@@ -221,12 +233,21 @@ public class UserData {
         this.comment = comment;
     }
 
+    public Integer getPersonal_id() {
+        return this.personal_id;
+    }
+
+    public void setPersonal_id(Integer personal_id) {
+        this.personal_id = personal_id;
+    }
+
     public static UserData createUserData(JSONObject jsonObject) {
         try {
             String tell = jsonObject.getString(TAG_TELL);
             String post_id = jsonObject.getString(TAG_POST_ID);
             String user_name = jsonObject.getString(TAG_USER_NAME);
             String picture = jsonObject.getString(TAG_PICTURE);
+            String background = jsonObject.getString(TAG_BACKGROUND);
             String movie = jsonObject.getString(TAG_MOVIE);
             String restname = jsonObject.getString(TAG_RESTNAME);
             Integer goodnum = jsonObject.getInt(TAG_GOODNUM);
@@ -241,7 +262,7 @@ public class UserData {
             Double lon = jsonObject.getDouble(TAG_LON);
             String datetime = jsonObject.getString(TAG_DATETIME);
 
-            return new UserData(movie, picture, post_id, user_name, restname, tell, category, lat, lon, locality, goodnum, comment_num, thumbnail, star_evaluation, pushed_at, homepage, datetime);
+            return new UserData(movie, picture, background, post_id, user_name, restname, tell, category, lat, lon, locality, goodnum, comment_num, thumbnail, star_evaluation, pushed_at, homepage, datetime);
 
         } catch (JSONException e) {
             e.printStackTrace();

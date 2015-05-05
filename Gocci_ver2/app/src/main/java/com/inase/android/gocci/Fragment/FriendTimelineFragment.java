@@ -87,6 +87,7 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
 
     private String clickedUsername;
     private String clickedUserpicture;
+    private String clickedUserbackground;
     private String clickedRestname;
     private String clickedLocality;
     private String clickedPhoneNumber;
@@ -953,6 +954,7 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
                 public void onClick(View v) {
                     clickedUsername = user.getUser_name();
                     clickedUserpicture = user.getPicture();
+                    clickedUserbackground = user.getBackground();
                     Handler handler = new Handler();
                     handler.postDelayed(new nameClickHandler(), 750);
 
@@ -964,6 +966,7 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
                 public void onClick(View v) {
                     clickedUsername = user.getUser_name();
                     clickedUserpicture = user.getPicture();
+                    clickedUserbackground = user.getBackground();
                     Handler handler = new Handler();
                     handler.postDelayed(new nameClickHandler(), 750);
 
@@ -1121,6 +1124,7 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
             Intent userintent = new Intent(getActivity(), FlexibleUserProfActivity.class);
             userintent.putExtra("username", clickedUsername);
             userintent.putExtra("picture", clickedUserpicture);
+            userintent.putExtra("background", clickedUserbackground);
             startActivity(userintent);
             getActivity().overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
         }

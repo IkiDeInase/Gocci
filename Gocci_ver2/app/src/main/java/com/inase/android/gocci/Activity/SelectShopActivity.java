@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.andexert.library.RippleView;
 import com.github.ppamorim.library.DraggerActivity;
@@ -26,6 +28,7 @@ public class SelectShopActivity extends DraggerActivity {
     private Search_tenpoAdapter mSearch_tenpoAdapter;
 
     private String clickedRestname;
+    private String noExistRestname;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,22 +50,28 @@ public class SelectShopActivity extends DraggerActivity {
             public void onClick(View v) {
                 new MaterialDialog.Builder(SelectShopActivity.this)
                         .title("店舗追加")
-                        .content("あなたのいるお店の名前を入力してください。※位置情報は現在の位置を使います")
+                        .content("あなたのいるお店の名前を入力してください。※位置情報は現在の位置を使います。")
                         .input("店舗名", null, new MaterialDialog.InputCallback() {
                             @Override
                             public void onInput(MaterialDialog materialDialog, CharSequence charSequence) {
+                                materialDialog.getActionButton(DialogAction.POSITIVE).setEnabled(charSequence.length() > 0);
 
                             }
                         })
+                        .alwaysCallInputCallback()
                         .positiveText("送信する")
                         .callback(new MaterialDialog.ButtonCallback() {
                             @Override
                             public void onPositive(MaterialDialog dialog) {
                                 super.onPositive(dialog);
 
-                                Toast.makeText(SelectShopActivity.this, dialog.getInputEditText().getText().toString(), Toast.LENGTH_SHORT).show();
+                                noExistRestname = dialog.getInputEditText().getText().toString();
+                                Handler handler = new Handler();
+                                handler.postDelayed(new noExistClickHandler(), 200);
+
                             }
-                        }).show();
+                        })
+                        .show();
             }
         });
 
@@ -126,7 +135,21 @@ public class SelectShopActivity extends DraggerActivity {
         public void run() {
             Intent data = new Intent();
             Bundle bundle = new Bundle();
+            bundle.putBoolean("isExist", true);
             bundle.putString("restname", clickedRestname);
+            data.putExtras(bundle);
+
+            setResult(RESULT_OK, data);
+            finish();
+        }
+    }
+
+    class noExistClickHandler implements Runnable {
+        public void run() {
+            Intent data = new Intent();
+            Bundle bundle = new Bundle();
+            bundle.putBoolean("isExist", false);
+            bundle.putString("restname", noExistRestname);
             data.putExtras(bundle);
 
             setResult(RESULT_OK, data);
