@@ -47,6 +47,7 @@ public class DrawerProfHeader extends LinearLayout {
         Picasso.with(context)
                 .load(background)
                 .fit()
+                .centerCrop()
                 .into(userbackground);
 
         adapter = new ViewPagerItemAdapter(ViewPagerItems.with(context)

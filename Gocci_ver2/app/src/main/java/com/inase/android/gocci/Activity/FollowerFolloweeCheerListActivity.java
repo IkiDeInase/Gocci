@@ -132,13 +132,11 @@ public class FollowerFolloweeCheerListActivity extends ActionBarActivity {
                         String username = jsonObject.getString("user_name");
                         String picture = jsonObject.getString("picture");
                         String background = jsonObject.getString("background_picture");
-                        int personal_id = jsonObject.getInt("personal_id");
 
                         UserData user = new UserData();
                         user.setUser_name(username);
                         user.setPicture(picture);
                         user.setBackground(background);
-                        user.setPersonal_id(personal_id);
 
                         users.add(user);
                     }
@@ -256,13 +254,11 @@ public class FollowerFolloweeCheerListActivity extends ActionBarActivity {
                         String username = jsonObject.getString("user_name");
                         String picture = jsonObject.getString("picture");
                         String background = jsonObject.getString("background_picture");
-                        int personal_id = jsonObject.getInt("personal_id");
 
                         UserData user = new UserData();
                         user.setUser_name(username);
                         user.setPicture(picture);
                         user.setBackground(background);
-                        user.setPersonal_id(personal_id);
 
                         users.add(user);
                     }

@@ -279,6 +279,7 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
         Picasso.with(FlexibleUserProfActivity.this)
                 .load(mUserBackground)
                 .fit()
+                .centerCrop()
                 .into(userprof_background);
 
         userprof_follow.setOnClickListener(new View.OnClickListener() {

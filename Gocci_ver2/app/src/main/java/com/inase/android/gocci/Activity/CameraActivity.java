@@ -76,8 +76,6 @@ public class CameraActivity extends Activity {
 
     private boolean isPlaying = false;
 
-    private boolean isNormalMode = true;
-
     private RippleView selectShopButton;
     private RippleView infoButton;
     private ImageView shopImage;
@@ -140,6 +138,8 @@ public class CameraActivity extends Activity {
                 if (!users.isEmpty()) {
                     int requestCode = 123;
                     Intent intent = new Intent(CameraActivity.this, SelectShopActivity.class);
+                    intent.putExtra("latitude", latitude);
+                    intent.putExtra("longitude", longitude);
                     startActivityForResult(intent, requestCode);
                 } else {
                     Toast.makeText(CameraActivity.this, "店舗情報が取れるまで、少々お待ち下さい", Toast.LENGTH_SHORT).show();
@@ -234,7 +234,6 @@ public class CameraActivity extends Activity {
             case 123:
                 if (resultCode == RESULT_OK) {
                     Bundle bundle = data.getExtras();
-                    isNormalMode = bundle.getBoolean("isExist");
                     mRestname = bundle.getString("restname");
                     Log.e("インプット店舗", mRestname);
                     shopImage.setBackgroundResource(R.drawable.ic_done_white_24dp);
@@ -245,7 +244,6 @@ public class CameraActivity extends Activity {
             case 125:
                 if (resultCode == RESULT_OK) {
                     Bundle bundle = data.getExtras();
-                    isNormalMode = bundle.getBoolean("isExist");
                     mRestname = bundle.getString("restname");
                     Log.e("インプット店舗", mRestname);
                     shopImage.setBackgroundResource(R.drawable.ic_done_white_24dp);
@@ -372,9 +370,6 @@ public class CameraActivity extends Activity {
                     false,
                     false,
                     mRestname,
-                    isNormalMode,
-                    latitude,
-                    longitude,
                     mFinalVideoUrl
             );
             fragment.setCancelable(false);

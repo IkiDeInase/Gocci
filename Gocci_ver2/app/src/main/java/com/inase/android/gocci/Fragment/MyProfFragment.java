@@ -245,6 +245,7 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
         Picasso.with(getActivity())
                 .load(gocci.getMyBackground())
                 .fit()
+                .centerCrop()
                 .into(myprof_background);
 
         editRipple.setOnClickListener(new View.OnClickListener() {
@@ -324,8 +325,6 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
 
                                                         gocci.changeProfile(name, picture, background_image);
 
-                                                        BusHolder.get().post(new DrawerHeaderRefreshEvent(name, picture, background_image, gocci.getMyFollower(), gocci.getMyFollowee(), gocci.getMyCheer()));
-
                                                         Intent intent = getActivity().getIntent();
                                                         getActivity().overridePendingTransition(0, 0);
                                                         intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
@@ -375,6 +374,7 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
                 Picasso.with(getActivity())
                         .load(gocci.getMyBackground())
                         .fit()
+                        .centerCrop()
                         .into(edit_background);
 
                 edit_username.setText(gocci.getMyName());

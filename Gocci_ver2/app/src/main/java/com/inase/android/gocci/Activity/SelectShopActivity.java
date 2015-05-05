@@ -18,7 +18,17 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.andexert.library.RippleView;
 import com.github.ppamorim.library.DraggerActivity;
 import com.inase.android.gocci.R;
+import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.data.UserData;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.TextHttpResponseHandler;
+import com.pnikosis.materialishprogress.ProgressWheel;
+
+import org.apache.http.Header;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -30,15 +40,26 @@ public class SelectShopActivity extends DraggerActivity {
     private String clickedRestname;
     private String noExistRestname;
 
+    private double mLatitude;
+    private double mLongitude;
+
+    private ProgressWheel wheel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_shop);
 
+        Intent intent = getIntent();
+        mLatitude = intent.getDoubleExtra("latitude", 0.0);
+        mLongitude = intent.getDoubleExtra("longitude", 0.0);
+
         selectList = (ListView) findViewById(R.id.shopList);
         selectList.setDivider(null);
         // スクロールバーを表示しない
         selectList.setVerticalScrollBarEnabled(false);
+
+        wheel = (ProgressWheel) findViewById(R.id.progress_wheel);
 
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         selectList.addFooterView(inflater.inflate(R.layout.cell_no_exist_shop, null));
@@ -64,10 +85,48 @@ public class SelectShopActivity extends DraggerActivity {
                             @Override
                             public void onPositive(MaterialDialog dialog) {
                                 super.onPositive(dialog);
-
                                 noExistRestname = dialog.getInputEditText().getText().toString();
-                                Handler handler = new Handler();
-                                handler.postDelayed(new noExistClickHandler(), 200);
+
+                                RequestParams params = new RequestParams();
+                                params.put("restname", noExistRestname);
+                                params.put("latitude", mLatitude);
+                                params.put("longitude", mLongitude);
+
+                                AsyncHttpClient client = new AsyncHttpClient();
+                                client.post(SelectShopActivity.this, Const.URL_ADD_REST, params, new JsonHttpResponseHandler() {
+                                    @Override
+                                    public void onStart() {
+                                        wheel.setVisibility(View.VISIBLE);
+                                    }
+
+                                    @Override
+                                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                                        Toast.makeText(SelectShopActivity.this, "通信に失敗しました", Toast.LENGTH_SHORT).show();
+                                    }
+
+                                    @Override
+                                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                                        Log.e("ジェイソン成功", String.valueOf(response));
+                                        try {
+                                            String message = response.getString("message");
+
+                                            if (message.equals("店舗を追加しました")) {
+                                                Toast.makeText(SelectShopActivity.this, message, Toast.LENGTH_SHORT).show();
+                                                Handler handler = new Handler();
+                                                handler.postDelayed(new noExistClickHandler(), 200);
+                                            } else {
+                                                Toast.makeText(SelectShopActivity.this, message, Toast.LENGTH_SHORT).show();
+                                            }
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onFinish() {
+                                        wheel.setVisibility(View.INVISIBLE);
+                                    }
+                                });
 
                             }
                         })
@@ -135,7 +194,6 @@ public class SelectShopActivity extends DraggerActivity {
         public void run() {
             Intent data = new Intent();
             Bundle bundle = new Bundle();
-            bundle.putBoolean("isExist", true);
             bundle.putString("restname", clickedRestname);
             data.putExtras(bundle);
 
@@ -148,7 +206,6 @@ public class SelectShopActivity extends DraggerActivity {
         public void run() {
             Intent data = new Intent();
             Bundle bundle = new Bundle();
-            bundle.putBoolean("isExist", false);
             bundle.putString("restname", noExistRestname);
             data.putExtras(bundle);
 
