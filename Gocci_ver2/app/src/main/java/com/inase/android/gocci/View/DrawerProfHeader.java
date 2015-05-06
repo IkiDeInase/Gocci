@@ -15,6 +15,7 @@ import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.Base.RoundedTransformation;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.common.Const;
+import com.inase.android.gocci.common.SavedData;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.ogaclejapan.smarttablayout.utils.ViewPagerItem;
 import com.ogaclejapan.smarttablayout.utils.ViewPagerItemAdapter;
@@ -28,7 +29,7 @@ public class DrawerProfHeader extends LinearLayout {
 
     private boolean isFirst = true;
 
-    public DrawerProfHeader(final Context context, String name, String picture, String background, final int follower, final int followee, final int cheer) {
+    public DrawerProfHeader(final Context context) {
         super(context);
 
         View inflateView = LayoutInflater.from(context).inflate(R.layout.header_drawer_prof, this);
@@ -37,15 +38,15 @@ public class DrawerProfHeader extends LinearLayout {
         ImageView userpicture = (ImageView) inflateView.findViewById(R.id.header_userpicture);
         ImageView userbackground = (ImageView) inflateView.findViewById(R.id.header_userbackground);
 
-        username.setText(name);
+        username.setText(SavedData.getServerName(context));
         Picasso.with(context)
-                .load(picture)
+                .load(SavedData.getServerPicture(context))
                 .placeholder(R.drawable.ic_userpicture)
                 .transform(new RoundedTransformation())
                 .into(userpicture);
 
         Picasso.with(context)
-                .load(background)
+                .load(SavedData.getServerBackground(context))
                 .fit()
                 .centerCrop()
                 .into(userbackground);
@@ -67,7 +68,7 @@ public class DrawerProfHeader extends LinearLayout {
                 if (isFirst && position == 0) {
                     View page = adapter.getPage(position);
                     final TextView text = (TextView) page.findViewById(R.id.numberTani);
-                    text.setText(follower + "人");
+                    text.setText(SavedData.getServerFollower(context) + "人");
                     text.setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -87,7 +88,7 @@ public class DrawerProfHeader extends LinearLayout {
 
                 switch (position) {
                     case 0:
-                        text.setText(follower + "人");
+                        text.setText(SavedData.getServerFollower(context) + "人");
                         text.setOnClickListener(new OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -98,7 +99,7 @@ public class DrawerProfHeader extends LinearLayout {
                         });
                         break;
                     case 1:
-                        text.setText(followee + "人");
+                        text.setText(SavedData.getServerFollowee(context) + "人");
                         text.setOnClickListener(new OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -109,7 +110,7 @@ public class DrawerProfHeader extends LinearLayout {
                         });
                         break;
                     case 2:
-                        text.setText(cheer + "店");
+                        text.setText(SavedData.getServerCheer(context) + "店");
                         text.setOnClickListener(new OnClickListener() {
                             @Override
                             public void onClick(View v) {

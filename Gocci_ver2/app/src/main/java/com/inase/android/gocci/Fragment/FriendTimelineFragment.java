@@ -37,7 +37,6 @@ import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.inase.android.gocci.Activity.CameraActivity;
 import com.inase.android.gocci.Activity.FlexibleTenpoActivity;
 import com.inase.android.gocci.Activity.FlexibleUserProfActivity;
-import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.Base.BaseFragment;
 import com.inase.android.gocci.Base.RoundedTransformation;
 import com.inase.android.gocci.Base.SquareVideoView;
@@ -47,6 +46,7 @@ import com.inase.android.gocci.R;
 import com.inase.android.gocci.View.CommentView;
 import com.inase.android.gocci.common.CacheManager;
 import com.inase.android.gocci.common.Const;
+import com.inase.android.gocci.common.SavedData;
 import com.inase.android.gocci.common.Util;
 import com.inase.android.gocci.data.UserData;
 import com.loopj.android.http.AsyncHttpClient;
@@ -115,8 +115,6 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
 
     private UiLifecycleHelper uiHelper;
 
-    private Application_Gocci gocci;
-
     private ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
         @Override
         public void onGlobalLayout() {
@@ -141,8 +139,6 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
         uiHelper.onCreate(savedInstanceState);
 
         Fabric.with(getActivity(), new TweetComposer());
-
-        gocci = (Application_Gocci) getActivity().getApplication();
     }
 
     @Override
@@ -155,8 +151,8 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
         mViewHolderHash = new ConcurrentHashMap<>();
 
         loginParam = new RequestParams();
-        loginParam.put("user_name", gocci.getLoginName());
-        loginParam.put("picture", gocci.getLoginPicture());
+        loginParam.put("user_name", SavedData.getLoginName(getActivity()));
+        loginParam.put("picture", SavedData.getLoginPicture(getActivity()));
 
         progressWheel = (ProgressWheel) view.findViewById(R.id.progress_wheel);
         mTimelineListView = (ObservableListView) view.findViewById(R.id.list);
@@ -637,7 +633,7 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
 
     @Override
     public void movieCacheCreated(boolean success, String postId) {
-        if (success && mPlayingPostId == postId && getActivity() != null) {
+        if (success && mPlayingPostId.equals(postId) && getActivity() != null) {
 
             Log.d("DEBUG", "MOVIE::movieCacheCreated 動画再生処理開始 postId:" + mPlayingPostId);
             startMovie();

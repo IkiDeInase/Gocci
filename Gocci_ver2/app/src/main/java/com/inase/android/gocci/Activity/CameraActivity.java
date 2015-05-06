@@ -61,7 +61,6 @@ import io.nlopez.smartlocation.SmartLocation;
 
 public class CameraActivity extends Activity {
 
-    private MySurfaceView videoSurface = null;
     private RecorderManager recorderManager = null;
     private CameraManager cameraManager;
     private ProgressView progressView = null;
@@ -70,28 +69,22 @@ public class CameraActivity extends Activity {
     private Handler handler = null;
     private ProgressWheel cameraProgress;
 
-    private String mRestname;
+    private String mRest_name;
     private String mFinalVideoUrl;
     private String timeStamp;
 
     private boolean isPlaying = false;
 
-    private RippleView selectShopButton;
-    private RippleView infoButton;
     private ImageView shopImage;
-    private ImageView infoImage;
-
-    private ImageButton toukouButton;
 
     private double latitude;
     private double longitude;
     public static ArrayList<UserData> users = new ArrayList<>();
     private String mSearch_mapUrl;
 
-    private static final String TAG_RESTNAME = "restname";
+    private static final String TAG_REST_NAME = "restname";
     private static final String TAG_LOCALITY = "locality";
     private static final String TAG_DISTANCE = "distance";
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -120,16 +113,16 @@ public class CameraActivity extends Activity {
         Toast.makeText(this, "技術的な問題でうまく動作しない場合があります", Toast.LENGTH_SHORT).show();
 
         cameraProgress = (ProgressWheel) findViewById(R.id.cameraprogress_wheel);
-        videoSurface = (MySurfaceView) findViewById(R.id.cameraView);
+        MySurfaceView videoSurface = (MySurfaceView) findViewById(R.id.cameraView);
         progressView = (ProgressView) findViewById(R.id.progress);
         shopImage = (ImageView) findViewById(R.id.shopImage);
-        infoImage = (ImageView) findViewById(R.id.infoImage);
+        ImageView infoImage = (ImageView) findViewById(R.id.infoImage);
         cameraManager = getCameraManager();
         recorderManager = new RecorderManager(getCameraManager(), videoSurface, this);
-        selectShopButton = (RippleView) findViewById(R.id.selectShopButton);
-        infoButton = (RippleView) findViewById(R.id.infoButton);
+        RippleView selectShopButton = (RippleView) findViewById(R.id.selectShopButton);
+        RippleView infoButton = (RippleView) findViewById(R.id.infoButton);
 
-        toukouButton = (ImageButton) findViewById(R.id.toukouButton);
+        ImageButton toukouButton = (ImageButton) findViewById(R.id.toukouButton);
 
         selectShopButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -234,8 +227,8 @@ public class CameraActivity extends Activity {
             case 123:
                 if (resultCode == RESULT_OK) {
                     Bundle bundle = data.getExtras();
-                    mRestname = bundle.getString("restname");
-                    Log.e("インプット店舗", mRestname);
+                    mRest_name = bundle.getString("restname");
+                    Log.e("インプット店舗", mRest_name);
                     shopImage.setBackgroundResource(R.drawable.ic_done_white_24dp);
                 } else if (resultCode == RESULT_CANCELED) {
 
@@ -244,8 +237,8 @@ public class CameraActivity extends Activity {
             case 125:
                 if (resultCode == RESULT_OK) {
                     Bundle bundle = data.getExtras();
-                    mRestname = bundle.getString("restname");
-                    Log.e("インプット店舗", mRestname);
+                    mRest_name = bundle.getString("restname");
+                    Log.e("インプット店舗", mRest_name);
                     shopImage.setBackgroundResource(R.drawable.ic_done_white_24dp);
                     startPlay();
                 } else if (resultCode == RESULT_CANCELED) {
@@ -284,7 +277,7 @@ public class CameraActivity extends Activity {
                     for (int i = 0; i < timeline.length(); i++) {
                         JSONObject jsonObject = timeline.getJSONObject(i);
 
-                        final String rest_name = jsonObject.getString(TAG_RESTNAME);
+                        final String rest_name = jsonObject.getString(TAG_REST_NAME);
                         final String locality = jsonObject.getString(TAG_LOCALITY);
                         String distance = jsonObject.getString(TAG_DISTANCE);
 
@@ -360,7 +353,7 @@ public class CameraActivity extends Activity {
     }
 
     public void startPlay() {
-        if (mRestname != null) {
+        if (mRest_name != null) {
             recorderManager.reset();
 
             CameraPreviewView fragment = CameraPreviewView.newInstance(
@@ -369,7 +362,7 @@ public class CameraActivity extends Activity {
                     true,
                     false,
                     false,
-                    mRestname,
+                    mRest_name,
                     mFinalVideoUrl
             );
             fragment.setCancelable(false);

@@ -23,6 +23,7 @@ import com.inase.android.gocci.R;
 import com.inase.android.gocci.View.CreateAccountView;
 import com.inase.android.gocci.View.SigninAccountView;
 import com.inase.android.gocci.common.Const;
+import com.inase.android.gocci.common.SavedData;
 import com.inase.android.gocci.common.Util;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -63,8 +64,6 @@ public class LoginActivity extends ActionBarActivity {
 
     private AsyncHttpClient httpClient;
     private RequestParams loginParams;
-
-    private Application_Gocci gocci;
 
     private Session.StatusCallback callback = new Session.StatusCallback() {
         @Override
@@ -117,8 +116,6 @@ public class LoginActivity extends ActionBarActivity {
         setContentView(R.layout.activity_login);
         uiHelper = new UiLifecycleHelper(this, null);
         uiHelper.onCreate(savedInstanceState);
-
-        gocci = (Application_Gocci) getApplication();
 
         progress = (ProgressWheel) findViewById(R.id.progress_wheel);
 
@@ -240,7 +237,7 @@ public class LoginActivity extends ActionBarActivity {
                         int mFollower = response.getInt(TAG_FOLLOWER);
                         int mCheer = response.getInt(TAG_CHEER);
 
-                        gocci.setAccount(mName, mPicture, mBackground, mFollowee, mFollower, mCheer);
+                        SavedData.setAccount(LoginActivity.this, mName, mPicture, mBackground, mFollowee, mFollower, mCheer);
 
                         Intent intent = new Intent(LoginActivity.this, TutorialGuideActivity.class);
                         intent.putExtra("judge", judge);

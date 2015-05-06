@@ -26,15 +26,14 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.hatenablog.shoma2da.eventdaterecorderlib.EventDateRecorder;
-import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.Event.BusHolder;
-import com.inase.android.gocci.Event.DrawerHeaderRefreshEvent;
 import com.inase.android.gocci.Event.PageChangeVideoStopEvent;
 import com.inase.android.gocci.Fragment.FriendTimelineFragment;
 import com.inase.android.gocci.Fragment.TimelineFragment;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.View.DrawerProfHeader;
 import com.inase.android.gocci.common.Const;
+import com.inase.android.gocci.common.SavedData;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -47,7 +46,6 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
-import com.squareup.otto.Subscribe;
 import com.twitter.sdk.android.Twitter;
 
 import org.apache.http.Header;
@@ -55,11 +53,6 @@ import org.apache.http.Header;
 import java.io.IOException;
 
 public class GocciTimelineActivity extends ActionBarActivity {
-
-    private Toolbar toolbar;
-    private ViewPager viewPager;
-
-    private FragmentPagerItemAdapter adapter;
 
     public static final String EXTRA_MESSAGE = "message";
     public static final String PROPERTY_REG_ID = "registration_id";
@@ -71,12 +64,7 @@ public class GocciTimelineActivity extends ActionBarActivity {
     static final String TAG = "GCMDemo";
 
     private GoogleCloudMessaging gcm;
-
     private String regid;
-
-    private Drawer.Result result;
-
-    private Application_Gocci gocci;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,15 +84,14 @@ public class GocciTimelineActivity extends ActionBarActivity {
             Log.e(TAG, "No valid Google Play Services APK found.");
         }
 
-        toolbar = (Toolbar) findViewById(R.id.tool_bar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
         toolbar.setLogo(R.drawable.ic_gocci_moji_white45);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("");
 
-        gocci = (Application_Gocci)getApplication();
-        View header = new DrawerProfHeader(this, gocci.getMyName(), gocci.getMypicture(), gocci.getMyBackground(), gocci.getMyFollower(), gocci.getMyFollowee(), gocci.getMyCheer());
+        View header = new DrawerProfHeader(this);
 
-        result = new Drawer()
+        Drawer.Result result = new Drawer()
                 .withActivity(this)
                 .withToolbar(toolbar)
                 .withHeader(header)
@@ -149,13 +136,13 @@ public class GocciTimelineActivity extends ActionBarActivity {
                 .withSavedInstance(savedInstanceState)
                 .build();
 
-        adapter = new FragmentPagerItemAdapter(
+        FragmentPagerItemAdapter adapter = new FragmentPagerItemAdapter(
                 getSupportFragmentManager(), FragmentPagerItems.with(this)
                 .add(R.string.tab_near, TimelineFragment.class)
                 .add(R.string.tab_follow_cheer, FriendTimelineFragment.class)
                 .create());
 
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
         viewPager.setAdapter(adapter);
         viewPager.setOffscreenPageLimit(2);
 
@@ -194,28 +181,6 @@ public class GocciTimelineActivity extends ActionBarActivity {
 
             }
         });
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        // Subscriberとして登録する
-        BusHolder.get().register(this);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        // Subscriberの登録を解除する
-        BusHolder.get().unregister(this);
-    }
-
-    @Subscribe
-    public void subscribe(DrawerHeaderRefreshEvent event) {
-        View refreshHeader = new DrawerProfHeader(this, event.refreshName, event.refreshPicture, event.refreshBackground,
-                event.refreshFollower, event.refreshFollowee, event.refreshCheer);
-        result.setHeader(refreshHeader);
-        result.setSelectionByIdentifier(1);
     }
 
     class lifelogClickHandler implements Runnable {
@@ -318,8 +283,8 @@ public class GocciTimelineActivity extends ActionBarActivity {
         private void postSignupAsync(final Context context, final String category, final String message) {
             final AsyncHttpClient httpClient = new AsyncHttpClient();
             RequestParams params = new RequestParams();
-            params.put("user_name", gocci.getLoginName());
-            params.put("picture", gocci.getLoginPicture());
+            params.put("user_name", SavedData.getLoginName(context));
+            params.put("picture", SavedData.getLoginPicture(context));
             httpClient.post(context, Const.URL_SIGNUP_API, params, new AsyncHttpResponseHandler() {
 
                 @Override

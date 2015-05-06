@@ -3,7 +3,6 @@ package com.inase.android.gocci.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
@@ -43,17 +42,15 @@ import com.gitonway.lee.niftymodaldialogeffects.lib.NiftyDialogBuilder;
 import com.hatenablog.shoma2da.eventdaterecorderlib.EventDateRecorder;
 import com.inase.android.gocci.Activity.CameraActivity;
 import com.inase.android.gocci.Activity.FlexibleTenpoActivity;
-import com.inase.android.gocci.Activity.GocciMyprofActivity;
-import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.Base.BaseFragment;
 import com.inase.android.gocci.Base.RoundedTransformation;
 import com.inase.android.gocci.Base.SquareVideoView;
 import com.inase.android.gocci.Event.BusHolder;
-import com.inase.android.gocci.Event.DrawerHeaderRefreshEvent;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.View.CommentView;
 import com.inase.android.gocci.common.CacheManager;
 import com.inase.android.gocci.common.Const;
+import com.inase.android.gocci.common.SavedData;
 import com.inase.android.gocci.data.UserData;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -130,13 +127,8 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
     private TextView edit_username;
     private EditText edit_username_edit;
 
-    private File backgroundFile;
-    private File userpictureFile;
-
     private boolean isBackground = false;
     private boolean isPicture = false;
-
-    private Application_Gocci gocci;
 
     private ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
         @Override
@@ -162,8 +154,6 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
         uiHelper.onCreate(savedInstanceState);
 
         Fabric.with(getActivity(), new TweetComposer());
-
-        gocci = (Application_Gocci) getActivity().getApplication();
     }
 
     @Override
@@ -174,7 +164,7 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
                 container, false);
 
         try {
-            mEncodeUser_name = URLEncoder.encode(gocci.getMyName(), "UTF-8");
+            mEncodeUser_name = URLEncoder.encode(SavedData.getServerName(getActivity()), "UTF-8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -201,8 +191,8 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
         mProfUrl = "http://api-gocci.jp/mypage/?user_name=" + mEncodeUser_name;
 
         loginParam = new RequestParams();
-        loginParam.put("user_name", gocci.getLoginName());
-        loginParam.put("picture", gocci.getLoginPicture());
+        loginParam.put("user_name", SavedData.getLoginName(getActivity()));
+        loginParam.put("picture", SavedData.getLoginPicture(getActivity()));
 
         fab = (FloatingActionButton) view.findViewById(R.id.toukouButton);
 
@@ -234,16 +224,16 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
         final ImageView myprof_picture = (ImageView) view.findViewById(R.id.myprof_picture);
         final ImageView myprof_background = (ImageView) view.findViewById(R.id.myprof_background);
         RippleView editRipple = (RippleView) view.findViewById(R.id.editProfile);
-        myprof_username.setText(gocci.getMyName());
+        myprof_username.setText(SavedData.getServerName(getActivity()));
         Picasso.with(getActivity())
-                .load(gocci.getMypicture())
+                .load(SavedData.getServerPicture(getActivity()))
                 .fit()
                 .placeholder(R.drawable.ic_userpicture)
                 .transform(new RoundedTransformation())
                 .into(myprof_picture);
 
         Picasso.with(getActivity())
-                .load(gocci.getMyBackground())
+                .load(SavedData.getServerBackground(getActivity()))
                 .fit()
                 .centerCrop()
                 .into(myprof_background);
@@ -323,7 +313,7 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
                                                         String name = response.getString("user_name");
                                                         String picture = response.getString("picture");
 
-                                                        gocci.changeProfile(name, picture, background_image);
+                                                        SavedData.changeProfile(getActivity(), name, picture, background_image);
 
                                                         Intent intent = getActivity().getIntent();
                                                         getActivity().overridePendingTransition(0, 0);
@@ -365,20 +355,20 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
                 edit_username_edit = (EditText) dialog.getCustomView().findViewById(R.id.myprof_username_edit);
 
                 Picasso.with(getActivity())
-                        .load(gocci.getMypicture())
+                        .load(SavedData.getServerName(getActivity()))
                         .fit()
                         .placeholder(R.drawable.ic_userpicture)
                         .transform(new RoundedTransformation())
                         .into(edit_picture);
 
                 Picasso.with(getActivity())
-                        .load(gocci.getMyBackground())
+                        .load(SavedData.getServerPicture(getActivity()))
                         .fit()
                         .centerCrop()
                         .into(edit_background);
 
-                edit_username.setText(gocci.getMyName());
-                edit_username_edit.setHint(gocci.getMyName());
+                edit_username.setText(SavedData.getServerName(getActivity()));
+                edit_username_edit.setHint(SavedData.getServerName(getActivity()));
 
                 edit_background.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -592,7 +582,7 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
 
     @Override
     public void movieCacheCreated(boolean success, String postId) {
-        if (success && mPlayingPostId == postId && getActivity().getApplicationContext() != null) {
+        if (success && mPlayingPostId.equals(postId) && getActivity() != null) {
             Log.d("DEBUG", "MOVIE::movieCacheCreated 動画再生処理開始 postId:" + mPlayingPostId);
             startMovie();
         }

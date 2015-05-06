@@ -10,10 +10,10 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.inase.android.gocci.Activity.CameraActivity;
-import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.Base.BaseFragment;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.common.Const;
+import com.inase.android.gocci.common.SavedData;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -58,8 +58,6 @@ public class LifelogFragment extends BaseFragment {
     private Calendar lastYear = Calendar.getInstance();
 
     private FloatingActionButton fab;
-
-    private Application_Gocci gocci;
 
     public LifelogFragment newIntent(String name, String imageUrl) {
         LifelogFragment fragment = new LifelogFragment();
@@ -118,8 +116,8 @@ public class LifelogFragment extends BaseFragment {
                         true,
                         false,
                         false,
-                        gocci.getLoginName(),
-                        gocci.getLoginPicture(),
+                        SavedData.getLoginName(getActivity()),
+                        SavedData.getLoginPicture(getActivity()),
                         users.get(number)
                 );
                 fragment.show(getActivity().getSupportFragmentManager(), "blur_sample");
@@ -136,11 +134,9 @@ public class LifelogFragment extends BaseFragment {
         View view2 = getActivity().getLayoutInflater().inflate(R.layout.fragment_lifelog,
                 container, false);
 
-        gocci = (Application_Gocci)getActivity().getApplication();
-
         loginParam = new RequestParams();
-        loginParam.put("user_name", gocci.getLoginName());
-        loginParam.put("picture", gocci.getLoginPicture());
+        loginParam.put("user_name", SavedData.getLoginName(getActivity()));
+        loginParam.put("picture", SavedData.getLoginPicture(getActivity()));
 
         thisYear.add(Calendar.YEAR, 0);
         thisYear.add(Calendar.MONTH, 0);

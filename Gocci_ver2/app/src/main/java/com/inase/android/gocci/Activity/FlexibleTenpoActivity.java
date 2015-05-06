@@ -44,16 +44,14 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.hatenablog.shoma2da.eventdaterecorderlib.EventDateRecorder;
-import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.Base.RoundedTransformation;
 import com.inase.android.gocci.Base.SquareVideoView;
-import com.inase.android.gocci.Event.BusHolder;
-import com.inase.android.gocci.Event.DrawerHeaderRefreshEvent;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.View.CommentView;
 import com.inase.android.gocci.View.DrawerProfHeader;
 import com.inase.android.gocci.common.CacheManager;
 import com.inase.android.gocci.common.Const;
+import com.inase.android.gocci.common.SavedData;
 import com.inase.android.gocci.data.UserData;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -66,7 +64,6 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.pnikosis.materialishprogress.ProgressWheel;
-import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 import com.twitter.sdk.android.Twitter;
 
@@ -110,14 +107,11 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
     private AsyncHttpClient httpClient2;
     private AsyncHttpClient httpClient3;
     private RequestParams loginParam;
-    private RequestParams goodParam;
 
     private MapView mMapView;
     private GoogleMap mMap;
 
     private MaterialDialog mViolationDialog;
-
-    private Application_Gocci gocci;
 
     private AttributeSet mVideoAttr;
     private Point mDisplaySize;
@@ -137,8 +131,6 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
             }
         }
     };
-
-    private Drawer.Result result;
 
     @Override
     public final void onCreate(Bundle savedInstanceState) {
@@ -172,8 +164,6 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
             e.printStackTrace();
         }
 
-        gocci = (Application_Gocci)getApplication();
-
         EventDateRecorder profilerecorder = EventDateRecorder.load(FlexibleTenpoActivity.this, "use_first_tenpo");
         if (!profilerecorder.didRecorded()) {
             // 機能が１度も利用されてない時のみ実行したい処理を書く
@@ -196,9 +186,9 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
 
-        View header = new DrawerProfHeader(this, gocci.getMyName(), gocci.getMypicture(), gocci.getMyBackground(), gocci.getMyFollower(), gocci.getMyFollowee(), gocci.getMyCheer());
+        View header = new DrawerProfHeader(this);
 
-        result = new Drawer()
+        Drawer.Result result = new Drawer()
                 .withActivity(this)
                 .withToolbar(toolbar)
                 .withHeader(header)
@@ -259,8 +249,8 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
         mTenpoUrl = "http://api-gocci.jp/restpage/?restname=" + mEncoderestname;
 
         loginParam = new RequestParams();
-        loginParam.put("user_name", gocci.getLoginName());
-        loginParam.put("picture", gocci.getLoginPicture());
+        loginParam.put("user_name", SavedData.getLoginName(this));
+        loginParam.put("picture", SavedData.getLoginPicture(this));
 
         mEmptyView = (ImageView) findViewById(R.id.tenpo_emptyView);
         tenpoprogress = (ProgressWheel) findViewById(R.id.tenpoprogress_wheel);
@@ -370,7 +360,6 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
     public final void onPause() {
         mMapView.onPause();
         super.onPause();
-        BusHolder.get().unregister(this);
 
         ViewHolder viewHolder = getPlayingViewHolder();
         if (viewHolder != null) {
@@ -381,17 +370,9 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
     @Override
     public final void onResume() {
         super.onResume();
-        BusHolder.get().register(this);
         mMapView.onResume();
 
         startMovie();
-    }
-
-    @Subscribe
-    public void subscribe(DrawerHeaderRefreshEvent event) {
-        View refreshHeader = new DrawerProfHeader(this, event.refreshName, event.refreshPicture, event.refreshBackground,
-                event.refreshFollower, event.refreshFollowee, event.refreshCheer);
-        result.setHeader(refreshHeader);
     }
 
     @Override
@@ -513,7 +494,7 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
     }
 
     private void postGoodAsync(final Context context, String post_id, final int position) {
-        goodParam = new RequestParams("post_id", post_id);
+        RequestParams goodParam = new RequestParams("post_id", post_id);
         httpClient2.post(context, Const.URL_GOOD_API, goodParam, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
@@ -634,7 +615,7 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
 
     @Override
     public void movieCacheCreated(boolean success, String postId) {
-        if (success && mPlayingPostId == postId && getApplicationContext() != null) {
+        if (success && mPlayingPostId.equals(postId) && getApplicationContext() != null) {
             Log.d("DEBUG", "MOVIE::movieCacheCreated 動画再生処理開始 postId:" + mPlayingPostId);
             startMovie();
         }
@@ -721,7 +702,7 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
             @Override
             public void onPrepared(MediaPlayer mp) {
                 Log.d("DEBUG", "MOVIE::onPrepared postId: " + postId);
-                if (mPlayingPostId == postId && !mPlayBlockFlag) {
+                if (mPlayingPostId.equals(postId) && !mPlayBlockFlag) {
                     Log.d("DEBUG", "MOVIE::onPrepared 再生開始");
                     //viewHolder.mVideoThumbnail.setVisibility(View.INVISIBLE);
                     //viewHolder.movie.start();
@@ -740,7 +721,7 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
                         @Override
                         public boolean onError(final MediaPlayer mp, final int what, final int extra) {
                             Log.e("DEBUG", "動画再生OnError: what:" + what + " extra:" + extra);
-                            if (mPlayingPostId == postId && !mPlayBlockFlag) {
+                            if (mPlayingPostId.equals(postId) && !mPlayBlockFlag) {
                                 Log.d("DEBUG", "MOVIE::onErrorListener 再生開始");
                                 mPlayingPostId = null;
                                 changeMovie();

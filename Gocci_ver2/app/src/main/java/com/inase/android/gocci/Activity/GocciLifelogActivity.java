@@ -17,12 +17,10 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.facebook.Session;
 import com.hatenablog.shoma2da.eventdaterecorderlib.EventDateRecorder;
-import com.inase.android.gocci.Application.Application_Gocci;
-import com.inase.android.gocci.Event.BusHolder;
-import com.inase.android.gocci.Event.DrawerHeaderRefreshEvent;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.View.DrawerProfHeader;
 import com.inase.android.gocci.common.Const;
+import com.inase.android.gocci.common.SavedData;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -32,33 +30,25 @@ import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
-import com.squareup.otto.Subscribe;
 import com.twitter.sdk.android.Twitter;
 
 import org.apache.http.Header;
 
 public class GocciLifelogActivity extends ActionBarActivity {
 
-    private Toolbar toolbar;
-
-    private Drawer.Result result;
-
-    private Application_Gocci gocci;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gocci_lifelog);
 
-        toolbar = (Toolbar) findViewById(R.id.tool_bar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
         toolbar.setLogo(R.drawable.ic_gocci_moji_white45);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("");
 
-        gocci = (Application_Gocci)getApplication();
-        View header = new DrawerProfHeader(this, gocci.getMyName(), gocci.getMypicture(), gocci.getMyBackground(), gocci.getMyFollower(), gocci.getMyFollowee(), gocci.getMyCheer());
+        View header = new DrawerProfHeader(this);
 
-        result = new Drawer()
+        Drawer.Result result = new Drawer()
                 .withActivity(this)
                 .withToolbar(toolbar)
                 .withHeader(header)
@@ -104,28 +94,6 @@ public class GocciLifelogActivity extends ActionBarActivity {
                 .withSavedInstance(savedInstanceState)
                 .withSelectedItem(1)
                 .build();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        // Subscriberとして登録する
-        BusHolder.get().register(this);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        // Subscriberの登録を解除する
-        BusHolder.get().unregister(this);
-    }
-
-    @Subscribe
-    public void subscribe(DrawerHeaderRefreshEvent event) {
-        View refreshHeader = new DrawerProfHeader(this, event.refreshName, event.refreshPicture, event.refreshBackground,
-                event.refreshFollower, event.refreshFollowee, event.refreshCheer);
-        result.setHeader(refreshHeader);
-        result.setSelectionByIdentifier(2);
     }
 
     class timelineClickHandler implements Runnable {
@@ -226,8 +194,8 @@ public class GocciLifelogActivity extends ActionBarActivity {
         private void postSignupAsync(final Context context, final String category, final String message) {
             final AsyncHttpClient httpClient = new AsyncHttpClient();
             RequestParams params = new RequestParams();
-            params.put("user_name", gocci.getLoginName());
-            params.put("picture", gocci.getLoginPicture());
+            params.put("user_name", SavedData.getLoginName(context));
+            params.put("picture", SavedData.getLoginPicture(context));
             httpClient.post(context, Const.URL_SIGNUP_API, params, new AsyncHttpResponseHandler() {
 
                 @Override

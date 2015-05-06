@@ -20,11 +20,10 @@ import com.inase.android.gocci.Tutorial.TutorialView1;
 import com.inase.android.gocci.Tutorial.TutorialView2;
 import com.inase.android.gocci.Tutorial.TutorialView3;
 import com.inase.android.gocci.Tutorial.TutorialView4;
+import com.inase.android.gocci.common.SavedData;
 import com.viewpagerindicator.CirclePageIndicator;
 
 public class TutorialGuideActivity extends ActionBarActivity {
-
-    private Application_Gocci gocci;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,12 +31,9 @@ public class TutorialGuideActivity extends ActionBarActivity {
         setContentView(R.layout.activity_tutorial_guide);
 
         Intent intent = getIntent();
-        final String judge = intent.getStringExtra("judge");
+        String judge = intent.getStringExtra("judge");
         String name = intent.getStringExtra("name");
         String picture = intent.getStringExtra("picture");
-
-        gocci = (Application_Gocci) getApplication();
-        gocci.setLoginParam(name, picture);
 
         EventDateRecorder recorder = EventDateRecorder.load(this, "use_first_gocci_tutorial");
         if (!recorder.didRecorded()) {
@@ -47,13 +43,7 @@ public class TutorialGuideActivity extends ActionBarActivity {
 
             //Gocciへようこそ　このアプリは・・・・的な感じで考えている。
 
-            SharedPreferences pref = getSharedPreferences("pref", Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = pref.edit();
-
-            editor.putString("name", name);
-            editor.putString("picture", picture);
-            editor.putString("judge", judge);
-            editor.apply();
+            SavedData.setLoginParam(this, name, picture, judge);
 
             ViewPager tutorialViewpager = (ViewPager) findViewById(R.id.viewpager_tutorial);
             tutorialViewpager.setAdapter(new TutorialPagerAdapter(getSupportFragmentManager()));

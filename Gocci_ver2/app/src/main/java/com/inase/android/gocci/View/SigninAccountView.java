@@ -20,6 +20,7 @@ import com.inase.android.gocci.Activity.TutorialGuideActivity;
 import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.common.Const;
+import com.inase.android.gocci.common.SavedData;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -59,8 +60,6 @@ public class SigninAccountView extends SupportBlurDialogFragment implements View
     private boolean mBlurredActionBar;
 
     private AsyncHttpClient httpClient;
-
-    private Application_Gocci gocci;
 
     public static SigninAccountView newInstance(int radius,
                                                 float downScaleFactor,
@@ -118,8 +117,6 @@ public class SigninAccountView extends SupportBlurDialogFragment implements View
         View view = getActivity().getLayoutInflater().inflate(R.layout.view_signin_account, null);
         usernameEdit = (EditText) view.findViewById(R.id.signinusernameEdit);
         passEdit = (EditText) view.findViewById(R.id.signinpassEdit);
-
-        gocci = (Application_Gocci)getActivity().getApplication();
 
         accountSigninButton = (RippleView) view.findViewById(R.id.signin_login_Ripple);
         facebookSigninButton = (RippleView) view.findViewById(R.id.signin_facebook_Ripple);
@@ -194,7 +191,7 @@ public class SigninAccountView extends SupportBlurDialogFragment implements View
                         int mFollower = timeline.getInt(TAG_FOLLOWER);
                         int mCheer = timeline.getInt(TAG_CHEER);
 
-                        gocci.setAccount(mName, mPicture, mBackground, mFollowee, mFollower, mCheer);
+                        SavedData.setAccount(getActivity(),mName, mPicture, mBackground, mFollowee, mFollower, mCheer);
 
                         Toast.makeText(getActivity(), "ログインに成功しました", Toast.LENGTH_SHORT).show();
 

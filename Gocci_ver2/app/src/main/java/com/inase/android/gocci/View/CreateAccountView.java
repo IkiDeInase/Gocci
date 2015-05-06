@@ -21,6 +21,7 @@ import com.inase.android.gocci.Activity.TutorialGuideActivity;
 import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.common.Const;
+import com.inase.android.gocci.common.SavedData;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -66,8 +67,6 @@ public class CreateAccountView extends SupportBlurDialogFragment implements View
     private boolean mBlurredActionBar;
 
     private AsyncHttpClient httpClient;
-
-    private Application_Gocci gocci;
 
     private static final String emailPattern = "^[a-zA-Z0-9\\._\\-\\+]+@[a-zA-Z0-9_\\-]+\\.[a-zA-Z\\.]+[a-zA-Z]$";
 
@@ -136,8 +135,6 @@ public class CreateAccountView extends SupportBlurDialogFragment implements View
         usernameEdit = (EditText) view.findViewById(R.id.usernameEdit);
         emailEdit = (EditText) view.findViewById(R.id.emailEdit);
         passEdit = (EditText) view.findViewById(R.id.passEdit);
-
-        gocci = (Application_Gocci) getActivity().getApplication();
 
         checkPolicy = (CheckBox) view.findViewById(R.id.checkPolicy);
 
@@ -232,7 +229,7 @@ public class CreateAccountView extends SupportBlurDialogFragment implements View
                         int mFollower = timeline.getInt(TAG_FOLLOWER);
                         int mCheer = timeline.getInt(TAG_CHEER);
 
-                        gocci.setAccount(mName, mPicture, mBackground, mFollowee, mFollower, mCheer);
+                        SavedData.setAccount(getActivity(), mName, mPicture, mBackground, mFollowee, mFollower, mCheer);
 
                         Toast.makeText(getActivity(), "アカウントを作成しました！", Toast.LENGTH_SHORT).show();
 

@@ -51,6 +51,7 @@ import com.inase.android.gocci.R;
 import com.inase.android.gocci.View.CommentView;
 import com.inase.android.gocci.common.CacheManager;
 import com.inase.android.gocci.common.Const;
+import com.inase.android.gocci.common.SavedData;
 import com.inase.android.gocci.common.Util;
 import com.inase.android.gocci.data.UserData;
 import com.loopj.android.http.AsyncHttpClient;
@@ -194,8 +195,8 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
         mViewHolderHash = new ConcurrentHashMap<>();
 
         loginParam = new RequestParams();
-        loginParam.put("user_name", gocci.getLoginName());
-        loginParam.put("picture", gocci.getLoginPicture());
+        loginParam.put("user_name", SavedData.getLoginName(getActivity()));
+        loginParam.put("picture", SavedData.getLoginPicture(getActivity()));
 
         progressWheel = (ProgressWheel) view.findViewById(R.id.progress_wheel);
         mTimelineListView = (ObservableListView) view.findViewById(R.id.list);
@@ -739,7 +740,7 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
 
     @Override
     public void movieCacheCreated(boolean success, String postId) {
-        if (success && mPlayingPostId == postId && getActivity() != null) {
+        if (success && mPlayingPostId.equals(postId) && getActivity() != null) {
 
             Log.d("DEBUG", "MOVIE::movieCacheCreated 動画再生処理開始 postId:" + mPlayingPostId);
             startMovie();

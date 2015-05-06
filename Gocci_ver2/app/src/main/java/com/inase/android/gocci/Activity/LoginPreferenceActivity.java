@@ -12,6 +12,7 @@ import android.widget.Toast;
 import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.common.Const;
+import com.inase.android.gocci.common.SavedData;
 import com.inase.android.gocci.common.Util;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -40,16 +41,12 @@ public class LoginPreferenceActivity extends ActionBarActivity {
     private AsyncHttpClient httpClient;
     private RequestParams loginParams;
 
-    private Application_Gocci gocci;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_preference);
 
         progress = (ProgressWheel) findViewById(R.id.progress_wheel);
-
-        gocci = (Application_Gocci) getApplication();
 
         if (Util.getConnectedState(LoginPreferenceActivity.this) == Util.NetworkStatus.OFF) {
             Toast.makeText(LoginPreferenceActivity.this, "通信に失敗しました", Toast.LENGTH_LONG).show();
@@ -64,7 +61,7 @@ public class LoginPreferenceActivity extends ActionBarActivity {
             Log.e("ダミーじゃ無いよ", name);
             postLoginAsync(this, name, picture, judge);
         } else {
-            Log.e("ダミだったよじゃ無いよ", name);
+            Log.e("ダミだったよ", name);
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
             finish();
@@ -94,7 +91,7 @@ public class LoginPreferenceActivity extends ActionBarActivity {
                         int mFollower = response.getInt(TAG_FOLLOWER);
                         int mCheer = response.getInt(TAG_CHEER);
 
-                        gocci.setAccount(mName, mPicture, mBackground, mFollowee, mFollower, mCheer);
+                        SavedData.setAccount(LoginPreferenceActivity.this, mName, mPicture, mBackground, mFollowee, mFollower, mCheer);
 
                         Intent intent = new Intent(LoginPreferenceActivity.this, TutorialGuideActivity.class);
                         intent.putExtra("judge", judge);

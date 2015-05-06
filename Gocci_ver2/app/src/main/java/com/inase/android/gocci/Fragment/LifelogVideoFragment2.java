@@ -239,7 +239,7 @@ public class LifelogVideoFragment2 extends SupportBlurDialogFragment implements 
 
     @Override
     public void movieCacheCreated(boolean success, String postId) {
-        if (success && mPlayingPostId == postId && getActivity() != null) {
+        if (success && mPlayingPostId.equals(postId) && getActivity() != null) {
             Log.d("DEBUG", "MOVIE::movieCacheCreated 動画再生処理開始 postId:" + mPlayingPostId);
             startMovie();
         }
@@ -480,7 +480,7 @@ public class LifelogVideoFragment2 extends SupportBlurDialogFragment implements 
                         @Override
                         public boolean onError(final MediaPlayer mp, final int what, final int extra) {
                             Log.e("DEBUG", "動画再生OnError: what:" + what + " extra:" + extra);
-                            if (mPlayingPostId == postId && !mPlayBlockFlag) {
+                            if (mPlayingPostId.equals(postId) && !mPlayBlockFlag) {
                                 Log.d("DEBUG", "MOVIE::onErrorListener 再生開始");
                                 mPlayingPostId = null;
                                 changeMovie();
