@@ -380,6 +380,8 @@ public class CameraActivity extends Activity {
             if (!users.isEmpty()) {
                 int requestCode = 125;
                 Intent intent = new Intent(CameraActivity.this, SelectShopActivity.class);
+                intent.putExtra("latitude", latitude);
+                intent.putExtra("longitude", longitude);
                 startActivityForResult(intent, requestCode);
             }
         }

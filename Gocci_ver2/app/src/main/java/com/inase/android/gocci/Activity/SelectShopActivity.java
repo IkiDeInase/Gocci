@@ -69,68 +69,8 @@ public class SelectShopActivity extends DraggerActivity {
         noexistRipple.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new MaterialDialog.Builder(SelectShopActivity.this)
-                        .title("店舗追加")
-                        .content("あなたのいるお店の名前を入力してください。※位置情報は現在の位置を使います。")
-                        .input("店舗名", null, new MaterialDialog.InputCallback() {
-                            @Override
-                            public void onInput(MaterialDialog materialDialog, CharSequence charSequence) {
-                                materialDialog.getActionButton(DialogAction.POSITIVE).setEnabled(charSequence.length() > 0);
-
-                            }
-                        })
-                        .alwaysCallInputCallback()
-                        .positiveText("送信する")
-                        .callback(new MaterialDialog.ButtonCallback() {
-                            @Override
-                            public void onPositive(MaterialDialog dialog) {
-                                super.onPositive(dialog);
-                                noExistRestname = dialog.getInputEditText().getText().toString();
-
-                                RequestParams params = new RequestParams();
-                                params.put("restname", noExistRestname);
-                                params.put("latitude", mLatitude);
-                                params.put("longitude", mLongitude);
-
-                                AsyncHttpClient client = new AsyncHttpClient();
-                                client.post(SelectShopActivity.this, Const.URL_ADD_REST, params, new JsonHttpResponseHandler() {
-                                    @Override
-                                    public void onStart() {
-                                        wheel.setVisibility(View.VISIBLE);
-                                    }
-
-                                    @Override
-                                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                                        Toast.makeText(SelectShopActivity.this, "通信に失敗しました", Toast.LENGTH_SHORT).show();
-                                    }
-
-                                    @Override
-                                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                                        Log.e("ジェイソン成功", String.valueOf(response));
-                                        try {
-                                            String message = response.getString("message");
-
-                                            if (message.equals("店舗を追加しました")) {
-                                                Toast.makeText(SelectShopActivity.this, message, Toast.LENGTH_SHORT).show();
-                                                Handler handler = new Handler();
-                                                handler.postDelayed(new noExistClickHandler(), 200);
-                                            } else {
-                                                Toast.makeText(SelectShopActivity.this, message, Toast.LENGTH_SHORT).show();
-                                            }
-                                        } catch (JSONException e) {
-                                            e.printStackTrace();
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onFinish() {
-                                        wheel.setVisibility(View.INVISIBLE);
-                                    }
-                                });
-
-                            }
-                        })
-                        .show();
+                Handler handler = new Handler();
+                handler.postDelayed(new createTenpoHandler(), 750);
             }
         });
 
@@ -211,6 +151,74 @@ public class SelectShopActivity extends DraggerActivity {
 
             setResult(RESULT_OK, data);
             finish();
+        }
+    }
+
+    class createTenpoHandler implements Runnable {
+        public void run() {
+            new MaterialDialog.Builder(SelectShopActivity.this)
+                    .title("店舗追加")
+                    .content("あなたのいるお店の名前を入力してください。※位置情報は現在の位置を使います。")
+                    .input("店舗名", null, new MaterialDialog.InputCallback() {
+                        @Override
+                        public void onInput(MaterialDialog materialDialog, CharSequence charSequence) {
+                            materialDialog.getActionButton(DialogAction.POSITIVE).setEnabled(charSequence.length() > 0);
+                        }
+                    })
+                    .alwaysCallInputCallback()
+                    .positiveText("送信する")
+                    .callback(new MaterialDialog.ButtonCallback() {
+                        @Override
+                        public void onPositive(MaterialDialog dialog) {
+                            super.onPositive(dialog);
+                            noExistRestname = dialog.getInputEditText().getText().toString();
+
+                            RequestParams params = new RequestParams();
+                            params.put("restname", noExistRestname);
+                            params.put("lat", mLatitude);
+                            params.put("lon", mLongitude);
+
+                            AsyncHttpClient client = new AsyncHttpClient();
+                            client.post(SelectShopActivity.this, Const.URL_INSERT_REST, params, new JsonHttpResponseHandler() {
+                                @Override
+                                public void onStart() {
+                                    wheel.setVisibility(View.VISIBLE);
+                                }
+
+                                @Override
+                                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                                    Toast.makeText(SelectShopActivity.this, "通信に失敗しました", Toast.LENGTH_SHORT).show();
+                                }
+
+                                @Override
+                                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                                    Log.e("ジェイソン成功", String.valueOf(response));
+
+                                    try {
+                                        String message = response.getString("message");
+
+                                        if (message.equals("店舗追加完了しました")) {
+                                            Toast.makeText(SelectShopActivity.this, message, Toast.LENGTH_SHORT).show();
+                                            Handler handler = new Handler();
+                                            handler.postDelayed(new noExistClickHandler(), 100);
+                                        } else {
+                                            Toast.makeText(SelectShopActivity.this, message, Toast.LENGTH_SHORT).show();
+                                        }
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                }
+
+                                @Override
+                                public void onFinish() {
+                                    wheel.setVisibility(View.INVISIBLE);
+                                }
+                            });
+
+                        }
+                    })
+                    .show();
         }
     }
 }
