@@ -45,6 +45,8 @@ import com.inase.android.gocci.data.UserData;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.melnykov.fab.FloatingActionButton;
+import com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayout;
+import com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayoutDirection;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.squareup.otto.Subscribe;
 
@@ -85,7 +87,7 @@ public class Search_mapFragment extends BaseFragment
     private ArrayList<UserData> mSearch_mapusers = new ArrayList<>();
     private ArrayList<String> tenpo_string_users = new ArrayList<>();
     private Search_mapAdapter mSearch_mapAdapter;
-    private SwipeRefreshLayout mSearchmapSwipe;
+    private SwipyRefreshLayout mSearchmapSwipe;
     private FloatingActionButton fab;
 
     private ProgressWheel mapprogress;
@@ -156,18 +158,16 @@ public class Search_mapFragment extends BaseFragment
         mSearch_mapListView.setSelector(android.R.color.transparent);
         mSearch_mapListView.setScrollViewCallbacks(this);
 
-        mSearchmapSwipe = (SwipeRefreshLayout) view1.findViewById(R.id.swipe_searchmap);
+        mSearchmapSwipe = (SwipyRefreshLayout) view1.findViewById(R.id.swipe_searchmap);
         mSearchmapSwipe.setColorSchemeColors(R.color.main_color_light, R.color.gocci, R.color.main_color_dark, R.color.window_bg);
-        mSearchmapSwipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        mSearchmapSwipe.setOnRefreshListener(new SwipyRefreshLayout.OnRefreshListener() {
             @Override
-            public void onRefresh() {
-//Handle the refresh then call
+            public void onRefresh(SwipyRefreshLayoutDirection swipyRefreshLayoutDirection) {
                 if (isCapturingLocation) {
-                    Log.d("DEBUG", "ProgressDialog show [mRefreshDialog]");
+                    Log.e("DEBUG", "ProgressDialog show " + swipyRefreshLayoutDirection);
                     mSearchmapSwipe.setRefreshing(true);
                     refreshLocation();
                 }
-
             }
         });
 

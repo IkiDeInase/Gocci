@@ -30,5 +30,5 @@
     <dimen name="dimen_margin_circle">4dp</dimen>
     <dimen name="dimen_margin_circle.negative">-4dp</dimen>
 
-    <dimen name="capture_top_mask">48.0dip</dimen>
+    <dimen name="capture_top_mask">56.0dip</dimen>
 </resources>

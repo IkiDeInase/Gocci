@@ -16,11 +16,11 @@
             android:layout_width="fill_parent"
             android:layout_height="@dimen/capture_top_mask">
 
-            <com.inase.android.gocci.View.ProgressView
-                android:id="@+id/progress"
-                android:layout_width="fill_parent"
-                android:layout_height="48.0dip"
-                android:background="@color/bg_capture_progress" />
+            <ImageView
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_centerInParent="true"
+                android:src="@drawable/ic_gocci_white" />
 
             <LinearLayout
                 android:id="@+id/cancel"
@@ -46,69 +46,41 @@
             android:layout_height="match_parent"
             android:layout_below="@id/top_mask"
             android:layout_centerInParent="true"
-            android:layout_marginBottom="150dp" />
+            android:layout_marginBottom="175dp" />
 
-        <RelativeLayout
+        <LinearLayout
+            xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/bottom_mask"
             android:layout_width="fill_parent"
-            android:layout_height="150.0dip"
+            android:layout_height="175.0dip"
+            android:orientation="vertical"
             android:layout_alignParentBottom="true"
             android:layout_gravity="bottom"
             android:background="@color/capture_background">
 
-            <com.andexert.library.RippleView
+            <android.support.v4.view.ViewPager
+                android:id="@+id/viewpager"
+                android:layout_width="match_parent"
+                android:layout_height="155dp"
+                />
+
+            <com.ogaclejapan.smarttablayout.SmartTabLayout
+                android:id="@+id/viewpagertab"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/infoButton"
-                android:layout_centerVertical="true"
-                android:layout_alignParentLeft="true"
-                android:layout_marginLeft="32dp"
-                android:visibility="invisible">
+                android:layout_height="8dp"
+                android:layout_gravity="bottom|center_horizontal"
+                app:stl_indicatorInterpolation="linear"
+                app:stl_indicatorColor="@color/view_background"
+                app:stl_indicatorThickness="8dp"
+                app:stl_indicatorCornerRadius="4dp"
+                app:stl_underlineThickness="0dp"
+                app:stl_underlineColor="@color/transparent"
+                app:stl_dividerThickness="0dp"
+                app:stl_dividerColor="@color/transparent"
+                app:stl_customTabTextLayoutId="@layout/custom_tab_circle"
+                android:layout_marginBottom="12dp" />
 
-                <ImageView
-                    android:layout_width="45dp"
-                    android:layout_height="45dp"
-                    android:layout_centerInParent="true"
-                    android:src="@drawable/ic_radio_button_off_white_36dp" />
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:id="@+id/infoImage"
-                    android:background="@drawable/ic_edit_white_24dp"
-                    />
-            </com.andexert.library.RippleView>
-
-            <ImageButton
-                android:layout_width="75dp"
-                android:layout_height="75dp"
-                android:background="@drawable/ic_toukou_circle"
-                android:id="@+id/toukouButton"
-                android:layout_centerInParent="true" />
-
-            <com.andexert.library.RippleView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/selectShopButton"
-                android:layout_centerVertical="true"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="32dp">
-
-                <ImageView
-                    android:layout_width="45dp"
-                    android:layout_height="45dp"
-                    android:layout_centerInParent="true"
-                    android:src="@drawable/ic_radio_button_off_white_36dp" />
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:id="@+id/shopImage"
-                    android:background="@drawable/ic_store_mall_directory_white_24dp"
-                    />
-            </com.andexert.library.RippleView>
-
-        </RelativeLayout>
+        </LinearLayout>
     </RelativeLayout>
 
     <com.pnikosis.materialishprogress.ProgressWheel

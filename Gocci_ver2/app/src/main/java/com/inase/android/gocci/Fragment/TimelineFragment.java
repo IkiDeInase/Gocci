@@ -58,6 +58,7 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.TextHttpResponseHandler;
 import com.melnykov.fab.FloatingActionButton;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.squareup.otto.Subscribe;
@@ -83,14 +84,14 @@ import me.drakeet.materialdialog.MaterialDialog;
 
 public class TimelineFragment extends BaseFragment implements ObservableScrollViewCallbacks, AbsListView.OnScrollListener, CacheManager.ICacheManagerListener {
 
-    private int mNowNumber = 30;
     private static final String KEY_IMAGE_URL = "image_url";
     private static final String TAG_USER_NAME = "user_name";
+    private static final String TAG_REFRESH = "refresh";
+    private static final String TAG_ADD = "add";
 
     private ProgressWheel progressWheel;
     private ObservableListView mTimelineListView;
     private ArrayList<UserData> mTimelineusers = new ArrayList<>();
-    private ArrayList<UserData> mTenpousers = new ArrayList<>();
     private SwipeRefreshLayout mTimelineSwipe;
     private TimelineAdapter mTimelineAdapter;
     private FloatingActionButton fab;
@@ -107,7 +108,7 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
     private double clickedLon;
 
     private boolean mScrolled = false;
-    private int refreshNumber = 1;
+    private boolean isNear = true;
 
     private Location mLocation = null;
     private String mTimelineUrl = null;
@@ -428,8 +429,7 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                mTimelineUrl = "http://api-gocci.jp/timeline_near/?lat=" + mLocation.getLatitude() + "&lon=" +
-                        mLocation.getLongitude() + "&limit=" + mNowNumber;
+                mTimelineUrl = "http://api-gocci.jp/test_timeline/?lat=" + mLocation.getLatitude() + "&lon=" + mLocation.getLongitude() + "&limit=30";
                 Log.e("サインアップ成功", mTimelineUrl);
                 getTimelineJson(context, mTimelineUrl, httpClient);
             }
@@ -444,32 +444,39 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
     }
 
     private void getTimelineJson(final Context context, String url, final AsyncHttpClient httpClient) {
-        httpClient.get(context, url, new JsonHttpResponseHandler() {
+        httpClient.get(context, url, new TextHttpResponseHandler() {
             @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray timeline) {
-                // Pull out the first event on the public timeline
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                Toast.makeText(getActivity(), "読み取りに失敗しました", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
                 try {
-                    for (int i = 0; i < timeline.length(); i++) {
-                        JSONObject jsonObject = timeline.getJSONObject(i);
+                    Log.e("タイムラインろぐ", responseString);
+                    JSONObject json = new JSONObject(responseString);
+                    String mode = json.getString("timeline");
+                    JSONArray array = new JSONArray(json.getString("android"));
+
+                    if (!mode.equals("near")) {
+                        isNear = false;
+                        Toast.makeText(getActivity(), "近くの投稿がないので、全体のタイムラインを読み込みます", Toast.LENGTH_SHORT).show();
+                    } else {
+                        isNear = true;
+                    }
+
+                    for (int i = 0; i < array.length(); i++) {
+                        JSONObject jsonObject = array.getJSONObject(i);
                         mTimelineusers.add(UserData.createUserData(jsonObject));
                     }
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
-                if (mTimelineusers.size() != 0) {
-                    mTimelineListView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
-                    mTimelineListView.setAdapter(mTimelineAdapter);
-                    //getTimelineDateJson(context);
-                } else {
-                    getTimelineJson(getActivity(), Const.URL_TIMELINE_API, httpClient);
-                    Toast.makeText(getActivity(), "近くの投稿がないので、全体のタイムラインを読み込みます", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, org.apache.http.Header[] headers, java.lang.Throwable throwable, org.json.JSONObject errorResponse) {
-                Toast.makeText(getActivity(), "読み取りに失敗しました", Toast.LENGTH_SHORT).show();
+                mTimelineListView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
+                mTimelineListView.setAdapter(mTimelineAdapter);
+                //getTimelineDateJson(context);
             }
 
             @Override
@@ -525,8 +532,8 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 Log.e("サインアップ成功", "status=" + statusCode);
-                mTimelineUrl = "http://api-gocci.jp/timeline_near/?lat=" + mLocation.getLatitude() + "&lon=" +
-                        mLocation.getLongitude() + "&limit=" + mNowNumber;
+                mTimelineUrl = "http://api-gocci.jp/test_timeline/?lat=" + mLocation.getLatitude() + "&lon=" + mLocation.getLongitude() +
+                        "&limit=30&mode=refresh";
                 getRefreshTimelineJson(context, mTimelineUrl, httpClient3);
 
             }
@@ -542,35 +549,41 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
     }
 
     private void getRefreshTimelineJson(final Context context, String url, final AsyncHttpClient httpClient3) {
-        httpClient3.get(context, url, new JsonHttpResponseHandler() {
+        httpClient3.get(context, url, new TextHttpResponseHandler() {
             @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray timeline) {
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                Toast.makeText(getActivity(), "読み取りに失敗しました", Toast.LENGTH_SHORT).show();
+            }
 
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
                 mTimelineusers.clear();
                 try {
-                    for (int i = 0; i < timeline.length(); i++) {
-                        JSONObject jsonObject = timeline.getJSONObject(i);
+                    Log.e("リフレッシュろぐ", responseString);
+                    JSONObject json = new JSONObject(responseString);
+                    String mode = json.getString("timeline");
+                    JSONArray array = new JSONArray(json.getString("android"));
+
+                    if (!mode.equals("near")) {
+                        isNear = false;
+                        Toast.makeText(getActivity(), "近くの投稿がないので、全体のタイムラインを読み込みます", Toast.LENGTH_SHORT).show();
+                    } else {
+                        isNear = true;
+                    }
+
+                    for (int i = 0; i < array.length(); i++) {
+                        JSONObject jsonObject = array.getJSONObject(i);
                         mTimelineusers.add(UserData.createUserData(jsonObject));
                     }
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
-                if (mTimelineusers.size() != 0) {
-                    mPlayingPostId = null;
-                    mViewHolderHash.clear();
-                    mTimelineListView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
-                    mTimelineAdapter.notifyDataSetChanged();
-                } else {
-                    getRefreshTimelineJson(getActivity(), Const.URL_TIMELINE_API, httpClient3);
-                    Toast.makeText(getActivity(), "近くの投稿がないので、全体のタイムラインを読み込みます", Toast.LENGTH_SHORT).show();
-                }
-
-            }
-
-            @Override
-            public void onFailure(int statusCode, org.apache.http.Header[] headers, java.lang.Throwable throwable, org.json.JSONObject errorResponse) {
-                Toast.makeText(getActivity(), "読み取りに失敗しました", Toast.LENGTH_SHORT).show();
+                mPlayingPostId = null;
+                mViewHolderHash.clear();
+                mTimelineListView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
+                mTimelineAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -609,14 +622,27 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
     }
 
     private void getAddTimelineJson(final Context context, String url, AsyncHttpClient httpClient4) {
-        httpClient4.get(context, url, new JsonHttpResponseHandler() {
+        httpClient4.get(context, url, new TextHttpResponseHandler() {
             @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray timeline) {
-                mTimelineusers.clear();
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                Toast.makeText(getActivity(), "読み取りに失敗しました", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
                 try {
-                    for (int i = 0; i < timeline.length(); i++) {
-                        JSONObject jsonObject = timeline.getJSONObject(i);
-                        mTimelineusers.add(UserData.createUserData(jsonObject));
+                    Log.e("あっどろぐ", responseString);
+                    JSONObject json = new JSONObject(responseString);
+                    String mode = json.getString("timeline");
+                    JSONArray array = new JSONArray(json.getString("android"));
+
+                    if (array.length() != 0) {
+                        for (int i = 0; i < array.length(); i++) {
+                            JSONObject jsonObject = array.getJSONObject(i);
+                            mTimelineusers.add(UserData.createUserData(jsonObject));
+                        }
+                    } else {
+                        Toast.makeText(getActivity(), "この投稿で最後です！", Toast.LENGTH_SHORT).show();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -625,12 +651,6 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
                 mPlayingPostId = null;
                 mTimelineListView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
                 mTimelineAdapter.notifyDataSetChanged();
-
-            }
-
-            @Override
-            public void onFailure(int statusCode, org.apache.http.Header[] headers, java.lang.Throwable throwable, org.json.JSONObject errorResponse) {
-                Toast.makeText(getActivity(), "読み取りに失敗しました", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -716,16 +736,25 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
         if (totalItemCount != 0 && totalItemCount == firstVisibleItem + visibleItemCount && !mScrolled) {
             Log.d("DEBUG", "onScroll 一番下に到達");
             mScrolled = true;
-            refreshNumber = refreshNumber + 1;
 
             // 最後尾までスクロールしたので、何かデータ取得する処理
 
-            mNowNumber = refreshNumber * Const.TIMELINE_LIMIT;
+            String nowPost_id = mTimelineusers.get(mTimelineusers.size() -1).getPost_id();
+            //mLocation.getLatitude();
+            //mLocation.getLongitude();
 
-            String TimelineUrl = "http://api-gocci.jp/timeline_near/?lat=" + mLocation.getLatitude() + "&lon=" +
-                    mLocation.getLongitude() + "&limit=" + mNowNumber;
+            if (isNear) {
+                //近い店のadd
+                String TimelineUrl = "http://api-gocci.jp/test_timeline/?lat=" + mLocation.getLatitude() + "&lon=" + mLocation.getLongitude() +
+                        "&post_id=" + nowPost_id + "&get=near";
+                getAddJsonAsync(getActivity(), TimelineUrl);
+            } else {
+                //全体のadd
+                String TimelineUrl = "http://api-gocci.jp/test_timeline/?lat=" + mLocation.getLatitude() + "&lon=" + mLocation.getLongitude() +
+                        "&post_id=" + nowPost_id + "&get=all";
+                getAddJsonAsync(getActivity(), TimelineUrl);
 
-            getAddJsonAsync(getActivity(), TimelineUrl);
+            }
 
             restoreListPosition();
         }
@@ -831,7 +860,7 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
             @Override
             public void onPrepared(MediaPlayer mp) {
                 Log.d("DEBUG", "MOVIE::onPrepared postId: " + postId);
-                if (mPlayingPostId == postId && !mPlayBlockFlag) {
+                if (mPlayingPostId.equals(postId) && !mPlayBlockFlag) {
                     Log.d("DEBUG", "MOVIE::onPrepared 再生開始");
                     //viewHolder.mVideoThumbnail.setVisibility(View.INVISIBLE);
                     //viewHolder.movie.start();
@@ -850,7 +879,7 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
                         @Override
                         public boolean onError(final MediaPlayer mp, final int what, final int extra) {
                             Log.e("DEBUG", "動画再生OnError: what:" + what + " extra:" + extra);
-                            if (mPlayingPostId == postId && !mPlayBlockFlag) {
+                            if (mPlayingPostId.equals(postId) && !mPlayBlockFlag) {
                                 Log.d("DEBUG", "MOVIE::onErrorListener 再生開始");
                                 mPlayingPostId = null;
                                 changeMovie();

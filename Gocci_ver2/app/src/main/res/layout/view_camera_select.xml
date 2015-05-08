@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/capture_background">
+
+    <com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="店名（必須）"
+        app:met_singleLineEllipsis="true"
+        app:met_floatingLabel="normal"
+        app:met_primaryColor="#ffffff"
+        app:met_textColor="#ffffff"
+        app:met_underlineColor="#ffffff"
+        app:met_helperTextColor="#afafaf"
+        app:met_textColorHint="#afafaf"
+        app:met_floatingLabelTextSize="10sp"
+        app:met_baseColor="#ffffff"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:id="@+id/restname_spinner"
+        android:layout_marginTop="8dp"
+        android:textSize="12sp"
+        />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="今いるお店が上のリストにないときは........"
+            android:id="@+id/infoText"
+            android:textColor="#ffffff"
+            android:textSize="12sp"
+            android:layout_alignParentBottom="false"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/restaddButton" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/restaddButton"
+            android:background="@drawable/ic_info_outline_white_36dp"
+            android:layout_marginLeft="16dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="16dp" />
+    </RelativeLayout>
+
+    <com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner
+        android:id="@+id/category_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="カテゴリー"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        app:met_floatingLabel="normal"
+        app:met_singleLineEllipsis="true"
+        app:met_primaryColor="#ffffff"
+        app:met_textColor="#ffffff"
+        app:met_underlineColor="#ffffff"
+        app:met_helperTextColor="#afafaf"
+        app:met_textColorHint="#afafaf"
+        app:met_floatingLabelTextSize="10sp"
+        app:met_baseColor="#ffffff"
+        android:textSize="12sp" />
+
+    <com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner
+        android:id="@+id/mood_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="雰囲気"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        app:met_floatingLabel="normal"
+        app:met_singleLineEllipsis="true"
+        app:met_primaryColor="#ffffff"
+        app:met_textColor="#ffffff"
+        app:met_underlineColor="#ffffff"
+        app:met_helperTextColor="#afafaf"
+        app:met_textColorHint="#afafaf"
+        app:met_floatingLabelTextSize="10sp"
+        app:met_baseColor="#ffffff"
+        android:textSize="12sp" />
+
+    <com.rengwuxian.materialedittext.MaterialEditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="価格（数字のみ）"
+        android:ems="10"
+        app:met_primaryColor="#ffffff"
+        app:met_textColor="#ffffff"
+        app:met_underlineColor="#ffffff"
+        app:met_helperTextColor="#afafaf"
+        app:met_textColorHint="#afafaf"
+        app:met_floatingLabelTextSize="10sp"
+        app:met_singleLineEllipsis="true"
+        app:met_baseColor="#ffffff"
+        app:met_floatingLabel="normal"
+        android:inputType="number"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:id="@+id/edit_value"
+        android:textSize="12sp"
+        />
+
+    <com.rengwuxian.materialedittext.MaterialEditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="一言"
+        android:ems="10"
+        app:met_floatingLabel="normal"
+        app:met_primaryColor="#ffffff"
+        app:met_textColor="#ffffff"
+        app:met_underlineColor="#ffffff"
+        app:met_helperTextColor="#afafaf"
+        app:met_textColorHint="#afafaf"
+        app:met_floatingLabelTextSize="10sp"
+        app:met_singleLineEllipsis="true"
+        app:met_baseColor="#ffffff"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="8dp"
+        android:id="@+id/edit_comment"
+        android:inputType="textShortMessage"
+        android:textSize="12sp"
+        />
+
+</LinearLayout>

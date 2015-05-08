@@ -387,7 +387,6 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
     private void getUserProfJson(final Context context, AsyncHttpClient httpClient) {
         httpClient.get(context, mProfUrl, new TextHttpResponseHandler() {
 
-
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 Toast.makeText(FlexibleUserProfActivity.this, "読み取りに失敗しました", Toast.LENGTH_SHORT).show();

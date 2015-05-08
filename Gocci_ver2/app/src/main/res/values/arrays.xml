@@ -20,4 +20,22 @@
         <item>@string/no50</item>
         <item>@string/no100</item>
     </array>
+
+    <array name="list_category">
+        <item>@string/wa</item>
+        <item>@string/you</item>
+        <item>@string/tyuu</item>
+        <item>@string/care</item>
+        <item>@string/ramen</item>
+        <item>@string/takoku</item>
+        <item>@string/cafe</item>
+        <item>@string/sake</item>
+        <item>@string/sonota</item>
+    </array>
+
+    <array name="list_mood">
+        <item>@string/nigi</item>
+        <item>@string/yutta</item>
+    </array>
+
 </resources>

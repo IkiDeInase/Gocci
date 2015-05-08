@@ -1,58 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="150.0dip"
-    android:background="#000000">
+    android:layout_height="155.0dip"
+    android:background="@color/capture_background">
 
-    <com.andexert.library.RippleView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/infoButton"
-        android:layout_centerVertical="true"
-        android:layout_alignParentLeft="true"
-        android:layout_marginLeft="32dp">
+    <FrameLayout
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_centerInParent="true"
+        >
 
-        <ImageView
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:layout_centerInParent="true"
-            android:src="@drawable/ic_radio_button_off_white_36dp" />
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:id="@+id/infoImage"
-            android:background="@drawable/ic_edit_white_24dp"
-            />
-    </com.andexert.library.RippleView>
+        <com.inase.android.gocci.Base.CircleProgressBar
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/circleProgress"
+            android:layout_gravity="center" />
 
-    <ImageButton
-        android:layout_width="75dp"
-        android:layout_height="75dp"
-        android:background="@drawable/ic_toukou_circle"
-        android:id="@+id/toukouButton"
-        android:layout_centerInParent="true" />
-
-    <com.andexert.library.RippleView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/selectShopButton"
-        android:layout_centerVertical="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="32dp">
-
-        <ImageView
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:layout_centerInParent="true"
-            android:src="@drawable/ic_radio_button_off_white_36dp" />
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:id="@+id/shopImage"
-            android:background="@drawable/ic_store_mall_directory_white_24dp"
-            />
-    </com.andexert.library.RippleView>
+        <ImageButton
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:id="@+id/toukouButton"
+            android:layout_gravity="center"
+            android:background="@drawable/ic_new_camera2x" />
+    </FrameLayout>
 
 </RelativeLayout>

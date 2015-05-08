@@ -15,20 +15,22 @@
 
     <FrameLayout
         xmlns:fab="http://schemas.android.com/apk/res-auto"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
 
-        <android.support.v4.widget.SwipeRefreshLayout
+        <com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayout
             android:id="@+id/swipe_searchmap"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            app:direction="top">
 
             <com.github.ksoichiro.android.observablescrollview.ObservableListView
                 android:id="@+id/list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
-        </android.support.v4.widget.SwipeRefreshLayout>
+        </com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayout>
 
         <com.pnikosis.materialishprogress.ProgressWheel
             android:id="@+id/mapprogress_wheel"

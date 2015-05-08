@@ -85,11 +85,11 @@
         android:layout_gravity="center_horizontal"
         android:background="#f5f5f5"
         android:hint="ユーザー名"
-        android:padding="8dp"
         android:textSize="14sp"
         android:layout_marginRight="16dp"
         android:layout_marginLeft="16dp"
-        android:layout_marginTop="8dp" />
+        android:layout_marginTop="8dp"
+        android:padding="8dp" />
 
     <View
         android:layout_width="match_parent"

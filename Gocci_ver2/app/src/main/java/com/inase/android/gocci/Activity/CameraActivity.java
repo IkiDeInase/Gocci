@@ -11,15 +11,16 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.andexert.library.RippleView;
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.coremedia.iso.boxes.Container;
 import com.gitonway.lee.niftymodaldialogeffects.lib.Effectstype;
 import com.gitonway.lee.niftymodaldialogeffects.lib.NiftyDialogBuilder;
@@ -30,15 +31,21 @@ import com.googlecode.mp4parser.authoring.container.mp4.MovieCreator;
 import com.googlecode.mp4parser.authoring.tracks.AppendTrack;
 import com.hatenablog.shoma2da.eventdaterecorderlib.EventDateRecorder;
 import com.inase.android.gocci.Base.CameraManager;
+import com.inase.android.gocci.Base.CircleProgressBar;
 import com.inase.android.gocci.Base.RecorderManager;
 import com.inase.android.gocci.R;
-import com.inase.android.gocci.View.CameraPreviewView;
 import com.inase.android.gocci.View.MySurfaceView;
-import com.inase.android.gocci.View.ProgressView;
+import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.data.UserData;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+import com.ogaclejapan.smarttablayout.SmartTabLayout;
+import com.ogaclejapan.smarttablayout.utils.ViewPagerItemAdapter;
+import com.ogaclejapan.smarttablayout.utils.ViewPagerItems;
 import com.pnikosis.materialishprogress.ProgressWheel;
+import com.rengwuxian.materialedittext.MaterialEditText;
+import com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
@@ -59,141 +66,93 @@ import java.util.List;
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
 
-public class CameraActivity extends Activity {
+public class CameraActivity extends Activity implements ViewPager.OnPageChangeListener {
 
     private RecorderManager recorderManager = null;
     private CameraManager cameraManager;
-    private ProgressView progressView = null;
 
     private Runnable progressRunnable = null;
     private Handler handler = null;
     private ProgressWheel cameraProgress;
 
+    private CircleProgressBar progress;
+
     private String mRest_name;
     private String mFinalVideoUrl;
+    private String mValue;
+    private String mCategory;
+    private String mAtmosphere;
+    private String mComment;
+    private boolean mIsnewRestname = false;
+
+    private boolean onScroll = false;
+
     private String timeStamp;
 
     private boolean isPlaying = false;
+    private boolean isFirst = true;
 
-    private ImageView shopImage;
+    private ViewPagerItemAdapter adapter;
+
+    public static String[] restname = new String[30];
+    private ImageButton toukouButton;
 
     private double latitude;
     private double longitude;
-    public static ArrayList<UserData> users = new ArrayList<>();
     private String mSearch_mapUrl;
 
     private static final String TAG_REST_NAME = "restname";
-    private static final String TAG_LOCALITY = "locality";
-    private static final String TAG_DISTANCE = "distance";
+
+    private MaterialBetterSpinner restname_spinner;
+    private MaterialBetterSpinner category_spinner;
+    private MaterialBetterSpinner mood_spinner;
+    private MaterialEditText edit_value;
+    private MaterialEditText edit_comment;
+    private ImageButton restaddButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
+        isFirst = true;
 
         getLocation(this);
 
-        EventDateRecorder maprecorder = EventDateRecorder.load(CameraActivity.this, "use_first_camera");
-        if (!maprecorder.didRecorded()) {
-            // 機能が１度も利用されてない時のみ実行したい処理を書く
-            //初めての起動のみの処理
-            NiftyDialogBuilder dialogBuilder = NiftyDialogBuilder.getInstance(CameraActivity.this);
-            Effectstype effect = Effectstype.SlideBottom;
-            dialogBuilder
-                    .withTitle("Gocciカメラ")
-                    .withMessage("このカメラはボタンをタップしている間だけ再生されます。自分の撮りたい場所だけを、７秒で記録しましょう！")
-                    .withDuration(500)                                          //def
-                    .withEffect(effect)
-                    .isCancelableOnTouchOutside(true)
-                    .show();
-
-            maprecorder.record();
+        for (int i = 0; i < 30; i++) {
+            restname[i] = "";
         }
 
-        Toast.makeText(this, "技術的な問題でうまく動作しない場合があります", Toast.LENGTH_SHORT).show();
+        NiftyDialogBuilder dialogBuilder = NiftyDialogBuilder.getInstance(CameraActivity.this);
+        Effectstype effect = Effectstype.SlideBottom;
+        dialogBuilder
+                .withTitle("Gocciカメラ")
+                .withMessage("このカメラはボタンをタップしている間だけ再生されます。技術的な問題でうまく動作しない場合があります。")
+                .withDuration(500)                                          //def
+                .withEffect(effect)
+                .isCancelableOnTouchOutside(true)
+                .show();
 
         cameraProgress = (ProgressWheel) findViewById(R.id.cameraprogress_wheel);
         MySurfaceView videoSurface = (MySurfaceView) findViewById(R.id.cameraView);
-        progressView = (ProgressView) findViewById(R.id.progress);
-        shopImage = (ImageView) findViewById(R.id.shopImage);
-        ImageView infoImage = (ImageView) findViewById(R.id.infoImage);
         cameraManager = getCameraManager();
         recorderManager = new RecorderManager(getCameraManager(), videoSurface, this);
-        RippleView selectShopButton = (RippleView) findViewById(R.id.selectShopButton);
-        RippleView infoButton = (RippleView) findViewById(R.id.infoButton);
 
-        ImageButton toukouButton = (ImageButton) findViewById(R.id.toukouButton);
+        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
+        viewPager.setOffscreenPageLimit(2);
+        SmartTabLayout viewPagerTab = (SmartTabLayout) findViewById(R.id.viewpagertab);
 
-        selectShopButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //店舗選択Activity
-                if (!users.isEmpty()) {
-                    int requestCode = 123;
-                    Intent intent = new Intent(CameraActivity.this, SelectShopActivity.class);
-                    intent.putExtra("latitude", latitude);
-                    intent.putExtra("longitude", longitude);
-                    startActivityForResult(intent, requestCode);
-                } else {
-                    Toast.makeText(CameraActivity.this, "店舗情報が取れるまで、少々お待ち下さい", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+        adapter = new ViewPagerItemAdapter(ViewPagerItems.with(this)
+                .add(R.string.lat, R.layout.view_camera_1)
+                .add(R.string.lon, R.layout.view_camera_2)
+                .create());
 
-        infoButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                /*
-                new MaterialDialog.Builder(CameraActivity.this)
-                        .title("追加情報")
-                        .content("追加したい情報を入力してください")
-                        .positiveText("完了")
-                        .callback(new MaterialDialog.ButtonCallback() {
-                            @Override
-                            public void onPositive(MaterialDialog dialog) {
-                                super.onPositive(dialog);
-                                infoImage.setBackgroundResource(R.drawable.ic_done_white_24dp);
-                            }
-                        }).show();
-                        */
-            }
-        });
+        viewPager.setAdapter(adapter);
+        viewPagerTab.setViewPager(viewPager);
+        viewPagerTab.setOnPageChangeListener(this);
 
-        toukouButton.setOnTouchListener(new View.OnTouchListener() {
-
-            @Override
-            public boolean onTouch(View arg0, MotionEvent motionEvent) {
-                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                    try {
-                        // sign.setPressed(true);
-                        new Handler().post(new Runnable() {
-                            @Override
-                            public void run() {
-                                cameraManager.getCamera().autoFocus(null);
-                            }
-                        });
-                        recorderManager.startRecord(true);
-
-                    } finally {
-                        muteAll(true);
-                    }
-                } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                    try {
-                        // sign.setPressed(false);
-                        recorderManager.stopRecord();
-                    } finally {
-                        muteAll(false);
-                        //
-                    }
-                }
-                return true;
-            }
-        });
         handler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
-                int total = ((ViewGroup) progressView.getParent())
-                        .getMeasuredWidth();
                 if (msg.arg1 < 7000) {
                     // System.out.println("Clickable");
                     // finishButton.setClickable(true);
@@ -208,9 +167,13 @@ public class CameraActivity extends Activity {
                     // finishButton
                     // .setBackgroundResource(R.drawable.btn_capture_arrow_pressed);
                 }
-                double length = msg.arg1 * 1.0 / 7000 * total;
-                progressView.setWidth((int) length);
-                progressView.invalidate();
+                int circle = (int) (msg.arg1 * 1.0 / 70);
+
+                if (circle > 50) {
+                    progress.setProgress(circle + 1);
+                } else {
+                    progress.setProgress(circle);
+                }
                 super.handleMessage(msg);
                 // //
             }
@@ -218,35 +181,6 @@ public class CameraActivity extends Activity {
 
         progressRunnable = new ProgressRunnable();
         handler.post(progressRunnable);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-            case 123:
-                if (resultCode == RESULT_OK) {
-                    Bundle bundle = data.getExtras();
-                    mRest_name = bundle.getString("restname");
-                    Log.e("インプット店舗", mRest_name);
-                    shopImage.setBackgroundResource(R.drawable.ic_done_white_24dp);
-                } else if (resultCode == RESULT_CANCELED) {
-
-                }
-                break;
-            case 125:
-                if (resultCode == RESULT_OK) {
-                    Bundle bundle = data.getExtras();
-                    mRest_name = bundle.getString("restname");
-                    Log.e("インプット店舗", mRest_name);
-                    shopImage.setBackgroundResource(R.drawable.ic_done_white_24dp);
-                    startPlay();
-                } else if (resultCode == RESULT_CANCELED) {
-
-                }
-            default:
-                break;
-        }
     }
 
     private void getLocation(final Context context) {
@@ -272,24 +206,16 @@ public class CameraActivity extends Activity {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray timeline) {
                 // Pull out the first event on the public timeline
-                users.clear();
+
                 try {
                     for (int i = 0; i < timeline.length(); i++) {
                         JSONObject jsonObject = timeline.getJSONObject(i);
 
                         final String rest_name = jsonObject.getString(TAG_REST_NAME);
-                        final String locality = jsonObject.getString(TAG_LOCALITY);
-                        String distance = jsonObject.getString(TAG_DISTANCE);
 
-                        UserData user = new UserData();
-
-                        user.setRest_name(rest_name);
-                        user.setLocality(locality);
-                        user.setDistance(distance);
-
-                        users.add(user);
-
+                        restname[i] = rest_name;
                     }
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -333,16 +259,14 @@ public class CameraActivity extends Activity {
 
     public void onBackPressed(View view) {
         recorderManager.reset();
-        progressView.setBackgroundResource(R.color.bg_capture_progress);
         isPlaying = false;
-        if (progressView.getCurrentWidth() == 0) {
+        if (progress.getProgress() == 0) {
             CameraActivity.this.finish();
         }
     }
 
     public void onFinishPressed() {
         if (!isPlaying && recorderManager.getVideoTempFiles().size() != 0) {
-            progressView.setBackgroundResource(R.color.gocci_progress);
             Toast.makeText(CameraActivity.this, "確認画面に進みます", Toast.LENGTH_SHORT).show();
             combineFiles();
             isPlaying = true;
@@ -353,31 +277,57 @@ public class CameraActivity extends Activity {
     }
 
     public void startPlay() {
-        if (mRest_name != null) {
-            recorderManager.reset();
+        recorderManager.reset();
 
-            CameraPreviewView fragment = CameraPreviewView.newInstance(
-                    2,
-                    4.0f,
-                    true,
-                    false,
-                    false,
-                    mRest_name,
-                    mFinalVideoUrl
-            );
-            fragment.setCancelable(false);
-            fragment.show(getFragmentManager(), "blur_sample");
-            cameraProgress.setVisibility(View.GONE);
-        } else {
-            Toast.makeText(CameraActivity.this, "撮影するお店を選択してください", Toast.LENGTH_SHORT).show();
-            if (!users.isEmpty()) {
-                int requestCode = 125;
-                Intent intent = new Intent(CameraActivity.this, SelectShopActivity.class);
-                intent.putExtra("latitude", latitude);
-                intent.putExtra("longitude", longitude);
-                startActivityForResult(intent, requestCode);
+        //ここで記入済みの値を持って行こう
+        if (onScroll) {
+            if (restname_spinner.getText().length() == 0) {
+                mRest_name = "";
+            } else {
+                mRest_name = restname_spinner.getText().toString();
             }
+            if (category_spinner.getText().length() == 0) {
+                mCategory = "";
+            } else {
+                mCategory = category_spinner.getText().toString();
+            }
+            if (mood_spinner.getText().length() == 0) {
+                mAtmosphere = "";
+            } else {
+                mAtmosphere = mood_spinner.getText().toString();
+            }
+            if (edit_value.getText().length() == 0) {
+                mValue = "";
+            } else {
+                mValue = edit_value.getText().toString();
+            }
+            if (edit_comment.getText().length() == 0) {
+                mComment = "";
+            } else {
+                mComment = edit_comment.getText().toString();
+            }
+        } else {
+            mRest_name = "";
+            mCategory = "";
+            mAtmosphere = "";
+            mValue = "";
+            mComment = "";
         }
+
+        Intent intent = new Intent(CameraActivity.this, CameraPreviewActivity.class);
+        intent.putExtra("restname", mRest_name);
+        intent.putExtra("video_url", mFinalVideoUrl);
+        intent.putExtra("category", mCategory);
+        intent.putExtra("mood", mAtmosphere);
+        intent.putExtra("comment", mComment);
+        intent.putExtra("value", mValue);
+        intent.putExtra("isNewRestname", mIsnewRestname);
+        intent.putExtra("lat", latitude);
+        intent.putExtra("lon", longitude);
+        startActivity(intent);
+        overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+
+        cameraProgress.setVisibility(View.GONE);
     }
 
     private void combineFiles() {
@@ -445,6 +395,189 @@ public class CameraActivity extends Activity {
         super.onDestroy();
         recorderManager.reset();
         handler.removeCallbacks(progressRunnable);
+    }
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+        if (isFirst && position == 0) {
+            View page = adapter.getPage(position);
+            toukouButton = (ImageButton) page.findViewById(R.id.toukouButton);
+            progress = (CircleProgressBar) findViewById(R.id.circleProgress);
+
+            toukouButton.setOnTouchListener(new View.OnTouchListener() {
+
+                @Override
+                public boolean onTouch(View arg0, MotionEvent motionEvent) {
+                    if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                        try {
+                            // sign.setPressed(true);
+                            new Handler().post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    cameraManager.getCamera().autoFocus(null);
+                                }
+                            });
+                            recorderManager.startRecord(true);
+
+                        } finally {
+                            muteAll(true);
+                        }
+                    } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                        try {
+                            // sign.setPressed(false);
+                            recorderManager.stopRecord();
+                        } finally {
+                            muteAll(false);
+                            //
+                        }
+                    }
+                    return true;
+                }
+            });
+
+            isFirst = false;
+        }
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+        View page = adapter.getPage(position);
+
+        switch (position) {
+            case 0:
+
+                break;
+            case 1:
+                onScroll = true;
+                EventDateRecorder recorder = EventDateRecorder.load(CameraActivity.this, "use_camera_tab");
+                if (!recorder.didRecorded()) {
+                    NiftyDialogBuilder dialogBuilder = NiftyDialogBuilder.getInstance(CameraActivity.this);
+                    Effectstype effect = Effectstype.SlideBottom;
+                    dialogBuilder
+                            .withTitle("タグ画面")
+                            .withMessage("店名以外にもタグを付けて投稿してみませんか？")
+                            .withDuration(500)                                          //def
+                            .withEffect(effect)
+                            .isCancelableOnTouchOutside(true)
+                            .show();
+                    recorder.record();
+                }
+
+                restname_spinner = (MaterialBetterSpinner) page.findViewById(R.id.restname_spinner);
+                category_spinner = (MaterialBetterSpinner) page.findViewById(R.id.category_spinner);
+                mood_spinner = (MaterialBetterSpinner) page.findViewById(R.id.mood_spinner);
+                edit_value = (MaterialEditText) page.findViewById(R.id.edit_value);
+                edit_comment = (MaterialEditText) page.findViewById(R.id.edit_comment);
+
+                restaddButton = (ImageButton) page.findViewById(R.id.restaddButton);
+
+                restname_spinner.setIconRight(R.drawable.ic_arrow_drop_down_white_24dp);
+                category_spinner.setIconRight(R.drawable.ic_arrow_drop_down_white_24dp);
+                mood_spinner.setIconRight(R.drawable.ic_arrow_drop_down_white_24dp);
+
+                String[] CATEGORY = getResources().getStringArray(R.array.list_category);
+                String[] MOOD = getResources().getStringArray(R.array.list_mood);
+
+                ArrayAdapter<String> categoryAdapter = new ArrayAdapter<>(CameraActivity.this,
+                        android.R.layout.simple_dropdown_item_1line, CATEGORY);
+                category_spinner.setAdapter(categoryAdapter);
+
+                ArrayAdapter<String> moodAdapter = new ArrayAdapter<>(CameraActivity.this,
+                        android.R.layout.simple_dropdown_item_1line, MOOD);
+                mood_spinner.setAdapter(moodAdapter);
+
+                ArrayAdapter<String> restAdapter = new ArrayAdapter<>(CameraActivity.this,
+                        android.R.layout.simple_dropdown_item_1line, restname);
+                restname_spinner.setAdapter(restAdapter);
+
+                restaddButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //店舗追加のダイアログ
+                        createTenpo();
+                    }
+                });
+
+                break;
+        }
+
+    }
+
+    private void createTenpo() {
+        new MaterialDialog.Builder(CameraActivity.this)
+                .title("店舗追加")
+                .content("あなたのいるお店の名前を入力してください。※位置情報は現在の位置を使います。")
+                .input("店舗名", null, new MaterialDialog.InputCallback() {
+                    @Override
+                    public void onInput(MaterialDialog materialDialog, CharSequence charSequence) {
+                        materialDialog.getActionButton(DialogAction.POSITIVE).setEnabled(charSequence.length() > 0);
+                    }
+                })
+                .alwaysCallInputCallback()
+                .positiveText("送信する")
+                .callback(new MaterialDialog.ButtonCallback() {
+                    @Override
+                    public void onPositive(MaterialDialog dialog) {
+                        super.onPositive(dialog);
+                        mRest_name = dialog.getInputEditText().getText().toString();
+
+                        RequestParams params = new RequestParams();
+                        params.put("restname", mRest_name);
+                        params.put("lat", latitude);
+                        params.put("lon", longitude);
+
+                        AsyncHttpClient client = new AsyncHttpClient();
+                        client.post(CameraActivity.this, Const.URL_INSERT_REST, params, new JsonHttpResponseHandler() {
+                            @Override
+                            public void onStart() {
+                                cameraProgress.setVisibility(View.VISIBLE);
+                            }
+
+                            @Override
+                            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                                Toast.makeText(CameraActivity.this, "通信に失敗しました", Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                                Log.e("ジェイソン成功", String.valueOf(response));
+
+                                try {
+                                    String message = response.getString("message");
+
+                                    if (message.equals("店舗追加完了しました")) {
+                                        Toast.makeText(CameraActivity.this, message, Toast.LENGTH_SHORT).show();
+                                        //店名をセット
+                                        mIsnewRestname = true;
+                                        restname_spinner.setText(mRest_name);
+                                    } else {
+                                        Toast.makeText(CameraActivity.this, message, Toast.LENGTH_SHORT).show();
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+
+                            }
+
+                            @Override
+                            public void onFinish() {
+                                cameraProgress.setVisibility(View.INVISIBLE);
+                            }
+                        });
+                    }
+                })
+                .show();
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+        if (ViewPager.SCROLL_STATE_DRAGGING == state) {
+            //ボタンクリックできないように
+            toukouButton.setClickable(false);
+        } else {
+            toukouButton.setClickable(true);
+        }
+
     }
 
     private class ProgressRunnable implements Runnable {

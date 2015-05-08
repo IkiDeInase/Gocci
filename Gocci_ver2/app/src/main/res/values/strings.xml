@@ -56,6 +56,19 @@
     <string name="no2500">2500件</string>
     <string name="no5000">5000件</string>
 
+    <string name="wa">和食</string>
+    <string name="you">洋食</string>
+    <string name="tyuu">中華</string>
+    <string name="care">カレー</string>
+    <string name="ramen">ラーメン</string>
+    <string name="takoku">多国籍</string>
+    <string name="cafe">カフェ</string>
+    <string name="sake">居酒屋</string>
+    <string name="sonota">その他</string>
+
+    <string name="nigi">にぎやか</string>
+    <string name="yutta">ゆったり</string>
+
     <string-array name="my_facebook_permissions">
         <item>public_profile</item>
     </string-array>
@@ -78,5 +91,6 @@
     <string name="title_activity_follower_followee_cheer_list">FollowerFolloweeCheerListActivity
     </string>
     <string name="title_activity_login_preference">LoginPreferenceActivity</string>
+    <string name="title_activity_camera_preview">CameraPreviewActivity</string>
 
 </resources>
