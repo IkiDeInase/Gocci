@@ -13,7 +13,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -60,6 +59,8 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.melnykov.fab.FloatingActionButton;
+import com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayout;
+import com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayoutDirection;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
@@ -92,7 +93,7 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
     private ProgressWheel progressWheel;
     private ObservableListView mTimelineListView;
     private ArrayList<UserData> mTimelineusers = new ArrayList<>();
-    private SwipeRefreshLayout mTimelineSwipe;
+    private SwipyRefreshLayout mTimelineSwipe;
     private TimelineAdapter mTimelineAdapter;
     private FloatingActionButton fab;
 
@@ -107,7 +108,6 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
     private double clickedLat;
     private double clickedLon;
 
-    private boolean mScrolled = false;
     private boolean isNear = true;
 
     private Location mLocation = null;
@@ -201,7 +201,7 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
 
         progressWheel = (ProgressWheel) view.findViewById(R.id.progress_wheel);
         mTimelineListView = (ObservableListView) view.findViewById(R.id.list);
-        mTimelineSwipe = (SwipeRefreshLayout) view.findViewById(R.id.swipe_timeline);
+        mTimelineSwipe = (SwipyRefreshLayout) view.findViewById(R.id.swipe_timeline);
         fab = (FloatingActionButton) view.findViewById(R.id.toukouButton);
 
         fab.setOnClickListener(new View.OnClickListener() {
@@ -270,28 +270,48 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
         }
 
         mTimelineSwipe.setColorSchemeColors(R.color.main_color_light, R.color.gocci, R.color.main_color_dark, R.color.window_bg);
-        mTimelineSwipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        mTimelineSwipe.setOnRefreshListener(new SwipyRefreshLayout.OnRefreshListener() {
 
             @Override
-            public void onRefresh() {
+            public void onRefresh(SwipyRefreshLayoutDirection swipyRefreshLayoutDirection) {
                 mTimelineSwipe.setRefreshing(true);
-                if (Util.getConnectedState(getActivity()) != Util.NetworkStatus.OFF) {
-                    SmartLocation.with(getActivity()).location().oneFix().start(new OnLocationUpdatedListener() {
-                        @Override
-                        public void onLocationUpdated(Location location) {
-                            if (location != null) {
-                                mLocation = location;
-                                Log.e("とったどー", "いえい！");
-                                getRefreshAsync(getActivity());
-                                gocci.setFirstLocation(location);
-                            } else {
-                                Toast.makeText(getActivity(), "位置情報が読み取れませんでした", Toast.LENGTH_SHORT).show();
-                                mTimelineSwipe.setRefreshing(false);
+                if (swipyRefreshLayoutDirection == SwipyRefreshLayoutDirection.TOP) {
+                    if (Util.getConnectedState(getActivity()) != Util.NetworkStatus.OFF) {
+                        SmartLocation.with(getActivity()).location().oneFix().start(new OnLocationUpdatedListener() {
+                            @Override
+                            public void onLocationUpdated(Location location) {
+                                if (location != null) {
+                                    mLocation = location;
+                                    Log.e("とったどー", "いえい！");
+                                    getRefreshAsync(getActivity());
+                                    gocci.setFirstLocation(location);
+                                } else {
+                                    Toast.makeText(getActivity(), "位置情報が読み取れませんでした", Toast.LENGTH_SHORT).show();
+                                    mTimelineSwipe.setRefreshing(false);
+                                }
                             }
-                        }
-                    });
+                        });
+                    } else {
+                        Toast.makeText(getActivity(), "通信に失敗しました", Toast.LENGTH_LONG).show();
+                    }
                 } else {
-                    Toast.makeText(getActivity(), "通信に失敗しました", Toast.LENGTH_LONG).show();
+                    String nowPost_id = mTimelineusers.get(mTimelineusers.size() -1).getPost_id();
+                    //mLocation.getLatitude();
+                    //mLocation.getLongitude();
+
+                    if (isNear) {
+                        //近い店のadd
+                        String TimelineUrl = "http://api-gocci.jp/test_timeline/?lat=" + mLocation.getLatitude() + "&lon=" + mLocation.getLongitude() +
+                                "&post_id=" + nowPost_id + "&get=near";
+                        getAddJsonAsync(getActivity(), TimelineUrl);
+                    } else {
+                        //全体のadd
+                        String TimelineUrl = "http://api-gocci.jp/test_timeline/&post_id=" + nowPost_id + "&get=all";
+                        getAddJsonAsync(getActivity(), TimelineUrl);
+
+                    }
+
+                    restoreListPosition();
                 }
             }
         });
@@ -533,7 +553,7 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 Log.e("サインアップ成功", "status=" + statusCode);
                 mTimelineUrl = "http://api-gocci.jp/test_timeline/?lat=" + mLocation.getLatitude() + "&lon=" + mLocation.getLongitude() +
-                        "&limit=30&mode=refresh";
+                        "&limit=30";
                 getRefreshTimelineJson(context, mTimelineUrl, httpClient3);
 
             }
@@ -598,11 +618,6 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
     private void getAddJsonAsync(final Context context, final String url) {
         final AsyncHttpClient httpClient4 = new AsyncHttpClient();
         httpClient4.post(context, Const.URL_SIGNUP_API, loginParam, new AsyncHttpResponseHandler() {
-            @Override
-            public void onStart() {
-                Log.d("DEBUG", "ProgressDialog show AddJson");
-                progressWheel.setVisibility(View.VISIBLE);
-            }
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
@@ -614,7 +629,7 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                 Log.d("DEBUG", "ProgressDialog dismiss AddJson failure");
-                progressWheel.setVisibility(View.GONE);
+                mTimelineSwipe.setRefreshing(false);
                 Toast.makeText(getActivity(), "サインアップに失敗しました", Toast.LENGTH_SHORT).show();
                 error.printStackTrace();
             }
@@ -626,6 +641,7 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 Toast.makeText(getActivity(), "読み取りに失敗しました", Toast.LENGTH_SHORT).show();
+                mTimelineSwipe.setRefreshing(false);
             }
 
             @Override
@@ -656,7 +672,7 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
             @Override
             public void onFinish() {
                 Log.d("DEBUG", "ProgressDialog dismiss AddJson Finish");
-                progressWheel.setVisibility(View.GONE);
+                mTimelineSwipe.setRefreshing(false);
             }
 
         });
@@ -733,38 +749,6 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
 
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-        if (totalItemCount != 0 && totalItemCount == firstVisibleItem + visibleItemCount && !mScrolled) {
-            Log.d("DEBUG", "onScroll 一番下に到達");
-            mScrolled = true;
-
-            // 最後尾までスクロールしたので、何かデータ取得する処理
-
-            String nowPost_id = mTimelineusers.get(mTimelineusers.size() -1).getPost_id();
-            //mLocation.getLatitude();
-            //mLocation.getLongitude();
-
-            if (isNear) {
-                //近い店のadd
-                String TimelineUrl = "http://api-gocci.jp/test_timeline/?lat=" + mLocation.getLatitude() + "&lon=" + mLocation.getLongitude() +
-                        "&post_id=" + nowPost_id + "&get=near";
-                getAddJsonAsync(getActivity(), TimelineUrl);
-            } else {
-                //全体のadd
-                String TimelineUrl = "http://api-gocci.jp/test_timeline/?lat=" + mLocation.getLatitude() + "&lon=" + mLocation.getLongitude() +
-                        "&post_id=" + nowPost_id + "&get=all";
-                getAddJsonAsync(getActivity(), TimelineUrl);
-
-            }
-
-            restoreListPosition();
-        }
-
-        if (totalItemCount != 0 && totalItemCount != firstVisibleItem + visibleItemCount && mScrolled) {
-            Log.d("DEBUG", "onScroll 一番下ではない");
-            mScrolled = false;
-        }
-
-
     }
 
     @Override
@@ -1008,13 +992,17 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
         public ImageView circleImage;
         public TextView user_name;
         public TextView datetime;
+        public TextView comment;
         public RippleView menuRipple;
         public SquareVideoView movie;
         public RoundCornerProgressBar movieProgress;
         public ImageView mVideoThumbnail;
-        public ImageView restaurantImage;
-        public TextView locality;
+        //public ImageView restaurantImage;
+        //public TextView locality;
         public TextView rest_name;
+        public TextView category;
+        public TextView value;
+        public TextView atmosphere;
         public RippleView tenpoRipple;
         public TextView likes;
         public ImageView likes_Image;
@@ -1039,19 +1027,23 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
             // ViewHolder 取得・作成処理
             ViewHolder viewHolder = null;
             if (convertView == null || convertView.getTag() == null) {
-                convertView = mLayoutInflater.inflate(R.layout.cell_timeline, null);
+                convertView = mLayoutInflater.inflate(R.layout.cell_timeline2, null);
 
                 viewHolder = new ViewHolder();
                 viewHolder.circleImage = (ImageView) convertView.findViewById(R.id.circleImage);
                 viewHolder.user_name = (TextView) convertView.findViewById(R.id.user_name);
                 viewHolder.datetime = (TextView) convertView.findViewById(R.id.time_text);
+                viewHolder.comment = (TextView) convertView.findViewById(R.id.comment);
                 viewHolder.menuRipple = (RippleView) convertView.findViewById(R.id.menuRipple);
                 viewHolder.movie = (SquareVideoView) convertView.findViewById(R.id.videoView);
                 viewHolder.movieProgress = (RoundCornerProgressBar) convertView.findViewById(R.id.video_progress);
                 viewHolder.mVideoThumbnail = (ImageView) convertView.findViewById(R.id.video_thumbnail);
-                viewHolder.restaurantImage = (ImageView) convertView.findViewById(R.id.restaurantImage);
+                //viewHolder.restaurantImage = (ImageView) convertView.findViewById(R.id.restaurantImage);
                 viewHolder.rest_name = (TextView) convertView.findViewById(R.id.rest_name);
-                viewHolder.locality = (TextView) convertView.findViewById(R.id.locality);
+                //viewHolder.locality = (TextView) convertView.findViewById(R.id.locality);
+                viewHolder.category = (TextView) convertView.findViewById(R.id.category);
+                viewHolder.value = (TextView) convertView.findViewById(R.id.value);
+                viewHolder.atmosphere = (TextView) convertView.findViewById(R.id.mood);
                 viewHolder.tenpoRipple = (RippleView) convertView.findViewById(R.id.tenpoRipple);
                 viewHolder.likes = (TextView) convertView.findViewById(R.id.likes_Number);
                 viewHolder.likes_Image = (ImageView) convertView.findViewById(R.id.likes_Image);
@@ -1074,6 +1066,8 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
             }
 
             viewHolder.datetime.setText(user.getDatetime());
+
+            viewHolder.comment.setText(user.getComment());
 
             Picasso.with(getContext())
                     .load(user.getPicture())
@@ -1109,49 +1103,48 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
             viewHolder.menuRipple.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    new BottomSheet.Builder(getActivity(), R.style.BottomSheet_StyleDialog).sheet(R.menu.popup_normal).listener(new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            switch (which) {
-                                case R.id.facebook_share:
+                        new BottomSheet.Builder(getActivity(), R.style.BottomSheet_StyleDialog).sheet(R.menu.popup_normal).listener(new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                switch (which) {
+                                    case R.id.facebook_share:
+                                        if (FacebookDialog.canPresentShareDialog(getActivity().getApplicationContext(),
+                                                FacebookDialog.ShareDialogFeature.VIDEO)) {
+                                            String data = mCacheManager.getCachePath(user.getPost_id(), user.getMovie());
+                                            File file = new File(data);
+                                            // Publish the post using the Video Share Dialog
+                                            FacebookDialog shareDialog = new FacebookDialog.VideoShareDialogBuilder(getActivity())
+                                                    .setFragment(TimelineFragment.this)
+                                                    .addVideoFile(file)
+                                                    .build();
+                                            uiHelper.trackPendingDialogCall(shareDialog.present());
+                                        } else {
+                                            // The user doesn't have the Facebook for Android app installed.
+                                            // You may be able to use a fallback.
+                                            Toast.makeText(getActivity(), "facebookシェアに失敗しました", Toast.LENGTH_SHORT).show();
+                                        }
+                                        break;
+                                    case R.id.twitter_share:
+                                        Uri bmpUri = getLocalBitmapUri(finalViewHolder1.mVideoThumbnail);
+                                        if (bmpUri != null) {
+                                            TweetComposer.Builder builder = new TweetComposer.Builder(getActivity())
+                                                    .text(user.getRest_name() + "/" + user.getLocality())
+                                                    .image(bmpUri);
 
-                                    if (FacebookDialog.canPresentShareDialog(getActivity().getApplicationContext(),
-                                            FacebookDialog.ShareDialogFeature.VIDEO)) {
-                                        String data = mCacheManager.getCachePath(user.getPost_id(), user.getMovie());
-                                        File file = new File(data);
-                                        // Publish the post using the Video Share Dialog
-                                        FacebookDialog shareDialog = new FacebookDialog.VideoShareDialogBuilder(getActivity())
-                                                .setFragment(TimelineFragment.this)
-                                                .addVideoFile(file)
-                                                .build();
-                                        uiHelper.trackPendingDialogCall(shareDialog.present());
-                                    } else {
-                                        // The user doesn't have the Facebook for Android app installed.
-                                        // You may be able to use a fallback.
-                                        Toast.makeText(getActivity(), "facebookシェアに失敗しました", Toast.LENGTH_SHORT).show();
-                                    }
-                                    break;
-                                case R.id.twitter_share:
-                                    Uri bmpUri = getLocalBitmapUri(finalViewHolder1.mVideoThumbnail);
-                                    if (bmpUri != null) {
-                                        TweetComposer.Builder builder = new TweetComposer.Builder(getActivity())
-                                                .text(user.getRest_name() + "/" + user.getLocality())
-                                                .image(bmpUri);
-
-                                        builder.show();
-                                    } else {
-                                        // ...sharing failed, handle error
-                                        Toast.makeText(getActivity(), "twitterシェアに失敗しました", Toast.LENGTH_SHORT).show();
-                                    }
-                                    break;
-                                case R.id.violation:
-                                    setViolateDialog(getActivity(), user.getPost_id());
-                                    break;
-                                case R.id.close:
-                                    dialog.dismiss();
+                                            builder.show();
+                                        } else {
+                                            // ...sharing failed, handle error
+                                            Toast.makeText(getActivity(), "twitterシェアに失敗しました", Toast.LENGTH_SHORT).show();
+                                        }
+                                        break;
+                                    case R.id.violation:
+                                        setViolateDialog(getActivity(), user.getPost_id());
+                                        break;
+                                    case R.id.close:
+                                        dialog.dismiss();
+                                }
                             }
-                        }
-                    }).show();
+                        }).show();
                 }
             });
             Picasso.with(getContext())
@@ -1182,7 +1175,23 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
 
 
             viewHolder.rest_name.setText(user.getRest_name());
-            viewHolder.locality.setText(user.getLocality());
+            //viewHolder.locality.setText(user.getLocality());
+
+            if (!user.getTagCategory().equals("none")) {
+                viewHolder.category.setText(user.getTagCategory());
+            } else {
+                viewHolder.category.setText("タグなし");
+            }
+            if (!user.getAtmosphere().equals("none")) {
+                viewHolder.atmosphere.setText(user.getAtmosphere());
+            } else {
+                viewHolder.atmosphere.setText("タグなし");
+            }
+            if (!user.getValue().equals("0")) {
+                viewHolder.value.setText(user.getValue());
+            } else {
+                viewHolder.value.setText("タグなし");
+            }
 
             //リップルエフェクトを見せてからIntentを飛ばす
             viewHolder.tenpoRipple.setOnClickListener(new View.OnClickListener() {
@@ -1207,7 +1216,7 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
 
             if (user.getPushed_at() == 0) {
                 viewHolder.likes_ripple.setClickable(true);
-                viewHolder.likes_Image.setImageResource(R.drawable.ic_favorite_normal);
+                viewHolder.likes_Image.setImageResource(R.drawable.ic_like_white);
 
                 final ViewHolder finalViewHolder = viewHolder;
                 viewHolder.likes_ripple.setOnClickListener(new View.OnClickListener() {
@@ -1219,14 +1228,14 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
                         user.setgoodnum(currentgoodnum + 1);
 
                         finalViewHolder.likes.setText(String.valueOf((currentgoodnum + 1)));
-                        finalViewHolder.likes_Image.setImageResource(R.drawable.ic_favorite_orange);
+                        finalViewHolder.likes_Image.setImageResource(R.drawable.ic_like_red);
                         finalViewHolder.likes_ripple.setClickable(false);
 
                         postSignupAsync(getActivity(), user.getPost_id(), position);
                     }
                 });
             } else {
-                viewHolder.likes_Image.setImageResource(R.drawable.ic_favorite_orange);
+                viewHolder.likes_Image.setImageResource(R.drawable.ic_like_red);
                 viewHolder.likes_ripple.setClickable(false);
             }
 

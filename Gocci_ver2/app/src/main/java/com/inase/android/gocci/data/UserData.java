@@ -23,6 +23,14 @@ public class UserData {
     private static final String TAG_LAT = "lat";
     private static final String TAG_LON = "lon";
     private static final String TAG_DATETIME = "date_time";
+    private static final String TAG_ID = "id";
+    private static final String TAG_PERSONAL_ID = "personal_id";
+    private static final String TAG_VALUE = "value";
+    private static final String TAG_ATMOSPHERE = "atmosphere";
+    private static final String TAG_TAG_CATEGORY = "tag_category";
+    private static final String TAG_COMMENT = "comment";
+    private static final String TAG_STATUS = "status";
+
 
     //JSON用のsetter/getter
 
@@ -45,14 +53,17 @@ public class UserData {
     private String datetime;
     private Integer pushed_at;
     private String homepage;
-
     private String comment;
-    private int personal_id;
+    private Integer personal_id;
+    private Integer status;
+    private String tag_category;
+    private String atmosphere;
+    private String value;
 
     public UserData() {
     }
 
-    public UserData(String movie, String circleImage, String background, String post_id, String user_name, String restname, String tell, String category, Double lat, Double lon, String locality, Integer goodnum, Integer comment_num, String thumbnail, Integer star_evaluation, Integer pushed_at, String homepage, String datetime) {
+    public UserData(String movie, String circleImage, String background, String post_id, String user_name, String restname, String tell, String category, Double lat, Double lon, String locality, Integer goodnum, Integer comment_num, String thumbnail, Integer star_evaluation, Integer pushed_at, String homepage, String datetime, String distance, String value, String atmosphere, String tag_category, String comment, Integer status) {
         this.movie = movie;
         this.circleImage = circleImage;
         this.background = background;
@@ -71,6 +82,12 @@ public class UserData {
         this.pushed_at = pushed_at;
         this.homepage = homepage;
         this.datetime = datetime;
+        this.distance = distance;
+        this.value = value;
+        this.atmosphere = atmosphere;
+        this.tag_category = tag_category;
+        this.comment = comment;
+        this.status = status;
     }
 
     public String getMovie() {
@@ -241,6 +258,38 @@ public class UserData {
         this.personal_id = personal_id;
     }
 
+    public String getValue() {
+        return this.value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public String getAtmosphere() {
+        return this.atmosphere;
+    }
+
+    public void setAtmosphere(String atmosphere) {
+        this.atmosphere = atmosphere;
+    }
+
+    public String getTagCategory() {
+        return this.tag_category;
+    }
+
+    public void setTagCategory(String tag_category) {
+        this.tag_category = tag_category;
+    }
+
+    public Integer getStatus() {
+        return this.status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
     public static UserData createUserData(JSONObject jsonObject) {
         try {
             String tell = jsonObject.getString(TAG_TELL);
@@ -261,8 +310,14 @@ public class UserData {
             Double lat = jsonObject.getDouble(TAG_LAT);
             Double lon = jsonObject.getDouble(TAG_LON);
             String datetime = jsonObject.getString(TAG_DATETIME);
+            String distance = jsonObject.getString(TAG_DATETIME);
+            String value = jsonObject.getString(TAG_VALUE);
+            String atmosphere = jsonObject.getString(TAG_ATMOSPHERE);
+            String tag_category = jsonObject.getString(TAG_TAG_CATEGORY);
+            String comment = jsonObject.getString(TAG_COMMENT);
+            Integer status = jsonObject.getInt(TAG_STATUS);
 
-            return new UserData(movie, picture, background, post_id, user_name, restname, tell, category, lat, lon, locality, goodnum, comment_num, thumbnail, star_evaluation, pushed_at, homepage, datetime);
+            return new UserData(movie, picture, background, post_id, user_name, restname, tell, category, lat, lon, locality, goodnum, comment_num, thumbnail, star_evaluation, pushed_at, homepage, datetime, distance, value, atmosphere, tag_category, comment, status);
 
         } catch (JSONException e) {
             e.printStackTrace();

@@ -276,6 +276,12 @@ public class CommentView extends LinearLayout {
                 }
                 mCommentAdapter.notifyDataSetChanged();
 
+                if (mCommentusers.isEmpty()) {
+                    mEmptyView.setVisibility(View.VISIBLE);
+                } else {
+                    mEmptyView.setVisibility(View.GONE);
+                }
+
             }
 
             @Override

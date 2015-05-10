@@ -12,7 +12,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -54,6 +53,8 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.melnykov.fab.FloatingActionButton;
+import com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayout;
+import com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayoutDirection;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
@@ -81,7 +82,7 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
     private ProgressWheel progressWheel;
     private ObservableListView mTimelineListView;
     private ArrayList<UserData> mTimelineusers = new ArrayList<>();
-    private SwipeRefreshLayout mTimelineSwipe;
+    private SwipyRefreshLayout mTimelineSwipe;
     private FriendTimelineAdapter mTimelineAdapter;
     private FloatingActionButton fab;
 
@@ -96,7 +97,6 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
     private double clickedLat;
     private double clickedLon;
 
-    private boolean mScrolled = false;
     private int refreshNumber = 1;
 
     private RequestParams loginParam;
@@ -156,7 +156,7 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
 
         progressWheel = (ProgressWheel) view.findViewById(R.id.progress_wheel);
         mTimelineListView = (ObservableListView) view.findViewById(R.id.list);
-        mTimelineSwipe = (SwipeRefreshLayout) view.findViewById(R.id.swipe_timeline);
+        mTimelineSwipe = (SwipyRefreshLayout) view.findViewById(R.id.swipe_timeline);
         fab = (FloatingActionButton) view.findViewById(R.id.toukouButton);
 
         fab.setOnClickListener(new View.OnClickListener() {
@@ -187,15 +187,28 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
         }
 
         mTimelineSwipe.setColorSchemeColors(R.color.main_color_light, R.color.gocci, R.color.main_color_dark, R.color.window_bg);
-        mTimelineSwipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        mTimelineSwipe.setOnRefreshListener(new SwipyRefreshLayout.OnRefreshListener() {
 
             @Override
-            public void onRefresh() {
+            public void onRefresh(SwipyRefreshLayoutDirection swipyRefreshLayoutDirection) {
                 mTimelineSwipe.setRefreshing(true);
-                if (Util.getConnectedState(getActivity()) != Util.NetworkStatus.OFF) {
-                    getRefreshAsync(getActivity());
+                if (swipyRefreshLayoutDirection == SwipyRefreshLayoutDirection.TOP) {
+                    if (Util.getConnectedState(getActivity()) != Util.NetworkStatus.OFF) {
+                        getRefreshAsync(getActivity());
+                    } else {
+                        Toast.makeText(getActivity(), "通信に失敗しました", Toast.LENGTH_LONG).show();
+                    }
                 } else {
-                    Toast.makeText(getActivity(), "通信に失敗しました", Toast.LENGTH_LONG).show();
+                    refreshNumber = refreshNumber + 1;
+                    // 最後尾までスクロールしたので、何かデータ取得する処理
+
+                    mNowNumber = refreshNumber * Const.TIMELINE_LIMIT;
+
+                    String TimelineUrl = "http://api-gocci.jp/favorites_timeline/?limit=" + mNowNumber;
+
+                    getAddJsonAsync(getActivity(), TimelineUrl);
+
+                    restoreListPosition();
                 }
             }
         });
@@ -479,11 +492,6 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
     private void getAddJsonAsync(final Context context, final String url) {
         final AsyncHttpClient httpClient4 = new AsyncHttpClient();
         httpClient4.post(context, Const.URL_SIGNUP_API, loginParam, new AsyncHttpResponseHandler() {
-            @Override
-            public void onStart() {
-                Log.d("DEBUG", "ProgressDialog show AddJson");
-                progressWheel.setVisibility(View.VISIBLE);
-            }
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
@@ -495,7 +503,7 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                 Log.d("DEBUG", "ProgressDialog dismiss AddJson failure");
-                progressWheel.setVisibility(View.GONE);
+                mTimelineSwipe.setRefreshing(false);
                 Toast.makeText(getActivity(), "サインアップに失敗しました", Toast.LENGTH_SHORT).show();
                 error.printStackTrace();
             }
@@ -530,7 +538,7 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
             @Override
             public void onFinish() {
                 Log.d("DEBUG", "ProgressDialog dismiss AddJson Finish");
-                progressWheel.setVisibility(View.GONE);
+                mTimelineSwipe.setRefreshing(false);
             }
 
         });
@@ -607,28 +615,6 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
 
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-        if (totalItemCount != 0 && totalItemCount == firstVisibleItem + visibleItemCount && !mScrolled) {
-            Log.d("DEBUG", "onScroll 一番下に到達");
-            mScrolled = true;
-            refreshNumber = refreshNumber + 1;
-
-            // 最後尾までスクロールしたので、何かデータ取得する処理
-
-            mNowNumber = refreshNumber * Const.TIMELINE_LIMIT;
-
-            String TimelineUrl = "http://api-gocci.jp/favorites_timeline/?limit=" + mNowNumber;
-
-            getAddJsonAsync(getActivity(), TimelineUrl);
-
-            restoreListPosition();
-        }
-
-        if (totalItemCount != 0 && totalItemCount != firstVisibleItem + visibleItemCount && mScrolled) {
-            Log.d("DEBUG", "onScroll 一番下ではない");
-            mScrolled = false;
-        }
-
-
     }
 
     @Override
@@ -872,13 +858,17 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
         public ImageView circleImage;
         public TextView user_name;
         public TextView datetime;
+        public TextView comment;
         public RippleView menuRipple;
         public SquareVideoView movie;
         public RoundCornerProgressBar movieProgress;
         public ImageView mVideoThumbnail;
-        public ImageView restaurantImage;
-        public TextView locality;
+        //public ImageView restaurantImage;
+        //public TextView locality;
         public TextView rest_name;
+        public TextView category;
+        public TextView value;
+        public TextView atmosphere;
         public RippleView tenpoRipple;
         public TextView likes;
         public ImageView likes_Image;
@@ -903,19 +893,23 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
             // ViewHolder 取得・作成処理
             ViewHolder viewHolder = null;
             if (convertView == null || convertView.getTag() == null) {
-                convertView = mLayoutInflater.inflate(R.layout.cell_timeline, null);
+                convertView = mLayoutInflater.inflate(R.layout.cell_timeline2, null);
 
                 viewHolder = new ViewHolder();
                 viewHolder.circleImage = (ImageView) convertView.findViewById(R.id.circleImage);
                 viewHolder.user_name = (TextView) convertView.findViewById(R.id.user_name);
                 viewHolder.datetime = (TextView) convertView.findViewById(R.id.time_text);
+                viewHolder.comment = (TextView) convertView.findViewById(R.id.comment);
                 viewHolder.menuRipple = (RippleView) convertView.findViewById(R.id.menuRipple);
                 viewHolder.movie = (SquareVideoView) convertView.findViewById(R.id.videoView);
                 viewHolder.movieProgress = (RoundCornerProgressBar) convertView.findViewById(R.id.video_progress);
                 viewHolder.mVideoThumbnail = (ImageView) convertView.findViewById(R.id.video_thumbnail);
-                viewHolder.restaurantImage = (ImageView) convertView.findViewById(R.id.restaurantImage);
+                //viewHolder.restaurantImage = (ImageView) convertView.findViewById(R.id.restaurantImage);
                 viewHolder.rest_name = (TextView) convertView.findViewById(R.id.rest_name);
-                viewHolder.locality = (TextView) convertView.findViewById(R.id.locality);
+                //viewHolder.locality = (TextView) convertView.findViewById(R.id.locality);
+                viewHolder.category = (TextView) convertView.findViewById(R.id.category);
+                viewHolder.value = (TextView) convertView.findViewById(R.id.value);
+                viewHolder.atmosphere = (TextView) convertView.findViewById(R.id.mood);
                 viewHolder.tenpoRipple = (RippleView) convertView.findViewById(R.id.tenpoRipple);
                 viewHolder.likes = (TextView) convertView.findViewById(R.id.likes_Number);
                 viewHolder.likes_Image = (ImageView) convertView.findViewById(R.id.likes_Image);
@@ -938,6 +932,8 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
             }
 
             viewHolder.datetime.setText(user.getDatetime());
+
+            viewHolder.comment.setText(user.getComment());
 
             Picasso.with(getContext())
                     .load(user.getPicture())
@@ -1046,7 +1042,23 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
 
 
             viewHolder.rest_name.setText(user.getRest_name());
-            viewHolder.locality.setText(user.getLocality());
+            //viewHolder.locality.setText(user.getLocality());
+
+            if (!user.getTagCategory().equals("none")) {
+                viewHolder.category.setText(user.getTagCategory());
+            } else {
+                viewHolder.category.setText("タグなし");
+            }
+            if (!user.getAtmosphere().equals("none")) {
+                viewHolder.atmosphere.setText(user.getAtmosphere());
+            } else {
+                viewHolder.atmosphere.setText("タグなし");
+            }
+            if (!user.getValue().equals("0")) {
+                viewHolder.value.setText(user.getValue());
+            } else {
+                viewHolder.value.setText("タグなし");
+            }
 
             //リップルエフェクトを見せてからIntentを飛ばす
             viewHolder.tenpoRipple.setOnClickListener(new View.OnClickListener() {
@@ -1071,7 +1083,7 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
 
             if (user.getPushed_at() == 0) {
                 viewHolder.likes_ripple.setClickable(true);
-                viewHolder.likes_Image.setImageResource(R.drawable.ic_favorite_normal);
+                viewHolder.likes_Image.setImageResource(R.drawable.ic_like_white);
 
                 final ViewHolder finalViewHolder = viewHolder;
                 viewHolder.likes_ripple.setOnClickListener(new View.OnClickListener() {
@@ -1083,14 +1095,14 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
                         user.setgoodnum(currentgoodnum + 1);
 
                         finalViewHolder.likes.setText(String.valueOf((currentgoodnum + 1)));
-                        finalViewHolder.likes_Image.setImageResource(R.drawable.ic_favorite_orange);
+                        finalViewHolder.likes_Image.setImageResource(R.drawable.ic_like_red);
                         finalViewHolder.likes_ripple.setClickable(false);
 
                         postSignupAsync(getActivity(), user.getPost_id(), position);
                     }
                 });
             } else {
-                viewHolder.likes_Image.setImageResource(R.drawable.ic_favorite_orange);
+                viewHolder.likes_Image.setImageResource(R.drawable.ic_like_red);
                 viewHolder.likes_ripple.setClickable(false);
             }
 

@@ -60,7 +60,7 @@
         <com.andexert.library.RippleView
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:background="@drawable/ic_delete_button"
+            android:background="@drawable/ic_etc_white"
             ripple:rv_color="@android:color/black"
             ripple:rv_centered="true"
             android:id="@+id/menuRipple"

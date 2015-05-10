@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/list_bg">
+
+    <ImageView
+        android:id="@+id/circleImage"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="12dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="12dp"
+        android:contentDescription="@string/picture"
+        android:src="@drawable/ic_userpicture"
+        android:layout_centerVertical="true" />
+
+    <TextView
+        android:id="@+id/user_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxLength="20"
+        android:text="GOCCI_MAN"
+        android:textColor="@color/nameblack"
+        android:textSize="18sp"
+        android:layout_toRightOf="@+id/circleImage"
+        android:layout_marginTop="16dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ひとこと"
+        android:textSize="12sp"
+        android:textColor="@color/nameblack"
+        android:maxLength="25"
+        android:layout_toRightOf="@+id/circleImage"
+        android:id="@+id/comment"
+        android:layout_below="@+id/user_name"
+        android:layout_marginTop="4dp" />
+
+    <TextView
+        android:id="@+id/time_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="１時間前"
+        android:textColor="@color/timecolor"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="8dp"
+        android:layout_alignTop="@+id/user_name"
+        android:layout_marginTop="4dp" />
+
+    <ImageView
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:id="@+id/cheerMedal"
+        android:layout_below="@+id/time_text"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="4dp"
+        android:layout_marginRight="16dp"
+        android:src="@drawable/ic_userpicture"
+        android:visibility="invisible" />
+
+</RelativeLayout>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:ripple="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/list_bg">
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="4dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="4dp"
+        card_view:cardCornerRadius="4dp">
+
+        <com.andexert.library.RippleView
+            android:id="@+id/tenpoRipple"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            ripple:rv_color="@android:color/black">
+
+            <TextView
+                android:id="@+id/rest_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLength="25"
+                android:layout_marginTop="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginBottom="4dp"
+                android:minLines="0"
+                android:text="Restname"
+                android:textColor="@color/namegrey"
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ラーメン"
+                android:textSize="12sp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginBottom="8dp"
+                android:layout_below="@+id/rest_name"
+                android:textColor="#ffffff"
+                android:background="@drawable/button_tag_category"
+                android:id="@+id/category" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="にぎやか"
+                android:textSize="12sp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginBottom="8dp"
+                android:layout_below="@+id/rest_name"
+                android:layout_toRightOf="@+id/category"
+                android:textColor="#ffffff"
+                android:background="@drawable/button_tag_atmosphere"
+                android:id="@+id/mood" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1000円"
+                android:textSize="12sp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginBottom="8dp"
+                android:layout_below="@+id/rest_name"
+                android:layout_toRightOf="@+id/mood"
+                android:textColor="#ffffff"
+                android:background="@drawable/button_tag_value"
+                android:id="@+id/value" />
+
+        </com.andexert.library.RippleView>
+
+    </android.support.v7.widget.CardView>
+</RelativeLayout>

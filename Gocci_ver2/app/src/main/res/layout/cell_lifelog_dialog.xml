@@ -7,6 +7,18 @@
 
     <include layout="@layout/cell_video_bar" />
 
-    <include layout="@layout/cell_restaurant_bar" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/lifelog_comment"
+        android:background="@drawable/list_bg"
+        android:text="コメント"
+        android:textColor="@color/nameblack"
+        android:textSize="14dp"
+        android:paddingLeft="8dp"
+        android:paddingTop="8dp"
+        android:paddingRight="8dp" />
+
+    <include layout="@layout/cell_restaurant_bar2" />
 
 </LinearLayout>

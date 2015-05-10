@@ -166,13 +166,13 @@ public class FollowerFolloweeCheerListActivity extends ActionBarActivity {
                         String username = jsonObject.getString("user_name");
                         String picture = jsonObject.getString("picture");
                         String background = jsonObject.getString("background_picture");
-                        int personal_id = jsonObject.getInt("personal_id");
+                        int status = jsonObject.getInt("status");
 
                         UserData user = new UserData();
                         user.setUser_name(username);
                         user.setPicture(picture);
                         user.setBackground(background);
-                        user.setPersonal_id(personal_id);
+                        user.setStatus(status);
 
                         users.add(user);
                     }
@@ -294,13 +294,13 @@ public class FollowerFolloweeCheerListActivity extends ActionBarActivity {
                         String username = jsonObject.getString("user_name");
                         String picture = jsonObject.getString("picture");
                         String background = jsonObject.getString("background_picture");
-                        int personal_id = jsonObject.getInt("personal_id");
+                        int status = jsonObject.getInt("status");
 
                         UserData user = new UserData();
                         user.setUser_name(username);
                         user.setPicture(picture);
                         user.setBackground(background);
-                        user.setPersonal_id(personal_id);
+                        user.setStatus(status);
 
                         users.add(user);
                     }
@@ -481,7 +481,7 @@ public class FollowerFolloweeCheerListActivity extends ActionBarActivity {
                     });
                     break;
                 case "followee":
-                    if (user.getPersonal_id() == 0) {
+                    if (user.getStatus() == 0) {
                         viewHolder.addfollowButton.setVisibility(View.VISIBLE);
                     } else {
                         viewHolder.deletefollowButton.setVisibility(View.VISIBLE);

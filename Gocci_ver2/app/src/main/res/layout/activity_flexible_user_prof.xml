@@ -8,8 +8,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.v4.widget.SwipeRefreshLayout
+        <com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayout
             android:id="@+id/swipe_container"
+            app:direction="top"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -17,7 +18,7 @@
                 android:id="@+id/list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
-        </android.support.v4.widget.SwipeRefreshLayout>
+        </com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayout>
 
         <com.pnikosis.materialishprogress.ProgressWheel
             android:id="@+id/userprofprogress_wheel"

@@ -57,6 +57,8 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.melnykov.fab.FloatingActionButton;
+import com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayout;
+import com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayoutDirection;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.squareup.picasso.Picasso;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
@@ -96,7 +98,7 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
     private ObservableListView mProfListView;
     private ArrayList<UserData> mProfusers = new ArrayList<>();
     private MyProfAdapter mProfAdapter;
-    private SwipeRefreshLayout mProfSwipe;
+    private SwipyRefreshLayout mProfSwipe;
 
     private FloatingActionButton fab;
 
@@ -355,14 +357,14 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
                 edit_username_edit = (EditText) dialog.getCustomView().findViewById(R.id.myprof_username_edit);
 
                 Picasso.with(getActivity())
-                        .load(SavedData.getServerName(getActivity()))
+                        .load(SavedData.getServerPicture(getActivity()))
                         .fit()
                         .placeholder(R.drawable.ic_userpicture)
                         .transform(new RoundedTransformation())
                         .into(edit_picture);
 
                 Picasso.with(getActivity())
-                        .load(SavedData.getServerPicture(getActivity()))
+                        .load(SavedData.getServerBackground(getActivity()))
                         .fit()
                         .centerCrop()
                         .into(edit_background);
@@ -415,15 +417,20 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
 
         getSignupAsync(getActivity());//サインアップとJSON
 
-        mProfSwipe = (SwipeRefreshLayout) view.findViewById(R.id.swipe_container);
+        mProfSwipe = (SwipyRefreshLayout) view.findViewById(R.id.swipe_container);
         mProfSwipe.setColorSchemeColors(R.color.main_color_light, R.color.gocci, R.color.main_color_dark, R.color.window_bg);
-        mProfSwipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        mProfSwipe.setOnRefreshListener(new SwipyRefreshLayout.OnRefreshListener() {
 
             @Override
-            public void onRefresh() {
-                mProfSwipe.setRefreshing(true);
-                getRefreshAsync(getActivity());
+            public void onRefresh(SwipyRefreshLayoutDirection swipyRefreshLayoutDirection) {
+                if (swipyRefreshLayoutDirection == SwipyRefreshLayoutDirection.TOP) {
+                    mProfSwipe.setRefreshing(true);
+                    getRefreshAsync(getActivity());
+                } else {
+                    //店舗追加
+                }
             }
+
         });
 
         return view;
@@ -994,13 +1001,17 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
         public ImageView circleImage;
         public TextView user_name;
         public TextView datetime;
+        public TextView comment;
         public RippleView menuRipple;
         public SquareVideoView movie;
         public RoundCornerProgressBar movieProgress;
         public ImageView mVideoThumbnail;
-        public ImageView restaurantImage;
-        public TextView locality;
+        //public ImageView restaurantImage;
+        //public TextView locality;
         public TextView rest_name;
+        public TextView category;
+        public TextView value;
+        public TextView atmosphere;
         public RippleView tenpoRipple;
         public TextView likes;
         public ImageView likes_Image;
@@ -1025,19 +1036,23 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
             // ViewHolder 取得・作成処理
             ViewHolder viewHolder = null;
             if (convertView == null || convertView.getTag() == null) {
-                convertView = mLayoutInflater.inflate(R.layout.cell_timeline, null);
+                convertView = mLayoutInflater.inflate(R.layout.cell_timeline2, null);
 
                 viewHolder = new ViewHolder();
                 viewHolder.circleImage = (ImageView) convertView.findViewById(R.id.circleImage);
                 viewHolder.user_name = (TextView) convertView.findViewById(R.id.user_name);
                 viewHolder.datetime = (TextView) convertView.findViewById(R.id.time_text);
+                viewHolder.comment = (TextView) convertView.findViewById(R.id.comment);
                 viewHolder.menuRipple = (RippleView) convertView.findViewById(R.id.menuRipple);
                 viewHolder.movie = (SquareVideoView) convertView.findViewById(R.id.videoView);
                 viewHolder.movieProgress = (RoundCornerProgressBar) convertView.findViewById(R.id.video_progress);
                 viewHolder.mVideoThumbnail = (ImageView) convertView.findViewById(R.id.video_thumbnail);
-                viewHolder.restaurantImage = (ImageView) convertView.findViewById(R.id.restaurantImage);
+                //viewHolder.restaurantImage = (ImageView) convertView.findViewById(R.id.restaurantImage);
                 viewHolder.rest_name = (TextView) convertView.findViewById(R.id.rest_name);
-                viewHolder.locality = (TextView) convertView.findViewById(R.id.locality);
+                //viewHolder.locality = (TextView) convertView.findViewById(R.id.locality);
+                viewHolder.category = (TextView) convertView.findViewById(R.id.category);
+                viewHolder.value = (TextView) convertView.findViewById(R.id.value);
+                viewHolder.atmosphere = (TextView) convertView.findViewById(R.id.mood);
                 viewHolder.tenpoRipple = (RippleView) convertView.findViewById(R.id.tenpoRipple);
                 viewHolder.likes = (TextView) convertView.findViewById(R.id.likes_Number);
                 viewHolder.likes_Image = (ImageView) convertView.findViewById(R.id.likes_Image);
@@ -1055,6 +1070,8 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
             }
 
             viewHolder.datetime.setText(user.getDatetime());
+
+            viewHolder.comment.setText(user.getComment());
 
             final ViewHolder finalViewHolder1 = viewHolder;
             viewHolder.menuRipple.setOnClickListener(new View.OnClickListener() {
@@ -1140,7 +1157,23 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
             });
 
             viewHolder.rest_name.setText(user.getRest_name());
-            viewHolder.locality.setText(user.getLocality());
+            //viewHolder.locality.setText(user.getLocality());
+
+            if (!user.getTagCategory().equals("none")) {
+                viewHolder.category.setText(user.getTagCategory());
+            } else {
+                viewHolder.category.setText("タグなし");
+            }
+            if (!user.getAtmosphere().equals("none")) {
+                viewHolder.atmosphere.setText(user.getAtmosphere());
+            } else {
+                viewHolder.atmosphere.setText("タグなし");
+            }
+            if (!user.getValue().equals("0")) {
+                viewHolder.value.setText(user.getValue());
+            } else {
+                viewHolder.value.setText("タグなし");
+            }
 
             //リップルエフェクトを見せてからIntentを飛ばす
             viewHolder.tenpoRipple.setOnClickListener(new View.OnClickListener() {
@@ -1166,7 +1199,7 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
 
             if (user.getPushed_at() == 0) {
                 viewHolder.likes_ripple.setClickable(true);
-                viewHolder.likes_Image.setImageResource(R.drawable.ic_favorite_normal);
+                viewHolder.likes_Image.setImageResource(R.drawable.ic_like_white);
 
                 final ViewHolder finalViewHolder = viewHolder;
                 viewHolder.likes_ripple.setOnClickListener(new View.OnClickListener() {
@@ -1178,14 +1211,14 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
                         user.setgoodnum(currentgoodnum + 1);
 
                         finalViewHolder.likes.setText(String.valueOf((currentgoodnum + 1)));
-                        finalViewHolder.likes_Image.setImageResource(R.drawable.ic_favorite_orange);
+                        finalViewHolder.likes_Image.setImageResource(R.drawable.ic_like_red);
                         finalViewHolder.likes_ripple.setClickable(false);
 
                         postSignupAsync(getActivity(), user.getPost_id(), position);
                     }
                 });
             } else {
-                viewHolder.likes_Image.setImageResource(R.drawable.ic_favorite_orange);
+                viewHolder.likes_Image.setImageResource(R.drawable.ic_like_red);
                 viewHolder.likes_ripple.setClickable(false);
             }
 

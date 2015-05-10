@@ -92,7 +92,7 @@ public class CircleProgressBar extends View {
 
     private static final int DEFAULT_INITIAL_ANGLE = 270;
     private final int DEFAULT_TEXT_COLOR = Color.rgb(255, 255, 255);
-    private final int DEFAULT_REACHED_COLOR = Color.rgb(243, 100, 59);
+    private final int DEFAULT_REACHED_COLOR = Color.rgb(247, 85, 51);
     private final int DEFAULT_UNREACHED_COLOR = Color.rgb(175, 175, 175);
     private final int DEFAULT_FILL_MODE = 0;
     private final float DEFAULT_TEXT_SIZE = sp2px(15);

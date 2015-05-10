@@ -29,6 +29,7 @@ import com.hatenablog.shoma2da.eventdaterecorderlib.EventDateRecorder;
 import com.inase.android.gocci.Event.BusHolder;
 import com.inase.android.gocci.Event.PageChangeVideoStopEvent;
 import com.inase.android.gocci.Fragment.FriendTimelineFragment;
+import com.inase.android.gocci.Fragment.LifelogFragment;
 import com.inase.android.gocci.Fragment.TimelineFragment;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.View.DrawerProfHeader;

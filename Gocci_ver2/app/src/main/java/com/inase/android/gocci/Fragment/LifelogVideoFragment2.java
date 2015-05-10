@@ -88,6 +88,10 @@ public class LifelogVideoFragment2 extends SupportBlurDialogFragment implements 
     private static final String TAG_HOMEPAGE = "homepage";
     private static final String TAG_CATEGORY = "category";
     private static final String TAG_POST_ID = "post_id";
+    private static final String TAG_VALUE = "value";
+    private static final String TAG_TAG_CATEGORY = "tag_category";
+    private static final String TAG_ATMOSPHERE = "atmosphere";
+    private static final String TAG_COMMENT = "comment";
 
     private ArrayList<UserData> videolifelogusers = new ArrayList<>();
 
@@ -339,6 +343,10 @@ public class LifelogVideoFragment2 extends SupportBlurDialogFragment implements 
                         String category = jsonObject.getString(TAG_CATEGORY);
                         Double lat = jsonObject.getDouble(TAG_LAT);
                         Double lon = jsonObject.getDouble(TAG_LON);
+                        String tag_category = jsonObject.getString(TAG_TAG_CATEGORY);
+                        String value = jsonObject.getString(TAG_VALUE);
+                        String atmosphere = jsonObject.getString(TAG_ATMOSPHERE);
+                        String comment = jsonObject.getString(TAG_COMMENT);
 
                         UserData user = new UserData();
                         user.setRest_name(rest_name);
@@ -351,6 +359,10 @@ public class LifelogVideoFragment2 extends SupportBlurDialogFragment implements 
                         user.setTell(tell);
                         user.setCategory(category);
                         user.setPost_id(post_id);
+                        user.setTagCategory(tag_category);
+                        user.setAtmosphere(atmosphere);
+                        user.setValue(value);
+                        user.setComment(comment);
                         videolifelogusers.add(user);
 
                     }
@@ -414,6 +426,7 @@ public class LifelogVideoFragment2 extends SupportBlurDialogFragment implements 
                 // 動画DL開始
                 Log.d("DEBUG", "MOVIE::changeMovie  [ProgressBar VISIBLE] 動画DL処理開始 postId:" + mPlayingPostId);
                 currentViewHolder.movieProgress.setVisibility(View.VISIBLE);
+                currentViewHolder.videoFrame.setClickable(false);
                 mCacheManager.requestMovieCacheCreate(getActivity(), userData.getMovie(), userData.getPost_id(), LifelogVideoFragment2.this, currentViewHolder.movieProgress);
 
             }
@@ -464,8 +477,9 @@ public class LifelogVideoFragment2 extends SupportBlurDialogFragment implements 
                 Log.d("DEBUG", "MOVIE::onPrepared postId: " + postId);
                 if (mPlayingPostId.equals(postId) && !mPlayBlockFlag) {
                     Log.d("DEBUG", "MOVIE::onPrepared 再生開始");
-                    viewHolder.mVideoThumbnail.setVisibility(View.INVISIBLE);
-                    viewHolder.movie.start();
+                    //viewHolder.mVideoThumbnail.setVisibility(View.INVISIBLE);
+                    //viewHolder.movie.start();
+                    viewHolder.videoFrame.setClickable(true);
                     Log.e("DEBUG", "onPrepared 動画再生開始: " + userData.getMovie());
 
                     mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -503,7 +517,7 @@ public class LifelogVideoFragment2 extends SupportBlurDialogFragment implements 
             viewHolder = getPlayingViewHolder();
         }
         viewHolder.movie.pause();
-
+        viewHolder.mVideoThumbnail.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -561,8 +575,11 @@ public class LifelogVideoFragment2 extends SupportBlurDialogFragment implements 
         public RoundCornerProgressBar movieProgress;
         public ImageView mVideoThumbnail;
         public ImageView restaurantImage;
-        public TextView locality;
+        public TextView comment;
         public TextView rest_name;
+        public TextView category;
+        public TextView value;
+        public TextView atmosphere;
         public RippleView tenpoRipple;
         public FrameLayout videoFrame;
     }
@@ -589,8 +606,11 @@ public class LifelogVideoFragment2 extends SupportBlurDialogFragment implements 
                 viewHolder.movieProgress = (RoundCornerProgressBar) convertView.findViewById(R.id.video_progress);
                 viewHolder.mVideoThumbnail = (ImageView) convertView.findViewById(R.id.video_thumbnail);
                 viewHolder.restaurantImage = (ImageView) convertView.findViewById(R.id.restaurantImage);
+                viewHolder.comment = (TextView) convertView.findViewById(R.id.lifelog_comment);
                 viewHolder.rest_name = (TextView) convertView.findViewById(R.id.rest_name);
-                viewHolder.locality = (TextView) convertView.findViewById(R.id.locality);
+                viewHolder.category = (TextView) convertView.findViewById(R.id.category);
+                viewHolder.value = (TextView) convertView.findViewById(R.id.value);
+                viewHolder.atmosphere = (TextView) convertView.findViewById(R.id.mood);
                 viewHolder.tenpoRipple = (RippleView) convertView.findViewById(R.id.tenpoRipple);
                 viewHolder.videoFrame = (FrameLayout) convertView.findViewById(R.id.videoFrame);
                 convertView.setTag(viewHolder);
@@ -623,12 +643,29 @@ public class LifelogVideoFragment2 extends SupportBlurDialogFragment implements 
                         videoClickViewHolder.movie.pause();
                     } else {
                         videoClickViewHolder.movie.start();
+                        videoClickViewHolder.mVideoThumbnail.setVisibility(View.INVISIBLE);
                     }
                 }
             });
 
             viewHolder.rest_name.setText(user.getRest_name());
-            viewHolder.locality.setText(user.getLocality());
+            viewHolder.comment.setText(user.getComment());
+
+            if (!user.getTagCategory().equals("none")) {
+                viewHolder.category.setText(user.getTagCategory());
+            } else {
+                viewHolder.category.setText("タグなし");
+            }
+            if (!user.getAtmosphere().equals("none")) {
+                viewHolder.atmosphere.setText(user.getAtmosphere());
+            } else {
+                viewHolder.atmosphere.setText("タグなし");
+            }
+            if (!user.getValue().equals("0")) {
+                viewHolder.value.setText(user.getValue());
+            } else {
+                viewHolder.value.setText("タグなし");
+            }
 
             //リップルエフェクトを見せてからIntentを飛ばす
             viewHolder.tenpoRipple.setOnClickListener(new View.OnClickListener() {
