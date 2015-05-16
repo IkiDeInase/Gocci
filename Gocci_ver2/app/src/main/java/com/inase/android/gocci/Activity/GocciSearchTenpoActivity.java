@@ -7,23 +7,31 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.PopupWindow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.facebook.Session;
 import com.hatenablog.shoma2da.eventdaterecorderlib.EventDateRecorder;
+import com.inase.android.gocci.Base.ToukouPopup;
 import com.inase.android.gocci.Event.BusHolder;
+import com.inase.android.gocci.Event.NotificationNumberEvent;
 import com.inase.android.gocci.Event.SearchKeywordPostEvent;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.View.DrawerProfHeader;
+import com.inase.android.gocci.View.NotificationListView;
 import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;
 import com.loopj.android.http.AsyncHttpClient;
@@ -35,6 +43,7 @@ import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.squareup.otto.Subscribe;
 import com.twitter.sdk.android.Twitter;
 
 import org.apache.http.Header;
@@ -48,6 +57,8 @@ public class GocciSearchTenpoActivity extends ActionBarActivity {
 
     private double mLat = 0.0;
     private double mLon = 0.0;
+
+    private final GocciSearchTenpoActivity self = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -147,6 +158,23 @@ public class GocciSearchTenpoActivity extends ActionBarActivity {
                 .withSelectedItem(2)
                 .build();
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        BusHolder.get().register(self);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        BusHolder.get().unregister(self);
+    }
+
+    @Subscribe
+    public void subscribe(NotificationNumberEvent event) {
+        SavedData.setNotification(this, event.mNotificationNumber);
     }
 
     class timelineClickHandler implements Runnable {

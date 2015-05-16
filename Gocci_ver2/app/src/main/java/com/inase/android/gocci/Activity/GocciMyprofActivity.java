@@ -6,19 +6,28 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.PopupWindow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.facebook.Session;
 import com.hatenablog.shoma2da.eventdaterecorderlib.EventDateRecorder;
+import com.inase.android.gocci.Base.ToukouPopup;
+import com.inase.android.gocci.Event.BusHolder;
+import com.inase.android.gocci.Event.NotificationNumberEvent;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.View.DrawerProfHeader;
+import com.inase.android.gocci.View.NotificationListView;
 import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;
 import com.loopj.android.http.AsyncHttpClient;
@@ -30,11 +39,16 @@ import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.squareup.otto.Subscribe;
 import com.twitter.sdk.android.Twitter;
 
 import org.apache.http.Header;
 
 public class GocciMyprofActivity extends ActionBarActivity {
+
+    private final GocciMyprofActivity self = this;
+
+    private TextView notificationNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +108,67 @@ public class GocciMyprofActivity extends ActionBarActivity {
                 .withSavedInstance(savedInstanceState)
                 .withSelectedItem(3)
                 .build();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        BusHolder.get().register(self);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        BusHolder.get().unregister(self);
+    }
+
+    @Subscribe
+    public void subscribe(NotificationNumberEvent event) {
+        notificationNumber.setVisibility(View.VISIBLE);
+        notificationNumber.setText(String.valueOf(event.mNotificationNumber));
+        SavedData.setNotification(this, event.mNotificationNumber);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.bell_notification, menu);
+        // お知らせ未読件数バッジ表示
+        MenuItem item = menu.findItem(R.id.badge);
+        MenuItemCompat.setActionView(item, R.layout.toolbar_notification_icon);
+        View view = MenuItemCompat.getActionView(item);
+        notificationNumber = (TextView) view.findViewById(R.id.notification_number);
+        int notifications = SavedData.getNotification(this);
+
+        // バッジの数字を更新。0の場合はバッジを表示させない
+        // _unreadHogeCountはAPIなどで通信した結果を格納する想定です
+
+        if (notifications == 0) {
+            notificationNumber.setVisibility(View.INVISIBLE);
+        } else {
+
+            notificationNumber.setText(String.valueOf(notifications));
+        }
+
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.e("ログ", "通知クリック");
+                notificationNumber.setVisibility(View.INVISIBLE);
+                SavedData.setNotification(GocciMyprofActivity.this, 0);
+                RequestParams params = new RequestParams();
+                params.put("user_name", SavedData.getLoginName(GocciMyprofActivity.this));
+                params.put("picture", SavedData.getLoginPicture(GocciMyprofActivity.this));
+                View notification = new NotificationListView(GocciMyprofActivity.this, params);
+
+                final PopupWindow window = ToukouPopup.newBasicPopupWindow(GocciMyprofActivity.this);
+                window.setContentView(notification);
+                //int totalHeight = getWindowManager().getDefaultDisplay().getHeight();
+                int[] location = new int[2];
+                v.getLocationOnScreen(location);
+                ToukouPopup.showLikeQuickAction(window, notification, v, GocciMyprofActivity.this.getWindowManager(), 0, 0);
+            }
+        });
+        return super.onCreateOptionsMenu(menu);
     }
 
     class timelineClickHandler implements Runnable {

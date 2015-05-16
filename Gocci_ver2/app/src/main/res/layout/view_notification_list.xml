@@ -1,14 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:wheel="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    >
+    android:gravity="center">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/yama"
+        android:src="@drawable/ic_yama"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="16dp" />
+
+    <android.support.v7.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        card_view:cardCornerRadius="4dp"
+        card_view:cardElevation="0dp"
+        android:layout_marginTop="28dp">
 
     <ListView
         android:layout_width="match_parent"
         android:layout_height="450dp"
-        android:id="@+id/notification_list" />
+        android:id="@+id/notification_list"
+        android:background="@color/view_background"
+        android:layout_centerInParent="true" />
 
     <com.pnikosis.materialishprogress.ProgressWheel
         android:id="@+id/progress_wheel"
@@ -18,4 +37,5 @@
         wheel:matProg_progressIndeterminate="true"
         android:layout_gravity="center"
         android:visibility="gone" />
+    </android.support.v7.widget.CardView>
 </RelativeLayout>

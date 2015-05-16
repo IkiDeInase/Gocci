@@ -3,6 +3,8 @@ package com.inase.android.gocci.Base;
 
 import android.content.Context;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -13,6 +15,8 @@ import android.widget.PopupWindow;
 import com.inase.android.gocci.R;
 
 public class ToukouPopup {
+    public static final int UPPER_HALF = 0;
+    public static final int LOWER_HALF = 1;
 
     public static PopupWindow newBasicPopupWindow(Context context) {
         final PopupWindow window = new PopupWindow(context);
@@ -28,11 +32,14 @@ public class ToukouPopup {
                 return false;
             }
         });
-        window.setWidth(WindowManager.LayoutParams.WRAP_CONTENT);
+        window.setWidth(WindowManager.LayoutParams.MATCH_PARENT);
         window.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
         window.setTouchable(true);
         window.setFocusable(true);
         window.setOutsideTouchable(true);
+
+        window.setBackgroundDrawable(new ColorDrawable(
+                android.graphics.Color.TRANSPARENT));
 
         return window;
     }
@@ -44,14 +51,14 @@ public class ToukouPopup {
      * @param yOffset offset in the Y direction
      */
     public static void showLikeQuickAction(PopupWindow window, View root, View anchor, WindowManager windowManager, int xOffset, int yOffset) {
-        window.setAnimationStyle(R.style.Animations_GrowFromBottom);
+        window.setAnimationStyle(R.style.Animations_GrowFromTopright);
         int[] location = new int[2];
 
         anchor.getLocationOnScreen(location);
         Rect anchorRect =
                 new Rect(location[0], location[1], location[0] + anchor.getWidth(), location[1]
                         + anchor.getHeight());
-        root.measure(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        root.measure(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         int rootWidth = root.getMeasuredWidth();
         int rootHeight = root.getMeasuredHeight();
         int screenWidth = windowManager.getDefaultDisplay().getWidth();
@@ -59,7 +66,10 @@ public class ToukouPopup {
         int xPos = ((screenWidth - rootWidth) / 2) + xOffset;
         int yPos = anchorRect.top - rootHeight + yOffset;
 
-        window.showAtLocation(anchor, Gravity.NO_GRAVITY, xPos, yPos);
+        window.setBackgroundDrawable(new ColorDrawable(
+                android.graphics.Color.TRANSPARENT));
+
+        window.showAtLocation(anchor, Gravity.CENTER, 0,0);
     }
 
     public static void showLikeQuickAction2(PopupWindow window, View root, View anchor, WindowManager windowManager, int xOffset, int yOffset) {
@@ -77,6 +87,9 @@ public class ToukouPopup {
         int screenHeight = windowManager.getDefaultDisplay().getHeight();
         int xPos = ((screenWidth - rootWidth) / 2) + xOffset;
         int yPos = anchorRect.top - rootHeight + yOffset;
+
+        window.setBackgroundDrawable(new ColorDrawable(
+                android.graphics.Color.TRANSPARENT));
 
         window.showAtLocation(anchor, Gravity.NO_GRAVITY, xPos, yPos);
     }

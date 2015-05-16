@@ -21,6 +21,8 @@ public class SavedData {
     private static final String KEY_LOGIN_PICTURE = "picture";
     private static final String KEY_LOGIN_JUDGE = "judge";
 
+    private static final String KEY_NOTIFICATION = "notification";
+
     public static void setAccount(Context context, String name, String picture, String background, int followee, int follower, int cheer) {
         SharedPreferences prefs = context.getSharedPreferences("pref", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
@@ -147,6 +149,18 @@ public class SavedData {
 
         SharedPreferences.Editor editor = prefs.edit();
         editor.putInt(KEY_SERVER_CHEER, cheer - 1);
+        editor.apply();
+    }
+
+    public static int getNotification(Context context) {
+        SharedPreferences pref = context.getSharedPreferences("pref", Context.MODE_PRIVATE);
+        return pref.getInt(KEY_NOTIFICATION, 0);
+    }
+
+    public static void setNotification(Context context, int notification) {
+        SharedPreferences prefs = context.getSharedPreferences("pref", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt(KEY_NOTIFICATION, notification);
         editor.apply();
     }
 }

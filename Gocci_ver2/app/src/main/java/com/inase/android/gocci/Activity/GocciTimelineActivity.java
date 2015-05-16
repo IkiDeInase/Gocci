@@ -22,6 +22,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,6 +35,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.hatenablog.shoma2da.eventdaterecorderlib.EventDateRecorder;
+import com.inase.android.gocci.Base.ToukouPopup;
 import com.inase.android.gocci.Event.BusHolder;
 import com.inase.android.gocci.Event.NotificationNumberEvent;
 import com.inase.android.gocci.Event.PageChangeVideoStopEvent;
@@ -82,7 +84,6 @@ public class GocciTimelineActivity extends ActionBarActivity {
     private GoogleCloudMessaging gcm;
     private String regid;
 
-    private int notifications = 1;
     private TextView notificationNumber;
 
     @Override
@@ -218,6 +219,7 @@ public class GocciTimelineActivity extends ActionBarActivity {
     public void subscribe(NotificationNumberEvent event) {
         notificationNumber.setVisibility(View.VISIBLE);
         notificationNumber.setText(String.valueOf(event.mNotificationNumber));
+        SavedData.setNotification(this, event.mNotificationNumber);
     }
 
     @Override
@@ -228,6 +230,7 @@ public class GocciTimelineActivity extends ActionBarActivity {
         MenuItemCompat.setActionView(item, R.layout.toolbar_notification_icon);
         View view = MenuItemCompat.getActionView(item);
         notificationNumber = (TextView) view.findViewById(R.id.notification_number);
+        int notifications = SavedData.getNotification(this);
 
         // バッジの数字を更新。0の場合はバッジを表示させない
         // _unreadHogeCountはAPIなどで通信した結果を格納する想定です
@@ -244,14 +247,19 @@ public class GocciTimelineActivity extends ActionBarActivity {
             public void onClick(View v) {
                 Log.e("ログ", "通知クリック");
                 notificationNumber.setVisibility(View.INVISIBLE);
+                SavedData.setNotification(GocciTimelineActivity.this, 0);
                 RequestParams params = new RequestParams();
                 params.put("user_name", SavedData.getLoginName(GocciTimelineActivity.this));
                 params.put("picture", SavedData.getLoginPicture(GocciTimelineActivity.this));
                 View notification = new NotificationListView(GocciTimelineActivity.this, params);
 
-                MaterialDialog dialog = new MaterialDialog.Builder(GocciTimelineActivity.this)
-                        .customView(notification, false)
-                        .show();
+                final PopupWindow window = ToukouPopup.newBasicPopupWindow(GocciTimelineActivity.this);
+                window.setContentView(notification);
+                //int totalHeight = getWindowManager().getDefaultDisplay().getHeight();
+                int[] location = new int[2];
+                v.getLocationOnScreen(location);
+                ToukouPopup.showLikeQuickAction(window, notification, v, GocciTimelineActivity.this.getWindowManager(), 0, 0);
+
             }
         });
         return super.onCreateOptionsMenu(menu);

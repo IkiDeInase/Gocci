@@ -98,6 +98,7 @@ public class LoginPreferenceActivity extends ActionBarActivity {
                         intent.putExtra("name", name);
                         intent.putExtra("picture", url);
                         startActivity(intent);
+                        finish();
                     } else {
                         Toast.makeText(LoginPreferenceActivity.this, "ログインに失敗しました", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(LoginPreferenceActivity.this, LoginActivity.class);
