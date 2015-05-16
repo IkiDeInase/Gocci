@@ -6,11 +6,15 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.inase.android.gocci.Activity.SplashActivity;
+import com.inase.android.gocci.Event.BusHolder;
+import com.inase.android.gocci.Event.MainThreadBus;
+import com.inase.android.gocci.Event.NotificationNumberEvent;
 import com.inase.android.gocci.R;
 
 /**
@@ -62,6 +66,8 @@ public class GcmIntentService extends IntentService {
 
         NotificationManager notificationManager = (NotificationManager)
                 this.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        BusHolder.get().post(new NotificationNumberEvent(Integer.parseInt(msg)));
 
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, SplashActivity.class), 0);
         NotificationCompat.Builder builder =

@@ -1,132 +1,215 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ripple="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="250dp">
+    android:layout_height="wrap_content"
+    android:background="#ffffff">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:id="@+id/tenpo_background"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_background_login" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TenpoName"
+        android:id="@+id/tenpo_name"
+        android:textSize="18sp"
+        android:textColor="@color/white"
+        android:maxLength="20"
+        android:layout_gravity="left"
+        android:textStyle="bold"
+        android:layout_alignBottom="@+id/tenpo_background"
+        android:layout_margin="12dp" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tenpo_background"
+        android:id="@+id/tenpo_menu">
+
+        <com.andexert.library.RippleView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/checkRipple"
+            ripple:rv_color="@android:color/black"
+            android:layout_weight="1">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_like_white"
+                android:id="@+id/check_image"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="12dp"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="行きたい店に認定"
+                android:textColor="@color/namegrey"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@+id/check_image"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:textSize="10sp"
+                android:id="@+id/check_text" />
+
+        </com.andexert.library.RippleView>
+
+        <com.andexert.library.RippleView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/callRipple"
+            ripple:rv_color="@android:color/black"
+            android:layout_weight="1">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_call_tenpo"
+                android:id="@+id/button_call"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="12dp"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="予約する"
+                android:textColor="@color/namegrey"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@+id/button_call"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:textSize="10sp"
+                 />
+
+        </com.andexert.library.RippleView>
+
+        <com.andexert.library.RippleView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/gohereRipple"
+            ripple:rv_color="@android:color/black"
+            android:layout_weight="1">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_pin_tenpo"
+                android:id="@+id/button_go"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="12dp"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ここへ行く"
+                android:textColor="@color/namegrey"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@+id/button_go"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:textSize="10sp"
+                />
+
+        </com.andexert.library.RippleView>
+
+        <com.andexert.library.RippleView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/etcRipple"
+            ripple:rv_color="@android:color/black"
+            android:layout_weight="1">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_etc_tenpo"
+                android:id="@+id/button_etc"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="12dp"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="その他"
+                android:textColor="@color/namegrey"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@+id/button_etc"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:textSize="10sp" />
+
+        </com.andexert.library.RippleView>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#c5c6c9"
+        android:layout_gravity="bottom"
+        android:layout_below="@+id/tenpo_menu"
+        android:id="@+id/separate" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="詳細情報"
+        android:id="@+id/text_info"
+        android:layout_below="@+id/separate"
+        android:textColor="@color/namegrey"
+        android:layout_marginTop="8dp"
+        android:textSize="16sp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="16sp" />
 
     <com.google.android.gms.maps.MapView
         android:id="@+id/map"
         android:layout_width="match_parent"
         android:layout_height="125dp"
-        android:apiKey="@string/map_key" />
+        android:apiKey="@string/map_key"
+        android:layout_below="@+id/text_info"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="125dp"
-        android:layout_marginTop="125dp"
-        android:orientation="vertical"
-        android:background="#ffffff"
-        android:paddingTop="16dp"
-        android:paddingLeft="12dp">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="カテゴリー"
+        android:id="@+id/text_category"
+        android:layout_below="@+id/map"
+        android:layout_alignLeft="@+id/text_info"
+        android:textColor="@color/nameblack"
+        android:textSize="12sp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="TenpoName"
-            android:id="@+id/tenpo_name"
-            android:textStyle="bold"
-            android:textSize="18sp"
-            android:textColor="@color/namegrey"
-            android:maxLength="20" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Category"
-            android:id="@+id/tenpo_category"
-            android:textSize="10sp"
-            android:textColor="@color/nameblack" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Locality"
-            android:id="@+id/tenpo_locality"
-            android:layout_marginTop="4dp"
-            android:textColor="@color/nameblack"
-            android:maxLength="30" />
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp">
-
-            <com.andexert.library.RippleView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/tenpo_homepage"
-                android:background="@drawable/button_follow"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginRight="4dp">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:src="@drawable/ic_homepage"
-                        android:layout_marginLeft="6dp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="ホームページを見る"
-                        android:textColor="#ffffff"
-                        android:paddingLeft="6dp"
-                        android:paddingTop="6dp"
-                        android:paddingRight="12dp"
-                        android:paddingBottom="6dp" />
-
-                </LinearLayout>
-
-            </com.andexert.library.RippleView>
-
-            <com.andexert.library.RippleView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/tenpo_call"
-                android:background="@drawable/button_follow"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginLeft="4dp">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:src="@drawable/ic_call"
-                        android:layout_marginLeft="6dp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="080-3903-3005"
-                        android:textColor="#ffffff"
-                        android:paddingLeft="6dp"
-                        android:paddingTop="6dp"
-                        android:paddingRight="12dp"
-                        android:paddingBottom="6dp"
-                        android:id="@+id/tenpo_phonenumber" />
-
-                </LinearLayout>
-
-            </com.andexert.library.RippleView>
-
-        </LinearLayout>
-    </LinearLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="category"
+        android:id="@+id/category"
+        android:layout_toRightOf="@+id/text_category"
+        android:layout_marginLeft="16dp"
+        android:textSize="14sp"
+        android:textColor="@color/namegrey"
+        android:layout_alignBottom="@+id/text_category"
+        android:maxLength="18" />
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="2dp"
+        android:layout_height="1dp"
         android:background="#c5c6c9"
-        android:layout_gravity="bottom" />
-</FrameLayout>
+        android:layout_below="@+id/category"
+        android:layout_marginTop="16dp" />
+
+</RelativeLayout>

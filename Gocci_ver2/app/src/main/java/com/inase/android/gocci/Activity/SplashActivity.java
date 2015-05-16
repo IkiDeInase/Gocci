@@ -2,19 +2,25 @@ package com.inase.android.gocci.Activity;
 
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.MaterialDialog;
-import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.hatenablog.shoma2da.eventdaterecorderlib.EventDateRecorder;
 import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.R;
@@ -23,19 +29,31 @@ import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
 
 
-public class SplashActivity extends Activity {
-
-    private LocationManager mLocationManager;
+public class SplashActivity extends Activity implements
+        GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener,
+        ResultCallback<LocationSettingsResult> {
 
     private Application_Gocci gocci;
+
+    protected static final int REQUEST_CHECK_SETTINGS = 0x1;
+
+    public static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
+
+    public static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS =
+            UPDATE_INTERVAL_IN_MILLISECONDS / 2;
+
+    protected GoogleApiClient mGoogleApiClient;
+
+    protected LocationRequest mLocationRequest;
+
+    protected LocationSettingsRequest mLocationSettingsRequest;
 
     @Override
     protected void onCreate(Bundle icicle) {
         super.onCreate(icicle);
 
-        gocci  = (Application_Gocci) getApplication();
-
-        mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        gocci = (Application_Gocci) getApplication();
 
         Window window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -43,38 +61,12 @@ public class SplashActivity extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         setContentView(R.layout.activity_splash);
-    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
+        buildGoogleApiClient();
+        createLocationRequest();
+        buildLocationSettingsRequest();
 
-        if (!mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            new MaterialDialog.Builder(this)
-                    .title("位置情報取得について")
-                    .content("位置情報を使いたいのですが、GPSが無効になっています。" + "設定を変更しますか？")
-                    .positiveText("はい")
-                    .positiveColorRes(R.color.gocci_header)
-                    .negativeText("いいえ")
-                    .negativeColorRes(R.color.material_drawer_primary_light)
-                    .callback(new MaterialDialog.ButtonCallback() {
-                        @Override
-                        public void onPositive(MaterialDialog dialog) {
-                            super.onPositive(dialog);
-                            Intent settingIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                            startActivity(settingIntent);
-                        }
-
-                        @Override
-                        public void onNegative(MaterialDialog dialog) {
-                            super.onNegative(dialog);
-                            Toast.makeText(SplashActivity.this, "近くの店舗表示ができなくなります", Toast.LENGTH_LONG).show();
-                        }
-                    }).show();
-
-        } else {
-            firstLocation();
-        }
+        checkLocationSettings();
     }
 
     private void firstLocation() {
@@ -118,6 +110,124 @@ public class SplashActivity extends Activity {
         });
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mGoogleApiClient.disconnect();
+    }
+
+    protected synchronized void buildGoogleApiClient() {
+        Log.e("DEBUG", "Building GoogleApiClient");
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+    }
+
+    protected void createLocationRequest() {
+        mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
+        mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    }
+
+    protected void buildLocationSettingsRequest() {
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
+        builder.addLocationRequest(mLocationRequest);
+        mLocationSettingsRequest = builder.build();
+    }
+
+    protected void checkLocationSettings() {
+        PendingResult<LocationSettingsResult> result =
+                LocationServices.SettingsApi.checkLocationSettings(
+                        mGoogleApiClient,
+                        mLocationSettingsRequest
+                );
+        result.setResultCallback(this);
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    public void onResult(LocationSettingsResult locationSettingsResult) {
+        final Status status = locationSettingsResult.getStatus();
+        switch (status.getStatusCode()) {
+            case LocationSettingsStatusCodes.SUCCESS:
+                Log.e("ログ", "All location settings are satisfied.");
+                firstLocation();
+                break;
+            case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                Log.e("ログ", "Location settings are not satisfied. Show the user a dialog to" +
+                        "upgrade location settings ");
+
+                try {
+                    // Show the dialog by calling startResolutionForResult(), and check the result
+                    // in onActivityResult().
+                    status.startResolutionForResult(SplashActivity.this, REQUEST_CHECK_SETTINGS);
+                } catch (IntentSender.SendIntentException e) {
+                    Log.e("ログ", "PendingIntent unable to execute request.");
+                }
+                break;
+            case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                Log.e("ログ", "Location settings are inadequate, and cannot be fixed here. Dialog " +
+                        "not created.");
+                Toast.makeText(SplashActivity.this, "アプリを終了します", Toast.LENGTH_SHORT).show();
+                finish();
+                break;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            // Check for the integer request code originally supplied to startResolutionForResult().
+            case REQUEST_CHECK_SETTINGS:
+                switch (resultCode) {
+                    case Activity.RESULT_OK:
+                        Log.e("ログ", "User agreed to make required location settings changes.");
+                        firstLocation();
+                        break;
+                    case Activity.RESULT_CANCELED:
+                        Log.e("ログ", "User chose not to make required location settings changes.");
+                        Toast.makeText(SplashActivity.this, "アプリを終了します", Toast.LENGTH_SHORT).show();
+                        finish();
+                        break;
+                }
+                break;
+        }
+    }
 }
 
 

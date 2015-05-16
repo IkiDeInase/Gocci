@@ -38,4 +38,8 @@
         <item>@string/yutta</item>
     </array>
 
+    <array name="list_tenpo_menu">
+        <item>@string/seeHomepage</item>
+    </array>
+
 </resources>

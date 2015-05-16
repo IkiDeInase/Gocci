@@ -28,15 +28,6 @@
             wheel:matProg_progressIndeterminate="true"
             android:layout_gravity="center" />
 
-        <ImageView
-            android:layout_width="250dp"
-            android:layout_height="250dp"
-            android:id="@+id/tenpo_emptyView"
-            android:src="@drawable/ic_background_nopost"
-            android:visibility="invisible"
-            android:layout_marginTop="230dp"
-            android:layout_gravity="center_horizontal" />
-
     </FrameLayout>
 
     <android.support.v7.widget.Toolbar

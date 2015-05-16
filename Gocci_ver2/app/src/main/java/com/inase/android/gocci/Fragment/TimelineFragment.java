@@ -306,7 +306,7 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
                         getAddJsonAsync(getActivity(), TimelineUrl);
                     } else {
                         //全体のadd
-                        String TimelineUrl = "http://api-gocci.jp/test_timeline/&post_id=" + nowPost_id + "&get=all";
+                        String TimelineUrl = "http://api-gocci.jp/test_timeline/?post_id=" + nowPost_id + "&get=all";
                         getAddJsonAsync(getActivity(), TimelineUrl);
 
                     }

@@ -1,13 +1,11 @@
 package com.inase.android.gocci.Event;
 
 
-import com.squareup.otto.Bus;
-
 public class BusHolder {
 
-    private static Bus sBus = new Bus();
+    private static MainThreadBus sBus = new MainThreadBus();
 
-    public static Bus get() {
+    public static MainThreadBus get() {
         return sBus;
     }
 }

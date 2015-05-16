@@ -9,7 +9,6 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
@@ -100,7 +99,6 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
 
     private ProgressWheel tenpoprogress;
     private ArrayList<UserData> mTenpousers = new ArrayList<UserData>();
-    private ImageView mEmptyView;
     private TenpoAdapter mTenpoAdapter;
     private SwipyRefreshLayout mTenpoSwipe;
     private ObservableListView mTenpoListView;
@@ -122,13 +120,18 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
     private boolean mPlayBlockFlag;
     private ConcurrentHashMap<ViewHolder, String> mViewHolderHash;  // Value: PosterId
 
+    private boolean isExist = false;
+    private boolean isSee = false;
+
     private ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
         @Override
         public void onGlobalLayout() {
             Log.e("DEBUG", "onGlobalLayout called: " + mPlayingPostId);
-            changeMovie();
+            if (isSee) {
+                changeMovie();
+            }
             Log.e("DEBUG", "onGlobalLayout  changeMovie called: " + mPlayingPostId);
-            if (mPlayingPostId != null) {
+            if (mPlayingPostId != null || !isExist) {
                 mTenpoListView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         }
@@ -254,7 +257,6 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
         loginParam.put("user_name", SavedData.getLoginName(this));
         loginParam.put("picture", SavedData.getLoginPicture(this));
 
-        mEmptyView = (ImageView) findViewById(R.id.tenpo_emptyView);
         tenpoprogress = (ProgressWheel) findViewById(R.id.tenpoprogress_wheel);
         mTenpoListView = (ObservableListView) findViewById(R.id.list);
         mTenpoSwipe = (SwipyRefreshLayout) findViewById(R.id.swipe_container);
@@ -269,37 +271,69 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
         mTenpoListView.addHeaderView(inflater.inflate(R.layout.view_header_tenpo, null));
 
         TextView tenpo_name = (TextView) findViewById(R.id.tenpo_name);
-        TextView tenpo_category = (TextView) findViewById(R.id.tenpo_category);
-        TextView tenpo_locality = (TextView) findViewById(R.id.tenpo_locality);
-        RippleView tenpo_homepage = (RippleView) findViewById(R.id.tenpo_homepage);
-        RippleView tenpo_phone = (RippleView) findViewById(R.id.tenpo_call);
-        TextView tenpo_phonenumber = (TextView) findViewById(R.id.tenpo_phonenumber);
+        TextView tenpo_category = (TextView) findViewById(R.id.category);
+        RippleView checkRipple = (RippleView) findViewById(R.id.checkRipple);
+        final ImageView check_Image = (ImageView) findViewById(R.id.check_image);
+        final TextView check_text = (TextView) findViewById(R.id.check_text);
+        RippleView callRipple = (RippleView) findViewById(R.id.callRipple);
+        RippleView gohereRipple = (RippleView) findViewById(R.id.gohereRipple);
+        RippleView etcRipple = (RippleView) findViewById(R.id.etcRipple);
+
+        checkRipple.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (check_text.getText().toString().equals("行きたい店に認定")) {
+                    check_Image.setImageResource(R.drawable.ic_favorite_orange);
+                    check_text.setText("行きたい店を取消");
+                } else {
+                    check_Image.setImageResource(R.drawable.ic_like_white);
+                    check_text.setText("行きたい店に認定");
+                }
+            }
+        });
+        callRipple.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Handler handler = new Handler();
+                handler.postDelayed(new callClickHandler(), 750);
+            }
+        });
+        gohereRipple.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Handler handler = new Handler();
+                handler.postDelayed(new gohereClickHandler(), 750);
+            }
+        });
+        etcRipple.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!mHomepage.equals("none")) {
+                    new com.afollestad.materialdialogs.MaterialDialog.Builder(FlexibleTenpoActivity.this)
+                            .title("その他メニュー")
+                            .items(R.array.list_tenpo_menu)
+                            .itemsCallback(new com.afollestad.materialdialogs.MaterialDialog.ListCallback() {
+                                @Override
+                                public void onSelection(com.afollestad.materialdialogs.MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
+                                    if (charSequence.toString().equals("ホームページを見る")) {
+                                        Uri uri = Uri.parse(mHomepage);
+                                        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                                        startActivity(intent);
+                                    }
+                                }
+                            })
+                            .show();
+                } else {
+                    Toast.makeText(FlexibleTenpoActivity.this, "その他メニューはありません", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
         mMapView = (MapView) findViewById(R.id.map);
         mMapView.onCreate(savedInstanceState);
 
         tenpo_name.setText(mPost_restname);
         tenpo_category.setText(mCategory);
-        tenpo_locality.setText(mPost_locality);
-        tenpo_phonenumber.setText(mPhoneNumber);
-
-        tenpo_homepage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //ホームページ押されたときの処理
-            }
-        });
-
-        tenpo_phone.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //電話するときの処理
-                Log.e("phonenumber", mPhoneNumber);
-                /*
-                Intent i = new Intent(Intent.ACTION_DIAL,
-                        Uri.parse("tel:0123456789"));
-                        */
-            }
-        });
 
         setUpMapIfNeeded();
 
@@ -348,6 +382,8 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
 
     @Override
     public void onScrollChanged(int scrollY, boolean firstScroll, boolean dragging) {
+        //ヘッダー通り過ぎた
+        isSee = scrollY > 550;
     }
 
     @Override
@@ -403,7 +439,9 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
             case AbsListView.OnScrollListener.SCROLL_STATE_IDLE:
                 //mBusy = false;
                 Log.d("DEBUG", "SCROLL_STATE_IDLE");
-                changeMovie();
+                if (isSee) {
+                    changeMovie();
+                }
 
                 break;
             // スクロール中
@@ -423,6 +461,13 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
 
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+        if (totalItemCount != 1) {
+            //投稿はある
+            isExist = true;
+        } else {
+            //投稿がない
+            isExist = false;
+        }
     }
 
     private void getSignupAsync(final Context context) {
@@ -460,11 +505,6 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
                 mTenpoListView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
                 mTenpoListView.setAdapter(mTenpoAdapter);
 
-                if (mTenpousers.isEmpty()) {
-                    mEmptyView.setVisibility(View.VISIBLE);
-                } else {
-                    mEmptyView.setVisibility(View.GONE);
-                }
             }
 
             @Override
@@ -547,12 +587,6 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
-                }
-
-                if (mTenpousers.isEmpty()) {
-                    mEmptyView.setVisibility(View.VISIBLE);
-                } else {
-                    mEmptyView.setVisibility(View.GONE);
                 }
 
                 mPlayingPostId = null;
@@ -727,7 +761,7 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
                         @Override
                         public boolean onError(final MediaPlayer mp, final int what, final int extra) {
                             Log.e("DEBUG", "動画再生OnError: what:" + what + " extra:" + extra);
-                            if (mPlayingPostId.equals(postId) && !mPlayBlockFlag) {
+                            if (mPlayingPostId.equals(postId) && !mPlayBlockFlag && isSee) {
                                 Log.d("DEBUG", "MOVIE::onErrorListener 再生開始");
                                 mPlayingPostId = null;
                                 changeMovie();
@@ -860,6 +894,7 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
             final UserData user = this.getItem(position);
+            Log.e("ポジション", String.valueOf(position));
 
             // ViewHolder 取得・作成処理
             ViewHolder viewHolder = null;
@@ -1086,6 +1121,36 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
             Intent intent = new Intent(FlexibleTenpoActivity.this, GocciMyprofActivity.class);
             startActivity(intent);
             overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+        }
+    }
+
+    class checkClickHandler implements Runnable {
+        public void run() {
+
+        }
+    }
+
+    class callClickHandler implements Runnable {
+        public void run() {
+            Intent intent = new Intent(
+                    Intent.ACTION_DIAL,
+                    Uri.parse("tel:" + mPhoneNumber));
+            startActivity(intent);
+        }
+    }
+
+    class gohereClickHandler implements Runnable {
+        public void run() {
+            Uri gmmIntentUri = Uri.parse("google.navigation:q=" + mLat + "," + mLon + "&mode=w");
+            Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+            mapIntent.setPackage("com.google.android.apps.maps");
+            startActivity(mapIntent);
+        }
+    }
+
+    class etcClickHandler implements Runnable {
+        public void run() {
+
         }
     }
 

@@ -5,17 +5,25 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -27,12 +35,16 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.hatenablog.shoma2da.eventdaterecorderlib.EventDateRecorder;
 import com.inase.android.gocci.Event.BusHolder;
+import com.inase.android.gocci.Event.NotificationNumberEvent;
 import com.inase.android.gocci.Event.PageChangeVideoStopEvent;
+import com.inase.android.gocci.Event.SearchKeywordPostEvent;
 import com.inase.android.gocci.Fragment.FriendTimelineFragment;
 import com.inase.android.gocci.Fragment.LifelogFragment;
 import com.inase.android.gocci.Fragment.TimelineFragment;
 import com.inase.android.gocci.R;
+import com.inase.android.gocci.View.CommentView;
 import com.inase.android.gocci.View.DrawerProfHeader;
+import com.inase.android.gocci.View.NotificationListView;
 import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;
 import com.loopj.android.http.AsyncHttpClient;
@@ -47,6 +59,7 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
+import com.squareup.otto.Subscribe;
 import com.twitter.sdk.android.Twitter;
 
 import org.apache.http.Header;
@@ -64,8 +77,13 @@ public class GocciTimelineActivity extends ActionBarActivity {
 
     static final String TAG = "GCMDemo";
 
+    private final GocciTimelineActivity self = this;
+
     private GoogleCloudMessaging gcm;
     private String regid;
+
+    private int notifications = 1;
+    private TextView notificationNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -182,6 +200,61 @@ public class GocciTimelineActivity extends ActionBarActivity {
 
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        BusHolder.get().register(self);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        BusHolder.get().unregister(self);
+    }
+
+    @Subscribe
+    public void subscribe(NotificationNumberEvent event) {
+        notificationNumber.setVisibility(View.VISIBLE);
+        notificationNumber.setText(String.valueOf(event.mNotificationNumber));
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.bell_notification, menu);
+        // お知らせ未読件数バッジ表示
+        MenuItem item = menu.findItem(R.id.badge);
+        MenuItemCompat.setActionView(item, R.layout.toolbar_notification_icon);
+        View view = MenuItemCompat.getActionView(item);
+        notificationNumber = (TextView) view.findViewById(R.id.notification_number);
+
+        // バッジの数字を更新。0の場合はバッジを表示させない
+        // _unreadHogeCountはAPIなどで通信した結果を格納する想定です
+
+        if (notifications == 0) {
+            notificationNumber.setVisibility(View.INVISIBLE);
+        } else {
+
+            notificationNumber.setText(String.valueOf(notifications));
+        }
+
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.e("ログ", "通知クリック");
+                notificationNumber.setVisibility(View.INVISIBLE);
+                RequestParams params = new RequestParams();
+                params.put("user_name", SavedData.getLoginName(GocciTimelineActivity.this));
+                params.put("picture", SavedData.getLoginPicture(GocciTimelineActivity.this));
+                View notification = new NotificationListView(GocciTimelineActivity.this, params);
+
+                MaterialDialog dialog = new MaterialDialog.Builder(GocciTimelineActivity.this)
+                        .customView(notification, false)
+                        .show();
+            }
+        });
+        return super.onCreateOptionsMenu(menu);
     }
 
     class lifelogClickHandler implements Runnable {
