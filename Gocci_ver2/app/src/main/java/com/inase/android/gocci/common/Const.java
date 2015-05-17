@@ -26,6 +26,8 @@ public class Const {
     public static final String URL_POST_PROFILE_EDIT_API = "http://api-gocci.jp/settings/";
     public static final String URL_TIMELINE_NEAR = "http://api-gocci.jp/android_timeline/";
     public static final String URL_INSERT_REST = "http://api-gocci.jp/restinsert/";
+    public static final String URL_RESTRAUNT_FOLLOW = "http://api-gocci.jp/wants/";
+    public static final String URL_RESTRAUNT_UNFOLLOW = "http://api-gocci.jp/unwants/";
 
     // 動画ファイルのキャッシュファイルの接頭辞
     public static final String MOVIE_CACHE_PREFIX = "movie_cache_";

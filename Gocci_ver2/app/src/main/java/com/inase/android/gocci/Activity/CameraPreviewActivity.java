@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -26,7 +26,6 @@ import com.inase.android.gocci.R;
 import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;
 import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
@@ -41,7 +40,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileNotFoundException;
 
-public class CameraPreviewActivity extends ActionBarActivity {
+public class CameraPreviewActivity extends AppCompatActivity {
 
     private String mRestname;
     private String mVideoUrl;
@@ -59,7 +58,6 @@ public class CameraPreviewActivity extends ActionBarActivity {
     private File mVideoFile;
 
     private AsyncHttpClient httpClient;
-    private RequestParams loginParam;
     private RequestParams toukouParam;
 
     private static final String sSignupUrl = "http://api-gocci.jp/login/";
@@ -126,10 +124,6 @@ public class CameraPreviewActivity extends ActionBarActivity {
         if (mIsnewRestname) {
             addrestView.setVisibility(View.GONE);
         }
-
-        loginParam = new RequestParams();
-        loginParam.put("user_name", SavedData.getLoginName(this));
-        loginParam.put("picture", SavedData.getLoginPicture(this));
 
         toukouParam = new RequestParams();
 
@@ -305,31 +299,15 @@ public class CameraPreviewActivity extends ActionBarActivity {
     }
 
     private void postSignupAsync(final Context context) {
+        Log.e("中身は！？！？", String.valueOf(toukouParam));
         httpClient = new AsyncHttpClient();
-        httpClient.post(context, sSignupUrl, loginParam, new AsyncHttpResponseHandler() {
+        httpClient.setCookieStore(SavedData.getCookieStore(context));
+        httpClient.post(context, sMovieurl, toukouParam, new TextHttpResponseHandler() {
             @Override
             public void onStart() {
                 mPostProgress.setVisibility(View.VISIBLE);
             }
 
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                Log.e("サインアップ成功", "status=" + statusCode);
-                postRestAsync(context);
-
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                mPostProgress.setVisibility(View.GONE);
-                Toast.makeText(context, "サインアップに失敗しました", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void postRestAsync(final Context context) {
-        Log.e("中身は！？！？", String.valueOf(toukouParam));
-        httpClient.post(context, sMovieurl, toukouParam, new TextHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 Toast.makeText(context, "投稿に失敗しました", Toast.LENGTH_SHORT).show();

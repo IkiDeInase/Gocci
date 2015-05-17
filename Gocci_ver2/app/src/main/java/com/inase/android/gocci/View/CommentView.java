@@ -26,6 +26,7 @@ import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.Base.RoundedTransformation;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.common.Const;
+import com.inase.android.gocci.common.SavedData;
 import com.inase.android.gocci.data.UserData;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -69,13 +70,11 @@ public class CommentView extends LinearLayout {
 
     private AsyncHttpClient httpClient;
     private AsyncHttpClient httpClient2;
-    private RequestParams mLoginParam;
     private RequestParams commentPostParam;
 
-    public CommentView(final Context context, String post_id, RequestParams loginParam) {
+    public CommentView(final Context context, String post_id) {
         super(context);
 
-        mLoginParam = loginParam;
         mPost_id = post_id;
 
         try {
@@ -146,23 +145,7 @@ public class CommentView extends LinearLayout {
 
     private void getSignupAsync(final Context context) {
         httpClient = new AsyncHttpClient();
-        httpClient.post(context, Const.URL_SIGNUP_API, mLoginParam, new AsyncHttpResponseHandler() {
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                Log.e("サインアップ成功", "status=" + statusCode);
-                getCommentJson(context);
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                mCommentProgress.setVisibility(GONE);
-                Toast.makeText(getContext(), "サインアップに失敗しました", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void getCommentJson(final Context context) {
+        httpClient.setCookieStore(SavedData.getCookieStore(context));
         httpClient.get(context, mCommentJsonUrl, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray timeline) {
@@ -213,28 +196,13 @@ public class CommentView extends LinearLayout {
 
     private void postSignupAsync(final Context context) {
         httpClient2 = new AsyncHttpClient();
-        httpClient2.post(context, Const.URL_SIGNUP_API, mLoginParam, new AsyncHttpResponseHandler() {
+        httpClient2.setCookieStore(SavedData.getCookieStore(context));
+        httpClient2.post(context, Const.URL_POST_COMMENT_API, commentPostParam, new AsyncHttpResponseHandler() {
             @Override
             public void onStart() {
                 mCommentProgress.setVisibility(VISIBLE);
             }
 
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                Log.e("サインアップ成功", "status=" + statusCode);
-                postCommentAsync(context);
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                mCommentProgress.setVisibility(GONE);
-                Toast.makeText(getContext(), "サインアップに失敗しました", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void postCommentAsync(final Context context) {
-        httpClient2.post(context, Const.URL_POST_COMMENT_API, commentPostParam, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 postCommentJson(context);

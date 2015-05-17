@@ -22,12 +22,12 @@
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_gravity="center"
-        app:backgroundPadding="2dp"
-        app:backgroundRadius="5dp"
-        app:backgroundColor="#cfd8dc"
-        app:progressColor="#607d8b"
-        app:progress="0"
-        app:max="100"
+        app:rcBackgroundPadding="2dp"
+        app:rcBackgroundRadius="5dp"
+        app:rcBackgroundColor="#cfd8dc"
+        app:rcProgressColor="#607d8b"
+        app:rcProgress="0"
+        app:rcMax="100"
         android:layout_marginLeft="32dp"
         android:layout_marginRight="32dp" />
 

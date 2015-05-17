@@ -113,7 +113,6 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
     private Location mLocation = null;
     private String mTimelineUrl = null;
 
-    private RequestParams loginParam;
     private RequestParams goodParam;
     private RequestParams violateParam;
     private RequestParams favoriteParam;
@@ -194,10 +193,6 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
         // 初期化処理
         mPlayingPostId = null;
         mViewHolderHash = new ConcurrentHashMap<>();
-
-        loginParam = new RequestParams();
-        loginParam.put("user_name", SavedData.getLoginName(getActivity()));
-        loginParam.put("picture", SavedData.getLoginPicture(getActivity()));
 
         progressWheel = (ProgressWheel) view.findViewById(R.id.progress_wheel);
         mTimelineListView = (ObservableListView) view.findViewById(R.id.list);
@@ -440,31 +435,10 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
     }
 
     private void getSignupAsync(final Context context) {
+        mTimelineUrl = "http://api-gocci.jp/test_timeline/?lat=" + mLocation.getLatitude() + "&lon=" + mLocation.getLongitude() + "&limit=30";
         final AsyncHttpClient httpClient = new AsyncHttpClient();
-        httpClient.post(context, Const.URL_SIGNUP_API, loginParam, new AsyncHttpResponseHandler() {
-            @Override
-            public void onStart() {
-                Log.d("DEBUG", "ProgressDialog show");
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                mTimelineUrl = "http://api-gocci.jp/test_timeline/?lat=" + mLocation.getLatitude() + "&lon=" + mLocation.getLongitude() + "&limit=30";
-                Log.e("サインアップ成功", mTimelineUrl);
-                getTimelineJson(context, mTimelineUrl, httpClient);
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                Log.d("DEBUG", "ProgressDialog dismiss getSignup failure");
-                progressWheel.setVisibility(View.GONE);
-                Toast.makeText(getActivity(), "サインアップに失敗しました", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void getTimelineJson(final Context context, String url, final AsyncHttpClient httpClient) {
-        httpClient.get(context, url, new TextHttpResponseHandler() {
+        httpClient.setCookieStore(SavedData.getCookieStore(context));
+        httpClient.get(context, mTimelineUrl, new TextHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 Toast.makeText(getActivity(), "読み取りに失敗しました", Toast.LENGTH_SHORT).show();
@@ -509,26 +483,9 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
     }
 
     private void postSignupAsync(final Context context, final String post_id, final int position) {
-        final AsyncHttpClient httpClient2 = new AsyncHttpClient();
-        httpClient2.post(context, Const.URL_SIGNUP_API, loginParam, new AsyncHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                Log.e("いいねサインアップ成功", "status=" + statusCode);
-                postGoodAsync(context, post_id, position, httpClient2);
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                final UserData user = mTimelineusers.get(position);
-                user.setPushed_at(0);
-                user.setgoodnum(user.getgoodnum() - 1);
-                Toast.makeText(getActivity(), "サインアップに失敗しました", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void postGoodAsync(final Context context, String post_id, final int position, AsyncHttpClient httpClient2) {
         goodParam = new RequestParams("post_id", post_id);
+        final AsyncHttpClient httpClient2 = new AsyncHttpClient();
+        httpClient2.setCookieStore(SavedData.getCookieStore(context));
         httpClient2.post(context, Const.URL_GOOD_API, goodParam, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
@@ -547,29 +504,11 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
     }
 
     private void getRefreshAsync(final Context context) {
+        mTimelineUrl = "http://api-gocci.jp/test_timeline/?lat=" + mLocation.getLatitude() + "&lon=" + mLocation.getLongitude() +
+                "&limit=30";
         final AsyncHttpClient httpClient3 = new AsyncHttpClient();
-        httpClient3.post(context, Const.URL_SIGNUP_API, loginParam, new AsyncHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                Log.e("サインアップ成功", "status=" + statusCode);
-                mTimelineUrl = "http://api-gocci.jp/test_timeline/?lat=" + mLocation.getLatitude() + "&lon=" + mLocation.getLongitude() +
-                        "&limit=30";
-                getRefreshTimelineJson(context, mTimelineUrl, httpClient3);
-
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                Log.d("DEBUG", "ProgressDialog dismiss getRefresh failure");
-                mTimelineSwipe.setRefreshing(false);
-                Toast.makeText(getActivity(), "サインアップに失敗しました", Toast.LENGTH_SHORT).show();
-                error.printStackTrace();
-            }
-        });
-    }
-
-    private void getRefreshTimelineJson(final Context context, String url, final AsyncHttpClient httpClient3) {
-        httpClient3.get(context, url, new TextHttpResponseHandler() {
+        httpClient3.setCookieStore(SavedData.getCookieStore(context));
+        httpClient3.get(context, mTimelineUrl, new TextHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 Toast.makeText(getActivity(), "読み取りに失敗しました", Toast.LENGTH_SHORT).show();
@@ -611,32 +550,12 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
                 Log.d("DEBUG", "ProgressDialog dismiss getRefresh finish");
                 mTimelineSwipe.setRefreshing(false);
             }
-
         });
     }
 
     private void getAddJsonAsync(final Context context, final String url) {
         final AsyncHttpClient httpClient4 = new AsyncHttpClient();
-        httpClient4.post(context, Const.URL_SIGNUP_API, loginParam, new AsyncHttpResponseHandler() {
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                Log.e("サインアップ成功", "status=" + statusCode);
-                getAddTimelineJson(context, url, httpClient4);
-
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                Log.d("DEBUG", "ProgressDialog dismiss AddJson failure");
-                mTimelineSwipe.setRefreshing(false);
-                Toast.makeText(getActivity(), "サインアップに失敗しました", Toast.LENGTH_SHORT).show();
-                error.printStackTrace();
-            }
-        });
-    }
-
-    private void getAddTimelineJson(final Context context, String url, AsyncHttpClient httpClient4) {
+        httpClient4.setCookieStore(SavedData.getCookieStore(context));
         httpClient4.get(context, url, new TextHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
@@ -679,30 +598,9 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
     }
 
     private void violateSignupAsync(final Context context, final String post_id) {
-        final AsyncHttpClient httpClient5 = new AsyncHttpClient();
-        httpClient5.post(context, Const.URL_SIGNUP_API, loginParam, new AsyncHttpResponseHandler() {
-            @Override
-            public void onStart() {
-                progressWheel.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                Log.e("サインアップ成功", "status=" + statusCode);
-                postViolateAsync(context, post_id, httpClient5);
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                //mMaterialDialog.dismiss();
-                progressWheel.setVisibility(View.GONE);
-                Toast.makeText(getActivity(), "サインアップに失敗しました", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void postViolateAsync(final Context context, final String post_id, AsyncHttpClient httpClient5) {
         violateParam = new RequestParams("post_id", post_id);
+        final AsyncHttpClient httpClient5 = new AsyncHttpClient();
+        httpClient5.setCookieStore(SavedData.getCookieStore(context));
         httpClient5.post(context, Const.URL_VIOLATE_API, violateParam, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
@@ -713,12 +611,6 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                 //mMaterialDialog.dismiss();
                 Toast.makeText(getActivity(), "違反報告に失敗しました", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onFinish() {
-                //mMaterialDialog.dismiss();
-                progressWheel.setVisibility(View.GONE);
             }
         });
     }
@@ -1245,7 +1137,7 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
                     Log.e("コメントをクリック", "コメント！" + user.getPost_id());
 
                     //投稿に対するコメントが見れるダイアログを表示
-                    View commentView = new CommentView(getActivity(), user.getPost_id(), loginParam);
+                    View commentView = new CommentView(getActivity(), user.getPost_id());
 
                     MaterialDialog mMaterialDialog = new MaterialDialog(getActivity())
                             .setContentView(commentView)

@@ -41,6 +41,7 @@ import com.inase.android.gocci.Base.BaseFragment;
 import com.inase.android.gocci.Event.BusHolder;
 import com.inase.android.gocci.Event.SearchKeywordPostEvent;
 import com.inase.android.gocci.R;
+import com.inase.android.gocci.common.SavedData;
 import com.inase.android.gocci.data.UserData;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -468,6 +469,7 @@ public class Search_mapFragment extends BaseFragment
         //mSearchmapDialog.show();
 
         httpClient = new AsyncHttpClient();
+        httpClient.setCookieStore(SavedData.getCookieStore(context));
         httpClient.get(context, url, new JsonHttpResponseHandler() {
 
             @Override
@@ -539,6 +541,7 @@ public class Search_mapFragment extends BaseFragment
 
     private void getRefreshMapJson(Context context, String url) {
         httpClient3 = new AsyncHttpClient();
+        httpClient3.setCookieStore(SavedData.getCookieStore(context));
         httpClient3.get(context, url, new JsonHttpResponseHandler() {
 
             @Override
@@ -608,6 +611,7 @@ public class Search_mapFragment extends BaseFragment
 
     private void getKeywordSearchJson(Context context) {
         httpClient2 = new AsyncHttpClient();
+        httpClient2.setCookieStore(SavedData.getCookieStore(context));
         httpClient2.get(context, mSearch_keywordUrl, new JsonHttpResponseHandler() {
             @Override
             public void onStart() {
@@ -682,6 +686,7 @@ public class Search_mapFragment extends BaseFragment
 
     private void getLongClickJson(Context context, String url) {
         AsyncHttpClient httpClient = new AsyncHttpClient();
+        httpClient.setCookieStore(SavedData.getCookieStore(context));
         httpClient.get(context, url, new JsonHttpResponseHandler() {
 
             @Override

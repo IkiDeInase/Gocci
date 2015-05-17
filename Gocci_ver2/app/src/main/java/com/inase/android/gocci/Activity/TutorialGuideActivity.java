@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -23,7 +24,7 @@ import com.inase.android.gocci.Tutorial.TutorialView4;
 import com.inase.android.gocci.common.SavedData;
 import com.viewpagerindicator.CirclePageIndicator;
 
-public class TutorialGuideActivity extends ActionBarActivity {
+public class TutorialGuideActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

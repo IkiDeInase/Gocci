@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -23,7 +24,7 @@ import org.apache.http.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class LoginPreferenceActivity extends ActionBarActivity {
+public class LoginPreferenceActivity extends AppCompatActivity {
 
     private ProgressWheel progress;
 
@@ -74,6 +75,7 @@ public class LoginPreferenceActivity extends ActionBarActivity {
         loginParams.put("user_name", name);
         loginParams.put("picture", url);
         httpClient = new AsyncHttpClient();
+        httpClient.setCookieStore(SavedData.getCookieStore(context));
         httpClient.post(context, Const.URL_SIGNUP_API, loginParams, new JsonHttpResponseHandler() {
 
             @Override

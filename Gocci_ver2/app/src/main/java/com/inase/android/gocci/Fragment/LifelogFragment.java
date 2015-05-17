@@ -14,7 +14,6 @@ import com.inase.android.gocci.Base.BaseFragment;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;
-import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.SyncHttpClient;
@@ -52,7 +51,6 @@ public class LifelogFragment extends BaseFragment {
     private CalendarPickerView calendar;
 
     private SyncHttpClient httpClient;
-    private RequestParams loginParam;
 
     private Calendar thisYear = Calendar.getInstance();
     private Calendar lastYear = Calendar.getInstance();
@@ -134,10 +132,6 @@ public class LifelogFragment extends BaseFragment {
         View view2 = getActivity().getLayoutInflater().inflate(R.layout.fragment_lifelog,
                 container, false);
 
-        loginParam = new RequestParams();
-        loginParam.put("user_name", SavedData.getLoginName(getActivity()));
-        loginParam.put("picture", SavedData.getLoginPicture(getActivity()));
-
         thisYear.add(Calendar.YEAR, 0);
         thisYear.add(Calendar.MONTH, 0);
         thisYear.add(Calendar.DAY_OF_MONTH, 1);
@@ -187,71 +181,62 @@ public class LifelogFragment extends BaseFragment {
         @Override
         protected ArrayList<Date> doInBackground(String... params) {
             httpClient = new SyncHttpClient();
-            httpClient.post(getActivity(), Const.URL_SIGNUP_API, loginParam, new AsyncHttpResponseHandler() {
+            httpClient.setCookieStore(SavedData.getCookieStore(getActivity()));
+            httpClient.get(getActivity(), Const.URL_LIFELOG_API, new JsonHttpResponseHandler() {
                 @Override
-                public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                    httpClient.get(getActivity(), Const.URL_LIFELOG_API, new JsonHttpResponseHandler() {
-                        @Override
-                        public void onSuccess(int statusCode, Header[] headers, JSONArray timeline) {
-                            users.clear();
-                            try {
-                                for (int i = 0; i < timeline.length(); i++) {
-                                    JSONObject jsonObject = timeline.getJSONObject(i);
+                public void onSuccess(int statusCode, Header[] headers, JSONArray timeline) {
+                    users.clear();
+                    try {
+                        for (int i = 0; i < timeline.length(); i++) {
+                            JSONObject jsonObject = timeline.getJSONObject(i);
 
-                                    Integer year = jsonObject.getInt(TAG_YEAR);
-                                    Integer month = jsonObject.getInt(TAG_MONTH);
-                                    Integer day = jsonObject.getInt(TAG_DAY);
-                                    Integer hour = jsonObject.getInt(TAG_HOUR);
-                                    Integer minute = jsonObject.getInt(TAG_MINUTE);
-                                    String stringYear = jsonObject.getString(TAG_YEAR);
-                                    String stringMonth = jsonObject.getString(TAG_MONTH);
-                                    String stringDay = jsonObject.getString(TAG_DAY);
+                            Integer year = jsonObject.getInt(TAG_YEAR);
+                            Integer month = jsonObject.getInt(TAG_MONTH);
+                            Integer day = jsonObject.getInt(TAG_DAY);
+                            Integer hour = jsonObject.getInt(TAG_HOUR);
+                            Integer minute = jsonObject.getInt(TAG_MINUTE);
+                            String stringYear = jsonObject.getString(TAG_YEAR);
+                            String stringMonth = jsonObject.getString(TAG_MONTH);
+                            String stringDay = jsonObject.getString(TAG_DAY);
 
-                                    String jsonDate = stringYear + "-" + stringMonth + "-" + stringDay;
+                            String jsonDate = stringYear + "-" + stringMonth + "-" + stringDay;
 
-                                    if (users.indexOf(jsonDate) == -1) {
-                                        users.add(jsonDate);
+                            if (users.indexOf(jsonDate) == -1) {
+                                users.add(jsonDate);
 
-                                        //YEAR　今年　０　来年　１　去年　−１
-                                        //MONTH　今月　０　来月　１
-                                        //DAY　JSON日にちー今日
-                                        switch (year) {
-                                            case 2014:
-                                                newYear = 2014 - 1970;
-                                                break;
-                                            case 2015:
-                                                newYear = 2015 - 1970;
-                                                break;
-                                        }
-
-                                        newDay = day - 1;
-
-                                        memory.clear();
-                                        memory.add(Calendar.YEAR, newYear);
-                                        memory.add(Calendar.MONTH, month - 1);
-                                        memory.add(Calendar.DAY_OF_MONTH, newDay);
-                                        //memory.add(Calendar.HOUR_OF_DAY, hour);
-                                        //memory.add(Calendar.MINUTE, minute);
-                                        //memory.add(Calendar.SECOND,i);
-                                        dates.add(memory.getTime());
-                                    }
-
+                                //YEAR　今年　０　来年　１　去年　−１
+                                //MONTH　今月　０　来月　１
+                                //DAY　JSON日にちー今日
+                                switch (year) {
+                                    case 2014:
+                                        newYear = 2014 - 1970;
+                                        break;
+                                    case 2015:
+                                        newYear = 2015 - 1970;
+                                        break;
                                 }
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
 
-                        @Override
-                        public void onFailure(int statusCode, org.apache.http.Header[] headers, java.lang.Throwable throwable, org.json.JSONObject errorResponse) {
-                            Toast.makeText(getActivity(), "読み取りに失敗しました", Toast.LENGTH_SHORT).show();
+                                newDay = day - 1;
+
+                                memory.clear();
+                                memory.add(Calendar.YEAR, newYear);
+                                memory.add(Calendar.MONTH, month - 1);
+                                memory.add(Calendar.DAY_OF_MONTH, newDay);
+                                //memory.add(Calendar.HOUR_OF_DAY, hour);
+                                //memory.add(Calendar.MINUTE, minute);
+                                //memory.add(Calendar.SECOND,i);
+                                dates.add(memory.getTime());
+                            }
+
                         }
-                    });
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 @Override
-                public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                    Toast.makeText(getActivity(), "サインアップに失敗しました", Toast.LENGTH_SHORT).show();
+                public void onFailure(int statusCode, org.apache.http.Header[] headers, java.lang.Throwable throwable, org.json.JSONObject errorResponse) {
+                    Toast.makeText(getActivity(), "読み取りに失敗しました", Toast.LENGTH_SHORT).show();
                 }
             });
 

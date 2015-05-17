@@ -12,7 +12,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -110,7 +109,6 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
     private AsyncHttpClient httpClient2;
     private AsyncHttpClient httpClient3;
     private AsyncHttpClient httpClient4;
-    private RequestParams loginParam;
     private RequestParams goodParam;
     private RequestParams deleteParam;
 
@@ -191,10 +189,6 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
         mViewHolderHash = new ConcurrentHashMap<>();
 
         mProfUrl = "http://api-gocci.jp/mypage/?user_name=" + mEncodeUser_name;
-
-        loginParam = new RequestParams();
-        loginParam.put("user_name", SavedData.getLoginName(getActivity()));
-        loginParam.put("picture", SavedData.getLoginPicture(getActivity()));
 
         fab = (FloatingActionButton) view.findViewById(R.id.toukouButton);
 
@@ -289,57 +283,47 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
                                 }
 
                                 final AsyncHttpClient client = new AsyncHttpClient();
-                                client.post(getActivity(), Const.URL_SIGNUP_API, loginParam, new AsyncHttpResponseHandler() {
-
+                                client.setCookieStore(SavedData.getCookieStore(getActivity()));
+                                client.post(getActivity(), Const.URL_POST_PROFILE_EDIT_API, params, new JsonHttpResponseHandler() {
                                     @Override
                                     public void onStart() {
                                         myprofprogress.setVisibility(View.VISIBLE);
                                     }
 
                                     @Override
-                                    public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                                        client.post(getActivity(), Const.URL_POST_PROFILE_EDIT_API, params, new JsonHttpResponseHandler() {
-                                            @Override
-                                            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                                                Toast.makeText(getActivity(), "プロフィール変更に失敗しました", Toast.LENGTH_SHORT).show();
-                                            }
-
-                                            @Override
-                                            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                                                try {
-                                                    String message = response.getString("message");
-
-                                                    if (message.equals("変更しました")) {
-                                                        Toast.makeText(getActivity(), "プロフィールを変更しました", Toast.LENGTH_SHORT).show();
-                                                        String background_image = response.getString("background_image");
-                                                        String name = response.getString("user_name");
-                                                        String picture = response.getString("picture");
-
-                                                        SavedData.changeProfile(getActivity(), name, picture, background_image);
-
-                                                        Intent intent = getActivity().getIntent();
-                                                        getActivity().overridePendingTransition(0, 0);
-                                                        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                                        getActivity().finish();
-
-                                                        getActivity().overridePendingTransition(0, 0);
-                                                        startActivity(intent);
-
-                                                    } else {
-                                                        Toast.makeText(getActivity(), "プロフィール変更に失敗しました", Toast.LENGTH_SHORT).show();
-                                                    }
-                                                } catch (JSONException e) {
-                                                    e.printStackTrace();
-                                                }
-                                            }
-                                        });
+                                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                                        Toast.makeText(getActivity(), "プロフィール変更に失敗しました", Toast.LENGTH_SHORT).show();
                                     }
 
                                     @Override
-                                    public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                                        Toast.makeText(getActivity(), "プロフィール変更に失敗しました", Toast.LENGTH_SHORT).show();
+                                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                                        try {
+                                            String message = response.getString("message");
+
+                                            if (message.equals("変更しました")) {
+                                                Toast.makeText(getActivity(), "プロフィールを変更しました", Toast.LENGTH_SHORT).show();
+                                                String background_image = response.getString("background_image");
+                                                String name = response.getString("user_name");
+                                                String picture = response.getString("picture");
+
+                                                SavedData.changeProfile(getActivity(), name, picture, background_image);
+
+                                                Intent intent = getActivity().getIntent();
+                                                getActivity().overridePendingTransition(0, 0);
+                                                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                                getActivity().finish();
+
+                                                getActivity().overridePendingTransition(0, 0);
+                                                startActivity(intent);
+
+                                            } else {
+                                                Toast.makeText(getActivity(), "プロフィール変更に失敗しました", Toast.LENGTH_SHORT).show();
+                                            }
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
                                     }
 
                                     @Override
@@ -597,24 +581,7 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
 
     private void getSignupAsync(final Context context) {
         httpClient = new AsyncHttpClient();
-        httpClient.post(context, Const.URL_SIGNUP_API, loginParam, new AsyncHttpResponseHandler() {
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                Log.e("サインアップ成功", "status=" + statusCode);
-                getProfileJson(context);
-
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                myprofprogress.setVisibility(View.GONE);
-                Toast.makeText(getActivity(), "サインアップに失敗しました", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void getProfileJson(final Context context) {
+        httpClient.setCookieStore(SavedData.getCookieStore(context));
         httpClient.get(context, mProfUrl, new JsonHttpResponseHandler() {
 
             @Override
@@ -648,31 +615,13 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
             public void onFinish() {
                 myprofprogress.setVisibility(View.GONE);
             }
-
         });
     }
 
     private void postSignupAsync(final Context context, final String post_id, final int position) {
-        httpClient2 = new AsyncHttpClient();
-        httpClient2.post(context, Const.URL_SIGNUP_API, loginParam, new AsyncHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                Log.e("サインアップ成功", "status=" + statusCode);
-                postGoodAsync(context, post_id, position);
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                final UserData user = mProfusers.get(position);
-                user.setPushed_at(0);
-                user.setgoodnum(user.getgoodnum() - 1);
-                Toast.makeText(getActivity(), "サインアップに失敗しました", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void postGoodAsync(final Context context, String post_id, final int position) {
         goodParam = new RequestParams("post_id", post_id);
+        httpClient2 = new AsyncHttpClient();
+        httpClient2.setCookieStore(SavedData.getCookieStore(context));
         httpClient2.post(context, Const.URL_GOOD_API, goodParam, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
@@ -689,26 +638,10 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
         });
     }
 
+
     private void getRefreshAsync(final Context context) {
         httpClient3 = new AsyncHttpClient();
-        httpClient3.post(context, Const.URL_SIGNUP_API, loginParam, new AsyncHttpResponseHandler() {
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                Log.e("サインアップ成功", "status=" + statusCode);
-                getRefreshProfileJson(context);
-
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                mProfSwipe.setRefreshing(false);
-                Toast.makeText(getActivity(), "サインアップに失敗しました", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void getRefreshProfileJson(final Context context) {
+        httpClient3.setCookieStore(SavedData.getCookieStore(context));
         httpClient3.get(context, mProfUrl, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray timeline) {
@@ -744,35 +677,13 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
             public void onFinish() {
                 mProfSwipe.setRefreshing(false);
             }
-
         });
     }
 
     private void deleteSignupAsync(final Context context, final String post_id, final int position) {
-        httpClient4 = new AsyncHttpClient();
-        httpClient4.post(context, Const.URL_SIGNUP_API, loginParam, new AsyncHttpResponseHandler() {
-            @Override
-            public void onStart() {
-                myprofprogress.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                Log.e("サインアップ成功", "status=" + statusCode);
-                postDeleteAsync(context, post_id, position);
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                //mMaterialDialog.dismiss();
-                myprofprogress.setVisibility(View.GONE);
-                Toast.makeText(getActivity(), "サインアップに失敗しました", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void postDeleteAsync(final Context context, final String post_id, final int position) {
         deleteParam = new RequestParams("post_id", post_id);
+        httpClient4 = new AsyncHttpClient();
+        httpClient4.setCookieStore(SavedData.getCookieStore(context));
         httpClient4.post(context, Const.URL_DELETE_API, deleteParam, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
@@ -787,12 +698,6 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                 //mMaterialDialog.dismiss();
                 Toast.makeText(getActivity(), "削除に失敗しました", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onFinish() {
-                //mMaterialDialog.dismiss();
-                myprofprogress.setVisibility(View.GONE);
             }
         });
     }
@@ -1228,7 +1133,7 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
                     Log.e("コメントをクリック", "コメント！" + user.getPost_id());
 
                     //投稿に対するコメントが見れるダイアログを表示
-                    View commentView = new CommentView(getActivity(), user.getPost_id(), loginParam);
+                    View commentView = new CommentView(getActivity(), user.getPost_id());
 
                     MaterialDialog mMaterialDialog = new MaterialDialog(getActivity())
                             .setContentView(commentView)

@@ -32,6 +32,7 @@ import com.inase.android.gocci.Base.SquareVideoView;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.common.CacheManager;
 import com.inase.android.gocci.common.Const;
+import com.inase.android.gocci.common.SavedData;
 import com.inase.android.gocci.data.UserData;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -98,7 +99,6 @@ public class LifelogVideoFragment2 extends SupportBlurDialogFragment implements 
     private String mDate;
 
     private AsyncHttpClient httpClient;
-    private RequestParams loginParam;
 
     private ListView lifelogVideoListView;
     private LifelogVideoAdapter adapter;
@@ -187,11 +187,8 @@ public class LifelogVideoFragment2 extends SupportBlurDialogFragment implements 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        loginParam = new RequestParams();
-        loginParam.put("user_name", mName);
-        loginParam.put("picture", mPicture);
 
-        getSignupAsync(getActivity(), mDate, loginParam);
+        getSignupAsync(getActivity(), mDate);
     }
 
     @NonNull
@@ -296,35 +293,10 @@ public class LifelogVideoFragment2 extends SupportBlurDialogFragment implements 
         startMovie();
     }
 
-    private void getSignupAsync(final Context context, final String date, RequestParams params) {
-        httpClient = new AsyncHttpClient();
-        httpClient.post(context, Const.URL_SIGNUP_API, params, new AsyncHttpResponseHandler() {
-            @Override
-            public void onStart() {
-                Log.d("DEBUG", "ProgressDialog show");
-//                mTimelineDialog = new CustomProgressDialog(getActivity());
-//                mTimelineDialog.setCancelable(false);
-//                mTimelineDialog.show();
-
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                Log.e("サインアップ成功", "status=" + statusCode);
-                getLifelogVideoJson(context, date);
-
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                Log.d("DEBUG", "ProgressDialog dismiss getSignup failure");
-                Toast.makeText(getActivity(), "サインアップに失敗しました", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void getLifelogVideoJson(Context context, String date) {
+    private void getSignupAsync(final Context context, final String date) {
         String url = "http://api-gocci.jp/lifelogs/?lifelog_date=" + date;
+        httpClient = new AsyncHttpClient();
+        httpClient.setCookieStore(SavedData.getCookieStore(context));
         httpClient.get(context, url, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray timeline) {
@@ -380,12 +352,6 @@ public class LifelogVideoFragment2 extends SupportBlurDialogFragment implements 
             public void onFailure(int statusCode, org.apache.http.Header[] headers, java.lang.Throwable throwable, org.json.JSONObject errorResponse) {
                 Toast.makeText(getActivity(), "読み取りに失敗しました", Toast.LENGTH_SHORT).show();
             }
-
-            @Override
-            public void onFinish() {
-                Log.d("DEBUG", "ProgressDialog dismiss getTimeline finish");
-//                mTimelineDialog.dismiss();
-            }
         });
     }
 
@@ -430,10 +396,7 @@ public class LifelogVideoFragment2 extends SupportBlurDialogFragment implements 
                 mCacheManager.requestMovieCacheCreate(getActivity(), userData.getMovie(), userData.getPost_id(), LifelogVideoFragment2.this, currentViewHolder.movieProgress);
 
             }
-
-
         }
-
     }
 
     private void startMovie() {

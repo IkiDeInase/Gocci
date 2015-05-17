@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.AttributeSet;
@@ -55,7 +56,9 @@ import com.inase.android.gocci.data.UserData;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.PersistentCookieStore;
 import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.TextHttpResponseHandler;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
@@ -81,7 +84,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import me.drakeet.materialdialog.MaterialDialog;
 
-public class FlexibleTenpoActivity extends ActionBarActivity implements ObservableScrollViewCallbacks, AbsListView.OnScrollListener, CacheManager.ICacheManagerListener {
+public class FlexibleTenpoActivity extends AppCompatActivity implements ObservableScrollViewCallbacks, AbsListView.OnScrollListener, CacheManager.ICacheManagerListener {
 
     private String mTenpoUrl;
     private String mPost_restname;
@@ -106,7 +109,6 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
     private AsyncHttpClient httpClient;
     private AsyncHttpClient httpClient2;
     private AsyncHttpClient httpClient3;
-    private RequestParams loginParam;
 
     private MapView mMapView;
     private GoogleMap mMap;
@@ -253,9 +255,7 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
 
         mTenpoUrl = "http://api-gocci.jp/restpage/?restname=" + mEncoderestname;
 
-        loginParam = new RequestParams();
-        loginParam.put("user_name", SavedData.getLoginName(this));
-        loginParam.put("picture", SavedData.getLoginPicture(this));
+        final RequestParams param = new RequestParams("restname", mPost_restname);
 
         tenpoprogress = (ProgressWheel) findViewById(R.id.tenpoprogress_wheel);
         mTenpoListView = (ObservableListView) findViewById(R.id.list);
@@ -285,9 +285,36 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
                 if (check_text.getText().toString().equals("行きたい店に認定")) {
                     check_Image.setImageResource(R.drawable.ic_favorite_orange);
                     check_text.setText("行きたい店を取消");
+                    final AsyncHttpClient client = new AsyncHttpClient();
+                    client.setCookieStore(SavedData.getCookieStore(FlexibleTenpoActivity.this));
+                    client.post(FlexibleTenpoActivity.this, Const.URL_RESTRAUNT_FOLLOW, param, new TextHttpResponseHandler() {
+                                @Override
+                                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                                    Log.e("失敗ログ", responseString);
+                                }
+
+                                @Override
+                                public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                                    Log.e("成功ログ", responseString);
+                                }
+
+                            });
                 } else {
                     check_Image.setImageResource(R.drawable.ic_like_white);
                     check_text.setText("行きたい店に認定");
+                    final AsyncHttpClient client = new AsyncHttpClient();
+                    client.setCookieStore(SavedData.getCookieStore(FlexibleTenpoActivity.this));
+                    client.post(FlexibleTenpoActivity.this, Const.URL_RESTRAUNT_UNFOLLOW, param, new TextHttpResponseHandler() {
+                        @Override
+                        public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                            Log.e("失敗ログ", responseString);
+                        }
+
+                        @Override
+                        public void onSuccess(int statusCode, Header[] headers, String responseString) {
+                            Log.e("成功ログ", responseString);
+                        }
+                    });
                 }
             }
         });
@@ -472,25 +499,8 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
 
     private void getSignupAsync(final Context context) {
         httpClient = new AsyncHttpClient();
-        httpClient.post(context, Const.URL_SIGNUP_API, loginParam, new AsyncHttpResponseHandler() {
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                Log.e("サインアップ成功", "status=" + statusCode);
-                getTenpoJson(context);
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                tenpoprogress.setVisibility(View.GONE);
-                Toast.makeText(FlexibleTenpoActivity.this, "サインアップに失敗しました", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void getTenpoJson(final Context context) {
+        httpClient.setCookieStore(SavedData.getCookieStore(context));
         httpClient.get(context, mTenpoUrl, new JsonHttpResponseHandler() {
-
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray timeline) {
                 try {
@@ -522,24 +532,7 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
 
     private void postSignupAsync(final Context context, final String post_id, final int position) {
         httpClient2 = new AsyncHttpClient();
-        httpClient2.post(context, Const.URL_SIGNUP_API, loginParam, new AsyncHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                Log.e("サインアップ成功", "status=" + statusCode);
-                postGoodAsync(context, post_id, position);
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                final UserData user = mTenpousers.get(position);
-                user.setPushed_at(0);
-                user.setgoodnum(user.getgoodnum() - 1);
-                Toast.makeText(FlexibleTenpoActivity.this, "サインアップに失敗しました", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void postGoodAsync(final Context context, String post_id, final int position) {
+        httpClient2.setCookieStore(SavedData.getCookieStore(context));
         RequestParams goodParam = new RequestParams("post_id", post_id);
         httpClient2.post(context, Const.URL_GOOD_API, goodParam, new AsyncHttpResponseHandler() {
             @Override
@@ -558,24 +551,7 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
 
     private void getRefreshAsync(final Context context) {
         httpClient3 = new AsyncHttpClient();
-        httpClient3.post(context, Const.URL_SIGNUP_API, loginParam, new AsyncHttpResponseHandler() {
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                Log.e("サインアップ成功", "status=" + statusCode);
-                getRefreshTenpoJson(context);
-
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                mTenpoSwipe.setRefreshing(false);
-                Toast.makeText(FlexibleTenpoActivity.this, "サインアップに失敗しました", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void getRefreshTenpoJson(final Context context) {
+        httpClient3.setCookieStore(SavedData.getCookieStore(context));
         httpClient3.get(context, mTenpoUrl, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray timeline) {
@@ -604,34 +580,12 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
             public void onFinish() {
                 mTenpoSwipe.setRefreshing(false);
             }
-
         });
     }
 
     private void violateSignupAsync(final Context context, final String post_id) {
         final AsyncHttpClient httpClient5 = new AsyncHttpClient();
-        httpClient5.post(context, Const.URL_SIGNUP_API, loginParam, new AsyncHttpResponseHandler() {
-            @Override
-            public void onStart() {
-                tenpoprogress.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                Log.e("サインアップ成功", "status=" + statusCode);
-                postViolateAsync(context, post_id, httpClient5);
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                //mMaterialDialog.dismiss();
-                tenpoprogress.setVisibility(View.GONE);
-                Toast.makeText(context, "サインアップに失敗しました", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void postViolateAsync(final Context context, final String post_id, AsyncHttpClient httpClient5) {
+        httpClient5.setCookieStore(SavedData.getCookieStore(context));
         RequestParams violateParam = new RequestParams("post_id", post_id);
         httpClient5.post(context, Const.URL_VIOLATE_API, violateParam, new AsyncHttpResponseHandler() {
             @Override
@@ -643,12 +597,6 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                 //mMaterialDialog.dismiss();
                 Toast.makeText(context, "違反報告に失敗しました", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onFinish() {
-                //mMaterialDialog.dismiss();
-                tenpoprogress.setVisibility(View.GONE);
             }
         });
     }
@@ -1066,7 +1014,7 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
                     Log.e("コメントをクリック", "コメント！" + user.getPost_id());
 
                     //投稿に対するコメントが見れるダイアログを表示
-                    View commentView = new CommentView(FlexibleTenpoActivity.this, user.getPost_id(), loginParam);
+                    View commentView = new CommentView(FlexibleTenpoActivity.this, user.getPost_id());
 
                     MaterialDialog mMaterialDialog = new MaterialDialog(FlexibleTenpoActivity.this)
                             .setContentView(commentView)
@@ -1226,39 +1174,22 @@ public class FlexibleTenpoActivity extends ActionBarActivity implements Observab
         }
 
         private void postSignupAsync(final Context context, final String category, final String message) {
-            final AsyncHttpClient httpClient = new AsyncHttpClient();
-            httpClient.post(context, Const.URL_SIGNUP_API, loginParam, new AsyncHttpResponseHandler() {
-
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                    Log.e("サインアップ成功", "status=" + statusCode);
-                    postAsync(context, httpClient, category, message);
-                }
-
-                @Override
-                public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                    Toast.makeText(context, "サインアップに失敗しました", Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
-
-        private void postAsync(final Context context, AsyncHttpClient client, String category, String message) {
             RequestParams sendParams = new RequestParams();
             sendParams.put("select_support", category);
             sendParams.put("content", message);
-            client.post(context, Const.URL_ADVICE_API, sendParams, new AsyncHttpResponseHandler() {
+            final AsyncHttpClient httpClient = new AsyncHttpClient();
+            httpClient.setCookieStore(SavedData.getCookieStore(context));
+            httpClient.post(context, Const.URL_ADVICE_API, sendParams, new AsyncHttpResponseHandler() {
 
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                     Toast.makeText(context, "ご協力ありがとうございました！", Toast.LENGTH_SHORT).show();
-
                 }
 
                 @Override
                 public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                     Toast.makeText(context, "送信に失敗しました", Toast.LENGTH_SHORT).show();
                 }
-
             });
         }
     }

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.inase.android.gocci" >
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.inase.android.gocci">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -37,7 +38,7 @@
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="@string/map_key" />
-        <meta-data
+        <meta-data tools:replace="android:value"
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 

@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +22,6 @@ import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;
 import com.inase.android.gocci.data.UserData;
 import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.r0adkll.slidr.Slidr;
@@ -35,7 +34,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class FollowerFolloweeCheerListActivity extends ActionBarActivity {
+public class FollowerFolloweeCheerListActivity extends AppCompatActivity {
 
     private String mCategory;
 
@@ -47,8 +46,6 @@ public class FollowerFolloweeCheerListActivity extends ActionBarActivity {
     private FollowerFolloweeAdapter followerFolloweeAdapter;
     private CheerAdapter cheerAdapter;
 
-    private RequestParams loginParam;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,10 +55,6 @@ public class FollowerFolloweeCheerListActivity extends ActionBarActivity {
 
         Intent intent = getIntent();
         mCategory = intent.getStringExtra("category");
-
-        loginParam = new RequestParams();
-        loginParam.put("user_name", SavedData.getLoginName(this));
-        loginParam.put("picture", SavedData.getLoginPicture(this));
 
         listView = (ObservableListView) findViewById(R.id.list);
         refresh = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
@@ -578,40 +571,31 @@ public class FollowerFolloweeCheerListActivity extends ActionBarActivity {
     private void postFollower(final Context context, String username) {
         final AsyncHttpClient client = new AsyncHttpClient();
         Log.e("送る名前", username);
+        client.setCookieStore(SavedData.getCookieStore(context));
         final RequestParams favoriteParam = new RequestParams("user_name", username);
-        client.post(context, Const.URL_SIGNUP_API, loginParam, new AsyncHttpResponseHandler() {
+        client.post(context, Const.URL_FAVORITE_API, favoriteParam, new JsonHttpResponseHandler() {
+            //JSONはどんな形だ？
             @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                client.post(context, Const.URL_FAVORITE_API, favoriteParam, new JsonHttpResponseHandler() {
-                    //JSONはどんな形だ？
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        Log.e("ジェイソン成功", String.valueOf(response));
-                        try {
-                            String message = response.getString("message");
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Log.e("ジェイソン成功", String.valueOf(response));
+                try {
+                    String message = response.getString("message");
 
-                            if (message.equals("ユーザーをお気に入りしました")) {
-                                //gocci.addFollower();
-                                Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-                                SavedData.addFollower(context);
-                            } else {
-                                Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+                    if (message.equals("ユーザーをお気に入りしました")) {
+                        //gocci.addFollower();
+                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+                        SavedData.addFollower(context);
+                    } else {
+                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                     }
-
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                        Toast.makeText(context, "処理に失敗しました", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                Toast.makeText(context, "サインアップに失敗しました", Toast.LENGTH_SHORT).show();
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Toast.makeText(context, "処理に失敗しました", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -620,39 +604,30 @@ public class FollowerFolloweeCheerListActivity extends ActionBarActivity {
         final AsyncHttpClient client = new AsyncHttpClient();
         Log.e("送る名前", username);
         final RequestParams unFavoriteParam = new RequestParams("user_name", username);
-        client.post(context, Const.URL_SIGNUP_API, loginParam, new AsyncHttpResponseHandler() {
+        client.setCookieStore(SavedData.getCookieStore(context));
+        client.post(context, Const.URL_UNFAVORITE_API, unFavoriteParam, new JsonHttpResponseHandler() {
+            //JSONはどんな形だ？
             @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                client.post(context, Const.URL_UNFAVORITE_API, unFavoriteParam, new JsonHttpResponseHandler() {
-                    //JSONはどんな形だ？
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        Log.e("ジェイソン成功", String.valueOf(response));
-                        try {
-                            String message = response.getString("message");
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Log.e("ジェイソン成功", String.valueOf(response));
+                try {
+                    String message = response.getString("message");
 
-                            if (message.equals("フォロー解除しました")) {
-                                //gocci.downFollower();
-                                SavedData.downFollower(context);
-                                Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-                            } else {
-                                Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+                    if (message.equals("フォロー解除しました")) {
+                        //gocci.downFollower();
+                        SavedData.downFollower(context);
+                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                     }
-
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                        Toast.makeText(context, "処理に失敗しました", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                Toast.makeText(context, "サインアップに失敗しました", Toast.LENGTH_SHORT).show();
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Toast.makeText(context, "処理に失敗しました", Toast.LENGTH_SHORT).show();
             }
         });
     }

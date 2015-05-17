@@ -3,6 +3,7 @@ package com.inase.android.gocci.common;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.loopj.android.http.PersistentCookieStore;
 import com.loopj.android.http.RequestParams;
 
 /**
@@ -162,5 +163,9 @@ public class SavedData {
         SharedPreferences.Editor editor = prefs.edit();
         editor.putInt(KEY_NOTIFICATION, notification);
         editor.apply();
+    }
+
+    public static PersistentCookieStore getCookieStore(Context context) {
+        return new PersistentCookieStore(context);
     }
 }

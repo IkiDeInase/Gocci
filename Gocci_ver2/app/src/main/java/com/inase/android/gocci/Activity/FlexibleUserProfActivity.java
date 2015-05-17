@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.AttributeSet;
@@ -76,7 +77,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import me.drakeet.materialdialog.MaterialDialog;
 
-public class FlexibleUserProfActivity extends ActionBarActivity implements ObservableScrollViewCallbacks, AbsListView.OnScrollListener, CacheManager.ICacheManagerListener {
+public class FlexibleUserProfActivity extends AppCompatActivity implements ObservableScrollViewCallbacks, AbsListView.OnScrollListener, CacheManager.ICacheManagerListener {
 
     private String mUser_name;
     private String mProfUrl;
@@ -98,8 +99,6 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
     private ArrayList<UserData> mUserProfusers = new ArrayList<UserData>();
 
     private ProgressWheel userprofprogress;
-
-    private RequestParams loginParam;
 
     private AttributeSet mVideoAttr;
 
@@ -237,10 +236,6 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
         result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        loginParam = new RequestParams();
-        loginParam.put("user_name", SavedData.getLoginName(this));
-        loginParam.put("picture", SavedData.getLoginPicture(this));
-
         userprofprogress = (ProgressWheel) findViewById(R.id.userprofprogress_wheel);
 
         mUserProfAdapter = new UserProfAdapter(this, 0, mUserProfusers);
@@ -373,24 +368,7 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
 
     private void getSignupAsync(final Context context) {
         final AsyncHttpClient httpClient = new AsyncHttpClient();
-        httpClient.post(context, Const.URL_SIGNUP_API, loginParam, new AsyncHttpResponseHandler() {
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                Log.e("サインアップ成功", "status=" + statusCode);
-                getUserProfJson(context, httpClient);
-
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                userprofprogress.setVisibility(View.GONE);
-                Toast.makeText(FlexibleUserProfActivity.this, "サインアップに失敗しました", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void getUserProfJson(final Context context, AsyncHttpClient httpClient) {
+        httpClient.setCookieStore(SavedData.getCookieStore(context));
         httpClient.get(context, mProfUrl, new TextHttpResponseHandler() {
 
             @Override
@@ -437,30 +415,12 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
     }
 
     private void postSignupAsync(final Context context, final String post_id, final int position) {
-        final AsyncHttpClient httpClient2 = new AsyncHttpClient();
-        httpClient2.post(context, Const.URL_SIGNUP_API, loginParam, new AsyncHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                Log.e("サインアップ成功", "status=" + statusCode);
-                postGoodAsync(context, post_id, position, httpClient2);
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                final UserData user = mUserProfusers.get(position);
-                user.setPushed_at(0);
-                user.setgoodnum(user.getgoodnum() - 1);
-                Toast.makeText(FlexibleUserProfActivity.this, "サインアップに失敗しました", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void postGoodAsync(final Context context, String post_id, final int position, AsyncHttpClient httpClient2) {
         RequestParams goodParam = new RequestParams("post_id", post_id);
+        final AsyncHttpClient httpClient2 = new AsyncHttpClient();
+        httpClient2.setCookieStore(SavedData.getCookieStore(context));
         httpClient2.post(context, Const.URL_GOOD_API, goodParam, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-
             }
 
             @Override
@@ -475,24 +435,7 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
 
     private void getRefreshAsync(final Context context) {
         final AsyncHttpClient httpClient3 = new AsyncHttpClient();
-        httpClient3.post(context, Const.URL_SIGNUP_API, loginParam, new AsyncHttpResponseHandler() {
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                Log.e("サインアップ成功", "status=" + statusCode);
-                getRefreshUserProfJson(context, httpClient3);
-
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                mUserProfSwipe.setRefreshing(false);
-                Toast.makeText(FlexibleUserProfActivity.this, "サインアップに失敗しました", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void getRefreshUserProfJson(final Context context, AsyncHttpClient httpClient3) {
+        httpClient3.setCookieStore(SavedData.getCookieStore(context));
         httpClient3.get(context, mProfUrl, new TextHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
@@ -540,30 +483,9 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
     }
 
     private void favoriteSignupAsync(final Context context, final String username) {
-        final AsyncHttpClient httpClient4 = new AsyncHttpClient();
-        httpClient4.post(context, Const.URL_SIGNUP_API, loginParam, new AsyncHttpResponseHandler() {
-            @Override
-            public void onStart() {
-                userprofprogress.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                Log.e("サインアップ成功", "status=" + statusCode);
-                postFavoriteAsync(context, username, httpClient4);
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                //mMaterialDialog.dismiss();
-                userprofprogress.setVisibility(View.GONE);
-                Toast.makeText(FlexibleUserProfActivity.this, "サインアップに失敗しました", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void postFavoriteAsync(final Context context, final String username, AsyncHttpClient httpClient4) {
         RequestParams favoriteParam = new RequestParams("user_name", username);
+        final AsyncHttpClient httpClient4 = new AsyncHttpClient();
+        httpClient4.setCookieStore(SavedData.getCookieStore(context));
         httpClient4.post(context, Const.URL_FAVORITE_API, favoriteParam, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -588,40 +510,13 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 Toast.makeText(context, "処理に失敗しました", Toast.LENGTH_SHORT).show();
             }
-
-            @Override
-            public void onFinish() {
-                //mMaterialDialog.dismiss();
-                userprofprogress.setVisibility(View.GONE);
-            }
         });
     }
 
     private void unFavoriteSignupAsync(final Context context, final String username) {
-        final AsyncHttpClient httpClient5 = new AsyncHttpClient();
-        httpClient5.post(context, Const.URL_SIGNUP_API, loginParam, new AsyncHttpResponseHandler() {
-            @Override
-            public void onStart() {
-                userprofprogress.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                Log.e("サインアップ成功", "status=" + statusCode);
-                postunFavoriteAsync(context, username, httpClient5);
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                //mMaterialDialog.dismiss();
-                userprofprogress.setVisibility(View.GONE);
-                Toast.makeText(FlexibleUserProfActivity.this, "サインアップに失敗しました", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void postunFavoriteAsync(final Context context, final String username, AsyncHttpClient httpClient5) {
         RequestParams unFavoriteParam = new RequestParams("user_name", username);
+        final AsyncHttpClient httpClient5 = new AsyncHttpClient();
+        httpClient5.setCookieStore(SavedData.getCookieStore(context));
         httpClient5.post(context, Const.URL_UNFAVORITE_API, unFavoriteParam, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -646,39 +541,13 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 Toast.makeText(context, "処理に失敗しました", Toast.LENGTH_SHORT).show();
             }
-
-            @Override
-            public void onFinish() {
-                userprofprogress.setVisibility(View.GONE);
-            }
         });
     }
 
     private void violateSignupAsync(final Context context, final String post_id) {
-        final AsyncHttpClient httpClient5 = new AsyncHttpClient();
-        httpClient5.post(context, Const.URL_SIGNUP_API, loginParam, new AsyncHttpResponseHandler() {
-            @Override
-            public void onStart() {
-                userprofprogress.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                Log.e("サインアップ成功", "status=" + statusCode);
-                postViolateAsync(context, post_id, httpClient5);
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                //mMaterialDialog.dismiss();
-                userprofprogress.setVisibility(View.GONE);
-                Toast.makeText(context, "サインアップに失敗しました", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void postViolateAsync(final Context context, final String post_id, AsyncHttpClient httpClient5) {
         RequestParams violateParam = new RequestParams("post_id", post_id);
+        final AsyncHttpClient httpClient5 = new AsyncHttpClient();
+        httpClient5.setCookieStore(SavedData.getCookieStore(context));
         httpClient5.post(context, Const.URL_VIOLATE_API, violateParam, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
@@ -689,12 +558,6 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                 //mMaterialDialog.dismiss();
                 Toast.makeText(context, "違反報告に失敗しました", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onFinish() {
-                //mMaterialDialog.dismiss();
-                userprofprogress.setVisibility(View.GONE);
             }
         });
     }
@@ -1098,7 +961,7 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
                     Log.e("コメントをクリック", "コメント！" + user.getPost_id());
 
                     //投稿に対するコメントが見れるダイアログを表示
-                    View commentView = new CommentView(FlexibleUserProfActivity.this, user.getPost_id(), loginParam);
+                    View commentView = new CommentView(FlexibleUserProfActivity.this, user.getPost_id());
 
                     MaterialDialog mMaterialDialog = new MaterialDialog(FlexibleUserProfActivity.this)
                             .setContentView(commentView)
@@ -1232,39 +1095,22 @@ public class FlexibleUserProfActivity extends ActionBarActivity implements Obser
         }
 
         private void postSignupAsync(final Context context, final String category, final String message) {
-            final AsyncHttpClient httpClient = new AsyncHttpClient();
-            httpClient.post(context, Const.URL_SIGNUP_API, loginParam, new AsyncHttpResponseHandler() {
-
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                    Log.e("サインアップ成功", "status=" + statusCode);
-                    postAsync(context, httpClient, category, message);
-                }
-
-                @Override
-                public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                    Toast.makeText(context, "サインアップに失敗しました", Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
-
-        private void postAsync(final Context context, AsyncHttpClient client, String category, String message) {
             RequestParams sendParams = new RequestParams();
             sendParams.put("select_support", category);
             sendParams.put("content", message);
-            client.post(context, Const.URL_ADVICE_API, sendParams, new AsyncHttpResponseHandler() {
+            final AsyncHttpClient httpClient = new AsyncHttpClient();
+            httpClient.setCookieStore(SavedData.getCookieStore(context));
+            httpClient.post(context, Const.URL_ADVICE_API, sendParams, new AsyncHttpResponseHandler() {
 
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                     Toast.makeText(context, "ご協力ありがとうございました！", Toast.LENGTH_SHORT).show();
-
                 }
 
                 @Override
                 public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                     Toast.makeText(context, "送信に失敗しました", Toast.LENGTH_SHORT).show();
                 }
-
             });
         }
     }

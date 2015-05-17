@@ -173,6 +173,7 @@ public class SigninAccountView extends SupportBlurDialogFragment implements View
 
     private void postSigninAsync(final Context context, RequestParams params) {
         httpClient = new AsyncHttpClient();
+        httpClient.setCookieStore(SavedData.getCookieStore(context));
         httpClient.post(context, Const.URL_AUTH_API, params, new JsonHttpResponseHandler() {
 
             @Override

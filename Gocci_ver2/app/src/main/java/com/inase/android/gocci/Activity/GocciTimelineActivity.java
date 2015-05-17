@@ -14,6 +14,7 @@ import android.provider.Settings;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.Log;
@@ -68,7 +69,7 @@ import org.apache.http.Header;
 
 import java.io.IOException;
 
-public class GocciTimelineActivity extends ActionBarActivity {
+public class GocciTimelineActivity extends AppCompatActivity {
 
     public static final String EXTRA_MESSAGE = "message";
     public static final String PROPERTY_REG_ID = "registration_id";
@@ -363,30 +364,12 @@ public class GocciTimelineActivity extends ActionBarActivity {
         }
 
         private void postSignupAsync(final Context context, final String category, final String message) {
-            final AsyncHttpClient httpClient = new AsyncHttpClient();
-            RequestParams params = new RequestParams();
-            params.put("user_name", SavedData.getLoginName(context));
-            params.put("picture", SavedData.getLoginPicture(context));
-            httpClient.post(context, Const.URL_SIGNUP_API, params, new AsyncHttpResponseHandler() {
-
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                    Log.e("サインアップ成功", "status=" + statusCode);
-                    postAsync(context, httpClient, category, message);
-                }
-
-                @Override
-                public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                    Toast.makeText(context, "サインアップに失敗しました", Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
-
-        private void postAsync(final Context context, AsyncHttpClient client, String category, String message) {
             RequestParams sendParams = new RequestParams();
             sendParams.put("select_support", category);
             sendParams.put("content", message);
-            client.post(context, Const.URL_ADVICE_API, sendParams, new AsyncHttpResponseHandler() {
+            final AsyncHttpClient httpClient = new AsyncHttpClient();
+            httpClient.setCookieStore(SavedData.getCookieStore(context));
+            httpClient.post(context, Const.URL_ADVICE_API, sendParams, new AsyncHttpResponseHandler() {
 
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
