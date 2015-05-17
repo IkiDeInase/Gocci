@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?><!--
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:ripple="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -237,4 +237,135 @@
             android:textStyle="bold|italic" />
     </FrameLayout>
 
-</RelativeLayout>
+</RelativeLayout> -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="250dp"
+    android:orientation="vertical">
+
+    <com.google.android.gms.maps.MapView
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="125dp"
+        android:apiKey="@string/map_key" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="125dp"
+        android:layout_marginTop="125dp"
+        android:background="#ffffff"
+        android:orientation="vertical"
+        android:paddingLeft="12dp"
+        android:paddingTop="16dp">
+
+        <TextView
+            android:id="@+id/tenpo_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLength="20"
+            android:text="TenpoName"
+            android:textColor="@color/namegrey"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tenpo_category"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Category"
+            android:textColor="@color/nameblack"
+            android:textSize="10sp" />
+
+        <TextView
+            android:id="@+id/tenpo_locality"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:maxLength="30"
+            android:text="Locality"
+            android:textColor="@color/nameblack" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
+
+            <com.andexert.library.RippleView
+                android:id="@+id/tenpo_homepage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginRight="4dp"
+                android:background="@drawable/button_follow">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="6dp"
+                        android:src="@drawable/ic_homepage" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="6dp"
+                        android:paddingLeft="6dp"
+                        android:paddingRight="12dp"
+                        android:paddingTop="6dp"
+                        android:text="ホームページを見る"
+                        android:textColor="#ffffff" />
+
+                </LinearLayout>
+
+            </com.andexert.library.RippleView>
+
+            <com.andexert.library.RippleView
+                android:id="@+id/tenpo_call"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="4dp"
+                android:background="@drawable/button_follow">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="6dp"
+                        android:src="@drawable/ic_call" />
+
+                    <TextView
+                        android:id="@+id/tenpo_phonenumber"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="6dp"
+                        android:paddingLeft="6dp"
+                        android:paddingRight="12dp"
+                        android:paddingTop="6dp"
+                        android:text="080-3903-3005"
+                        android:textColor="#ffffff" />
+
+                </LinearLayout>
+
+            </com.andexert.library.RippleView>
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_gravity="bottom"
+        android:background="#c5c6c9" />
+</FrameLayout>

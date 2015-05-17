@@ -47,14 +47,15 @@
             android:layout_gravity="center_horizontal|top"
             android:textSize="20sp"
             android:layout_marginTop="32dp"
-            />
+            android:textColor="@color/namegrey" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="グルメ動画アプリ「Gocci」"
             android:layout_gravity="center_horizontal|top"
-            android:layout_marginTop="4dp" />
+            android:layout_marginTop="4dp"
+            android:textColor="@color/nameblack" />
 
         <com.andexert.library.RippleView
             android:layout_width="match_parent"

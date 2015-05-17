@@ -27,6 +27,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar;
 import com.andexert.library.RippleView;
 import com.cocosw.bottomsheet.BottomSheet;
@@ -82,8 +83,6 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import me.drakeet.materialdialog.MaterialDialog;
-
 public class FlexibleTenpoActivity extends AppCompatActivity implements ObservableScrollViewCallbacks, AbsListView.OnScrollListener, CacheManager.ICacheManagerListener {
 
     private String mTenpoUrl;
@@ -113,8 +112,6 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements Observab
     private MapView mMapView;
     private GoogleMap mMap;
 
-    private MaterialDialog mViolationDialog;
-
     private AttributeSet mVideoAttr;
     private Point mDisplaySize;
     private CacheManager mCacheManager;
@@ -122,18 +119,18 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements Observab
     private boolean mPlayBlockFlag;
     private ConcurrentHashMap<ViewHolder, String> mViewHolderHash;  // Value: PosterId
 
-    private boolean isExist = false;
-    private boolean isSee = false;
+    //private boolean isExist = false;
+    //private boolean isSee = false;
 
     private ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
         @Override
         public void onGlobalLayout() {
             Log.e("DEBUG", "onGlobalLayout called: " + mPlayingPostId);
-            if (isSee) {
+            //if (isSee) {
                 changeMovie();
-            }
+            //}
             Log.e("DEBUG", "onGlobalLayout  changeMovie called: " + mPlayingPostId);
-            if (mPlayingPostId != null || !isExist) {
+            if (mPlayingPostId != null /*|| !isExist*/) {
                 mTenpoListView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         }
@@ -270,6 +267,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements Observab
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mTenpoListView.addHeaderView(inflater.inflate(R.layout.view_header_tenpo, null));
 
+        /*
         TextView tenpo_name = (TextView) findViewById(R.id.tenpo_name);
         TextView tenpo_category = (TextView) findViewById(R.id.category);
         RippleView checkRipple = (RippleView) findViewById(R.id.checkRipple);
@@ -361,6 +359,44 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements Observab
 
         tenpo_name.setText(mPost_restname);
         tenpo_category.setText(mCategory);
+        */
+
+        TextView tenpo_name = (TextView) findViewById(R.id.tenpo_name);
+        TextView tenpo_category = (TextView) findViewById(R.id.tenpo_category);
+        TextView tenpo_locality = (TextView) findViewById(R.id.tenpo_locality);
+        RippleView tenpo_homepage = (RippleView) findViewById(R.id.tenpo_homepage);
+        RippleView tenpo_phone = (RippleView) findViewById(R.id.tenpo_call);
+        TextView tenpo_phonenumber = (TextView) findViewById(R.id.tenpo_phonenumber);
+        mMapView = (MapView) findViewById(R.id.map);
+        mMapView.onCreate(savedInstanceState);
+
+        tenpo_name.setText(mPost_restname);
+        tenpo_category.setText(mCategory);
+        tenpo_locality.setText(mPost_locality);
+        tenpo_phonenumber.setText(mPhoneNumber);
+
+        if (!mHomepage.equals("none")) {
+            tenpo_homepage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //ホームページ押されたときの処理
+                    Uri uri = Uri.parse(mHomepage);
+                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                    startActivity(intent);
+                }
+            });
+        } else {
+            tenpo_homepage.setVisibility(View.GONE);
+        }
+
+        tenpo_phone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //電話するときの処理
+                Handler handler = new Handler();
+                handler.postDelayed(new callClickHandler(), 750);
+            }
+        });
 
         setUpMapIfNeeded();
 
@@ -410,7 +446,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements Observab
     @Override
     public void onScrollChanged(int scrollY, boolean firstScroll, boolean dragging) {
         //ヘッダー通り過ぎた
-        isSee = scrollY > 550;
+        //isSee = scrollY > 550;
     }
 
     @Override
@@ -466,9 +502,9 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements Observab
             case AbsListView.OnScrollListener.SCROLL_STATE_IDLE:
                 //mBusy = false;
                 Log.d("DEBUG", "SCROLL_STATE_IDLE");
-                if (isSee) {
+                //if (isSee) {
                     changeMovie();
-                }
+                //}
 
                 break;
             // スクロール中
@@ -488,6 +524,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements Observab
 
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+        /*
         if (totalItemCount != 1) {
             //投稿はある
             isExist = true;
@@ -495,6 +532,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements Observab
             //投稿がない
             isExist = false;
         }
+        */
     }
 
     private void getSignupAsync(final Context context) {
@@ -709,7 +747,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements Observab
                         @Override
                         public boolean onError(final MediaPlayer mp, final int what, final int extra) {
                             Log.e("DEBUG", "動画再生OnError: what:" + what + " extra:" + extra);
-                            if (mPlayingPostId.equals(postId) && !mPlayBlockFlag && isSee) {
+                            if (mPlayingPostId.equals(postId) && !mPlayBlockFlag /*&& isSee*/) {
                                 Log.d("DEBUG", "MOVIE::onErrorListener 再生開始");
                                 mPlayingPostId = null;
                                 changeMovie();
@@ -736,25 +774,23 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements Observab
     }
 
     private void setViolateDialog(final Context context, final String post_id) {
-        mViolationDialog = new MaterialDialog(FlexibleTenpoActivity.this);
-        mViolationDialog.setTitle("投稿の違反報告");
-        mViolationDialog.setMessage("本当にこの投稿を違反報告しますか？");
-        mViolationDialog.setCanceledOnTouchOutside(true);
-        mViolationDialog.setPositiveButton("はい", new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mViolationDialog.dismiss();
-                violateSignupAsync(context, post_id);
-            }
-        });
-        mViolationDialog.setNegativeButton("いいえ", new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mViolationDialog.dismiss();
-            }
-        });
+        new MaterialDialog.Builder(context)
+                .title("投稿の違反報告")
+                .content("本当にこの投稿を違反報告しますか？")
+                .positiveText("する")
+                .negativeText("いいえ")
+                .callback(new MaterialDialog.ButtonCallback() {
+                    @Override
+                    public void onPositive(MaterialDialog dialog) {
+                        super.onPositive(dialog);
+                        violateSignupAsync(context, post_id);
+                    }
 
-        mViolationDialog.show();
+                    @Override
+                    public void onNegative(MaterialDialog dialog) {
+                        super.onNegative(dialog);
+                    }
+                }).show();
     }
 
 
@@ -1016,10 +1052,9 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements Observab
                     //投稿に対するコメントが見れるダイアログを表示
                     View commentView = new CommentView(FlexibleTenpoActivity.this, user.getPost_id());
 
-                    MaterialDialog mMaterialDialog = new MaterialDialog(FlexibleTenpoActivity.this)
-                            .setContentView(commentView)
-                            .setCanceledOnTouchOutside(true);
-                    mMaterialDialog.show();
+                    new MaterialDialog.Builder(FlexibleTenpoActivity.this)
+                            .customView(commentView, false)
+                            .show();
                 }
             });
 

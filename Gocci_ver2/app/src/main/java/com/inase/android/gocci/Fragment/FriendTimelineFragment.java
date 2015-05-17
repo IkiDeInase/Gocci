@@ -25,6 +25,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar;
 import com.andexert.library.RippleView;
 import com.cocosw.bottomsheet.BottomSheet;
@@ -73,7 +74,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.fabric.sdk.android.Fabric;
-import me.drakeet.materialdialog.MaterialDialog;
 
 public class FriendTimelineFragment extends BaseFragment implements ObservableScrollViewCallbacks, AbsListView.OnScrollListener, CacheManager.ICacheManagerListener {
 
@@ -109,8 +109,6 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
     private String mPlayingPostId;
     private boolean mPlayBlockFlag;
     private ConcurrentHashMap<ViewHolder, String> mViewHolderHash;  // Value: PosterId
-
-    private MaterialDialog mViolationDialog;
 
     private UiLifecycleHelper uiHelper;
 
@@ -277,26 +275,25 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
     }
 
     private void setViolateDialog(final Context context, final String post_id) {
-        mViolationDialog = new MaterialDialog(getActivity());
-        mViolationDialog.setTitle("投稿の違反報告");
-        mViolationDialog.setMessage("本当にこの投稿を違反報告しますか？");
-        mViolationDialog.setCanceledOnTouchOutside(true);
-        mViolationDialog.setPositiveButton("はい", new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mViolationDialog.dismiss();
-                violateSignupAsync(context, post_id);
-            }
-        });
-        mViolationDialog.setNegativeButton("いいえ", new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mViolationDialog.dismiss();
-            }
-        });
+        new MaterialDialog.Builder(context)
+                .title("投稿の違反報告")
+                .content("本当にこの投稿を違反報告しますか？")
+                .positiveText("する")
+                .negativeText("いいえ")
+                .callback(new MaterialDialog.ButtonCallback() {
+                    @Override
+                    public void onPositive(MaterialDialog dialog) {
+                        super.onPositive(dialog);
+                        violateSignupAsync(context, post_id);
+                    }
 
-        mViolationDialog.show();
+                    @Override
+                    public void onNegative(MaterialDialog dialog) {
+                        super.onNegative(dialog);
+                    }
+                }).show();
     }
+
 
     //動画のバックグラウンド再生を止める処理のはず。。。
     @Subscribe
@@ -1006,10 +1003,9 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
                     //投稿に対するコメントが見れるダイアログを表示
                     View commentView = new CommentView(getActivity(), user.getPost_id());
 
-                    MaterialDialog mMaterialDialog = new MaterialDialog(getActivity())
-                            .setContentView(commentView)
-                            .setCanceledOnTouchOutside(true);
-                    mMaterialDialog.show();
+                    new MaterialDialog.Builder(getActivity())
+                            .customView(commentView, false)
+                            .show();
                 }
             });
 

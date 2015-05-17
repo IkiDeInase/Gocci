@@ -9,8 +9,6 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
@@ -28,6 +26,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar;
 import com.andexert.library.RippleView;
 import com.cocosw.bottomsheet.BottomSheet;
@@ -75,8 +74,6 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import me.drakeet.materialdialog.MaterialDialog;
-
 public class FlexibleUserProfActivity extends AppCompatActivity implements ObservableScrollViewCallbacks, AbsListView.OnScrollListener, CacheManager.ICacheManagerListener {
 
     private String mUser_name;
@@ -110,7 +107,6 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Obser
 
     private TextView followText;
 
-    private MaterialDialog mViolationDialog;
 
     private ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
         @Override
@@ -693,25 +689,23 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Obser
     }
 
     private void setViolateDialog(final Context context, final String post_id) {
-        mViolationDialog = new MaterialDialog(FlexibleUserProfActivity.this);
-        mViolationDialog.setTitle("投稿の違反報告");
-        mViolationDialog.setMessage("本当にこの投稿を違反報告しますか？");
-        mViolationDialog.setCanceledOnTouchOutside(true);
-        mViolationDialog.setPositiveButton("はい", new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mViolationDialog.dismiss();
-                violateSignupAsync(context, post_id);
-            }
-        });
-        mViolationDialog.setNegativeButton("いいえ", new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mViolationDialog.dismiss();
-            }
-        });
+        new MaterialDialog.Builder(context)
+                .title("投稿の違反報告")
+                .content("本当にこの投稿を違反報告しますか？")
+                .positiveText("する")
+                .negativeText("いいえ")
+                .callback(new MaterialDialog.ButtonCallback() {
+                    @Override
+                    public void onPositive(MaterialDialog dialog) {
+                        super.onPositive(dialog);
+                        violateSignupAsync(context, post_id);
+                    }
 
-        mViolationDialog.show();
+                    @Override
+                    public void onNegative(MaterialDialog dialog) {
+                        super.onNegative(dialog);
+                    }
+                }).show();
     }
 
 
@@ -963,10 +957,9 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Obser
                     //投稿に対するコメントが見れるダイアログを表示
                     View commentView = new CommentView(FlexibleUserProfActivity.this, user.getPost_id());
 
-                    MaterialDialog mMaterialDialog = new MaterialDialog(FlexibleUserProfActivity.this)
-                            .setContentView(commentView)
-                            .setCanceledOnTouchOutside(true);
-                    mMaterialDialog.show();
+                    new MaterialDialog.Builder(FlexibleUserProfActivity.this)
+                            .customView(commentView, false)
+                            .show();
                 }
             });
 

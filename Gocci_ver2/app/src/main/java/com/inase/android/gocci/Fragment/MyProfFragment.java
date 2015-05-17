@@ -28,6 +28,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar;
 import com.andexert.library.RippleView;
 import com.cocosw.bottomsheet.BottomSheet;
@@ -78,7 +79,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.fabric.sdk.android.Fabric;
-import me.drakeet.materialdialog.MaterialDialog;
 
 public class MyProfFragment extends BaseFragment implements ObservableScrollViewCallbacks, AbsListView.OnScrollListener, CacheManager.ICacheManagerListener {
 
@@ -100,8 +100,6 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
     private SwipyRefreshLayout mProfSwipe;
 
     private FloatingActionButton fab;
-
-    private MaterialDialog mMaterialDialog;
 
     private ImageView mEmptyView;
 
@@ -550,26 +548,25 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
     }
 
     private void setDeleteDialog(final String post_id, final int position) {
-        mMaterialDialog = new MaterialDialog(getActivity());
-        mMaterialDialog.setTitle("投稿の削除");
-        mMaterialDialog.setMessage("この投稿を削除しますか？");
-        mMaterialDialog.setCanceledOnTouchOutside(true);
-        mMaterialDialog.setPositiveButton("はい", new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mMaterialDialog.dismiss();
-                deleteSignupAsync(getActivity(), post_id, position);
-            }
-        });
-        mMaterialDialog.setNegativeButton("いいえ", new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mMaterialDialog.dismiss();
-            }
-        });
+        new MaterialDialog.Builder(getActivity())
+                .title("投稿の削除")
+                .content("この投稿を削除しますか？")
+                .positiveText("する")
+                .negativeText("いいえ")
+                .callback(new MaterialDialog.ButtonCallback() {
+                    @Override
+                    public void onPositive(MaterialDialog dialog) {
+                        super.onPositive(dialog);
+                        deleteSignupAsync(getActivity(), post_id, position);
+                    }
 
-        mMaterialDialog.show();
+                    @Override
+                    public void onNegative(MaterialDialog dialog) {
+                        super.onNegative(dialog);
+                    }
+                }).show();
     }
+
 
     @Override
     public void movieCacheCreated(boolean success, String postId) {
@@ -1135,10 +1132,9 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
                     //投稿に対するコメントが見れるダイアログを表示
                     View commentView = new CommentView(getActivity(), user.getPost_id());
 
-                    MaterialDialog mMaterialDialog = new MaterialDialog(getActivity())
-                            .setContentView(commentView)
-                            .setCanceledOnTouchOutside(true);
-                    mMaterialDialog.show();
+                    new MaterialDialog.Builder(getActivity())
+                            .customView(commentView, false)
+                            .show();
                 }
             });
 

@@ -9,7 +9,6 @@ import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.inase.android.gocci.common.CacheManager;
-import com.mopub.common.MoPub;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 
@@ -48,8 +47,7 @@ public class Application_Gocci extends Application {
 
         // Example: multiple kits
         Fabric.with(this, new Twitter(authConfig),
-                new Crashlytics(),
-                new MoPub());
+                new Crashlytics());
 
     }
 

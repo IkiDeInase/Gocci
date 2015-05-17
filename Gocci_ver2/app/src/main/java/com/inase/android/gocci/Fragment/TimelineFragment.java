@@ -26,6 +26,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar;
 import com.andexert.library.RippleView;
 import com.cocosw.bottomsheet.BottomSheet;
@@ -55,7 +56,6 @@ import com.inase.android.gocci.common.Util;
 import com.inase.android.gocci.data.UserData;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.melnykov.fab.FloatingActionButton;
@@ -81,7 +81,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import io.fabric.sdk.android.Fabric;
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
-import me.drakeet.materialdialog.MaterialDialog;
 
 public class TimelineFragment extends BaseFragment implements ObservableScrollViewCallbacks, AbsListView.OnScrollListener, CacheManager.ICacheManagerListener {
 
@@ -123,8 +122,6 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
     private String mPlayingPostId;
     private boolean mPlayBlockFlag;
     private ConcurrentHashMap<ViewHolder, String> mViewHolderHash;  // Value: PosterId
-
-    private MaterialDialog mViolationDialog;
 
     private UiLifecycleHelper uiHelper;
 
@@ -290,7 +287,7 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
                         Toast.makeText(getActivity(), "通信に失敗しました", Toast.LENGTH_LONG).show();
                     }
                 } else {
-                    String nowPost_id = mTimelineusers.get(mTimelineusers.size() -1).getPost_id();
+                    String nowPost_id = mTimelineusers.get(mTimelineusers.size() - 1).getPost_id();
                     //mLocation.getLatitude();
                     //mLocation.getLongitude();
 
@@ -385,25 +382,23 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
     }
 
     private void setViolateDialog(final Context context, final String post_id) {
-        mViolationDialog = new MaterialDialog(getActivity());
-        mViolationDialog.setTitle("投稿の違反報告");
-        mViolationDialog.setMessage("本当にこの投稿を違反報告しますか？");
-        mViolationDialog.setCanceledOnTouchOutside(true);
-        mViolationDialog.setPositiveButton("はい", new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mViolationDialog.dismiss();
-                violateSignupAsync(context, post_id);
-            }
-        });
-        mViolationDialog.setNegativeButton("いいえ", new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mViolationDialog.dismiss();
-            }
-        });
+        new MaterialDialog.Builder(context)
+                .title("投稿の違反報告")
+                .content("本当にこの投稿を違反報告しますか？")
+                .positiveText("する")
+                .negativeText("いいえ")
+                .callback(new MaterialDialog.ButtonCallback() {
+                    @Override
+                    public void onPositive(MaterialDialog dialog) {
+                        super.onPositive(dialog);
+                        violateSignupAsync(context, post_id);
+                    }
 
-        mViolationDialog.show();
+                    @Override
+                    public void onNegative(MaterialDialog dialog) {
+                        super.onNegative(dialog);
+                    }
+                }).show();
     }
 
     //動画のバックグラウンド再生を止める処理のはず。。。
@@ -995,48 +990,48 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
             viewHolder.menuRipple.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                        new BottomSheet.Builder(getActivity(), R.style.BottomSheet_StyleDialog).sheet(R.menu.popup_normal).listener(new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                switch (which) {
-                                    case R.id.facebook_share:
-                                        if (FacebookDialog.canPresentShareDialog(getActivity().getApplicationContext(),
-                                                FacebookDialog.ShareDialogFeature.VIDEO)) {
-                                            String data = mCacheManager.getCachePath(user.getPost_id(), user.getMovie());
-                                            File file = new File(data);
-                                            // Publish the post using the Video Share Dialog
-                                            FacebookDialog shareDialog = new FacebookDialog.VideoShareDialogBuilder(getActivity())
-                                                    .setFragment(TimelineFragment.this)
-                                                    .addVideoFile(file)
-                                                    .build();
-                                            uiHelper.trackPendingDialogCall(shareDialog.present());
-                                        } else {
-                                            // The user doesn't have the Facebook for Android app installed.
-                                            // You may be able to use a fallback.
-                                            Toast.makeText(getActivity(), "facebookシェアに失敗しました", Toast.LENGTH_SHORT).show();
-                                        }
-                                        break;
-                                    case R.id.twitter_share:
-                                        Uri bmpUri = getLocalBitmapUri(finalViewHolder1.mVideoThumbnail);
-                                        if (bmpUri != null) {
-                                            TweetComposer.Builder builder = new TweetComposer.Builder(getActivity())
-                                                    .text(user.getRest_name() + "/" + user.getLocality())
-                                                    .image(bmpUri);
+                    new BottomSheet.Builder(getActivity(), R.style.BottomSheet_StyleDialog).sheet(R.menu.popup_normal).listener(new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            switch (which) {
+                                case R.id.facebook_share:
+                                    if (FacebookDialog.canPresentShareDialog(getActivity().getApplicationContext(),
+                                            FacebookDialog.ShareDialogFeature.VIDEO)) {
+                                        String data = mCacheManager.getCachePath(user.getPost_id(), user.getMovie());
+                                        File file = new File(data);
+                                        // Publish the post using the Video Share Dialog
+                                        FacebookDialog shareDialog = new FacebookDialog.VideoShareDialogBuilder(getActivity())
+                                                .setFragment(TimelineFragment.this)
+                                                .addVideoFile(file)
+                                                .build();
+                                        uiHelper.trackPendingDialogCall(shareDialog.present());
+                                    } else {
+                                        // The user doesn't have the Facebook for Android app installed.
+                                        // You may be able to use a fallback.
+                                        Toast.makeText(getActivity(), "facebookシェアに失敗しました", Toast.LENGTH_SHORT).show();
+                                    }
+                                    break;
+                                case R.id.twitter_share:
+                                    Uri bmpUri = getLocalBitmapUri(finalViewHolder1.mVideoThumbnail);
+                                    if (bmpUri != null) {
+                                        TweetComposer.Builder builder = new TweetComposer.Builder(getActivity())
+                                                .text(user.getRest_name() + "/" + user.getLocality())
+                                                .image(bmpUri);
 
-                                            builder.show();
-                                        } else {
-                                            // ...sharing failed, handle error
-                                            Toast.makeText(getActivity(), "twitterシェアに失敗しました", Toast.LENGTH_SHORT).show();
-                                        }
-                                        break;
-                                    case R.id.violation:
-                                        setViolateDialog(getActivity(), user.getPost_id());
-                                        break;
-                                    case R.id.close:
-                                        dialog.dismiss();
-                                }
+                                        builder.show();
+                                    } else {
+                                        // ...sharing failed, handle error
+                                        Toast.makeText(getActivity(), "twitterシェアに失敗しました", Toast.LENGTH_SHORT).show();
+                                    }
+                                    break;
+                                case R.id.violation:
+                                    setViolateDialog(getActivity(), user.getPost_id());
+                                    break;
+                                case R.id.close:
+                                    dialog.dismiss();
                             }
-                        }).show();
+                        }
+                    }).show();
                 }
             });
             Picasso.with(getContext())
@@ -1139,10 +1134,9 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
                     //投稿に対するコメントが見れるダイアログを表示
                     View commentView = new CommentView(getActivity(), user.getPost_id());
 
-                    MaterialDialog mMaterialDialog = new MaterialDialog(getActivity())
-                            .setContentView(commentView)
-                            .setCanceledOnTouchOutside(true);
-                    mMaterialDialog.show();
+                    new MaterialDialog.Builder(getActivity())
+                            .customView(commentView, false)
+                            .show();
                 }
             });
 

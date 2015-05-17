@@ -207,7 +207,7 @@ public class CacheManager {
                 Log.d("DEBUG", "CacheManager::startMovieHttpReuest DL開始");
                 mAsyncHttpClient.get(mRequestVo.getContext(), mRequestVo.getUrl(), new FileAsyncHttpResponseHandler(mRequestFile) {
                             @Override
-                            public void onProgress(final int bytesWritten, final int totalSize) {
+                            public void onProgress(final long bytesWritten, final long totalSize) {
                                 int mProgressStatus = (totalSize > 0) ? (int) ((bytesWritten * 1.0 / totalSize) * 100) : -1;
 
                                 if (mProgressStatus % 10 == 0 && mProgressStatus == countNumber) {
