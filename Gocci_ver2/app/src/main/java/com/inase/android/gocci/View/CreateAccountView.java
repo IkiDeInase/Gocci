@@ -149,7 +149,7 @@ public class CreateAccountView extends SupportBlurDialogFragment implements View
                     Handler handler = new Handler();
                     handler.postDelayed(new FacebookClickHandler(), 750);
                 } else {
-                    Toast.makeText(getActivity(), "利用規約を確認してください", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "利用規約を一度確認してください", Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -162,7 +162,7 @@ public class CreateAccountView extends SupportBlurDialogFragment implements View
                     Handler handler = new Handler();
                     handler.postDelayed(new TwitterClickHandler(), 750);
                 } else {
-                    Toast.makeText(getActivity(), "利用規約を確認してください", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "利用規約を一度確認してください", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -175,6 +175,7 @@ public class CreateAccountView extends SupportBlurDialogFragment implements View
                 Uri uri = Uri.parse("http://inase-inc.jp/rules/");
                 Intent i = new Intent(Intent.ACTION_VIEW, uri);
                 startActivity(i);
+                checkPolicy.setClickable(false);
             }
         });
         //facebookLoginButton.setOnClickListener(this);
@@ -279,7 +280,7 @@ public class CreateAccountView extends SupportBlurDialogFragment implements View
 
                         postAccountAsync(getActivity(), accountParam);
                     } else {
-                        Toast.makeText(getActivity(), "利用規約を確認してください", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), "利用規約を一度確認してください", Toast.LENGTH_SHORT).show();
                     }
                 } else {
                     Toast.makeText(getActivity(), "パスワードは６文字以上入力してください", Toast.LENGTH_SHORT).show();
