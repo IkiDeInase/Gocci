@@ -63,7 +63,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.facebook.LoginActivity" />
+        <activity android:name="com.facebook.FacebookActivity"
+            android:configChanges=
+                "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:label="@string/app_name" />
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
@@ -93,9 +97,8 @@
             android:name="com.crashlytics.ApiKey"
             android:value="49e96e5c483c3d53249639b65b786d8358cc4300" />
 
-        <provider
-            android:name="com.facebook.NativeAppCallContentProvider"
-            android:authorities="com.facebook.app.NativeAppCallContentProvider673123156062598"
+        <provider android:authorities="com.facebook.app.FacebookContentProvider673123156062598"
+            android:name="com.facebook.FacebookContentProvider"
             android:exported="true" />
 
         <activity

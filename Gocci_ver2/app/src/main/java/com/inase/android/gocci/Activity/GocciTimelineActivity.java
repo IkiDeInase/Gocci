@@ -5,31 +5,26 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.Settings;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.PopupWindow;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.facebook.Session;
+import com.facebook.login.LoginManager;
 import com.gitonway.lee.niftymodaldialogeffects.lib.Effectstype;
 import com.gitonway.lee.niftymodaldialogeffects.lib.NiftyDialogBuilder;
 import com.google.android.gms.common.ConnectionResult;
@@ -40,12 +35,9 @@ import com.inase.android.gocci.Base.ToukouPopup;
 import com.inase.android.gocci.Event.BusHolder;
 import com.inase.android.gocci.Event.NotificationNumberEvent;
 import com.inase.android.gocci.Event.PageChangeVideoStopEvent;
-import com.inase.android.gocci.Event.SearchKeywordPostEvent;
 import com.inase.android.gocci.Fragment.FriendTimelineFragment;
-import com.inase.android.gocci.Fragment.LifelogFragment;
 import com.inase.android.gocci.Fragment.TimelineFragment;
 import com.inase.android.gocci.R;
-import com.inase.android.gocci.View.CommentView;
 import com.inase.android.gocci.View.DrawerProfHeader;
 import com.inase.android.gocci.View.NotificationListView;
 import com.inase.android.gocci.common.Const;
@@ -412,19 +404,7 @@ public class GocciTimelineActivity extends AppCompatActivity {
 
                             switch (judge) {
                                 case "facebook":
-                                    Session session = Session.getActiveSession();
-                                    if (session != null) {
-                                        if (!session.isClosed()) {
-                                            session.closeAndClearTokenInformation();
-                                            //clear your preferences if saved
-                                        }
-                                    } else {
-                                        session = new Session(GocciTimelineActivity.this);
-                                        Session.setActiveSession(session);
-
-                                        session.closeAndClearTokenInformation();
-                                        //clear your preferences if saved
-                                    }
+                                    LoginManager.getInstance().logOut();
                                     break;
                                 case "twitter":
                                     Twitter.logOut();

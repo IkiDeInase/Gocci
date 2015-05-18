@@ -7,7 +7,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
@@ -21,7 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.facebook.Session;
+import com.facebook.login.LoginManager;
 import com.hatenablog.shoma2da.eventdaterecorderlib.EventDateRecorder;
 import com.inase.android.gocci.Base.ToukouPopup;
 import com.inase.android.gocci.Event.BusHolder;
@@ -316,19 +315,7 @@ public class GocciMyprofActivity extends AppCompatActivity {
 
                             switch (judge) {
                                 case "facebook":
-                                    Session session = Session.getActiveSession();
-                                    if (session != null) {
-                                        if (!session.isClosed()) {
-                                            session.closeAndClearTokenInformation();
-                                            //clear your preferences if saved
-                                        }
-                                    } else {
-                                        session = new Session(GocciMyprofActivity.this);
-                                        Session.setActiveSession(session);
-
-                                        session.closeAndClearTokenInformation();
-                                        //clear your preferences if saved
-                                    }
+                                    LoginManager.getInstance().logOut();
                                     break;
                                 case "twitter":
                                     Twitter.logOut();

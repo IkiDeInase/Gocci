@@ -4,21 +4,22 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import com.andexert.library.RippleView;
-import com.facebook.Request;
-import com.facebook.Response;
-import com.facebook.Session;
-import com.facebook.SessionState;
-import com.facebook.UiLifecycleHelper;
-import com.facebook.model.GraphUser;
-import com.facebook.widget.LoginButton;
-import com.inase.android.gocci.Application.Application_Gocci;
+import com.facebook.CallbackManager;
+
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.Profile;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.inase.android.gocci.Base.GocciTwitterLoginButton;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.View.CreateAccountView;
@@ -42,7 +43,7 @@ import org.json.JSONObject;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private UiLifecycleHelper uiHelper;
+    private CallbackManager callbackManager;
 
     private LoginButton facebookLoginButton;
     private GocciTwitterLoginButton twitterLoginButton;
@@ -66,43 +67,6 @@ public class LoginActivity extends AppCompatActivity {
     private AsyncHttpClient httpClient;
     private RequestParams loginParams;
 
-    private Session.StatusCallback callback = new Session.StatusCallback() {
-        @Override
-        public void call(Session session, SessionState state, Exception exception) {
-            onSessionStateChange(session, state, exception);
-        }
-    };
-
-    private void onSessionStateChange(Session session, SessionState state, Exception exception) {
-        if (Util.getConnectedState(LoginActivity.this) != Util.NetworkStatus.OFF) {
-            if (state.isOpened()) {
-                fetchUserInfo(session);
-
-            } else if (state.isClosed()) {
-                //Toast.makeText(LoginActivity.this, "ログインに失敗しました", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    private void fetchUserInfo(final Session session) {
-        if (session != null && session.isOpened()) {
-            Request request = Request.newMeRequest(session, new Request.GraphUserCallback() {
-                @Override
-                public void onCompleted(GraphUser me, Response response) {
-                    if (response.getRequest().getSession() == session) {
-                        String mName = me.getName();
-                        String mId = me.getId();
-                        String mPictureImageUrl = "https://graph.facebook.com/" + mId + "/picture";
-
-                        postLoginAsync(LoginActivity.this, mName, mPictureImageUrl, TAG_SNS_FACEBOOK);
-                    }
-                }
-            });
-            request.executeAsync();
-
-        }
-    }
-
     public void onFacebookButtonClicked() {
         facebookLoginButton.performClick();
     }
@@ -114,9 +78,10 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        callbackManager = CallbackManager.Factory.create();
+
         setContentView(R.layout.activity_login);
-        uiHelper = new UiLifecycleHelper(this, null);
-        uiHelper.onCreate(savedInstanceState);
 
         progress = (ProgressWheel) findViewById(R.id.progress_wheel);
 
@@ -145,6 +110,44 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         facebookLoginButton.setReadPermissions("public_profile");
+        facebookLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                GraphRequest request = GraphRequest.newMeRequest(
+                        loginResult.getAccessToken(),
+                        new GraphRequest.GraphJSONObjectCallback() {
+                            @Override
+                            public void onCompleted(
+                                    JSONObject user,
+                                    GraphResponse response) {
+                                try {
+                                    Log.e("レスポンスログ", user.toString());
+
+                                    String mName = user.getString("name");
+                                    String mId = user.getString("id");
+                                    String mPictureImageUrl = "https://graph.facebook.com/" + mId + "/picture";
+
+                                    postLoginAsync(LoginActivity.this, mName, mPictureImageUrl, TAG_SNS_FACEBOOK);
+
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                request.executeAsync();
+            }
+
+            @Override
+            public void onCancel() {
+                // App code
+            }
+
+            @Override
+            public void onError(FacebookException exception) {
+                // App code
+            }
+        });
+
         twitterLoginButton.setCallback(new Callback<TwitterSession>() {
             @Override
             public void success(Result<TwitterSession> result) {
@@ -166,16 +169,17 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        uiHelper.onResume();
 
         if (Util.getConnectedState(LoginActivity.this) != Util.NetworkStatus.OFF) {
 
-            Session session = Session.getActiveSession();
-            if (session != null &&
-                    (session.isOpened() || session.isClosed())) {
-                onSessionStateChange(session, session.getState(), null);
-            }
+            Profile profile = Profile.getCurrentProfile();
+            if (profile != null) {
+                String mName = profile.getName();
+                String mId = profile.getId();
+                String mPictureImageUrl = "https://graph.facebook.com/" + mId + "/picture";
 
+                postLoginAsync(LoginActivity.this, mName, mPictureImageUrl, TAG_SNS_FACEBOOK);
+            }
 
             TwitterSession twisession =
                     Twitter.getSessionManager().getActiveSession();
@@ -193,26 +197,8 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        uiHelper.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
         twitterLoginButton.onActivityResult(requestCode, resultCode, data);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        uiHelper.onPause();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        uiHelper.onDestroy();
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        uiHelper.onSaveInstanceState(outState);
     }
 
     private void postLoginAsync(final Context context, final String name, final String url, final String judge) {

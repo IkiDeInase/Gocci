@@ -32,8 +32,13 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar;
 import com.andexert.library.RippleView;
 import com.cocosw.bottomsheet.BottomSheet;
-import com.facebook.UiLifecycleHelper;
-import com.facebook.widget.FacebookDialog;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookSdk;
+import com.facebook.share.model.SharePhoto;
+import com.facebook.share.model.SharePhotoContent;
+import com.facebook.share.model.ShareVideo;
+import com.facebook.share.model.ShareVideoContent;
+import com.facebook.share.widget.ShareDialog;
 import com.github.ksoichiro.android.observablescrollview.ObservableListView;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
@@ -118,7 +123,8 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
     private boolean mPlayBlockFlag;
     private ConcurrentHashMap<ViewHolder, String> mViewHolderHash;  // Value: PosterId
 
-    private UiLifecycleHelper uiHelper;
+    private CallbackManager callbackManager;
+    private ShareDialog shareDialog;
 
     private ImageView edit_background;
     private ImageView edit_picture;
@@ -148,8 +154,9 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
         mDisplaySize = new Point();
         getActivity().getWindowManager().getDefaultDisplay().getSize(mDisplaySize);
 
-        uiHelper = new UiLifecycleHelper(getActivity(), null);
-        uiHelper.onCreate(savedInstanceState);
+        FacebookSdk.sdkInitialize(getActivity().getApplicationContext());
+        callbackManager = CallbackManager.Factory.create();
+        shareDialog = new ShareDialog(MyProfFragment.this);
 
         Fabric.with(getActivity(), new TweetComposer());
     }
@@ -421,7 +428,7 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
+        callbackManager.onActivityResult(requestCode, resultCode, data);
         if (data != null) {
             Uri uri = data.getData();
             switch (requestCode) {
@@ -445,23 +452,11 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
                     break;
             }
         }
-        uiHelper.onActivityResult(requestCode, resultCode, data, new FacebookDialog.Callback() {
-            @Override
-            public void onError(FacebookDialog.PendingCall pendingCall, Exception error, Bundle data) {
-                Log.e("Activity", String.format("Error: %s", error.toString()));
-            }
-
-            @Override
-            public void onComplete(FacebookDialog.PendingCall pendingCall, Bundle data) {
-                Log.i("Activity", "Success!");
-            }
-        });
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        uiHelper.onResume();
         // Subscriberとして登録する
         BusHolder.get().register(this);
 
@@ -471,7 +466,6 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
     @Override
     public void onPause() {
         super.onPause();
-        uiHelper.onPause();
         // Subscriberの登録を解除する
         BusHolder.get().unregister(this);
 
@@ -479,18 +473,6 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
         if (viewHolder != null) {
             stopMovie(viewHolder);
         }
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        uiHelper.onSaveInstanceState(outState);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        uiHelper.onDestroy();
     }
 
     @Override
@@ -984,20 +966,17 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
                         public void onClick(DialogInterface dialog, int which) {
                             switch (which) {
                                 case R.id.facebook_share:
-
-                                    if (FacebookDialog.canPresentShareDialog(getActivity().getApplicationContext(),
-                                            FacebookDialog.ShareDialogFeature.VIDEO)) {
-                                        String data = mCacheManager.getCachePath(user.getPost_id(), user.getMovie());
-                                        File file = new File(data);
-                                        // Publish the post using the Video Share Dialog
-                                        FacebookDialog shareDialog = new FacebookDialog.VideoShareDialogBuilder(getActivity())
-                                                .setFragment(MyProfFragment.this)
-                                                .addVideoFile(file)
+                                    Uri bmpUri2 = getLocalBitmapUri(finalViewHolder1.mVideoThumbnail);
+                                    if (ShareDialog.canShow(SharePhotoContent.class) && bmpUri2 != null) {
+                                        SharePhoto photo = new SharePhoto.Builder()
+                                                .setImageUrl(bmpUri2)
                                                 .build();
-                                        uiHelper.trackPendingDialogCall(shareDialog.present());
+                                        SharePhotoContent content = new SharePhotoContent.Builder()
+                                                .addPhoto(photo)
+                                                .build();
+                                        shareDialog.show(content);
                                     } else {
-                                        // The user doesn't have the Facebook for Android app installed.
-                                        // You may be able to use a fallback.
+                                        // ...sharing failed, handle error
                                         Toast.makeText(getActivity(), "facebookシェアに失敗しました", Toast.LENGTH_SHORT).show();
                                     }
                                     break;

@@ -7,32 +7,24 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.PopupWindow;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.facebook.Session;
+import com.facebook.login.LoginManager;
 import com.hatenablog.shoma2da.eventdaterecorderlib.EventDateRecorder;
-import com.inase.android.gocci.Base.ToukouPopup;
 import com.inase.android.gocci.Event.BusHolder;
 import com.inase.android.gocci.Event.NotificationNumberEvent;
 import com.inase.android.gocci.Event.SearchKeywordPostEvent;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.View.DrawerProfHeader;
-import com.inase.android.gocci.View.NotificationListView;
 import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;
 import com.loopj.android.http.AsyncHttpClient;
@@ -322,19 +314,7 @@ public class GocciSearchTenpoActivity extends AppCompatActivity {
 
                             switch (judge) {
                                 case "facebook":
-                                    Session session = Session.getActiveSession();
-                                    if (session != null) {
-                                        if (!session.isClosed()) {
-                                            session.closeAndClearTokenInformation();
-                                            //clear your preferences if saved
-                                        }
-                                    } else {
-                                        session = new Session(GocciSearchTenpoActivity.this);
-                                        Session.setActiveSession(session);
-
-                                        session.closeAndClearTokenInformation();
-                                        //clear your preferences if saved
-                                    }
+                                    LoginManager.getInstance().logOut();
                                     break;
                                 case "twitter":
                                     Twitter.logOut();

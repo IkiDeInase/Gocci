@@ -9,7 +9,6 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
@@ -31,7 +30,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar;
 import com.andexert.library.RippleView;
 import com.cocosw.bottomsheet.BottomSheet;
-import com.facebook.Session;
+import com.facebook.login.LoginManager;
 import com.github.ksoichiro.android.observablescrollview.ObservableListView;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
@@ -57,9 +56,7 @@ import com.inase.android.gocci.data.UserData;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.PersistentCookieStore;
 import com.loopj.android.http.RequestParams;
-import com.loopj.android.http.TextHttpResponseHandler;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
@@ -127,7 +124,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements Observab
         public void onGlobalLayout() {
             Log.e("DEBUG", "onGlobalLayout called: " + mPlayingPostId);
             //if (isSee) {
-                changeMovie();
+            changeMovie();
             //}
             Log.e("DEBUG", "onGlobalLayout  changeMovie called: " + mPlayingPostId);
             if (mPlayingPostId != null /*|| !isExist*/) {
@@ -503,7 +500,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements Observab
                 //mBusy = false;
                 Log.d("DEBUG", "SCROLL_STATE_IDLE");
                 //if (isSee) {
-                    changeMovie();
+                changeMovie();
                 //}
 
                 break;
@@ -1255,19 +1252,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements Observab
 
                             switch (judge) {
                                 case "facebook":
-                                    Session session = Session.getActiveSession();
-                                    if (session != null) {
-                                        if (!session.isClosed()) {
-                                            session.closeAndClearTokenInformation();
-                                            //clear your preferences if saved
-                                        }
-                                    } else {
-                                        session = new Session(FlexibleTenpoActivity.this);
-                                        Session.setActiveSession(session);
-
-                                        session.closeAndClearTokenInformation();
-                                        //clear your preferences if saved
-                                    }
+                                    LoginManager.getInstance().logOut();
                                     break;
                                 case "twitter":
                                     Twitter.logOut();

@@ -30,7 +30,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar;
 import com.andexert.library.RippleView;
 import com.cocosw.bottomsheet.BottomSheet;
-import com.facebook.Session;
+import com.facebook.login.LoginManager;
 import com.github.ksoichiro.android.observablescrollview.ObservableListView;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
@@ -1134,19 +1134,7 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Obser
 
                             switch (judge) {
                                 case "facebook":
-                                    Session session = Session.getActiveSession();
-                                    if (session != null) {
-                                        if (!session.isClosed()) {
-                                            session.closeAndClearTokenInformation();
-                                            //clear your preferences if saved
-                                        }
-                                    } else {
-                                        session = new Session(FlexibleUserProfActivity.this);
-                                        Session.setActiveSession(session);
-
-                                        session.closeAndClearTokenInformation();
-                                        //clear your preferences if saved
-                                    }
+                                    LoginManager.getInstance().logOut();
                                     break;
                                 case "twitter":
                                     Twitter.logOut();

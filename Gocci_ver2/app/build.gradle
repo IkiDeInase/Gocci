@@ -24,8 +24,8 @@ android {
         applicationId 'com.inase.android.gocci'
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 5
-        versionName '1.4'
+        versionCode 7
+        versionName '1.6'
         multiDexEnabled true
         resConfigs "en", "ja"
     }
@@ -67,7 +67,7 @@ dependencies {
     compile 'com.github.sd6352051.niftydialogeffects:niftydialogeffects:1.0.0@aar'
     compile 'fr.tvbarthel.blurdialogfragment:lib:2.1.2'
     compile 'com.akexorcist:RoundCornerProgressBar:1.1.0'
-    compile 'com.facebook.android:facebook-android-sdk:3.23.0'
+    compile 'com.facebook.android:facebook-android-sdk:4.1.2'
     compile 'com.cocosw:bottomsheet:1.+@aar'
     compile('io.nlopez.smartlocation:library:3.0.10') {
         transitive = false;
