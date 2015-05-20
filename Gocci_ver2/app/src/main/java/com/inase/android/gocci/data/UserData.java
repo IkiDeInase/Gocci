@@ -30,6 +30,9 @@ public class UserData {
     private static final String TAG_TAG_CATEGORY = "tag_category";
     private static final String TAG_COMMENT = "comment";
     private static final String TAG_STATUS = "status";
+    private static final String TAG_WANT_FLAG = "want_flag";
+    private static final String TAG_CHEER_NUM = "cheer_num";
+    private static final String TAG_TOTAL_CHEER_NUM = "total_cheer_num";
 
 
     //JSON用のsetter/getter
@@ -59,8 +62,41 @@ public class UserData {
     private String tag_category;
     private String atmosphere;
     private String value;
+    private Integer want_flag;
+    private Integer cheer_num;
+    private Integer total_cheer_num;
 
     public UserData() {
+    }
+
+    public UserData(String movie, String circleImage, String background, String post_id, String user_name, String restname, String tell, String category, Double lat, Double lon, String locality, Integer goodnum, Integer comment_num, String thumbnail, Integer star_evaluation, Integer pushed_at, String homepage, String datetime, String distance, String value, String atmosphere, String tag_category, String comment, Integer status, Integer want_flag, Integer cheer_num, Integer total_cheer_num) {
+        this.movie = movie;
+        this.circleImage = circleImage;
+        this.background = background;
+        this.post_id = post_id;
+        this.user_name = user_name;
+        this.restname = restname;
+        this.tell = tell;
+        this.category = category;
+        this.lat = lat;
+        this.lon = lon;
+        this.locality = locality;
+        this.goodnum = goodnum;
+        this.comment_num = comment_num;
+        this.thumbnail = thumbnail;
+        this.star_evaluation = star_evaluation;
+        this.pushed_at = pushed_at;
+        this.homepage = homepage;
+        this.datetime = datetime;
+        this.distance = distance;
+        this.value = value;
+        this.atmosphere = atmosphere;
+        this.tag_category = tag_category;
+        this.comment = comment;
+        this.status = status;
+        this.want_flag = want_flag;
+        this.cheer_num = cheer_num;
+        this.total_cheer_num = total_cheer_num;
     }
 
     public UserData(String movie, String circleImage, String background, String post_id, String user_name, String restname, String tell, String category, Double lat, Double lon, String locality, Integer goodnum, Integer comment_num, String thumbnail, Integer star_evaluation, Integer pushed_at, String homepage, String datetime, String distance, String value, String atmosphere, String tag_category, String comment, Integer status) {
@@ -290,7 +326,69 @@ public class UserData {
         this.status = status;
     }
 
+    public Integer getWant_flag() {
+        return this.want_flag;
+    }
+
+    public void setWant_flag(Integer want_flag) {
+        this.want_flag = want_flag;
+    }
+
+    public Integer getCheer_num() {
+        return this.cheer_num;
+    }
+
+    public void setCheer_num(Integer cheer_num) {
+        this.cheer_num = cheer_num;
+    }
+
+    public Integer getTotal_cheer_num() {
+        return this.total_cheer_num;
+    }
+
+    public void setTotal_cheer_num(Integer total_cheer_num) {
+        this.total_cheer_num = total_cheer_num;
+    }
+
     public static UserData createUserData(JSONObject jsonObject) {
+        try {
+            String tell = jsonObject.getString(TAG_TELL);
+            String post_id = jsonObject.getString(TAG_POST_ID);
+            String user_name = jsonObject.getString(TAG_USER_NAME);
+            String picture = jsonObject.getString(TAG_PICTURE);
+            String background = jsonObject.getString(TAG_BACKGROUND);
+            String movie = jsonObject.getString(TAG_MOVIE);
+            String restname = jsonObject.getString(TAG_RESTNAME);
+            Integer goodnum = jsonObject.getInt(TAG_GOODNUM);
+            Integer comment_num = jsonObject.getInt(TAG_COMMENT_NUM);
+            String thumbnail = jsonObject.getString(TAG_THUMBNAIL);
+            Integer star_evaluation = jsonObject.getInt(TAG_STAR_EVALUATION);
+            String homepage = jsonObject.getString(TAG_HOMEPAGE);
+            String locality = jsonObject.getString(TAG_LOCALITY);
+            String category = jsonObject.getString(TAG_CATEGORY);
+            Integer pushed_at = jsonObject.getInt(TAG_PUSHED_AT);
+            Double lat = jsonObject.getDouble(TAG_LAT);
+            Double lon = jsonObject.getDouble(TAG_LON);
+            String datetime = jsonObject.getString(TAG_DATETIME);
+            String distance = jsonObject.getString(TAG_DATETIME);
+            String value = jsonObject.getString(TAG_VALUE);
+            String atmosphere = jsonObject.getString(TAG_ATMOSPHERE);
+            String tag_category = jsonObject.getString(TAG_TAG_CATEGORY);
+            String comment = jsonObject.getString(TAG_COMMENT);
+            Integer status = jsonObject.getInt(TAG_STATUS);
+            Integer want_flag = jsonObject.getInt(TAG_WANT_FLAG);
+            Integer cheer_num = jsonObject.getInt(TAG_CHEER_NUM);
+            Integer total_cheer_num = jsonObject.getInt(TAG_TOTAL_CHEER_NUM);
+
+            return new UserData(movie, picture, background, post_id, user_name, restname, tell, category, lat, lon, locality, goodnum, comment_num, thumbnail, star_evaluation, pushed_at, homepage, datetime, distance, value, atmosphere, tag_category, comment, status, want_flag, cheer_num, total_cheer_num);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static UserData createTenpoUserData(JSONObject jsonObject) {
         try {
             String tell = jsonObject.getString(TAG_TELL);
             String post_id = jsonObject.getString(TAG_POST_ID);

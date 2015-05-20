@@ -57,6 +57,7 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.TextHttpResponseHandler;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
@@ -96,6 +97,9 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements Observab
     private double mLat;
     private double mLon;
 
+    private int mWant_flag;
+    private int mTotal_cheer_num;
+
     private ProgressWheel tenpoprogress;
     private ArrayList<UserData> mTenpousers = new ArrayList<UserData>();
     private TenpoAdapter mTenpoAdapter;
@@ -116,18 +120,18 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements Observab
     private boolean mPlayBlockFlag;
     private ConcurrentHashMap<ViewHolder, String> mViewHolderHash;  // Value: PosterId
 
-    //private boolean isExist = false;
-    //private boolean isSee = false;
+    private boolean isExist = false;
+    private boolean isSee = false;
 
     private ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
         @Override
         public void onGlobalLayout() {
             Log.e("DEBUG", "onGlobalLayout called: " + mPlayingPostId);
-            //if (isSee) {
+            if (isSee) {
             changeMovie();
-            //}
+            }
             Log.e("DEBUG", "onGlobalLayout  changeMovie called: " + mPlayingPostId);
-            if (mPlayingPostId != null /*|| !isExist*/) {
+            if (mPlayingPostId != null || !isExist) {
                 mTenpoListView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         }
@@ -158,6 +162,8 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements Observab
         mPhoneNumber = intent.getStringExtra("phone");
         mHomepage = intent.getStringExtra("homepage");
         mCategory = intent.getStringExtra("category");
+        mWant_flag = intent.getIntExtra("want_flag", 0);
+        mTotal_cheer_num = intent.getIntExtra("total_cheer_num", 0);
 
         try {
             mEncoderestname = URLEncoder.encode(mPost_restname, "UTF-8");
@@ -264,15 +270,32 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements Observab
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mTenpoListView.addHeaderView(inflater.inflate(R.layout.view_header_tenpo, null));
 
-        /*
         TextView tenpo_name = (TextView) findViewById(R.id.tenpo_name);
         TextView tenpo_category = (TextView) findViewById(R.id.category);
+        TextView tenpo_number = (TextView) findViewById(R.id.cheer_number);
+        ImageView tenpo_flag = (ImageView) findViewById(R.id.cheer_flag);
         RippleView checkRipple = (RippleView) findViewById(R.id.checkRipple);
         final ImageView check_Image = (ImageView) findViewById(R.id.check_image);
         final TextView check_text = (TextView) findViewById(R.id.check_text);
         RippleView callRipple = (RippleView) findViewById(R.id.callRipple);
         RippleView gohereRipple = (RippleView) findViewById(R.id.gohereRipple);
         RippleView etcRipple = (RippleView) findViewById(R.id.etcRipple);
+
+        if (mWant_flag == 0) {
+            check_Image.setImageResource(R.drawable.ic_like_white);
+            check_text.setText("行きたい店に認定");
+        } else {
+            check_Image.setImageResource(R.drawable.ic_favorite_orange);
+            check_text.setText("行きたい店を取消");
+        }
+        tenpo_number.setText(String.valueOf(mTotal_cheer_num));
+
+        tenpo_flag.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
 
         checkRipple.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -282,15 +305,26 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements Observab
                     check_text.setText("行きたい店を取消");
                     final AsyncHttpClient client = new AsyncHttpClient();
                     client.setCookieStore(SavedData.getCookieStore(FlexibleTenpoActivity.this));
-                    client.post(FlexibleTenpoActivity.this, Const.URL_RESTRAUNT_FOLLOW, param, new TextHttpResponseHandler() {
+                    client.post(FlexibleTenpoActivity.this, Const.URL_RESTRAUNT_FOLLOW, param, new JsonHttpResponseHandler() {
                                 @Override
-                                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                                    Log.e("失敗ログ", responseString);
+                                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
+                                    check_Image.setImageResource(R.drawable.ic_like_white);
+                                    check_text.setText("行きたい店に認定");
                                 }
 
                                 @Override
-                                public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                                    Log.e("成功ログ", responseString);
+                                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                                    try {
+                                        String message = response.getString("message");
+
+                                        if (!message.equals("行きたいリストに登録しました")) {
+                                            check_Image.setImageResource(R.drawable.ic_like_white);
+                                            check_text.setText("行きたい店に認定");
+                                            Toast.makeText(FlexibleTenpoActivity.this, message, Toast.LENGTH_SHORT).show();
+                                        }
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
                                 }
 
                             });
@@ -299,15 +333,26 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements Observab
                     check_text.setText("行きたい店に認定");
                     final AsyncHttpClient client = new AsyncHttpClient();
                     client.setCookieStore(SavedData.getCookieStore(FlexibleTenpoActivity.this));
-                    client.post(FlexibleTenpoActivity.this, Const.URL_RESTRAUNT_UNFOLLOW, param, new TextHttpResponseHandler() {
+                    client.post(FlexibleTenpoActivity.this, Const.URL_RESTRAUNT_UNFOLLOW, param, new JsonHttpResponseHandler() {
                         @Override
-                        public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                            Log.e("失敗ログ", responseString);
+                        public void onFailure(int statusCode, Header[] headers, Throwable throwableString, JSONObject response) {
+                            check_Image.setImageResource(R.drawable.ic_favorite_orange);
+                            check_text.setText("行きたい店を取消");
                         }
 
                         @Override
-                        public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                            Log.e("成功ログ", responseString);
+                        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                            try {
+                                String message = response.getString("message");
+
+                                if (!message.equals("行きたいリストから解除しました")) {
+                                    check_Image.setImageResource(R.drawable.ic_favorite_orange);
+                                    check_text.setText("行きたい店を取消");
+                                    Toast.makeText(FlexibleTenpoActivity.this, message, Toast.LENGTH_SHORT).show();
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
                         }
                     });
                 }
@@ -356,8 +401,8 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements Observab
 
         tenpo_name.setText(mPost_restname);
         tenpo_category.setText(mCategory);
-        */
 
+        /*
         TextView tenpo_name = (TextView) findViewById(R.id.tenpo_name);
         TextView tenpo_category = (TextView) findViewById(R.id.tenpo_category);
         TextView tenpo_locality = (TextView) findViewById(R.id.tenpo_locality);
@@ -394,6 +439,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements Observab
                 handler.postDelayed(new callClickHandler(), 750);
             }
         });
+        */
 
         setUpMapIfNeeded();
 
@@ -443,7 +489,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements Observab
     @Override
     public void onScrollChanged(int scrollY, boolean firstScroll, boolean dragging) {
         //ヘッダー通り過ぎた
-        //isSee = scrollY > 550;
+        isSee = scrollY > 550;
     }
 
     @Override
@@ -499,9 +545,9 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements Observab
             case AbsListView.OnScrollListener.SCROLL_STATE_IDLE:
                 //mBusy = false;
                 Log.d("DEBUG", "SCROLL_STATE_IDLE");
-                //if (isSee) {
+                if (isSee) {
                 changeMovie();
-                //}
+                }
 
                 break;
             // スクロール中
@@ -521,7 +567,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements Observab
 
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-        /*
+
         if (totalItemCount != 1) {
             //投稿はある
             isExist = true;
@@ -529,7 +575,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements Observab
             //投稿がない
             isExist = false;
         }
-        */
+
     }
 
     private void getSignupAsync(final Context context) {
@@ -541,7 +587,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements Observab
                 try {
                     for (int i = 0; i < timeline.length(); i++) {
                         JSONObject jsonObject = timeline.getJSONObject(i);
-                        mTenpousers.add(UserData.createUserData(jsonObject));
+                        mTenpousers.add(UserData.createTenpoUserData(jsonObject));
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -594,7 +640,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements Observab
                 try {
                     for (int i = 0; i < timeline.length(); i++) {
                         JSONObject jsonObject = timeline.getJSONObject(i);
-                        mTenpousers.add(UserData.createUserData(jsonObject));
+                        mTenpousers.add(UserData.createTenpoUserData(jsonObject));
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -744,7 +790,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements Observab
                         @Override
                         public boolean onError(final MediaPlayer mp, final int what, final int extra) {
                             Log.e("DEBUG", "動画再生OnError: what:" + what + " extra:" + extra);
-                            if (mPlayingPostId.equals(postId) && !mPlayBlockFlag /*&& isSee*/) {
+                            if (mPlayingPostId.equals(postId) && !mPlayBlockFlag && isSee) {
                                 Log.d("DEBUG", "MOVIE::onErrorListener 再生開始");
                                 mPlayingPostId = null;
                                 changeMovie();

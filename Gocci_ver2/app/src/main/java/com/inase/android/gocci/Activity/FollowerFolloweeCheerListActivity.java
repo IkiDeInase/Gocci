@@ -202,6 +202,8 @@ public class FollowerFolloweeCheerListActivity extends AppCompatActivity {
                         String tell = jsonObject.getString("tell");
                         String category = jsonObject.getString("category");
                         String homepage = jsonObject.getString("homepage");
+                        Integer want_flag = jsonObject.getInt("want_flag");
+                        Integer total_cheer_num = jsonObject.getInt("total_cheer_num");
 
                         UserData user = new UserData();
                         user.setRest_name(restname);
@@ -211,6 +213,8 @@ public class FollowerFolloweeCheerListActivity extends AppCompatActivity {
                         user.setTell(tell);
                         user.setCategory(category);
                         user.setHomepage(homepage);
+                        user.setWant_flag(want_flag);
+                        user.setTotal_cheer_num(total_cheer_num);
 
                         users.add(user);
                     }
@@ -335,6 +339,8 @@ public class FollowerFolloweeCheerListActivity extends AppCompatActivity {
                         String tell = jsonObject.getString("tell");
                         String category = jsonObject.getString("category");
                         String homepage = jsonObject.getString("homepage");
+                        Integer want_flag = jsonObject.getInt("want_flag");
+                        Integer total_cheer_num = jsonObject.getInt("total_cheer_num");
 
                         UserData user = new UserData();
                         user.setRest_name(restname);
@@ -344,6 +350,8 @@ public class FollowerFolloweeCheerListActivity extends AppCompatActivity {
                         user.setTell(tell);
                         user.setCategory(category);
                         user.setHomepage(homepage);
+                        user.setWant_flag(want_flag);
+                        user.setTotal_cheer_num(total_cheer_num);
 
                         users.add(user);
                     }
@@ -543,6 +551,8 @@ public class FollowerFolloweeCheerListActivity extends AppCompatActivity {
                     intent.putExtra("phone", user.getTell());
                     intent.putExtra("homepage", user.getHomepage());
                     intent.putExtra("category", user.getCategory());
+                    intent.putExtra("want_flag", user.getWant_flag());
+                    intent.putExtra("total_cheer_num", user.getTotal_cheer_num());
                     startActivity(intent);
                     overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
                 }
@@ -559,6 +569,8 @@ public class FollowerFolloweeCheerListActivity extends AppCompatActivity {
                     intent.putExtra("phone", user.getTell());
                     intent.putExtra("homepage", user.getHomepage());
                     intent.putExtra("category", user.getCategory());
+                    intent.putExtra("want_flag", user.getWant_flag());
+                    intent.putExtra("total_cheer_num", user.getTotal_cheer_num());
                     startActivity(intent);
                     overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
                 }

@@ -97,6 +97,8 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
     private String clickedPhoneNumber;
     private String clickedHomepage;
     private String clickedCategory;
+    private int clickedWant_flag;
+    private int clickedTotal_cheer_num;
 
     private ProgressWheel myprofprogress;
     private ObservableListView mProfListView;
@@ -1067,6 +1069,8 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
                     clickedPhoneNumber = user.getTell();
                     clickedHomepage = user.getHomepage();
                     clickedCategory = user.getCategory();
+                    clickedWant_flag = user.getWant_flag();
+                    clickedTotal_cheer_num = user.getTotal_cheer_num();
                     Handler handler = new Handler();
                     handler.postDelayed(new restClickHandler(), 750);
                 }
@@ -1132,6 +1136,8 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
             intent.putExtra("phone", clickedPhoneNumber);
             intent.putExtra("homepage", clickedHomepage);
             intent.putExtra("category", clickedCategory);
+            intent.putExtra("want_flag", clickedWant_flag);
+            intent.putExtra("total_cheer_num", clickedTotal_cheer_num);
             startActivity(intent);
             getActivity().overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
         }

@@ -105,6 +105,8 @@ public class Search_mapFragment extends BaseFragment
     private String clickedPhoneNumber;
     private String clickedHomepage;
     private String clickedCategory;
+    private int clickedWant_flag;
+    private int clickedTotal_cheer_num;
 
     private double mLatitude;
     private double mLongitude;
@@ -449,6 +451,7 @@ public class Search_mapFragment extends BaseFragment
                 // Pull out the first event on the public timeline
                 mSearch_mapusers.clear();
                 tenpo_string_users.clear();
+                Log.e("ログ", String.valueOf(timeline));
                 try {
                     for (int i = 0; i < timeline.length(); i++) {
                         JSONObject jsonObject = timeline.getJSONObject(i);
@@ -461,6 +464,8 @@ public class Search_mapFragment extends BaseFragment
                         final String locality = jsonObject.getString(TAG_LOCALITY);
                         String distance = jsonObject.getString(TAG_DISTANCE);
                         String homepage = jsonObject.getString(TAG_HOMEPAGE);
+                        Integer want_flag = jsonObject.getInt("want_flag");
+                        Integer total_cheer_num = jsonObject.getInt("total_cheer_num");
 
                         UserData user = new UserData();
 
@@ -472,6 +477,8 @@ public class Search_mapFragment extends BaseFragment
                         user.setLocality(locality);
                         user.setDistance(distance);
                         user.setHomepage(homepage);
+                        user.setWant_flag(want_flag);
+                        user.setTotal_cheer_num(total_cheer_num);
 
                         mSearch_mapusers.add(user);
                         tenpo_string_users.add(rest_name);
@@ -521,6 +528,7 @@ public class Search_mapFragment extends BaseFragment
                 // Pull out the first event on the public timeline
                 mSearch_mapusers.clear();
                 tenpo_string_users.clear();
+                Log.e("ログ", String.valueOf(timeline));
                 try {
                     for (int i = 0; i < timeline.length(); i++) {
                         JSONObject jsonObject = timeline.getJSONObject(i);
@@ -533,6 +541,8 @@ public class Search_mapFragment extends BaseFragment
                         final String locality = jsonObject.getString(TAG_LOCALITY);
                         String distance = jsonObject.getString(TAG_DISTANCE);
                         String homepage = jsonObject.getString(TAG_HOMEPAGE);
+                        Integer want_flag = jsonObject.getInt("want_flag");
+                        Integer total_cheer_num = jsonObject.getInt("total_cheer_num");
 
                         UserData user = new UserData();
 
@@ -544,6 +554,8 @@ public class Search_mapFragment extends BaseFragment
                         user.setLocality(locality);
                         user.setDistance(distance);
                         user.setHomepage(homepage);
+                        user.setWant_flag(want_flag);
+                        user.setTotal_cheer_num(total_cheer_num);
 
                         mSearch_mapusers.add(user);
                         tenpo_string_users.add(rest_name);
@@ -595,6 +607,7 @@ public class Search_mapFragment extends BaseFragment
                 // Pull out the first event on the public timeline
                 mSearch_mapusers.clear();
                 tenpo_string_users.clear();
+                Log.e("ログ", String.valueOf(timeline));
                 try {
                     for (int i = 0; i < timeline.length(); i++) {
                         JSONObject jsonObject = timeline.getJSONObject(i);
@@ -607,6 +620,8 @@ public class Search_mapFragment extends BaseFragment
                         final String locality = jsonObject.getString(TAG_LOCALITY);
                         String distance = jsonObject.getString(TAG_DISTANCE);
                         String homepage = jsonObject.getString(TAG_HOMEPAGE);
+                        Integer want_flag = jsonObject.getInt("want_flag");
+                        Integer total_cheer_num = jsonObject.getInt("total_cheer_num");
 
                         UserData user = new UserData();
 
@@ -618,6 +633,8 @@ public class Search_mapFragment extends BaseFragment
                         user.setLocality(locality);
                         user.setDistance(distance);
                         user.setHomepage(homepage);
+                        user.setWant_flag(want_flag);
+                        user.setTotal_cheer_num(total_cheer_num);
 
                         mSearch_mapusers.add(user);
                         tenpo_string_users.add(rest_name);
@@ -684,6 +701,8 @@ public class Search_mapFragment extends BaseFragment
                         final String locality = jsonObject.getString(TAG_LOCALITY);
                         String distance = jsonObject.getString(TAG_DISTANCE);
                         String homepage = jsonObject.getString(TAG_HOMEPAGE);
+                        Integer want_flag = jsonObject.getInt("want_flag");
+                        Integer total_cheer_num = jsonObject.getInt("total_cheer_num");
 
                         UserData user = new UserData();
 
@@ -695,6 +714,8 @@ public class Search_mapFragment extends BaseFragment
                         user.setLocality(locality);
                         user.setDistance(distance);
                         user.setHomepage(homepage);
+                        user.setWant_flag(want_flag);
+                        user.setTotal_cheer_num(total_cheer_num);
 
                         mSearch_mapusers.add(user);
                         tenpo_string_users.add(rest_name);
@@ -774,6 +795,8 @@ public class Search_mapFragment extends BaseFragment
                     clickedCategory = user.getCategory();
                     clickedHomepage = user.getHomepage();
                     clickedPhoneNumber = user.getTell();
+                    clickedWant_flag = user.getWant_flag();
+                    clickedTotal_cheer_num = user.getTotal_cheer_num();
 
                     //リップルエフェクトを見せるためにすこし遅らせてIntentを飛ばす
                     Handler handler = new Handler();
@@ -805,6 +828,8 @@ public class Search_mapFragment extends BaseFragment
             intent.putExtra("phone", clickedPhoneNumber);
             intent.putExtra("homepage", clickedHomepage);
             intent.putExtra("category", clickedCategory);
+            intent.putExtra("want_flag", clickedWant_flag);
+            intent.putExtra("total_cheer_num", clickedTotal_cheer_num);
             startActivity(intent);
             getActivity().overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
         }

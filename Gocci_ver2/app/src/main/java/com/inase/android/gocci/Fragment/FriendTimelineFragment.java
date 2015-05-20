@@ -101,6 +101,8 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
     private String clickedCategory;
     private double clickedLat;
     private double clickedLon;
+    private int clickedWant_flag;
+    private int clickedTotal_cheer_num;
 
     private int refreshNumber = 1;
 
@@ -939,6 +941,8 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
                     clickedPhoneNumber = user.getTell();
                     clickedHomepage = user.getHomepage();
                     clickedCategory = user.getCategory();
+                    clickedWant_flag = user.getWant_flag();
+                    clickedTotal_cheer_num = user.getTotal_cheer_num();
                     Handler handler = new Handler();
                     handler.postDelayed(new restClickHandler(), 750);
                 }
@@ -1016,6 +1020,8 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
             intent.putExtra("phone", clickedPhoneNumber);
             intent.putExtra("homepage", clickedHomepage);
             intent.putExtra("category", clickedCategory);
+            intent.putExtra("want_flag", clickedWant_flag);
+            intent.putExtra("total_cheer_num", clickedTotal_cheer_num);
             startActivity(intent);
             getActivity().overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
         }

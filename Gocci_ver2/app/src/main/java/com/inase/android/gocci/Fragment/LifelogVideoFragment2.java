@@ -73,11 +73,13 @@ public class LifelogVideoFragment2 extends SupportBlurDialogFragment implements 
 
     private String clickedRestname;
     private String clickedLocality;
-    private Double clickedLat;
-    private Double clickedLon;
+    private double clickedLat;
+    private double clickedLon;
     private String clickedPhoneNumber;
     private String clickedHomepage;
     private String clickedCategory;
+    private int clickedWant_flag;
+    private int clickedTotal_cheer_num;
 
     private static final String TAG_LOCALITY = "locality";
     private static final String TAG_MOVIE = "movie";
@@ -301,6 +303,7 @@ public class LifelogVideoFragment2 extends SupportBlurDialogFragment implements 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray timeline) {
                 videolifelogusers.clear();
+                Log.e("ログ", String.valueOf(timeline));
                 try {
                     for (int i = 0; i < timeline.length(); i++) {
                         JSONObject jsonObject = timeline.getJSONObject(i);
@@ -319,6 +322,8 @@ public class LifelogVideoFragment2 extends SupportBlurDialogFragment implements 
                         String value = jsonObject.getString(TAG_VALUE);
                         String atmosphere = jsonObject.getString(TAG_ATMOSPHERE);
                         String comment = jsonObject.getString(TAG_COMMENT);
+                        Integer want_flag = jsonObject.getInt("want_flag");
+                        Integer total_cheer_num = jsonObject.getInt("total_cheer_num");
 
                         UserData user = new UserData();
                         user.setRest_name(rest_name);
@@ -335,6 +340,8 @@ public class LifelogVideoFragment2 extends SupportBlurDialogFragment implements 
                         user.setAtmosphere(atmosphere);
                         user.setValue(value);
                         user.setComment(comment);
+                        user.setWant_flag(want_flag);
+                        user.setTotal_cheer_num(total_cheer_num);
                         videolifelogusers.add(user);
 
                     }
@@ -641,6 +648,8 @@ public class LifelogVideoFragment2 extends SupportBlurDialogFragment implements 
                     clickedPhoneNumber = user.getTell();
                     clickedHomepage = user.getHomepage();
                     clickedCategory = user.getCategory();
+                    clickedWant_flag = user.getWant_flag();
+                    clickedTotal_cheer_num = user.getTotal_cheer_num();
                     Handler handler = new Handler();
                     handler.postDelayed(new restClickHandler(), 750);
                 }
@@ -661,6 +670,8 @@ public class LifelogVideoFragment2 extends SupportBlurDialogFragment implements 
             intent.putExtra("phone", clickedPhoneNumber);
             intent.putExtra("homepage", clickedHomepage);
             intent.putExtra("category", clickedCategory);
+            intent.putExtra("want_flag", clickedWant_flag);
+            intent.putExtra("total_cheer_num", clickedTotal_cheer_num);
             startActivity(intent);
             getActivity().overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
         }
