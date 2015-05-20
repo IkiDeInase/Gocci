@@ -16,6 +16,7 @@ import com.inase.android.gocci.Event.BusHolder;
 import com.inase.android.gocci.Event.MainThreadBus;
 import com.inase.android.gocci.Event.NotificationNumberEvent;
 import com.inase.android.gocci.R;
+import com.inase.android.gocci.common.SavedData;
 
 /**
  * Created by kinagafuji on 15/05/01.
@@ -68,6 +69,7 @@ public class GcmIntentService extends IntentService {
                 this.getSystemService(Context.NOTIFICATION_SERVICE);
 
         BusHolder.get().post(new NotificationNumberEvent(Integer.parseInt(msg)));
+        SavedData.setNotification(getApplicationContext(), Integer.parseInt(msg));
 
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, SplashActivity.class), 0);
         NotificationCompat.Builder builder =

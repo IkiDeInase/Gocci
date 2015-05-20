@@ -126,7 +126,6 @@ public class GocciMyprofActivity extends AppCompatActivity {
     public void subscribe(NotificationNumberEvent event) {
         notificationNumber.setVisibility(View.VISIBLE);
         notificationNumber.setText(String.valueOf(event.mNotificationNumber));
-        SavedData.setNotification(this, event.mNotificationNumber);
     }
 
     @Override

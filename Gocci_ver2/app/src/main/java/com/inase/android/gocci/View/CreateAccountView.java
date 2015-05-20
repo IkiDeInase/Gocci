@@ -45,8 +45,6 @@ public class CreateAccountView extends SupportBlurDialogFragment implements View
     private RippleView twitterLoginButton;
     private RippleView accountLoginButton;
 
-    private CheckBox checkPolicy;
-
     private static final String BUNDLE_KEY_DOWN_SCALE_FACTOR = "bundle_key_down_scale_factor";
     private static final String BUNDLE_KEY_BLUR_RADIUS = "bundle_key_blur_radius";
     private static final String BUNDLE_KEY_DIMMING = "bundle_key_dimming_effect";
@@ -136,8 +134,6 @@ public class CreateAccountView extends SupportBlurDialogFragment implements View
         emailEdit = (EditText) view.findViewById(R.id.emailEdit);
         passEdit = (EditText) view.findViewById(R.id.passEdit);
 
-        checkPolicy = (CheckBox) view.findViewById(R.id.checkPolicy);
-
         accountLoginButton = (RippleView) view.findViewById(R.id.account_login_Ripple);
         facebookLoginButton = (RippleView) view.findViewById(R.id.account_facebook_Ripple);
         twitterLoginButton = (RippleView) view.findViewById(R.id.account_twitter_Ripple);
@@ -145,39 +141,21 @@ public class CreateAccountView extends SupportBlurDialogFragment implements View
         facebookLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (checkPolicy.isChecked()) {
                     Handler handler = new Handler();
                     handler.postDelayed(new FacebookClickHandler(), 750);
-                } else {
-                    Toast.makeText(getActivity(), "利用規約を一度確認してください", Toast.LENGTH_SHORT).show();
-                }
-
             }
         });
 
         twitterLoginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (checkPolicy.isChecked()) {
                     Handler handler = new Handler();
                     handler.postDelayed(new TwitterClickHandler(), 750);
-                } else {
-                    Toast.makeText(getActivity(), "利用規約を一度確認してください", Toast.LENGTH_SHORT).show();
-                }
             }
         });
 
         accountLoginButton.setOnClickListener(this);
 
-        checkPolicy.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Uri uri = Uri.parse("http://inase-inc.jp/rules/");
-                Intent i = new Intent(Intent.ACTION_VIEW, uri);
-                startActivity(i);
-                checkPolicy.setClickable(false);
-            }
-        });
         //facebookLoginButton.setOnClickListener(this);
         //twitterLoginButton.setOnClickListener(this);
 
@@ -272,16 +250,12 @@ public class CreateAccountView extends SupportBlurDialogFragment implements View
         } else {
             if (isEmail(email)) {
                 if (password.length() > 6) {
-                    if (checkPolicy.isChecked()) {
                         RequestParams accountParam = new RequestParams();
                         accountParam.put("user_name", username);
                         accountParam.put("email", email);
                         accountParam.put("password", password);
 
                         postAccountAsync(getActivity(), accountParam);
-                    } else {
-                        Toast.makeText(getActivity(), "利用規約を一度確認してください", Toast.LENGTH_SHORT).show();
-                    }
                 } else {
                     Toast.makeText(getActivity(), "パスワードは６文字以上入力してください", Toast.LENGTH_SHORT).show();
                 }

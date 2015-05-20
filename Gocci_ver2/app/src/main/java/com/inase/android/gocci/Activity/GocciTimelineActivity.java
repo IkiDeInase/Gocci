@@ -51,6 +51,10 @@ import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.nispok.snackbar.Snackbar;
+import com.nispok.snackbar.SnackbarManager;
+import com.nispok.snackbar.enums.SnackbarType;
+import com.nispok.snackbar.listeners.EventListener;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
@@ -210,9 +214,17 @@ public class GocciTimelineActivity extends AppCompatActivity {
 
     @Subscribe
     public void subscribe(NotificationNumberEvent event) {
+        SnackbarManager.show(
+                Snackbar.with(this)
+                        .type(SnackbarType.MULTI_LINE)
+                        .position(Snackbar.SnackbarPosition.BOTTOM)
+                        .margin(16, 16, 16, 20)
+                        .backgroundDrawable(R.color.material_drawer_background)
+                        .text("新しいユーザーにフォローされました！！！　確認してみましょう")
+                        );
+        //２1文字で改行っぽい
         notificationNumber.setVisibility(View.VISIBLE);
         notificationNumber.setText(String.valueOf(event.mNotificationNumber));
-        SavedData.setNotification(this, event.mNotificationNumber);
     }
 
     @Override

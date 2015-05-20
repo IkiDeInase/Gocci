@@ -75,39 +75,46 @@ public class SplashActivity extends Activity implements
             public void onLocationUpdated(Location location) {
                 if (location != null) {
                     gocci.setFirstLocation(location);
-                    Log.e("とったどー", "いえい！");
+                    Log.e("位置出ました", location.getLatitude() + "/" + location.getLongitude());
+                    goNextView();
+                } else {
+                    Toast.makeText(SplashActivity.this, "位置情報が読み取れないため、Gocciを起動できませんでした", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
 
-                    EventDateRecorder recorder = EventDateRecorder.load(SplashActivity.this, "use_first_gocci_android");
-                    if (!recorder.didRecorded()) {
-                        // 機能が１度も利用されてない時のみ実行したい処理を書く
+    private void goNextView() {
+        EventDateRecorder recorder = EventDateRecorder.load(SplashActivity.this, "use_first_gocci_android");
+        if (!recorder.didRecorded()) {
+            // 機能が１度も利用されてない時のみ実行したい処理を書く
 
                         /*
                         //初回起動時
                         //一度アンインストールして再びインストールした
                         //ログアウトして再びログインしたい
                          */
-                        Log.e("DEBUG", "LoginActivitへ");
-                        Intent mainIntent = new Intent(SplashActivity.this, LoginActivity.class);
-                        SplashActivity.this.startActivity(mainIntent);
-                        overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-                        SplashActivity.this.finish();
-                        recorder.record();
-                    } else {
+
+            Log.e("DEBUG", "LoginActivitへ");
+            Intent mainIntent = new Intent(SplashActivity.this, LoginActivity.class);
+            SplashActivity.this.startActivity(mainIntent);
+            overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+            SplashActivity.this.finish();
+            recorder.record();
+
+        } else {
 
                         /*
                         //２回目以降の起動
                          */
-                        Log.e("DEBUG", "LoginPreferenceActivitへ");
-                        Intent mainIntent2 = new Intent(SplashActivity.this, LoginPreferenceActivity.class);
-                        SplashActivity.this.startActivity(mainIntent2);
-                        overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-                        SplashActivity.this.finish();
-                    }
-                } else {
-                    Toast.makeText(SplashActivity.this, "位置情報が読み取れないため、Gocciを起動できませんでした", Toast.LENGTH_LONG).show();
-                }
-            }
-        });
+
+            Log.e("DEBUG", "LoginPreferenceActivitへ");
+            Intent mainIntent2 = new Intent(SplashActivity.this, LoginPreferenceActivity.class);
+            SplashActivity.this.startActivity(mainIntent2);
+            overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+            SplashActivity.this.finish();
+
+        }
     }
 
     @Override
@@ -153,6 +160,7 @@ public class SplashActivity extends Activity implements
     protected void buildLocationSettingsRequest() {
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
         builder.addLocationRequest(mLocationRequest);
+        builder.setAlwaysShow(true);
         mLocationSettingsRequest = builder.build();
     }
 
@@ -203,8 +211,6 @@ public class SplashActivity extends Activity implements
             case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
                 Log.e("ログ", "Location settings are inadequate, and cannot be fixed here. Dialog " +
                         "not created.");
-                Toast.makeText(SplashActivity.this, "アプリを終了します", Toast.LENGTH_SHORT).show();
-                finish();
                 break;
         }
     }
@@ -221,7 +227,8 @@ public class SplashActivity extends Activity implements
                         break;
                     case Activity.RESULT_CANCELED:
                         Log.e("ログ", "User chose not to make required location settings changes.");
-                        Toast.makeText(SplashActivity.this, "アプリを終了します", Toast.LENGTH_SHORT).show();
+                        //ダイアログをキャンセルした
+                        Toast.makeText(this, "位置情報機能はONにしてください", Toast.LENGTH_SHORT).show();
                         finish();
                         break;
                 }

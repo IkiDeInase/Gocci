@@ -9,8 +9,6 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.provider.Settings;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -307,34 +305,8 @@ public class Search_mapFragment extends BaseFragment
         super.onResume();
         BusHolder.get().register(search_mapself);
 
-        //GPSかネットワーク経由から位置情報を取ってくるかの条件分岐
-        if (!mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            new MaterialDialog.Builder(getActivity())
-                    .title("位置情報取得について")
-                    .content("位置情報を使いたいのですが、GPSが無効になっています。" + "設定を変更しますか？")
-                    .positiveText("はい")
-                    .positiveColorRes(R.color.gocci_header)
-                    .negativeText("いいえ")
-                    .negativeColorRes(R.color.material_drawer_primary_light)
-                    .callback(new MaterialDialog.ButtonCallback() {
-                        @Override
-                        public void onPositive(MaterialDialog dialog) {
-                            super.onPositive(dialog);
-                            Intent settingIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                            startActivity(settingIntent);
-                        }
-
-                        @Override
-                        public void onNegative(MaterialDialog dialog) {
-                            super.onNegative(dialog);
-                            Toast.makeText(getActivity(), "近くの店舗表示ができなくなります", Toast.LENGTH_LONG).show();
-                        }
-                    }).show();
-
-        } else {
-            if (!isCapturingLocation) {
-                startLocation();
-            }
+        if (!isCapturingLocation) {
+            startLocation();
         }
     }
 

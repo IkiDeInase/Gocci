@@ -167,7 +167,6 @@ public class GocciSearchTenpoActivity extends AppCompatActivity {
 
     @Subscribe
     public void subscribe(NotificationNumberEvent event) {
-        SavedData.setNotification(this, event.mNotificationNumber);
     }
 
     class timelineClickHandler implements Runnable {
