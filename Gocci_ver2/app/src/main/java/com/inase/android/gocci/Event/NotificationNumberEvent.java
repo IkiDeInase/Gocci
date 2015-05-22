@@ -6,9 +6,11 @@ package com.inase.android.gocci.Event;
 public class NotificationNumberEvent {
 
     public int mNotificationNumber;
+    public String mMessage;
 
-    public NotificationNumberEvent(int number) {
+    public NotificationNumberEvent(int number, String message) {
         super();
         this.mNotificationNumber = number;
+        this.mMessage = message;
     }
 }

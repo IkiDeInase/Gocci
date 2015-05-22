@@ -19,7 +19,8 @@
         android:layout_gravity="center_horizontal"
         android:textSize="24sp"
         android:textStyle="bold"
-        android:layout_marginBottom="4dp" />
+        android:layout_marginBottom="4dp"
+        android:textColor="@color/namegrey" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -27,5 +28,6 @@
         android:text="Gocciへようこそ！"
         android:layout_gravity="center_horizontal"
         android:textSize="28sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:textColor="@color/namegrey" />
 </LinearLayout>

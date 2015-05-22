@@ -25,7 +25,8 @@
         android:text="Gocci は楽しい動画アプリですので"
         android:layout_gravity="center_horizontal"
         android:textSize="12sp"
-        android:layout_marginTop="8dp" />
+        android:layout_marginTop="8dp"
+        android:textColor="@color/nameblack" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -33,7 +34,8 @@
         android:text="登録するといいですよ"
         android:textSize="12sp"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="4dp" />
+        android:layout_marginTop="4dp"
+        android:textColor="@color/nameblack" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -108,7 +110,8 @@
         android:layout_marginTop="8dp"
         android:textSize="14sp"
         android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp" />
+        android:layout_marginRight="16dp"
+        android:textColor="@color/timecolor" />
 
     <View
         android:layout_width="match_parent"
@@ -129,7 +132,8 @@
         android:padding="8dp"
         android:textSize="14sp"
         android:layout_marginRight="16dp"
-        android:layout_marginLeft="16dp" />
+        android:layout_marginLeft="16dp"
+        android:textColor="@color/timecolor" />
 
     <View
         android:layout_width="match_parent"
@@ -150,7 +154,8 @@
         android:hint="パスワード"
         android:textSize="14sp"
         android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp" />
+        android:layout_marginRight="16dp"
+        android:textColor="@color/timecolor" />
 
     <View
         android:layout_width="match_parent"

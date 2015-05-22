@@ -43,14 +43,15 @@
             android:textStyle="bold"
             android:textSize="16sp"
             android:maxLength="20"
-            android:textColor="@color/nameblack"
+            android:textColor="@color/namegrey"
             android:layout_gravity="center_vertical" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="locality"
-            android:id="@+id/locality" />
+            android:id="@+id/locality"
+            android:textColor="@color/nameblack" />
     </LinearLayout>
 
 </RelativeLayout>

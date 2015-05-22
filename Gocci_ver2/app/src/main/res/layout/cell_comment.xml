@@ -37,7 +37,7 @@
                     android:textStyle="bold"
                     android:textSize="12sp"
                     android:maxLength="20"
-                    android:textColor="@color/nameblack" />
+                    android:textColor="@color/namegrey" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -45,7 +45,8 @@
                     android:text="Comment"
                     android:id="@+id/usercomment"
                     android:textSize="10sp"
-                    android:maxLength="40" />
+                    android:maxLength="40"
+                    android:textColor="@color/nameblack" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

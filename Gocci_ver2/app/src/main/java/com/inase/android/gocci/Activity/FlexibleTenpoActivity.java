@@ -46,6 +46,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.hatenablog.shoma2da.eventdaterecorderlib.EventDateRecorder;
 import com.inase.android.gocci.Base.RoundedTransformation;
 import com.inase.android.gocci.Base.SquareVideoView;
+import com.inase.android.gocci.Event.BusHolder;
+import com.inase.android.gocci.Event.NotificationNumberEvent;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.View.CommentView;
 import com.inase.android.gocci.View.DrawerProfHeader;
@@ -64,9 +66,13 @@ import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.nispok.snackbar.Snackbar;
+import com.nispok.snackbar.SnackbarManager;
+import com.nispok.snackbar.enums.SnackbarType;
 import com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayout;
 import com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayoutDirection;
 import com.pnikosis.materialishprogress.ProgressWheel;
+import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 import com.twitter.sdk.android.Twitter;
 
@@ -122,6 +128,8 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements Observab
 
     private boolean isExist = false;
     private boolean isSee = false;
+
+    private final FlexibleTenpoActivity self = this;
 
     private ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
         @Override
@@ -508,6 +516,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements Observab
     public final void onPause() {
         mMapView.onPause();
         super.onPause();
+        BusHolder.get().unregister(self);
 
         ViewHolder viewHolder = getPlayingViewHolder();
         if (viewHolder != null) {
@@ -518,9 +527,22 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements Observab
     @Override
     public final void onResume() {
         super.onResume();
+        BusHolder.get().register(self);
         mMapView.onResume();
 
         startMovie();
+    }
+
+    @Subscribe
+    public void subscribe(NotificationNumberEvent event) {
+        SnackbarManager.show(
+                Snackbar.with(this)
+                        .type(SnackbarType.MULTI_LINE)
+                        .position(Snackbar.SnackbarPosition.BOTTOM)
+                        .margin(16, 16, 16, 20)
+                        .backgroundDrawable(R.color.material_drawer_background)
+                        .text(event.mMessage)
+        );
     }
 
     @Override

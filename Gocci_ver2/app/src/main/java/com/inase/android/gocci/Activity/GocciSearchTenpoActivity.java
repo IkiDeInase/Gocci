@@ -7,24 +7,32 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.PopupWindow;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.facebook.login.LoginManager;
 import com.hatenablog.shoma2da.eventdaterecorderlib.EventDateRecorder;
+import com.inase.android.gocci.Base.ToukouPopup;
 import com.inase.android.gocci.Event.BusHolder;
 import com.inase.android.gocci.Event.NotificationNumberEvent;
 import com.inase.android.gocci.Event.SearchKeywordPostEvent;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.View.DrawerProfHeader;
+import com.inase.android.gocci.View.NotificationListView;
 import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;
 import com.loopj.android.http.AsyncHttpClient;
@@ -36,6 +44,9 @@ import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.nispok.snackbar.Snackbar;
+import com.nispok.snackbar.SnackbarManager;
+import com.nispok.snackbar.enums.SnackbarType;
 import com.squareup.otto.Subscribe;
 import com.twitter.sdk.android.Twitter;
 
@@ -167,7 +178,62 @@ public class GocciSearchTenpoActivity extends AppCompatActivity {
 
     @Subscribe
     public void subscribe(NotificationNumberEvent event) {
+        SnackbarManager.show(
+                Snackbar.with(this)
+                        .type(SnackbarType.MULTI_LINE)
+                        .position(Snackbar.SnackbarPosition.BOTTOM)
+                        .margin(16, 16, 16, 20)
+                        .backgroundDrawable(R.color.material_drawer_background)
+                        .text(event.mMessage)
+        );
     }
+
+    /*
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.search, menu);
+        // お知らせ未読件数バッジ表示
+        mSearchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
+        mSearchView.setQueryHint("お店を検索する");
+
+        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String searchWord) {
+                if (mLat != 0.0) {
+                    BusHolder.get().post(new SearchKeywordPostEvent(searchWord, mLat, mLon));
+                    mSearchView.clearFocus();
+                } else {
+                    Toast.makeText(GocciSearchTenpoActivity.this, "現在地が読み込めず、検索に失敗しました。", Toast.LENGTH_SHORT).show();
+                }
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                return false;
+            }
+        });
+
+        mSearchView.setOnSearchClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SmartLocation.with(GocciSearchTenpoActivity.this).location().oneFix().start(new OnLocationUpdatedListener() {
+                    @Override
+                    public void onLocationUpdated(Location location) {
+                        if (location != null) {
+                            mLat = location.getLatitude();
+                            mLon = location.getLongitude();
+                            Log.e("とったどー", "検索に使うよ");
+                        } else {
+                            Log.e("からでしたー", "locationupdated");
+                        }
+                    }
+                });
+            }
+        });
+        return super.onCreateOptionsMenu(menu);
+    }
+    */
 
     class timelineClickHandler implements Runnable {
         public void run() {

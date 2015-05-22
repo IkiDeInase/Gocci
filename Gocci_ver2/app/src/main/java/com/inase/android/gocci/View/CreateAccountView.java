@@ -50,6 +50,8 @@ public class CreateAccountView extends SupportBlurDialogFragment implements View
     private static final String BUNDLE_KEY_DIMMING = "bundle_key_dimming_effect";
     private static final String BUNDLE_KEY_DEBUG = "bundle_key_debug_effect";
     private static final String BUNDLE_KEY_BLURRED_ACTION_BAR = "bundle_key_blurred_action_bar";
+    private static final String BUNDLE_KEY_ISNEW = "bundle_key_isnew";
+    private static final String BUNDLE_KEY_REGID = "bundle_key_regid";
 
     private static final String TAG_FOLLOWEE = "followee_num";
     private static final String TAG_FOLLOWER = "follower_num";
@@ -63,6 +65,8 @@ public class CreateAccountView extends SupportBlurDialogFragment implements View
     private boolean mDimming;
     private boolean mDebug;
     private boolean mBlurredActionBar;
+    private boolean isNew;
+    private String regid;
 
     private AsyncHttpClient httpClient;
 
@@ -80,7 +84,9 @@ public class CreateAccountView extends SupportBlurDialogFragment implements View
                                                 float downScaleFactor,
                                                 boolean dimming,
                                                 boolean debug,
-                                                boolean mBlurredActionBar
+                                                boolean mBlurredActionBar,
+                                                boolean isNew,
+                                                String regid
     ) {
         CreateAccountView fragment = new CreateAccountView();
         Bundle args = new Bundle();
@@ -104,7 +110,14 @@ public class CreateAccountView extends SupportBlurDialogFragment implements View
                 BUNDLE_KEY_BLURRED_ACTION_BAR,
                 mBlurredActionBar
         );
-
+        args.putBoolean(
+                BUNDLE_KEY_ISNEW,
+                isNew
+        );
+        args.putString(
+                BUNDLE_KEY_REGID,
+                regid
+        );
         fragment.setArguments(args);
         return fragment;
     }
@@ -118,6 +131,8 @@ public class CreateAccountView extends SupportBlurDialogFragment implements View
         mDimming = args.getBoolean(BUNDLE_KEY_DIMMING);
         mDebug = args.getBoolean(BUNDLE_KEY_DEBUG);
         mBlurredActionBar = args.getBoolean(BUNDLE_KEY_BLURRED_ACTION_BAR);
+        isNew = args.getBoolean(BUNDLE_KEY_ISNEW);
+        regid = args.getString(BUNDLE_KEY_REGID);
     }
 
     @Override
@@ -254,6 +269,10 @@ public class CreateAccountView extends SupportBlurDialogFragment implements View
                         accountParam.put("user_name", username);
                         accountParam.put("email", email);
                         accountParam.put("password", password);
+
+                    if (isNew) {
+                        accountParam.put("token_id", regid);
+                    }
 
                         postAccountAsync(getActivity(), accountParam);
                 } else {

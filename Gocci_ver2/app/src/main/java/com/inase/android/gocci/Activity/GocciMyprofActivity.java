@@ -39,6 +39,9 @@ import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.nispok.snackbar.Snackbar;
+import com.nispok.snackbar.SnackbarManager;
+import com.nispok.snackbar.enums.SnackbarType;
 import com.squareup.otto.Subscribe;
 import com.twitter.sdk.android.Twitter;
 
@@ -124,6 +127,14 @@ public class GocciMyprofActivity extends AppCompatActivity {
 
     @Subscribe
     public void subscribe(NotificationNumberEvent event) {
+        SnackbarManager.show(
+                Snackbar.with(this)
+                        .type(SnackbarType.MULTI_LINE)
+                        .position(Snackbar.SnackbarPosition.BOTTOM)
+                        .margin(16, 16, 16, 20)
+                        .backgroundDrawable(R.color.material_drawer_background)
+                        .text(event.mMessage)
+        );
         notificationNumber.setVisibility(View.VISIBLE);
         notificationNumber.setText(String.valueOf(event.mNotificationNumber));
     }

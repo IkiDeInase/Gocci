@@ -117,8 +117,6 @@ public class Search_mapFragment extends BaseFragment
 
     private GoogleMap mMap;
 
-    private LocationManager mLocationManager;
-
     private boolean isCapturingLocation = false;
 
     private Location firstLocation = null;
@@ -240,8 +238,6 @@ public class Search_mapFragment extends BaseFragment
             fm = (SupportMapFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.map);
             fm.getMapAsync(this);
         }
-        //システムサービスのLOCATION_SERVICEからLocationManager objectを取得
-        mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
         return view1;
     }

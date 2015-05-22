@@ -17,7 +17,8 @@
         android:text="Gocci.とは？"
         android:textStyle="bold"
         android:textSize="28sp"
-        android:layout_gravity="center_horizontal" />
+        android:layout_gravity="center_horizontal"
+        android:textColor="@color/namegrey" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -25,5 +26,6 @@
         android:text="Gocci.は７秒のグルメ動画アプリです"
         android:layout_margin="8dp"
         android:layout_gravity="center_horizontal"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        android:textColor="@color/nameblack" />
 </LinearLayout>

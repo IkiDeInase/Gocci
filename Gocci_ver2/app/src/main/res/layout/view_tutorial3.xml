@@ -50,12 +50,14 @@
         android:text="検索すること　記録すること"
         android:layout_gravity="center_horizontal"
         android:textSize="16sp"
-        android:layout_marginBottom="4dp" />
+        android:layout_marginBottom="4dp"
+        android:textColor="@color/nameblack" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="投稿すること　ができます"
         android:layout_gravity="center_horizontal"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        android:textColor="@color/nameblack" />
 </LinearLayout>

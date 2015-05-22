@@ -17,7 +17,8 @@
         android:layout_marginRight="16dp"
         android:layout_marginTop="8dp"
         android:id="@+id/restname_spinner"
-        android:textSize="12sp" />
+        android:textSize="12sp"
+        android:textColor="@color/timecolor" />
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -54,7 +55,8 @@
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         app:met_floatingLabel="normal"
-        android:textSize="12sp" />
+        android:textSize="12sp"
+        android:textColor="@color/timecolor" />
 
     <com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner
         android:id="@+id/mood_spinner"
@@ -65,7 +67,8 @@
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         app:met_floatingLabel="normal"
-        android:textSize="12sp" />
+        android:textSize="12sp"
+        android:textColor="@color/timecolor" />
 
     <com.rengwuxian.materialedittext.MaterialEditText
         android:layout_width="match_parent"
@@ -78,7 +81,8 @@
         android:layout_marginRight="16dp"
         android:id="@+id/edit_value"
         android:textSize="12sp"
-        android:inputType="number" />
+        android:inputType="number"
+        android:textColor="@color/timecolor" />
 
     <com.rengwuxian.materialedittext.MaterialEditText
         android:layout_width="match_parent"
@@ -91,7 +95,8 @@
         android:layout_marginRight="16dp"
         android:id="@+id/edit_comment"
         android:inputType="textShortMessage"
-        android:textSize="12sp" />
+        android:textSize="12sp"
+        android:textColor="@color/timecolor" />
 
     <RelativeLayout
         android:layout_width="match_parent"

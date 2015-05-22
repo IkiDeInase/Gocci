@@ -18,6 +18,9 @@ import com.inase.android.gocci.Event.NotificationNumberEvent;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.common.SavedData;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Created by kinagafuji on 15/05/01.
  */
@@ -65,22 +68,31 @@ public class GcmIntentService extends IntentService {
     private void sendNotification(String msg) {
         int NOTIFICATION_ID = 1;
 
+        try {
+            JSONObject json = new JSONObject(msg);
+            String message = json.getString("message");
+            int badge = json.getInt("badge");
+
         NotificationManager notificationManager = (NotificationManager)
                 this.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        BusHolder.get().post(new NotificationNumberEvent(Integer.parseInt(msg)));
-        SavedData.setNotification(getApplicationContext(), Integer.parseInt(msg));
+        BusHolder.get().post(new NotificationNumberEvent(badge, message));
+        SavedData.setNotification(getApplicationContext(), badge);
 
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, new Intent(this, SplashActivity.class), 0);
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.ic_gocci_push)
-                        .setContentTitle("Gocci")
+                        .setContentTitle("Gocciからのお知らせ")
                         .setStyle(new NotificationCompat.BigTextStyle()
-                                .bigText(msg))
-                        .setContentText(msg);
+                                .bigText(message))
+                        .setContentText(message);
 
         builder.setContentIntent(contentIntent);
         notificationManager.notify(NOTIFICATION_ID, builder.build());
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 }

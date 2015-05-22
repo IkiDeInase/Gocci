@@ -30,5 +30,6 @@
         android:text="７秒で外観→内装→食事を撮りましょう"
         android:textSize="16sp"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="30dp" />
+        android:layout_marginTop="30dp"
+        android:textColor="@color/nameblack" />
 </LinearLayout>
