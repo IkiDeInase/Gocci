@@ -93,7 +93,6 @@ public class CacheManager {
     // 初期化フラグ
     private static boolean sInitFlag = false;
 
-
     // キャッシュディレクトリ
     private File mCacheDir;
 

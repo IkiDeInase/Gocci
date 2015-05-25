@@ -29,6 +29,8 @@ public class Const {
     public static final String URL_RESTRAUNT_FOLLOW = "http://api-gocci.jp/wants/";
     public static final String URL_RESTRAUNT_UNFOLLOW = "http://api-gocci.jp/unwants/";
 
+    public static final String URL_NOTICE_LIST = "http://api-gocci.jp/notice/";
+
     // 動画ファイルのキャッシュファイルの接頭辞
     public static final String MOVIE_CACHE_PREFIX = "movie_cache_";
 

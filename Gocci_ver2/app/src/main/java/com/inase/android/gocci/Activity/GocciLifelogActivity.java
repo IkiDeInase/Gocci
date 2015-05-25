@@ -169,7 +169,7 @@ public class GocciLifelogActivity extends AppCompatActivity {
                 RequestParams params = new RequestParams();
                 params.put("user_name", SavedData.getLoginName(GocciLifelogActivity.this));
                 params.put("picture", SavedData.getLoginPicture(GocciLifelogActivity.this));
-                View notification = new NotificationListView(GocciLifelogActivity.this, params);
+                View notification = new NotificationListView(GocciLifelogActivity.this);
 
                 final PopupWindow window = ToukouPopup.newBasicPopupWindow(GocciLifelogActivity.this);
                 window.setContentView(notification);

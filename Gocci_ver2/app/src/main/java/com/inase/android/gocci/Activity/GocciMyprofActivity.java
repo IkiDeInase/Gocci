@@ -168,7 +168,7 @@ public class GocciMyprofActivity extends AppCompatActivity {
                 RequestParams params = new RequestParams();
                 params.put("user_name", SavedData.getLoginName(GocciMyprofActivity.this));
                 params.put("picture", SavedData.getLoginPicture(GocciMyprofActivity.this));
-                View notification = new NotificationListView(GocciMyprofActivity.this, params);
+                View notification = new NotificationListView(GocciMyprofActivity.this);
 
                 final PopupWindow window = ToukouPopup.newBasicPopupWindow(GocciMyprofActivity.this);
                 window.setContentView(notification);

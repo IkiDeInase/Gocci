@@ -417,8 +417,6 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
                 if (swipyRefreshLayoutDirection == SwipyRefreshLayoutDirection.TOP) {
                     mProfSwipe.setRefreshing(true);
                     getRefreshAsync(getActivity());
-                } else {
-                    //店舗追加
                 }
             }
 

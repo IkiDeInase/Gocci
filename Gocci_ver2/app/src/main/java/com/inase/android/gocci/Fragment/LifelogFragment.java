@@ -9,13 +9,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.inase.android.gocci.Activity.CameraActivity;
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.inase.android.gocci.Activity.GocciMyprofActivity;
 import com.inase.android.gocci.Base.BaseFragment;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.SyncHttpClient;
 import com.melnykov.fab.FloatingActionButton;
 import com.squareup.timessquare.CalendarPickerView;
@@ -154,8 +154,22 @@ public class LifelogFragment extends BaseFragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                /*
                 Intent intent = new Intent(getActivity(), CameraActivity.class);
                 startActivity(intent);
+                */
+                new MaterialDialog.Builder(getActivity())
+                        .title("その他メニュー")
+                        .items(R.array.list_lifelog_menu)
+                        .itemsCallback(new MaterialDialog.ListCallback() {
+                            @Override
+                            public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
+                                if (charSequence.toString().equals("行きたい店リストを見る")) {
+                                    android.os.Handler handler = new android.os.Handler();
+                                    handler.postDelayed(new wantListClickHandler(), 500);
+                                }
+                            }
+                        }).show();
             }
         });
 
@@ -255,5 +269,13 @@ public class LifelogFragment extends BaseFragment {
         }
     }
 
-
+    class wantListClickHandler implements Runnable {
+        public void run() {
+            /*
+            Intent intent = new Intent(getActivity(), );
+            startActivity(intent);
+            overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+            */
+        }
+    }
 }

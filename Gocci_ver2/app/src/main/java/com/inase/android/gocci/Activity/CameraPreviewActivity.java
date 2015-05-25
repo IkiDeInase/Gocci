@@ -23,6 +23,7 @@ import com.gitonway.lee.niftymodaldialogeffects.lib.NiftyDialogBuilder;
 import com.hatenablog.shoma2da.eventdaterecorderlib.EventDateRecorder;
 import com.inase.android.gocci.Base.SquareVideoView;
 import com.inase.android.gocci.R;
+import com.inase.android.gocci.common.CacheManager;
 import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;
 import com.loopj.android.http.AsyncHttpClient;
@@ -301,6 +302,8 @@ public class CameraPreviewActivity extends AppCompatActivity {
     private void postSignupAsync(final Context context) {
         Log.e("中身は！？！？", String.valueOf(toukouParam));
         httpClient = new AsyncHttpClient();
+        httpClient.setConnectTimeout(10 * 1000);
+        httpClient.setResponseTimeout(60 * 1000);
         httpClient.setCookieStore(SavedData.getCookieStore(context));
         httpClient.post(context, sMovieurl, toukouParam, new TextHttpResponseHandler() {
             @Override
@@ -326,7 +329,7 @@ public class CameraPreviewActivity extends AppCompatActivity {
             public void onFinish() {
                 mPostProgress.setVisibility(View.GONE);
                 //成功しても失敗してもホーム画面に戻る。
-                Intent intent = new Intent(context, GocciTimelineActivity.class);
+                Intent intent = new Intent(context, LoginPreferenceActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);

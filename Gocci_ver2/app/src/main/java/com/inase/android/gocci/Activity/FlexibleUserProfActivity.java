@@ -305,8 +305,6 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Obser
                     mUserProfSwipe.setRefreshing(true);
 
                     getRefreshAsync(FlexibleUserProfActivity.this);
-                } else {
-                    //追加更新
                 }
             }
         });

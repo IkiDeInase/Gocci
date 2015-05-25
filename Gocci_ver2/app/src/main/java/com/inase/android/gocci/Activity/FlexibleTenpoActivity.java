@@ -463,8 +463,6 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements Observab
                 if (swipyRefreshLayoutDirection == SwipyRefreshLayoutDirection.TOP) {
                     mTenpoSwipe.setRefreshing(true);
                     getRefreshAsync(FlexibleTenpoActivity.this);
-                } else {
-
                 }
             }
         });

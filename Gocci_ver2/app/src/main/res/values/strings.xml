@@ -71,6 +71,8 @@
 
     <string name="seeHomepage">ホームページを見る</string>
 
+    <string name="seeWantList">行きたい店リストを見る</string>
+
     <string-array name="my_facebook_permissions">
         <item>public_profile</item>
     </string-array>

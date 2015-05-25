@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <include layout="@layout/cell_name_picture_bar" />
+            <include layout="@layout/cell_name_bar2" />
 
             <include layout="@layout/cell_video_bar" />
 

@@ -7,7 +7,7 @@
 
     <com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayout
         android:id="@+id/swipe_container"
-        app:direction="both"
+        app:direction="top"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 

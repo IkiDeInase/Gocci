@@ -42,4 +42,8 @@
         <item>@string/seeHomepage</item>
     </array>
 
+    <array name="list_lifelog_menu">
+        <item>@string/seeWantList</item>
+    </array>
+
 </resources>

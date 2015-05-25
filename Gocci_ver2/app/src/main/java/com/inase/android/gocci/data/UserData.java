@@ -33,6 +33,7 @@ public class UserData {
     private static final String TAG_WANT_FLAG = "want_flag";
     private static final String TAG_CHEER_NUM = "cheer_num";
     private static final String TAG_TOTAL_CHEER_NUM = "total_cheer_num";
+    private static final String TAG_NOTICE = "notice";
 
 
     //JSON用のsetter/getter
@@ -65,6 +66,7 @@ public class UserData {
     private Integer want_flag;
     private Integer cheer_num;
     private Integer total_cheer_num;
+    private String notice;
 
     public UserData() {
     }
@@ -348,6 +350,14 @@ public class UserData {
 
     public void setTotal_cheer_num(Integer total_cheer_num) {
         this.total_cheer_num = total_cheer_num;
+    }
+
+    public String getNotice() {
+        return this.notice;
+    }
+
+    public void setNotice(String notice) {
+        this.notice = notice;
     }
 
     public static UserData createUserData(JSONObject jsonObject) {

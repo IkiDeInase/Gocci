@@ -231,7 +231,7 @@ public class GocciTimelineActivity extends AppCompatActivity {
                 RequestParams params = new RequestParams();
                 params.put("user_name", SavedData.getLoginName(GocciTimelineActivity.this));
                 params.put("picture", SavedData.getLoginPicture(GocciTimelineActivity.this));
-                View notification = new NotificationListView(GocciTimelineActivity.this, params);
+                View notification = new NotificationListView(GocciTimelineActivity.this);
 
                 final PopupWindow window = ToukouPopup.newBasicPopupWindow(GocciTimelineActivity.this);
                 window.setContentView(notification);
