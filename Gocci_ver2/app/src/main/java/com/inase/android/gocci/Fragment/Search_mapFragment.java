@@ -761,6 +761,7 @@ public class Search_mapFragment extends BaseFragment
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
+            Log.e("ポジでたよ", "ポジ" + position);
             Search_mapHolder mapHolder = null;
             if (convertView == null || convertView.getTag() == null) {
                 convertView = layoutInflater.inflate(R.layout.cell_search, null);

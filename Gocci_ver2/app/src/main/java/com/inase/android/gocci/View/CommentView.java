@@ -106,7 +106,6 @@ public class CommentView extends LinearLayout {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
                     inputMethodManager.hideSoftInputFromWindow(mCommenttext.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
-                    mCommentString = String.valueOf(mCommenttext.getText());
                     return true;
                 }
                 return false;
@@ -116,17 +115,16 @@ public class CommentView extends LinearLayout {
         mCommentButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mCommentString != null) {
-                    commentPostParam = new RequestParams();
-                    commentPostParam.put("post_id", mPost_id);
-                    commentPostParam.put("comment", mCommentString);
+                mCommentString = mCommenttext.getText().toString();
+                inputMethodManager.hideSoftInputFromWindow(mCommenttext.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
 
-                    postSignupAsync(context);
+                commentPostParam = new RequestParams();
+                commentPostParam.put("post_id", mPost_id);
+                commentPostParam.put("comment", mCommentString);
 
-                    mCommenttext.setText(null);
-                } else {
-                    Toast.makeText(context, "コメントを入力してください", Toast.LENGTH_SHORT).show();
-                }
+                postSignupAsync(context);
+
+                mCommenttext.setText(null);
 
             }
         });

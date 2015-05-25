@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.inase.android.gocci.Activity.FollowerFolloweeCheerListActivity;
 import com.inase.android.gocci.Activity.GocciMyprofActivity;
 import com.inase.android.gocci.Base.BaseFragment;
 import com.inase.android.gocci.R;
@@ -271,11 +272,10 @@ public class LifelogFragment extends BaseFragment {
 
     class wantListClickHandler implements Runnable {
         public void run() {
-            /*
-            Intent intent = new Intent(getActivity(), );
+            Intent intent = new Intent(getActivity(), FollowerFolloweeCheerListActivity.class);
+            intent.putExtra("category", "want");
             startActivity(intent);
-            overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-            */
+            getActivity().overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
         }
     }
 }

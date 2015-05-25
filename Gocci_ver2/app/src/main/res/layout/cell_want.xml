@@ -1,0 +1,63 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/want_picture"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_margin="8dp"
+        android:src="@drawable/ic_userpicture" />
+
+    <com.andexert.library.RippleView
+        android:id="@+id/wantButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:padding="12dp">
+
+        <ImageView
+            android:id="@+id/deletewantButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_like_red"
+            android:visibility="invisible"/>
+
+        <ImageView
+            android:id="@+id/addwantButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_like_white"
+            android:visibility="invisible"/>
+
+    </com.andexert.library.RippleView>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/want_picture"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/restname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:maxLength="20"
+            android:text="Restname"
+            android:textColor="@color/namegrey"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/locality"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="locality"
+            android:textColor="@color/nameblack" />
+    </LinearLayout>
+
+</RelativeLayout>

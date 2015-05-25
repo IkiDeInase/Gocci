@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -14,6 +15,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import com.andexert.library.RippleView;
 import com.hatenablog.shoma2da.eventdaterecorderlib.EventDateRecorder;
 import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.R;
@@ -54,13 +56,12 @@ public class TutorialGuideActivity extends AppCompatActivity {
 
 
             //チュートリアルを実施
-            Button button = (Button) findViewById(R.id.tutorial_finish);
+            RippleView button = (RippleView) findViewById(R.id.tutorial_finish);
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(TutorialGuideActivity.this, GocciTimelineActivity.class);
-                    startActivity(intent);
-                    TutorialGuideActivity.this.finish();
+                    Handler handler = new Handler();
+                    handler.postDelayed(new finishClickHandler(), 750);
                 }
             });
 
@@ -99,5 +100,12 @@ public class TutorialGuideActivity extends AppCompatActivity {
         }
     }
 
-
+    class finishClickHandler implements Runnable {
+        public void run() {
+            Intent intent = new Intent(TutorialGuideActivity.this, GocciTimelineActivity.class);
+            startActivity(intent);
+            overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+            TutorialGuideActivity.this.finish();
+        }
+    }
 }

@@ -126,7 +126,7 @@ public class CameraActivity extends Activity implements ViewPager.OnPageChangeLi
         Effectstype effect = Effectstype.SlideBottom;
         dialogBuilder
                 .withTitle("Gocciカメラ")
-                .withMessage("このカメラはボタンをタップしている間だけ再生されます。技術的な問題でうまく動作しない場合があります。")
+                .withMessage("このカメラはボタンをタップしている間だけ再生されます。縦向きで投稿するようにしてください！")
                 .withDuration(500)                                          //def
                 .withEffect(effect)
                 .isCancelableOnTouchOutside(true)

@@ -249,6 +249,11 @@ public class LoginActivity extends AppCompatActivity {
         httpClient.post(context, Const.URL_SIGNUP_API, loginParams, new JsonHttpResponseHandler() {
 
             @Override
+            public void onStart() {
+                progress.setVisibility(View.VISIBLE);
+            }
+
+            @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 Log.e("サインアップ成功", String.valueOf(response));
 
