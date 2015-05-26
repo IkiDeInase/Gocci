@@ -296,7 +296,6 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Obser
         getSignupAsync(FlexibleUserProfActivity.this);
 
         mUserProfSwipe = (SwipyRefreshLayout) findViewById(R.id.swipe_container);
-        mUserProfSwipe.setColorSchemeColors(R.color.main_color_light, R.color.gocci, R.color.main_color_dark, R.color.window_bg);
         mUserProfSwipe.setOnRefreshListener(new SwipyRefreshLayout.OnRefreshListener() {
 
             @Override

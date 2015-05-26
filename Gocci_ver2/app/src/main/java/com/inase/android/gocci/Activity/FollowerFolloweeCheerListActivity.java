@@ -89,7 +89,6 @@ public class FollowerFolloweeCheerListActivity extends AppCompatActivity {
         getJSON(mUrl, mCategory);
 
         refresh = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
-        refresh.setColorSchemeColors(R.color.main_color_light, R.color.gocci, R.color.main_color_dark, R.color.window_bg);
         refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 
             @Override

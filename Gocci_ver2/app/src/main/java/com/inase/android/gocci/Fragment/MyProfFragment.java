@@ -409,7 +409,6 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
         getSignupAsync(getActivity());//サインアップとJSON
 
         mProfSwipe = (SwipyRefreshLayout) view.findViewById(R.id.swipe_container);
-        mProfSwipe.setColorSchemeColors(R.color.main_color_light, R.color.gocci, R.color.main_color_dark, R.color.window_bg);
         mProfSwipe.setOnRefreshListener(new SwipyRefreshLayout.OnRefreshListener() {
 
             @Override

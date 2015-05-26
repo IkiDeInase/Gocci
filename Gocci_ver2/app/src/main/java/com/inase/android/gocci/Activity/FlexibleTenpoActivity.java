@@ -455,7 +455,6 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements Observab
 
         mTenpoAdapter = new TenpoAdapter(this, 0, mTenpousers);
 
-        mTenpoSwipe.setColorSchemeColors(R.color.main_color_light, R.color.gocci, R.color.main_color_dark, R.color.window_bg);
         mTenpoSwipe.setOnRefreshListener(new SwipyRefreshLayout.OnRefreshListener() {
 
             @Override

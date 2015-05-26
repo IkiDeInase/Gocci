@@ -158,7 +158,6 @@ public class Search_mapFragment extends BaseFragment
         mSearch_mapListView.setScrollViewCallbacks(this);
 
         mSearchmapSwipe = (SwipyRefreshLayout) view1.findViewById(R.id.swipe_searchmap);
-        mSearchmapSwipe.setColorSchemeColors(R.color.main_color_light, R.color.gocci, R.color.main_color_dark, R.color.window_bg);
         mSearchmapSwipe.setOnRefreshListener(new SwipyRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh(SwipyRefreshLayoutDirection swipyRefreshLayoutDirection) {

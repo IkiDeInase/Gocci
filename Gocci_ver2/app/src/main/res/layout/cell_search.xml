@@ -53,7 +53,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/distance"
+                        android:text="距離"
                         android:id="@+id/distance"
                         android:textColor="@color/nameblack"
                         android:textSize="10sp"
@@ -81,7 +81,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/restname"
+                        android:text="店舗名"
                         android:id="@+id/restname"
                         android:maxLength="20"
                         android:textSize="14sp"

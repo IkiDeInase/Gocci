@@ -1,16 +1,7 @@
 <resources>
     <!-- 色を定義-->
     <color name="window_bg">#ebedf0</color>
-    <drawable name="window_bg">@color/window_bg</drawable>
-    <color name="main_color_light">#EB9152</color>
-    <color name="main_color_dark">#E2694A</color>
-    <color name="selector_transparent1">#22000000</color>
-    <color name="selector_transparent2">#11000000</color>
-    <color name="gocci">#f52b00</color>
-    <color name="gocci_button">#f75533</color>
-    <color name="gocci_header">#f75533</color>
-    <color name="gocci_nannda">#f75533</color>
-    <color name="gocci_progress">#f2614d</color>
+
     <color name="videobackground">#ffc5c6c9</color>
     <color name="tab_background">#555555</color>
 
@@ -32,16 +23,8 @@
     <color name="custom_text_selected">#ffffff</color>
     <color name="custom_text_inactive">#7f778088</color>
 
-    <color name="gocci_light">#ffab91</color>
-    <color name="gocci_dark">#ff8a65</color>
-    <color name="gocci2">#ff7043</color>
-
-    <color name="blue_button">#4aa5e0</color>
-
     <!--Activityカラー-->
-    <color name="header_myprof">#009688</color>
-    <color name="header_tenpo">#ec407a</color>
-    <color name="header_userprof">#00bcd4</color>
+
     <color name="backgroung_grey">#eeeeee</color>
 
     <!--カメラ画面-->
@@ -57,7 +40,6 @@
     <!--ホワイト-->
     <color name="white">#ffffff</color>
     <color name="materialwhite">#fafafa</color>
-
     <color name="view_background">#f8f8f8</color>
 
     <!-- Material DEFAULT colors -->
@@ -65,6 +47,10 @@
     <color name="material_drawer_primary_dark">#f74533</color>
     <color name="material_drawer_primary_light">#f76533</color>
     <color name="material_drawer_accent">#f75533</color>
+    <color name="gocci_button">#f75533</color>
+    <color name="gocci_header">#f75533</color>
+    <color name="gocci_nannda">#f75533</color>
+    <color name="gocci_progress">#f2614d</color>
 
     <!-- OVERWRITE THESE COLORS FOR A LIGHT THEME -->
     <!-- MaterialDrawer DEFAULT colors -->
@@ -97,9 +83,6 @@
     <color name="material_drawer_dark_selected">#555555</color>
     <color name="material_drawer_dark_selected_text">#f75533</color>
     <color name="material_drawer_dark_header_selection_text">#555555</color>
-
-    <color name="Transparent">#BF000000</color>
-    <color name="black">#000000</color>
 
     <color name="value">#ee8221</color>
     <color name="category">#2b77bf</color>

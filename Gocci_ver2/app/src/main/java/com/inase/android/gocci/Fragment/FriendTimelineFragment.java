@@ -188,7 +188,6 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
             Toast.makeText(getActivity(), "通信に失敗しました", Toast.LENGTH_LONG).show();
         }
 
-        mTimelineSwipe.setColorSchemeColors(R.color.main_color_light, R.color.gocci, R.color.main_color_dark, R.color.window_bg);
         mTimelineSwipe.setOnRefreshListener(new SwipyRefreshLayout.OnRefreshListener() {
 
             @Override

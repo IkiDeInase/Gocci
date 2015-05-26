@@ -13,7 +13,6 @@
         android:layout_marginLeft="12dp"
         android:layout_marginRight="8dp"
         android:layout_marginTop="12dp"
-        android:contentDescription="@string/picture"
         android:src="@drawable/ic_userpicture"
         android:layout_centerVertical="true" />
 

@@ -11,10 +11,6 @@
         <item name="colorAccent">@color/material_drawer_window_background</item>
     </style>
 
-    <style name="Toolbar" parent="Theme.AppCompat">
-
-    </style>
-
     <style name="Animations" />
 
     <style name="Animations.GrowFromBottom">
@@ -30,18 +26,6 @@
     <style name="Animations.GrowFromTopright">
         <item name="@android:windowEnterAnimation">@anim/grow_from_topright_to_bottomleft</item>
         <item name="@android:windowExitAnimation">@anim/shrink_from_bottomleft_to_topright</item>
-    </style>
-
-    <style name="Theme.CustomProgressDialog" parent="android:style/Theme.Dialog">
-
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
-
-    </style>
-
-    <style name="FacebookLoginButton">
-        <item name="android:textSize">16sp</item>
-        <item name="android:layout_gravity">center_horizontal</item>
     </style>
 
     <style name="Theme.NoTitleBar" parent="Theme.AppCompat.Light.NoActionBar">
