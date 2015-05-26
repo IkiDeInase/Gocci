@@ -8,9 +8,15 @@ import android.support.multidex.MultiDex;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+import com.inase.android.gocci.R;
 import com.inase.android.gocci.common.CacheManager;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
+
+import java.util.HashMap;
 
 import io.fabric.sdk.android.Fabric;
 import io.nlopez.smartlocation.SmartLocation;
@@ -28,6 +34,50 @@ public class Application_Gocci extends Application {
 
     public Location getFirstLocation() {
         return mLocation;
+    }
+
+    private static final String PROPERTY_ID = "UA-63362687-1";
+    public enum TrackerName {
+        APP_TRACKER, // Tracker used only in this app.
+        GLOBAL_TRACKER, // Tracker used by all the apps from a company. eg: roll-up tracking.
+        ECOMMERCE_TRACKER, // Tracker used by all ecommerce transactions from a company.
+    }
+
+    HashMap<TrackerName, Tracker> mTrackers = new HashMap<TrackerName, Tracker>();
+    public Application_Gocci() {
+        super();
+    }
+    public synchronized Tracker getTracker(TrackerName trackerId) {
+        if (!mTrackers.containsKey(trackerId)) {
+
+            GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
+            Tracker t = (trackerId == TrackerName.APP_TRACKER) ? analytics.newTracker(PROPERTY_ID)
+                    : (trackerId == TrackerName.GLOBAL_TRACKER) ? analytics.newTracker(R.xml.global_tracker)
+                    : analytics.newTracker(R.xml.ecommerce_tracker);
+            t.enableAdvertisingIdCollection(true);
+            mTrackers.put(trackerId, t);
+
+        }
+        return mTrackers.get(trackerId);
+    }
+
+    public static void sendGAScreen(Context context, String screenName) {
+        Tracker t = ((Application_Gocci) context.getApplicationContext()).getTracker(Application_Gocci.TrackerName.APP_TRACKER);
+        t.setScreenName(screenName);
+        t.send(new HitBuilders.AppViewBuilder().build());
+    }
+
+    public static void sendGAEvent(Context context, String category, String action, String label) {
+        if(label.length() == 0){
+            label = "-";
+        }
+        Tracker t = ((Application_Gocci) context.getApplicationContext()).getTracker(TrackerName.APP_TRACKER);
+        t.send(new HitBuilders.EventBuilder()
+                .setCategory(category)
+                .setAction(action)
+                .setLabel(label)
+                .setValue(0)
+                .build());
     }
 
     @Override
