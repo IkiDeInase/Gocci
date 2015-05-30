@@ -665,8 +665,8 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Obser
                 Log.d("DEBUG", "MOVIE::onPrepared postId: " + postId);
                 if (mPlayingPostId.equals(postId) && !mPlayBlockFlag) {
                     Log.d("DEBUG", "MOVIE::onPrepared 再生開始");
-                    //viewHolder.mVideoThumbnail.setVisibility(View.INVISIBLE);
-                    //viewHolder.movie.start();
+                    viewHolder.mVideoThumbnail.setVisibility(View.INVISIBLE);
+                    viewHolder.movie.start();
                     viewHolder.videoFrame.setClickable(true);
                     Log.e("DEBUG", "onPrepared 動画再生開始: " + userData.getMovie());
 

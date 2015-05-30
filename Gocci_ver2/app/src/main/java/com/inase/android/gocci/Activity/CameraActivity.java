@@ -240,12 +240,13 @@ public class CameraActivity extends Activity implements ViewPager.OnPageChangeLi
             if (field.getName().startsWith("STREAM_")
                     && Modifier.isStatic(field.getModifiers())
                     && field.getType() == int.class) {
+                Integer stream = null;
                 try {
-                    Integer stream = (Integer) field.get(null);
-                    streams.add(stream);
-                } catch (IllegalArgumentException | IllegalAccessException e) {
-                    // do nothing
+                    stream = (Integer) field.get(null);
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
                 }
+                streams.add(stream);
             }
         }
     }
