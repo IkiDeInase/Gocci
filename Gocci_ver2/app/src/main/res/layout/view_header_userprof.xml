@@ -22,13 +22,14 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="GOCCI_MAN"
+            android:text="@string/username"
             android:id="@+id/userprof_username"
             android:textStyle="bold"
-            android:textSize="20sp"
+            android:textSize="@dimen/large_text"
             android:textColor="@color/namegrey"
             android:layout_gravity="center_horizontal"
-            android:maxLength="20" />
+            android:singleLine="true"
+            />
 
         <com.andexert.library.RippleView
             android:layout_width="wrap_content"
@@ -48,7 +49,7 @@
                 android:paddingTop="8dp"
                 android:paddingRight="12dp"
                 android:paddingBottom="8dp"
-                android:textSize="14sp"
+                android:textSize="@dimen/normal_text"
                 android:id="@+id/followText" />
         </com.andexert.library.RippleView>
     </LinearLayout>

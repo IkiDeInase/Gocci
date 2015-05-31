@@ -17,8 +17,8 @@
             android:background="@drawable/list_bg">
 
             <ImageView
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="@dimen/userpicture_size"
+                android:layout_height="@dimen/userpicture_size"
                 android:id="@+id/circleImage"
                 android:src="@drawable/ic_userpicture"
                 android:layout_marginLeft="12dp"
@@ -35,21 +35,22 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="GOCCI_MAN"
+                    android:text="@string/username"
                     android:id="@+id/user_name"
-                    android:textSize="18sp"
+                    android:textSize="@dimen/accent_text"
                     android:maxLength="20"
+                    android:singleLine="true"
                     android:textColor="@color/nameblack"
                     android:layout_marginBottom="2dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="１時間前"
+                    android:text="@string/datetime"
                     android:id="@+id/time_text"
                     android:layout_marginTop="2dp"
                     android:textStyle="bold"
-                    android:textSize="12sp"
+                    android:textSize="@dimen/small_text"
                     android:textColor="@color/timecolor" />
 
             </LinearLayout>

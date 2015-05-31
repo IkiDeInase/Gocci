@@ -27,20 +27,19 @@
                 android:id="@+id/rest_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxLength="25"
+                android:singleLine="true"
                 android:layout_marginTop="8dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginBottom="4dp"
-                android:minLines="0"
-                android:text="Restname"
+                android:text="@string/restname"
                 android:textColor="@color/namegrey"
-                android:textSize="14sp" />
+                android:textSize="@dimen/small_text" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="ラーメン"
-                android:textSize="12sp"
+                android:text="@string/category"
+                android:textSize="@dimen/small_text"
                 android:layout_marginLeft="8dp"
                 android:layout_marginBottom="8dp"
                 android:layout_below="@+id/rest_name"
@@ -51,8 +50,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="にぎやか"
-                android:textSize="12sp"
+                android:text="@string/atmosphere"
+                android:textSize="@dimen/small_text"
                 android:layout_marginLeft="8dp"
                 android:layout_marginBottom="8dp"
                 android:layout_below="@+id/rest_name"
@@ -64,8 +63,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="1000円"
-                android:textSize="12sp"
+                android:text="@string/value"
+                android:textSize="@dimen/small_text"
                 android:layout_marginLeft="8dp"
                 android:layout_marginBottom="8dp"
                 android:layout_below="@+id/rest_name"

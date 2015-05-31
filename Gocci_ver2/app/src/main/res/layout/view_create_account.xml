@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
         android:text="Gocci は楽しい動画アプリですので"
         android:layout_gravity="center_horizontal"
-        android:textSize="12sp"
+        android:textSize="@dimen/small_text"
         android:layout_marginTop="8dp"
         android:textColor="@color/nameblack" />
 
@@ -32,7 +32,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="登録するといいですよ"
-        android:textSize="12sp"
+        android:textSize="@dimen/small_text"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="4dp"
         android:textColor="@color/nameblack" />
@@ -41,7 +41,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="SNS でアカウント作成"
-        android:textSize="14sp"
+        android:textSize="@dimen/normal_text"
         android:textColor="@color/nameblack"
         android:textStyle="bold"
         android:layout_gravity="center_horizontal"
@@ -63,7 +63,7 @@
             android:text="twitter でアカウント作成"
             android:textColor="#ffffff"
             android:alpha="0.9"
-            android:textSize="16sp" />
+            android:textSize="@dimen/accent_text" />
 
     </com.andexert.library.RippleView>
 
@@ -83,7 +83,7 @@
             android:text="facebook でアカウント作成"
             android:textColor="#ffffff"
             android:alpha="0.9"
-            android:textSize="16sp" />
+            android:textSize="@dimen/accent_text" />
 
     </com.andexert.library.RippleView>
 
@@ -94,7 +94,7 @@
         android:layout_gravity="center_horizontal"
         android:textStyle="bold"
         android:textColor="@color/nameblack"
-        android:textSize="14sp"
+        android:textSize="@dimen/normal_text"
         android:layout_marginTop="16dp" />
 
     <EditText
@@ -106,9 +106,9 @@
         android:layout_gravity="center_horizontal"
         android:background="#f5f5f5"
         android:padding="8dp"
-        android:hint="ユーザー名"
+        android:hint="@string/username"
         android:layout_marginTop="8dp"
-        android:textSize="14sp"
+        android:textSize="@dimen/normal_text"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:textColor="@color/timecolor" />
@@ -128,9 +128,9 @@
         android:id="@+id/emailEdit"
         android:layout_gravity="center_horizontal"
         android:background="#f5f5f5"
-        android:hint="メールアドレス"
+        android:hint="@string/email"
         android:padding="8dp"
-        android:textSize="14sp"
+        android:textSize="@dimen/normal_text"
         android:layout_marginRight="16dp"
         android:layout_marginLeft="16dp"
         android:textColor="@color/timecolor" />
@@ -151,8 +151,8 @@
         android:layout_gravity="center_horizontal"
         android:background="#f5f5f5"
         android:padding="8dp"
-        android:hint="パスワード"
-        android:textSize="14sp"
+        android:hint="@string/password"
+        android:textSize="@dimen/normal_text"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:textColor="@color/timecolor" />
@@ -180,7 +180,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="アカウントを作成する"
-            android:textSize="16sp"
+            android:textSize="@dimen/accent_text"
             android:alpha="0.9"
             android:textColor="#ffffff" />
 

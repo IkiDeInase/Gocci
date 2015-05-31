@@ -4,8 +4,8 @@
     android:layout_height="wrap_content">
 
     <ImageView
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="@dimen/userpicture_size"
+        android:layout_height="@dimen/userpicture_size"
         android:id="@+id/circleImage"
         android:src="@drawable/ic_userpicture"
         android:layout_marginLeft="12dp"
@@ -16,25 +16,26 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Notice"
+        android:text="@string/notice"
         android:id="@+id/notice"
+        android:singleLine="true"
         android:layout_alignTop="@+id/circleImage"
         android:layout_toRightOf="@+id/circleImage"
         android:layout_toEndOf="@+id/circleImage"
-        android:textSize="12sp"
-        android:layout_marginTop="4dp"
+        android:textSize="@dimen/small_text"
+        android:layout_marginTop="8dp"
         android:layout_marginBottom="2dp"
         android:textColor="@color/namegrey" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="date_time"
+        android:text="@string/datetime"
         android:id="@+id/date_time"
         android:layout_centerVertical="true"
         android:layout_toRightOf="@+id/circleImage"
         android:layout_toEndOf="@+id/circleImage"
-        android:textSize="10dp"
+        android:textSize="@dimen/minimum_text"
         android:layout_below="@+id/notice"
         android:layout_marginTop="2dp"
         android:textColor="@color/nameblack" />

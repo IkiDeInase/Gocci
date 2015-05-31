@@ -35,8 +35,8 @@
 
 
                     <ImageView
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
+                        android:layout_width="@dimen/userpicture_size"
+                        android:layout_height="@dimen/userpicture_size"
                         android:id="@+id/restaurantImage"
                         android:src="@drawable/ic_userpicture"
                         android:layout_margin="4dp" />
@@ -50,22 +50,21 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Restname"
+                            android:text="@string/restname"
                             android:id="@+id/rest_name"
-                            android:textSize="14sp"
-                            android:minLines="0"
+                            android:textSize="@dimen/normal_text"
                             android:layout_marginBottom="2dp"
                             android:textColor="@color/nameblack"
-                            android:maxLength="20" />
+                            android:singleLine="true"
+                            />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Locality"
+                            android:text="@string/locality"
                             android:id="@+id/locality"
-                            android:textSize="12sp"
-                            android:maxLength="20"
-                            android:minLines="0"
+                            android:textSize="@dimen/small_text"
+                            android:singleLine="true"
                             android:layout_marginTop="2dp"
                             android:textColor="@color/timecolor" />
                     </LinearLayout>

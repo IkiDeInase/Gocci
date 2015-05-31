@@ -46,28 +46,26 @@
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:id="@+id/imageView5"
                         android:src="@drawable/ic_pin"
                         android:layout_margin="8dp" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="距離"
+                        android:text="@string/distance"
+                        android:maxLength="8"
                         android:id="@+id/distance"
                         android:textColor="@color/nameblack"
-                        android:textSize="10sp"
+                        android:textSize="@dimen/minimum_text"
                         android:layout_gravity="center_vertical" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="m"
-                        android:id="@+id/textView18"
                         android:textColor="@color/nameblack"
-                        android:textSize="10sp"
+                        android:textSize="@dimen/minimum_text"
                         android:layout_gravity="center_vertical" />
-
 
                 </LinearLayout>
 
@@ -81,10 +79,10 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="店舗名"
+                        android:text="@string/restname"
                         android:id="@+id/restname"
-                        android:maxLength="20"
-                        android:textSize="14sp"
+                        android:singleLine="true"
+                        android:textSize="@dimen/small_text"
                         android:textColor="@color/namegrey"
                         android:textStyle="bold" />
 
@@ -92,20 +90,20 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/category"
-                        android:text="カテゴリー"
-                        android:textSize="10sp"
-                        android:maxLength="30"
+                        android:text="@string/category"
+                        android:textSize="@dimen/minimum_text"
+                        android:singleLine="true"
                         android:layout_marginTop="2dp"
                         android:textColor="@color/nameblack" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="住所"
+                        android:text="@string/locality"
                         android:id="@+id/locality"
                         android:layout_marginTop="8dp"
-                        android:textSize="12sp"
-                        android:maxLength="35"
+                        android:textSize="@dimen/small_text"
+                        android:singleLine="true"
                         android:layout_marginBottom="4dp"
                         android:textColor="@color/nameblack" />
 
@@ -126,7 +124,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="この店舗を詳しく見る"
-                    android:textSize="10sp"
+                    android:textSize="@dimen/minimum_text"
                     android:textColor="@color/nameblack"
                     android:layout_margin="12dp"
                     android:id="@+id/subscribeText" />

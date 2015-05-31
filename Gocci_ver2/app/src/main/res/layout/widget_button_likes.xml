@@ -17,7 +17,7 @@
         android:layout_height="wrap_content"
         android:text="0"
         android:id="@+id/likes_Number"
-        android:textSize="14sp"
+        android:textSize="@dimen/normal_text"
         android:layout_gravity="center_vertical"
         android:textColor="@color/nameblack" />
 
@@ -25,7 +25,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Likes"
-        android:textSize="14sp"
+        android:textSize="@dimen/normal_text"
         android:layout_gravity="center_vertical"
         android:layout_marginLeft="2dp"
         android:textColor="@color/nameblack" />

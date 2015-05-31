@@ -15,11 +15,11 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TenpoName"
+        android:text="@string/restname"
         android:id="@+id/tenpo_name"
-        android:textSize="18sp"
+        android:textSize="18dp"
         android:textColor="@color/white"
-        android:maxLength="20"
+        android:singleLine="true"
         android:layout_gravity="left"
         android:textStyle="bold"
         android:layout_alignBottom="@+id/tenpo_background"
@@ -51,13 +51,13 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="行きたい店に認定"
+                android:text="@string/want"
                 android:textColor="@color/namegrey"
                 android:layout_centerHorizontal="true"
                 android:layout_below="@+id/check_image"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
-                android:textSize="10sp"
+                android:textSize="@dimen/minimum_text"
                 android:id="@+id/check_text" />
 
         </com.andexert.library.RippleView>
@@ -87,7 +87,7 @@
                 android:layout_below="@+id/button_call"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
-                android:textSize="10sp"
+                android:textSize="@dimen/minimum_text"
                  />
 
         </com.andexert.library.RippleView>
@@ -117,7 +117,7 @@
                 android:layout_below="@+id/button_go"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
-                android:textSize="10sp"
+                android:textSize="@dimen/minimum_text"
                 />
 
         </com.andexert.library.RippleView>
@@ -147,7 +147,7 @@
                 android:layout_below="@+id/button_etc"
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"
-                android:textSize="10sp" />
+                android:textSize="@dimen/minimum_text" />
 
         </com.andexert.library.RippleView>
     </LinearLayout>
@@ -168,7 +168,7 @@
         android:layout_below="@+id/separate"
         android:textColor="@color/namegrey"
         android:layout_marginTop="8dp"
-        android:textSize="16sp"
+        android:textSize="@dimen/accent_text"
         android:layout_marginBottom="8dp"
         android:layout_marginLeft="16sp" />
 
@@ -184,26 +184,27 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="カテゴリー"
+        android:text="@string/category"
         android:id="@+id/text_category"
         android:layout_below="@+id/map"
         android:layout_alignLeft="@+id/text_info"
         android:textColor="@color/nameblack"
-        android:textSize="12sp"
+        android:textSize="@dimen/small_text"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="category"
+        android:text="@string/category"
         android:id="@+id/category"
         android:layout_toRightOf="@+id/text_category"
         android:layout_marginLeft="16dp"
-        android:textSize="14sp"
+        android:textSize="@dimen/normal_text"
         android:textColor="@color/namegrey"
         android:layout_alignBottom="@+id/text_category"
-        android:maxLength="18" />
+        android:singleLine="true"
+        />
 
     <View
         android:layout_width="match_parent"
@@ -230,7 +231,7 @@
             android:layout_height="wrap_content"
             android:text="0"
             android:id="@+id/cheer_number"
-            android:textSize="20sp"
+            android:textSize="@dimen/large_text"
             android:textColor="#ffffff"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="12dp"

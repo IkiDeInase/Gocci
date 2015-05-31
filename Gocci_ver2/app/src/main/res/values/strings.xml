@@ -40,4 +40,22 @@
     <string name="seeHomepage">ホームページを見る</string>
     <string name="seeWantList">行きたい店リストを見る</string>
 
+    <string name="enjoy_eat">食を楽しもう</string>
+    <string name="introduce">グルメ動画アプリ「Gocci」</string>
+    <string name="start_gocci">Gocciを始める</string>
+    <string name="restname">店名</string>
+    <string name="restname_strong">店名(必須)</string>
+    <string name="locality">住所</string>
+    <string name="username">ユーザー名</string>
+    <string name="comment">コメント</string>
+    <string name="datetime">？日前</string>
+    <string name="notice">通知</string>
+    <string name="category">カテゴリー</string>
+    <string name="atmosphere">雰囲気</string>
+    <string name="value">価格</string>
+    <string name="value_strong">価格(数字のみ)</string>
+    <string name="distance">距離</string>
+    <string name="email">メールアドレス</string>
+    <string name="password">パスワード</string>
+    <string name="want">行きたい店に認定</string>
 </resources>

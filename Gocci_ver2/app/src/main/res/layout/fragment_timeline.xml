@@ -28,8 +28,8 @@
 
     <com.pnikosis.materialishprogress.ProgressWheel
         android:id="@+id/progress_wheel"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:layout_width="@dimen/progress_size"
+        android:layout_height="@dimen/progress_size"
         wheel:matProg_barColor="@color/gocci_header"
         wheel:matProg_progressIndeterminate="true"
         android:layout_gravity="center" />

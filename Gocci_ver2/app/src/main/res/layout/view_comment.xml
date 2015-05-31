@@ -22,8 +22,8 @@
 
             <com.pnikosis.materialishprogress.ProgressWheel
                 android:id="@+id/commentprogress_wheel"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
+                android:layout_width="@dimen/progress_size"
+                android:layout_height="@dimen/progress_size"
                 wheel:matProg_barColor="@color/gocci_header"
                 wheel:matProg_progressIndeterminate="true"
                 android:layout_gravity="center" />
@@ -54,8 +54,8 @@
                 android:id="@+id/commentText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="コメント"
-                android:textSize="14sp"
+                android:hint="@string/comment"
+                android:textSize="@dimen/normal_text"
                 android:paddingLeft="8dp"
                 android:paddingRight="8dp"
                 android:layout_weight="1"
@@ -66,7 +66,7 @@
                 android:layout_width="0dp"
                 android:layout_height="30dp"
                 android:background="@drawable/ic_comment_button"
-                android:textSize="16sp"
+                android:textSize="@dimen/accent_text"
                 android:layout_weight="0.3"
                 android:layout_marginRight="8dp"
                 android:layout_gravity="center_vertical"

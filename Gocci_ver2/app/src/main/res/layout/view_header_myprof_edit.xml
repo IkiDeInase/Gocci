@@ -23,10 +23,11 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="GOCCI_MAN"
+            android:text="@string/username"
             android:id="@+id/myprof_username"
             android:textStyle="bold"
-            android:textSize="20sp"
+            android:textSize="@dimen/large_text"
+            android:singleLine="true"
             android:textColor="@color/namegrey"
             android:layout_gravity="center" />
 
@@ -35,6 +36,7 @@
             android:layout_height="wrap_content"
             android:inputType="textPersonName"
             android:ems="10"
+            android:textSize="@dimen/normal_text"
             android:id="@+id/myprof_username_edit"
             android:layout_gravity="center"
             android:visibility="gone" />

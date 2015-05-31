@@ -5,8 +5,8 @@
 
     <ImageView
         android:id="@+id/want_picture"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
+        android:layout_width="@dimen/userpicture_size"
+        android:layout_height="@dimen/userpicture_size"
         android:layout_margin="8dp"
         android:src="@drawable/ic_userpicture" />
 
@@ -46,17 +46,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:maxLength="20"
-            android:text="Restname"
+            android:singleLine="true"
+            android:text="@string/restname"
             android:textColor="@color/namegrey"
-            android:textSize="16sp"
+            android:textSize="@dimen/accent_text"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/locality"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="locality"
+            android:text="@string/locality"
+            android:singleLine="true"
+            android:textSize="@dimen/normal_text"
             android:textColor="@color/nameblack" />
     </LinearLayout>
 

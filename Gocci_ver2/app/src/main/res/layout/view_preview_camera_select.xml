@@ -10,14 +10,14 @@
     <com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="店名（必須）"
+        android:hint="@string/restname_strong"
         app:met_floatingLabel="normal"
         app:met_floatingLabelTextSize="10sp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginTop="8dp"
         android:id="@+id/restname_spinner"
-        android:textSize="12sp"
+        android:textSize="@dimen/small_text"
         android:textColor="@color/timecolor" />
 
     <RelativeLayout
@@ -31,7 +31,7 @@
             android:text="今いるお店が上のリストにないときは........"
             android:id="@+id/infoText"
             android:textColor="@color/nameblack"
-            android:textSize="12sp"
+            android:textSize="@dimen/small_text"
             android:layout_alignParentBottom="false"
             android:layout_centerVertical="true"
             android:layout_toLeftOf="@+id/restaddButton" />
@@ -50,44 +50,44 @@
         android:id="@+id/category_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="カテゴリー"
+        android:hint="@string/category"
         app:met_floatingLabelTextSize="10sp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         app:met_floatingLabel="normal"
-        android:textSize="12sp"
+        android:textSize="@dimen/small_text"
         android:textColor="@color/timecolor" />
 
     <com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner
         android:id="@+id/mood_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="雰囲気"
+        android:hint="@string/atmosphere"
         app:met_floatingLabelTextSize="10sp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         app:met_floatingLabel="normal"
-        android:textSize="12sp"
+        android:textSize="@dimen/small_text"
         android:textColor="@color/timecolor" />
 
     <com.rengwuxian.materialedittext.MaterialEditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="価格（数字のみ）"
+        android:hint="@string/value_strong"
         android:ems="10"
         app:met_floatingLabelTextSize="10sp"
         app:met_floatingLabel="normal"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:id="@+id/edit_value"
-        android:textSize="12sp"
+        android:textSize="@dimen/small_text"
         android:inputType="number"
         android:textColor="@color/timecolor" />
 
     <com.rengwuxian.materialedittext.MaterialEditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="一言"
+        android:hint="@string/comment"
         android:ems="10"
         app:met_floatingLabelTextSize="10sp"
         app:met_floatingLabel="normal"
@@ -95,7 +95,7 @@
         android:layout_marginRight="16dp"
         android:id="@+id/edit_comment"
         android:inputType="textShortMessage"
-        android:textSize="12sp"
+        android:textSize="@dimen/small_text"
         android:textColor="@color/timecolor" />
 
     <RelativeLayout
@@ -122,7 +122,7 @@
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:textColor="@color/nameblack"
-            android:textSize="12sp" />
+            android:textSize="@dimen/small_text" />
     </RelativeLayout>
 
     <com.andexert.library.RippleView
@@ -140,7 +140,7 @@
             android:layout_height="wrap_content"
             android:text="投稿する"
             android:textColor="#ffffff"
-            android:textSize="16sp"
+            android:textSize="@dimen/accent_text"
             android:alpha="0.9" />
 
     </com.andexert.library.RippleView>

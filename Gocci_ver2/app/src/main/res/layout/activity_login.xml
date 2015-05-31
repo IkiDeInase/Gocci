@@ -18,16 +18,16 @@
             android:src="@drawable/ic_gocci_moji_white45" />
 
         <ImageView
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="@dimen/progress_size"
+            android:layout_height="@dimen/progress_size"
             android:src="@drawable/ic_gocci_white"
             android:layout_gravity="center"
             android:layout_marginBottom="8dp" />
 
         <com.pnikosis.materialishprogress.ProgressWheel
             android:id="@+id/progress_wheel"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="@dimen/progress_size"
+            android:layout_height="@dimen/progress_size"
             wheel:matProg_barColor="@color/gocci_header"
             wheel:matProg_progressIndeterminate="true"
             android:layout_gravity="center_horizontal|bottom"
@@ -44,20 +44,21 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="食を楽しもう"
+            android:text="@string/enjoy_eat"
             android:textStyle="bold"
             android:layout_gravity="center_horizontal|top"
-            android:textSize="20sp"
+            android:textSize="@dimen/large_text"
             android:layout_marginTop="32dp"
             android:textColor="@color/namegrey" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="グルメ動画アプリ「Gocci」"
+            android:text="@string/introduce"
             android:layout_gravity="center_horizontal|top"
             android:layout_marginTop="4dp"
-            android:textColor="@color/nameblack" />
+            android:textColor="@color/nameblack"
+            android:textSize="@dimen/normal_text" />
 
         <com.facebook.login.widget.LoginButton
             android:id="@+id/login_button"
