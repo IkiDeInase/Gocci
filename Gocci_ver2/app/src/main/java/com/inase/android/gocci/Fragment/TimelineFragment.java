@@ -53,6 +53,7 @@ import com.hatenablog.shoma2da.eventdaterecorderlib.EventDateRecorder;
 import com.inase.android.gocci.Activity.CameraActivity;
 import com.inase.android.gocci.Activity.FlexibleTenpoActivity;
 import com.inase.android.gocci.Activity.FlexibleUserProfActivity;
+import com.inase.android.gocci.Activity.GocciCameraActivity;
 import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.Base.BaseFragment;
 import com.inase.android.gocci.Base.RoundedTransformation;
@@ -231,8 +232,10 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), CameraActivity.class);
+                //Intent intent = new Intent(getActivity(), CameraActivity.class);
+                Intent intent = new Intent(getActivity(), GocciCameraActivity.class);
                 startActivity(intent);
+                getActivity().finish();
             }
         });
 

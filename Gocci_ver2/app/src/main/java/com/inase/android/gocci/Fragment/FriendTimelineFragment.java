@@ -120,6 +120,8 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
     private CallbackManager callbackManager;
     private ShareDialog shareDialog;
 
+    private boolean isFirst = true;
+
     private ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
         @Override
         public void onGlobalLayout() {
@@ -584,8 +586,12 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
                 Log.d("DEBUG", "MOVIE::onPrepared postId: " + postId);
                 if (mPlayingPostId == postId && !mPlayBlockFlag) {
                     Log.d("DEBUG", "MOVIE::onPrepared 再生開始");
-                    viewHolder.mVideoThumbnail.setVisibility(View.INVISIBLE);
-                    viewHolder.movie.start();
+                    if (!isFirst) {
+                        viewHolder.mVideoThumbnail.setVisibility(View.INVISIBLE);
+                        viewHolder.movie.start();
+                    } else {
+                        isFirst = false;
+                    }
                     viewHolder.videoFrame.setClickable(true);
                     Log.e("DEBUG", "onPrepared 動画再生開始: " + userData.getMovie());
 

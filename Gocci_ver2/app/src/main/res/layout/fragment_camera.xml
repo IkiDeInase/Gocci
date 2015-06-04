@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.inase.android.gocci.Camera.CameraFragment" >
+
+    <com.inase.android.gocci.Camera.CameraGLView
+        android:id="@+id/cameraView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true" />
+
+    <com.inase.android.gocci.View.ProgressView
+        android:id="@+id/progress"
+        android:layout_width="fill_parent"
+        android:layout_height="48.0dip"
+        android:background="@color/bg_capture_progress"
+        android:layout_alignParentTop="true" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/stopButton"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/ic_new_camera"
+        android:layout_margin="20dp"
+        android:visibility="visible" />
+</RelativeLayout>

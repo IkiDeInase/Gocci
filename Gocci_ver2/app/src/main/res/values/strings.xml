@@ -3,8 +3,11 @@
 
     <string name="app_name">Gocci</string>
 
-    <string name="map_key">AIzaSyBHYT0dtZUDaiId_WXPtjdQr-t3BlzHXGg</string>
+    <!--<string name="map_key">AIzaSyBHYT0dtZUDaiId_WXPtjdQr-t3BlzHXGg</string>-->
+    <string name="map_key">AIzaSyCdJXmgncMEUoEmNflVqHkSIJwA7Mmtuc0</string>
     <string name="facebook_app_id">673123156062598</string>
+
+    <string name="recording_hint">Record movie only while touching screen(without record button)</string>
 
     <string name="lat">経度</string>
     <string name="lon">緯度</string>
@@ -58,4 +61,8 @@
     <string name="email">メールアドレス</string>
     <string name="password">パスワード</string>
     <string name="want">行きたい店に認定</string>
+    <string name="title_activity_gocci_camera">GocciCameraActivity</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
 </resources>
