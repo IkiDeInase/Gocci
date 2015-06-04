@@ -217,6 +217,8 @@ public class SplashActivity extends Activity implements
             case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
                 Log.e("ログ", "Location settings are inadequate, and cannot be fixed here. Dialog " +
                         "not created.");
+                Toast.makeText(this, "原因不明のエラーが発生しました", Toast.LENGTH_SHORT).show();
+                finish();
                 break;
         }
     }

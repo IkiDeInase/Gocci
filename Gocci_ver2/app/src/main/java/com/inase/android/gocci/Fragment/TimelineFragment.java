@@ -229,7 +229,6 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
                 //Intent intent = new Intent(getActivity(), CameraActivity.class);
                 Intent intent = new Intent(getActivity(), GocciCameraActivity.class);
                 startActivity(intent);
-                getActivity().finish();
             }
         });
 

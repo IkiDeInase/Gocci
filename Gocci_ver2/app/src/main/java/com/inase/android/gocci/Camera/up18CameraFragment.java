@@ -18,6 +18,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -62,6 +63,7 @@ public class up18CameraFragment extends Fragment implements ViewPager.OnPageChan
     private CameraGLView mCameraView;
 
     private ImageButton toukouButton;
+    private Button cancelButton;
     /**
      * button for start/stop recording
      */
@@ -139,7 +141,8 @@ public class up18CameraFragment extends Fragment implements ViewPager.OnPageChan
                 .show();
 
         mCameraView = (CameraGLView) rootView.findViewById(R.id.cameraView);
-        mCameraView.setVideoSize(1280, 720);
+        //mCameraView.setVideoSize(1280, 720);
+        mCameraView.setVideoSize(640, 480);
         //mCameraView.setOnTouchListener(mOnTouchListener);
         cameraProgress = (ProgressWheel) rootView.findViewById(R.id.cameraprogress_wheel);
         //progress = (CircleProgressBar) rootView.findViewById(R.id.circleProgress);
@@ -147,6 +150,30 @@ public class up18CameraFragment extends Fragment implements ViewPager.OnPageChan
         //progress = (CircleProgressBar) rootView.findViewById(R.id.circleProgress);
         //recordButton = (ImageButton) rootView.findViewById(R.id.toukouButton);
         //recordButton.setOnTouchListener(mOnTouchListener);
+        cancelButton = (Button) rootView.findViewById(R.id.cancel);
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new MaterialDialog.Builder(getActivity())
+                        .title("確認")
+                        .content("この動画は初期化されますがよろしいですか？")
+                        .positiveText("戻る")
+                        .negativeText("いいえ")
+                        .callback(new MaterialDialog.ButtonCallback() {
+                            @Override
+                            public void onPositive(MaterialDialog dialog) {
+                                super.onPositive(dialog);
+                                isPlaying = false;
+                                getActivity().finish();
+                            }
+
+                            @Override
+                            public void onNegative(MaterialDialog dialog) {
+                                super.onNegative(dialog);
+                            }
+                        }).show();
+            }
+        });
         ViewPager viewPager = (ViewPager) rootView.findViewById(R.id.viewpager);
         viewPager.setOffscreenPageLimit(2);
         SmartTabLayout viewPagerTab = (SmartTabLayout) rootView.findViewById(R.id.viewpagertab);
@@ -239,13 +266,6 @@ public class up18CameraFragment extends Fragment implements ViewPager.OnPageChan
             }
 
         });
-    }
-
-    public void onBackPressed(View view) {
-        isPlaying = false;
-        if (progress.getProgress() == 0) {
-            getActivity().finish();
-        }
     }
 
     public void startPlay() {

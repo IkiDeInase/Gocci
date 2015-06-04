@@ -24,19 +24,19 @@
                 android:src="@drawable/ic_gocci_white" />
 
             <LinearLayout
-                android:id="@+id/cancel"
                 android:layout_width="56.0dip"
                 android:layout_height="fill_parent"
                 android:layout_alignParentLeft="true"
                 android:layout_centerVertical="true"
                 android:gravity="center"
-                android:onClick="onBackPressed">
+                >
 
                 <Button
+                    android:id="@+id/cancel"
                     android:layout_width="32.0dip"
                     android:layout_height="32.0dip"
                     android:background="@drawable/btn_capture_x"
-                    android:onClick="onBackPressed" />
+                    />
             </LinearLayout>
 
         </RelativeLayout>

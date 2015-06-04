@@ -29,7 +29,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_centerVertical="true"
                 android:gravity="center"
-                android:onClick="onBackPressed">
+                >
 
                 <Button
                     android:layout_width="32.0dip"

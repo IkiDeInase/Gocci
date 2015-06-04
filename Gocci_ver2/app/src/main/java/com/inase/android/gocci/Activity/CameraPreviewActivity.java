@@ -200,7 +200,7 @@ public class CameraPreviewActivity extends AppCompatActivity {
                         mYen = Integer.parseInt(edit_value.getText().toString());
                     }
                     if (edit_comment.getText().length() == 0) {
-                        mComment = "none";
+                        mComment = "...";
                     } else {
                         mComment = edit_comment.getText().toString();
                     }
