@@ -22,8 +22,8 @@ import com.gitonway.lee.niftymodaldialogeffects.lib.Effectstype;
 import com.gitonway.lee.niftymodaldialogeffects.lib.NiftyDialogBuilder;
 import com.hatenablog.shoma2da.eventdaterecorderlib.EventDateRecorder;
 import com.inase.android.gocci.Base.SquareVideoView;
+import com.inase.android.gocci.Camera.up18CameraFragment;
 import com.inase.android.gocci.R;
-import com.inase.android.gocci.common.CacheManager;
 import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;
 import com.loopj.android.http.AsyncHttpClient;
@@ -159,7 +159,7 @@ public class CameraPreviewActivity extends AppCompatActivity {
         mood_spinner.setAdapter(moodAdapter);
 
         ArrayAdapter<String> restAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_dropdown_item_1line, CameraActivity.restname);
+                android.R.layout.simple_dropdown_item_1line, GocciCameraActivity.restname);
         restname_spinner.setAdapter(restAdapter);
 
         restname_spinner.setText(mRestname);

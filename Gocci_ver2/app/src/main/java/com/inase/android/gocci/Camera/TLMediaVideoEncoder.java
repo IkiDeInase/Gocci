@@ -1,11 +1,13 @@
 package com.inase.android.gocci.Camera;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.media.MediaCodec;
 import android.media.MediaCodecInfo;
 import android.media.MediaCodecList;
 import android.media.MediaFormat;
 import android.opengl.EGLContext;
+import android.os.Build;
 import android.util.Log;
 import android.view.Surface;
 
@@ -137,6 +139,7 @@ public class TLMediaVideoEncoder extends TLMediaEncoder {
         return format;
     }
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     @Override
     protected MediaCodec internal_configure(MediaCodec previous_codec, final MediaFormat format) throws IOException {
         if (DEBUG) Log.v(TAG, "internal_configure:");

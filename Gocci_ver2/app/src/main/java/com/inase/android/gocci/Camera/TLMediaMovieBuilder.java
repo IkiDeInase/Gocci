@@ -1,9 +1,11 @@
 package com.inase.android.gocci.Camera;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.media.MediaCodec;
 import android.media.MediaFormat;
 import android.media.MediaMuxer;
+import android.os.Build;
 import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
@@ -154,6 +156,7 @@ public class TLMediaMovieBuilder {
             mIsRunning = false;
         }
 
+        @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
         @Override
         public void run() {
             if (DEBUG) Log.v(TAG, "MuxerTask#run");

@@ -1,42 +1,36 @@
-package com.inase.android.gocci.Activity;
+package com.inase.android.gocci.Camera;
 
 import android.app.Activity;
-import android.content.ContentResolver;
-import android.content.ContentValues;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.location.Location;
-import android.media.AudioManager;
+import android.media.MediaScannerConnection;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.provider.MediaStore;
 import android.support.v4.view.ViewPager;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.coremedia.iso.boxes.Container;
 import com.gitonway.lee.niftymodaldialogeffects.lib.Effectstype;
 import com.gitonway.lee.niftymodaldialogeffects.lib.NiftyDialogBuilder;
-import com.googlecode.mp4parser.authoring.Movie;
-import com.googlecode.mp4parser.authoring.Track;
-import com.googlecode.mp4parser.authoring.builder.DefaultMp4Builder;
-import com.googlecode.mp4parser.authoring.container.mp4.MovieCreator;
-import com.googlecode.mp4parser.authoring.tracks.AppendTrack;
 import com.hatenablog.shoma2da.eventdaterecorderlib.EventDateRecorder;
-import com.inase.android.gocci.Base.CameraManager;
+import com.inase.android.gocci.Activity.CameraPreviewActivity;
+import com.inase.android.gocci.Activity.GocciCameraActivity;
 import com.inase.android.gocci.Base.CircleProgressBar;
-import com.inase.android.gocci.Base.RecorderManager;
 import com.inase.android.gocci.R;
-import com.inase.android.gocci.View.MySurfaceView;
 import com.inase.android.gocci.common.Const;
-import com.inase.android.gocci.data.UserData;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -52,29 +46,34 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
 
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
 
-public class CameraActivity extends Activity implements ViewPager.OnPageChangeListener {
+public class up18CameraFragment extends Fragment implements ViewPager.OnPageChangeListener {
+    private static final boolean DEBUG = true;    // TODO set false on releasing
+    private static final String TAG = "GocciCamera";
 
-    private RecorderManager recorderManager = null;
-    private CameraManager cameraManager;
+    /**
+     * for camera preview display
+     */
+    private CameraGLView mCameraView;
+
+    private ImageButton toukouButton;
+    /**
+     * button for start/stop recording
+     */
+    private TLMediaVideoEncoder mVideoEncoder;
+    private TLMediaAudioEncoder mAudioEncoder;
+    private TLMediaMovieBuilder mMuxer;
+    private boolean mIsRecording;
+    private String mMovieName;
 
     private Runnable progressRunnable = null;
     private Handler handler = null;
     private ProgressWheel cameraProgress;
-
     private CircleProgressBar progress;
 
     private String mRest_name;
@@ -85,6 +84,12 @@ public class CameraActivity extends Activity implements ViewPager.OnPageChangeLi
     private String mComment;
     private boolean mIsnewRestname = false;
 
+    private double latitude;
+    private double longitude;
+    private String mSearch_mapUrl;
+
+    private static final String TAG_REST_NAME = "restname";
+
     private boolean onScroll = false;
 
     private String timeStamp;
@@ -94,13 +99,12 @@ public class CameraActivity extends Activity implements ViewPager.OnPageChangeLi
 
     private ViewPagerItemAdapter adapter;
 
-    private ImageButton toukouButton;
-
-    private double latitude;
-    private double longitude;
-    private String mSearch_mapUrl;
-
-    private static final String TAG_REST_NAME = "restname";
+    public static final int MAX_TIME = 7000;
+    private boolean isMax = false;
+    private long videoStartTime;
+    private int totalTime = 0;
+    private boolean isStart = false;
+    private boolean isFinish = false;
 
     private MaterialBetterSpinner restname_spinner;
     private MaterialBetterSpinner category_spinner;
@@ -109,19 +113,22 @@ public class CameraActivity extends Activity implements ViewPager.OnPageChangeLi
     private MaterialEditText edit_comment;
     private ImageButton restaddButton;
 
+    public up18CameraFragment() {
+        // need default constructor
+    }
+
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_camera);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        final View rootView = inflater.inflate(R.layout.fragment_camera_up18, container, false);
         isFirst = true;
 
-        getLocation(this);
+        getLocation(getActivity());
 
         for (int i = 0; i < 30; i++) {
             GocciCameraActivity.restname[i] = "";
         }
 
-        NiftyDialogBuilder dialogBuilder = NiftyDialogBuilder.getInstance(CameraActivity.this);
+        NiftyDialogBuilder dialogBuilder = NiftyDialogBuilder.getInstance(getActivity());
         Effectstype effect = Effectstype.SlideBottom;
         dialogBuilder
                 .withTitle("Gocciカメラ")
@@ -131,16 +138,20 @@ public class CameraActivity extends Activity implements ViewPager.OnPageChangeLi
                 .isCancelableOnTouchOutside(true)
                 .show();
 
-        cameraProgress = (ProgressWheel) findViewById(R.id.cameraprogress_wheel);
-        MySurfaceView videoSurface = (MySurfaceView) findViewById(R.id.cameraView);
-        cameraManager = getCameraManager();
-        recorderManager = new RecorderManager(getCameraManager(), videoSurface, this);
-
-        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
+        mCameraView = (CameraGLView) rootView.findViewById(R.id.cameraView);
+        mCameraView.setVideoSize(1280, 720);
+        //mCameraView.setOnTouchListener(mOnTouchListener);
+        cameraProgress = (ProgressWheel) rootView.findViewById(R.id.cameraprogress_wheel);
+        //progress = (CircleProgressBar) rootView.findViewById(R.id.circleProgress);
+        //mRecordButton.setOnTouchListener(mOnTouchListener);
+        //progress = (CircleProgressBar) rootView.findViewById(R.id.circleProgress);
+        //recordButton = (ImageButton) rootView.findViewById(R.id.toukouButton);
+        //recordButton.setOnTouchListener(mOnTouchListener);
+        ViewPager viewPager = (ViewPager) rootView.findViewById(R.id.viewpager);
         viewPager.setOffscreenPageLimit(2);
-        SmartTabLayout viewPagerTab = (SmartTabLayout) findViewById(R.id.viewpagertab);
+        SmartTabLayout viewPagerTab = (SmartTabLayout) rootView.findViewById(R.id.viewpagertab);
 
-        adapter = new ViewPagerItemAdapter(ViewPagerItems.with(this)
+        adapter = new ViewPagerItemAdapter(ViewPagerItems.with(getActivity())
                 .add(R.string.lat, R.layout.view_camera_1)
                 .add(R.string.lon, R.layout.view_camera_2)
                 .create());
@@ -152,19 +163,20 @@ public class CameraActivity extends Activity implements ViewPager.OnPageChangeLi
         handler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
+
                 if (msg.arg1 < 7000) {
-                    // System.out.println("Clickable");
-                    // finishButton.setClickable(true);
-                    // finishButton
-                    // .setBackgroundResource(R.drawable.btn_capture_arrow);
+
                 } else {
                     cameraProgress.setVisibility(View.VISIBLE);
-
-                    // System.out.println("UnClickable");
-                    // finishButton.setClickable(false);
-                    onFinishPressed();
-                    // finishButton
-                    // .setBackgroundResource(R.drawable.btn_capture_arrow_pressed);
+                    //onFinishPressed();
+                    if (!isFinish) {
+                        Log.e("終了ログ", String.valueOf(msg.arg1));
+                        progress.setProgress(100);
+                        pauseRecording();
+                        stopRecording();
+                        isFinish = true;
+                    }
+                    //Toast.makeText(getActivity(), "finishRecord", Toast.LENGTH_SHORT).show();
                 }
                 int circle = (int) (msg.arg1 * 1.0 / 70);
 
@@ -173,13 +185,14 @@ public class CameraActivity extends Activity implements ViewPager.OnPageChangeLi
                 } else {
                     progress.setProgress(circle);
                 }
+                //progress.invalidate();
                 super.handleMessage(msg);
-                // //
             }
         };
 
         progressRunnable = new ProgressRunnable();
         handler.post(progressRunnable);
+        return rootView;
     }
 
     private void getLocation(final Context context) {
@@ -228,56 +241,15 @@ public class CameraActivity extends Activity implements ViewPager.OnPageChangeLi
         });
     }
 
-    public void muteAll(boolean isMute) {
-        // ((AudioManager) this.getSystemService(Context.AUDIO_SERVICE))
-        // .setStreamSolo(AudioManager.STREAM_SYSTEM, isMute);
-        // ((AudioManager) this.getSystemService(Context.AUDIO_SERVICE))
-        // .setStreamMute(AudioManager.STREAM_SYSTEM, isMute);
-        List<Integer> streams = new ArrayList<Integer>();
-        Field[] fields = AudioManager.class.getFields();
-        for (Field field : fields) {
-            if (field.getName().startsWith("STREAM_")
-                    && Modifier.isStatic(field.getModifiers())
-                    && field.getType() == int.class) {
-                Integer stream = null;
-                try {
-                    stream = (Integer) field.get(null);
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-                streams.add(stream);
-            }
-        }
-    }
-
-    public CameraManager getCameraManager() {
-        if (cameraManager == null) {
-            cameraManager = new CameraManager();
-        }
-        return cameraManager;
-    }
-
     public void onBackPressed(View view) {
-        recorderManager.reset();
         isPlaying = false;
         if (progress.getProgress() == 0) {
-            CameraActivity.this.finish();
-        }
-    }
-
-    public void onFinishPressed() {
-        if (!isPlaying && recorderManager.getVideoTempFiles().size() != 0) {
-            Toast.makeText(CameraActivity.this, "確認画面に進みます", Toast.LENGTH_SHORT).show();
-            combineFiles();
-            isPlaying = true;
-        } else {
-            recorderManager.reset();
-            isPlaying = false;
+            getActivity().finish();
         }
     }
 
     public void startPlay() {
-        recorderManager.reset();
+        //recorderManager.reset();
 
         //ここで記入済みの値を持って行こう
         if (onScroll) {
@@ -314,7 +286,7 @@ public class CameraActivity extends Activity implements ViewPager.OnPageChangeLi
             mComment = "";
         }
 
-        Intent intent = new Intent(CameraActivity.this, CameraPreviewActivity.class);
+        Intent intent = new Intent(getActivity(), CameraPreviewActivity.class);
         intent.putExtra("restname", mRest_name);
         intent.putExtra("video_url", mFinalVideoUrl);
         intent.putExtra("category", mCategory);
@@ -325,76 +297,320 @@ public class CameraActivity extends Activity implements ViewPager.OnPageChangeLi
         intent.putExtra("lat", latitude);
         intent.putExtra("lon", longitude);
         startActivity(intent);
-        overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+        getActivity().overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
 
-        cameraProgress.setVisibility(View.GONE);
-    }
-
-    private void combineFiles() {
-        mFinalVideoUrl = getFinalVideoFileName();
-
-        try {
-            List<Track> videoTracks = new LinkedList<Track>();
-            List<Track> audioTracks = new LinkedList<Track>();
-            for (String fileName : recorderManager.getVideoTempFiles()) {
-                try {
-                    Movie movie = MovieCreator.build(fileName);
-                    for (Track t : movie.getTracks()) {
-                        if (t.getHandler().equals("soun")) {
-                            audioTracks.add(t);
-                        }
-                        if (t.getHandler().equals("vide")) {
-                            videoTracks.add(t);
-                        }
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-            Movie result = new Movie();
-
-            if (audioTracks.size() > 0) {
-                result.addTrack(new AppendTrack(audioTracks
-                        .toArray(new Track[audioTracks.size()])));
-            }
-            if (videoTracks.size() > 0) {
-                result.addTrack(new AppendTrack(videoTracks
-                        .toArray(new Track[videoTracks.size()])));
-            }
-
-            Container out = new DefaultMp4Builder().build(result);
-
-            ContentResolver contentResolver = getContentResolver();
-            ContentValues values = new ContentValues(3);
-            values.put(MediaStore.Video.Media.TITLE, timeStamp);
-            values.put(MediaStore.Video.Media.MIME_TYPE, "video/mp4");
-            values.put(MediaStore.Video.Media.DATA, mFinalVideoUrl);
-            contentResolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
-
-            FileOutputStream fos = new FileOutputStream(new File(mFinalVideoUrl));
-            out.writeContainer(fos.getChannel());
-            fos.close();
-
-            startPlay();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-    }
-
-    public String getFinalVideoFileName() {
-        timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        return recorderManager.getVideoParentpath() + "/" + timeStamp + ".mp4";
+        //cameraProgress.setVisibility(View.GONE);
     }
 
     @Override
-    protected void onDestroy() {
-        muteAll(false);
+    public void onStart() {
+        super.onStart();
+        if (DEBUG) Log.v(TAG, "onStart:");
+        if (!mIsRecording) {
+            startRecording();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (DEBUG) Log.v(TAG, "onResume:");
+        mCameraView.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        if (DEBUG) Log.v(TAG, "onPause:");
+        //stopRecording();
+        mCameraView.onPause();
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
         super.onDestroy();
-        recorderManager.reset();
+        if (DEBUG) Log.v(TAG, "onDestroy:");
         handler.removeCallbacks(progressRunnable);
+        mCameraView.onFinish();
+    }
+
+    /*
+     *
+     */
+    public final void fixedScreenOrientation(final boolean fixed) {
+        getActivity().setRequestedOrientation(
+                fixed ? ActivityInfo.SCREEN_ORIENTATION_LOCKED : ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+    }
+
+    /**
+     * method when touch record button
+     */
+    /*
+    private final OnClickListener mOnClickListener = new OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            switch (view.getId()) {
+                case R.id.record_button:
+                    if (!mIsRecording) {
+                        startRecording();
+                    } else {
+                        stopRecording();
+                    }
+                    break;
+            }
+        }
+    };
+    */
+
+    private final View.OnTouchListener mOnTouchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            if (mIsRecording) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        resumeRecording();
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        break;
+                    case MotionEvent.ACTION_CANCEL:
+                    case MotionEvent.ACTION_UP:
+                        pauseRecording();
+                        break;
+                }
+                return true;
+            } else {
+                return false;
+            }
+        }
+    };
+
+    /**
+     * start recording
+     * This is a sample project and call this on UI thread to avoid being complicated
+     * but basically this should be called on private thread because preparing
+     * of encoder may be heavy work on some devices
+     */
+    private void startRecording() {
+        if (mIsRecording) return;
+        if (isMax) return;
+
+        if (DEBUG) Log.v(TAG, "start:");
+        try {
+            //mRecordButton.setColorFilter(0xffffff00);    // turn yellow
+            mMovieName = TAG + System.nanoTime();
+            if (true) {
+                // for video capturing
+                mVideoEncoder = new TLMediaVideoEncoder(getActivity(), mMovieName, mMediaEncoderListener);
+                try {
+                    mVideoEncoder.setFormat(mCameraView.getVideoWidth(), mCameraView.getVideoHeight());
+                    mVideoEncoder.prepare();
+                } catch (Exception e) {
+                    Log.e(TAG, "startRecording:", e);
+                    mVideoEncoder.release();
+                    mVideoEncoder = null;
+                    throw e;
+                }
+            }
+            if (true) {
+                // for audio capturing
+                mAudioEncoder = new TLMediaAudioEncoder(getActivity(), mMovieName, mMediaEncoderListener);
+                try {
+                    mAudioEncoder.prepare();
+                } catch (Exception e) {
+                    Log.e(TAG, "startRecording:", e);
+                    mAudioEncoder.release();
+                    mAudioEncoder = null;
+                    throw e;
+                }
+            }
+            if (mVideoEncoder != null) {
+                mVideoEncoder.start(true);
+            }
+            if (mAudioEncoder != null) {
+                mAudioEncoder.start(true);
+            }
+            mIsRecording = true;
+
+        } catch (Exception e) {
+            //mRecordButton.setColorFilter(0);
+            Log.e(TAG, "startCapture:", e);
+        }
+        fixedScreenOrientation(mIsRecording);
+    }
+
+    /**
+     * request stop recording
+     */
+    private void stopRecording() {
+        if (!mIsRecording) return;
+        isMax = false;
+        totalTime = 0;
+        isStart = false;
+        handler.removeCallbacks(progressRunnable);
+
+        if (DEBUG) Log.v(TAG, "stop");
+        mIsRecording = false;
+        //mRecordButton.setColorFilter(0);    // return to default color
+        if (mVideoEncoder != null) {
+            mVideoEncoder.stop();
+            mVideoEncoder.release();
+        }
+        if (mAudioEncoder != null) {
+            mAudioEncoder.stop();
+            mAudioEncoder.release();
+        }
+        fixedScreenOrientation(mIsRecording);
+        try {
+            mMuxer = new TLMediaMovieBuilder(getActivity(), mMovieName);
+            mMuxer.build(mTLMediaMovieBuilderCallback);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * resume recording
+     */
+    private void resumeRecording() {
+        if (!mIsRecording) return;
+        if (isMax) return;
+
+        //mRecordButton.setColorFilter(0xffff0000);    // turn red
+        try {
+            if (mVideoEncoder != null) {
+                if (mVideoEncoder.isPaused())
+                    mVideoEncoder.resume();
+            }
+            if (mAudioEncoder != null) {
+                if (mAudioEncoder.isPaused())
+                    mAudioEncoder.resume();
+            }
+            isStart = true;
+            videoStartTime = new Date().getTime();
+        } catch (IOException e) {
+            stopRecording();
+        }
+    }
+
+    /**
+     * pause recording
+     */
+    private void pauseRecording() {
+        if (!mIsRecording) return;
+        if (!isMax) {
+            totalTime += new Date().getTime() - videoStartTime;
+            videoStartTime = 0;
+        }
+        isStart = false;
+
+        //mRecordButton.setColorFilter(0xffffff00);    // turn yellow
+        if ((mVideoEncoder != null) && !mVideoEncoder.isPaused())
+            try {
+                mVideoEncoder.pause();
+            } catch (Exception e) {
+                Log.e(TAG, "pauseRecording:", e);
+                mVideoEncoder.release();
+                mVideoEncoder = null;
+            }
+        if ((mAudioEncoder != null) && !mAudioEncoder.isPaused())
+            try {
+                mAudioEncoder.pause();
+            } catch (Exception e) {
+                Log.e(TAG, "pauseRecording:", e);
+                mAudioEncoder.release();
+                mAudioEncoder = null;
+            }
+    }
+
+    /**
+     * callback methods from encoder
+     */
+    private final TLMediaEncoder.MediaEncoderListener mMediaEncoderListener
+            = new TLMediaEncoder.MediaEncoderListener() {
+
+        @Override
+        public void onPrepared(TLMediaEncoder encoder) {
+            if (DEBUG) Log.v(TAG, "onPrepared:encoder=" + encoder);
+        }
+
+        @Override
+        public void onStopped(TLMediaEncoder encoder) {
+            if (DEBUG) Log.v(TAG, "onStopped:encoder=" + encoder);
+        }
+
+        @Override
+        public void onResume(TLMediaEncoder encoder) {
+            if (DEBUG) Log.v(TAG, "onResume:encoder=" + encoder);
+            if (encoder instanceof TLMediaVideoEncoder)
+                mCameraView.setVideoEncoder((TLMediaVideoEncoder) encoder);
+        }
+
+        @Override
+        public void onPause(TLMediaEncoder encoder) {
+            if (DEBUG) Log.v(TAG, "onPause:encoder=" + encoder);
+            if (encoder instanceof TLMediaVideoEncoder)
+                mCameraView.setVideoEncoder(null);
+        }
+    };
+
+    /**
+     * callback methods from TLMediaMovieBuilder
+     */
+    private TLMediaMovieBuilder.TLMediaMovieBuilderCallback mTLMediaMovieBuilderCallback
+            = new TLMediaMovieBuilder.TLMediaMovieBuilderCallback() {
+
+        @Override
+        public void onFinished(String output_path) {
+            if (DEBUG) Log.v(TAG, "onFinished:");
+            mMuxer = null;
+            if (!TextUtils.isEmpty(output_path)) {
+                final Activity activity = up18CameraFragment.this.getActivity();
+                if ((activity == null) || activity.isFinishing()) return;
+                // add movie to gallery
+                MediaScannerConnection.scanFile(activity, new String[]{output_path}, null, null);
+
+                mCameraView.onFinish();
+                mFinalVideoUrl = output_path;
+                startPlay();
+                //画面遷移するときにやる
+            }
+        }
+
+        @Override
+        public void onError(Exception e) {
+            if (DEBUG) Log.v(TAG, "onError:" + e.getMessage());
+        }
+    };
+
+    private class ProgressRunnable implements Runnable {
+
+        @Override
+        public void run() {
+            int time = 0;
+            time = checkIfMax(new Date().getTime());
+            Message message = new Message();
+            message.arg1 = time;
+            handler.sendMessage(message);
+            // System.out.println(time);
+            handler.postDelayed(this, 10);
+        }
+    }
+
+    public int checkIfMax(long timeNow) {
+        int during = 0;
+        if (isStart) {
+            during = (int) (totalTime + (timeNow - videoStartTime));
+            if (during >= MAX_TIME) {
+                during = MAX_TIME;
+                isMax = true;
+            }
+        } else {
+            during = totalTime;
+            if (during >= MAX_TIME) {
+                during = MAX_TIME;
+            }
+        }
+        return during;
     }
 
     @Override
@@ -402,38 +618,9 @@ public class CameraActivity extends Activity implements ViewPager.OnPageChangeLi
         if (isFirst && position == 0) {
             View page = adapter.getPage(position);
             toukouButton = (ImageButton) page.findViewById(R.id.toukouButton);
-            progress = (CircleProgressBar) findViewById(R.id.circleProgress);
+            progress = (CircleProgressBar) page.findViewById(R.id.circleProgress);
 
-            toukouButton.setOnTouchListener(new View.OnTouchListener() {
-
-                @Override
-                public boolean onTouch(View arg0, MotionEvent motionEvent) {
-                    if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                        try {
-                            // sign.setPressed(true);
-                            new Handler().post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    cameraManager.getCamera().autoFocus(null);
-                                }
-                            });
-                            recorderManager.startRecord(true);
-
-                        } finally {
-                            muteAll(true);
-                        }
-                    } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                        try {
-                            // sign.setPressed(false);
-                            recorderManager.stopRecord();
-                        } finally {
-                            muteAll(false);
-                            //
-                        }
-                    }
-                    return true;
-                }
-            });
+            toukouButton.setOnTouchListener(mOnTouchListener);
 
             isFirst = false;
         }
@@ -449,9 +636,9 @@ public class CameraActivity extends Activity implements ViewPager.OnPageChangeLi
                 break;
             case 1:
                 onScroll = true;
-                EventDateRecorder recorder = EventDateRecorder.load(CameraActivity.this, "use_camera_tab");
+                EventDateRecorder recorder = EventDateRecorder.load(getActivity(), "use_camera_tab");
                 if (!recorder.didRecorded()) {
-                    NiftyDialogBuilder dialogBuilder = NiftyDialogBuilder.getInstance(CameraActivity.this);
+                    NiftyDialogBuilder dialogBuilder = NiftyDialogBuilder.getInstance(getActivity());
                     Effectstype effect = Effectstype.SlideBottom;
                     dialogBuilder
                             .withTitle("タグ画面")
@@ -478,15 +665,15 @@ public class CameraActivity extends Activity implements ViewPager.OnPageChangeLi
                 String[] CATEGORY = getResources().getStringArray(R.array.list_category);
                 String[] MOOD = getResources().getStringArray(R.array.list_mood);
 
-                ArrayAdapter<String> categoryAdapter = new ArrayAdapter<>(CameraActivity.this,
+                ArrayAdapter<String> categoryAdapter = new ArrayAdapter<>(getActivity(),
                         android.R.layout.simple_dropdown_item_1line, CATEGORY);
                 category_spinner.setAdapter(categoryAdapter);
 
-                ArrayAdapter<String> moodAdapter = new ArrayAdapter<>(CameraActivity.this,
+                ArrayAdapter<String> moodAdapter = new ArrayAdapter<>(getActivity(),
                         android.R.layout.simple_dropdown_item_1line, MOOD);
                 mood_spinner.setAdapter(moodAdapter);
 
-                ArrayAdapter<String> restAdapter = new ArrayAdapter<>(CameraActivity.this,
+                ArrayAdapter<String> restAdapter = new ArrayAdapter<>(getActivity(),
                         android.R.layout.simple_dropdown_item_1line, GocciCameraActivity.restname);
                 restname_spinner.setAdapter(restAdapter);
 
@@ -504,7 +691,7 @@ public class CameraActivity extends Activity implements ViewPager.OnPageChangeLi
     }
 
     private void createTenpo() {
-        new MaterialDialog.Builder(CameraActivity.this)
+        new MaterialDialog.Builder(getActivity())
                 .title("店舗追加")
                 .content("あなたのいるお店の名前を入力してください。※位置情報は現在の位置を使います。")
                 .input("店舗名", null, new MaterialDialog.InputCallback() {
@@ -527,7 +714,7 @@ public class CameraActivity extends Activity implements ViewPager.OnPageChangeLi
                         params.put("lon", longitude);
 
                         AsyncHttpClient client = new AsyncHttpClient();
-                        client.post(CameraActivity.this, Const.URL_INSERT_REST, params, new JsonHttpResponseHandler() {
+                        client.post(getActivity(), Const.URL_INSERT_REST, params, new JsonHttpResponseHandler() {
                             @Override
                             public void onStart() {
                                 cameraProgress.setVisibility(View.VISIBLE);
@@ -535,7 +722,7 @@ public class CameraActivity extends Activity implements ViewPager.OnPageChangeLi
 
                             @Override
                             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                                Toast.makeText(CameraActivity.this, "通信に失敗しました", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getActivity(), "通信に失敗しました", Toast.LENGTH_SHORT).show();
                             }
 
                             @Override
@@ -546,12 +733,12 @@ public class CameraActivity extends Activity implements ViewPager.OnPageChangeLi
                                     String message = response.getString("message");
 
                                     if (message.equals("店舗追加完了しました")) {
-                                        Toast.makeText(CameraActivity.this, message, Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
                                         //店名をセット
                                         mIsnewRestname = true;
                                         restname_spinner.setText(mRest_name);
                                     } else {
-                                        Toast.makeText(CameraActivity.this, message, Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
                                     }
                                 } catch (JSONException e) {
                                     e.printStackTrace();
@@ -578,20 +765,5 @@ public class CameraActivity extends Activity implements ViewPager.OnPageChangeLi
             toukouButton.setClickable(true);
         }
 
-    }
-
-    private class ProgressRunnable implements Runnable {
-
-        @Override
-        public void run() {
-            int time = 0;
-            time = recorderManager.checkIfMax(new Date().getTime());
-            Message message = new Message();
-            message.arg1 = time;
-            handler.sendMessage(message);
-            // System.out.println(time);
-            handler.postDelayed(this, 10);
-
-        }
     }
 }

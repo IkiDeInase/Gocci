@@ -1,5 +1,6 @@
 package com.inase.android.gocci.Camera;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
@@ -7,6 +8,7 @@ import android.opengl.EGL14;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -28,7 +30,7 @@ import javax.microedition.khronos.opengles.GL10;
  */
 public final class CameraGLView extends GLSurfaceView {
 
-    private static final boolean DEBUG = false; // TODO set false on releasing
+    private static final boolean DEBUG = true; // TODO set false on releasing
     private static final String TAG = "CameraGLView";
 
     private static final int CAMERA_ID = 0;
@@ -57,9 +59,9 @@ public final class CameraGLView extends GLSurfaceView {
         super(context, attrs);
         if (DEBUG) Log.v(TAG, "CameraGLView:");
         mRenderer = new CameraSurfaceRenderer();
-        setEGLContextClientVersion(2);	// GLES 2.0, API >= 8
+        setEGLContextClientVersion(2);    // GLES 2.0, API >= 8
         setRenderer(mRenderer);
-        final CameraThread thread = new CameraThread();
+        CameraThread thread = new CameraThread();
         thread.start();
         mCameraHandler = thread.getHandler();
     }
@@ -87,10 +89,17 @@ public final class CameraGLView extends GLSurfaceView {
         if (DEBUG) Log.v(TAG, "surfaceDestroyed:");
         // wait for finish previewing here
         // otherwise camera try to display on un-exist Surface and some error will occur
-        mCameraHandler.release(true);
+       //mCameraHandler.release(true);
+        mCameraHandler.stopPreview();
         mHasSurface = false;
         mRenderer.onSurfaceDestroyed();
         super.surfaceDestroyed(holder);
+    }
+
+    public void onFinish() {
+        if (DEBUG) Log.v(TAG, "onFinish:");
+        // just request stop previewing
+        mCameraHandler.release(true);
     }
 
     public void setScaleMode(final int mode) {
@@ -141,6 +150,7 @@ public final class CameraGLView extends GLSurfaceView {
     public void setVideoEncoder(final TLMediaVideoEncoder encoder) {
         if (DEBUG) Log.v(TAG, "setVideoEncoder:tex_id=" + mRenderer.hTex);
         queueEvent(new Runnable() {
+            @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
             @Override
             public void run() {
                 synchronized (mRenderer) {
@@ -159,14 +169,15 @@ public final class CameraGLView extends GLSurfaceView {
 
 //********************************************************************************
 //********************************************************************************
+
     /**
      * GLSurfaceViewのRenderer
      */
     private final class CameraSurfaceRenderer
             implements GLSurfaceView.Renderer,
-            SurfaceTexture.OnFrameAvailableListener {	// API >= 11
+            SurfaceTexture.OnFrameAvailableListener {    // API >= 11
 
-        private SurfaceTexture mSTexture;	// API >= 11
+        private SurfaceTexture mSTexture;    // API >= 11
         private int hTex;
         private GLDrawer2D mDrawer;
         private final float[] mStMatrix = new float[16];
@@ -182,7 +193,7 @@ public final class CameraGLView extends GLSurfaceView {
         public void onSurfaceCreated(GL10 unused, EGLConfig config) {
             if (DEBUG) Log.v(TAG, "onSurfaceCreated:");
             // This renderer required OES_EGL_image_external extension
-            final String extensions = GLES20.glGetString(GLES20.GL_EXTENSIONS);	// API >= 8
+            final String extensions = GLES20.glGetString(GLES20.GL_EXTENSIONS);    // API >= 8
 //			if (DEBUG) Log.i(TAG, "onSurfaceCreated:Gl extensions: " + extensions);
             if (!extensions.contains("OES_EGL_image_external"))
                 throw new RuntimeException("This system does not support OES_EGL_image_external.");
@@ -228,7 +239,7 @@ public final class CameraGLView extends GLSurfaceView {
             final float video_height = mVideoHeight;
             if (video_width == 0 || video_height == 0) return;
             Matrix.setIdentityM(mMvpMatrix, 0);
-            final float view_aspect = view_width / (float)view_height;
+            final float view_aspect = view_width / (float) view_height;
             switch (mScaleMode) {
                 case SCALE_STRETCH_FIT:
                     break;
@@ -271,6 +282,7 @@ public final class CameraGLView extends GLSurfaceView {
 
         private volatile boolean requestUpdateTex = false;
         private boolean flip = true;
+
         /**
          * drawing to GLSurface
          * we set renderMode to GLSurfaceView.RENDERMODE_WHEN_DIRTY,
@@ -291,7 +303,7 @@ public final class CameraGLView extends GLSurfaceView {
             // draw to preview screen
             mDrawer.draw(hTex, mStMatrix);
             flip = !flip;
-            if (flip) {	// ~30fps
+            if (flip) {    // ~30fps
                 synchronized (this) {
                     if (mVideoEncoder != null) {
                         // notify to capturing thread that the camera frame is available.
@@ -337,6 +349,7 @@ public final class CameraGLView extends GLSurfaceView {
 
         /**
          * request to release camera thread and handler
+         *
          * @param needWait need to wait
          */
         public void release(boolean needWait) {
@@ -427,6 +440,7 @@ public final class CameraGLView extends GLSurfaceView {
 
         /**
          * start camera preview
+         *
          * @param width
          * @param height
          */
@@ -441,7 +455,7 @@ public final class CameraGLView extends GLSurfaceView {
                     final List<String> focusModes = params.getSupportedFocusModes();
                     if (focusModes.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO)) {
                         params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
-                    } else if(focusModes.contains(Camera.Parameters.FOCUS_MODE_AUTO)) {
+                    } else if (focusModes.contains(Camera.Parameters.FOCUS_MODE_AUTO)) {
                         params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
                     } else {
                         if (DEBUG) Log.i(TAG, "Camera does not support autofocus");
@@ -516,27 +530,36 @@ public final class CameraGLView extends GLSurfaceView {
 
         /**
          * rotate preview screen according to the device orientation
+         *
          * @param params
          */
         private final void setRotation(Camera.Parameters params) {
             if (DEBUG) Log.v(TAG, "setRotation:");
 
-            final Display display = ((WindowManager)getContext()
+            final Display display = ((WindowManager) getContext()
                     .getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
             int rotation = display.getRotation();
             int degrees = 0;
             switch (rotation) {
-                case Surface.ROTATION_0: degrees = 0; break;
-                case Surface.ROTATION_90: degrees = 90; break;
-                case Surface.ROTATION_180: degrees = 180; break;
-                case Surface.ROTATION_270: degrees = 270; break;
+                case Surface.ROTATION_0:
+                    degrees = 0;
+                    break;
+                case Surface.ROTATION_90:
+                    degrees = 90;
+                    break;
+                case Surface.ROTATION_180:
+                    degrees = 180;
+                    break;
+                case Surface.ROTATION_270:
+                    degrees = 270;
+                    break;
             }
             // get whether the camera is front camera or back camera
             final Camera.CameraInfo info =
                     new android.hardware.Camera.CameraInfo();
             android.hardware.Camera.getCameraInfo(CAMERA_ID, info);
             mIsFrontFace = (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT);
-            if (mIsFrontFace) {	// front camera
+            if (mIsFrontFace) {    // front camera
                 degrees = (info.orientation + degrees) % 360;
                 degrees = (360 - degrees) % 360;  // reverse
             } else {  // back camera
