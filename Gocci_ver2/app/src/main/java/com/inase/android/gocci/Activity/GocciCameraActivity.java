@@ -21,9 +21,6 @@ public class GocciCameraActivity extends AppCompatActivity {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                 getFragmentManager().beginTransaction()
                         .add(R.id.container, new up18CameraFragment()).commit();
-                Intent intent = new Intent(this, CameraActivity.class);
-                startActivity(intent);
-                overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
             } else {
                 Intent intent = new Intent(this, CameraActivity.class);
                 startActivity(intent);
