@@ -26,14 +26,20 @@ public class Application_Gocci extends Application {
     private final String TAG = "Gocci";
 
     //経度緯度情報
-    private Location mLocation;
+    private double mLatitude;
+    private double mLongitude;
 
-    public void setFirstLocation(Location location) {
-        mLocation = location;
+    public void setFirstLocation(double latitude, double longitude) {
+        mLatitude = latitude;
+        mLongitude = longitude;
     }
 
-    public Location getFirstLocation() {
-        return mLocation;
+    public double getFirstLatitude() {
+        return mLatitude;
+    }
+
+    public double getFirstLongitude() {
+        return mLongitude;
     }
 
     private static final String PROPERTY_ID = "UA-63362687-1";
@@ -104,6 +110,5 @@ public class Application_Gocci extends Application {
     @Override
     public void onTerminate() {
         Log.v(TAG, "Gocci終了");
-        SmartLocation.with(getApplicationContext()).location().stop();
     }
 }

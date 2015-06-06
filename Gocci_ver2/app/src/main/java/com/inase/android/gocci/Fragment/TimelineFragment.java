@@ -44,7 +44,6 @@ import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.gitonway.lee.niftymodaldialogeffects.lib.Effectstype;
 import com.gitonway.lee.niftymodaldialogeffects.lib.NiftyDialogBuilder;
 import com.hatenablog.shoma2da.eventdaterecorderlib.EventDateRecorder;
-import com.inase.android.gocci.Activity.CameraActivity;
 import com.inase.android.gocci.Activity.FlexibleTenpoActivity;
 import com.inase.android.gocci.Activity.FlexibleUserProfActivity;
 import com.inase.android.gocci.Activity.GocciCameraActivity;
@@ -118,6 +117,9 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
 
     private boolean isNear = true;
 
+    private boolean isLocationUpdate = false;
+    private double mLatitude;
+    private double mLongitude;
     private Location mLocation = null;
     private String mTimelineUrl = null;
 
@@ -240,49 +242,30 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
 
         mTimelineAdapter = new TimelineAdapter(getActivity(), 0, mTimelineusers);
 
+        mLatitude = gocci.getFirstLatitude();
+        mLongitude = gocci.getFirstLongitude();
+        isLocationUpdate = mLatitude != 0.0;
+
         if (Util.getConnectedState(getActivity()) != Util.NetworkStatus.OFF) {
             if (Util.getConnectedState(getActivity()) == Util.NetworkStatus.MOBILE) {
-                Toast.makeText(getActivity(), "回線が悪いので、動画が流れなくなります", Toast.LENGTH_LONG).show();
-                if (gocci.getFirstLocation() != null) {
-                    mLocation = gocci.getFirstLocation();
-                    Log.e("DEBUG", "アプリから位置とったよ");
-
+                if (isLocationUpdate) {
+                    Toast.makeText(getActivity(), "回線が悪いので、動画が流れなくなります", Toast.LENGTH_LONG).show();
+                    mTimelineUrl = "http://api-gocci.jp/test_timeline/?lat=" + mLatitude + "&lon=" + mLongitude + "&limit=30";
                     getSignupAsync(getActivity());//サインアップとJSON
-
                 } else {
-                    SmartLocation.with(getActivity()).location().oneFix().start(new OnLocationUpdatedListener() {
-                        @Override
-                        public void onLocationUpdated(Location location) {
-                            if (location != null) {
-                                mLocation = location;
-                                getSignupAsync(getActivity());
-                                gocci.setFirstLocation(location);
-                            } else {
-                                Toast.makeText(getActivity(), "位置情報が読み取れませんでした", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
+                    //経度緯度ない
+                    Toast.makeText(getActivity(), "位置情報がないので、近くの店は表示されません", Toast.LENGTH_LONG).show();
+                    mTimelineUrl = "http://api-gocci.jp/test_timeline/?lat=35.710063&lon=139.8107&limit=30";
+                    getSignupAsync(getActivity());
                 }
             } else {
-                if (gocci.getFirstLocation() != null) {
-                    mLocation = gocci.getFirstLocation();
-                    Log.e("DEBUG", "アプリから位置とったよ");
-
+                if (isLocationUpdate) {
+                    mTimelineUrl = "http://api-gocci.jp/test_timeline/?lat=" + mLatitude + "&lon=" + mLongitude + "&limit=30";
                     getSignupAsync(getActivity());//サインアップとJSON
-
                 } else {
-                    SmartLocation.with(getActivity()).location().oneFix().start(new OnLocationUpdatedListener() {
-                        @Override
-                        public void onLocationUpdated(Location location) {
-                            if (location != null) {
-                                mLocation = location;
-                                getSignupAsync(getActivity());
-                                gocci.setFirstLocation(location);
-                            } else {
-                                Toast.makeText(getActivity(), "位置情報が読み取れませんでした", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
+                    Toast.makeText(getActivity(), "位置情報がないので、近くの店は表示されません", Toast.LENGTH_LONG).show();
+                    mTimelineUrl = "http://api-gocci.jp/test_timeline/?lat=35.710063&lon=139.8107&limit=30";
+                    getSignupAsync(getActivity());
                 }
             }
         } else {
@@ -296,24 +279,33 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
                 mTimelineSwipe.setRefreshing(true);
                 if (swipyRefreshLayoutDirection == SwipyRefreshLayoutDirection.TOP) {
                     if (Util.getConnectedState(getActivity()) != Util.NetworkStatus.OFF) {
-                        SmartLocation.with(getActivity()).location().oneFix().start(new OnLocationUpdatedListener() {
-                            @Override
-                            public void onLocationUpdated(Location location) {
-                                if (location != null) {
-                                    mLocation = location;
-                                    Log.e("とったどー", "いえい！");
-                                    getRefreshAsync(getActivity());
-                                    gocci.setFirstLocation(location);
-                                } else {
-                                    Toast.makeText(getActivity(), "位置情報が読み取れませんでした", Toast.LENGTH_SHORT).show();
-                                    mTimelineSwipe.setRefreshing(false);
+                        if (isLocationUpdate) {
+                            SmartLocation.with(getActivity()).location().oneFix().start(new OnLocationUpdatedListener() {
+                                @Override
+                                public void onLocationUpdated(Location location) {
+                                    if (location != null) {
+                                        mLocation = location;
+                                        Log.e("とったどー", "いえい！");
+                                        mTimelineUrl = "http://api-gocci.jp/test_timeline/?lat=" + mLocation.getLatitude() + "&lon=" + mLocation.getLongitude() +
+                                                "&limit=30";
+                                        getRefreshAsync(getActivity());
+                                        gocci.setFirstLocation(location.getLatitude(), location.getLongitude());
+                                    } else {
+                                        Toast.makeText(getActivity(), "位置情報が読み取れませんでした", Toast.LENGTH_SHORT).show();
+                                        mTimelineSwipe.setRefreshing(false);
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        } else {
+                            Toast.makeText(getActivity(), "位置情報がないので、近くの店は表示されません", Toast.LENGTH_LONG).show();
+                            mTimelineUrl = "http://api-gocci.jp/test_timeline/?lat=35.710063&lon=139.8107&limit=30";
+                            getRefreshAsync(getActivity());
+                        }
                     } else {
                         Toast.makeText(getActivity(), "通信に失敗しました", Toast.LENGTH_LONG).show();
                     }
                 } else {
+
                     String nowPost_id = mTimelineusers.get(mTimelineusers.size() - 1).getPost_id();
                     //mLocation.getLatitude();
                     //mLocation.getLongitude();
@@ -432,7 +424,7 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
     }
 
     private void getSignupAsync(final Context context) {
-        mTimelineUrl = "http://api-gocci.jp/test_timeline/?lat=" + mLocation.getLatitude() + "&lon=" + mLocation.getLongitude() + "&limit=30";
+
         final AsyncHttpClient httpClient = new AsyncHttpClient();
         httpClient.setCookieStore(SavedData.getCookieStore(context));
         httpClient.get(context, mTimelineUrl, new TextHttpResponseHandler() {
@@ -501,8 +493,7 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
     }
 
     private void getRefreshAsync(final Context context) {
-        mTimelineUrl = "http://api-gocci.jp/test_timeline/?lat=" + mLocation.getLatitude() + "&lon=" + mLocation.getLongitude() +
-                "&limit=30";
+
         final AsyncHttpClient httpClient3 = new AsyncHttpClient();
         httpClient3.setCookieStore(SavedData.getCookieStore(context));
         httpClient3.get(context, mTimelineUrl, new TextHttpResponseHandler() {

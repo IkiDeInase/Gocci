@@ -5,7 +5,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -108,6 +107,7 @@ public class Search_mapFragment extends BaseFragment
     private int clickedWant_flag;
     private int clickedTotal_cheer_num;
 
+    private boolean isLocationUpdate = false;
     private double mLatitude;
     private double mLongitude;
 
@@ -142,9 +142,10 @@ public class Search_mapFragment extends BaseFragment
 
         gocci = (Application_Gocci) getActivity().getApplication();
 
-        if (gocci.getFirstLocation() != null) {
-            firstLocation = gocci.getFirstLocation();
-            Log.e("DEBUG", "アプリから位置とったよ");
+        mLatitude = gocci.getFirstLatitude();
+        mLongitude = gocci.getFirstLongitude();
+        if (mLatitude == 0.0) {
+            Toast.makeText(getActivity(), "位置情報がないので、近くの店は表示されません", Toast.LENGTH_LONG).show();
         }
 
         mapprogress = (ProgressWheel) view1.findViewById(R.id.mapprogress_wheel);
@@ -324,7 +325,7 @@ public class Search_mapFragment extends BaseFragment
                 if (location != null) {
                     mLatitude = location.getLatitude();
                     mLongitude = location.getLongitude();
-                    gocci.setFirstLocation(location);
+                    gocci.setFirstLocation(mLatitude, mLongitude);
                 } else {
                     Log.e("からでしたー", "locationupdated");
                 }
@@ -340,7 +341,7 @@ public class Search_mapFragment extends BaseFragment
                     mLatitude = location.getLatitude();
                     mLongitude = location.getLongitude();
                     setUpMap(FUNCTION_FIRST, mLatitude, mLongitude, 30);
-                    gocci.setFirstLocation(location);
+                    gocci.setFirstLocation(mLatitude, mLongitude);
                 } else {
                     Log.e("からでしたー", "locationupdated");
                 }
@@ -355,7 +356,7 @@ public class Search_mapFragment extends BaseFragment
                 if (location != null) {
                     mLatitude = location.getLatitude();
                     mLongitude = location.getLongitude();
-                    gocci.setFirstLocation(location);
+                    gocci.setFirstLocation(mLatitude, mLongitude);
                     setUpMap(FUNCTION_REFRESH, mLatitude, mLongitude, 30);
                 } else {
                     Log.e("からでしたー", "locationupdated");
@@ -403,11 +404,8 @@ public class Search_mapFragment extends BaseFragment
         });
 
         Log.d("DEBUG", "ProgressDialog show [mSearchmapDialog]");
-        if (firstLocation == null) {
-            firstLocation();
-        } else {
-            setUpMap(FUNCTION_FIRST, firstLocation.getLatitude(), firstLocation.getLongitude(), 30);
-        }
+
+        setUpMap(FUNCTION_FIRST, mLatitude, mLongitude, 30);
     }
 
     @Override
