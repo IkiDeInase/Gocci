@@ -146,6 +146,7 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         facebookLoginButton.setReadPermissions("public_profile");
+        /*
         facebookLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
@@ -183,6 +184,7 @@ public class LoginActivity extends AppCompatActivity {
                 // App code
             }
         });
+        */
 
         twitterLoginButton.setCallback(new Callback<TwitterSession>() {
             @Override

@@ -53,9 +53,19 @@ public class GcmIntentService extends IntentService {
             } else if (GoogleCloudMessaging.
                     MESSAGE_TYPE_MESSAGE.equals(messageType)) {
                 // Post notification of received message.
+                String extraData = extras.getString("extraData");
+                String from=extras.getString("from");
+                String title=extras.getString("title");
+                String message=extras.getString("message");
 
-                sendNotification(extras.get("message").toString());
-                Log.e(TAG, "Received: " + extras.toString());
+                if(message != null) {
+                    if (from.equals("google.com/iid")) {
+                        //related to google ... DO NOT PERFORM ANY ACTION
+                    } else {
+                        //HANDLE THE RECEIVED NOTIFICATION
+                        sendNotification(message);
+                    }
+                }
             }
         }
         // Release the wake lock provided by the WakefulBroadcastReceiver.
