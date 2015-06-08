@@ -46,7 +46,6 @@ import com.gitonway.lee.niftymodaldialogeffects.lib.NiftyDialogBuilder;
 import com.hatenablog.shoma2da.eventdaterecorderlib.EventDateRecorder;
 import com.inase.android.gocci.Activity.FlexibleTenpoActivity;
 import com.inase.android.gocci.Activity.FlexibleUserProfActivity;
-import com.inase.android.gocci.Activity.GocciCameraActivity;
 import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.Base.BaseFragment;
 import com.inase.android.gocci.Base.RoundedTransformation;
@@ -64,7 +63,6 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
-import com.melnykov.fab.FloatingActionButton;
 import com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayout;
 import com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayoutDirection;
 import com.pnikosis.materialishprogress.ProgressWheel;
@@ -100,7 +98,6 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
     private ArrayList<UserData> mTimelineusers = new ArrayList<>();
     private SwipyRefreshLayout mTimelineSwipe;
     private TimelineAdapter mTimelineAdapter;
-    private FloatingActionButton fab;
 
     private String clickedUsername;
     private String clickedUserpicture;
@@ -223,16 +220,6 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
         progressWheel = (ProgressWheel) view.findViewById(R.id.progress_wheel);
         mTimelineListView = (ObservableListView) view.findViewById(R.id.list);
         mTimelineSwipe = (SwipyRefreshLayout) view.findViewById(R.id.swipe_timeline);
-        fab = (FloatingActionButton) view.findViewById(R.id.toukouButton);
-
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Intent intent = new Intent(getActivity(), CameraActivity.class);
-                Intent intent = new Intent(getActivity(), GocciCameraActivity.class);
-                startActivity(intent);
-            }
-        });
 
         mTimelineListView.setOnScrollListener(this);
         mTimelineListView.setScrollViewCallbacks(this);
@@ -830,16 +817,6 @@ public class TimelineFragment extends BaseFragment implements ObservableScrollVi
 
     @Override
     public void onUpOrCancelMotionEvent(ScrollState scrollState) {
-
-        if (scrollState == ScrollState.UP) {
-            if (fab.isVisible()) {
-                fab.hide();
-            }
-        } else if (scrollState == ScrollState.DOWN) {
-            if (!fab.isVisible()) {
-                fab.show();
-            }
-        }
 
     }
 

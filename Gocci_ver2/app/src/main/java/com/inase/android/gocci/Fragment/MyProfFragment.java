@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.support.design.widget.FloatingActionButton;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -59,7 +60,6 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
-import com.melnykov.fab.FloatingActionButton;
 import com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayout;
 import com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayoutDirection;
 import com.pnikosis.materialishprogress.ProgressWheel;
@@ -196,6 +196,7 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
         mProfUrl = "http://api-gocci.jp/mypage/?user_name=" + mEncodeUser_name;
 
         fab = (FloatingActionButton) view.findViewById(R.id.toukouButton);
+        fab.setRippleColor(getResources().getColor(R.color.material_drawer_primary));
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -515,15 +516,6 @@ public class MyProfFragment extends BaseFragment implements ObservableScrollView
     @Override
     public void onUpOrCancelMotionEvent(ScrollState scrollState) {
 
-        if (scrollState == ScrollState.UP) {
-            if (fab.isVisible()) {
-                fab.hide();
-            }
-        } else if (scrollState == ScrollState.DOWN) {
-            if (!fab.isVisible()) {
-                fab.show();
-            }
-        }
     }
 
     private void setDeleteDialog(final String post_id, final int position) {

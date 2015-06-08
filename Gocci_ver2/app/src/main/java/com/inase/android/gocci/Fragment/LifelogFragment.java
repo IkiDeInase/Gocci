@@ -4,6 +4,7 @@ package com.inase.android.gocci.Fragment;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +19,6 @@ import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.SyncHttpClient;
-import com.melnykov.fab.FloatingActionButton;
 import com.squareup.timessquare.CalendarPickerView;
 
 import org.apache.http.Header;
@@ -151,7 +151,7 @@ public class LifelogFragment extends BaseFragment {
                 .withSelectedDate(new Date());
 
         fab = (FloatingActionButton) view2.findViewById(R.id.toukouButton);
-        fab.attachToListView(calendar);
+        fab.setRippleColor(getResources().getColor(R.color.material_drawer_primary));
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

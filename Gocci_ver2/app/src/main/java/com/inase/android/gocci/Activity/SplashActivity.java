@@ -2,16 +2,20 @@ package com.inase.android.gocci.Activity;
 
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.ConnectionResult;
@@ -62,11 +66,16 @@ public class SplashActivity extends AppCompatActivity implements
 
     protected LocationSettingsRequest mLocationSettingsRequest;
 
+    private LocationManager mLocationManager;
+
+
     @Override
     protected void onCreate(Bundle icicle) {
         super.onCreate(icicle);
 
         gocci = (Application_Gocci) getApplication();
+
+        mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         setContentView(R.layout.activity_splash);
 
@@ -148,15 +157,59 @@ public class SplashActivity extends AppCompatActivity implements
         super.onResume();
         checkPlayServices();
 
-        if (mGoogleApiClient.isConnected() && !isLocationUpdating) {
-            if (isLocationOnOff) {
-                startLocationUpdates();
-            } else {
-                gocci.setFirstLocation(0.0, 0.0);
-                goNextView();
+        if (mGoogleApiClient != null) {
+            if (mGoogleApiClient.isConnected() && !isLocationUpdating) {
+                if (isLocationOnOff) {
+                    startLocationUpdates();
+                } else {
+                    gocci.setFirstLocation(0.0, 0.0);
+                    goNextView();
+                }
             }
-        }
+        } else {
+            if (!mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                new MaterialDialog.Builder(this)
+                        .title("位置情報取得について")
+                        .content("位置情報を使いたいのですが、GPSが無効になっています。" + "設定を変更しますか？")
+                        .positiveText("はい")
+                        .positiveColorRes(R.color.gocci_header)
+                        .negativeText("いいえ")
+                        .negativeColorRes(R.color.material_drawer_primary_light)
+                        .callback(new MaterialDialog.ButtonCallback() {
+                            @Override
+                            public void onPositive(MaterialDialog dialog) {
+                                super.onPositive(dialog);
+                                Intent settingIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                                startActivity(settingIntent);
+                            }
+                            @Override
+                            public void onNegative(MaterialDialog dialog) {
+                                super.onNegative(dialog);
+                                Toast.makeText(SplashActivity.this, "近くの店舗表示ができなくなります", Toast.LENGTH_LONG).show();
+                            }
+                        }).show();
 
+            } else {
+                firstLocation();
+            }
+
+        }
+    }
+
+    private void firstLocation() {
+        SmartLocation.with(getApplicationContext()).location().oneFix().start(new OnLocationUpdatedListener() {
+            @Override
+            public void onLocationUpdated(Location location) {
+                if (location != null) {
+                    gocci.setFirstLocation(location.getLatitude(), location.getLongitude());
+                    Log.e("とったどー", "いえい！");
+                    goNextView();
+                } else {
+                    Toast.makeText(SplashActivity.this, "位置情報が読み取れないため、Gocciを起動できませんでした", Toast.LENGTH_LONG).show();
+                    finish();
+                }
+            }
+        });
     }
 
     @Override
@@ -170,8 +223,10 @@ public class SplashActivity extends AppCompatActivity implements
     @Override
     protected void onStop() {
         super.onStop();
-        if (mGoogleApiClient.isConnected()) {
-            mGoogleApiClient.disconnect();
+        if (mGoogleApiClient != null) {
+            if (mGoogleApiClient.isConnected()) {
+                mGoogleApiClient.disconnect();
+            }
         }
     }
 

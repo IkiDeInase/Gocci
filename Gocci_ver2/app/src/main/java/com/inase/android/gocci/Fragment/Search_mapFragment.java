@@ -8,6 +8,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,7 +43,6 @@ import com.inase.android.gocci.common.SavedData;
 import com.inase.android.gocci.data.UserData;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.melnykov.fab.FloatingActionButton;
 import com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayout;
 import com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayoutDirection;
 import com.pnikosis.materialishprogress.ProgressWheel;
@@ -171,7 +171,7 @@ public class Search_mapFragment extends BaseFragment
         });
 
         fab = (FloatingActionButton) view1.findViewById(R.id.siboriButton);
-        fab.attachToListView(mSearch_mapListView);
+        fab.setRippleColor(getResources().getColor(R.color.material_drawer_primary));
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -9,6 +9,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -51,10 +53,6 @@ import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
-import com.nispok.snackbar.Snackbar;
-import com.nispok.snackbar.SnackbarManager;
-import com.nispok.snackbar.enums.SnackbarType;
-import com.nispok.snackbar.listeners.EventListener;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
@@ -70,6 +68,8 @@ public class GocciTimelineActivity extends AppCompatActivity {
     private final GocciTimelineActivity self = this;
 
     private TextView notificationNumber;
+
+    private FloatingActionButton fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -173,6 +173,18 @@ public class GocciTimelineActivity extends AppCompatActivity {
 
             }
         });
+
+        fab = (FloatingActionButton) findViewById(R.id.toukouButton);
+        fab.setRippleColor(getResources().getColor(R.color.material_drawer_primary));
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Intent intent = new Intent(getActivity(), CameraActivity.class);
+                Intent intent = new Intent(GocciTimelineActivity.this, GocciCameraActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -189,14 +201,7 @@ public class GocciTimelineActivity extends AppCompatActivity {
 
     @Subscribe
     public void subscribe(NotificationNumberEvent event) {
-        SnackbarManager.show(
-                Snackbar.with(this)
-                        .type(SnackbarType.MULTI_LINE)
-                        .position(Snackbar.SnackbarPosition.BOTTOM)
-                        .margin(16, 16, 16, 20)
-                        .backgroundDrawable(R.color.material_drawer_background)
-                        .text(event.mMessage)
-                        );
+        Snackbar.make(fab, event.mMessage, Snackbar.LENGTH_SHORT).show();
         //２1文字で改行っぽい
         notificationNumber.setVisibility(View.VISIBLE);
         notificationNumber.setText(String.valueOf(event.mNotificationNumber));

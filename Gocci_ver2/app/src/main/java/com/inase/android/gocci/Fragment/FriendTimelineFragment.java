@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.support.design.widget.FloatingActionButton;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -56,7 +57,6 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
-import com.melnykov.fab.FloatingActionButton;
 import com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayout;
 import com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayoutDirection;
 import com.pnikosis.materialishprogress.ProgressWheel;
@@ -87,7 +87,6 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
     private ArrayList<UserData> mTimelineusers = new ArrayList<>();
     private SwipyRefreshLayout mTimelineSwipe;
     private FriendTimelineAdapter mTimelineAdapter;
-    private FloatingActionButton fab;
 
     private String clickedUsername;
     private String clickedUserpicture;
@@ -159,15 +158,6 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
         progressWheel = (ProgressWheel) view.findViewById(R.id.progress_wheel);
         mTimelineListView = (ObservableListView) view.findViewById(R.id.list);
         mTimelineSwipe = (SwipyRefreshLayout) view.findViewById(R.id.swipe_timeline);
-        fab = (FloatingActionButton) view.findViewById(R.id.toukouButton);
-
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), GocciCameraActivity.class);
-                startActivity(intent);
-            }
-        });
 
         mTimelineListView.setOnScrollListener(this);
         mTimelineListView.setScrollViewCallbacks(this);
@@ -692,17 +682,7 @@ public class FriendTimelineFragment extends BaseFragment implements ObservableSc
 
     @Override
     public void onUpOrCancelMotionEvent(ScrollState scrollState) {
-
-        if (scrollState == ScrollState.UP) {
-            if (fab.isVisible()) {
-                fab.hide();
-            }
-        } else if (scrollState == ScrollState.DOWN) {
-            if (!fab.isVisible()) {
-                fab.show();
-            }
-        }
-
+        
     }
 
     public Uri getLocalBitmapUri(ImageView imageView) {

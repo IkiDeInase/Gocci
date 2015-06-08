@@ -69,7 +69,7 @@ public class ToukouPopup {
         window.setBackgroundDrawable(new ColorDrawable(
                 android.graphics.Color.TRANSPARENT));
 
-        window.showAtLocation(anchor, Gravity.CENTER, 0,0);
+        window.showAtLocation(anchor, Gravity.TOP , 0,0);
     }
 
     public static void showLikeQuickAction2(PopupWindow window, View root, View anchor, WindowManager windowManager, int xOffset, int yOffset) {
