@@ -31,14 +31,12 @@
             android:id="@+id/viewpagertab"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:background="@color/gocci_header"
+            android:background="@color/view_background"
             android:clipToPadding="false"
-            android:paddingBottom="8dp"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp"
-            app:stl_customTabTextLayoutId="@layout/custom_tab"
+            android:paddingLeft="32dp"
+            android:paddingRight="32dp"
             app:stl_defaultTabTextAllCaps="true"
-            app:stl_defaultTabTextColor="@color/white"
+            app:stl_defaultTabTextColor="@color/gocci_header"
             app:stl_defaultTabTextHorizontalPadding="20dp"
             app:stl_defaultTabTextMinWidth="0dp"
             app:stl_defaultTabTextSize="16sp"
@@ -46,13 +44,18 @@
             app:stl_dividerColor="@color/transparent"
             app:stl_dividerThickness="0dp"
             app:stl_indicatorAlwaysInCenter="false"
-            app:stl_indicatorColor="@color/tab_background"
-            app:stl_indicatorCornerRadius="20dp"
+            app:stl_indicatorColor="@color/gocci_header"
+            app:stl_indicatorCornerRadius="0dp"
             app:stl_indicatorInFront="false"
-            app:stl_indicatorInterpolation="smart"
-            app:stl_indicatorThickness="40dp"
+            app:stl_indicatorInterpolation="linear"
+            app:stl_indicatorThickness="3dp"
             app:stl_underlineColor="@color/transparent"
             app:stl_underlineThickness="0dp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/tabFooter"/>
 
     </android.support.design.widget.AppBarLayout>
 
@@ -67,6 +70,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
+        android:layout_margin="16dp"
         android:src="@drawable/ic_camera_alt_white_36dp"
         app:fabSize="normal" />
 

@@ -25,7 +25,7 @@
 
     <ListView
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="350dp"
         android:id="@+id/notification_list"
         android:background="@color/view_background"
         android:layout_centerInParent="true" />

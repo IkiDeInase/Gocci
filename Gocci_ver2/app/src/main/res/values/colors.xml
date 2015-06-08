@@ -18,7 +18,7 @@
     <color name="custom_header_text">#607d8b</color>
     <color name="custom_selected">#aed581</color>
     <color name="custom_background">#eeeeee</color>
-    <color name="custom_background_today">#f75533</color>
+    <color name="custom_background_today">#F45849</color>
     <color name="custom_background_disabled">#eeeeee</color>
     <color name="custom_text_selected">#ffffff</color>
     <color name="custom_text_inactive">#7f778088</color>
@@ -36,6 +36,7 @@
     <color name="nameblack">#7d7d7d</color>
     <color name="timecolor">#999999</color>
     <color name="namegrey">#4d4d4d</color>
+    <color name="tabFooter">#bdbdbd</color>
 
     <!--ホワイト-->
     <color name="white">#ffffff</color>
@@ -43,14 +44,14 @@
     <color name="view_background">#f8f8f8</color>
 
     <!-- Material DEFAULT colors -->
-    <color name="material_drawer_primary">#f75533</color>
-    <color name="material_drawer_primary_dark">#f74533</color>
-    <color name="material_drawer_primary_light">#f76533</color>
-    <color name="material_drawer_accent">#f75533</color>
-    <color name="gocci_button">#f75533</color>
-    <color name="gocci_header">#f75533</color>
-    <color name="gocci_nannda">#f75533</color>
-    <color name="gocci_progress">#f2614d</color>
+    <color name="material_drawer_primary">#F45849</color>
+    <color name="material_drawer_primary_dark">#f34231</color>
+    <color name="material_drawer_primary_light">#f56e61</color>
+    <color name="material_drawer_accent">#F45849</color>
+    <color name="gocci_button">#F45849</color>
+    <color name="gocci_header">#F45849</color>
+    <color name="gocci_nannda">#F45849</color>
+    <color name="gocci_progress">#F45849</color>
 
     <!-- OVERWRITE THESE COLORS FOR A LIGHT THEME -->
     <!-- MaterialDrawer DEFAULT colors -->
@@ -65,7 +66,7 @@
     <color name="material_drawer_divider">#1F000000</color>
     <!-- Material DEFAULT drawer colors -->
     <color name="material_drawer_selected">#555555</color>
-    <color name="material_drawer_selected_text">#f75533</color>
+    <color name="material_drawer_selected_text">#F45849</color>
     <color name="material_drawer_header_selection_text">#555555</color>
 
     <!-- OVERWRITE THESE COLORS FOR A DARK THEME -->
@@ -81,7 +82,7 @@
     <color name="material_drawer_dark_divider">#1F000000</color>
     <!-- MaterialDrawer DEFAULT DARK drawer colors -->
     <color name="material_drawer_dark_selected">#555555</color>
-    <color name="material_drawer_dark_selected_text">#f75533</color>
+    <color name="material_drawer_dark_selected_text">#F45849</color>
     <color name="material_drawer_dark_header_selection_text">#555555</color>
 
     <color name="value">#ee8221</color>

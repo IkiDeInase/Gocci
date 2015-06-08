@@ -38,6 +38,7 @@ import com.inase.android.gocci.Event.BusHolder;
 import com.inase.android.gocci.Event.NotificationNumberEvent;
 import com.inase.android.gocci.Event.PageChangeVideoStopEvent;
 import com.inase.android.gocci.Fragment.FriendTimelineFragment;
+import com.inase.android.gocci.Fragment.LatestTimelineFragment;
 import com.inase.android.gocci.Fragment.TimelineFragment;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.View.DrawerProfHeader;
@@ -130,7 +131,7 @@ public class GocciTimelineActivity extends AppCompatActivity {
 
         FragmentPagerItemAdapter adapter = new FragmentPagerItemAdapter(
                 getSupportFragmentManager(), FragmentPagerItems.with(this)
-                .add(R.string.tab_near, TimelineFragment.class)
+                .add(R.string.tab_near, LatestTimelineFragment.class)
                 .add(R.string.tab_follow_cheer, FriendTimelineFragment.class)
                 .create());
 

@@ -5,6 +5,10 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Location;
 import android.media.MediaScannerConnection;
 import android.os.Bundle;
@@ -13,6 +17,7 @@ import android.os.Message;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -49,13 +54,31 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
 
-public class up18CameraFragment extends Fragment implements ViewPager.OnPageChangeListener {
+public class up18CameraFragment extends Fragment implements ViewPager.OnPageChangeListener, SensorEventListener {
     private static final boolean DEBUG = true;    // TODO set false on releasing
     private static final String TAG = "GocciCamera";
+
+    private SensorManager mSensorManager;
+    private boolean mIsMagSensor;
+    private boolean mIsAccSensor;
+
+    private static final int MATRIX_SIZE = 16;
+    /* 回転行列 */
+    float[]  inR = new float[MATRIX_SIZE];
+    float[] outR = new float[MATRIX_SIZE];
+    float[]    I = new float[MATRIX_SIZE];
+
+    /* センサーの値 */
+    float[] orientationValues   = new float[3];
+    float[] magneticValues      = new float[3];
+    float[] accelerometerValues = new float[3];
+
+    private boolean isOpen = true;
 
     /**
      * for camera preview display
@@ -120,6 +143,12 @@ public class up18CameraFragment extends Fragment implements ViewPager.OnPageChan
     }
 
     @Override
+    public void onCreate(Bundle bundle) {
+        super.onCreate(bundle);
+        mSensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_camera_up18, container, false);
         isFirst = true;
@@ -156,7 +185,7 @@ public class up18CameraFragment extends Fragment implements ViewPager.OnPageChan
             public void onClick(View v) {
                 new MaterialDialog.Builder(getActivity())
                         .title("確認")
-                        .content("この動画は初期化されますがよろしいですか？")
+                        .content("すでに録画中の場合、その動画は初期化されますがよろしいですか？")
                         .positiveText("戻る")
                         .negativeText("いいえ")
                         .callback(new MaterialDialog.ButtonCallback() {
@@ -336,6 +365,22 @@ public class up18CameraFragment extends Fragment implements ViewPager.OnPageChan
         super.onResume();
         if (DEBUG) Log.v(TAG, "onResume:");
         mCameraView.onResume();
+
+        List<Sensor> sensors = mSensorManager.getSensorList(Sensor.TYPE_ALL);
+
+        // センサマネージャへリスナーを登録(implements SensorEventListenerにより、thisで登録する)
+        for (Sensor sensor : sensors) {
+
+            if( sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD){
+                mSensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_UI);
+                mIsMagSensor = true;
+            }
+
+            if( sensor.getType() == Sensor.TYPE_ACCELEROMETER){
+                mSensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_UI);
+                mIsAccSensor = true;
+            }
+        }
     }
 
     @Override
@@ -344,6 +389,12 @@ public class up18CameraFragment extends Fragment implements ViewPager.OnPageChan
         //stopRecording();
         mCameraView.onPause();
         super.onPause();
+
+        if (mIsMagSensor || mIsAccSensor) {
+            mSensorManager.unregisterListener(this);
+            mIsMagSensor = false;
+            mIsAccSensor = false;
+        }
     }
 
     @Override
@@ -601,6 +652,72 @@ public class up18CameraFragment extends Fragment implements ViewPager.OnPageChan
             if (DEBUG) Log.v(TAG, "onError:" + e.getMessage());
         }
     };
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (event.accuracy == SensorManager.SENSOR_STATUS_UNRELIABLE) return;
+
+        switch (event.sensor.getType()) {
+            case Sensor.TYPE_MAGNETIC_FIELD:
+                magneticValues = event.values.clone();
+                break;
+            case Sensor.TYPE_ACCELEROMETER:
+                accelerometerValues = event.values.clone();
+                break;
+        }
+
+        if (magneticValues != null && accelerometerValues != null) {
+
+            SensorManager.getRotationMatrix(inR, I, accelerometerValues, magneticValues);
+
+            //Activityの表示が縦固定の場合。横向きになる場合、修正が必要です
+            SensorManager.remapCoordinateSystem(inR, SensorManager.AXIS_X, SensorManager.AXIS_Z, outR);
+            SensorManager.getOrientation(outR, orientationValues);
+
+            int degree = radianToDegree(orientationValues[2]);
+
+            if(degree <=  -60  ) {
+                if (!isOpen) {
+                    isOpen = true;
+                    NiftyDialogBuilder dialogBuilder = NiftyDialogBuilder.getInstance(getActivity());
+                    Effectstype effect = Effectstype.SlideBottom;
+                    dialogBuilder
+                            .withTitle("Gocciカメラ")
+                            .withMessage("このカメラでは、縦向きで投稿するようにしてください！")
+                            .withDuration(500)                                          //def
+                            .withEffect(effect)
+                            .isCancelableOnTouchOutside(true)
+                            .show();
+                }
+            }
+            if( -60 < degree  && degree <=   60  ) {
+                isOpen = false;
+            }
+            if(60 < degree) {
+                if (!isOpen) {
+                    isOpen = true;
+                    NiftyDialogBuilder dialogBuilder = NiftyDialogBuilder.getInstance(getActivity());
+                    Effectstype effect = Effectstype.SlideBottom;
+                    dialogBuilder
+                            .withTitle("Gocciカメラ")
+                            .withMessage("このカメラでは、縦向きで投稿するようにしてください！")
+                            .withDuration(500)                                          //def
+                            .withEffect(effect)
+                            .isCancelableOnTouchOutside(true)
+                            .show();
+                }
+            }
+        }
+    }
+
+    int radianToDegree(float rad){
+        return (int) Math.floor( Math.toDegrees(rad) ) ;
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+    }
 
     private class ProgressRunnable implements Runnable {
 

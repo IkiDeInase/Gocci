@@ -5,6 +5,10 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Location;
 import android.media.AudioManager;
 import android.os.Bundle;
@@ -13,6 +17,7 @@ import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -66,7 +71,7 @@ import java.util.List;
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
 
-public class CameraActivity extends Activity implements ViewPager.OnPageChangeListener {
+public class CameraActivity extends Activity implements ViewPager.OnPageChangeListener, SensorEventListener {
 
     private RecorderManager recorderManager = null;
     private CameraManager cameraManager;
@@ -109,11 +114,30 @@ public class CameraActivity extends Activity implements ViewPager.OnPageChangeLi
     private MaterialEditText edit_comment;
     private ImageButton restaddButton;
 
+    private SensorManager mSensorManager;
+    private boolean mIsMagSensor;
+    private boolean mIsAccSensor;
+
+    private static final int MATRIX_SIZE = 16;
+    /* 回転行列 */
+    float[]  inR = new float[MATRIX_SIZE];
+    float[] outR = new float[MATRIX_SIZE];
+    float[]    I = new float[MATRIX_SIZE];
+
+    /* センサーの値 */
+    float[] orientationValues   = new float[3];
+    float[] magneticValues      = new float[3];
+    float[] accelerometerValues = new float[3];
+
+    private boolean isOpen = true;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
         isFirst = true;
+
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
         getLocation(this);
 
@@ -180,6 +204,104 @@ public class CameraActivity extends Activity implements ViewPager.OnPageChangeLi
 
         progressRunnable = new ProgressRunnable();
         handler.post(progressRunnable);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        List<Sensor> sensors = mSensorManager.getSensorList(Sensor.TYPE_ALL);
+
+        // センサマネージャへリスナーを登録(implements SensorEventListenerにより、thisで登録する)
+        for (Sensor sensor : sensors) {
+
+            if( sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD){
+                mSensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_UI);
+                mIsMagSensor = true;
+            }
+
+            if( sensor.getType() == Sensor.TYPE_ACCELEROMETER){
+                mSensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_UI);
+                mIsAccSensor = true;
+            }
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        if (mIsMagSensor || mIsAccSensor) {
+            mSensorManager.unregisterListener(this);
+            mIsMagSensor = false;
+            mIsAccSensor = false;
+        }
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (event.accuracy == SensorManager.SENSOR_STATUS_UNRELIABLE) return;
+
+        switch (event.sensor.getType()) {
+            case Sensor.TYPE_MAGNETIC_FIELD:
+                magneticValues = event.values.clone();
+                break;
+            case Sensor.TYPE_ACCELEROMETER:
+                accelerometerValues = event.values.clone();
+                break;
+        }
+
+        if (magneticValues != null && accelerometerValues != null) {
+
+            SensorManager.getRotationMatrix(inR, I, accelerometerValues, magneticValues);
+
+            //Activityの表示が縦固定の場合。横向きになる場合、修正が必要です
+            SensorManager.remapCoordinateSystem(inR, SensorManager.AXIS_X, SensorManager.AXIS_Z, outR);
+            SensorManager.getOrientation(outR, orientationValues);
+
+            int degree = radianToDegree(orientationValues[2]);
+
+            if(degree <=  -60  ) {
+                if (!isOpen) {
+                    isOpen = true;
+                    NiftyDialogBuilder dialogBuilder = NiftyDialogBuilder.getInstance(this);
+                    Effectstype effect = Effectstype.SlideBottom;
+                    dialogBuilder
+                            .withTitle("Gocciカメラ")
+                            .withMessage("このカメラでは、縦向きで投稿するようにしてください！")
+                            .withDuration(500)                                          //def
+                            .withEffect(effect)
+                            .isCancelableOnTouchOutside(true)
+                            .show();
+                }
+            }
+            if( -60 < degree  && degree <=   60  ) {
+                isOpen = false;
+            }
+            if(60 < degree) {
+                if (!isOpen) {
+                    isOpen = true;
+                    NiftyDialogBuilder dialogBuilder = NiftyDialogBuilder.getInstance(this);
+                    Effectstype effect = Effectstype.SlideBottom;
+                    dialogBuilder
+                            .withTitle("Gocciカメラ")
+                            .withMessage("このカメラでは、縦向きで投稿するようにしてください！")
+                            .withDuration(500)                                          //def
+                            .withEffect(effect)
+                            .isCancelableOnTouchOutside(true)
+                            .show();
+                }
+            }
+        }
+    }
+
+    int radianToDegree(float rad){
+        return (int) Math.floor( Math.toDegrees(rad) ) ;
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
     }
 
     private void getLocation(final Context context) {
@@ -257,12 +379,49 @@ public class CameraActivity extends Activity implements ViewPager.OnPageChangeLi
         return cameraManager;
     }
 
+    @Override
+    public void onBackPressed() {
+        new MaterialDialog.Builder(this)
+                .title("確認")
+                .content("すでに録画中の場合、その動画は初期化されますがよろしいですか？")
+                .positiveText("戻る")
+                .negativeText("いいえ")
+                .callback(new MaterialDialog.ButtonCallback() {
+                    @Override
+                    public void onPositive(MaterialDialog dialog) {
+                        super.onPositive(dialog);
+                        isPlaying = false;
+                        recorderManager.reset();
+                        CameraActivity.this.finish();
+                    }
+
+                    @Override
+                    public void onNegative(MaterialDialog dialog) {
+                        super.onNegative(dialog);
+                    }
+                }).show();
+    }
+
     public void onBackPressed(View view) {
-        recorderManager.reset();
-        isPlaying = false;
-        if (progress.getProgress() == 0) {
-            CameraActivity.this.finish();
-        }
+        new MaterialDialog.Builder(this)
+                .title("確認")
+                .content("すでに録画中の場合、その動画は初期化されますがよろしいですか？")
+                .positiveText("戻る")
+                .negativeText("いいえ")
+                .callback(new MaterialDialog.ButtonCallback() {
+                    @Override
+                    public void onPositive(MaterialDialog dialog) {
+                        super.onPositive(dialog);
+                        isPlaying = false;
+                        recorderManager.reset();
+                        CameraActivity.this.finish();
+                    }
+
+                    @Override
+                    public void onNegative(MaterialDialog dialog) {
+                        super.onNegative(dialog);
+                    }
+                }).show();
     }
 
     public void onFinishPressed() {

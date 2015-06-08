@@ -12,8 +12,8 @@
     <string name="lat">経度</string>
     <string name="lon">緯度</string>
 
-    <string name="tab_near">近くの店</string>
-    <string name="tab_follow_cheer">フォロー</string>
+    <string name="tab_near">全体</string>
+    <string name="tab_follow_cheer">人気</string>
 
     <string name="youbou">ご要望</string>
     <string name="kujou">苦情</string>

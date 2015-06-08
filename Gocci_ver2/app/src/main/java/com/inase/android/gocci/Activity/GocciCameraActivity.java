@@ -5,6 +5,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.inase.android.gocci.Camera.up18CameraFragment;
 import com.inase.android.gocci.R;
 
@@ -27,7 +28,27 @@ public class GocciCameraActivity extends AppCompatActivity {
                 overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
             }
         }
+    }
 
+    @Override
+    public void onBackPressed() {
+        new MaterialDialog.Builder(this)
+                .title("確認")
+                .content("すでに録画中の場合、その動画は初期化されますがよろしいですか？")
+                .positiveText("戻る")
+                .negativeText("いいえ")
+                .callback(new MaterialDialog.ButtonCallback() {
+                    @Override
+                    public void onPositive(MaterialDialog dialog) {
+                        super.onPositive(dialog);
+                        GocciCameraActivity.this.finish();
+                    }
+
+                    @Override
+                    public void onNegative(MaterialDialog dialog) {
+                        super.onNegative(dialog);
+                    }
+                }).show();
     }
 
 }

@@ -94,6 +94,7 @@ dependencies {
         exclude group: 'com.android.support', module: 'appcompat-v7'
     }
     compile 'com.nispok:snackbar:2.10.+'
+    compile 'com.android.support:recyclerview-v7:22.2.0'
 }
 
 repositories{
