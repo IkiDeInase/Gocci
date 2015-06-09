@@ -78,7 +78,7 @@ public class GocciTimelineActivity extends AppCompatActivity {
         setContentView(R.layout.activity_gocci_timeline);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
-        toolbar.setLogo(R.drawable.ic_gocci_moji_white45);
+        //toolbar.setLogo(R.drawable.ic_gocci_moji_white45);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("");
 

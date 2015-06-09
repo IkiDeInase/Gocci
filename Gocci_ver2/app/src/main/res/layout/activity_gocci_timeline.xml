@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<android.support.v4.widget.DrawerLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/drawer_layout"
+    android:orientation="vertical"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
     android:fitsSystemWindows="true">
+<android.support.v4.widget.DrawerLayout
+    android:id="@+id/drawer_layout"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    >
 
 <android.support.design.widget.CoordinatorLayout
     android:id="@+id/main_content"
@@ -25,7 +29,13 @@
             android:layout_height="?attr/actionBarSize"
             android:background="@color/gocci_header"
             app:layout_scrollFlags="scroll|enterAlways"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" >
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_gocci_white48"/>
+            </android.support.v7.widget.Toolbar>
 
         <com.ogaclejapan.smarttablayout.SmartTabLayout
             android:id="@+id/viewpagertab"
@@ -77,3 +87,4 @@
 </android.support.design.widget.CoordinatorLayout>
 
 </android.support.v4.widget.DrawerLayout>
+</LinearLayout>
