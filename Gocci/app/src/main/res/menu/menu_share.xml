@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/facebook_share"
+        android:title="facebook シェアする"
+        android:icon="@drawable/ic_preview_facebook" />
+    <item
+        android:id="@+id/twitter_share"
+        android:title="twitter シェアする"
+        android:icon="@drawable/ic_preview_twitter" />
+
+    <item
+        android:id="@+id/other_share"
+        android:title="instagram シェアする"
+        android:icon="@drawable/ic_preview_instagram" />
+    <divider />
+    <item
+        android:id="@+id/close"
+        android:title="閉じる"
+        android:icon="@drawable/ic_icon_close" />
+</menu>

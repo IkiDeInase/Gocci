@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/list_bg">
+
+    <ImageView
+        android:id="@+id/circleImage"
+        android:layout_width="@dimen/userpicture_size"
+        android:layout_height="@dimen/userpicture_size"
+        android:layout_marginBottom="12dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="12dp"
+        android:src="@drawable/ic_userpicture"
+        android:layout_centerVertical="true" />
+
+    <RelativeLayout
+        android:orientation="horizontal"
+        android:layout_toRightOf="@+id/circleImage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/top_bar"
+        android:layout_marginTop="16dp">
+
+        <TextView
+            android:id="@+id/user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLength="20"
+            android:singleLine="true"
+            android:text="@string/username"
+            android:textColor="@color/namegrey"
+            android:textSize="@dimen/accent_text" />
+
+        <TextView
+            android:id="@+id/time_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/datetime"
+            android:textColor="@color/namegrey"
+            android:textSize="@dimen/small_text"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="12dp"
+            android:layout_centerVertical="true" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/bottom_bar"
+        android:layout_toRightOf="@+id/circleImage"
+        android:layout_below="@+id/top_bar">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/comment"
+            android:textSize="@dimen/small_text"
+            android:textColor="@color/namegrey"
+            android:singleLine="true"
+            android:id="@+id/comment"
+
+            android:layout_centerVertical="true" />
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:id="@+id/cheerMedal"
+            android:src="@drawable/ic_userpicture"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="16dp"
+            android:layout_centerVertical="true"
+            android:visibility="invisible" />
+    </RelativeLayout>
+
+</RelativeLayout>

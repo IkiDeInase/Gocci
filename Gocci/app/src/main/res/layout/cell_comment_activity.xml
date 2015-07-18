@@ -1,0 +1,60 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/materialwhite">
+
+    <ImageView
+        android:id="@+id/commentUserImage"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:src="@drawable/ic_userpicture"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="12dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="8dp" />
+
+    <TextView
+        android:id="@+id/user_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:singleLine="true"
+        android:text="@string/username"
+        android:textColor="@color/namegrey"
+        android:textSize="@dimen/normal_text"
+        android:layout_toRightOf="@+id/commentUserImage"
+        android:layout_marginTop="12dp" />
+
+    <TextView
+        android:id="@+id/date_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:singleLine="true"
+        android:text="@string/datetime"
+        android:textColor="@color/namegrey"
+        android:textSize="@dimen/small_text"
+        android:layout_alignTop="@+id/user_name"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="12dp" />
+
+    <TextView
+        android:id="@+id/usercomment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxLength="50"
+        android:text="@string/comment"
+        android:textColor="@color/namegrey"
+        android:textSize="@dimen/small_text"
+        android:layout_toRightOf="@+id/commentUserImage"
+        android:layout_below="@+id/user_name" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:background="#c5c6c9"
+        android:layout_marginTop="8dp"
+        android:layout_below="@+id/usercomment" />
+
+</RelativeLayout>

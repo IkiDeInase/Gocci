@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Gocci</string>
+
+    <!--<string name="map_key">AIzaSyBHYT0dtZUDaiId_WXPtjdQr-t3BlzHXGg</string>-->
+    <string name="map_key">AIzaSyCdJXmgncMEUoEmNflVqHkSIJwA7Mmtuc0</string>
+    <string name="facebook_app_id">673123156062598</string>
+
+    <string name="recording_hint">Record movie only while touching screen(without record button)</string>
+
+    <string name="lat">経度</string>
+    <string name="lon">緯度</string>
+
+    <string name="tab_near">全体</string>
+    <string name="tab_follow_cheer">人気</string>
+
+    <string name="youbou">ご要望</string>
+    <string name="kujou">苦情</string>
+    <string name="ikenn">ご意見</string>
+
+    <string name="wa">和風</string>
+    <string name="you">洋風</string>
+    <string name="tyuu">中華</string>
+    <string name="care">カレー</string>
+    <string name="ramen">ラーメン</string>
+    <string name="takoku">多国籍</string>
+    <string name="cafe">カフェ</string>
+    <string name="sake">居酒屋</string>
+    <string name="sonota">その他</string>
+
+    <string name="nigi">にぎやか</string>
+    <string name="yutta">ゆったり</string>
+
+    <string name="seeHomepage">ホームページを見る</string>
+    <string name="seeWantList">行きたい店リストを見る</string>
+
+    <string name="enjoy_eat">食を楽しもう</string>
+    <string name="introduce">グルメ動画アプリ「Gocci」</string>
+    <string name="start_gocci">Gocciを始める</string>
+    <string name="restname">店名</string>
+    <string name="restname_strong">店名(必須)</string>
+    <string name="locality">住所</string>
+    <string name="username">ユーザー名</string>
+    <string name="comment">コメント</string>
+    <string name="datetime">？日前</string>
+    <string name="notice">通知</string>
+    <string name="category">カテゴリー</string>
+    <string name="atmosphere">雰囲気</string>
+    <string name="value">価格</string>
+    <string name="value_strong">価格(数字のみ)</string>
+    <string name="distance">距離</string>
+    <string name="email">メールアドレス</string>
+    <string name="password">パスワード</string>
+    <string name="want">行きたい店に認定</string>
+    <string name="title_activity_web_view">WebViewActivity</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_pick_thumbnail">PickThumbnailActivity</string>
+    <string name="title_activity_login_session">LoginSessionActivity</string>
+</resources>

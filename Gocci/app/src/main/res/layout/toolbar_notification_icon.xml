@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:layout_gravity="center"
+    android:clickable="true"
+    style="@android:style/Widget.ActionButton">
+
+    <ImageView
+        android:id="@+id/notification_bell"
+        android:src="@drawable/ic_bell"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_margin="0dp" />
+
+    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/notification_number"
+        android:layout_width="wrap_content"
+        android:textColor="@color/material_drawer_primary"
+        android:layout_height="wrap_content"
+        android:minWidth="17sp"
+        android:layout_marginTop="16dp"
+        android:textSize="12sp"
+        android:gravity="center"
+        android:layout_alignTop="@id/notification_bell"
+        android:layout_alignRight="@+id/notification_bell"
+        android:background="@drawable/rounded_badge"
+        android:textStyle="bold"
+        android:text="@null" />
+</RelativeLayout>

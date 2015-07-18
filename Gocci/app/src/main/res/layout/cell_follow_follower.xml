@@ -1,0 +1,49 @@
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ImageView
+        android:layout_width="@dimen/userpicture_size"
+        android:layout_height="@dimen/userpicture_size"
+        android:id="@+id/follower_followee_picture"
+        android:src="@drawable/ic_userpicture"
+        android:layout_margin="8dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/username"
+        android:id="@+id/username"
+        android:textStyle="bold"
+        android:textSize="@dimen/accent_text"
+        android:singleLine="true"
+        android:textColor="@color/namegrey"
+        android:layout_gravity="center_vertical"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/follower_followee_picture" />
+
+    <com.andexert.library.RippleView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/accountButton"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:padding="12dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/addfollowButton"
+            android:src="@drawable/ic_account_plus"
+            android:visibility="invisible" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/deletefollowButton"
+            android:src="@drawable/ic_account_check"
+            android:visibility="invisible" />
+    </com.andexert.library.RippleView>
+
+</RelativeLayout>

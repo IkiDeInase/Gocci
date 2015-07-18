@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ripple="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/materialwhite">
+
+    <ImageView
+        android:id="@+id/myprof_background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/viewFotter"
+        android:src="@color/materialwhite"
+        android:background="@color/materialwhite" />
+
+    <TextView
+        android:id="@+id/myprof_username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/myprof_picture"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="8dp"
+        android:layout_toRightOf="@+id/myprof_picture"
+        android:singleLine="true"
+        android:text="@string/username"
+        android:textColor="@color/namegrey"
+        android:textSize="@dimen/large_text"
+        android:textStyle="bold" />
+
+    <com.andexert.library.RippleView
+        android:id="@+id/editProfile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/myprof_username"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="8dp"
+        android:layout_toRightOf="@+id/myprof_picture"
+        android:background="@drawable/button_follow">
+
+        <TextView
+            android:id="@+id/editText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="8dp"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:paddingTop="8dp"
+            android:text="プロフィールを編集する"
+            android:textColor="#ffffff"
+            android:textSize="@dimen/small_text" />
+    </com.andexert.library.RippleView>
+
+
+    <ImageView
+        android:id="@+id/myprof_picture"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:layout_gravity="left"
+        android:layout_marginBottom="16dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="16dp"
+        android:src="@drawable/ic_userpicture" />
+
+    <LinearLayout
+        android:id="@+id/numBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="false"
+        android:layout_below="@+id/myprof_picture"
+        android:orientation="horizontal">
+
+        <com.andexert.library.RippleView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/followRipple"
+            ripple:rv_color="@android:color/black"
+            ripple:rv_centered="true"
+            android:layout_weight="1">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/follow_num"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="16dp"
+                android:singleLine="false"
+                android:text="フォロー"
+                android:textColor="@color/namegrey"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/follow_num"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:text="20"
+                android:textColor="@color/namegrey"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:padding="8dp" />
+        </com.andexert.library.RippleView>
+
+        <com.andexert.library.RippleView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/followerRipple"
+            ripple:rv_color="@android:color/black"
+            ripple:rv_centered="true"
+            android:layout_weight="1">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/follower_num"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="16dp"
+                android:text="フォロワー"
+                android:textColor="@color/namegrey"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/follower_num"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:text="50"
+                android:textColor="@color/namegrey"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:padding="8dp" />
+        </com.andexert.library.RippleView>
+
+        <com.andexert.library.RippleView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/usercheerRipple"
+            ripple:rv_color="@android:color/black"
+            ripple:rv_centered="true"
+            android:layout_weight="1">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/usercheer_num"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="16dp"
+                android:text="応援店"
+                android:textColor="@color/namegrey"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/usercheer_num"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:text="5"
+                android:textColor="@color/namegrey"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:padding="8dp" />
+        </com.andexert.library.RippleView>
+
+        <com.andexert.library.RippleView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/wantRipple"
+            ripple:rv_color="@android:color/black"
+            ripple:rv_centered="true"
+            android:layout_weight="1">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/want_num"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="16dp"
+                android:text="行きたい店"
+                android:textColor="@color/namegrey"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/want_num"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:text="20"
+                android:textColor="@color/namegrey"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:padding="8dp" />
+        </com.andexert.library.RippleView>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/tabbar"
+        android:id="@+id/viewFotter"
+        android:layout_gravity="bottom"
+        android:background="#c5c6c9" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/numBar"
+        android:id="@+id/viewheader"
+        android:layout_gravity="bottom"
+        android:background="#c5c6c9" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tabbar"
+        android:layout_below="@+id/numBar">
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/grid"
+            android:layout_weight="1"
+            android:src="@drawable/ic_apps_grey600_24dp"
+            android:padding="8dp" />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="#c5c6c9" />
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/location"
+            android:layout_weight="1"
+            android:src="@drawable/ic_place_grey600_24dp"
+            android:padding="8dp" />
+    </LinearLayout>
+
+</RelativeLayout>

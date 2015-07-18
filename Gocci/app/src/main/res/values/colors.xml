@@ -1,0 +1,95 @@
+<resources>
+    <!-- 色を定義-->
+    <color name="window_bg">#ebedf0</color>
+
+    <color name="videobackground">#ffc5c6c9</color>
+    <color name="tab_background">#555555</color>
+
+    <color name="likecolor">#ff995845</color>
+
+    <color name="icon_enabled">#FFFFFFFF</color>
+    <color name="icon_disabled">#FF63727B</color>
+
+    <color name="twitter_background">#6babdc</color>
+    <color name="facebook_background">#3c5a96</color>
+
+    <color name="transparent">#00000000</color>
+
+    <color name="custom_header_text">#607d8b</color>
+    <color name="custom_selected">#aed581</color>
+    <color name="custom_background">#eeeeee</color>
+    <color name="custom_background_today">#F75533</color>
+    <color name="custom_background_disabled">#eeeeee</color>
+    <color name="custom_text_selected">#ffffff</color>
+    <color name="custom_text_inactive">#7f778088</color>
+
+    <!--Activityカラー-->
+
+    <color name="backgroung_grey">#eeeeee</color>
+
+    <!--カメラ画面-->
+    <color name="solid_black">#ff000000</color>
+    <color name="bg_capture_progress">#ff000000</color>
+    <color name="capture_background">#ff000000</color>
+
+    <!--テキストカラー-->
+    <color name="nameblack">#7d7d7d</color>
+    <color name="timecolor">#999999</color>
+    <color name="namegrey">#4d4d4d</color>
+    <color name="tabFooter">#bdbdbd</color>
+    <color name="like_comment_share_color">#afafaf</color>
+
+    <!--ホワイト-->
+    <color name="white">#ffffff</color>
+    <color name="materialwhite">#fafafa</color>
+    <color name="view_background">#f8f8f8</color>
+
+    <color name="fab">#F75533</color>
+    <color name="fabPressed">#f6411a</color>
+
+    <!-- Material DEFAULT colors -->
+    <color name="material_drawer_primary">#F75533</color>
+    <color name="material_drawer_primary_dark">#000000</color>
+    <color name="material_drawer_primary_light">#f8694c</color>
+    <color name="material_drawer_accent">#F75533</color>
+    <color name="gocci_button">#F75533</color>
+    <color name="gocci_header">#F75533</color>
+    <color name="gocci_nannda">#F75533</color>
+    <color name="gocci_progress">#F75533</color>
+
+    <!-- OVERWRITE THESE COLORS FOR A LIGHT THEME -->
+    <!-- MaterialDrawer DEFAULT colors -->
+    <color name="material_drawer_window_background">#f8f8f8</color>
+    <color name="material_drawer_background">#f8f8f8</color>
+    <!-- Material DEFAULT text / items colors -->
+    <color name="material_drawer_icons">#4d4d4d</color>
+    <color name="material_drawer_primary_text">#4d4d4d</color>
+    <color name="material_drawer_primary_icon">#4d4d4d</color>
+    <color name="material_drawer_secondary_text">#4d4d4d</color>
+    <color name="material_drawer_hint_text">#4d4d4d</color>
+    <color name="material_drawer_divider">#1F000000</color>
+    <!-- Material DEFAULT drawer colors -->
+    <color name="material_drawer_selected">#f8f8f8</color>
+    <color name="material_drawer_selected_text">#F75533</color>
+    <color name="material_drawer_header_selection_text">#f8f8f8</color>
+
+    <!-- OVERWRITE THESE COLORS FOR A DARK THEME -->
+    <!-- MaterialDrawer DEFAULT DARK colors -->
+    <color name="material_drawer_dark_window_background">#f8f8f8</color>
+    <color name="material_drawer_dark_background">#f8f8f8</color>
+    <!-- MaterialDrawer DEFAULT DARK text / items colors -->
+    <color name="material_drawer_dark_icons">#4d4d4d</color>
+    <color name="material_drawer_dark_primary_text">#4d4d4d</color>
+    <color name="material_drawer_dark_primary_icon">#4d4d4d</color>
+    <color name="material_drawer_dark_secondary_text">#4d4d4d</color>
+    <color name="material_drawer_dark_hint_text">#4d4d4d</color>
+    <color name="material_drawer_dark_divider">#1F000000</color>
+    <!-- MaterialDrawer DEFAULT DARK drawer colors -->
+    <color name="material_drawer_dark_selected">#f8f8f8</color>
+    <color name="material_drawer_dark_selected_text">#F75533</color>
+    <color name="material_drawer_dark_header_selection_text">#f8f8f8</color>
+
+    <color name="value">#ee8221</color>
+    <color name="category">#2b77bf</color>
+    <color name="atmosphere">#dd2c2b</color>
+</resources>
