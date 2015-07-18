@@ -2,13 +2,12 @@ package com.inase.android.gocci.VideoPlayer;
 
 import android.content.Context;
 import android.util.AttributeSet;
-
-import com.google.android.exoplayer.VideoSurfaceView;
+import android.view.SurfaceView;
 
 /**
  * Created by kinagafuji on 15/07/16.
  */
-public class SquareExoVideoView extends VideoSurfaceView {
+public class SquareExoVideoView extends SurfaceView {
 
     public SquareExoVideoView(final Context context) {
         super(context);

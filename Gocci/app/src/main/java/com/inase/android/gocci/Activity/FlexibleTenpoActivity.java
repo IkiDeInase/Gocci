@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Point;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -59,7 +58,6 @@ import com.googlecode.mp4parser.authoring.Movie;
 import com.googlecode.mp4parser.authoring.builder.DefaultMp4Builder;
 import com.googlecode.mp4parser.authoring.container.mp4.MovieCreator;
 import com.inase.android.gocci.Base.RoundedTransformation;
-import com.inase.android.gocci.Base.SquareVideoView;
 import com.inase.android.gocci.Event.BusHolder;
 import com.inase.android.gocci.Event.NotificationNumberEvent;
 import com.inase.android.gocci.R;
@@ -583,7 +581,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
 
     private String getVideoPath() {
         final int position = mTenpoRecyclerView.getChildAdapterPosition(mTenpoRecyclerView.findChildViewUnder(mDisplaySize.x / 2, mDisplaySize.y / 2));
-        final PostData userData = mTenpoAdapter.getItem(position-1);
+        final PostData userData = mTenpoAdapter.getItem(position - 1);
         if (!userData.getPost_id().equals(mPlayingPostId)) {
             return null;
         }
@@ -623,7 +621,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
                 @Override
                 public void onVideoSizeChanged(int width, int height, float pixelWidthAspectRatio) {
                     viewHolder.mVideoThumbnail.setVisibility(View.GONE);
-                    viewHolder.movie.setVideoWidthHeightRatio(
+                    viewHolder.videoFrame.setAspectRatio(
                             height == 0 ? 1 : (width * pixelWidthAspectRatio) / height);
                 }
             });
@@ -653,7 +651,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
         if (mTenpoAdapter.isEmpty()) {
             return;
         }
-        if (position-1 < 0) {
+        if (position - 1 < 0) {
             return;
         }
 

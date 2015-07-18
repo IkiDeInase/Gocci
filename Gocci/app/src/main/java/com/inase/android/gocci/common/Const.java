@@ -9,8 +9,7 @@ import android.widget.TextView;
 import com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar;
 import com.amazonaws.regions.Regions;
 import com.andexert.library.RippleView;
-import com.google.android.exoplayer.VideoSurfaceView;
-import com.inase.android.gocci.Base.SquareImageView;
+import com.google.android.exoplayer.AspectRatioFrameLayout;
 import com.inase.android.gocci.Base.SquareVideoView;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.VideoPlayer.SquareExoVideoView;
@@ -39,92 +38,120 @@ public class Const {
         return URL_PREFIX + VERSION_NUMBER + "/auth/welcome/?identity_id=" + identity_id +
                 "&sns_flag=" + flag;
     }
+
     public static String getAuthLoginAPI(String identity_id) {
         return URL_PREFIX + VERSION_NUMBER + "/auth/login/?identity_id=" + identity_id;
     }
+
     public static String getAuthSignupAPI(String username, String os, String model, String register_id) {
         return URL_PREFIX + VERSION_NUMBER + "/auth/signup/?username=" + username + "&os=android_" + os +
                 "&model=" + model + "&register_id=" + register_id;
     }
+
     public static String getAuthConversionAPI(String username, String profile_img, String os, String model, String register_id) {
-        return  URL_PREFIX + VERSION_NUMBER + "/auth/conversion/?username=" + username +
+        return URL_PREFIX + VERSION_NUMBER + "/auth/conversion/?username=" + username +
                 "&profile_img=" + profile_img + "&os=android_" + os +
                 "&model=" + model + "&register_id=" + register_id;
     }
+
     public static String getTimelineAPI() {
         return URL_PREFIX + VERSION_NUMBER + "/get/timeline";
     }
+
     public static String getTimelineNextApi(int call) {
         return URL_PREFIX + VERSION_NUMBER + "/get/timeline_next/?call=" + call;
     }
+
     public static String getPopularAPI() {
         return URL_PREFIX + VERSION_NUMBER + "/get/popular";
     }
+
     public static String getPopularNextApi(int call) {
         return URL_PREFIX + VERSION_NUMBER + "/get/popular_next/?call=" + call;
     }
+
     public static String getCommentAPI(String post_id) {
         return URL_PREFIX + VERSION_NUMBER + "/get/comment/?post_id=" + post_id;
     }
+
     public static String getRestpageAPI(int rest_id) {
         return URL_PREFIX + VERSION_NUMBER + "/get/rest/?rest_id=" + rest_id;
     }
+
     public static String getUserpageAPI(int user_id) {
         return URL_PREFIX + VERSION_NUMBER + "/get/user/?target_user_id=" + user_id;
     }
+
     public static String getNoticeAPI() {
         return URL_PREFIX + VERSION_NUMBER + "/get/notice";
     }
+
     public static String getNearAPI(double lat, double lon) {
         return URL_PREFIX + VERSION_NUMBER + "/get/near/?lon=" + lon + "&lat=" + lat;
     }
+
     public static String getFollowAPI(int user_id) {
         return URL_PREFIX + VERSION_NUMBER + "/get/follow/?target_user_id=" + user_id;
     }
+
     public static String getFollowerAPI(int user_id) {
         return URL_PREFIX + VERSION_NUMBER + "/get/follower/?target_user_id=" + user_id;
     }
+
     public static String getWantAPI(int user_id) {
         return URL_PREFIX + VERSION_NUMBER + "/get/want/?target_user_id=" + user_id;
     }
+
     public static String getUserCheerAPI(int user_id) {
         return URL_PREFIX + VERSION_NUMBER + "/get/user_cheer/?target_user_id=" + user_id;
     }
+
     public static String getRestCheerAPI(int rest_id) {
         return URL_PREFIX + VERSION_NUMBER + "/get/rest_cheer/?rest_id=" + rest_id;
     }
+
     public static String getPostGochiAPI(String post_id) {
         return URL_PREFIX + VERSION_NUMBER + "/post/gochi/?post_id=" + post_id;
     }
+
     public static String getPostDeleteAPI(String post_id) {
         return URL_PREFIX + VERSION_NUMBER + "/post/postdel/?post_id=" + post_id;
     }
+
     public static String getPostViolateAPI(String post_id) {
         return URL_PREFIX + VERSION_NUMBER + "/post/postblock/?post_id=" + post_id;
     }
+
     public static String getPostFollowAPI(int user_id) {
         return URL_PREFIX + VERSION_NUMBER + "/post/follow/?target_user_id=" + user_id;
     }
+
     public static String getPostUnFollowAPI(int user_id) {
         return URL_PREFIX + VERSION_NUMBER + "/post/unfollow/?target_user_id=" + user_id;
     }
+
     public static String getPostWantAPI(int rest_id) {
         return URL_PREFIX + VERSION_NUMBER + "/post/want/?rest_id=" + rest_id;
     }
+
     public static String getPostUnWantAPI(int rest_id) {
         return URL_PREFIX + VERSION_NUMBER + "/post/unwant/?rest_id=" + rest_id;
     }
+
     public static String getPostFeedbackAPI(String feedback) {
         return URL_PREFIX + VERSION_NUMBER + "/post/feedback/?feedback=" + feedback;
     }
+
     public static String getPostCommentAPI(String post_id, String comment) {
         return URL_PREFIX + VERSION_NUMBER + "/post/comment/?post_id=" + post_id + "&comment=" + comment;
     }
+
     public static String getPostMovieAPI(int rest_id, String movie, int category_id, int tag_id, String value, String memo, int cheer_flag) {
         return URL_PREFIX + VERSION_NUMBER + "/post/post/?rest_id=" + rest_id +
                 "&movie_name=" + movie + "&category_id=" + category_id + "&tag_id=" + tag_id +
                 "&value=" + value + "&memo=" + memo + "&cheer_flag=" + cheer_flag;
     }
+
     public static String getPostRestAddAPI(String restname, double lat, double lon) {
         return URL_PREFIX + VERSION_NUMBER + "/post/restadd/?rest_name=" + restname +
                 "&lat=" + lat + "&lon=" + lon;
@@ -133,6 +160,7 @@ public class Const {
     public static final int FLAG_CHANGE_NAME = 0;
     public static final int FLAG_CHANGE_PICTURE = 1;
     public static final int FLAG_CHANGE_BOTH = 2;
+
     public static String getPostUpdateProfileAPI(int flag, String username, String profile_img) {
         String returnUrl = null;
         switch (flag) {
@@ -149,6 +177,7 @@ public class Const {
         }
         return returnUrl;
     }
+
     public static final String URL_POST_PROFILE_EDIT_API = URL_PREFIX + VERSION_NUMBER + "post/";
 
     // 動画ファイルのキャッシュファイルの接頭辞
@@ -253,7 +282,7 @@ public class Const {
         public RippleView likes_ripple;
         public RippleView comments_ripple;
         public RippleView share_ripple;
-        public FrameLayout videoFrame;
+        public AspectRatioFrameLayout videoFrame;
 
         public ExoViewHolder(View view) {
             super(view);
@@ -277,7 +306,7 @@ public class Const {
             likes_ripple = (RippleView) view.findViewById(R.id.likes_ripple);
             comments_ripple = (RippleView) view.findViewById(R.id.comments_ripple);
             share_ripple = (RippleView) view.findViewById(R.id.share_ripple);
-            videoFrame = (FrameLayout) view.findViewById(R.id.videoFrame);
+            videoFrame = (AspectRatioFrameLayout) view.findViewById(R.id.videoFrame);
         }
     }
 }

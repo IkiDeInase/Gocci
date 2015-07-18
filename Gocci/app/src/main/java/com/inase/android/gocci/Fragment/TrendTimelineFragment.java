@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Point;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -13,7 +12,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,7 +29,6 @@ import com.facebook.share.Sharer;
 import com.facebook.share.model.ShareVideo;
 import com.facebook.share.model.ShareVideoContent;
 import com.facebook.share.widget.ShareDialog;
-import com.google.android.exoplayer.VideoSurfaceView;
 import com.google.android.exoplayer.audio.AudioCapabilities;
 import com.google.android.exoplayer.audio.AudioCapabilitiesReceiver;
 import com.googlecode.mp4parser.authoring.Movie;
@@ -39,7 +36,9 @@ import com.googlecode.mp4parser.authoring.builder.DefaultMp4Builder;
 import com.googlecode.mp4parser.authoring.container.mp4.MovieCreator;
 import com.inase.android.gocci.Activity.GocciTimelineActivity;
 import com.inase.android.gocci.Base.RoundedTransformation;
-import com.inase.android.gocci.Base.SquareVideoView;
+import com.inase.android.gocci.Event.BusHolder;
+import com.inase.android.gocci.Event.PageChangeVideoStopEvent;
+import com.inase.android.gocci.R;
 import com.inase.android.gocci.VideoPlayer.HlsRendererBuilder;
 import com.inase.android.gocci.VideoPlayer.VideoPlayer;
 import com.inase.android.gocci.common.CacheManager;
@@ -47,9 +46,6 @@ import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;
 import com.inase.android.gocci.common.Util;
 import com.inase.android.gocci.data.PostData;
-import com.inase.android.gocci.Event.BusHolder;
-import com.inase.android.gocci.Event.PageChangeVideoStopEvent;
-import com.inase.android.gocci.R;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.melnykov.fab.FloatingActionButton;
 import com.pnikosis.materialishprogress.ProgressWheel;
@@ -290,9 +286,9 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
         switch (event.position) {
             case 1:
                 mPlayBlockFlag = false;
-                    //path!=nullで　viewholder!=nullじゃない　
+                //path!=nullで　viewholder!=nullじゃない　
                 if (player != null) {
-                        player.getPlayerControl().start();
+                    player.getPlayerControl().start();
                     Log.e("Otto発動", "動画再生復帰");
                 } else {
                     preparePlayer(getPlayingViewHolder(), getVideoPath());
@@ -301,10 +297,10 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
             case 0:
                 mPlayBlockFlag = true;
                 //タイムライン以外のfragmentが可視化している場合
-                    if (player.getPlayerControl().isPlaying()) {
-                        player.getPlayerControl().pause();
-                        Log.e("DEBUG", "subscribe 動画再生停止");
-                    }
+                if (player.getPlayerControl().isPlaying()) {
+                    player.getPlayerControl().pause();
+                    Log.e("DEBUG", "subscribe 動画再生停止");
+                }
                 Log.e("Otto発動", "動画再生停止");
                 break;
         }
@@ -340,7 +336,7 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
             player.addListener(new VideoPlayer.Listener() {
                 @Override
                 public void onStateChanged(boolean playWhenReady, int playbackState) {
-                    switch(playbackState) {
+                    switch (playbackState) {
                         case VideoPlayer.STATE_BUFFERING:
                             break;
                         case VideoPlayer.STATE_ENDED:
@@ -365,7 +361,7 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
                 @Override
                 public void onVideoSizeChanged(int width, int height, float pixelWidthAspectRatio) {
                     viewHolder.mVideoThumbnail.setVisibility(View.GONE);
-                    viewHolder.movie.setVideoWidthHeightRatio(
+                    viewHolder.videoFrame.setAspectRatio(
                             height == 0 ? 1 : (width * pixelWidthAspectRatio) / height);
                 }
             });
@@ -512,8 +508,12 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
         Log.e("DEBUG", "changeMovie called");
         // TODO:実装
         final int position = mTimelineRecyclerView.getChildAdapterPosition(mTimelineRecyclerView.findChildViewUnder(mDisplaySize.x / 2, mDisplaySize.y / 2));
-        if (mTrendTimelineAdapter.isEmpty()) {return;}
-        if (position < 0) {return;}
+        if (mTrendTimelineAdapter.isEmpty()) {
+            return;
+        }
+        if (position < 0) {
+            return;
+        }
 
         final PostData userData = mTrendTimelineAdapter.getItem(position);
         if (!userData.getPost_id().equals(mPlayingPostId)) {

@@ -29,7 +29,6 @@ import com.facebook.share.Sharer;
 import com.facebook.share.model.ShareVideo;
 import com.facebook.share.model.ShareVideoContent;
 import com.facebook.share.widget.ShareDialog;
-import com.google.android.exoplayer.VideoSurfaceView;
 import com.google.android.exoplayer.audio.AudioCapabilities;
 import com.google.android.exoplayer.audio.AudioCapabilitiesReceiver;
 import com.googlecode.mp4parser.authoring.Movie;
@@ -287,7 +286,7 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
             case 0:
                 mPlayBlockFlag = false;
                 //タイムラインが呼ばれた時の処理
-                    //path!=nullで　viewholder!=nullじゃない　
+                //path!=nullで　viewholder!=nullじゃない　
                 if (player != null) {
                     player.getPlayerControl().start();
                     Log.e("Otto発動", "動画再生復帰");
@@ -298,10 +297,10 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
             case 1:
                 mPlayBlockFlag = true;
                 //タイムライン以外のfragmentが可視化している場合
-                    if (player.getPlayerControl().isPlaying()) {
-                        player.getPlayerControl().pause();
-                        Log.e("DEBUG", "subscribe 動画再生停止");
-                    }
+                if (player.getPlayerControl().isPlaying()) {
+                    player.getPlayerControl().pause();
+                    Log.e("DEBUG", "subscribe 動画再生停止");
+                }
                 Log.e("Otto発動", "動画再生停止");
                 break;
         }
@@ -338,7 +337,7 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
             player.addListener(new VideoPlayer.Listener() {
                 @Override
                 public void onStateChanged(boolean playWhenReady, int playbackState) {
-                    switch(playbackState) {
+                    switch (playbackState) {
                         case VideoPlayer.STATE_BUFFERING:
                             break;
                         case VideoPlayer.STATE_ENDED:
@@ -363,7 +362,7 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
                 @Override
                 public void onVideoSizeChanged(int width, int height, float pixelWidthAspectRatio) {
                     viewHolder.mVideoThumbnail.setVisibility(View.GONE);
-                    viewHolder.movie.setVideoWidthHeightRatio(
+                    viewHolder.videoFrame.setAspectRatio(
                             height == 0 ? 1 : (width * pixelWidthAspectRatio) / height);
                 }
             });

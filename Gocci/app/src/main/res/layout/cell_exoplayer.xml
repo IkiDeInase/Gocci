@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.exoplayer.AspectRatioFrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/videoFrame"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
@@ -18,4 +19,4 @@
         android:layout_gravity="center_horizontal"
         android:visibility="visible" />
 
-</FrameLayout>
+</com.google.android.exoplayer.AspectRatioFrameLayout>
