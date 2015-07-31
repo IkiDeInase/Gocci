@@ -122,6 +122,10 @@ public class SplashActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Toast.makeText(context, "ログインに失敗しました", Toast.LENGTH_SHORT).show();
+                handler = new Handler();
+                runnable = new loginRunnable();
+                handler.postDelayed(runnable, 1000);
             }
         });
     }
@@ -155,6 +159,10 @@ public class SplashActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Toast.makeText(context, "ログインに失敗しました", Toast.LENGTH_SHORT).show();
+                handler = new Handler();
+                runnable = new loginRunnable();
+                handler.postDelayed(runnable, 1000);
             }
         });
     }
@@ -177,15 +185,16 @@ public class SplashActivity extends AppCompatActivity {
             //復帰
             switch (loginFrag) {
                 case TAG_SNS_FACEBOOK:
-                    if (AccessToken.getCurrentAccessToken().getToken() != null) {
-                        Application_Gocci.addLogins(Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken());
+                    if (AccessToken.getCurrentAccessToken() != null) {
+                        String token = AccessToken.getCurrentAccessToken().getToken();
+                        Application_Gocci.addLogins(Const.ENDPOINT_FACEBOOK, token);
                     }
                     break;
                 case TAG_SNS_TWITTER:
                     TwitterSession session =
                             Twitter.getSessionManager().getActiveSession();
-                    TwitterAuthToken authToken = session.getAuthToken();
-                    if (authToken != null) {
+                    if (session != null) {
+                        TwitterAuthToken authToken = session.getAuthToken();
                         Application_Gocci.addLogins(Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret);
                     }
                     break;
@@ -216,7 +225,7 @@ public class SplashActivity extends AppCompatActivity {
     private class loginRunnable implements Runnable {
         @Override
         public void run() {
-            Intent mainIntent = new Intent(SplashActivity.this, LoginActivity.class);
+            Intent mainIntent = new Intent(SplashActivity.this, TutorialGuideActivity.class);
             if (!SplashActivity.this.isFinishing()) {
                 SplashActivity.this.startActivity(mainIntent);
                 overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);

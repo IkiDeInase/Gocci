@@ -1,6 +1,7 @@
 <resources>
     <!-- 色を定義-->
     <color name="window_bg">#ebedf0</color>
+    <color name="text_selected">#888</color>
 
     <color name="videobackground">#ffc5c6c9</color>
     <color name="tab_background">#555555</color>

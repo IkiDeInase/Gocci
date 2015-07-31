@@ -84,8 +84,6 @@ public class LoginActivity extends AppCompatActivity {
             Log.e(TAG, "No valid Google Play Services APK found.");
         }
 
-        gocci = (Application_Gocci) getApplication();
-
         progress = (ProgressWheel) findViewById(R.id.progress_wheel);
 
         if (Util.getConnectedState(LoginActivity.this) == Util.NetworkStatus.OFF) {

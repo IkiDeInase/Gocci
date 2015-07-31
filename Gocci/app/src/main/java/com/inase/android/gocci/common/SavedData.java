@@ -52,6 +52,27 @@ public class SavedData {
         return pref.getString(KEY_SERVER_PICTURE, "http://api-gocci.jp/img/s_1.png");
     }
 
+    public static void setServerName(Context context, String name) {
+        SharedPreferences pref = context.getSharedPreferences("pref", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putString(KEY_SERVER_NAME, name);
+        editor.apply();
+    }
+
+    public static void setServerPicture(Context context, String picture) {
+        SharedPreferences pref = context.getSharedPreferences("pref", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putString(KEY_SERVER_PICTURE, picture);
+        editor.apply();
+    }
+
+    public static void setLoginJudge(Context context, String judge) {
+        SharedPreferences pref = context.getSharedPreferences("pref", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putString(KEY_LOGIN_JUDGE, judge);
+        editor.apply();
+    }
+
     public static String getServerUserId(Context context) {
         SharedPreferences pref = context.getSharedPreferences("pref", Context.MODE_PRIVATE);
         return pref.getString(KEY_SERVER_NAME_ID, "1");

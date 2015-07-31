@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:id="@+id/welcome_fragment"
+    android:background="#F58E7E">
 
     <ImageView
-        android:layout_width="175dp"
-        android:layout_height="175dp"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
         android:layout_gravity="center_horizontal"
         android:src="@drawable/ic_gocci_want"
-        android:layout_margin="70dp" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="100dp"
+        android:id="@+id/image_1" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -18,14 +21,22 @@
         android:textStyle="bold"
         android:textSize="28sp"
         android:layout_gravity="center_horizontal"
-        android:textColor="@color/namegrey" />
+        android:textColor="@color/white"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/text_1"
+        android:layout_below="@+id/image_1"
+        android:layout_marginTop="32dp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Gocci.は７秒のグルメ動画アプリです"
-        android:layout_margin="8dp"
         android:layout_gravity="center_horizontal"
         android:textSize="16sp"
-        android:textColor="@color/nameblack" />
-</LinearLayout>
+        android:textColor="@color/white"
+        android:id="@+id/text_2"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/text_1"
+        android:layout_marginTop="8dp" />
+
+</RelativeLayout>

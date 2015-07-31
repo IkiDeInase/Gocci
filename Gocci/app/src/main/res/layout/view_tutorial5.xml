@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/welcome_fragment"
+    android:background="#93B8CA">
+
+    <ImageView
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:id="@+id/image_9"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/ic_gocci"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SNS連携して始めませんか？"
+        android:id="@+id/text_1"
+        android:layout_gravity="center_horizontal"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/image_9"
+        android:layout_marginTop="16dp"
+        android:textStyle="bold" />
+
+    <com.facebook.login.widget.LoginButton
+        android:id="@+id/login_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginRight="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginBottom="4dp"
+        android:layout_marginTop="16dp"
+        android:visibility="gone" />
+
+    <com.inase.android.gocci.Base.GocciTwitterLoginButton
+        android:id="@+id/twitter_login_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/sign_up_button_twitter"
+        android:text="twitterでアカウント作成/ログイン"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:visibility="gone" />
+
+    <com.andexert.library.RippleView
+        android:layout_width="match_parent"
+        android:layout_height="42dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginRight="32dp"
+        android:background="@color/twitter_background"
+        android:gravity="center"
+        android:id="@+id/twitter_Ripple"
+        android:layout_below="@+id/text_1"
+        android:layout_marginTop="16dp"
+        android:layout_centerHorizontal="true">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ツイッター連携する"
+            android:textColor="#ffffff"
+            android:textSize="@dimen/accent_text" />
+
+    </com.andexert.library.RippleView>
+
+    <com.andexert.library.RippleView
+        android:layout_width="match_parent"
+        android:layout_height="42dp"
+        android:id="@+id/facebook_Ripple"
+        android:layout_marginLeft="32dp"
+        android:layout_marginRight="32dp"
+        android:layout_marginTop="16dp"
+        android:background="@color/facebook_background"
+        android:gravity="center"
+        android:layout_below="@+id/twitter_Ripple">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="フェイスブック連携する"
+            android:textColor="#ffffff"
+            android:textSize="@dimen/accent_text" />
+
+    </com.andexert.library.RippleView>
+
+    <com.andexert.library.RippleView
+        android:id="@+id/skip_Ripple"
+        android:layout_width="match_parent"
+        android:layout_height="42dp"
+        android:layout_below="@+id/facebook_Ripple"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="32dp"
+        android:layout_marginRight="32dp"
+        android:layout_marginTop="16dp"
+        android:background="@color/gocci_button"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="連携せずに始める"
+            android:textColor="#ffffff"
+            android:textSize="@dimen/accent_text" />
+    </com.andexert.library.RippleView>
+
+</RelativeLayout>

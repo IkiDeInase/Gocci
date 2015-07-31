@@ -67,7 +67,7 @@ public class LoginSessionActivity extends AppCompatActivity {
     private String profile_img;
 
     public void onFacebookButtonClicked() {
-        if (AccessToken.getCurrentAccessToken().getToken() != null) {
+        if (AccessToken.getCurrentAccessToken() != null) {
             LoginManager.getInstance().logOut();
         }
         facebookLoginButton.performClick();
@@ -224,6 +224,7 @@ public class LoginSessionActivity extends AppCompatActivity {
                             Intent intent = new Intent(context, GocciTimelineActivity.class);
                             startActivity(intent);
                             overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+                            finish();
                         } else {
                             Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                         }

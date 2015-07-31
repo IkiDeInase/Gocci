@@ -1,22 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:id="@+id/welcome_fragment"
+    android:background="#5EBABA">
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="30dp"
-        android:layout_marginBottom="40dp">
+        android:layout_marginTop="75dp"
+        android:id="@+id/frame_2"
+        android:layout_centerHorizontal="true">
 
         <ImageView
             android:layout_width="75dp"
             android:layout_height="75dp"
             android:src="@drawable/ic_gocci_surprise"
             android:alpha="0.2"
-            android:layout_gravity="center_horizontal" />
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/image_4" />
 
         <ImageView
             android:layout_width="100dp"
@@ -25,7 +28,8 @@
             android:alpha="0.5"
             android:layout_marginTop="50dp"
             android:layout_gravity="center_horizontal"
-            android:layout_marginRight="80dp" />
+            android:layout_marginRight="80dp"
+            android:id="@+id/image_5" />
 
         <ImageView
             android:layout_width="125dp"
@@ -34,30 +38,39 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginLeft="50dp"
             android:layout_marginTop="80dp"
-            android:alpha="0.7" />
+            android:alpha="0.7"
+            android:id="@+id/image_6" />
 
         <ImageView
             android:layout_width="150dp"
             android:layout_height="150dp"
             android:layout_gravity="center_horizontal"
             android:src="@drawable/ic_gocci_eat"
-            android:layout_marginTop="110dp" />
+            android:layout_marginTop="110dp"
+            android:id="@+id/image_7" />
     </FrameLayout>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="検索すること　記録すること"
+        android:text="外食をわかりやすい動画で"
         android:layout_gravity="center_horizontal"
         android:textSize="16sp"
-        android:layout_marginBottom="4dp"
-        android:textColor="@color/nameblack" />
+        android:textColor="@color/white"
+        android:id="@+id/text_1"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/frame_2"
+        android:layout_marginTop="32dp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="投稿すること　ができます"
+        android:text="記録しましょう"
         android:layout_gravity="center_horizontal"
         android:textSize="16sp"
-        android:textColor="@color/nameblack" />
-</LinearLayout>
+        android:textColor="@color/white"
+        android:id="@+id/text_2"
+        android:layout_marginTop="8dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/text_1" />
+</RelativeLayout>
