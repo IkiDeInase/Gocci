@@ -23,14 +23,12 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.Event.BusHolder;
-import com.inase.android.gocci.Event.CreateProviderFinishEvent;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;
 import com.inase.android.gocci.common.Util;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.pnikosis.materialishprogress.ProgressWheel;
-import com.squareup.otto.Subscribe;
 
 import org.apache.http.Header;
 import org.json.JSONException;
@@ -113,36 +111,15 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        BusHolder.get().register(self);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        BusHolder.get().unregister(self);
-    }
-
-    @Subscribe
-    public void subscribe(final CreateProviderFinishEvent event) {
-        //DEV
-        progress.setVisibility(View.INVISIBLE);
-
-        SavedData.setFlag(LoginActivity.this, 0);
-        SavedData.setIdentityId(LoginActivity.this, event.identityId);
-
-        Intent intent = new Intent(LoginActivity.this, GocciTimelineActivity.class);
-        LoginActivity.this.startActivity(intent);
-        overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-    }
-
     class UsernameClickHandler implements Runnable {
         public void run() {
             //ダイアログ
-            new MaterialDialog.Builder(LoginActivity.this)
-                    .content("希望のユーザー名を入力してください")
+            setLoginDialog(LoginActivity.this);
+        }
+
+        private void setLoginDialog(final Context context) {
+            new MaterialDialog.Builder(context)
+                    .content("好きなユーザー名を入力しましょう")
                     .input("ユーザー名", null, new MaterialDialog.InputCallback() {
                         @Override
                         public void onInput(MaterialDialog materialDialog, CharSequence charSequence) {
@@ -161,6 +138,7 @@ public class LoginActivity extends AppCompatActivity {
                             String url = Const.getAuthSignupAPI(username, Build.VERSION.RELEASE, Build.MODEL, regid);
                             Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(LoginActivity.this));
                             Const.asyncHttpClient.get(LoginActivity.this, url, new JsonHttpResponseHandler() {
+
                                 @Override
                                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                                     try {
@@ -177,9 +155,16 @@ public class LoginActivity extends AppCompatActivity {
 
                                             if (code == 200) {
                                                 SavedData.setWelcome(LoginActivity.this, username, profile_img, user_id, identity_id, badge_num);
-
                                                 Application_Gocci.GuestInit(LoginActivity.this, identity_id, token, user_id);
+                                                progress.setVisibility(View.INVISIBLE);
+                                                SavedData.setFlag(LoginActivity.this, 0);
+                                                SavedData.setIdentityId(LoginActivity.this, identity_id);
+
+                                                Intent intent = new Intent(LoginActivity.this, GocciTimelineActivity.class);
+                                                LoginActivity.this.startActivity(intent);
+                                                overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
                                             } else {
+                                                progress.setVisibility(View.INVISIBLE);
                                                 Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
                                             }
                                         } else {
@@ -191,16 +176,11 @@ public class LoginActivity extends AppCompatActivity {
                                     }
                                 }
 
-                                @Override
-                                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                                }
 
                                 @Override
-                                public void onFinish() {
-                                    if (!isOk) {
-                                        progress.setVisibility(View.INVISIBLE);
-                                        dialog.getInputEditText().getText().clear();
-                                    }
+                                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
+                                    setLoginDialog(context);
+                                    Toast.makeText(context, "ログインに失敗しました", Toast.LENGTH_SHORT).show();
                                 }
                             });
                         }

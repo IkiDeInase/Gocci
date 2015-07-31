@@ -26,12 +26,13 @@ public class Const {
     //AWS SN　ログイン　エンドポイント
     public static final String ENDPOINT_FACEBOOK = "graph.facebook.com";
     public static final String ENDPOINT_TWITTER = "api.twitter.com";
-    public static final String ENDPOINT_INASE = "login.inase.gocci";
+    public static final String ENDPOINT_INASE = "test.login.gocci";
 
-    public static final String IDENTITY_POOL_ID = "us-east-1:a8cc1fdb-92b1-4586-ba97-9e6994a43195";
+    public static final String IDENTITY_POOL_ID = "us-east-1:2ef43520-856b-4641-b4a1-e08dfc07f802";
     public static final Regions REGION = Regions.US_EAST_1;
 
     public static final String POST_MOVIE_BUCKET_NAME = "gocci.movies.bucket.jp-test";
+    public static final String GET_MOVIE_BUCKET_NAME = "gocci.movies.provider.jp-test";
     public static final String POST_PHOTO_BUCKET_NAME = "gocci.imgs.provider.jp-test";
 
     public static String getAuthWelcomeAPI(String identity_id, int flag) {

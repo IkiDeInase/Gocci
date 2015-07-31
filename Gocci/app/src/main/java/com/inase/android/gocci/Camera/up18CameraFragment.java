@@ -359,8 +359,6 @@ public class up18CameraFragment extends Fragment implements ViewPager.OnPageChan
         intent.putExtra("lon", longitude);
         startActivity(intent);
         getActivity().overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-
-        //cameraProgress.setVisibility(View.GONE);
     }
 
     @Override

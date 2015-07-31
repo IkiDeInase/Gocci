@@ -1,6 +1,7 @@
 package com.inase.android.gocci.common;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Point;
@@ -16,15 +17,26 @@ import android.telephony.TelephonyManager;
 import android.text.InputType;
 import android.util.Log;
 import android.view.Display;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
+import com.facebook.share.model.ShareVideo;
+import com.facebook.share.model.ShareVideoContent;
+import com.facebook.share.widget.ShareDialog;
+import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.data.HeaderData;
 import com.inase.android.gocci.data.PostData;
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.pnikosis.materialishprogress.ProgressWheel;
+import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
 import org.apache.http.Header;
 import org.json.JSONException;
@@ -33,6 +45,9 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.GregorianCalendar;
+import java.util.Locale;
 
 /**
  * 便利メソッド群クラス
@@ -152,6 +167,54 @@ public class Util {
             e.printStackTrace();
         }
         return bmpUri;
+    }
+
+    public static File getLocalBitmapFile(ImageView imageView, String post_date) {
+        // Extract Bitmap from ImageView drawable
+        Drawable drawable = imageView.getDrawable();
+        Bitmap bmp = null;
+        if (drawable instanceof BitmapDrawable) {
+            bmp = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+        } else {
+            return null;
+        }
+        // Store image to default external storage directory
+        File file = null;
+        try {
+            file = new File(Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_DOWNLOADS), post_date + ".png");
+            file.getParentFile().mkdirs();
+            FileOutputStream out = new FileOutputStream(file);
+            bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return file;
+    }
+
+    public static File getFile(String url, String post_date) {
+        // Extract Bitmap from ImageView drawable
+        Bitmap bmp = ImageLoader.getInstance().loadImageSync(url);
+        // Store image to default external storage directory
+        File file = null;
+        try {
+            file = new File(Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_DOWNLOADS), post_date + ".png");
+            file.getParentFile().mkdirs();
+            FileOutputStream out = new FileOutputStream(file);
+            bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return file;
+    }
+
+    public static final String getDateTimeString() {
+        final GregorianCalendar now = new GregorianCalendar();
+        final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss", Locale.US);
+        return dateTimeFormat.format(now.getTime());
     }
 
     public static Uri getUri(String path) {
@@ -406,6 +469,88 @@ public class Util {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 Toast.makeText(context, "行きたい店リストから解除できませんでした", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public static void facebookVideoShare(final Context context, final ShareDialog dialog, String key) {
+        final File file = new File(Environment.getExternalStorageDirectory().toString() + "/" + key);
+        TransferObserver transferObserver = Application_Gocci.transferUtility.download(Const.GET_MOVIE_BUCKET_NAME, key, file);
+        transferObserver.setTransferListener(new TransferListener() {
+            @Override
+            public void onStateChanged(int id, TransferState state) {
+                if (state == TransferState.COMPLETED) {
+                    Uri uri = Uri.fromFile(file);
+                    if (ShareDialog.canShow(ShareVideoContent.class)) {
+                        ShareVideo video = new ShareVideo.Builder()
+                                .setLocalUrl(uri)
+                                .build();
+                        ShareVideoContent content = new ShareVideoContent.Builder()
+                                .setVideo(video)
+                                .build();
+                        dialog.show(content);
+                    } else {
+                        // ...sharing failed, handle error
+                        Toast.makeText(context, "facebookシェアに失敗しました", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+
+            }
+
+            @Override
+            public void onError(int id, Exception ex) {
+                Toast.makeText(context, "facebookシェアに失敗しました", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public static void twitterShare(Context context, ImageView thumbnail, String restname) {
+        Uri bmpUri = Util.getLocalBitmapUri(thumbnail);
+        if (bmpUri != null) {
+            TweetComposer.Builder builder = new TweetComposer.Builder(context)
+                    .text("#" + restname.replaceAll("\\s+", "") + " #Gocci #FoodPorn")
+                    .image(bmpUri);
+
+            builder.show();
+        } else {
+            // ...sharing failed, handle error
+            Toast.makeText(context, "twitterシェアに失敗しました", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public static void instaVideoShare(final Context context, final String restname, String key) {
+        final File file = new File(Environment.getExternalStorageDirectory().toString() + "/" + key);
+        TransferObserver transferObserver = Application_Gocci.transferUtility.download(Const.GET_MOVIE_BUCKET_NAME, key, file);
+        transferObserver.setTransferListener(new TransferListener() {
+            @Override
+            public void onStateChanged(int id, TransferState state) {
+                if (state == TransferState.COMPLETED) {
+                    Uri uri = Uri.fromFile(file);
+                    // Create the new Intent using the 'Send' action.
+                    Intent share = new Intent(Intent.ACTION_SEND);
+                    // Set the MIME type
+                    share.setType("video/*");
+                    // Add the URI and the caption to the Intent.
+                    share.putExtra(Intent.EXTRA_STREAM, uri);
+                    share.setPackage("com.instagram.android");
+                    share.putExtra(Intent.EXTRA_TEXT, "#" + restname + " #Gocci #FoodPorn");
+                    // Broadcast the Intent.
+                    context.startActivity(Intent.createChooser(share, "Share to"));
+                }
+            }
+
+            @Override
+            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+
+            }
+
+            @Override
+            public void onError(int id, Exception ex) {
+                Toast.makeText(context, "instagramシェアに失敗しました", Toast.LENGTH_SHORT).show();
             }
         });
     }

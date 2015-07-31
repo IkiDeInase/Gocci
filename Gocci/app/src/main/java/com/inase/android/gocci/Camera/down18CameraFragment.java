@@ -551,8 +551,6 @@ public class down18CameraFragment extends Fragment implements ViewPager.OnPageCh
         intent.putExtra("lon", longitude);
         startActivity(intent);
         getActivity().overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-
-        cameraProgress.setVisibility(View.GONE);
     }
 
     private void combineFiles() {

@@ -3,6 +3,7 @@ package com.inase.android.gocci.Activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -27,6 +28,8 @@ import com.twitter.sdk.android.core.TwitterSession;
 import org.apache.http.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.File;
 
 
 public class SplashActivity extends AppCompatActivity {
@@ -94,7 +97,15 @@ public class SplashActivity extends AppCompatActivity {
                         if (code == 200) {
                             Application_Gocci.GuestInit(context, identity_id, token, user_id);
                             SavedData.setWelcome(context, username, profile_img, user_id, identity_id, badge_num);
+                            //ノーマル
+                            SavedData.setFlag(SplashActivity.this, 0);
 
+                            Intent intent = new Intent(SplashActivity.this, GocciTimelineActivity.class);
+                            if (!SplashActivity.this.isFinishing()) {
+                                SplashActivity.this.startActivity(intent);
+                                overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+                                SplashActivity.this.finish();
+                            }
                         } else {
                             Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                         }
@@ -181,16 +192,16 @@ public class SplashActivity extends AppCompatActivity {
                 case TAG_AUTH:
                     break;
             }
-        }
-        //ノーマル
-        SavedData.setFlag(SplashActivity.this, 0);
-        SavedData.setIdentityId(SplashActivity.this, event.identityId);
 
-        Intent intent = new Intent(SplashActivity.this, GocciTimelineActivity.class);
-        if (!SplashActivity.this.isFinishing()) {
-            SplashActivity.this.startActivity(intent);
-            overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-            SplashActivity.this.finish();
+            //ノーマル
+            SavedData.setFlag(SplashActivity.this, 0);
+
+            Intent intent = new Intent(SplashActivity.this, GocciTimelineActivity.class);
+            if (!SplashActivity.this.isFinishing()) {
+                SplashActivity.this.startActivity(intent);
+                overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+                SplashActivity.this.finish();
+            }
         }
     }
 

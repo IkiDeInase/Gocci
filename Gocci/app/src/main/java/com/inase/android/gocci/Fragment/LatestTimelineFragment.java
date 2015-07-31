@@ -19,6 +19,9 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Toast;
 
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.cocosw.bottomsheet.BottomSheet;
 import com.coremedia.iso.boxes.Container;
 import com.facebook.CallbackManager;
@@ -35,6 +38,7 @@ import com.googlecode.mp4parser.authoring.Movie;
 import com.googlecode.mp4parser.authoring.builder.DefaultMp4Builder;
 import com.googlecode.mp4parser.authoring.container.mp4.MovieCreator;
 import com.inase.android.gocci.Activity.GocciTimelineActivity;
+import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.Base.RoundedTransformation;
 import com.inase.android.gocci.Event.BusHolder;
 import com.inase.android.gocci.Event.PageChangeVideoStopEvent;
@@ -47,6 +51,7 @@ import com.inase.android.gocci.common.LocaleFormatHelper;
 import com.inase.android.gocci.common.SavedData;
 import com.inase.android.gocci.common.Util;
 import com.inase.android.gocci.data.PostData;
+import com.loopj.android.http.FileAsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.melnykov.fab.FloatingActionButton;
 import com.pnikosis.materialishprogress.ProgressWheel;
@@ -270,7 +275,7 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
         }
         releasePlayer();
         audioCapabilitiesReceiver.unregister();
-        getPlayingViewHolder().mVideoThumbnail.setVisibility(View.VISIBLE);
+        //getPlayingViewHolder().mVideoThumbnail.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -421,7 +426,7 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
             public void onFinish() {
                 Log.d("DEBUG", "ProgressDialog dismiss getTimeline finish");
 //                mTimelineDialog.dismiss();
-                progress.setVisibility(View.INVISIBLE);
+                progress.setVisibility(View.GONE);
             }
         });
     }
@@ -726,91 +731,30 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
             holder.share_ripple.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    new BottomSheet.Builder(mContext, R.style.BottomSheet_StyleDialog).sheet(R.menu.menu_share).listener(new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            switch (which) {
-                                case R.id.facebook_share:
-                                    final String path = mCacheManager.getCachePath(user.getPost_id(), user.getMovie());
-                                    if (path != null) {
-                                        try {
-                                            Movie movie = MovieCreator.build(path);
-                                            Container out = new DefaultMp4Builder().build(movie);
-                                            File file = new File(Environment.getExternalStoragePublicDirectory(
-                                                    Environment.DIRECTORY_DOWNLOADS), "share_video_" + System.currentTimeMillis() + ".mp4");
-                                            file.getParentFile().mkdirs();
-                                            FileOutputStream fos = new FileOutputStream(file);
-                                            out.writeContainer(fos.getChannel());
-                                            fos.close();
-                                            Uri uri = Uri.fromFile(file);
-                                            if (ShareDialog.canShow(ShareVideoContent.class)) {
-                                                ShareVideo video = new ShareVideo.Builder()
-                                                        .setLocalUrl(uri)
-                                                        .build();
-                                                ShareVideoContent content = new ShareVideoContent.Builder()
-                                                        .setVideo(video)
-                                                        .setContentTitle(user.getRestname().replaceAll("\\s+", ""))
-                                                        .build();
-                                                shareDialog.show(content);
-                                            } else {
-                                                // ...sharing failed, handle error
-                                                Toast.makeText(mContext, "facebookシェアに失敗しました", Toast.LENGTH_SHORT).show();
-                                            }
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
-                                        }
-                                    } else {
-                                        Toast.makeText(mContext, "動画が読み込めていません", Toast.LENGTH_SHORT).show();
-                                    }
-                                    break;
-                                case R.id.twitter_share:
-                                    Uri bmpUri = Util.getLocalBitmapUri(holder.mVideoThumbnail);
-                                    if (bmpUri != null) {
-                                        TweetComposer.Builder builder = new TweetComposer.Builder(getActivity())
-                                                .text("#" + user.getRestname().replaceAll("\\s+", "") + " #Gocci")
-                                                .image(bmpUri);
-
-                                        builder.show();
-                                    } else {
-                                        // ...sharing failed, handle error
-                                        Toast.makeText(getActivity(), "twitterシェアに失敗しました", Toast.LENGTH_SHORT).show();
-                                    }
-                                    break;
-                                case R.id.other_share:
-                                    final String other_path = mCacheManager.getCachePath(user.getPost_id(), user.getMovie());
-                                    if (other_path != null) {
-                                        try {
-                                            Movie movie = MovieCreator.build(other_path);
-                                            Container out = new DefaultMp4Builder().build(movie);
-                                            File file = new File(Environment.getExternalStoragePublicDirectory(
-                                                    Environment.DIRECTORY_DOWNLOADS), "share_video_" + System.currentTimeMillis() + ".mp4");
-                                            file.getParentFile().mkdirs();
-                                            FileOutputStream fos = new FileOutputStream(file);
-                                            out.writeContainer(fos.getChannel());
-                                            fos.close();
-                                            Uri uri = Uri.fromFile(file);
-                                            // Create the new Intent using the 'Send' action.
-                                            Intent share = new Intent(Intent.ACTION_SEND);
-                                            // Set the MIME type
-                                            share.setType("video/*");
-                                            // Add the URI and the caption to the Intent.
-                                            share.putExtra(Intent.EXTRA_STREAM, uri);
-                                            share.setPackage("com.instagram.android");
-                                            share.putExtra(Intent.EXTRA_TEXT, "#" + user.getRestname() + " #Gocci #FoodPorn");
-                                            // Broadcast the Intent.
-                                            startActivity(Intent.createChooser(share, "Share to"));
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
-                                        }
-                                    } else {
-                                        Toast.makeText(getActivity(), "シェアに失敗しました", Toast.LENGTH_SHORT).show();
-                                    }
-                                    break;
-                                case R.id.close:
-                                    dialog.dismiss();
+                    if (Application_Gocci.transferUtility != null) {
+                        new BottomSheet.Builder(mContext, R.style.BottomSheet_StyleDialog).sheet(R.menu.menu_share).listener(new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                switch (which) {
+                                    case R.id.facebook_share:
+                                        Toast.makeText(getActivity(), "シェアの準備をしています", Toast.LENGTH_LONG).show();
+                                        Util.facebookVideoShare(getActivity(), shareDialog, user.getShare());
+                                        break;
+                                    case R.id.twitter_share:
+                                        Util.twitterShare(getActivity(), holder.mVideoThumbnail, user.getRestname());
+                                        break;
+                                    case R.id.other_share:
+                                        Toast.makeText(getActivity(), "シェアの準備をしています", Toast.LENGTH_LONG).show();
+                                        Util.instaVideoShare(getActivity(), user.getRestname(), user.getShare());
+                                        break;
+                                    case R.id.close:
+                                        dialog.dismiss();
+                                }
                             }
-                        }
-                    }).show();
+                        }).show();
+                    } else {
+                        Toast.makeText(getActivity(), "もうちょっと待ってから押してみましょう", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
 

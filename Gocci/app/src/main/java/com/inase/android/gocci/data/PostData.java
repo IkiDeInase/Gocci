@@ -27,6 +27,7 @@ public class PostData {
     private static final String TAG_GOCHI_FLAG = "gochi_flag";
     private static final String TAG_LAT = "X(lon_lat)";
     private static final String TAG_LON = "Y(lon_lat)";
+    private static final String TAG_SHARE = "share";
 
     //JSON用のsetter/getter
 
@@ -52,6 +53,7 @@ public class PostData {
     private int gochi_flag;
     private double lat;
     private double lon;
+    private String share;
 
     public PostData() {
     }
@@ -60,7 +62,7 @@ public class PostData {
                     String restname, String movie, String thumbnail, String category, String tag,
                     String value, String memo, String post_date, int cheer_flag, int gochi_num,
                     int comment_num, int want_flag, int follow_flag, int gochi_flag, double lat,
-                    double lon) {
+                    double lon, String share) {
         this.post_id = post_id;
         this.post_user_id = post_user_id;
         this.username = username;
@@ -82,6 +84,7 @@ public class PostData {
         this.gochi_flag = gochi_flag;
         this.lat = lat;
         this.lon = lon;
+        this.share = share;
     }
 
     public static PostData createPostData(JSONObject jsonObject) {
@@ -107,12 +110,13 @@ public class PostData {
             int gochi_flag = jsonObject.getInt(TAG_GOCHI_FLAG);
             double lat = jsonObject.getDouble(TAG_LAT);
             double lon = jsonObject.getDouble(TAG_LON);
+            String share = jsonObject.getString(TAG_SHARE);
 
             return new PostData(post_id, post_user_id, username, profile_img, post_rest_id,
                     restname, movie, thumbnail, category, tag,
                     value, memo, post_date, cheer_flag, gochi_num,
                     comment_num, want_flag, follow_flag, gochi_flag, lat,
-                    lon);
+                    lon, share);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -286,5 +290,13 @@ public class PostData {
 
     public void setLon(double lon) {
         this.lon = lon;
+    }
+
+    public String getShare() {
+        return share;
+    }
+
+    public void setShare(String share) {
+        this.share = share;
     }
 }

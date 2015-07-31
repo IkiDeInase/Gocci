@@ -14,8 +14,8 @@
 
     <ImageView
         android:id="@+id/icon"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_above="@+id/logo"
         android:layout_centerHorizontal="true"
         android:layout_gravity="center"
@@ -47,7 +47,7 @@
         android:layout_above="@+id/introduce"
         android:layout_centerHorizontal="true"
         android:layout_gravity="center_horizontal|top"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="16dp"
         android:text="@string/enjoy_eat"
         android:textColor="@color/namegrey"
         android:textSize="@dimen/large_text"
@@ -60,7 +60,7 @@
         android:layout_above="@+id/username_Ripple"
         android:layout_centerHorizontal="true"
         android:layout_gravity="center_horizontal|top"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="2dp"
         android:text="@string/introduce"
         android:textColor="@color/nameblack"
         android:textSize="@dimen/normal_text" />

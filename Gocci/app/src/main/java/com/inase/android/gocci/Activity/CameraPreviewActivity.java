@@ -21,6 +21,9 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.amazonaws.mobileconnectors.s3.transfermanager.TransferManager;
 import com.amazonaws.mobileconnectors.s3.transfermanager.Upload;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.andexert.library.RippleView;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -86,10 +89,14 @@ public class CameraPreviewActivity extends AppCompatActivity {
     private CallbackManager callbackManager;
     private ShareDialog shareDialog;
 
+    private boolean isUpload;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera_preview);
+
+        isUpload = false;
 
         Intent intent = getIntent();
         mRest_id = intent.getIntExtra("rest_id", 1);
@@ -194,8 +201,8 @@ public class CameraPreviewActivity extends AppCompatActivity {
         });
 
         restname_spinner.setText(mRest_id == 1 ? "" : GocciCameraActivity.restname.get(GocciCameraActivity.rest_id.indexOf(mRest_id)));
-        category_spinner.setText(mCategory_id == 1 ? "" : CATEGORY[mCategory_id-2]);
-        mood_spinner.setText(mTag_id == 1 ? "" : MOOD[mTag_id-2]);
+        category_spinner.setText(mCategory_id == 1 ? "" : CATEGORY[mCategory_id - 2]);
+        mood_spinner.setText(mTag_id == 1 ? "" : MOOD[mTag_id - 2]);
         edit_value.setText(mValue);
         edit_comment.setText(mMemo);
 
@@ -218,7 +225,7 @@ public class CameraPreviewActivity extends AppCompatActivity {
                         Toast.makeText(CameraPreviewActivity.this, "店名を入力してください", Toast.LENGTH_SHORT).show();
                     } else {
                         TweetComposer.Builder builder = new TweetComposer.Builder(CameraPreviewActivity.this)
-                                .text("#" + mRestname.replaceAll("\\s+", "") + " #Gocci")
+                                .text("#" + mRestname.replaceAll("\\s+", "") + " #Gocci #FoodPorn")
                                 .image(bmpUri);
 
                         builder.show();
@@ -341,44 +348,44 @@ public class CameraPreviewActivity extends AppCompatActivity {
 
                         Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(CameraPreviewActivity.this));
                         Const.asyncHttpClient.get(CameraPreviewActivity.this, Const.getPostRestAddAPI(mRestname, mLatitude, mLongitude), new JsonHttpResponseHandler() {
-            @Override
-            public void onStart() {
-                mPostProgress.setVisibility(View.VISIBLE);
-            }
+                            @Override
+                            public void onStart() {
+                                mPostProgress.setVisibility(View.VISIBLE);
+                            }
 
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Toast.makeText(CameraPreviewActivity.this, "通信に失敗しました", Toast.LENGTH_SHORT).show();
-            }
+                            @Override
+                            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                                Toast.makeText(CameraPreviewActivity.this, "通信に失敗しました", Toast.LENGTH_SHORT).show();
+                            }
 
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                Log.e("ジェイソン成功", String.valueOf(response));
+                            @Override
+                            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                                Log.e("ジェイソン成功", String.valueOf(response));
 
-                try {
-                    String message = response.getString("message");
+                                try {
+                                    String message = response.getString("message");
 
-                    if (message.equals("店舗を追加しました")) {
-                        Toast.makeText(CameraPreviewActivity.this, message, Toast.LENGTH_SHORT).show();
-                        //店名をセット
-                        mIsnewRestname = true;
-                        restname_spinner.setText(mRestname);
-                        mRest_id = response.getInt("rest_id");
-                        restname_spinner.setClickable(false);
-                    } else {
-                        Toast.makeText(CameraPreviewActivity.this, message, Toast.LENGTH_SHORT).show();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                                    if (message.equals("店舗を追加しました")) {
+                                        Toast.makeText(CameraPreviewActivity.this, message, Toast.LENGTH_SHORT).show();
+                                        //店名をセット
+                                        mIsnewRestname = true;
+                                        restname_spinner.setText(mRestname);
+                                        mRest_id = response.getInt("rest_id");
+                                        restname_spinner.setClickable(false);
+                                    } else {
+                                        Toast.makeText(CameraPreviewActivity.this, message, Toast.LENGTH_SHORT).show();
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
 
-            }
+                            }
 
-            @Override
-            public void onFinish() {
-                mPostProgress.setVisibility(View.INVISIBLE);
-            }
-        });
+                            @Override
+                            public void onFinish() {
+                                mPostProgress.setVisibility(View.INVISIBLE);
+                            }
+                        });
                     }
                 })
                 .show();
@@ -390,44 +397,73 @@ public class CameraPreviewActivity extends AppCompatActivity {
             protected void onPreExecute() {
                 mPostProgress.setVisibility(View.VISIBLE);
             }
+
             @Override
             protected Void doInBackground(Void... params) {
-                TransferManager transferManager = new TransferManager(Application_Gocci.credentialsProvider);
-                Upload upload = transferManager.upload(Const.POST_MOVIE_BUCKET_NAME, mAwsPostName + ".mp4", mVideoFile);
-                while (!upload.isDone()) {
-                    Log.d("CameraPreviewActivity", "送信中");
+                if (!isUpload) {
+                    TransferObserver transferObserver = Application_Gocci.transferUtility.upload(Const.POST_MOVIE_BUCKET_NAME, mAwsPostName + ".mp4", mVideoFile);
+                    transferObserver.setTransferListener(new TransferListener() {
+                        @Override
+                        public void onStateChanged(int id, TransferState state) {
+                            if (state == TransferState.COMPLETED) {
+                                postMovieAsync(context);
+                            }
+                        }
+
+                        @Override
+                        public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+
+                        }
+
+                        @Override
+                        public void onError(int id, Exception ex) {
+
+                        }
+                    });
                 }
                 return null;
             }
+        }.execute();
+    }
+
+    private void postMovieAsync(final Context context) {
+        isUpload = true;
+        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
+        Const.asyncHttpClient.setConnectTimeout(10 * 1000);
+        Const.asyncHttpClient.setResponseTimeout(60 * 1000);
+        Const.asyncHttpClient.get(context, Const.getPostMovieAPI(mRest_id, mAwsPostName, mCategory_id, mTag_id, mValue, mMemo, mCheer_flag), new JsonHttpResponseHandler() {
+
             @Override
-            protected void onPostExecute(Void result) {
-                Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-                Const.asyncHttpClient.setConnectTimeout(10 * 1000);
-                Const.asyncHttpClient.setResponseTimeout(60 * 1000);
-                Const.asyncHttpClient.get(context, Const.getPostMovieAPI(mRest_id, mAwsPostName, mCategory_id, mTag_id, mValue, mMemo, mCheer_flag), new TextHttpResponseHandler() {
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Toast.makeText(context, "投稿に失敗しました", Toast.LENGTH_SHORT).show();
+            }
 
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                        Toast.makeText(context, "投稿に失敗しました", Toast.LENGTH_SHORT).show();
-                    }
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                try {
+                    String message = response.getString("message");
+                    int code = response.getInt("code");
 
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                        Toast.makeText(context, "投稿が完了しました", Toast.LENGTH_SHORT).show();
-                    }
+                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
 
-                    @Override
-                    public void onFinish() {
-                        mPostProgress.setVisibility(View.GONE);
-                        //成功しても失敗してもホーム画面に戻る。
+                    if (code == 200 && message.equals("投稿しました")) {
                         Intent intent = new Intent(context, GocciTimelineActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
                         finish();
+                    } else {
+                        Toast.makeText(context, "投稿に失敗しました", Toast.LENGTH_SHORT).show();
                     }
-                });
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
-        }.execute();
+
+            @Override
+            public void onFinish() {
+                mPostProgress.setVisibility(View.GONE);
+            }
+        });
     }
 }

@@ -39,6 +39,9 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.amazonaws.mobileconnectors.s3.transfermanager.TransferManager;
 import com.amazonaws.mobileconnectors.s3.transfermanager.Upload;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.andexert.library.RippleView;
 import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.Base.RoundedTransformation;
@@ -661,8 +664,8 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
 
                                     if (isName && isPicture) {
                                         //どっちも変更した
-                                        post_date = SavedData.getServerUserId(context) + "_" + getDateTimeString();
-                                        update_file = getLocalBitmapFile(edit_picture, post_date);
+                                        post_date = SavedData.getServerUserId(context) + "_" + Util.getDateTimeString();
+                                        update_file = Util.getLocalBitmapFile(edit_picture, post_date);
                                         updateUrl = Const.getPostUpdateProfileAPI(Const.FLAG_CHANGE_BOTH,
                                                 edit_username.getText().toString(),
                                                 post_date);
@@ -670,8 +673,8 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
                                         isPicture = false;
                                     } else if (isPicture) {
                                         //写真だけ変更
-                                        post_date = SavedData.getServerUserId(context) + "_" + getDateTimeString();
-                                        update_file = getLocalBitmapFile(edit_picture, post_date);
+                                        post_date = SavedData.getServerUserId(context) + "_" + Util.getDateTimeString();
+                                        update_file = Util.getLocalBitmapFile(edit_picture, post_date);
                                         updateUrl = Const.getPostUpdateProfileAPI(Const.FLAG_CHANGE_PICTURE,
                                                 null, post_date);
                                         isPicture = false;
@@ -797,96 +800,79 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
 
     }
 
-    private static File getLocalBitmapFile(ImageView imageView, String post_date) {
-        // Extract Bitmap from ImageView drawable
-        Drawable drawable = imageView.getDrawable();
-        Bitmap bmp = null;
-        if (drawable instanceof BitmapDrawable) {
-            bmp = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
-        } else {
-            return null;
-        }
-        // Store image to default external storage directory
-        File file = null;
-        try {
-            file = new File(Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_DOWNLOADS), post_date + ".png");
-            file.getParentFile().mkdirs();
-            FileOutputStream out = new FileOutputStream(file);
-            bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
-            out.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return file;
-    }
-
-    private static final String getDateTimeString() {
-        final GregorianCalendar now = new GregorianCalendar();
-        final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss", Locale.US);
-        return dateTimeFormat.format(now.getTime());
-    }
-
     private void postChangeProfileAsync(final Context context, final String post_date, final File file, final String url) {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
                 if (post_date != null) {
-                    TransferManager transferManager = new TransferManager(Application_Gocci.credentialsProvider);
-                    Upload upload = transferManager.upload(Const.POST_PHOTO_BUCKET_NAME, post_date + ".png", file);
-                    while (!upload.isDone()) {
-                        Log.d("CameraPreviewActivity", "送信中");
-                    }
+                    TransferObserver transferObserver = Application_Gocci.transferUtility.upload(Const.POST_PHOTO_BUCKET_NAME, post_date + ".png", file);
+                    transferObserver.setTransferListener(new TransferListener() {
+                        @Override
+                        public void onStateChanged(int id, TransferState state) {
+                            if (state == TransferState.COMPLETED) {
+                                postChangeProf(context, url);
+                            }
+                        }
+
+                        @Override
+                        public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+
+                        }
+
+                        @Override
+                        public void onError(int id, Exception ex) {
+
+                        }
+                    });
                 }
                 return null;
             }
+        }.execute();
+    }
+
+    private void postChangeProf(final Context context, String url) {
+        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
+        Const.asyncHttpClient.get(context, url, new JsonHttpResponseHandler() {
 
             @Override
-            protected void onPostExecute(Void result) {
-                Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-                Const.asyncHttpClient.get(context, url, new JsonHttpResponseHandler() {
-
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                        Toast.makeText(context, "プロフィール変更に失敗しました", Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        try {
-                            String message = response.getString("message");
-
-                            if (message.equals("プロフィールを変更しました")) {
-                                Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-                                String name = response.getString("username");
-                                String picture = response.getString("profile_img");
-
-                                SavedData.changeProfile(context, name, picture);
-
-                                Intent intent = getIntent();
-                                overridePendingTransition(0, 0);
-                                intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                finish();
-
-                                overridePendingTransition(0, 0);
-                                startActivity(intent);
-
-                            } else {
-                                Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    @Override
-                    public void onFinish() {
-                        progress.setVisibility(View.INVISIBLE);
-                    }
-                });
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Toast.makeText(context, "プロフィール変更に失敗しました", Toast.LENGTH_SHORT).show();
             }
-        }.execute();
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                try {
+                    String message = response.getString("message");
+
+                    if (message.equals("プロフィールを変更しました")) {
+                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+                        String name = response.getString("username");
+                        String picture = response.getString("profile_img");
+
+                        SavedData.changeProfile(context, name, picture);
+
+                        Intent intent = getIntent();
+                        overridePendingTransition(0, 0);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        finish();
+
+                        overridePendingTransition(0, 0);
+                        startActivity(intent);
+
+                    } else {
+                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFinish() {
+                progress.setVisibility(View.INVISIBLE);
+            }
+        });
     }
 }

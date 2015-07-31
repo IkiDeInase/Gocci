@@ -3,12 +3,22 @@ package com.inase.android.gocci.Application;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.multidex.MultiDex;
 import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.mobileconnectors.cognito.CognitoSyncManager;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
+import com.amazonaws.regions.Region;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
 import com.crashlytics.android.Crashlytics;
 import com.facebook.FacebookSdk;
 import com.google.android.gms.analytics.GoogleAnalytics;
@@ -20,9 +30,16 @@ import com.inase.android.gocci.R;
 import com.inase.android.gocci.aws.CustomProvider;
 import com.inase.android.gocci.common.CacheManager;
 import com.inase.android.gocci.common.Const;
+import com.inase.android.gocci.common.SavedData;
+import com.loopj.android.http.JsonHttpResponseHandler;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 
+import org.apache.http.Header;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,9 +49,10 @@ public class Application_Gocci extends Application {
 
     private final String TAG = "Gocci";
 
-    public static CognitoSyncManager syncClient;
     public static CognitoCachingCredentialsProvider credentialsProvider = null;
-    public static CustomProvider customProvider;
+    public static CustomProvider customProvider = null;
+    public static AmazonS3 s3 = null;
+    public static TransferUtility transferUtility = null;
 
     //経度緯度情報
     private double mLatitude;
@@ -113,9 +131,10 @@ public class Application_Gocci extends Application {
                 logins.put(providerName, token);
                 credentialsProvider.setLogins(logins);
 
-                syncClient = new CognitoSyncManager(context, Const.REGION, credentialsProvider);
+                s3 = new AmazonS3Client(credentialsProvider);
+                s3.setRegion(Region.getRegion(Const.REGION));
+                transferUtility = new TransferUtility(s3, context);
 
-                Log.e("SNSInit", credentialsProvider.getIdentityId());
                 return credentialsProvider.getIdentityId();
             }
 
@@ -141,10 +160,11 @@ public class Application_Gocci extends Application {
                 credentialsProvider.setLogins(logins);
                 credentialsProvider.refresh();
 
-                syncClient = new CognitoSyncManager(context, Const.REGION, credentialsProvider);
+                s3 = new AmazonS3Client(credentialsProvider);
+                s3.setRegion(Region.getRegion(Const.REGION));
+                transferUtility = new TransferUtility(s3, context);
 
-                Log.e("GuestInit", credentialsProvider.getIdentityId());
-                return credentialsProvider.getIdentityId();
+                return "identityId";
             }
 
             @Override
@@ -154,18 +174,7 @@ public class Application_Gocci extends Application {
         }.execute();
     }
 
-    public static CognitoSyncManager getInstance() {
-        if (syncClient == null) {
-            throw new IllegalStateException("CognitoSyncClientManager not initialized yet");
-        }
-        return syncClient;
-    }
-
     public static void addLogins(final String providerName, final String token) {
-        if (syncClient == null) {
-            throw new IllegalStateException("CognitoSyncClientManager not initialized yet");
-        }
-
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {

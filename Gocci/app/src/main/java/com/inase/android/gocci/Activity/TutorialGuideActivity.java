@@ -12,7 +12,6 @@ import android.util.Log;
 import android.view.View;
 
 import com.andexert.library.RippleView;
-import com.hatenablog.shoma2da.eventdaterecorderlib.EventDateRecorder;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.Tutorial.TutorialView1;
 import com.inase.android.gocci.Tutorial.TutorialView2;
@@ -27,38 +26,24 @@ public class TutorialGuideActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tutorial_guide);
 
-        EventDateRecorder recorder = EventDateRecorder.load(this, "use_first_gocci_tutorial");
-        if (!recorder.didRecorded()) {
-            // 機能が１度も利用されてない時のみ実行したい処理を書く
-            recorder.record();
-            Log.e("DEBUG", "TutorialGuideActivit　チュートあり");
+        //Gocciへようこそ　このアプリは・・・・的な感じで考えている。
 
-            //Gocciへようこそ　このアプリは・・・・的な感じで考えている。
-
-            ViewPager tutorialViewpager = (ViewPager) findViewById(R.id.viewpager_tutorial);
-            tutorialViewpager.setAdapter(new TutorialPagerAdapter(getSupportFragmentManager()));
-            tutorialViewpager.setOffscreenPageLimit(4);
-            CirclePageIndicator circlePageIndicator = (CirclePageIndicator) findViewById(R.id.circles);
-            circlePageIndicator.setViewPager(tutorialViewpager);
+        ViewPager tutorialViewpager = (ViewPager) findViewById(R.id.viewpager_tutorial);
+        tutorialViewpager.setAdapter(new TutorialPagerAdapter(getSupportFragmentManager()));
+        tutorialViewpager.setOffscreenPageLimit(4);
+        CirclePageIndicator circlePageIndicator = (CirclePageIndicator) findViewById(R.id.circles);
+        circlePageIndicator.setViewPager(tutorialViewpager);
 
 
-            //チュートリアルを実施
-            RippleView button = (RippleView) findViewById(R.id.tutorial_finish);
-            button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Handler handler = new Handler();
-                    handler.postDelayed(new finishClickHandler(), 750);
-                }
-            });
-
-        } else {
-            Log.e("DEBUG", "TutorialGuideActivit　チュートなし");
-
-            Intent goIntent = new Intent(TutorialGuideActivity.this, GocciTimelineActivity.class);
-            startActivity(goIntent);
-            TutorialGuideActivity.this.finish();
-        }
+        //チュートリアルを実施
+        RippleView button = (RippleView) findViewById(R.id.tutorial_finish);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Handler handler = new Handler();
+                handler.postDelayed(new finishClickHandler(), 750);
+            }
+        });
     }
 
     class TutorialPagerAdapter extends FragmentPagerAdapter {

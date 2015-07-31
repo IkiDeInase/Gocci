@@ -57,6 +57,10 @@
 
         <service android:name=".data.GcmIntentService" />
 
+        <service
+            android:name="com.amazonaws.mobileconnectors.s3.transferutility.TransferService"
+            android:enabled="true" />
+
         <activity
             android:name=".Activity.SplashActivity"
             android:screenOrientation="portrait"

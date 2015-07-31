@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -14,10 +15,12 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.andexert.library.RippleView;
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.Profile;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.inase.android.gocci.Application.Application_Gocci;
@@ -50,8 +53,10 @@ public class LoginSessionActivity extends AppCompatActivity {
     private RippleView twitterRipple;
     private RippleView facebookRipple;
 
-    private EditText usernameEdit;
-    private EditText passwordEdit;
+    private TextInputLayout usernameEdit;
+    private TextInputLayout passwordEdit;
+
+    private RippleView loginRipple;
 
     private ProgressWheel progress;
 
@@ -62,6 +67,9 @@ public class LoginSessionActivity extends AppCompatActivity {
     private String profile_img;
 
     public void onFacebookButtonClicked() {
+        if (AccessToken.getCurrentAccessToken().getToken() != null) {
+            LoginManager.getInstance().logOut();
+        }
         facebookLoginButton.performClick();
     }
 
@@ -96,8 +104,10 @@ public class LoginSessionActivity extends AppCompatActivity {
         facebookLoginButton = (LoginButton) findViewById(R.id.login_button);
         twitterLoginButton = (GocciTwitterLoginButton) findViewById(R.id.twitter_login_button);
 
-        usernameEdit = (EditText) findViewById(R.id.signinusernameEdit);
-        passwordEdit = (EditText) findViewById(R.id.signinpassEdit);
+        usernameEdit = (TextInputLayout) findViewById(R.id.signinusernameEdit);
+        usernameEdit.setErrorEnabled(true);
+        passwordEdit = (TextInputLayout) findViewById(R.id.signinpassEdit);
+        passwordEdit.setErrorEnabled(true);
 
         twitterRipple.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -164,6 +174,14 @@ public class LoginSessionActivity extends AppCompatActivity {
                 Toast.makeText(LoginSessionActivity.this, "ログインに失敗しました", Toast.LENGTH_SHORT).show();
             }
         });
+
+        loginRipple = (RippleView) findViewById(R.id.login_Ripple);
+        loginRipple.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(LoginSessionActivity.this, "ログインに失敗しました", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -182,7 +200,6 @@ public class LoginSessionActivity extends AppCompatActivity {
     public void subscribe(final CreateProviderFinishEvent event) {
         //DEV
         welcomeAsync(this, event.identityId);
-
     }
 
     private void welcomeAsync(final Context context, final String identity_id) {
@@ -206,11 +223,12 @@ public class LoginSessionActivity extends AppCompatActivity {
 
                             Intent intent = new Intent(context, GocciTimelineActivity.class);
                             startActivity(intent);
+                            overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
                         } else {
                             Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                         }
                     } else {
-                        Toast.makeText(context, "ログインに失敗しました", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "まだアカウントを作成していません", Toast.LENGTH_SHORT).show();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -222,7 +240,7 @@ public class LoginSessionActivity extends AppCompatActivity {
             }
 
             @Override
-        public void onFinish() {
+            public void onFinish() {
                 progress.setVisibility(View.INVISIBLE);
             }
         });
