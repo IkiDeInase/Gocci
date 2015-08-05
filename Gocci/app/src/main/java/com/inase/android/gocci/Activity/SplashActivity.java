@@ -3,7 +3,6 @@ package com.inase.android.gocci.Activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,7 +18,6 @@ import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;
 import com.inase.android.gocci.common.Util;
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.SyncHttpClient;
 import com.squareup.otto.Subscribe;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthToken;
@@ -28,8 +26,6 @@ import com.twitter.sdk.android.core.TwitterSession;
 import org.apache.http.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.File;
 
 
 public class SplashActivity extends AppCompatActivity {
@@ -187,7 +183,7 @@ public class SplashActivity extends AppCompatActivity {
                 case TAG_SNS_FACEBOOK:
                     if (AccessToken.getCurrentAccessToken() != null) {
                         String token = AccessToken.getCurrentAccessToken().getToken();
-                        Application_Gocci.addLogins(Const.ENDPOINT_FACEBOOK, token);
+                        Application_Gocci.addLogins(this, Const.ENDPOINT_FACEBOOK, token, "none");
                     }
                     break;
                 case TAG_SNS_TWITTER:
@@ -195,7 +191,7 @@ public class SplashActivity extends AppCompatActivity {
                             Twitter.getSessionManager().getActiveSession();
                     if (session != null) {
                         TwitterAuthToken authToken = session.getAuthToken();
-                        Application_Gocci.addLogins(Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret);
+                        Application_Gocci.addLogins(this, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, "none");
                     }
                     break;
                 case TAG_AUTH:

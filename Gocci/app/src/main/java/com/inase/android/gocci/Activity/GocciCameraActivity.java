@@ -13,7 +13,6 @@ import com.inase.android.gocci.Camera.down18CameraFragment;
 import com.inase.android.gocci.Camera.up18CameraFragment;
 import com.inase.android.gocci.R;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class GocciCameraActivity extends AppCompatActivity {

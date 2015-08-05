@@ -55,6 +55,11 @@ public class Const {
                 "&model=" + model + "&register_id=" + register_id;
     }
 
+    public static String getAuthSNSMatchAPI(String providerName, String token, String profile_img) {
+        return URL_PREFIX + VERSION_NUMBER + "/post/sns/?provider=" + providerName +
+                "&token=" + token + "&profile_img=" + profile_img;
+    }
+
     public static String getTimelineAPI() {
         return URL_PREFIX + VERSION_NUMBER + "/get/timeline";
     }

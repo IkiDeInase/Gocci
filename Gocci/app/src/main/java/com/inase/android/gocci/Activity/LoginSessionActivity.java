@@ -11,7 +11,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.andexert.library.RippleView;
@@ -135,7 +134,7 @@ public class LoginSessionActivity extends AppCompatActivity {
                     profile_img = "https://graph.facebook.com/" + profile.getId() + "/picture";
                 }
 
-                Application_Gocci.SNSInit(LoginSessionActivity.this, Const.ENDPOINT_FACEBOOK, loginResult.getAccessToken().getToken());
+                Application_Gocci.SNSInit(LoginSessionActivity.this, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken());
                 //Application_Gocci.addLogins("graph.facebook.com", loginResult.getAccessToken().getToken());
 
                 //postLoginAsync(LoginActivity.this, mName, mPictureImageUrl, TAG_SNS_FACEBOOK);

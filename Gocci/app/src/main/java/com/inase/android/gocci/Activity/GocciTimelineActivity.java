@@ -237,7 +237,7 @@ public class GocciTimelineActivity extends AppCompatActivity {
 
                 final PopupWindow window = ToukouPopup.newBasicPopupWindow(GocciTimelineActivity.this);
 
-                View header = (View) notification.findViewById(R.id.headerView);
+                View header = notification.findViewById(R.id.headerView);
                 header.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

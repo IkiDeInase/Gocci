@@ -2,19 +2,18 @@ package com.inase.android.gocci.aws;
 
 import com.amazonaws.auth.AWSAbstractCognitoDeveloperIdentityProvider;
 import com.amazonaws.regions.Regions;
+import com.inase.android.gocci.common.Const;
 
 /**
  * Created by kinagafuji on 15/07/06.
  */
 public class CustomProvider extends AWSAbstractCognitoDeveloperIdentityProvider {
 
-    private static final String poolId = "us-east-1:a8cc1fdb-92b1-4586-ba97-9e6994a43195";
-
     private String mIdentityId;
     private String mToken;
 
     public CustomProvider(String identityId, String token) {
-        super(null, poolId, Regions.US_EAST_1);
+        super(null, Const.IDENTITY_POOL_ID, Regions.US_EAST_1);
 
         mIdentityId = identityId;
         mToken = token;

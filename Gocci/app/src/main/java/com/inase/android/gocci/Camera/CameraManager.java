@@ -24,7 +24,7 @@ public class CameraManager {
 
     public void startCamera(SurfaceHolder holder) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
-            for (int i = 0; i < camera.getNumberOfCameras(); i++) {
+            for (int i = 0; i < Camera.getNumberOfCameras(); i++) {
                 CameraInfo info = new CameraInfo();
                 Camera.getCameraInfo(i, info);
                 if (info.facing == cameraFacingType) {

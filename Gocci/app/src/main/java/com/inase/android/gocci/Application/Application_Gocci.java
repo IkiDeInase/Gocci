@@ -3,18 +3,12 @@ package com.inase.android.gocci.Application;
 
 import android.app.Application;
 import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.multidex.MultiDex;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
-import com.amazonaws.mobileconnectors.cognito.CognitoSyncManager;
-import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
-import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
-import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import com.amazonaws.regions.Region;
 import com.amazonaws.services.s3.AmazonS3;
@@ -26,6 +20,7 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.inase.android.gocci.Event.BusHolder;
 import com.inase.android.gocci.Event.CreateProviderFinishEvent;
+import com.inase.android.gocci.Event.SNSMatchFinishEvent;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.aws.CustomProvider;
 import com.inase.android.gocci.common.CacheManager;
@@ -39,7 +34,6 @@ import org.apache.http.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -174,10 +168,11 @@ public class Application_Gocci extends Application {
         }.execute();
     }
 
-    public static void addLogins(final String providerName, final String token) {
-        new AsyncTask<Void, Void, Void>() {
+    public static void addLogins(final Context context, String providerName, String token, String profile_img) {
+        /*
+        new AsyncTask<Void, Void, String>() {
             @Override
-            protected Void doInBackground(Void... params) {
+            protected String doInBackground(Void... params) {
                 Map<String, String> logins = credentialsProvider.getLogins();
                 if (logins == null) {
                     logins = new HashMap<String, String>();
@@ -187,7 +182,36 @@ public class Application_Gocci extends Application {
                 credentialsProvider.refresh();
                 return null;
             }
+
+            @Override
+            protected void onPostExecute(String result) {
+                BusHolder.get().post(new CreateProviderFinishEvent(result));
+            }
         }.execute();
+        */
+        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
+        Const.asyncHttpClient.get(context, Const.getAuthSNSMatchAPI(providerName, token, profile_img), new JsonHttpResponseHandler() {
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Toast.makeText(context, "通信に失敗しました", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                try {
+                    int code = response.getInt("code");
+                    String message = response.getString("message");
+                    String profile_img = response.getString("profile_img");
+
+                    if (code == 200) {
+                        BusHolder.get().post(new SNSMatchFinishEvent(message, profile_img));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     @Override

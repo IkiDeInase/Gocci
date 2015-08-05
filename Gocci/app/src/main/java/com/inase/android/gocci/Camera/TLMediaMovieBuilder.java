@@ -39,14 +39,14 @@ public class TLMediaMovieBuilder {
          *
          * @param output_path output movie file path, may null when canceled or error occurred etc.
          */
-        public void onFinished(String output_path, String awspostname);
+        void onFinished(String output_path, String awspostname);
 
         /**
          * called when error occurred while movie building
          *
          * @param e
          */
-        public void onError(Exception e);
+        void onError(Exception e);
     }
 
     /**

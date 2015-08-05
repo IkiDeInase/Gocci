@@ -62,28 +62,28 @@ public abstract class TLMediaEncoder {
          *
          * @param encoder
          */
-        public void onPrepared(TLMediaEncoder encoder);
+        void onPrepared(TLMediaEncoder encoder);
 
         /**
          * called when encoder stopped
          *
          * @param encoder
          */
-        public void onStopped(TLMediaEncoder encoder);
+        void onStopped(TLMediaEncoder encoder);
 
         /**
          * called when resuming
          *
          * @param encoder
          */
-        public void onResume(TLMediaEncoder encoder);
+        void onResume(TLMediaEncoder encoder);
 
         /**
          * called when pausing
          *
          * @param encoder
          */
-        public void onPause(TLMediaEncoder encoder);
+        void onPause(TLMediaEncoder encoder);
     }
 
     private final Object mSync = new Object();

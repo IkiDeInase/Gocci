@@ -143,8 +143,6 @@ public class CircleProgressBar extends View {
         Visible, Invisible
     }
 
-    ;
-
     public CircleProgressBar(Context context) {
         super(context);
         init();
@@ -433,10 +431,7 @@ public class CircleProgressBar extends View {
     }
 
     public boolean isFinished() {
-        if (mProgress >= mMax) {
-            return true;
-        }
-        return false;
+        return mProgress >= mMax;
     }
 
     public void setProgress(int Progress) {
@@ -457,11 +452,7 @@ public class CircleProgressBar extends View {
     }
 
     public void setProgressTextVisibility(ProgressTextVisibility visibility) {
-        if (visibility == ProgressTextVisibility.Visible) {
-            mIfDrawText = true;
-        } else {
-            mIfDrawText = false;
-        }
+        mIfDrawText = visibility == ProgressTextVisibility.Visible;
         invalidate();
     }
 

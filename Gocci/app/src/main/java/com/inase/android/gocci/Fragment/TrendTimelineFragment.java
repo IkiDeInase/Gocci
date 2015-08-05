@@ -4,9 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Point;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -20,20 +18,14 @@ import android.view.ViewTreeObserver;
 import android.widget.Toast;
 
 import com.cocosw.bottomsheet.BottomSheet;
-import com.coremedia.iso.boxes.Container;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.share.Sharer;
-import com.facebook.share.model.ShareVideo;
-import com.facebook.share.model.ShareVideoContent;
 import com.facebook.share.widget.ShareDialog;
 import com.google.android.exoplayer.audio.AudioCapabilities;
 import com.google.android.exoplayer.audio.AudioCapabilitiesReceiver;
-import com.googlecode.mp4parser.authoring.Movie;
-import com.googlecode.mp4parser.authoring.builder.DefaultMp4Builder;
-import com.googlecode.mp4parser.authoring.container.mp4.MovieCreator;
 import com.inase.android.gocci.Activity.GocciTimelineActivity;
 import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.Base.RoundedTransformation;
@@ -59,9 +51,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -272,7 +261,7 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
         }
         releasePlayer();
         audioCapabilitiesReceiver.unregister();
-       // getPlayingViewHolder().mVideoThumbnail.setVisibility(View.VISIBLE);
+        // getPlayingViewHolder().mVideoThumbnail.setVisibility(View.VISIBLE);
     }
 
     @Override

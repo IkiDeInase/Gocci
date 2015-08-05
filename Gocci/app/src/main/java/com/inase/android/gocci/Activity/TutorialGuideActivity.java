@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -22,8 +21,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -32,24 +29,17 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.andexert.library.RippleView;
-import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.inase.android.gocci.Application.Application_Gocci;
-import com.inase.android.gocci.Base.GocciTwitterLoginButton;
 import com.inase.android.gocci.Fragment.TutorialFragment;
 import com.inase.android.gocci.R;
-import com.inase.android.gocci.Tutorial.TutorialView1;
-import com.inase.android.gocci.Tutorial.TutorialView2;
-import com.inase.android.gocci.Tutorial.TutorialView3;
-import com.inase.android.gocci.Tutorial.TutorialView4;
 import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.nineoldandroids.view.ViewHelper;
 import com.pnikosis.materialishprogress.ProgressWheel;
-import com.viewpagerindicator.CirclePageIndicator;
 
 import org.apache.http.Header;
 import org.json.JSONException;
@@ -157,20 +147,32 @@ public class TutorialGuideActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Pass the activity result to the fragment, which will then pass the result to the login
+        // button.
+        Fragment fragment = (Fragment) pagerAdapter.instantiateItem(pager, pager.getCurrentItem());
+        if (fragment != null && pager.getCurrentItem() == 4) {
+            fragment.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(pager!=null){
+        if (pager != null) {
             pager.clearOnPageChangeListeners();
         }
     }
 
-    private void buildCircles(){
+    private void buildCircles() {
         circles = LinearLayout.class.cast(findViewById(R.id.circles));
 
         float scale = getResources().getDisplayMetrics().density;
         int padding = (int) (5 * scale + 0.5f);
 
-        for(int i = 0 ; i < NUM_PAGES; i++){
+        for (int i = 0; i < NUM_PAGES; i++) {
             ImageView circle = new ImageView(this);
             circle.setImageResource(R.drawable.ic_swipe_indicator_white_18dp);
             circle.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -182,13 +184,13 @@ public class TutorialGuideActivity extends AppCompatActivity {
         setIndicator(0);
     }
 
-    private void setIndicator(int index){
-        if(index < NUM_PAGES){
-            for(int i = 0 ; i < NUM_PAGES; i++){
+    private void setIndicator(int index) {
+        if (index < NUM_PAGES) {
+            for (int i = 0; i < NUM_PAGES; i++) {
                 ImageView circle = (ImageView) circles.getChildAt(i);
-                if(i == index){
+                if (i == index) {
                     circle.setColorFilter(getResources().getColor(R.color.text_selected));
-                }else {
+                } else {
                     circle.setColorFilter(getResources().getColor(android.R.color.transparent));
                 }
             }
@@ -213,7 +215,7 @@ public class TutorialGuideActivity extends AppCompatActivity {
         @Override
         public Fragment getItem(int position) {
             TutorialFragment tp = null;
-            switch(position){
+            switch (position) {
                 case 0:
                     tp = TutorialFragment.newInstance(R.layout.view_tutorial1);
                     break;
@@ -247,7 +249,7 @@ public class TutorialGuideActivity extends AppCompatActivity {
             int pageWidth = page.getWidth();
 
             View backgroundView = page.findViewById(R.id.welcome_fragment);
-            View text_head= page.findViewById(R.id.text_1);
+            View text_head = page.findViewById(R.id.text_1);
             View text_content = page.findViewById(R.id.text_2);
 
             View object1 = page.findViewById(R.id.image_1);//Gocciくん
@@ -264,76 +266,76 @@ public class TutorialGuideActivity extends AppCompatActivity {
             RippleView facebook_ripple = (RippleView) page.findViewById(R.id.facebook_Ripple);
             RippleView skip_ripple = (RippleView) page.findViewById(R.id.skip_Ripple);
 
-            if(0 <= position && position < 1){
+            if (0 <= position && position < 1) {
                 ViewHelper.setTranslationX(page, pageWidth * -position);
             }
-            if(-1 < position && position < 0){
-                ViewHelper.setTranslationX(page,pageWidth * -position);
+            if (-1 < position && position < 0) {
+                ViewHelper.setTranslationX(page, pageWidth * -position);
             }
 
-            if(position <= -1.0f || position >= 1.0f) {
-            } else if( position == 0.0f ) {
+            if (position <= -1.0f || position >= 1.0f) {
+            } else if (position == 0.0f) {
             } else {
-                if(backgroundView != null) {
-                    ViewHelper.setAlpha(backgroundView,1.0f - Math.abs(position));
+                if (backgroundView != null) {
+                    ViewHelper.setAlpha(backgroundView, 1.0f - Math.abs(position));
 
                 }
 
                 if (text_head != null) {
-                    ViewHelper.setTranslationX(text_head,pageWidth * position);
+                    ViewHelper.setTranslationX(text_head, pageWidth * position);
                     ViewHelper.setAlpha(text_head, 1.0f - Math.abs(position));
                 }
 
                 if (text_content != null) {
-                    ViewHelper.setTranslationX(text_content,pageWidth * position);
+                    ViewHelper.setTranslationX(text_content, pageWidth * position);
                     ViewHelper.setAlpha(text_content, 1.0f - Math.abs(position));
                 }
 
                 if (object1 != null) {
-                    ViewHelper.setTranslationX(object1,pageWidth/2 * position);
+                    ViewHelper.setTranslationX(object1, pageWidth / 2 * position);
                 }
 
                 // parallax effect
-                if(object2 != null){
-                    ViewHelper.setTranslationX(object2,(float)(pageWidth * position));
+                if (object2 != null) {
+                    ViewHelper.setTranslationX(object2, pageWidth * position);
                 }
 
-                if(object3 != null){
-                    ViewHelper.setTranslationX(object3,pageWidth/2 * position);
+                if (object3 != null) {
+                    ViewHelper.setTranslationX(object3, pageWidth / 2 * position);
                 }
 
-                if(object4 != null){
-                    ViewHelper.setTranslationX(object4, (float) (pageWidth/1.5 * position));
+                if (object4 != null) {
+                    ViewHelper.setTranslationX(object4, (float) (pageWidth / 1.5 * position));
                 }
-                if(object5 != null){
-                    ViewHelper.setTranslationX(object5, (float) (pageWidth/1.1 * position));
+                if (object5 != null) {
+                    ViewHelper.setTranslationX(object5, (float) (pageWidth / 1.1 * position));
                 }
-                if(object6 != null){
-                    ViewHelper.setTranslationX(object6, (float) (pageWidth/1.6 * position));
+                if (object6 != null) {
+                    ViewHelper.setTranslationX(object6, (float) (pageWidth / 1.6 * position));
                 }
-                if(object7 != null){
-                    ViewHelper.setTranslationX(object7, (float) (pageWidth/1.8 * position));
+                if (object7 != null) {
+                    ViewHelper.setTranslationX(object7, (float) (pageWidth / 1.8 * position));
                 }
 
-                if(object8 != null){
+                if (object8 != null) {
                     //ViewHelper.setTranslationX(object8,(float)(pageWidth/1.5 * position));
                 }
 
-                if(object9 != null){
-                    ViewHelper.setTranslationX(object9,(float)(pageWidth/2 * position));
+                if (object9 != null) {
+                    ViewHelper.setTranslationX(object9, pageWidth / 2 * position);
                 }
 
-                if(twitter_ripple != null){
+                if (twitter_ripple != null) {
                     ViewHelper.setTranslationX(twitter_ripple, pageWidth * position);
                     ViewHelper.setAlpha(twitter_ripple, 1.0f - Math.abs(position));
                 }
 
-                if(facebook_ripple != null){
+                if (facebook_ripple != null) {
                     ViewHelper.setTranslationX(facebook_ripple, pageWidth * position);
                     ViewHelper.setAlpha(facebook_ripple, 1.0f - Math.abs(position));
                 }
 
-                if(skip_ripple != null){
+                if (skip_ripple != null) {
                     ViewHelper.setTranslationX(skip_ripple, pageWidth * position);
                     ViewHelper.setAlpha(skip_ripple, 1.0f - Math.abs(position));
                 }
@@ -389,15 +391,13 @@ public class TutorialGuideActivity extends AppCompatActivity {
                                                 Application_Gocci.GuestInit(context, identity_id, token, user_id);
                                                 progress.setVisibility(View.INVISIBLE);
                                                 SavedData.setFlag(context, 0);
-
                                                 isOK = true;
-                                                pager.setCurrentItem(4);
                                             } else {
                                                 progress.setVisibility(View.INVISIBLE);
                                                 isOK = false;
                                                 pager.setCurrentItem(3);
-                                                Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                                             }
+                                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                                         } else {
                                             progress.setVisibility(View.INVISIBLE);
                                             isOK = false;

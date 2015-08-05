@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -19,8 +18,6 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.amazonaws.mobileconnectors.s3.transfermanager.TransferManager;
-import com.amazonaws.mobileconnectors.s3.transfermanager.Upload;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
@@ -40,7 +37,6 @@ import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;
 import com.inase.android.gocci.common.Util;
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.TextHttpResponseHandler;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
@@ -392,38 +388,29 @@ public class CameraPreviewActivity extends AppCompatActivity {
     }
 
     private void postSignupAsync(final Context context) {
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected void onPreExecute() {
-                mPostProgress.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            protected Void doInBackground(Void... params) {
-                if (!isUpload) {
-                    TransferObserver transferObserver = Application_Gocci.transferUtility.upload(Const.POST_MOVIE_BUCKET_NAME, mAwsPostName + ".mp4", mVideoFile);
-                    transferObserver.setTransferListener(new TransferListener() {
-                        @Override
-                        public void onStateChanged(int id, TransferState state) {
-                            if (state == TransferState.COMPLETED) {
-                                postMovieAsync(context);
-                            }
-                        }
-
-                        @Override
-                        public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
-
-                        }
-
-                        @Override
-                        public void onError(int id, Exception ex) {
-
-                        }
-                    });
+        if (!isUpload) {
+            mPostProgress.setVisibility(View.VISIBLE);
+            TransferObserver transferObserver = Application_Gocci.transferUtility.upload(Const.POST_MOVIE_BUCKET_NAME, mAwsPostName + ".mp4", mVideoFile);
+            transferObserver.setTransferListener(new TransferListener() {
+                @Override
+                public void onStateChanged(int id, TransferState state) {
+                    if (state == TransferState.COMPLETED) {
+                        postMovieAsync(context);
+                    }
                 }
-                return null;
-            }
-        }.execute();
+
+                @Override
+                public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+
+                }
+
+                @Override
+                public void onError(int id, Exception ex) {
+
+                }
+            });
+        }
+
     }
 
     private void postMovieAsync(final Context context) {

@@ -7,7 +7,7 @@
     <ImageView
         android:id="@+id/image"
         android:layout_width="75dp"
-        android:layout_height="75dp"/>
+        android:layout_height="75dp" />
 
     <TextView
         android:id="@id/text"
@@ -18,6 +18,6 @@
         android:paddingLeft="2dp"
         android:paddingRight="2dp"
         android:layout_gravity="center"
-        android:alpha=".8"/>
+        android:alpha=".8" />
 
 </FrameLayout>

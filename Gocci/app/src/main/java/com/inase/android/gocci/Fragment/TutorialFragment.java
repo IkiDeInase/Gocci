@@ -2,6 +2,7 @@ package com.inase.android.gocci.Fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.andexert.library.RippleView;
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -19,8 +21,12 @@ import com.facebook.login.widget.LoginButton;
 import com.inase.android.gocci.Activity.GocciTimelineActivity;
 import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.Base.GocciTwitterLoginButton;
+import com.inase.android.gocci.Event.BusHolder;
+import com.inase.android.gocci.Event.SNSMatchFinishEvent;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.common.Const;
+import com.inase.android.gocci.common.SavedData;
+import com.squareup.otto.Subscribe;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
@@ -37,6 +43,11 @@ public class TutorialFragment extends Fragment {
 
     private CallbackManager callbackManager;
 
+    private GocciTwitterLoginButton twitter_loginButton;
+    private LoginButton loginButton;
+
+    private boolean isFirst = true;
+
     public static TutorialFragment newInstance(int layoutId) {
         TutorialFragment pane = new TutorialFragment();
         Bundle args = new Bundle();
@@ -52,8 +63,8 @@ public class TutorialFragment extends Fragment {
 
         if (layoutId == R.layout.view_tutorial5) {
             callbackManager = CallbackManager.Factory.create();
-            final LoginButton loginButton = (LoginButton) rootView.findViewById(R.id.login_button);
-            final GocciTwitterLoginButton twitter_loginButton = (GocciTwitterLoginButton) rootView.findViewById(R.id.twitter_login_button);
+            loginButton = (LoginButton) rootView.findViewById(R.id.login_button);
+            twitter_loginButton = (GocciTwitterLoginButton) rootView.findViewById(R.id.twitter_login_button);
             RippleView twitter_ripple = (RippleView) rootView.findViewById(R.id.twitter_Ripple);
             RippleView facebook_ripple = (RippleView) rootView.findViewById(R.id.facebook_Ripple);
             RippleView skip_ripple = (RippleView) rootView.findViewById(R.id.skip_Ripple);
@@ -63,16 +74,15 @@ public class TutorialFragment extends Fragment {
                 @Override
                 public void onSuccess(LoginResult loginResult) {
                     Profile profile = Profile.getCurrentProfile();
-                    if (profile != null) {
-                        String profile_img = "https://graph.facebook.com/" + profile.getId() + "/picture";
-                        //API叩く
-                    }
-                    Application_Gocci.addLogins(Const.ENDPOINT_FACEBOOK, loginResult.getAccessToken().getToken());
+                    String profile_img = "https://graph.facebook.com/" + profile.getId() + "/picture";
+                    Application_Gocci.addLogins(getActivity(), Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), profile_img);
 
+                    /*
                     Intent intent = new Intent(getActivity(), GocciTimelineActivity.class);
                     startActivity(intent);
                     getActivity().overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
                     getActivity().finish();
+                    */
                 }
 
                 @Override
@@ -95,12 +105,14 @@ public class TutorialFragment extends Fragment {
 
                     String username = session.getUserName();
                     String profile_img = "http://www.paper-glasses.com/api/twipi/" + username;
-                    Application_Gocci.addLogins("api.twitter.com", authToken.token + ";" + authToken.secret);
+                    Application_Gocci.addLogins(getActivity(), "api.twitter.com", authToken.token + ";" + authToken.secret, profile_img);
 
+                    /*
                     Intent intent = new Intent(getActivity(), GocciTimelineActivity.class);
                     startActivity(intent);
                     getActivity().overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
                     getActivity().finish();
+                    */
                 }
 
                 @Override
@@ -134,10 +146,7 @@ public class TutorialFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     if (Application_Gocci.credentialsProvider != null) {
-                        Intent intent = new Intent(getActivity(), GocciTimelineActivity.class);
-                        startActivity(intent);
-                        getActivity().overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-                        getActivity().finish();
+                        goTimeline(500);
                     } else {
                         Toast.makeText(getActivity(), "もう少し待ってから押してみよう", Toast.LENGTH_SHORT).show();
                     }
@@ -146,5 +155,47 @@ public class TutorialFragment extends Fragment {
 
         }
         return rootView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        BusHolder.get().register(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        BusHolder.get().unregister(this);
+    }
+
+    @Subscribe
+    public void subscribe(SNSMatchFinishEvent event) {
+        if (isFirst) {
+            isFirst = false;
+            SavedData.setServerPicture(getActivity(), event.profile_img);
+            Toast.makeText(getActivity(), event.message, Toast.LENGTH_SHORT).show();
+            goTimeline(0);
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        twitter_loginButton.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void goTimeline(int time) {
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = new Intent(getActivity(), GocciTimelineActivity.class);
+                startActivity(intent);
+                getActivity().overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+                getActivity().finish();
+            }
+        }, time);
     }
 }

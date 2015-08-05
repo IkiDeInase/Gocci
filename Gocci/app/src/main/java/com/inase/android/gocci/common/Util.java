@@ -17,7 +17,6 @@ import android.telephony.TelephonyManager;
 import android.text.InputType;
 import android.util.Log;
 import android.view.Display;
-import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -35,7 +34,6 @@ import com.inase.android.gocci.data.HeaderData;
 import com.inase.android.gocci.data.PostData;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.pnikosis.materialishprogress.ProgressWheel;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
 import org.apache.http.Header;
@@ -220,7 +218,7 @@ public class Util {
     public static Uri getUri(String path) {
         // Extract Bitmap from ImageView drawable
         ThumbnailUtils tu = new ThumbnailUtils();
-        Bitmap bmp = tu.createVideoThumbnail(path, MediaStore.Video.Thumbnails.MINI_KIND);
+        Bitmap bmp = ThumbnailUtils.createVideoThumbnail(path, MediaStore.Video.Thumbnails.MINI_KIND);
         // Store image to default external storage directory
         Uri bmpUri = null;
         try {

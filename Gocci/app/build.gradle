@@ -94,7 +94,9 @@ dependencies {
 repositories {
     jcenter()
     flatDir { dirs 'libs' }
-    maven { url 'https://raw.githubusercontent.com/shoma2da/EventDateRecorder/master/lib/repository/' }
+    maven {
+        url 'https://raw.githubusercontent.com/shoma2da/EventDateRecorder/master/lib/repository/'
+    }
     maven { url 'https://maven.fabric.io/public' }
     maven { url "https://jitpack.io" }
     maven { url 'https://dl.bintray.com/drummer-aidan/maven' }

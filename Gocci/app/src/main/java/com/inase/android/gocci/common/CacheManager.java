@@ -25,8 +25,8 @@ public class CacheManager {
     /**
      * キャッシュマネージャーのイベント通知インタフェース
      */
-    public static interface ICacheManagerListener {
-        public void movieCacheCreated(boolean success, String postId);
+    public interface ICacheManagerListener {
+        void movieCacheCreated(boolean success, String postId);
     }
 
 

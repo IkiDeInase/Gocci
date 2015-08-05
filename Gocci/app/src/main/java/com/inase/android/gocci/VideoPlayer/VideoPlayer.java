@@ -21,18 +21,12 @@ import com.google.android.exoplayer.chunk.MultiTrackChunkSource;
 import com.google.android.exoplayer.dash.DashChunkSource;
 import com.google.android.exoplayer.drm.StreamingDrmSessionManager;
 import com.google.android.exoplayer.hls.HlsSampleSource;
-import com.google.android.exoplayer.metadata.MetadataTrackRenderer;
-import com.google.android.exoplayer.text.Cue;
-import com.google.android.exoplayer.text.TextRenderer;
 import com.google.android.exoplayer.upstream.BandwidthMeter;
 import com.google.android.exoplayer.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer.util.DebugTextViewHelper;
 import com.google.android.exoplayer.util.PlayerControl;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -64,11 +58,17 @@ public class VideoPlayer implements ExoPlayer.Listener, ChunkSampleSource.EventL
 
     public interface InternalErrorListener {
         void onRendererInitializationError(Exception e);
+
         void onAudioTrackInitializationError(AudioTrack.InitializationException e);
+
         void onAudioTrackWriteError(AudioTrack.WriteException e);
+
         void onDecoderInitializationError(MediaCodecTrackRenderer.DecoderInitializationException e);
+
         void onCryptoError(MediaCodec.CryptoException e);
+
         void onLoadError(int sourceId, IOException e);
+
         void onDrmSessionManagerError(Exception e);
     }
 
@@ -77,15 +77,22 @@ public class VideoPlayer implements ExoPlayer.Listener, ChunkSampleSource.EventL
      */
     public interface InfoListener {
         void onVideoFormatEnabled(Format format, int trigger, int mediaTimeMs);
+
         void onAudioFormatEnabled(Format format, int trigger, int mediaTimeMs);
+
         void onDroppedFrames(int count, long elapsed);
+
         void onBandwidthSample(int elapsedMs, long bytes, long bitrateEstimate);
+
         void onLoadStarted(int sourceId, long length, int type, int trigger, Format format,
                            int mediaStartTimeMs, int mediaEndTimeMs);
+
         void onLoadCompleted(int sourceId, long bytesLoaded, int type, int trigger, Format format,
                              int mediaStartTimeMs, int mediaEndTimeMs, long elapsedRealtimeMs, long loadDurationMs);
+
         void onDecoderInitialized(String decoderName, long elapsedRealtimeMs,
                                   long initializationDurationMs);
+
         void onSeekRangeChanged(TimeRange seekRange);
     }
 

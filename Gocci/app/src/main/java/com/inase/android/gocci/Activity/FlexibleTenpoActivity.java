@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.AppBarLayout;
@@ -32,14 +31,11 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.andexert.library.RippleView;
 import com.cocosw.bottomsheet.BottomSheet;
-import com.coremedia.iso.boxes.Container;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.share.Sharer;
-import com.facebook.share.model.ShareVideo;
-import com.facebook.share.model.ShareVideoContent;
 import com.facebook.share.widget.ShareDialog;
 import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
@@ -54,9 +50,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.googlecode.mp4parser.authoring.Movie;
-import com.googlecode.mp4parser.authoring.builder.DefaultMp4Builder;
-import com.googlecode.mp4parser.authoring.container.mp4.MovieCreator;
 import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.Base.RoundedTransformation;
 import com.inase.android.gocci.Event.BusHolder;
@@ -87,9 +80,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -354,13 +344,9 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
                 totalItemCount = mLayoutManager.getItemCount();
                 firstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
 
-                if (totalItemCount != 1) {
-                    //投稿はある
-                    isExist = true;
-                } else {
-                    //投稿がない
-                    isExist = false;
-                }
+                //投稿はある
+//投稿がない
+                isExist = totalItemCount != 1;
 
                 if (loading) {
                     if (totalItemCount > previousTotal) {

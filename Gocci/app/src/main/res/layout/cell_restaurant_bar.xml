@@ -5,62 +5,62 @@
     android:layout_height="wrap_content"
     android:background="@drawable/list_bg">
 
-        <com.andexert.library.RippleView
-            android:id="@+id/tenpoRipple"
-            android:layout_width="match_parent"
+    <com.andexert.library.RippleView
+        android:id="@+id/tenpoRipple"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        ripple:rv_color="@android:color/black">
+
+        <TextView
+            android:id="@+id/rest_name"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            ripple:rv_color="@android:color/black">
+            android:singleLine="true"
+            android:layout_marginTop="12dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginBottom="4dp"
+            android:text="@string/restname"
+            android:textColor="@color/namegrey"
+            android:textSize="@dimen/small_text" />
 
-            <TextView
-                android:id="@+id/rest_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:singleLine="true"
-                android:layout_marginTop="12dp"
-                android:layout_marginLeft="12dp"
-                android:layout_marginBottom="4dp"
-                android:text="@string/restname"
-                android:textColor="@color/namegrey"
-                android:textSize="@dimen/small_text" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/category"
+            android:textSize="@dimen/small_text"
+            android:layout_marginLeft="12dp"
+            android:layout_marginBottom="12dp"
+            android:layout_below="@+id/rest_name"
+            android:textColor="#ffffff"
+            android:background="@drawable/button_tag_category"
+            android:id="@+id/category" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/category"
-                android:textSize="@dimen/small_text"
-                android:layout_marginLeft="12dp"
-                android:layout_marginBottom="12dp"
-                android:layout_below="@+id/rest_name"
-                android:textColor="#ffffff"
-                android:background="@drawable/button_tag_category"
-                android:id="@+id/category" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/atmosphere"
+            android:textSize="@dimen/small_text"
+            android:layout_marginLeft="8dp"
+            android:layout_marginBottom="12dp"
+            android:layout_below="@+id/rest_name"
+            android:layout_toRightOf="@+id/category"
+            android:textColor="#ffffff"
+            android:background="@drawable/button_tag_atmosphere"
+            android:id="@+id/mood" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/atmosphere"
-                android:textSize="@dimen/small_text"
-                android:layout_marginLeft="8dp"
-                android:layout_marginBottom="12dp"
-                android:layout_below="@+id/rest_name"
-                android:layout_toRightOf="@+id/category"
-                android:textColor="#ffffff"
-                android:background="@drawable/button_tag_atmosphere"
-                android:id="@+id/mood" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/value"
+            android:textSize="@dimen/small_text"
+            android:layout_marginLeft="8dp"
+            android:layout_marginBottom="12dp"
+            android:layout_below="@+id/rest_name"
+            android:layout_toRightOf="@+id/mood"
+            android:textColor="#ffffff"
+            android:background="@drawable/button_tag_value"
+            android:id="@+id/value" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/value"
-                android:textSize="@dimen/small_text"
-                android:layout_marginLeft="8dp"
-                android:layout_marginBottom="12dp"
-                android:layout_below="@+id/rest_name"
-                android:layout_toRightOf="@+id/mood"
-                android:textColor="#ffffff"
-                android:background="@drawable/button_tag_value"
-                android:id="@+id/value" />
-
-        </com.andexert.library.RippleView>
+    </com.andexert.library.RippleView>
 
 </RelativeLayout>

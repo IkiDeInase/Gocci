@@ -492,7 +492,7 @@ public class ListActivity extends AppCompatActivity {
 
     }
 
-    private void getRefreshFollowJSON(String url,  Context context) {
+    private void getRefreshFollowJSON(String url, Context context) {
         Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
         Const.asyncHttpClient.get(this, url, new JsonHttpResponseHandler() {
 

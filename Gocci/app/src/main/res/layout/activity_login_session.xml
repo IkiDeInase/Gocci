@@ -39,6 +39,7 @@
         android:layout_centerHorizontal="true"
         android:layout_height="wrap_content"
         android:focusableInTouchMode="true">
+
         <EditText
             android:inputType="textPersonName"
             android:ems="10"
@@ -46,8 +47,7 @@
             android:hint="@string/username"
             android:textSize="@dimen/normal_text"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            />
+            android:layout_height="wrap_content" />
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
@@ -60,6 +60,7 @@
         android:layout_marginLeft="16dp"
         android:layout_height="wrap_content"
         android:focusableInTouchMode="true">
+
         <EditText
             android:inputType="textPersonName"
             android:ems="10"
@@ -67,8 +68,7 @@
             android:hint="@string/password"
             android:textSize="@dimen/normal_text"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            />
+            android:layout_height="wrap_content" />
     </android.support.design.widget.TextInputLayout>
 
     <com.andexert.library.RippleView
@@ -80,8 +80,7 @@
         android:layout_marginRight="16dp"
         android:background="@color/gocci_button"
         android:gravity="center"
-        android:layout_below="@+id/signinpassEdit"
-        >
+        android:layout_below="@+id/signinpassEdit">
 
         <TextView
             android:layout_width="wrap_content"

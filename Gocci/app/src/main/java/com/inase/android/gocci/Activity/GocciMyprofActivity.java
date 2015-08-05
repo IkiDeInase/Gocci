@@ -3,13 +3,9 @@ package com.inase.android.gocci.Activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.AppBarLayout;
@@ -37,8 +33,6 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.amazonaws.mobileconnectors.s3.transfermanager.TransferManager;
-import com.amazonaws.mobileconnectors.s3.transfermanager.Upload;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
@@ -77,13 +71,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Locale;
 
 public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayout.OnOffsetChangedListener {
 
@@ -314,7 +303,7 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
 
                 final PopupWindow window = ToukouPopup.newBasicPopupWindow(GocciMyprofActivity.this);
 
-                View header = (View) notification.findViewById(R.id.headerView);
+                View header = notification.findViewById(R.id.headerView);
                 header.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -801,33 +790,27 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
     }
 
     private void postChangeProfileAsync(final Context context, final String post_date, final File file, final String url) {
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... params) {
-                if (post_date != null) {
-                    TransferObserver transferObserver = Application_Gocci.transferUtility.upload(Const.POST_PHOTO_BUCKET_NAME, post_date + ".png", file);
-                    transferObserver.setTransferListener(new TransferListener() {
-                        @Override
-                        public void onStateChanged(int id, TransferState state) {
-                            if (state == TransferState.COMPLETED) {
-                                postChangeProf(context, url);
-                            }
-                        }
-
-                        @Override
-                        public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
-
-                        }
-
-                        @Override
-                        public void onError(int id, Exception ex) {
-
-                        }
-                    });
+        if (post_date != null) {
+            TransferObserver transferObserver = Application_Gocci.transferUtility.upload(Const.POST_PHOTO_BUCKET_NAME, post_date + ".png", file);
+            transferObserver.setTransferListener(new TransferListener() {
+                @Override
+                public void onStateChanged(int id, TransferState state) {
+                    if (state == TransferState.COMPLETED) {
+                        postChangeProf(context, url);
+                    }
                 }
-                return null;
-            }
-        }.execute();
+
+                @Override
+                public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+
+                }
+
+                @Override
+                public void onError(int id, Exception ex) {
+
+                }
+            });
+        }
     }
 
     private void postChangeProf(final Context context, String url) {
