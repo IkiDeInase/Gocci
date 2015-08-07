@@ -790,7 +790,7 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
 
     private void postChangeProfileAsync(final Context context, final String post_date, final File file, final String url) {
         if (post_date != null) {
-            TransferObserver transferObserver = Application_Gocci.transferUtility.upload(Const.POST_PHOTO_BUCKET_NAME, post_date + ".png", file);
+            TransferObserver transferObserver = Application_Gocci.getTransfer(context).upload(Const.POST_PHOTO_BUCKET_NAME, post_date + ".png", file);
             transferObserver.setTransferListener(new TransferListener() {
                 @Override
                 public void onStateChanged(int id, TransferState state) {

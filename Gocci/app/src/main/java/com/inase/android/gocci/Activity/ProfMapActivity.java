@@ -34,6 +34,7 @@ import com.inase.android.gocci.R;
 import com.inase.android.gocci.data.MultiDrawable;
 import com.inase.android.gocci.data.PhotoLog;
 import com.inase.android.gocci.data.PostData;
+import com.pnikosis.materialishprogress.ProgressWheel;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
@@ -51,6 +52,8 @@ public class ProfMapActivity extends AppCompatActivity implements ClusterManager
     private MapDrawableAsync mAsync;
 
     private static List<PhotoLog> list = new ArrayList<>();
+
+    private ProgressWheel progress;
 
     private class PhotoLogRenderer extends DefaultClusterRenderer<PhotoLog>  {
         private final IconGenerator mIconGenerator = new IconGenerator(getApplicationContext());
@@ -182,6 +185,8 @@ public class ProfMapActivity extends AppCompatActivity implements ClusterManager
         }, this);
         mAsync.execute();
 
+        progress = (ProgressWheel) findViewById(R.id.progress_wheel);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
         //toolbar.inflateMenu(R.menu.toolbar_menu);
         //toolbar.setLogo(R.drawable.ic_gocci_moji_white45);
@@ -219,6 +224,9 @@ public class ProfMapActivity extends AppCompatActivity implements ClusterManager
             mClusterManager.setOnClusterItemInfoWindowClickListener(ProfMapActivity.this);
             mClusterManager.addItems(list);
             mClusterManager.cluster();
+
+            progress.setVisibility(View.GONE);
+
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(35.681382, 139.766084), 4));
         }
     };

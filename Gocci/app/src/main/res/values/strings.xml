@@ -3,8 +3,8 @@
 
     <string name="app_name">Gocci</string>
 
-    <string name="map_key">AIzaSyBHYT0dtZUDaiId_WXPtjdQr-t3BlzHXGg</string>
-    <!--<string name="map_key">AIzaSyCdJXmgncMEUoEmNflVqHkSIJwA7Mmtuc0</string>-->
+    <!--<string name="map_key">AIzaSyBHYT0dtZUDaiId_WXPtjdQr-t3BlzHXGg</string>-->
+    <string name="map_key">AIzaSyCdJXmgncMEUoEmNflVqHkSIJwA7Mmtuc0</string>
     <string name="facebook_app_id">673123156062598</string>
 
     <string name="recording_hint">Record movie only while touching screen(without record button)</string>

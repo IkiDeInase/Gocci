@@ -11,6 +11,7 @@ import android.widget.Toast;
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import com.amazonaws.regions.Region;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.crashlytics.android.Crashlytics;
@@ -43,10 +44,10 @@ public class Application_Gocci extends Application {
 
     private final String TAG = "Gocci";
 
-    public static CognitoCachingCredentialsProvider credentialsProvider = null;
-    public static CustomProvider customProvider = null;
-    public static AmazonS3 s3 = null;
-    public static TransferUtility transferUtility = null;
+    private static CognitoCachingCredentialsProvider credentialsProvider = null;
+    private static CustomProvider customProvider = null;
+    private static AmazonS3 s3 = null;
+    private static TransferUtility transferUtility = null;
 
     //経度緯度情報
     private double mLatitude;
@@ -57,6 +58,26 @@ public class Application_Gocci extends Application {
         mLongitude = longitude;
     }
 
+    public static CognitoCachingCredentialsProvider getProvider(Context context) {
+        if (credentialsProvider == null) {
+            credentialsProvider = new CognitoCachingCredentialsProvider(context, Const.IDENTITY_POOL_ID, Const.REGION);
+        }
+        return credentialsProvider;
+    }
+
+    private static AmazonS3 getS3(Context context) {
+        if (s3 == null) {
+            s3 = new AmazonS3Client(getProvider(context));
+        }
+        return s3;
+    }
+
+    public static TransferUtility getTransfer(Context context) {
+        if (transferUtility == null) {
+            transferUtility = new TransferUtility(getS3(context), context);
+        }
+        return transferUtility;
+    }
     public double getFirstLatitude() {
         return mLatitude;
     }
@@ -126,7 +147,7 @@ public class Application_Gocci extends Application {
                 credentialsProvider.setLogins(logins);
 
                 s3 = new AmazonS3Client(credentialsProvider);
-                s3.setRegion(Region.getRegion(Const.REGION));
+                s3.setRegion(Region.getRegion(Regions.AP_NORTHEAST_1));
                 transferUtility = new TransferUtility(s3, context);
 
                 return credentialsProvider.getIdentityId();
@@ -155,7 +176,7 @@ public class Application_Gocci extends Application {
                 credentialsProvider.refresh();
 
                 s3 = new AmazonS3Client(credentialsProvider);
-                s3.setRegion(Region.getRegion(Const.REGION));
+                s3.setRegion(Region.getRegion(Regions.AP_NORTHEAST_1));
                 transferUtility = new TransferUtility(s3, context);
 
                 return "identityId";

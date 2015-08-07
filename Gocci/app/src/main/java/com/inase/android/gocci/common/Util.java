@@ -474,7 +474,7 @@ public class Util {
 
     public static void facebookVideoShare(final Context context, final ShareDialog dialog, String key) {
         final File file = new File(Environment.getExternalStorageDirectory().toString() + "/" + key);
-        TransferObserver transferObserver = Application_Gocci.transferUtility.download(Const.GET_MOVIE_BUCKET_NAME, key, file);
+        TransferObserver transferObserver = Application_Gocci.getTransfer(context).download(Const.GET_MOVIE_BUCKET_NAME, key, file);
         transferObserver.setTransferListener(new TransferListener() {
             @Override
             public void onStateChanged(int id, TransferState state) {
@@ -523,7 +523,7 @@ public class Util {
 
     public static void instaVideoShare(final Context context, final String restname, String key) {
         final File file = new File(Environment.getExternalStorageDirectory().toString() + "/" + key);
-        TransferObserver transferObserver = Application_Gocci.transferUtility.download(Const.GET_MOVIE_BUCKET_NAME, key, file);
+        TransferObserver transferObserver = Application_Gocci.getTransfer(context).download(Const.GET_MOVIE_BUCKET_NAME, key, file);
         transferObserver.setTransferListener(new TransferListener() {
             @Override
             public void onStateChanged(int id, TransferState state) {

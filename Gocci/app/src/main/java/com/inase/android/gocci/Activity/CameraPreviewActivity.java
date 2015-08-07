@@ -390,7 +390,7 @@ public class CameraPreviewActivity extends AppCompatActivity {
     private void postSignupAsync(final Context context) {
         if (!isUpload) {
             mPostProgress.setVisibility(View.VISIBLE);
-            TransferObserver transferObserver = Application_Gocci.transferUtility.upload(Const.POST_MOVIE_BUCKET_NAME, mAwsPostName + ".mp4", mVideoFile);
+            TransferObserver transferObserver = Application_Gocci.getTransfer(context).upload(Const.POST_MOVIE_BUCKET_NAME, mAwsPostName + ".mp4", mVideoFile);
             transferObserver.setTransferListener(new TransferListener() {
                 @Override
                 public void onStateChanged(int id, TransferState state) {

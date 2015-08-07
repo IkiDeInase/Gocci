@@ -115,7 +115,7 @@ public class SocialAuthenticationFragment extends Fragment {
         twitter_ripple.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (Application_Gocci.credentialsProvider != null) {
+                if (Application_Gocci.getProvider(getActivity()) != null) {
                     twitter_loginButton.performClick();
                 } else {
                     Toast.makeText(getActivity(), "希望のユーザー名を入力してください", Toast.LENGTH_SHORT).show();
@@ -125,7 +125,7 @@ public class SocialAuthenticationFragment extends Fragment {
         facebook_ripple.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (Application_Gocci.credentialsProvider != null) {
+                if (Application_Gocci.getProvider(getActivity()) != null) {
                     loginButton.performClick();
                 } else {
                     Toast.makeText(getActivity(), "希望のユーザー名を入力してください", Toast.LENGTH_SHORT).show();
@@ -135,7 +135,7 @@ public class SocialAuthenticationFragment extends Fragment {
         skip_ripple.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (Application_Gocci.credentialsProvider != null) {
+                if (Application_Gocci.getProvider(getActivity()) != null) {
                     goTimeline(500);
                 } else {
                     Toast.makeText(getActivity(), "希望のユーザー名を入力してください", Toast.LENGTH_SHORT).show();
