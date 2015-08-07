@@ -7,6 +7,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
@@ -50,6 +51,12 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
 
         if (Util.getConnectedState(SplashActivity.this) != Util.NetworkStatus.OFF) {
+
+            //SavedData.setServerName(this, "kazu0914");
+            //SavedData.setServerPicture(this, "https://graph.facebook.com/100004985405636/picture");
+            //SavedData.setLoginJudge(this, TAG_SNS_FACEBOOK);
+            //SavedData.setRegId(this, "APA91bFlIfRuMRWjMbKfXyC5votBewFcpj71N0j4aiSEgqvHeHsoDcCjS6TuUTxdHnj13cT_40mkflrl5aqigmPGdj5VH0njkc0MM6aMgkExqZoRVZAv8BcUEFy09ZUaxoiRXNuvktee");
+            //SavedData.setIdentityId(this, "us-east-1:6b195305-171c-4b83-aa51-e0b1d38de2f2");
 
             String mIdentityId = SavedData.getIdentityId(this);
             if (!mIdentityId.equals("no identityId")) {
@@ -151,6 +158,11 @@ public class SplashActivity extends AppCompatActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                Log.e("ログ", responseString);
             }
 
             @Override

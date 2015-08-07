@@ -25,8 +25,8 @@ public class PostData {
     private static final String TAG_WANT_FLAG = "want_flag";
     private static final String TAG_FOLLOW_FLAG = "follow_flag";
     private static final String TAG_GOCHI_FLAG = "gochi_flag";
-    private static final String TAG_LAT = "X(lon_lat)";
-    private static final String TAG_LON = "Y(lon_lat)";
+    private static final String TAG_LON = "X(lon_lat)";
+    private static final String TAG_LAT = "Y(lon_lat)";
     private static final String TAG_SHARE = "share";
 
     //JSON用のsetter/getter

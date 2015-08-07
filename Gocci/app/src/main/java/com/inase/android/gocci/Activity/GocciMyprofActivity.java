@@ -87,7 +87,6 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
     private RecyclerView mProfRecyclerView;
     private StaggeredGridLayoutManager mLayoutManager;
     public static ArrayList<PostData> mProfusers = new ArrayList<>();
-    public static List<Drawable> mProfDrawables = new ArrayList<>();
     private HeaderData headerUserData;
     private MyProfileAdapter mMyProfAdapter;
     private SwipeRefreshLayout mSwipeRefreshLayout;

@@ -23,7 +23,6 @@ public class PhotoLog implements ClusterItem {
         mPosition = new LatLng(user.getLat(), user.getLon());
         mDatetime = user.getPost_date();
         mWant_flag = user.getWant_flag();
-        //
         mCheer_num = user.getCheer_flag();
         userdata = user;
         mDrawable = drawable;

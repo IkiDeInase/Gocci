@@ -206,6 +206,14 @@ public class Application_Gocci extends Application {
 
                     if (code == 200) {
                         BusHolder.get().post(new SNSMatchFinishEvent(message, profile_img));
+
+                        new AsyncTask<Void, Void, Void>() {
+                            @Override
+                            protected Void doInBackground(Void... params) {
+                                credentialsProvider.refresh();
+                                return null;
+                            }
+                        }.execute();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

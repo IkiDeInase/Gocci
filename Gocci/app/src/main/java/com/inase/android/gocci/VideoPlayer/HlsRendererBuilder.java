@@ -17,6 +17,9 @@ import com.google.android.exoplayer.hls.HlsMasterPlaylist;
 import com.google.android.exoplayer.hls.HlsPlaylist;
 import com.google.android.exoplayer.hls.HlsPlaylistParser;
 import com.google.android.exoplayer.hls.HlsSampleSource;
+import com.google.android.exoplayer.metadata.Id3Parser;
+import com.google.android.exoplayer.metadata.MetadataTrackRenderer;
+import com.google.android.exoplayer.text.eia608.Eia608TrackRenderer;
 import com.google.android.exoplayer.upstream.DataSource;
 import com.google.android.exoplayer.upstream.DefaultAllocator;
 import com.google.android.exoplayer.upstream.DefaultBandwidthMeter;
@@ -24,11 +27,12 @@ import com.google.android.exoplayer.upstream.DefaultUriDataSource;
 import com.google.android.exoplayer.util.ManifestFetcher;
 
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * Created by kinagafuji on 15/07/14.
  */
-public class HlsRendererBuilder implements VideoPlayer.RendererBuilder, ManifestFetcher.ManifestCallback<HlsPlaylist> {
+public class HlsRendererBuilder implements VideoPlayer.RendererBuilder {
 
     private static final int BUFFER_SEGMENT_SIZE = 256 * 1024;
     private static final int BUFFER_SEGMENTS = 64;
@@ -38,8 +42,7 @@ public class HlsRendererBuilder implements VideoPlayer.RendererBuilder, Manifest
     private final String url;
     private final AudioCapabilities audioCapabilities;
 
-    private VideoPlayer player;
-    private VideoPlayer.RendererBuilderCallback callback;
+    private AsyncRendererBuilder currentAsyncBuilder;
 
     public HlsRendererBuilder(Context context, String userAgent, String url, AudioCapabilities audioCapabilities) {
         this.context = context;
@@ -49,50 +52,100 @@ public class HlsRendererBuilder implements VideoPlayer.RendererBuilder, Manifest
     }
 
     @Override
-    public void buildRenderers(VideoPlayer player, VideoPlayer.RendererBuilderCallback callback) {
-        this.player = player;
-        this.callback = callback;
-        HlsPlaylistParser parser = new HlsPlaylistParser();
-        ManifestFetcher<HlsPlaylist> playlistFetcher = new ManifestFetcher<HlsPlaylist>(url,
-                new DefaultUriDataSource(context, userAgent), parser);
-        playlistFetcher.singleLoad(player.getMainHandler().getLooper(), this);
+    public void buildRenderers(VideoPlayer player) {
+        currentAsyncBuilder = new AsyncRendererBuilder(context, userAgent, url, audioCapabilities,
+                player);
+        currentAsyncBuilder.init();
     }
 
     @Override
-    public void onSingleManifestError(IOException e) {
-        callback.onRenderersError(e);
+    public void cancel() {
+        if (currentAsyncBuilder != null) {
+            currentAsyncBuilder.cancel();
+            currentAsyncBuilder = null;
+        }
     }
 
-    @Override
-    public void onSingleManifest(HlsPlaylist manifest) {
-        Handler mainHandler = player.getMainHandler();
-        LoadControl loadControl = new DefaultLoadControl(new DefaultAllocator(BUFFER_SEGMENT_SIZE));
-        DefaultBandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
+    private static final class AsyncRendererBuilder implements ManifestFetcher.ManifestCallback<HlsPlaylist> {
 
-        int[] variantIndices = null;
-        if (manifest instanceof HlsMasterPlaylist) {
-            HlsMasterPlaylist masterPlaylist = (HlsMasterPlaylist) manifest;
-            try {
-                variantIndices = VideoFormatSelectorUtil.selectVideoFormatsForDefaultDisplay(
-                        context, masterPlaylist.variants, null, false);
-            } catch (MediaCodecUtil.DecoderQueryException e) {
-                callback.onRenderersError(e);
-                return;
-            }
+        private final Context context;
+        private final String userAgent;
+        private final String url;
+        private final AudioCapabilities audioCapabilities;
+        private final VideoPlayer player;
+        private final ManifestFetcher<HlsPlaylist> playlistFetcher;
+
+        private boolean canceled;
+
+        public AsyncRendererBuilder(Context context, String userAgent, String url,
+                                    AudioCapabilities audioCapabilities, VideoPlayer player) {
+            this.context = context;
+            this.userAgent = userAgent;
+            this.url = url;
+            this.audioCapabilities = audioCapabilities;
+            this.player = player;
+            HlsPlaylistParser parser = new HlsPlaylistParser();
+            playlistFetcher = new ManifestFetcher<>(url, new DefaultUriDataSource(context, userAgent),
+                    parser);
         }
 
-        DataSource dataSource = new DefaultUriDataSource(context, bandwidthMeter, userAgent);
-        HlsChunkSource chunkSource = new HlsChunkSource(dataSource, url, manifest, bandwidthMeter,
-                variantIndices, HlsChunkSource.ADAPTIVE_MODE_SPLICE, audioCapabilities);
-        HlsSampleSource sampleSource = new HlsSampleSource(chunkSource, loadControl,
-                BUFFER_SEGMENTS * BUFFER_SEGMENT_SIZE, true, mainHandler, player, VideoPlayer.TYPE_VIDEO);
-        MediaCodecVideoTrackRenderer videoRenderer = new MediaCodecVideoTrackRenderer(sampleSource,
-                MediaCodec.VIDEO_SCALING_MODE_SCALE_TO_FIT, 5000, mainHandler, player, 50);
-        MediaCodecAudioTrackRenderer audioRenderer = new MediaCodecAudioTrackRenderer(sampleSource);
+        public void init() {
+            playlistFetcher.singleLoad(player.getMainHandler().getLooper(), this);
+        }
 
-        TrackRenderer[] renderers = new TrackRenderer[VideoPlayer.RENDERER_COUNT];
-        renderers[VideoPlayer.TYPE_VIDEO] = videoRenderer;
-        renderers[VideoPlayer.TYPE_AUDIO] = audioRenderer;
-        callback.onRenderers(null, null, renderers, bandwidthMeter);
+        public void cancel() {
+            canceled = true;
+        }
+
+        @Override
+        public void onSingleManifestError(IOException e) {
+            if (canceled) {
+                return;
+            }
+
+            player.onRenderersError(e);
+        }
+
+        @Override
+        public void onSingleManifest(HlsPlaylist manifest) {
+            if (canceled) {
+                return;
+            }
+
+            Handler mainHandler = player.getMainHandler();
+            LoadControl loadControl = new DefaultLoadControl(new DefaultAllocator(BUFFER_SEGMENT_SIZE));
+            DefaultBandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
+
+            int[] variantIndices = null;
+            if (manifest instanceof HlsMasterPlaylist) {
+                HlsMasterPlaylist masterPlaylist = (HlsMasterPlaylist) manifest;
+                try {
+                    variantIndices = VideoFormatSelectorUtil.selectVideoFormatsForDefaultDisplay(
+                            context, masterPlaylist.variants, null, false);
+                } catch (MediaCodecUtil.DecoderQueryException e) {
+                    player.onRenderersError(e);
+                    return;
+                }
+                if (variantIndices.length == 0) {
+                    player.onRenderersError(new IllegalStateException("No variants selected."));
+                    return;
+                }
+            }
+
+            DataSource dataSource = new DefaultUriDataSource(context, bandwidthMeter, userAgent);
+            HlsChunkSource chunkSource = new HlsChunkSource(dataSource, url, manifest, bandwidthMeter,
+                    variantIndices, HlsChunkSource.ADAPTIVE_MODE_SPLICE, audioCapabilities);
+            HlsSampleSource sampleSource = new HlsSampleSource(chunkSource, loadControl,
+                    BUFFER_SEGMENTS * BUFFER_SEGMENT_SIZE, mainHandler, player, VideoPlayer.TYPE_VIDEO);
+            MediaCodecVideoTrackRenderer videoRenderer = new MediaCodecVideoTrackRenderer(sampleSource,
+                    MediaCodec.VIDEO_SCALING_MODE_SCALE_TO_FIT, 5000, mainHandler, player, 50);
+            MediaCodecAudioTrackRenderer audioRenderer = new MediaCodecAudioTrackRenderer(sampleSource);
+
+            TrackRenderer[] renderers = new TrackRenderer[VideoPlayer.RENDERER_COUNT];
+            renderers[VideoPlayer.TYPE_VIDEO] = videoRenderer;
+            renderers[VideoPlayer.TYPE_AUDIO] = audioRenderer;
+            player.onRenderers(null, null, renderers, bandwidthMeter);
+        }
+
     }
 }

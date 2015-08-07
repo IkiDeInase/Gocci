@@ -37,108 +37,110 @@
         android:label="@string/app_name"
         android:largeHeap="true"
         android:theme="@style/AppTheme">
-        <meta-data
-            android:name="com.google.android.maps.v2.API_KEY"
-            android:value="@string/map_key" />
-        <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version"
-            tools:replace="android:value" />
 
-        <receiver
-            android:name=".data.GcmBroadcastReceiver"
-            android:permission="com.google.android.c2dm.permission.SEND">
-            <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+    <meta-data
+        android:name="com.google.android.maps.v2.API_KEY"
+        android:value="@string/map_key" />
+    <meta-data
+        android:name="com.google.android.gms.version"
+        android:value="@integer/google_play_services_version"
+        tools:replace="android:value" />
 
-                <category android:name="com.inase.android.gocci" />
-            </intent-filter>
-        </receiver>
+    <receiver
+        android:name=".data.GcmBroadcastReceiver"
+        android:permission="com.google.android.c2dm.permission.SEND">
+        <intent-filter>
+            <action android:name="com.google.android.c2dm.intent.RECEIVE" />
 
-        <service android:name=".data.GcmIntentService" />
+            <category android:name="com.inase.android.gocci" />
+        </intent-filter>
+    </receiver>
 
-        <service
-            android:name="com.amazonaws.mobileconnectors.s3.transferutility.TransferService"
-            android:enabled="true" />
+    <service android:name=".data.GcmIntentService" />
 
-        <activity
-            android:name=".Activity.SplashActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.NoTitleBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+    <service
+        android:name="com.amazonaws.mobileconnectors.s3.transferutility.TransferService"
+        android:enabled="true" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name="com.facebook.FacebookActivity"
-            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
-            android:label="@string/app_name"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+    <activity
+        android:name=".Activity.SplashActivity"
+        android:screenOrientation="portrait"
+        android:theme="@style/Theme.NoTitleBar">
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
 
-        <meta-data
-            android:name="com.facebook.sdk.ApplicationId"
-            android:value="@string/facebook_app_id" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+    </activity>
+    <activity
+        android:name="com.facebook.FacebookActivity"
+        android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+        android:label="@string/app_name"
+        android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
-        <activity
-            android:name=".Activity.FlexibleTenpoActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/CustomTheme" />
-        <activity
-            android:name=".Activity.FlexibleUserProfActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/CustomTheme" />
-        <activity
-            android:name=".Activity.TutorialGuideActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".Activity.LoginActivity"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".Activity.ProfMapActivity"
-            android:screenOrientation="portrait" />
+    <meta-data
+        android:name="com.facebook.sdk.ApplicationId"
+        android:value="@string/facebook_app_id" />
 
-        <meta-data
-            android:name="com.crashlytics.ApiKey"
-            android:value="49e96e5c483c3d53249639b65b786d8358cc4300" />
+    <activity
+        android:name=".Activity.FlexibleTenpoActivity"
+        android:screenOrientation="portrait"
+        android:theme="@style/CustomTheme" />
+    <activity
+        android:name=".Activity.FlexibleUserProfActivity"
+        android:screenOrientation="portrait"
+        android:theme="@style/CustomTheme" />
+    <activity
+        android:name=".Activity.TutorialGuideActivity"
+        android:screenOrientation="portrait" />
+    <activity
+        android:name=".Activity.LoginActivity"
+        android:launchMode="singleTask"
+        android:screenOrientation="portrait" />
+    <activity
+        android:name=".Activity.ProfMapActivity"
+        android:screenOrientation="portrait" />
 
-        <provider
-            android:name="com.facebook.FacebookContentProvider"
-            android:authorities="com.facebook.app.FacebookContentProvider673123156062598"
-            android:exported="true" />
+    <meta-data
+        android:name="com.crashlytics.ApiKey"
+        android:value="49e96e5c483c3d53249639b65b786d8358cc4300" />
 
-        <activity
-            android:name=".Activity.GocciTimelineActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/CustomTheme" />
-        <activity
-            android:name=".Activity.GocciMyprofActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/CustomTheme" />
-        <activity
-            android:name=".Activity.ListActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/CustomTheme" />
-        <activity
-            android:name=".Activity.CameraPreviewActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".Activity.GocciCameraActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.NoTitleBar" />
-        <activity
-            android:name=".Activity.CommentActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/CustomTheme" />
-        <activity
-            android:name=".Activity.WebViewActivity"
-            android:screenOrientation="portrait" />
-        <activity android:name="com.soundcloud.android.crop.CropImageActivity" />
-        <activity
-            android:name=".Activity.LoginSessionActivity"
-            android:label="@string/title_activity_login_session"></activity>
+    <provider
+        android:name="com.facebook.FacebookContentProvider"
+        android:authorities="com.facebook.app.FacebookContentProvider673123156062598"
+        android:exported="true" />
+
+    <activity
+        android:name=".Activity.GocciTimelineActivity"
+        android:screenOrientation="portrait"
+        android:theme="@style/CustomTheme" />
+    <activity
+        android:name=".Activity.GocciMyprofActivity"
+        android:screenOrientation="portrait"
+        android:theme="@style/CustomTheme" />
+    <activity
+        android:name=".Activity.ListActivity"
+        android:screenOrientation="portrait"
+        android:theme="@style/CustomTheme" />
+    <activity
+        android:name=".Activity.CameraPreviewActivity"
+        android:screenOrientation="portrait" />
+    <activity
+        android:name=".Activity.GocciCameraActivity"
+        android:screenOrientation="portrait"
+        android:theme="@style/Theme.NoTitleBar" />
+    <activity
+        android:name=".Activity.CommentActivity"
+        android:screenOrientation="portrait"
+        android:theme="@style/CustomTheme" />
+    <activity
+        android:name=".Activity.WebViewActivity"
+        android:screenOrientation="portrait" />
+    <activity
+        android:name="com.soundcloud.android.crop.CropImageActivity"
+        android:screenOrientation="portrait" />
+    <activity
+        android:name=".Activity.LoginSessionActivity"
+        android:screenOrientation="portrait" />
     </application>
-
 </manifest>

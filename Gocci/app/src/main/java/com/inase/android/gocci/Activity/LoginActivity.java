@@ -173,7 +173,6 @@ public class LoginActivity extends AppCompatActivity {
                                     }
                                 }
 
-
                                 @Override
                                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
                                     setLoginDialog(context);

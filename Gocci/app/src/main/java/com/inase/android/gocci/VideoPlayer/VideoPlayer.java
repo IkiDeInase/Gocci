@@ -38,14 +38,9 @@ public class VideoPlayer implements ExoPlayer.Listener, ChunkSampleSource.EventL
         DashChunkSource.EventListener, DebugTextViewHelper.Provider {
 
     public interface RendererBuilder {
-        void buildRenderers(VideoPlayer player, RendererBuilderCallback callback);
-    }
+        void buildRenderers(VideoPlayer player);
 
-    public interface RendererBuilderCallback {
-        void onRenderers(String[][] trackNames, MultiTrackChunkSource[] multiTrackSources,
-                         TrackRenderer[] renderers, BandwidthMeter bandwidthMeter);
-
-        void onRenderersError(Exception e);
+        void cancel();
     }
 
     public interface Listener {
@@ -127,7 +122,6 @@ public class VideoPlayer implements ExoPlayer.Listener, ChunkSampleSource.EventL
     private boolean lastReportedPlayWhenReady;
 
     private Surface surface;
-    private InternalRendererBuilderCallback builderCallback;
     private TrackRenderer videoRenderer;
     private CodecCounters codecCounters;
     private Format videoFormat;
@@ -148,7 +142,7 @@ public class VideoPlayer implements ExoPlayer.Listener, ChunkSampleSource.EventL
         player.addListener(this);
         playerControl = new PlayerControl(player);
         mainHandler = new Handler();
-        listeners = new CopyOnWriteArrayList<Listener>();
+        listeners = new CopyOnWriteArrayList<>();
         lastReportedPlaybackState = STATE_IDLE;
         rendererBuildingState = RENDERER_BUILDING_STATE_IDLE;
         selectedTracks = new int[RENDERER_COUNT];
@@ -228,22 +222,18 @@ public class VideoPlayer implements ExoPlayer.Listener, ChunkSampleSource.EventL
         if (rendererBuildingState == RENDERER_BUILDING_STATE_BUILT) {
             player.stop();
         }
-        if (builderCallback != null) {
-            builderCallback.cancel();
-        }
+        rendererBuilder.cancel();
         videoFormat = null;
         videoRenderer = null;
         multiTrackSources = null;
         rendererBuildingState = RENDERER_BUILDING_STATE_BUILDING;
         maybeReportPlayerState();
-        builderCallback = new InternalRendererBuilderCallback();
-        rendererBuilder.buildRenderers(this, builderCallback);
+        rendererBuilder.buildRenderers(this);
     }
 
     void onRenderers(String[][] trackNames,
                      MultiTrackChunkSource[] multiTrackSources, TrackRenderer[] renderers,
                      BandwidthMeter bandwidthMeter) {
-        builderCallback = null;
         // Normalize the results.
         if (trackNames == null) {
             trackNames = new String[RENDERER_COUNT][];
@@ -281,7 +271,6 @@ public class VideoPlayer implements ExoPlayer.Listener, ChunkSampleSource.EventL
     }
 
     void onRenderersError(Exception e) {
-        builderCallback = null;
         if (internalErrorListener != null) {
             internalErrorListener.onRendererInitializationError(e);
         }
@@ -301,10 +290,7 @@ public class VideoPlayer implements ExoPlayer.Listener, ChunkSampleSource.EventL
     }
 
     public void release() {
-        if (builderCallback != null) {
-            builderCallback.cancel();
-            builderCallback = null;
-        }
+        rendererBuilder.cancel();
         rendererBuildingState = RENDERER_BUILDING_STATE_IDLE;
         surface = null;
         player.release();
@@ -316,8 +302,7 @@ public class VideoPlayer implements ExoPlayer.Listener, ChunkSampleSource.EventL
             return ExoPlayer.STATE_PREPARING;
         }
         int playerState = player.getPlaybackState();
-        if (rendererBuildingState == RENDERER_BUILDING_STATE_BUILT
-                && rendererBuildingState == RENDERER_BUILDING_STATE_IDLE) {
+        if (rendererBuildingState == RENDERER_BUILDING_STATE_BUILT && playerState == STATE_IDLE) {
             // This is an edge case where the renderers are built, but are still being passed to the
             // player's playback thread.
             return ExoPlayer.STATE_PREPARING;
@@ -554,30 +539,5 @@ public class VideoPlayer implements ExoPlayer.Listener, ChunkSampleSource.EventL
             player.setRendererEnabled(type, allowRendererEnable);
             player.setPlayWhenReady(playWhenReady);
         }
-    }
-
-    private class InternalRendererBuilderCallback implements RendererBuilderCallback {
-
-        private boolean canceled;
-
-        public void cancel() {
-            canceled = true;
-        }
-
-        @Override
-        public void onRenderers(String[][] trackNames, MultiTrackChunkSource[] multiTrackSources,
-                                TrackRenderer[] renderers, BandwidthMeter bandwidthMeter) {
-            if (!canceled) {
-                VideoPlayer.this.onRenderers(trackNames, multiTrackSources, renderers, bandwidthMeter);
-            }
-        }
-
-        @Override
-        public void onRenderersError(Exception e) {
-            if (!canceled) {
-                VideoPlayer.this.onRenderersError(e);
-            }
-        }
-
     }
 }

@@ -2,6 +2,7 @@ package com.inase.android.gocci.Activity;
 
 
 import android.app.Dialog;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -26,14 +27,16 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
+import com.google.maps.android.clustering.view.ClusterRenderer;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.google.maps.android.ui.IconGenerator;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.data.MultiDrawable;
 import com.inase.android.gocci.data.PhotoLog;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.inase.android.gocci.data.PostData;
+import com.squareup.picasso.Picasso;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,15 +50,17 @@ public class ProfMapActivity extends AppCompatActivity implements ClusterManager
 
     private MapDrawableAsync mAsync;
 
-    private class PhotoLogRenderer extends DefaultClusterRenderer<PhotoLog> {
+    private static List<PhotoLog> list = new ArrayList<>();
+
+    private class PhotoLogRenderer extends DefaultClusterRenderer<PhotoLog>  {
         private final IconGenerator mIconGenerator = new IconGenerator(getApplicationContext());
         private final IconGenerator mClusterIconGenerator = new IconGenerator(getApplicationContext());
         private final ImageView mImageView;
         private final ImageView mClusterImageView;
         private final int mDimension;
 
-        public PhotoLogRenderer() {
-            super(getApplicationContext(), mMap, mClusterManager);
+        public PhotoLogRenderer(Context context, GoogleMap map, ClusterManager<PhotoLog> clusterManager) {
+            super(context, map, clusterManager);
 
             View multiProfile = getLayoutInflater().inflate(R.layout.cell_photolog, null);
             mClusterIconGenerator.setContentView(multiProfile);
@@ -155,9 +160,6 @@ public class ProfMapActivity extends AppCompatActivity implements ClusterManager
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // FragmentのViewを返却
-        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this).build();
-        ImageLoader.getInstance().init(config);
-
         setContentView(R.layout.activity_prof_map);
 
         mAsync = new MapDrawableAsync(new MapDrawableAsync.Callback() {
@@ -177,7 +179,7 @@ public class ProfMapActivity extends AppCompatActivity implements ClusterManager
                     fm.getMapAsync(readyCallback);
                 }
             }
-        });
+        }, this);
         mAsync.execute();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
@@ -207,7 +209,7 @@ public class ProfMapActivity extends AppCompatActivity implements ClusterManager
             mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
             mClusterManager = new ClusterManager<PhotoLog>(ProfMapActivity.this, mMap);
-            mClusterManager.setRenderer(new PhotoLogRenderer());
+            mClusterManager.setRenderer(new PhotoLogRenderer(getApplicationContext(), mMap, mClusterManager));
             mMap.setOnCameraChangeListener(mClusterManager);
             mMap.setOnMarkerClickListener(mClusterManager);
             mMap.setOnInfoWindowClickListener(mClusterManager);
@@ -215,12 +217,8 @@ public class ProfMapActivity extends AppCompatActivity implements ClusterManager
             mClusterManager.setOnClusterInfoWindowClickListener(ProfMapActivity.this);
             mClusterManager.setOnClusterItemClickListener(ProfMapActivity.this);
             mClusterManager.setOnClusterItemInfoWindowClickListener(ProfMapActivity.this);
-
-            for (int i = 0; i < GocciMyprofActivity.mProfusers.size(); i++) {
-                mClusterManager.addItem(new PhotoLog(GocciMyprofActivity.mProfusers.get(i), GocciMyprofActivity.mProfDrawables.get(i)));
-            }
+            mClusterManager.addItems(list);
             mClusterManager.cluster();
-            Log.e("ログ", "onMapReady");
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(35.681382, 139.766084), 4));
         }
     };
@@ -245,17 +243,21 @@ public class ProfMapActivity extends AppCompatActivity implements ClusterManager
     private static class MapDrawableAsync extends AsyncTask<Void, Void, Void> {
 
         private Callback callbackRef;
+        private Context context;
 
-        private MapDrawableAsync(Callback callback) {
+        private MapDrawableAsync(Callback callback, Context context) {
             callbackRef = callback;
+            this.context = context;
         }
 
         @Override
         protected Void doInBackground(Void... params) {
-            GocciMyprofActivity.mProfDrawables.clear();
-            for (int i = 0; i < GocciMyprofActivity.mProfusers.size(); i++) {
-                Bitmap bmp = ImageLoader.getInstance().loadImageSync(GocciMyprofActivity.mProfusers.get(i).getThumbnail());
-                GocciMyprofActivity.mProfDrawables.add(new BitmapDrawable(bmp));
+            for (PostData data : GocciMyprofActivity.mProfusers) {
+                try {
+                    list.add(new PhotoLog(data, new BitmapDrawable(Picasso.with(context).load(data.getThumbnail()).get())));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
             return null;
         }

@@ -53,6 +53,7 @@
     <string name="email">メールアドレス</string>
     <string name="password">パスワード</string>
     <string name="want">行きたい店に認定</string>
+    <string name="please">希望のユーザー名</string>
     <string name="title_activity_web_view">WebViewActivity</string>
 
     <string name="hello_world">Hello world!</string>

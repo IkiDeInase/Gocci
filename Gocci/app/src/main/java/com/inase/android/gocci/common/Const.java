@@ -36,130 +36,130 @@ public class Const {
     public static final String POST_PHOTO_BUCKET_NAME = "gocci.imgs.provider.jp-test";
 
     public static String getAuthWelcomeAPI(String identity_id, int flag) {
-        return URL_PREFIX + VERSION_NUMBER + "/auth/welcome/?identity_id=" + identity_id +
+        return URL_PREFIX + VERSION_NUMBER + "/mobile/auth/welcome/?identity_id=" + identity_id +
                 "&sns_flag=" + flag;
     }
 
     public static String getAuthLoginAPI(String identity_id) {
-        return URL_PREFIX + VERSION_NUMBER + "/auth/login/?identity_id=" + identity_id;
+        return URL_PREFIX + VERSION_NUMBER + "/mobile/auth/login/?identity_id=" + identity_id;
     }
 
     public static String getAuthSignupAPI(String username, String os, String model, String register_id) {
-        return URL_PREFIX + VERSION_NUMBER + "/auth/signup/?username=" + username + "&os=android_" + os +
+        return URL_PREFIX + VERSION_NUMBER + "/mobile/auth/signup/?username=" + username + "&os=android_" + os +
                 "&model=" + model + "&register_id=" + register_id;
     }
 
     public static String getAuthConversionAPI(String username, String profile_img, String os, String model, String register_id) {
-        return URL_PREFIX + VERSION_NUMBER + "/auth/conversion/?username=" + username +
+        return URL_PREFIX + VERSION_NUMBER + "/mobile/auth/conversion/?username=" + username +
                 "&profile_img=" + profile_img + "&os=android_" + os +
                 "&model=" + model + "&register_id=" + register_id;
     }
 
     public static String getAuthSNSMatchAPI(String providerName, String token, String profile_img) {
-        return URL_PREFIX + VERSION_NUMBER + "/post/sns/?provider=" + providerName +
+        return URL_PREFIX + VERSION_NUMBER + "/mobile/post/sns/?provider=" + providerName +
                 "&token=" + token + "&profile_img=" + profile_img;
     }
 
     public static String getTimelineAPI() {
-        return URL_PREFIX + VERSION_NUMBER + "/get/timeline";
+        return URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline";
     }
 
     public static String getTimelineNextApi(int call) {
-        return URL_PREFIX + VERSION_NUMBER + "/get/timeline_next/?call=" + call;
+        return URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline_next/?call=" + call;
     }
 
     public static String getPopularAPI() {
-        return URL_PREFIX + VERSION_NUMBER + "/get/popular";
+        return URL_PREFIX + VERSION_NUMBER + "/mobile/get/popular";
     }
 
     public static String getPopularNextApi(int call) {
-        return URL_PREFIX + VERSION_NUMBER + "/get/popular_next/?call=" + call;
+        return URL_PREFIX + VERSION_NUMBER + "/mobile/get/popular_next/?call=" + call;
     }
 
     public static String getCommentAPI(String post_id) {
-        return URL_PREFIX + VERSION_NUMBER + "/get/comment/?post_id=" + post_id;
+        return URL_PREFIX + VERSION_NUMBER + "/mobile/get/comment/?post_id=" + post_id;
     }
 
     public static String getRestpageAPI(int rest_id) {
-        return URL_PREFIX + VERSION_NUMBER + "/get/rest/?rest_id=" + rest_id;
+        return URL_PREFIX + VERSION_NUMBER + "/mobile/get/rest/?rest_id=" + rest_id;
     }
 
     public static String getUserpageAPI(int user_id) {
-        return URL_PREFIX + VERSION_NUMBER + "/get/user/?target_user_id=" + user_id;
+        return URL_PREFIX + VERSION_NUMBER + "/mobile/get/user/?target_user_id=" + user_id;
     }
 
     public static String getNoticeAPI() {
-        return URL_PREFIX + VERSION_NUMBER + "/get/notice";
+        return URL_PREFIX + VERSION_NUMBER + "/mobile/get/notice";
     }
 
     public static String getNearAPI(double lat, double lon) {
-        return URL_PREFIX + VERSION_NUMBER + "/get/near/?lon=" + lon + "&lat=" + lat;
+        return URL_PREFIX + VERSION_NUMBER + "/mobile/get/near/?lon=" + lon + "&lat=" + lat;
     }
 
     public static String getFollowAPI(int user_id) {
-        return URL_PREFIX + VERSION_NUMBER + "/get/follow/?target_user_id=" + user_id;
+        return URL_PREFIX + VERSION_NUMBER + "/mobile/get/follow/?target_user_id=" + user_id;
     }
 
     public static String getFollowerAPI(int user_id) {
-        return URL_PREFIX + VERSION_NUMBER + "/get/follower/?target_user_id=" + user_id;
+        return URL_PREFIX + VERSION_NUMBER + "/mobile/get/follower/?target_user_id=" + user_id;
     }
 
     public static String getWantAPI(int user_id) {
-        return URL_PREFIX + VERSION_NUMBER + "/get/want/?target_user_id=" + user_id;
+        return URL_PREFIX + VERSION_NUMBER + "/mobile/get/want/?target_user_id=" + user_id;
     }
 
     public static String getUserCheerAPI(int user_id) {
-        return URL_PREFIX + VERSION_NUMBER + "/get/user_cheer/?target_user_id=" + user_id;
+        return URL_PREFIX + VERSION_NUMBER + "/mobile/get/user_cheer/?target_user_id=" + user_id;
     }
 
     public static String getRestCheerAPI(int rest_id) {
-        return URL_PREFIX + VERSION_NUMBER + "/get/rest_cheer/?rest_id=" + rest_id;
+        return URL_PREFIX + VERSION_NUMBER + "/mobile/get/rest_cheer/?rest_id=" + rest_id;
     }
 
     public static String getPostGochiAPI(String post_id) {
-        return URL_PREFIX + VERSION_NUMBER + "/post/gochi/?post_id=" + post_id;
+        return URL_PREFIX + VERSION_NUMBER + "/mobile/post/gochi/?post_id=" + post_id;
     }
 
     public static String getPostDeleteAPI(String post_id) {
-        return URL_PREFIX + VERSION_NUMBER + "/post/postdel/?post_id=" + post_id;
+        return URL_PREFIX + VERSION_NUMBER + "/mobile/post/postdel/?post_id=" + post_id;
     }
 
     public static String getPostViolateAPI(String post_id) {
-        return URL_PREFIX + VERSION_NUMBER + "/post/postblock/?post_id=" + post_id;
+        return URL_PREFIX + VERSION_NUMBER + "/mobile/post/postblock/?post_id=" + post_id;
     }
 
     public static String getPostFollowAPI(int user_id) {
-        return URL_PREFIX + VERSION_NUMBER + "/post/follow/?target_user_id=" + user_id;
+        return URL_PREFIX + VERSION_NUMBER + "/mobile/post/follow/?target_user_id=" + user_id;
     }
 
     public static String getPostUnFollowAPI(int user_id) {
-        return URL_PREFIX + VERSION_NUMBER + "/post/unfollow/?target_user_id=" + user_id;
+        return URL_PREFIX + VERSION_NUMBER + "/mobile/post/unfollow/?target_user_id=" + user_id;
     }
 
     public static String getPostWantAPI(int rest_id) {
-        return URL_PREFIX + VERSION_NUMBER + "/post/want/?rest_id=" + rest_id;
+        return URL_PREFIX + VERSION_NUMBER + "/mobile/post/want/?rest_id=" + rest_id;
     }
 
     public static String getPostUnWantAPI(int rest_id) {
-        return URL_PREFIX + VERSION_NUMBER + "/post/unwant/?rest_id=" + rest_id;
+        return URL_PREFIX + VERSION_NUMBER + "/mobile/post/unwant/?rest_id=" + rest_id;
     }
 
     public static String getPostFeedbackAPI(String feedback) {
-        return URL_PREFIX + VERSION_NUMBER + "/post/feedback/?feedback=" + feedback;
+        return URL_PREFIX + VERSION_NUMBER + "/mobile/post/feedback/?feedback=" + feedback;
     }
 
     public static String getPostCommentAPI(String post_id, String comment) {
-        return URL_PREFIX + VERSION_NUMBER + "/post/comment/?post_id=" + post_id + "&comment=" + comment;
+        return URL_PREFIX + VERSION_NUMBER + "/mobile/post/comment/?post_id=" + post_id + "&comment=" + comment;
     }
 
     public static String getPostMovieAPI(int rest_id, String movie, int category_id, int tag_id, String value, String memo, int cheer_flag) {
-        return URL_PREFIX + VERSION_NUMBER + "/post/post/?rest_id=" + rest_id +
+        return URL_PREFIX + VERSION_NUMBER + "/mobile/post/post/?rest_id=" + rest_id +
                 "&movie_name=" + movie + "&category_id=" + category_id + "&tag_id=" + tag_id +
                 "&value=" + value + "&memo=" + memo + "&cheer_flag=" + cheer_flag;
     }
 
     public static String getPostRestAddAPI(String restname, double lat, double lon) {
-        return URL_PREFIX + VERSION_NUMBER + "/post/restadd/?rest_name=" + restname +
+        return URL_PREFIX + VERSION_NUMBER + "/mobile/post/restadd/?rest_name=" + restname +
                 "&lat=" + lat + "&lon=" + lon;
     }
 
@@ -171,20 +171,18 @@ public class Const {
         String returnUrl = null;
         switch (flag) {
             case FLAG_CHANGE_NAME:
-                returnUrl = URL_PREFIX + VERSION_NUMBER + "/post/update_profile/?username=" + username;
+                returnUrl = URL_PREFIX + VERSION_NUMBER + "/mobile/post/update_profile/?username=" + username;
                 break;
             case FLAG_CHANGE_PICTURE:
-                returnUrl = URL_PREFIX + VERSION_NUMBER + "/post/update_profile/?profile_img=" + profile_img;
+                returnUrl = URL_PREFIX + VERSION_NUMBER + "/mobile/post/update_profile/?profile_img=" + profile_img;
                 break;
             case FLAG_CHANGE_BOTH:
-                returnUrl = URL_PREFIX + VERSION_NUMBER + "/post/update_profile/?username=" + username +
+                returnUrl = URL_PREFIX + VERSION_NUMBER + "/mobile/post/update_profile/?username=" + username +
                         "&profile_img=" + profile_img;
                 break;
         }
         return returnUrl;
     }
-
-    public static final String URL_POST_PROFILE_EDIT_API = URL_PREFIX + VERSION_NUMBER + "post/";
 
     // 動画ファイルのキャッシュファイルの接頭辞
     public static final String MOVIE_CACHE_PREFIX = "movie_cache_";

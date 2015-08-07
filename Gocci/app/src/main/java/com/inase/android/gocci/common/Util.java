@@ -33,7 +33,6 @@ import com.inase.android.gocci.R;
 import com.inase.android.gocci.data.HeaderData;
 import com.inase.android.gocci.data.PostData;
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.nostra13.universalimageloader.core.ImageLoader;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
 import org.apache.http.Header;
@@ -191,6 +190,7 @@ public class Util {
         return file;
     }
 
+    /*
     public static File getFile(String url, String post_date) {
         // Extract Bitmap from ImageView drawable
         Bitmap bmp = ImageLoader.getInstance().loadImageSync(url);
@@ -208,6 +208,7 @@ public class Util {
         }
         return file;
     }
+    */
 
     public static final String getDateTimeString() {
         final GregorianCalendar now = new GregorianCalendar();

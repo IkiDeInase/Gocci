@@ -9,14 +9,16 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -26,14 +28,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.andexert.library.RippleView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.inase.android.gocci.Application.Application_Gocci;
-import com.inase.android.gocci.Fragment.TutorialFragment;
+import com.inase.android.gocci.Fragment.CreateUserNameFragment;
+import com.inase.android.gocci.Fragment.SocialAuthenticationFragment;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;
@@ -59,8 +60,6 @@ public class TutorialGuideActivity extends AppCompatActivity {
 
     private ProgressWheel progress;
 
-    private boolean isOK = false;
-
     public static final String EXTRA_MESSAGE = "message";
     public static final String PROPERTY_REG_ID = "registration_id";
     private static final String PROPERTY_APP_VERSION = "appVersion";
@@ -72,8 +71,6 @@ public class TutorialGuideActivity extends AppCompatActivity {
 
     private GoogleCloudMessaging gcm;
     private String regid;
-
-    private String username;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,10 +128,6 @@ public class TutorialGuideActivity extends AppCompatActivity {
             @Override
             public void onPageSelected(int position) {
                 setIndicator(position);
-                if (position == 3 && !isOK) {
-                    Handler handler = new Handler();
-                    handler.postDelayed(new UsernameClickHandler(), 250);
-                }
             }
 
             @Override
@@ -214,7 +207,7 @@ public class TutorialGuideActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            TutorialFragment tp = null;
+            Fragment tp = null;
             switch (position) {
                 case 0:
                     tp = TutorialFragment.newInstance(R.layout.view_tutorial1);
@@ -226,13 +219,12 @@ public class TutorialGuideActivity extends AppCompatActivity {
                     tp = TutorialFragment.newInstance(R.layout.view_tutorial3);
                     break;
                 case 3:
-                    tp = TutorialFragment.newInstance(R.layout.view_tutorial4);
+                    tp = CreateUserNameFragment.newInstance();
                     break;
                 case 4:
-                    tp = TutorialFragment.newInstance(R.layout.view_tutorial5);
+                    tp = SocialAuthenticationFragment.newInstance();
                     break;
             }
-
             return tp;
         }
 
@@ -343,84 +335,22 @@ public class TutorialGuideActivity extends AppCompatActivity {
         }
     }
 
-    class UsernameClickHandler implements Runnable {
-        public void run() {
-            //ダイアログ
-            setLoginDialog(TutorialGuideActivity.this);
+    public static class TutorialFragment extends Fragment {
+        final static String LAYOUT_ID = "layoutid";
+
+        public static TutorialFragment newInstance(int layoutId) {
+            TutorialFragment pane = new TutorialFragment();
+            Bundle args = new Bundle();
+            args.putInt(LAYOUT_ID, layoutId);
+            pane.setArguments(args);
+            return pane;
         }
 
-        private void setLoginDialog(final Context context) {
-            new MaterialDialog.Builder(context)
-                    .content("好きなユーザー名を入力しましょう")
-                    .input("ユーザー名", null, new MaterialDialog.InputCallback() {
-                        @Override
-                        public void onInput(MaterialDialog materialDialog, CharSequence charSequence) {
-                            materialDialog.getActionButton(DialogAction.POSITIVE).setEnabled(charSequence.length() > 0);
-                        }
-                    })
-                    .cancelable(false)
-                    .alwaysCallInputCallback()
-                    .positiveText("完了")
-                    .callback(new MaterialDialog.ButtonCallback() {
-                        @Override
-                        public void onPositive(final MaterialDialog dialog) {
-                            super.onPositive(dialog);
-                            isOK = true;
-                            progress.setVisibility(View.VISIBLE);
-                            username = dialog.getInputEditText().getText().toString();
-
-                            String url = Const.getAuthSignupAPI(username, Build.VERSION.RELEASE, Build.MODEL, regid);
-                            Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-                            Const.asyncHttpClient.get(context, url, new JsonHttpResponseHandler() {
-
-                                @Override
-                                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                                    try {
-                                        if (response.has("message")) {
-                                            int code = response.getInt("code");
-                                            String user_id = response.getString("user_id");
-                                            String username = response.getString("username");
-                                            String profile_img = response.getString("profile_img");
-                                            String identity_id = response.getString("identity_id");
-                                            int badge_num = response.getInt("badge_num");
-                                            String message = response.getString("message");
-                                            String token = response.getString("token");
-
-                                            if (code == 200) {
-                                                SavedData.setWelcome(context, username, profile_img, user_id, identity_id, badge_num);
-                                                Application_Gocci.GuestInit(context, identity_id, token, user_id);
-                                                progress.setVisibility(View.INVISIBLE);
-                                                SavedData.setFlag(context, 0);
-                                                isOK = true;
-                                            } else {
-                                                progress.setVisibility(View.INVISIBLE);
-                                                isOK = false;
-                                                pager.setCurrentItem(3);
-                                            }
-                                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-                                        } else {
-                                            progress.setVisibility(View.INVISIBLE);
-                                            isOK = false;
-                                            pager.setCurrentItem(3);
-                                            Toast.makeText(TutorialGuideActivity.this, "このユーザー名はすでに登録されています", Toast.LENGTH_SHORT).show();
-                                            //setLoginDialog(context);
-                                        }
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-
-
-                                @Override
-                                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
-                                    isOK = false;
-                                    pager.setCurrentItem(3);
-                                    Toast.makeText(context, "ログインに失敗しました", Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                        }
-                    })
-                    .show();
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            int layoutId = getArguments().getInt(LAYOUT_ID, -1);
+            ViewGroup rootView = (ViewGroup) inflater.inflate(layoutId, container, false);
+            return rootView;
         }
     }
 
