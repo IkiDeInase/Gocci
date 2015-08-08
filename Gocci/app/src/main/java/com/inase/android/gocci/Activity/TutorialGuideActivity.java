@@ -28,6 +28,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
+import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
 import com.andexert.library.RippleView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -72,9 +74,21 @@ public class TutorialGuideActivity extends AppCompatActivity {
     private GoogleCloudMessaging gcm;
     private String regid;
 
+    private static MobileAnalyticsManager analytics;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        try {
+            analytics = MobileAnalyticsManager.getOrCreateInstance(
+                    this.getApplicationContext(),
+                    Const.ANALYTICS_ID, //Amazon Mobile Analytics App ID
+                    Const.IDENTITY_POOL_ID //Amazon Cognito Identity Pool ID
+            );
+        } catch(InitializationException ex) {
+            Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
+        }
+
         Window window = getWindow();
         window.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         setContentView(R.layout.activity_tutorial);
@@ -148,6 +162,23 @@ public class TutorialGuideActivity extends AppCompatActivity {
         Fragment fragment = (Fragment) pagerAdapter.instantiateItem(pager, pager.getCurrentItem());
         if (fragment != null && pager.getCurrentItem() == 4) {
             fragment.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(analytics != null) {
+            analytics.getSessionClient().pauseSession();
+            analytics.getEventClient().submitEvents();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(analytics != null) {
+            analytics.getSessionClient().resumeSession();
         }
     }
 

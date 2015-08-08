@@ -28,6 +28,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
+import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
 import com.cocosw.bottomsheet.BottomSheet;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -120,6 +122,8 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
     private AudioCapabilitiesReceiver audioCapabilitiesReceiver;
     private AudioCapabilities audioCapabilities;
 
+    private static MobileAnalyticsManager analytics;
+
     private static Handler sHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -172,6 +176,16 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
     protected void onCreate(Bundle savedInstanceState) {
         mPlayBlockFlag = false;
         super.onCreate(savedInstanceState);
+        try {
+            analytics = MobileAnalyticsManager.getOrCreateInstance(
+                    this.getApplicationContext(),
+                    Const.ANALYTICS_ID, //Amazon Mobile Analytics App ID
+                    Const.IDENTITY_POOL_ID //Amazon Cognito Identity Pool ID
+            );
+        } catch(InitializationException ex) {
+            Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
+        }
+
         setContentView(R.layout.activity_comment);
 
         mCacheManager = CacheManager.getInstance(getApplicationContext());
@@ -326,6 +340,9 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
     public void onResume() {
         super.onResume();
         BusHolder.get().register(self);
+        if(analytics != null) {
+            analytics.getSessionClient().resumeSession();
+        }
         audioCapabilitiesReceiver.register();
     }
 
@@ -333,6 +350,11 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
     public void onPause() {
         super.onPause();
         BusHolder.get().unregister(self);
+
+        if(analytics != null) {
+            analytics.getSessionClient().pauseSession();
+            analytics.getEventClient().submitEvents();
+        }
 
         if (player != null) {
             player.blockingClearSurface();

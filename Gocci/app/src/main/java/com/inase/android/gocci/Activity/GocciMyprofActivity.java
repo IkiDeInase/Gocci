@@ -33,6 +33,8 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
+import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
@@ -105,6 +107,8 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
     private int visibleThreshold = 5;
     int pastVisibleItems, visibleItemCount, totalItemCount;
 
+    private static MobileAnalyticsManager analytics;
+
     private static Handler sHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -150,6 +154,16 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        try {
+            analytics = MobileAnalyticsManager.getOrCreateInstance(
+                    this.getApplicationContext(),
+                    Const.ANALYTICS_ID, //Amazon Mobile Analytics App ID
+                    Const.IDENTITY_POOL_ID //Amazon Cognito Identity Pool ID
+            );
+        } catch(InitializationException ex) {
+            Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
+        }
+
         setContentView(R.layout.activity_gocci_myprof);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
@@ -249,12 +263,19 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
     @Override
     protected void onResume() {
         super.onResume();
+        if(analytics != null) {
+            analytics.getSessionClient().resumeSession();
+        }
         BusHolder.get().register(self);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        if(analytics != null) {
+            analytics.getSessionClient().pauseSession();
+            analytics.getEventClient().submitEvents();
+        }
         BusHolder.get().unregister(self);
     }
 

@@ -13,6 +13,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
+import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
 import com.andexert.library.RippleView;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -65,6 +67,8 @@ public class LoginSessionActivity extends AppCompatActivity {
 
     private String profile_img;
 
+    private static MobileAnalyticsManager analytics;
+
     public void onFacebookButtonClicked() {
         if (AccessToken.getCurrentAccessToken() != null) {
             LoginManager.getInstance().logOut();
@@ -85,6 +89,16 @@ public class LoginSessionActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        try {
+            analytics = MobileAnalyticsManager.getOrCreateInstance(
+                    this.getApplicationContext(),
+                    Const.ANALYTICS_ID, //Amazon Mobile Analytics App ID
+                    Const.IDENTITY_POOL_ID //Amazon Cognito Identity Pool ID
+            );
+        } catch(InitializationException ex) {
+            Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
+        }
+
         callbackManager = CallbackManager.Factory.create();
 
         setContentView(R.layout.activity_login_session);
@@ -186,12 +200,19 @@ public class LoginSessionActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        if(analytics != null) {
+            analytics.getSessionClient().resumeSession();
+        }
         BusHolder.get().register(self);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        if(analytics != null) {
+            analytics.getSessionClient().pauseSession();
+            analytics.getEventClient().submitEvents();
+        }
         BusHolder.get().unregister(self);
     }
 

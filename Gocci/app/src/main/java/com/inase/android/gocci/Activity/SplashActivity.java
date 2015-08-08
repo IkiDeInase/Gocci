@@ -10,6 +10,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
+import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
 import com.facebook.AccessToken;
 import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.Event.BusHolder;
@@ -45,9 +47,21 @@ public class SplashActivity extends AppCompatActivity {
 
     private boolean isConversion = false;
 
+    private static MobileAnalyticsManager analytics;
+
     @Override
     protected void onCreate(Bundle icicle) {
         super.onCreate(icicle);
+        try {
+            analytics = MobileAnalyticsManager.getOrCreateInstance(
+                    this.getApplicationContext(),
+                    Const.ANALYTICS_ID, //Amazon Mobile Analytics App ID
+                    Const.IDENTITY_POOL_ID //Amazon Cognito Identity Pool ID
+            );
+        } catch(InitializationException ex) {
+            Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
+        }
+
         setContentView(R.layout.activity_splash);
 
         if (Util.getConnectedState(SplashActivity.this) != Util.NetworkStatus.OFF) {
@@ -178,12 +192,19 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        if(analytics != null) {
+            analytics.getSessionClient().resumeSession();
+        }
         BusHolder.get().register(self);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        if(analytics != null) {
+            analytics.getSessionClient().pauseSession();
+            analytics.getEventClient().submitEvents();
+        }
         BusHolder.get().unregister(self);
     }
 

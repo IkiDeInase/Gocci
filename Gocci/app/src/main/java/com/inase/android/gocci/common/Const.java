@@ -29,6 +29,8 @@ public class Const {
     public static final String ENDPOINT_INASE = "test.login.gocci";
 
     public static final String IDENTITY_POOL_ID = "us-east-1:2ef43520-856b-4641-b4a1-e08dfc07f802";
+    public static final String ANALYTICS_ID = "9cc17c8116ae40738002f10d907bbd16";
+
     public static final Regions REGION = Regions.US_EAST_1;
 
     public static final String POST_MOVIE_BUCKET_NAME = "gocci.movies.bucket.jp-test";

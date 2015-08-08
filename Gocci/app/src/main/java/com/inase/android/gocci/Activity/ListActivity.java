@@ -22,6 +22,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
+import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
 import com.andexert.library.RippleView;
 import com.inase.android.gocci.Base.RoundedTransformation;
 import com.inase.android.gocci.Event.NotificationNumberEvent;
@@ -68,6 +70,8 @@ public class ListActivity extends AppCompatActivity {
 
     private Drawer result;
 
+    private static MobileAnalyticsManager analytics;
+
     public static void startListActivity(int id, int isMypage, int category, Activity startingActivity) {
         Intent intent = new Intent(startingActivity, ListActivity.class);
         intent.putExtra("id", id);
@@ -113,6 +117,16 @@ public class ListActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        try {
+            analytics = MobileAnalyticsManager.getOrCreateInstance(
+                    this.getApplicationContext(),
+                    Const.ANALYTICS_ID, //Amazon Mobile Analytics App ID
+                    Const.IDENTITY_POOL_ID //Amazon Cognito Identity Pool ID
+            );
+        } catch(InitializationException ex) {
+            Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
+        }
+
         setContentView(R.layout.activity_follower_followee_cheer_list);
 
         Intent intent = getIntent();
@@ -228,6 +242,23 @@ public class ListActivity extends AppCompatActivity {
 
         Log.e("ログ", mUrl);
         getJSON(mUrl, mCategory, this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(analytics != null) {
+            analytics.getSessionClient().pauseSession();
+            analytics.getEventClient().submitEvents();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(analytics != null) {
+            analytics.getSessionClient().resumeSession();
+        }
     }
 
     @Override

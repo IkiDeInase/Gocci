@@ -93,11 +93,7 @@
     <activity
         android:name=".Activity.TutorialGuideActivity"
         android:screenOrientation="portrait" />
-    <activity
-        android:name=".Activity.LoginActivity"
-        android:launchMode="singleTask"
-        android:screenOrientation="portrait" />
-    <activity
+        <activity
         android:name=".Activity.ProfMapActivity"
         android:screenOrientation="portrait" />
 

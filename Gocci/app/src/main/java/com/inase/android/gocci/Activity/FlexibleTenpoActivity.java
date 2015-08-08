@@ -29,6 +29,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
+import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
 import com.andexert.library.RippleView;
 import com.cocosw.bottomsheet.BottomSheet;
 import com.facebook.CallbackManager;
@@ -108,7 +110,6 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
 
     private AttributeSet mVideoAttr;
     private Point mDisplaySize;
-    private CacheManager mCacheManager;
     private String mPlayingPostId;
     private boolean mPlayBlockFlag;
     private ConcurrentHashMap<Const.ExoViewHolder, String> mViewHolderHash;  // Value: PosterId
@@ -141,6 +142,8 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
 
     private AudioCapabilitiesReceiver audioCapabilitiesReceiver;
     private AudioCapabilities audioCapabilities;
+
+    private static MobileAnalyticsManager analytics;
 
     private ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
         @Override
@@ -202,7 +205,16 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
     @Override
     public final void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mCacheManager = CacheManager.getInstance(getApplicationContext());
+        try {
+            analytics = MobileAnalyticsManager.getOrCreateInstance(
+                    this.getApplicationContext(),
+                    Const.ANALYTICS_ID, //Amazon Mobile Analytics App ID
+                    Const.IDENTITY_POOL_ID //Amazon Cognito Identity Pool ID
+            );
+        } catch(InitializationException ex) {
+            Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
+        }
+
         audioCapabilitiesReceiver = new AudioCapabilitiesReceiver(getApplicationContext(), this);
         // 画面回転に対応するならonResumeが安全かも
         mDisplaySize = new Point();
@@ -406,6 +418,10 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
             mapView.onPause();
         }
         super.onPause();
+        if(analytics != null) {
+            analytics.getSessionClient().pauseSession();
+            analytics.getEventClient().submitEvents();
+        }
         BusHolder.get().unregister(self);
 
         if (player != null) {
@@ -423,6 +439,9 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
     @Override
     public final void onResume() {
         super.onResume();
+        if(analytics != null) {
+            analytics.getSessionClient().resumeSession();
+        }
         BusHolder.get().register(self);
         if (mapView != null) {
             mapView.onResume();

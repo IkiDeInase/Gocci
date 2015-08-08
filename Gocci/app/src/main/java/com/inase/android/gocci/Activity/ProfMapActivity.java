@@ -16,6 +16,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
+import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -31,6 +33,7 @@ import com.google.maps.android.clustering.view.ClusterRenderer;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.google.maps.android.ui.IconGenerator;
 import com.inase.android.gocci.R;
+import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.data.MultiDrawable;
 import com.inase.android.gocci.data.PhotoLog;
 import com.inase.android.gocci.data.PostData;
@@ -54,6 +57,8 @@ public class ProfMapActivity extends AppCompatActivity implements ClusterManager
     private static List<PhotoLog> list = new ArrayList<>();
 
     private ProgressWheel progress;
+
+    private static MobileAnalyticsManager analytics;
 
     private class PhotoLogRenderer extends DefaultClusterRenderer<PhotoLog>  {
         private final IconGenerator mIconGenerator = new IconGenerator(getApplicationContext());
@@ -163,6 +168,16 @@ public class ProfMapActivity extends AppCompatActivity implements ClusterManager
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // FragmentのViewを返却
+        try {
+            analytics = MobileAnalyticsManager.getOrCreateInstance(
+                    this.getApplicationContext(),
+                    Const.ANALYTICS_ID, //Amazon Mobile Analytics App ID
+                    Const.IDENTITY_POOL_ID //Amazon Cognito Identity Pool ID
+            );
+        } catch(InitializationException ex) {
+            Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
+        }
+
         setContentView(R.layout.activity_prof_map);
 
         mAsync = new MapDrawableAsync(new MapDrawableAsync.Callback() {
@@ -193,6 +208,23 @@ public class ProfMapActivity extends AppCompatActivity implements ClusterManager
         toolbar.setTitle("マップログ");
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(analytics != null) {
+            analytics.getSessionClient().pauseSession();
+            analytics.getEventClient().submitEvents();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(analytics != null) {
+            analytics.getSessionClient().resumeSession();
+        }
     }
 
     @Override
