@@ -1,85 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:ripple="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/list_bg">
+    android:background="@drawable/list_bg"
+    android:descendantFocusability="blocksDescendants">
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#c5c6c9" />
-
-    <RelativeLayout
-        android:layout_width="match_parent"
+    <com.andexert.library.RippleView
+        android:id="@+id/likes_ripple"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:descendantFocusability="blocksDescendants">
+        android:layout_centerVertical="true"
+        android:gravity="center_horizontal"
+        ripple:rv_color="@android:color/black">
 
-        <com.andexert.library.RippleView
+        <include
+            layout="@layout/widget_button_likes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </com.andexert.library.RippleView>
+
+
+    <com.andexert.library.RippleView
+        android:id="@+id/comments_ripple"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/likes_ripple"
+        android:gravity="center_horizontal"
+        ripple:rv_color="@android:color/black">
+
+        <include
+            layout="@layout/widget_button_comment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </com.andexert.library.RippleView>
+
+    <com.andexert.library.RippleView
+        android:id="@+id/share_ripple"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/comments_ripple"
+        android:gravity="center_horizontal"
+        ripple:rv_color="@android:color/black">
+
+        <include
+            layout="@layout/widget_button_share"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </com.andexert.library.RippleView>
+
+    <com.andexert.library.RippleView
+        android:id="@+id/menuRipple"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="4dp"
+        ripple:rv_centered="true"
+        ripple:rv_color="@android:color/black">
+
+        <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            ripple:rv_color="@android:color/black"
-            android:gravity="center_horizontal"
-            android:id="@+id/likes_ripple"
-            android:layout_centerVertical="true">
+            android:padding="8dp"
+            android:src="@drawable/ic_etc_white" />
+    </com.andexert.library.RippleView>
 
-            <include
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                layout="@layout/widget_button_likes" />
-
-        </com.andexert.library.RippleView>
-
-
-        <com.andexert.library.RippleView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            ripple:rv_color="@android:color/black"
-            android:gravity="center_horizontal"
-            android:id="@+id/comments_ripple"
-            android:layout_toRightOf="@+id/likes_ripple"
-            android:layout_centerVertical="true">
-
-            <include
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                layout="@layout/widget_button_comment" />
-
-        </com.andexert.library.RippleView>
-
-        <com.andexert.library.RippleView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            ripple:rv_color="@android:color/black"
-            android:gravity="center_horizontal"
-            android:id="@+id/share_ripple"
-            android:layout_toRightOf="@+id/comments_ripple"
-            android:layout_centerVertical="true">
-
-            <include
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                layout="@layout/widget_button_share" />
-
-        </com.andexert.library.RippleView>
-
-        <com.andexert.library.RippleView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            ripple:rv_color="@android:color/black"
-            ripple:rv_centered="true"
-            android:id="@+id/menuRipple"
-            android:layout_centerVertical="true"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="4dp">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_etc_white"
-                android:padding="8dp" />
-        </com.andexert.library.RippleView>
-
-    </RelativeLayout>
-</LinearLayout>
+</RelativeLayout>
