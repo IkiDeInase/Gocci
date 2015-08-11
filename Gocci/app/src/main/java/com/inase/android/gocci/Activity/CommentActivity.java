@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -16,10 +17,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -38,6 +39,8 @@ import com.facebook.FacebookSdk;
 import com.facebook.share.Sharer;
 import com.facebook.share.widget.ShareDialog;
 import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
+import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
+import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.google.android.exoplayer.audio.AudioCapabilities;
 import com.google.android.exoplayer.audio.AudioCapabilitiesReceiver;
 import com.inase.android.gocci.Application.Application_Gocci;
@@ -48,7 +51,6 @@ import com.inase.android.gocci.R;
 import com.inase.android.gocci.VideoPlayer.HlsRendererBuilder;
 import com.inase.android.gocci.VideoPlayer.VideoPlayer;
 import com.inase.android.gocci.View.DrawerProfHeader;
-import com.inase.android.gocci.common.CacheManager;
 import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;
 import com.inase.android.gocci.common.Util;
@@ -56,7 +58,6 @@ import com.inase.android.gocci.data.HeaderData;
 import com.inase.android.gocci.data.PostData;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.TextHttpResponseHandler;
-import com.melnykov.fab.FloatingActionButton;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
@@ -80,7 +81,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import io.fabric.sdk.android.Fabric;
 
-public class CommentActivity extends AppCompatActivity implements AudioCapabilitiesReceiver.Listener {
+public class CommentActivity extends AppCompatActivity implements AudioCapabilitiesReceiver.Listener, ObservableScrollViewCallbacks {
 
     private ObservableRecyclerView mCommentRecyclerView;
     private LinearLayoutManager mLayoutManager;
@@ -94,9 +95,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
 
     private CommentActivity self = this;
 
-    private AttributeSet mVideoAttr;
     private Point mDisplaySize;
-    private CacheManager mCacheManager;
     private String mPlayingPostId;
     private boolean mPlayBlockFlag;
     private ConcurrentHashMap<Const.ExoViewHolder, String> mViewHolderHash;  // Value: PosterId
@@ -182,13 +181,12 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
                     Const.ANALYTICS_ID, //Amazon Mobile Analytics App ID
                     Const.IDENTITY_POOL_ID //Amazon Cognito Identity Pool ID
             );
-        } catch(InitializationException ex) {
+        } catch (InitializationException ex) {
             Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
         }
 
         setContentView(R.layout.activity_comment);
 
-        mCacheManager = CacheManager.getInstance(getApplicationContext());
         audioCapabilitiesReceiver = new AudioCapabilitiesReceiver(getApplicationContext(), this);
         // 画面回転に対応するならonResumeが安全かも
         mDisplaySize = new Point();
@@ -294,8 +292,8 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
         mCommentRecyclerView.setLayoutManager(mLayoutManager);
         mCommentRecyclerView.setHasFixedSize(true);
         mCommentRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
+        mCommentRecyclerView.setScrollViewCallbacks(this);
         mCommentButton = (FloatingActionButton) findViewById(R.id.commentButton);
-        mCommentButton.attachToRecyclerView(mCommentRecyclerView);
         mCommentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -340,7 +338,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
     public void onResume() {
         super.onResume();
         BusHolder.get().register(self);
-        if(analytics != null) {
+        if (analytics != null) {
             analytics.getSessionClient().resumeSession();
         }
         audioCapabilitiesReceiver.register();
@@ -351,7 +349,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
         super.onPause();
         BusHolder.get().unregister(self);
 
-        if(analytics != null) {
+        if (analytics != null) {
             analytics.getSessionClient().pauseSession();
             analytics.getEventClient().submitEvents();
         }
@@ -662,6 +660,25 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
             }
         }
         return viewHolder;
+    }
+
+    @Override
+    public void onScrollChanged(int i, boolean b, boolean b1) {
+
+    }
+
+    @Override
+    public void onDownMotionEvent() {
+
+    }
+
+    @Override
+    public void onUpOrCancelMotionEvent(ScrollState scrollState) {
+        if (scrollState == ScrollState.UP) {
+            mCommentButton.hide();
+        } else if (scrollState == ScrollState.DOWN) {
+            mCommentButton.show();
+        }
     }
 
     static class CommentViewHolder extends RecyclerView.ViewHolder {

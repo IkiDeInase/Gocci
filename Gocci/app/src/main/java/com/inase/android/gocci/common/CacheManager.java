@@ -3,7 +3,6 @@ package com.inase.android.gocci.common;
 import android.content.Context;
 import android.util.Log;
 
-import com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.BinaryHttpResponseHandler;
 import com.loopj.android.http.FileAsyncHttpResponseHandler;
@@ -39,15 +38,13 @@ public class CacheManager {
         private String mPostId;
         private ICacheManagerListener mICacheManagerListener;
         private int mRetryCount;
-        private RoundCornerProgressBar mProgressBar;
 
-        public MovieCacheRequestVo(Context context, String url, String postId, ICacheManagerListener ICacheManagerListener, RoundCornerProgressBar progressBar) {
+        public MovieCacheRequestVo(Context context, String url, String postId, ICacheManagerListener ICacheManagerListener) {
             mContext = context;
             mUrl = url;
             mPostId = postId;
             mICacheManagerListener = ICacheManagerListener;
             mRetryCount = 0;
-            mProgressBar = progressBar;
         }
 
         public Context getContext() {
@@ -81,10 +78,6 @@ public class CacheManager {
 
         public static String getCacheName(String postId, String url) {
             return Const.MOVIE_CACHE_PREFIX.concat(postId).concat(Util.getFileExtension(url));
-        }
-
-        public RoundCornerProgressBar getProgressBar() {
-            return mProgressBar;
         }
 
     }
@@ -178,8 +171,8 @@ public class CacheManager {
      * @param url      動画URL
      * @param listener 完了時に呼ばれるリスナー
      */
-    public void requestMovieCacheCreate(Context context, String url, String postId, ICacheManagerListener listener, RoundCornerProgressBar progressBar) {
-        final MovieCacheRequestVo movieCacheRequestVo = new MovieCacheRequestVo(context, url, postId, listener, progressBar);
+    public void requestMovieCacheCreate(Context context, String url, String postId, ICacheManagerListener listener) {
+        final MovieCacheRequestVo movieCacheRequestVo = new MovieCacheRequestVo(context, url, postId, listener);
         mMovieCacheRequestVos.push(movieCacheRequestVo);
         startMovieHttpReuest();
     }
@@ -219,7 +212,7 @@ public class CacheManager {
 
                                 if (mProgressStatus % 10 == 0 && mProgressStatus == countNumber) {
                                     countNumber += 10;
-                                    mRequestVo.getProgressBar().setProgress(mProgressStatus);
+                                    //mRequestVo.getProgressBar().setProgress(mProgressStatus);
                                 }
                                 if (mProgressStatus == 100) {
                                     countNumber = 0;

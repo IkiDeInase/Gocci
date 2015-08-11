@@ -6,12 +6,15 @@ import android.content.Intent;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -24,6 +27,9 @@ import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.share.Sharer;
 import com.facebook.share.widget.ShareDialog;
+import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
+import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
+import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.google.android.exoplayer.audio.AudioCapabilities;
 import com.google.android.exoplayer.audio.AudioCapabilitiesReceiver;
 import com.inase.android.gocci.Activity.GocciTimelineActivity;
@@ -33,15 +39,13 @@ import com.inase.android.gocci.Event.BusHolder;
 import com.inase.android.gocci.Event.PageChangeVideoStopEvent;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.VideoPlayer.HlsRendererBuilder;
+import com.inase.android.gocci.VideoPlayer.SquareExoVideoView;
 import com.inase.android.gocci.VideoPlayer.VideoPlayer;
-import com.inase.android.gocci.common.CacheManager;
 import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;
 import com.inase.android.gocci.common.Util;
 import com.inase.android.gocci.data.PostData;
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.melnykov.fab.FloatingActionButton;
-import com.pnikosis.materialishprogress.ProgressWheel;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
@@ -60,17 +64,16 @@ import io.fabric.sdk.android.Fabric;
 /**
  * Created by kinagafuji on 15/06/11.
  */
-public class TrendTimelineFragment extends Fragment implements AudioCapabilitiesReceiver.Listener, AppBarLayout.OnOffsetChangedListener {
+public class TrendTimelineFragment extends Fragment implements AudioCapabilitiesReceiver.Listener, AppBarLayout.OnOffsetChangedListener,
+        ObservableScrollViewCallbacks {
 
-    private RecyclerView mTimelineRecyclerView;
+    private ObservableRecyclerView mTimelineRecyclerView;
     private LinearLayoutManager mLayoutManager;
     private ArrayList<PostData> mTimelineusers = new ArrayList<>();
     private TrendTimelineAdapter mTrendTimelineAdapter;
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    private ProgressWheel progress;
 
     private Point mDisplaySize;
-    private CacheManager mCacheManager;
     private String mPlayingPostId;
     private boolean mPlayBlockFlag;
     private ConcurrentHashMap<Const.ExoViewHolder, String> mViewHolderHash;  // Value: PosterId
@@ -78,6 +81,7 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
     private CallbackManager callbackManager;
     private ShareDialog shareDialog;
 
+    private AttributeSet mVideoAttr;
     private int previousTotal = 0;
     private boolean loading = true;
     private int visibleThreshold = 5;
@@ -111,7 +115,6 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mCacheManager = CacheManager.getInstance(getActivity().getApplicationContext());
         // 画面回転に対応するならonResumeが安全かも
         mDisplaySize = new Point();
         getActivity().getWindowManager().getDefaultDisplay().getSize(mDisplaySize);
@@ -150,12 +153,12 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
         mPlayingPostId = null;
         mViewHolderHash = new ConcurrentHashMap<>();
 
-        progress = (ProgressWheel) view.findViewById(R.id.progress);
-        mTimelineRecyclerView = (RecyclerView) view.findViewById(R.id.list);
+        mTimelineRecyclerView = (ObservableRecyclerView) view.findViewById(R.id.list);
         mLayoutManager = new LinearLayoutManager(getActivity());
         mTimelineRecyclerView.setLayoutManager(mLayoutManager);
         mTimelineRecyclerView.setHasFixedSize(true);
         mTimelineRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
+        mTimelineRecyclerView.setScrollViewCallbacks(this);
         mTimelineRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -207,7 +210,6 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
         });
 
         fab = (FloatingActionButton) getActivity().findViewById(R.id.toukouButton);
-        fab.attachToRecyclerView(mTimelineRecyclerView);
 
         mTrendTimelineAdapter = new TrendTimelineAdapter(getActivity());
 
@@ -379,11 +381,6 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
         Const.asyncHttpClient.get(context, Const.getPopularAPI(), new JsonHttpResponseHandler() {
 
             @Override
-            public void onStart() {
-                progress.setVisibility(View.VISIBLE);
-            }
-
-            @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
                 Toast.makeText(getActivity(), "読み取りに失敗しました", Toast.LENGTH_SHORT).show();
             }
@@ -404,13 +401,6 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
                 mTimelineRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
                 mTimelineRecyclerView.setAdapter(mTrendTimelineAdapter);
                 //getTimelineDateJson(context);
-            }
-
-            @Override
-            public void onFinish() {
-                Log.d("DEBUG", "ProgressDialog dismiss getTimeline finish");
-//                mTimelineDialog.dismiss();
-                progress.setVisibility(View.INVISIBLE);
             }
         });
     }
@@ -509,6 +499,13 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
         if (!userData.getPost_id().equals(mPlayingPostId)) {
             Log.d("DEBUG", "postId change");
 
+            final Const.ExoViewHolder oldViewHolder = getPlayingViewHolder();
+            if (oldViewHolder != null) {
+                Log.d("DEBUG", "MOVIE::changeMovie 再生停止 postId:" + mPlayingPostId);
+                Log.e("DEBUG", "changeMovie 動画再生停止");
+                oldViewHolder.mVideoThumbnail.setVisibility(View.VISIBLE);
+            }
+
             mPlayingPostId = userData.getPost_id();
             final Const.ExoViewHolder currentViewHolder = getPlayingViewHolder();
             Log.d("DEBUG", "MOVIE::changeMovie 動画再生処理開始 postId:" + mPlayingPostId);
@@ -549,6 +546,25 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
             mSwipeRefreshLayout.setEnabled(true);
         } else {
             mSwipeRefreshLayout.setEnabled(false);
+        }
+    }
+
+    @Override
+    public void onScrollChanged(int i, boolean b, boolean b1) {
+
+    }
+
+    @Override
+    public void onDownMotionEvent() {
+
+    }
+
+    @Override
+    public void onUpOrCancelMotionEvent(ScrollState scrollState) {
+        if (scrollState == ScrollState.UP) {
+            fab.hide();
+        } else if (scrollState == ScrollState.DOWN) {
+            fab.show();
         }
     }
 

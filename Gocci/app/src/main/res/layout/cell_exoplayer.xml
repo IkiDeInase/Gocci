@@ -10,11 +10,11 @@
         android:layout_height="match_parent"
         android:layout_gravity="center_horizontal" />
 
-    <ImageView
+    <com.inase.android.gocci.Base.SquareImageView
         android:id="@+id/video_thumbnail"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center_horizontal"
-        android:visibility="visible" />
+         />
 
 </com.google.android.exoplayer.AspectRatioFrameLayout>

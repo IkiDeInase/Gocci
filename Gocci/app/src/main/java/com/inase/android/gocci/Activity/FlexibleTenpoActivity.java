@@ -20,6 +20,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -60,7 +61,6 @@ import com.inase.android.gocci.R;
 import com.inase.android.gocci.VideoPlayer.HlsRendererBuilder;
 import com.inase.android.gocci.VideoPlayer.VideoPlayer;
 import com.inase.android.gocci.View.DrawerProfHeader;
-import com.inase.android.gocci.common.CacheManager;
 import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;
 import com.inase.android.gocci.common.Util;
@@ -211,7 +211,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
                     Const.ANALYTICS_ID, //Amazon Mobile Analytics App ID
                     Const.IDENTITY_POOL_ID //Amazon Cognito Identity Pool ID
             );
-        } catch(InitializationException ex) {
+        } catch (InitializationException ex) {
             Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
         }
 
@@ -418,7 +418,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
             mapView.onPause();
         }
         super.onPause();
-        if(analytics != null) {
+        if (analytics != null) {
             analytics.getSessionClient().pauseSession();
             analytics.getEventClient().submitEvents();
         }
@@ -439,7 +439,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
     @Override
     public final void onResume() {
         super.onResume();
-        if(analytics != null) {
+        if (analytics != null) {
             analytics.getSessionClient().resumeSession();
         }
         BusHolder.get().register(self);

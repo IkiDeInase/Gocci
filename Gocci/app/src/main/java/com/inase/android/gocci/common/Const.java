@@ -2,15 +2,13 @@ package com.inase.android.gocci.common;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar;
 import com.amazonaws.regions.Regions;
 import com.andexert.library.RippleView;
 import com.google.android.exoplayer.AspectRatioFrameLayout;
-import com.inase.android.gocci.Base.SquareVideoView;
+import com.inase.android.gocci.Base.SquareImageView;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.VideoPlayer.SquareExoVideoView;
 import com.loopj.android.http.AsyncHttpClient;
@@ -214,58 +212,6 @@ public class Const {
 
     public static final AsyncHttpClient asyncHttpClient = new AsyncHttpClient();
 
-    public static final class ViewHolder extends RecyclerView.ViewHolder {
-
-        public ImageView circleImage;
-        public TextView user_name;
-        public TextView datetime;
-        public TextView comment;
-        public RippleView menuRipple;
-        public SquareVideoView movie;
-        public RoundCornerProgressBar movieProgress;
-        public ImageView mVideoThumbnail;
-        //public ImageView restaurantImage;
-        //public TextView locality;
-        public TextView rest_name;
-        public TextView category;
-        public TextView value;
-        public TextView atmosphere;
-        public RippleView tenpoRipple;
-        public TextView likes;
-        public ImageView likes_Image;
-        public TextView comments;
-        public RippleView likes_ripple;
-        public RippleView comments_ripple;
-        public RippleView share_ripple;
-        public FrameLayout videoFrame;
-
-        public ViewHolder(View view) {
-            super(view);
-            circleImage = (ImageView) view.findViewById(R.id.circleImage);
-            user_name = (TextView) view.findViewById(R.id.user_name);
-            datetime = (TextView) view.findViewById(R.id.time_text);
-            comment = (TextView) view.findViewById(R.id.comment);
-            menuRipple = (RippleView) view.findViewById(R.id.menuRipple);
-            movie = (SquareVideoView) view.findViewById(R.id.videoView);
-            movieProgress = (RoundCornerProgressBar) view.findViewById(R.id.video_progress);
-            mVideoThumbnail = (ImageView) view.findViewById(R.id.video_thumbnail);
-            //viewHolder.restaurantImage = (ImageView) convertView.findViewById(R.id.restaurantImage);
-            rest_name = (TextView) view.findViewById(R.id.rest_name);
-            //viewHolder.locality = (TextView) convertView.findViewById(R.id.locality);
-            category = (TextView) view.findViewById(R.id.category);
-            value = (TextView) view.findViewById(R.id.value);
-            atmosphere = (TextView) view.findViewById(R.id.mood);
-            tenpoRipple = (RippleView) view.findViewById(R.id.tenpoRipple);
-            likes = (TextView) view.findViewById(R.id.likes_Number);
-            likes_Image = (ImageView) view.findViewById(R.id.likes_Image);
-            comments = (TextView) view.findViewById(R.id.comments_Number);
-            likes_ripple = (RippleView) view.findViewById(R.id.likes_ripple);
-            comments_ripple = (RippleView) view.findViewById(R.id.comments_ripple);
-            share_ripple = (RippleView) view.findViewById(R.id.share_ripple);
-            videoFrame = (FrameLayout) view.findViewById(R.id.videoFrame);
-        }
-    }
-
     public static final class ExoViewHolder extends RecyclerView.ViewHolder {
 
         public ImageView circleImage;
@@ -273,7 +219,7 @@ public class Const {
         public TextView datetime;
         public TextView comment;
         public RippleView menuRipple;
-        public ImageView mVideoThumbnail;
+        public SquareImageView mVideoThumbnail;
         public SquareExoVideoView movie;
         //public ImageView restaurantImage;
         //public TextView locality;
@@ -298,7 +244,7 @@ public class Const {
             comment = (TextView) view.findViewById(R.id.comment);
             menuRipple = (RippleView) view.findViewById(R.id.menuRipple);
             movie = (SquareExoVideoView) view.findViewById(R.id.square_video_exo);
-            mVideoThumbnail = (ImageView) view.findViewById(R.id.video_thumbnail);
+            mVideoThumbnail = (SquareImageView) view.findViewById(R.id.video_thumbnail);
             //viewHolder.restaurantImage = (ImageView) convertView.findViewById(R.id.restaurantImage);
             rest_name = (TextView) view.findViewById(R.id.rest_name);
             //viewHolder.locality = (TextView) convertView.findViewById(R.id.locality);

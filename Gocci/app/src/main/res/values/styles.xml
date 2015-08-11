@@ -32,14 +32,6 @@
         <item name="android:windowNoTitle">true</item>
     </style>
 
-    <style name="CustomCirclePageIndicator">
-        <item name="fillColor">#757575</item>
-        <item name="centered">true</item>
-        <item name="pageColor">#ffffff</item>
-        <item name="strokeColor">#ffffff</item>
-        <item name="radius">4dp</item>
-    </style>
-
     <style name="BottomSheet.StyleDialog" parent="BottomSheet.Dialog">
         <item name="android:backgroundDimAmount">0.5</item>
         <item name="android:windowAnimationStyle">@style/BottomSheet.Animation</item>

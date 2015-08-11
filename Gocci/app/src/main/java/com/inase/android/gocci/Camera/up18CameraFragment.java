@@ -46,7 +46,6 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
-import com.hatenablog.shoma2da.eventdaterecorderlib.EventDateRecorder;
 import com.inase.android.gocci.Activity.CameraPreviewActivity;
 import com.inase.android.gocci.Activity.GocciCameraActivity;
 import com.inase.android.gocci.Base.CircleProgressBar;
@@ -198,17 +197,13 @@ public class up18CameraFragment extends Fragment implements ViewPager.OnPageChan
         final View rootView = inflater.inflate(R.layout.fragment_camera_up18, container, false);
         isFirst = true;
 
-        EventDateRecorder recorder = EventDateRecorder.load(getActivity(), "use_first_camera");
-        if (!recorder.didRecorded()) {
-            dialogBuilder = NiftyDialogBuilder.getInstance(getActivity());
-            dialogBuilder
-                    .withTitle("Gocciカメラ")
-                    .withMessage("このカメラはボタンをタップしている間だけ録画されます。縦向きで投稿するようにしてください！")
-                    .withDuration(500)                                          //def
-                    .withEffect(Effectstype.SlideBottom)
-                    .show();
-            recorder.record();
-        }
+        dialogBuilder = NiftyDialogBuilder.getInstance(getActivity());
+        dialogBuilder
+                .withTitle("Gocciカメラ")
+                .withMessage("このカメラはボタンをタップしている間だけ録画されます。縦向きで投稿するようにしてください！")
+                .withDuration(500)                                          //def
+                .withEffect(Effectstype.SlideBottom)
+                .show();
 
         mCameraView = (CameraGLView) rootView.findViewById(R.id.cameraView);
         //mCameraView.setVideoSize(1280, 720);

@@ -52,7 +52,6 @@ import com.googlecode.mp4parser.authoring.Track;
 import com.googlecode.mp4parser.authoring.builder.DefaultMp4Builder;
 import com.googlecode.mp4parser.authoring.container.mp4.MovieCreator;
 import com.googlecode.mp4parser.authoring.tracks.AppendTrack;
-import com.hatenablog.shoma2da.eventdaterecorderlib.EventDateRecorder;
 import com.inase.android.gocci.Activity.CameraPreviewActivity;
 import com.inase.android.gocci.Activity.GocciCameraActivity;
 import com.inase.android.gocci.Base.CircleProgressBar;
@@ -193,17 +192,13 @@ public class down18CameraFragment extends Fragment implements ViewPager.OnPageCh
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_camera_down18, container, false);
 
-        EventDateRecorder recorder = EventDateRecorder.load(getActivity(), "use_first_camera");
-        if (!recorder.didRecorded()) {
-            dialogBuilder = NiftyDialogBuilder.getInstance(getActivity());
-            dialogBuilder
-                    .withTitle("Gocciカメラ")
-                    .withMessage("このカメラはボタンをタップしている間だけ録画されます。縦向きで投稿するようにしてください！")
-                    .withDuration(500)                                          //def
-                    .withEffect(Effectstype.SlideBottom)
-                    .show();
-            recorder.record();
-        }
+        dialogBuilder = NiftyDialogBuilder.getInstance(getActivity());
+        dialogBuilder
+                .withTitle("Gocciカメラ")
+                .withMessage("このカメラはボタンをタップしている間だけ録画されます。縦向きで投稿するようにしてください！")
+                .withDuration(500)                                          //def
+                .withEffect(Effectstype.SlideBottom)
+                .show();
 
         cameraProgress = (ProgressWheel) rootView.findViewById(R.id.cameraprogress_wheel);
         MySurfaceView videoSurface = (MySurfaceView) rootView.findViewById(R.id.cameraView);

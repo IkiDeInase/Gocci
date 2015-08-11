@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
@@ -31,7 +32,6 @@ import com.inase.android.gocci.View.NotificationListView;
 import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;
 import com.inase.android.gocci.common.Util;
-import com.melnykov.fab.FloatingActionButton;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
@@ -101,7 +101,7 @@ public class GocciTimelineActivity extends AppCompatActivity {
                     Const.ANALYTICS_ID, //Amazon Mobile Analytics App ID
                     Const.IDENTITY_POOL_ID //Amazon Cognito Identity Pool ID
             );
-        } catch(InitializationException ex) {
+        } catch (InitializationException ex) {
             Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
         }
 
@@ -198,7 +198,7 @@ public class GocciTimelineActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if(analytics != null) {
+        if (analytics != null) {
             analytics.getSessionClient().resumeSession();
         }
         BusHolder.get().register(self);
@@ -207,7 +207,7 @@ public class GocciTimelineActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        if(analytics != null) {
+        if (analytics != null) {
             analytics.getSessionClient().pauseSession();
             analytics.getEventClient().submitEvents();
         }
