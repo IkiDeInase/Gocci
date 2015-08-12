@@ -1,23 +1,11 @@
 package com.inase.android.gocci.Activity;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -29,9 +17,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
@@ -39,23 +25,13 @@ import com.andexert.library.RippleView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.Fragment.CreateUserNameFragment;
 import com.inase.android.gocci.Fragment.SocialAuthenticationFragment;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.common.Const;
-import com.inase.android.gocci.common.SavedData;
-import com.inase.android.gocci.data.QuickstartPreferences;
 import com.inase.android.gocci.data.RegistrationIntentService;
-import com.loopj.android.http.JsonHttpResponseHandler;
 import com.nineoldandroids.view.ViewHelper;
 import com.pnikosis.materialishprogress.ProgressWheel;
-
-import org.apache.http.Header;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
 
 public class TutorialGuideActivity extends AppCompatActivity {
 
@@ -90,7 +66,7 @@ public class TutorialGuideActivity extends AppCompatActivity {
                     Const.ANALYTICS_ID, //Amazon Mobile Analytics App ID
                     Const.IDENTITY_POOL_ID //Amazon Cognito Identity Pool ID
             );
-        } catch(InitializationException ex) {
+        } catch (InitializationException ex) {
             Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
         }
 
@@ -166,7 +142,7 @@ public class TutorialGuideActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        if(analytics != null) {
+        if (analytics != null) {
             analytics.getSessionClient().pauseSession();
             analytics.getEventClient().submitEvents();
         }
@@ -175,7 +151,7 @@ public class TutorialGuideActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if(analytics != null) {
+        if (analytics != null) {
             analytics.getSessionClient().resumeSession();
         }
     }

@@ -20,7 +20,6 @@ import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -31,6 +30,7 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
+import com.andexert.library.RippleView;
 import com.cocosw.bottomsheet.BottomSheet;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -136,12 +136,6 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
                     break;
                 case Const.INTENT_TO_MYPAGE:
                     GocciMyprofActivity.startMyProfActivity(activity);
-                    break;
-                case Const.INTENT_TO_USERPAGE:
-                    FlexibleUserProfActivity.startUserProfActivity(msg.arg1, activity);
-                    break;
-                case Const.INTENT_TO_RESTPAGE:
-                    FlexibleTenpoActivity.startTenpoActivity(msg.arg1, activity);
                     break;
                 case Const.INTENT_TO_POLICY:
                     WebViewActivity.startWebViewActivity(1, activity);
@@ -739,9 +733,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
 
         private void bindHeader(final Const.ExoViewHolder holder, final PostData user) {
             holder.user_name.setText(user.getUsername());
-
             holder.datetime.setText(user.getPost_date());
-
             holder.comment.setText(user.getMemo());
 
             Picasso.with(context)
@@ -753,18 +745,14 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
             holder.user_name.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Message msg =
-                            sHandler.obtainMessage(Const.INTENT_TO_USERPAGE, user.getPost_user_id(), user.getPost_user_id(), CommentActivity.this);
-                    sHandler.sendMessageDelayed(msg, 750);
+                    FlexibleUserProfActivity.startUserProfActivity(user.getPost_user_id(), user.getUsername(), CommentActivity.this);
                 }
             });
 
             holder.circleImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Message msg =
-                            sHandler.obtainMessage(Const.INTENT_TO_USERPAGE, user.getPost_user_id(), user.getPost_user_id(), CommentActivity.this);
-                    sHandler.sendMessageDelayed(msg, 750);
+                    FlexibleUserProfActivity.startUserProfActivity(user.getPost_user_id(), user.getUsername(), CommentActivity.this);
                 }
             });
 
@@ -828,12 +816,10 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
             }
 
             //リップルエフェクトを見せてからIntentを飛ばす
-            holder.tenpoRipple.setOnClickListener(new View.OnClickListener() {
+            holder.tenpoRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
                 @Override
-                public void onClick(View v) {
-                    Message msg =
-                            sHandler.obtainMessage(Const.INTENT_TO_RESTPAGE, user.getPost_rest_id(), user.getPost_rest_id(), CommentActivity.this);
-                    sHandler.sendMessageDelayed(msg, 750);
+                public void onComplete(RippleView rippleView) {
+                    FlexibleTenpoActivity.startTenpoActivity(user.getPost_rest_id(), user.getRestname(), CommentActivity.this);
                 }
             });
 
@@ -866,10 +852,9 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
                 holder.likes_ripple.setClickable(false);
             }
 
-            holder.comments_ripple.setOnClickListener(new View.OnClickListener() {
+            holder.comments_ripple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
                 @Override
-                public void onClick(View v) {
-                    Log.e("コメントをクリック", "コメント！" + user.getPost_id());
+                public void onComplete(RippleView rippleView) {
                     mCommentButton.performClick();
                 }
             });
@@ -921,18 +906,14 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
             holder.user_name.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Message msg =
-                            sHandler.obtainMessage(Const.INTENT_TO_USERPAGE, users.getComment_user_id(), users.getComment_user_id(), CommentActivity.this);
-                    sHandler.sendMessageDelayed(msg, 750);
+                    FlexibleUserProfActivity.startUserProfActivity(users.getUser_id(), users.getUsername(), CommentActivity.this);
                 }
             });
 
             holder.commentUserImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Message msg =
-                            sHandler.obtainMessage(Const.INTENT_TO_USERPAGE, users.getComment_user_id(), users.getComment_user_id(), CommentActivity.this);
-                    sHandler.sendMessageDelayed(msg, 750);
+                    FlexibleUserProfActivity.startUserProfActivity(users.getUser_id(), users.getUsername(), CommentActivity.this);
                 }
             });
         }

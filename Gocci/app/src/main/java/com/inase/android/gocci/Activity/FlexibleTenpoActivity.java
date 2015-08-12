@@ -20,7 +20,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -173,12 +172,6 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
                 case Const.INTENT_TO_MYPAGE:
                     GocciMyprofActivity.startMyProfActivity(activity);
                     break;
-                case Const.INTENT_TO_USERPAGE:
-                    FlexibleUserProfActivity.startUserProfActivity(msg.arg1, activity);
-                    break;
-                case Const.INTENT_TO_COMMENT:
-                    CommentActivity.startCommentActivity(msg.arg1, activity);
-                    break;
                 case Const.INTENT_TO_POLICY:
                     WebViewActivity.startWebViewActivity(1, activity);
                     break;
@@ -188,16 +181,14 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
                 case Const.INTENT_TO_ADVICE:
                     Util.setAdviceDialog(activity);
                     break;
-                case Const.INTENT_TO_LIST:
-                    ListActivity.startListActivity(msg.arg1, 0, msg.arg2, activity);
-                    break;
             }
         }
     };
 
-    public static void startTenpoActivity(int rest_id, Activity startingActivity) {
+    public static void startTenpoActivity(int rest_id, String restname, Activity startingActivity) {
         Intent intent = new Intent(startingActivity, FlexibleTenpoActivity.class);
         intent.putExtra("rest_id", rest_id);
+        intent.putExtra("rest_name", restname);
         startingActivity.startActivity(intent);
         startingActivity.overridePendingTransition(R.anim.activity_in, R.anim.activity_out);
     }
@@ -260,6 +251,17 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
         //toolbar.setLogo(R.drawable.ic_gocci_moji_white45);
         setSupportActionBar(toolbar);
 
+        mTenpoRecyclerView = (ObservableRecyclerView) findViewById(R.id.list);
+        mLayoutManager = new LinearLayoutManager(this);
+        mTenpoRecyclerView.setLayoutManager(mLayoutManager);
+        mTenpoRecyclerView.setHasFixedSize(true);
+        mTenpoRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
+        mTenpoRecyclerView.setScrollViewCallbacks(this);
+
+        mTenpoAdapter = new TenpoAdapter(FlexibleTenpoActivity.this);
+
+        getSignupAsync(FlexibleTenpoActivity.this);
+
         result = new DrawerBuilder()
                 .withActivity(this)
                 .withToolbar(toolbar)
@@ -318,15 +320,10 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+        collapsingToolbarLayout.setTitle(intent.getStringExtra("rest_name"));
 
         cheer_number = (TextView) findViewById(R.id.cheer_number);
         cheer_number.setText(String.valueOf(mTotal_cheer_num));
-        mTenpoRecyclerView = (ObservableRecyclerView) findViewById(R.id.list);
-        mLayoutManager = new LinearLayoutManager(this);
-        mTenpoRecyclerView.setLayoutManager(mLayoutManager);
-        mTenpoRecyclerView.setHasFixedSize(true);
-        mTenpoRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
-        mTenpoRecyclerView.setScrollViewCallbacks(this);
         mTenpoRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -390,8 +387,6 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
         });
 
         appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
-
-        getSignupAsync(FlexibleTenpoActivity.this);
     }
 
     @Override
@@ -528,9 +523,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
                     e.printStackTrace();
                 }
 
-                collapsingToolbarLayout.setTitle(headerTenpoData.getRestname());
                 mTenpoRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
-                mTenpoAdapter = new TenpoAdapter(FlexibleTenpoActivity.this);
                 mTenpoRecyclerView.setAdapter(mTenpoAdapter);
             }
 
@@ -703,7 +696,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
     public void onScrollChanged(int i, boolean b, boolean b1) {
         //ヘッダー通り過ぎた
         Log.e("スクロール", String.valueOf(i));
-        isSee = i > 500;
+        isSee = i > 350;
     }
 
     @Override
@@ -846,23 +839,31 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
                     }
                 }
             });
-            holder.callRipple.setOnClickListener(new View.OnClickListener() {
+            holder.callRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
                 @Override
-                public void onClick(View v) {
-                    Handler handler = new Handler();
-                    handler.postDelayed(new callClickHandler(), 750);
+                public void onComplete(RippleView rippleView) {
+                    Intent intent = new Intent(
+                            Intent.ACTION_DIAL,
+                            Uri.parse("tel:" + headerTenpoData.getTell()));
+                    startActivity(intent);
+                    overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
                 }
             });
-            holder.gohereRipple.setOnClickListener(new View.OnClickListener() {
+
+            holder.gohereRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
                 @Override
-                public void onClick(View v) {
-                    Handler handler = new Handler();
-                    handler.postDelayed(new gohereClickHandler(), 750);
+                public void onComplete(RippleView rippleView) {
+                    Uri gmmIntentUri = Uri.parse("google.navigation:q=" + headerTenpoData.getLat() + "," + headerTenpoData.getLon() + "&mode=w");
+                    Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                    mapIntent.setPackage("com.google.android.apps.maps");
+                    startActivity(mapIntent);
+                    overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
                 }
             });
-            holder.etcRipple.setOnClickListener(new View.OnClickListener() {
+
+            holder.etcRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
                 @Override
-                public void onClick(View v) {
+                public void onComplete(RippleView rippleView) {
                     if (!headerTenpoData.getHomepage().equals("none")) {
                         new MaterialDialog.Builder(FlexibleTenpoActivity.this)
                                 .title("その他メニュー")
@@ -920,18 +921,14 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
             holder.user_name.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Message msg =
-                            sHandler.obtainMessage(Const.INTENT_TO_USERPAGE, user.getPost_user_id(), user.getPost_user_id(), FlexibleTenpoActivity.this);
-                    sHandler.sendMessageDelayed(msg, 750);
+                    FlexibleUserProfActivity.startUserProfActivity(user.getPost_user_id(), user.getUsername(), FlexibleTenpoActivity.this);
                 }
             });
 
             holder.circleImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Message msg =
-                            sHandler.obtainMessage(Const.INTENT_TO_USERPAGE, user.getPost_user_id(), user.getPost_user_id(), FlexibleTenpoActivity.this);
-                    sHandler.sendMessageDelayed(msg, 750);
+                    FlexibleUserProfActivity.startUserProfActivity(user.getPost_user_id(), user.getUsername(), FlexibleTenpoActivity.this);
                 }
             });
 
@@ -1024,12 +1021,10 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
                 holder.likes_ripple.setClickable(false);
             }
 
-            holder.comments_ripple.setOnClickListener(new View.OnClickListener() {
+            holder.comments_ripple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
                 @Override
-                public void onClick(View v) {
-                    Message msg =
-                            sHandler.obtainMessage(Const.INTENT_TO_COMMENT, Integer.parseInt(user.getPost_id()), Integer.parseInt(user.getPost_id()), FlexibleTenpoActivity.this);
-                    sHandler.sendMessageDelayed(msg, 750);
+                public void onComplete(RippleView rippleView) {
+                    CommentActivity.startCommentActivity(Integer.parseInt(user.getPost_id()), FlexibleTenpoActivity.this);
                 }
             });
 
@@ -1069,26 +1064,6 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
         @Override
         public int getItemCount() {
             return mTenpousers.size() + 1;
-        }
-    }
-
-    class callClickHandler implements Runnable {
-        public void run() {
-            Intent intent = new Intent(
-                    Intent.ACTION_DIAL,
-                    Uri.parse("tel:" + headerTenpoData.getTell()));
-            startActivity(intent);
-            overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-        }
-    }
-
-    class gohereClickHandler implements Runnable {
-        public void run() {
-            Uri gmmIntentUri = Uri.parse("google.navigation:q=" + headerTenpoData.getLat() + "," + headerTenpoData.getLon() + "&mode=w");
-            Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-            mapIntent.setPackage("com.google.android.apps.maps");
-            startActivity(mapIntent);
-            overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
         }
     }
 }

@@ -84,10 +84,13 @@ public class CameraPreviewActivity extends AppCompatActivity {
     private ImageButton facebookButton;
     private ImageButton instagramButton;
 
+    private RippleView toukou_ripple;
+
     private CallbackManager callbackManager;
     private ShareDialog shareDialog;
 
     private boolean isUpload;
+    private boolean isError;
 
     private static MobileAnalyticsManager analytics;
 
@@ -100,13 +103,14 @@ public class CameraPreviewActivity extends AppCompatActivity {
                     Const.ANALYTICS_ID, //Amazon Mobile Analytics App ID
                     Const.IDENTITY_POOL_ID //Amazon Cognito Identity Pool ID
             );
-        } catch(InitializationException ex) {
+        } catch (InitializationException ex) {
             Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
         }
 
         setContentView(R.layout.activity_camera_preview);
 
         isUpload = false;
+        isError = false;
 
         Intent intent = getIntent();
         mRest_id = intent.getIntExtra("rest_id", 1);
@@ -121,6 +125,8 @@ public class CameraPreviewActivity extends AppCompatActivity {
         mLongitude = intent.getDoubleExtra("lon", 0.0);
 
         mVideoFile = new File(mVideoUrl);
+
+        postMovieBackground(CameraPreviewActivity.this);
 
         FacebookSdk.sdkInitialize(getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
@@ -175,7 +181,7 @@ public class CameraPreviewActivity extends AppCompatActivity {
         twitterButton = (ImageButton) findViewById(R.id.twitterButton);
         facebookButton = (ImageButton) findViewById(R.id.facebookButton);
         instagramButton = (ImageButton) findViewById(R.id.instagramButton);
-        RippleView toukou_ripple = (RippleView) findViewById(R.id.toukou_button_Ripple);
+        toukou_ripple = (RippleView) findViewById(R.id.toukou_button_Ripple);
 
         String[] CATEGORY = getResources().getStringArray(R.array.list_category);
         String[] MOOD = getResources().getStringArray(R.array.list_mood);
@@ -286,26 +292,35 @@ public class CameraPreviewActivity extends AppCompatActivity {
             }
         });
 
-        toukou_ripple.setOnClickListener(new View.OnClickListener() {
+        toukou_ripple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
             @Override
-            public void onClick(View v) {
-                if (mRest_id != 1) {
-                    if (edit_value.getText().length() != 0) {
-                        mValue = edit_value.getText().toString();
+            public void onComplete(RippleView rippleView) {
+                if (!isError) {
+                    if (isUpload) {
+                        if (mRest_id != 1) {
+                            if (edit_value.getText().length() != 0) {
+                                mValue = edit_value.getText().toString();
+                            } else {
+                                mValue = "0";
+                            }
+                            if (edit_comment.getText().length() != 0) {
+                                mMemo = edit_comment.getText().toString();
+                            } else {
+                                mMemo = "none";
+                            }
+                            if (cheerCheck.isChecked()) {
+                                mCheer_flag = 1;
+                            }
+                            postMovieAsync(CameraPreviewActivity.this);
+                        } else {
+                            Toast.makeText(CameraPreviewActivity.this, "店名は入力してください", Toast.LENGTH_SHORT).show();
+                        }
                     } else {
-                        mValue = "0";
+                        Toast.makeText(CameraPreviewActivity.this, "動画の準備が終わるまで少しお待ち下さい", Toast.LENGTH_SHORT).show();
                     }
-                    if (edit_comment.getText().length() != 0) {
-                        mMemo = edit_comment.getText().toString();
-                    } else {
-                        mMemo = "none";
-                    }
-                    if (cheerCheck.isChecked()) {
-                        mCheer_flag = 1;
-                    }
-                    postSignupAsync(CameraPreviewActivity.this);
                 } else {
-                    Toast.makeText(CameraPreviewActivity.this, "店名は入力してください", Toast.LENGTH_SHORT).show();
+                    isError = false;
+                    postMovieBackground(CameraPreviewActivity.this);
                 }
             }
         });
@@ -314,7 +329,7 @@ public class CameraPreviewActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        if(analytics != null) {
+        if (analytics != null) {
             analytics.getSessionClient().pauseSession();
             analytics.getEventClient().submitEvents();
         }
@@ -323,7 +338,7 @@ public class CameraPreviewActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if(analytics != null) {
+        if (analytics != null) {
             analytics.getSessionClient().resumeSession();
         }
     }
@@ -418,34 +433,33 @@ public class CameraPreviewActivity extends AppCompatActivity {
                 .show();
     }
 
-    private void postSignupAsync(final Context context) {
-        if (!isUpload) {
-            mPostProgress.setVisibility(View.VISIBLE);
-            TransferObserver transferObserver = Application_Gocci.getTransfer(context).upload(Const.POST_MOVIE_BUCKET_NAME, mAwsPostName + ".mp4", mVideoFile);
-            transferObserver.setTransferListener(new TransferListener() {
-                @Override
-                public void onStateChanged(int id, TransferState state) {
-                    if (state == TransferState.COMPLETED) {
-                        postMovieAsync(context);
-                    }
+    private void postMovieBackground(Context context) {
+        TransferObserver transferObserver = Application_Gocci.getTransfer(context).upload(Const.POST_MOVIE_BUCKET_NAME, mAwsPostName + ".mp4", mVideoFile);
+        transferObserver.setTransferListener(new TransferListener() {
+            @Override
+            public void onStateChanged(int id, TransferState state) {
+                if (state == TransferState.COMPLETED) {
+                    toukou_ripple.setAlpha(1);
+                    isUpload = true;
+                    isError = false;
                 }
+            }
 
-                @Override
-                public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+            @Override
+            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
 
-                }
+            }
 
-                @Override
-                public void onError(int id, Exception ex) {
-
-                }
-            });
-        }
-
+            @Override
+            public void onError(int id, Exception ex) {
+                isError = true;
+                Toast.makeText(CameraPreviewActivity.this, "動画の準備に失敗しました", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void postMovieAsync(final Context context) {
-        isUpload = true;
+        mPostProgress.setVisibility(View.VISIBLE);
         Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
         Const.asyncHttpClient.setConnectTimeout(10 * 1000);
         Const.asyncHttpClient.setResponseTimeout(60 * 1000);

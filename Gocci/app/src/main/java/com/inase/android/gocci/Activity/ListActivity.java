@@ -95,12 +95,6 @@ public class ListActivity extends AppCompatActivity {
                 case Const.INTENT_TO_MYPAGE:
                     GocciMyprofActivity.startMyProfActivity(activity);
                     break;
-                case Const.INTENT_TO_USERPAGE:
-                    FlexibleUserProfActivity.startUserProfActivity(msg.arg1, activity);
-                    break;
-                case Const.INTENT_TO_RESTPAGE:
-                    FlexibleTenpoActivity.startTenpoActivity(msg.arg1, activity);
-                    break;
                 case Const.INTENT_TO_POLICY:
                     WebViewActivity.startWebViewActivity(1, activity);
                     break;
@@ -123,7 +117,7 @@ public class ListActivity extends AppCompatActivity {
                     Const.ANALYTICS_ID, //Amazon Mobile Analytics App ID
                     Const.IDENTITY_POOL_ID //Amazon Cognito Identity Pool ID
             );
-        } catch(InitializationException ex) {
+        } catch (InitializationException ex) {
             Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
         }
 
@@ -247,7 +241,7 @@ public class ListActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        if(analytics != null) {
+        if (analytics != null) {
             analytics.getSessionClient().pauseSession();
             analytics.getEventClient().submitEvents();
         }
@@ -256,7 +250,7 @@ public class ListActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if(analytics != null) {
+        if (analytics != null) {
             analytics.getSessionClient().resumeSession();
         }
     }
@@ -838,18 +832,14 @@ public class ListActivity extends AppCompatActivity {
             viewHolder.username.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Message msg =
-                            sHandler.obtainMessage(Const.INTENT_TO_USERPAGE, user.getUser_id(), user.getUser_id(), ListActivity.this);
-                    sHandler.sendMessageDelayed(msg, 50);
+                    FlexibleUserProfActivity.startUserProfActivity(user.getUser_id(), user.getUsername(), ListActivity.this);
                 }
             });
 
             viewHolder.userpicture.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Message msg =
-                            sHandler.obtainMessage(Const.INTENT_TO_USERPAGE, user.getUser_id(), user.getUser_id(), ListActivity.this);
-                    sHandler.sendMessageDelayed(msg, 50);
+                    FlexibleUserProfActivity.startUserProfActivity(user.getUser_id(), user.getUsername(), ListActivity.this);
                 }
             });
 
@@ -941,18 +931,14 @@ public class ListActivity extends AppCompatActivity {
             viewHolder.restname.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Message msg =
-                            sHandler.obtainMessage(Const.INTENT_TO_RESTPAGE, user.getRest_id(), user.getRest_id(), ListActivity.this);
-                    sHandler.sendMessageDelayed(msg, 50);
+                    FlexibleTenpoActivity.startTenpoActivity(user.getRest_id(), user.getRestname(), ListActivity.this);
                 }
             });
 
             viewHolder.restpicture.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Message msg =
-                            sHandler.obtainMessage(Const.INTENT_TO_RESTPAGE, user.getRest_id(), user.getRest_id(), ListActivity.this);
-                    sHandler.sendMessageDelayed(msg, 50);
+                    FlexibleTenpoActivity.startTenpoActivity(user.getRest_id(), user.getRestname(), ListActivity.this);
                 }
             });
         }
@@ -995,18 +981,14 @@ public class ListActivity extends AppCompatActivity {
             viewHolder.restname.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Message msg =
-                            sHandler.obtainMessage(Const.INTENT_TO_RESTPAGE, user.getRest_id(), user.getRest_id(), ListActivity.this);
-                    sHandler.sendMessageDelayed(msg, 50);
+                    FlexibleTenpoActivity.startTenpoActivity(user.getRest_id(), user.getRestname(), ListActivity.this);
                 }
             });
 
             viewHolder.restpicture.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Message msg =
-                            sHandler.obtainMessage(Const.INTENT_TO_RESTPAGE, user.getRest_id(), user.getRest_id(), ListActivity.this);
-                    sHandler.sendMessageDelayed(msg, 50);
+                    FlexibleTenpoActivity.startTenpoActivity(user.getRest_id(), user.getRestname(), ListActivity.this);
                 }
             });
 
@@ -1064,18 +1046,14 @@ public class ListActivity extends AppCompatActivity {
             viewHolder.username.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Message msg =
-                            sHandler.obtainMessage(Const.INTENT_TO_USERPAGE, user.getUser_id(), user.getUser_id(), ListActivity.this);
-                    sHandler.sendMessageDelayed(msg, 50);
+                    FlexibleUserProfActivity.startUserProfActivity(user.getUser_id(), user.getUsername(), ListActivity.this);
                 }
             });
 
             viewHolder.userpicture.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Message msg =
-                            sHandler.obtainMessage(Const.INTENT_TO_USERPAGE, user.getUser_id(), user.getUser_id(), ListActivity.this);
-                    sHandler.sendMessageDelayed(msg, 50);
+                    FlexibleUserProfActivity.startUserProfActivity(user.getUser_id(), user.getUsername(), ListActivity.this);
                 }
             });
 

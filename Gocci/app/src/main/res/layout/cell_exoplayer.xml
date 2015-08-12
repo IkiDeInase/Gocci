@@ -3,8 +3,7 @@
     android:id="@+id/videoFrame"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@color/solid_black"
-    >
+    android:background="@color/solid_black">
 
     <com.inase.android.gocci.VideoPlayer.SquareExoVideoView
         android:id="@+id/square_video_exo"
@@ -18,7 +17,6 @@
         android:id="@+id/video_thumbnail"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="center_horizontal"
-         />
+        android:layout_gravity="center_horizontal" />
 
 </com.google.android.exoplayer.AspectRatioFrameLayout>

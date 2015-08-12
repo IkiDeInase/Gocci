@@ -5,6 +5,10 @@
     android:layout_height="wrap_content"
     android:background="@color/materialwhite">
 
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"></RelativeLayout>
+
     <ImageView
         android:id="@+id/userprof_background"
         android:layout_width="match_parent"
@@ -18,31 +22,32 @@
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/userprof_picture"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="8dp"
         android:layout_toRightOf="@+id/userprof_picture"
         android:singleLine="true"
         android:text="@string/username"
         android:textColor="@color/namegrey"
         android:textSize="@dimen/large_text"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:visibility="gone" />
 
     <com.andexert.library.RippleView
         android:id="@+id/userprof_follow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/userprof_username"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="8dp"
-        android:layout_toRightOf="@+id/userprof_picture"
-        android:background="@drawable/button_follow">
+        android:background="@drawable/button_follow"
+        android:layout_below="@+id/numBar"
+        android:layout_marginTop="4dp"
+        android:layout_alignRight="@+id/numBar"
+        android:layout_marginRight="72dp">
 
         <TextView
             android:id="@+id/followText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingBottom="8dp"
-            android:paddingLeft="12dp"
-            android:paddingRight="12dp"
+            android:paddingLeft="32dp"
+            android:paddingRight="32dp"
             android:paddingTop="8dp"
             android:text="フォローする"
             android:textColor="#ffffff"
@@ -51,22 +56,22 @@
 
     <ImageView
         android:id="@+id/userprof_picture"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:layout_gravity="left"
-        android:layout_marginBottom="16dp"
-        android:layout_marginLeft="24dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="16dp"
-        android:src="@drawable/ic_userpicture" />
+        android:src="@drawable/ic_userpicture"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="32dp" />
 
     <LinearLayout
         android:id="@+id/numBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="false"
-        android:layout_below="@+id/userprof_picture"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_toRightOf="@+id/userprof_picture"
+        android:layout_alignTop="@+id/userprof_picture">
 
         <com.andexert.library.RippleView
             android:layout_width="0dp"
@@ -81,7 +86,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/follow_num"
                 android:layout_centerHorizontal="true"
-                android:layout_marginBottom="16dp"
+                android:layout_marginBottom="4dp"
                 android:singleLine="false"
                 android:text="フォロー"
                 android:textColor="@color/namegrey"
@@ -92,10 +97,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:padding="8dp"
+                android:padding="4dp"
                 android:text="20"
                 android:textColor="@color/namegrey"
-                android:textSize="24sp"
+                android:textSize="18sp"
                 android:textStyle="bold" />
         </com.andexert.library.RippleView>
 
@@ -112,7 +117,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/follower_num"
                 android:layout_centerHorizontal="true"
-                android:layout_marginBottom="16dp"
+                android:layout_marginBottom="4dp"
                 android:text="フォロワー"
                 android:textColor="@color/namegrey"
                 android:textSize="12sp" />
@@ -122,10 +127,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:padding="8dp"
+                android:padding="4dp"
                 android:text="50"
                 android:textColor="@color/namegrey"
-                android:textSize="24sp"
+                android:textSize="18sp"
                 android:textStyle="bold" />
         </com.andexert.library.RippleView>
 
@@ -142,7 +147,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/usercheer_num"
                 android:layout_centerHorizontal="true"
-                android:layout_marginBottom="16dp"
+                android:layout_marginBottom="4dp"
                 android:text="応援店"
                 android:textColor="@color/namegrey"
                 android:textSize="12sp" />
@@ -152,10 +157,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:padding="8dp"
+                android:padding="4dp"
                 android:text="5"
                 android:textColor="@color/namegrey"
-                android:textSize="24sp"
+                android:textSize="18sp"
                 android:textStyle="bold" />
         </com.andexert.library.RippleView>
 
@@ -163,8 +168,8 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:layout_below="@+id/numBar"
+        android:layout_height="1dp"
+        android:layout_below="@+id/userprof_picture"
         android:id="@+id/viewFotter"
         android:layout_gravity="bottom"
         android:background="#c5c6c9" />

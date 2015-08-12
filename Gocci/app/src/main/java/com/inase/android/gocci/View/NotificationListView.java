@@ -62,6 +62,7 @@ public class NotificationListView extends RelativeLayout {
                     case "follow":
                         Intent intent = new Intent(getContext(), FlexibleUserProfActivity.class);
                         intent.putExtra("user_id", user.getNotice_user_id());
+                        intent.putExtra("user_name", user.getUsername());
                         getContext().startActivity(intent);
                         break;
                     case "comment":
@@ -174,6 +175,7 @@ public class NotificationListView extends RelativeLayout {
                 public void onClick(View v) {
                     Intent intent = new Intent(getContext(), FlexibleUserProfActivity.class);
                     intent.putExtra("user_id", user.getNotice_user_id());
+                    intent.putExtra("user_name", user.getUsername());
                     getContext().startActivity(intent);
                 }
             });
@@ -183,6 +185,7 @@ public class NotificationListView extends RelativeLayout {
                 public void onClick(View v) {
                     Intent intent = new Intent(getContext(), FlexibleUserProfActivity.class);
                     intent.putExtra("user_id", user.getNotice_user_id());
+                    intent.putExtra("user_name", user.getUsername());
                     getContext().startActivity(intent);
                 }
             });

@@ -29,7 +29,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
-import com.google.maps.android.clustering.view.ClusterRenderer;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.google.maps.android.ui.IconGenerator;
 import com.inase.android.gocci.R;
@@ -60,7 +59,7 @@ public class ProfMapActivity extends AppCompatActivity implements ClusterManager
 
     private static MobileAnalyticsManager analytics;
 
-    private class PhotoLogRenderer extends DefaultClusterRenderer<PhotoLog>  {
+    private class PhotoLogRenderer extends DefaultClusterRenderer<PhotoLog> {
         private final IconGenerator mIconGenerator = new IconGenerator(getApplicationContext());
         private final IconGenerator mClusterIconGenerator = new IconGenerator(getApplicationContext());
         private final ImageView mImageView;
@@ -174,7 +173,7 @@ public class ProfMapActivity extends AppCompatActivity implements ClusterManager
                     Const.ANALYTICS_ID, //Amazon Mobile Analytics App ID
                     Const.IDENTITY_POOL_ID //Amazon Cognito Identity Pool ID
             );
-        } catch(InitializationException ex) {
+        } catch (InitializationException ex) {
             Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
         }
 
@@ -213,7 +212,7 @@ public class ProfMapActivity extends AppCompatActivity implements ClusterManager
     @Override
     protected void onPause() {
         super.onPause();
-        if(analytics != null) {
+        if (analytics != null) {
             analytics.getSessionClient().pauseSession();
             analytics.getEventClient().submitEvents();
         }
@@ -222,7 +221,7 @@ public class ProfMapActivity extends AppCompatActivity implements ClusterManager
     @Override
     protected void onResume() {
         super.onResume();
-        if(analytics != null) {
+        if (analytics != null) {
             analytics.getSessionClient().resumeSession();
         }
     }

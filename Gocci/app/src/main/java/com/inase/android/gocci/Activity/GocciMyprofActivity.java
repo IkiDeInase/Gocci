@@ -3,7 +3,6 @@ package com.inase.android.gocci.Activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -74,7 +73,6 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 
 public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayout.OnOffsetChangedListener {
 
@@ -120,15 +118,6 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
                     activity.startActivity(new Intent(activity, GocciTimelineActivity.class));
                     activity.overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
                     break;
-                case Const.INTENT_TO_USERPAGE:
-                    FlexibleUserProfActivity.startUserProfActivity(msg.arg1, activity);
-                    break;
-                case Const.INTENT_TO_RESTPAGE:
-                    FlexibleTenpoActivity.startTenpoActivity(msg.arg1, activity);
-                    break;
-                case Const.INTENT_TO_COMMENT:
-                    CommentActivity.startCommentActivity(msg.arg1, activity);
-                    break;
                 case Const.INTENT_TO_POLICY:
                     WebViewActivity.startWebViewActivity(1, activity);
                     break;
@@ -138,9 +127,6 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
                 case Const.INTENT_TO_ADVICE:
                     Util.setAdviceDialog(activity);
                     break;
-                case Const.INTENT_TO_LIST:
-                    ListActivity.startListActivity(msg.arg1, 1, msg.arg2, activity);
-                    break;
             }
         }
     };
@@ -148,7 +134,7 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
     public static void startMyProfActivity(Activity startingActivity) {
         Intent intent = new Intent(startingActivity, GocciMyprofActivity.class);
         startingActivity.startActivity(intent);
-        startingActivity.overridePendingTransition(R.anim.activity_in, R.anim.activity_out);
+        startingActivity.overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
     }
 
     @Override
@@ -160,7 +146,7 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
                     Const.ANALYTICS_ID, //Amazon Mobile Analytics App ID
                     Const.IDENTITY_POOL_ID //Amazon Cognito Identity Pool ID
             );
-        } catch(InitializationException ex) {
+        } catch (InitializationException ex) {
             Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
         }
 
@@ -263,7 +249,7 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
     @Override
     protected void onResume() {
         super.onResume();
-        if(analytics != null) {
+        if (analytics != null) {
             analytics.getSessionClient().resumeSession();
         }
         BusHolder.get().register(self);
@@ -272,7 +258,7 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
     @Override
     protected void onPause() {
         super.onPause();
-        if(analytics != null) {
+        if (analytics != null) {
             analytics.getSessionClient().pauseSession();
             analytics.getEventClient().submitEvents();
         }
@@ -618,39 +604,31 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
             holder.usercheer_num.setText(String.valueOf(headerUserData.getCheer_num()));
             holder.want_num.setText(String.valueOf(headerUserData.getWant_num()));
 
-            holder.followRipple.setOnClickListener(new View.OnClickListener() {
+            holder.followRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
                 @Override
-                public void onClick(View v) {
-                    Message msg =
-                            sHandler.obtainMessage(Const.INTENT_TO_LIST, headerUserData.getUser_id(), Const.CATEGORY_FOLLOW, GocciMyprofActivity.this);
-                    sHandler.sendMessageDelayed(msg, 750);
+                public void onComplete(RippleView rippleView) {
+                    ListActivity.startListActivity(headerUserData.getUser_id(), 1, Const.CATEGORY_FOLLOW, GocciMyprofActivity.this);
                 }
             });
 
-            holder.followerRipple.setOnClickListener(new View.OnClickListener() {
+            holder.followerRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
                 @Override
-                public void onClick(View v) {
-                    Message msg =
-                            sHandler.obtainMessage(Const.INTENT_TO_LIST, headerUserData.getUser_id(), Const.CATEGORY_FOLLOWER, GocciMyprofActivity.this);
-                    sHandler.sendMessageDelayed(msg, 750);
+                public void onComplete(RippleView rippleView) {
+                    ListActivity.startListActivity(headerUserData.getUser_id(), 1, Const.CATEGORY_FOLLOWER, GocciMyprofActivity.this);
                 }
             });
 
-            holder.usercheerRipple.setOnClickListener(new View.OnClickListener() {
+            holder.usercheerRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
                 @Override
-                public void onClick(View v) {
-                    Message msg =
-                            sHandler.obtainMessage(Const.INTENT_TO_LIST, headerUserData.getUser_id(), Const.CATEGORY_USER_CHEER, GocciMyprofActivity.this);
-                    sHandler.sendMessageDelayed(msg, 750);
+                public void onComplete(RippleView rippleView) {
+                    ListActivity.startListActivity(headerUserData.getUser_id(), 1, Const.CATEGORY_USER_CHEER, GocciMyprofActivity.this);
                 }
             });
 
-            holder.wantRipple.setOnClickListener(new View.OnClickListener() {
+            holder.wantRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
                 @Override
-                public void onClick(View v) {
-                    Message msg =
-                            sHandler.obtainMessage(Const.INTENT_TO_LIST, headerUserData.getUser_id(), Const.CATEGORY_WANT, GocciMyprofActivity.this);
-                    sHandler.sendMessageDelayed(msg, 750);
+                public void onComplete(RippleView rippleView) {
+                    ListActivity.startListActivity(headerUserData.getUser_id(), 1, Const.CATEGORY_WANT, GocciMyprofActivity.this);
                 }
             });
 
@@ -785,10 +763,7 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
             holder.squareImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Message msg =
-                            sHandler.obtainMessage(Const.INTENT_TO_COMMENT, Integer.parseInt(mProfusers.get(position - 1).getPost_id())
-                                    , Integer.parseInt(mProfusers.get(position - 1).getPost_id()), GocciMyprofActivity.this);
-                    sHandler.sendMessageDelayed(msg, 50);
+                    CommentActivity.startCommentActivity(Integer.parseInt(mProfusers.get(position - 1).getPost_id()), GocciMyprofActivity.this);
                 }
             });
 

@@ -67,18 +67,6 @@ public class GocciTimelineActivity extends AppCompatActivity {
                 case Const.INTENT_TO_MYPAGE:
                     GocciMyprofActivity.startMyProfActivity(activity);
                     break;
-                case Const.INTENT_TO_USERPAGE:
-                    FlexibleUserProfActivity.startUserProfActivity(msg.arg1, activity);
-                    break;
-                case Const.INTENT_TO_RESTPAGE:
-                    FlexibleTenpoActivity.startTenpoActivity(msg.arg1, activity);
-                    break;
-                case Const.INTENT_TO_COMMENT:
-                    CommentActivity.startCommentActivity(msg.arg1, activity);
-                    break;
-                case Const.INTENT_TO_CAMERA:
-                    activity.startActivity(new Intent(activity, GocciCameraActivity.class));
-                    break;
                 case Const.INTENT_TO_POLICY:
                     WebViewActivity.startWebViewActivity(1, activity);
                     break;
@@ -188,9 +176,7 @@ public class GocciTimelineActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Message msg =
-                        sHandler.obtainMessage(Const.INTENT_TO_CAMERA, 0, 0, GocciTimelineActivity.this);
-                sHandler.sendMessageDelayed(msg, 50);
+                startActivity(new Intent(GocciTimelineActivity.this, GocciCameraActivity.class));
             }
         });
     }
@@ -287,21 +273,15 @@ public class GocciTimelineActivity extends AppCompatActivity {
         }
     }
 
-    public void onUserClicked(int user_id) {
-        Message msg =
-                sHandler.obtainMessage(Const.INTENT_TO_USERPAGE, user_id, user_id, GocciTimelineActivity.this);
-        sHandler.sendMessageDelayed(msg, 750);
+    public void onUserClicked(int user_id, String username) {
+        FlexibleUserProfActivity.startUserProfActivity(user_id, username, GocciTimelineActivity.this);
     }
 
-    public void onTenpoClicked(int rest_id) {
-        Message msg =
-                sHandler.obtainMessage(Const.INTENT_TO_RESTPAGE, rest_id, rest_id, GocciTimelineActivity.this);
-        sHandler.sendMessageDelayed(msg, 750);
+    public void onTenpoClicked(int rest_id, String restname) {
+        FlexibleTenpoActivity.startTenpoActivity(rest_id, restname, GocciTimelineActivity.this);
     }
 
     public void onCommentClicked(int post_id) {
-        Message msg =
-                sHandler.obtainMessage(Const.INTENT_TO_COMMENT, post_id, post_id, GocciTimelineActivity.this);
-        sHandler.sendMessageDelayed(msg, 750);
+        CommentActivity.startCommentActivity(post_id, GocciTimelineActivity.this);
     }
 }

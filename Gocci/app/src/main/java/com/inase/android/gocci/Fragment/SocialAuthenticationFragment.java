@@ -160,8 +160,8 @@ public class SocialAuthenticationFragment extends Fragment {
 
     @Subscribe
     public void subscribe(SNSMatchFinishEvent event) {
-            SavedData.setServerPicture(getActivity(), event.profile_img);
-            goTimeline(0);
+        SavedData.setServerPicture(getActivity(), event.profile_img);
+        goTimeline(0);
     }
 
     @Override

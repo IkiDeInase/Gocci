@@ -144,12 +144,6 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
                 case Const.INTENT_TO_MYPAGE:
                     GocciMyprofActivity.startMyProfActivity(activity);
                     break;
-                case Const.INTENT_TO_RESTPAGE:
-                    FlexibleTenpoActivity.startTenpoActivity(msg.arg1, activity);
-                    break;
-                case Const.INTENT_TO_COMMENT:
-                    CommentActivity.startCommentActivity(msg.arg1, activity);
-                    break;
                 case Const.INTENT_TO_POLICY:
                     WebViewActivity.startWebViewActivity(1, activity);
                     break;
@@ -159,16 +153,14 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
                 case Const.INTENT_TO_ADVICE:
                     Util.setAdviceDialog(activity);
                     break;
-                case Const.INTENT_TO_LIST:
-                    ListActivity.startListActivity(msg.arg1, 0, msg.arg2, activity);
-                    break;
             }
         }
     };
 
-    public static void startUserProfActivity(int user_id, Activity startingActivity) {
+    public static void startUserProfActivity(int user_id, String username, Activity startingActivity) {
         Intent intent = new Intent(startingActivity, FlexibleUserProfActivity.class);
         intent.putExtra("user_id", user_id);
+        intent.putExtra("user_name", username);
         startingActivity.startActivity(intent);
         startingActivity.overridePendingTransition(R.anim.activity_in, R.anim.activity_out);
     }
@@ -216,7 +208,6 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
         Fabric.with(this, new TweetComposer());
 
         mPlayBlockFlag = false;
-
         // 初期化処理
         mPlayingPostId = null;
         mViewHolderHash = new ConcurrentHashMap<>();
@@ -229,8 +220,17 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
         //toolbar.inflateMenu(R.menu.toolbar_menu);
         //toolbar.setLogo(R.drawable.ic_gocci_moji_white45);
-        toolbar.setTitle("");
+        toolbar.setTitle(userintent.getStringExtra("user_name"));
         setSupportActionBar(toolbar);
+
+        mUserProfRecyclerView = (RecyclerView) findViewById(R.id.list);
+        mLayoutManager = new LinearLayoutManager(this);
+        mUserProfAdapter = new UserProfAdapter(FlexibleUserProfActivity.this);
+        mUserProfRecyclerView.setLayoutManager(mLayoutManager);
+        mUserProfRecyclerView.setHasFixedSize(true);
+        mUserProfRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
+
+        getSignupAsync(FlexibleUserProfActivity.this);
 
         result = new DrawerBuilder()
                 .withActivity(this)
@@ -289,11 +289,6 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
         result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        mUserProfRecyclerView = (RecyclerView) findViewById(R.id.list);
-        mLayoutManager = new LinearLayoutManager(this);
-        mUserProfRecyclerView.setLayoutManager(mLayoutManager);
-        mUserProfRecyclerView.setHasFixedSize(true);
-        mUserProfRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
         mUserProfRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -349,9 +344,6 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
                 }
             }
         });
-
-        getSignupAsync(FlexibleUserProfActivity.this);
-
     }
 
     @Override
@@ -477,9 +469,7 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
                     e.printStackTrace();
                 }
 
-                toolbar.setTitle(headerUserData.getUsername());
                 mUserProfRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
-                mUserProfAdapter = new UserProfAdapter(FlexibleUserProfActivity.this);
                 mUserProfRecyclerView.setAdapter(mUserProfAdapter);
             }
         });
@@ -717,30 +707,24 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
             holder.follower_num.setText(String.valueOf(headerUserData.getFollower_num()));
             holder.usercheer_num.setText(String.valueOf(headerUserData.getCheer_num()));
 
-            holder.followRipple.setOnClickListener(new View.OnClickListener() {
+            holder.followRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
                 @Override
-                public void onClick(View v) {
-                    Message msg =
-                            sHandler.obtainMessage(Const.INTENT_TO_LIST, headerUserData.getUser_id(), Const.CATEGORY_FOLLOW, FlexibleUserProfActivity.this);
-                    sHandler.sendMessageDelayed(msg, 750);
+                public void onComplete(RippleView rippleView) {
+                    ListActivity.startListActivity(headerUserData.getUser_id(), 0, Const.CATEGORY_FOLLOW, FlexibleUserProfActivity.this);
                 }
             });
 
-            holder.followerRipple.setOnClickListener(new View.OnClickListener() {
+            holder.followerRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
                 @Override
-                public void onClick(View v) {
-                    Message msg =
-                            sHandler.obtainMessage(Const.INTENT_TO_LIST, headerUserData.getUser_id(), Const.CATEGORY_FOLLOWER, FlexibleUserProfActivity.this);
-                    sHandler.sendMessageDelayed(msg, 750);
+                public void onComplete(RippleView rippleView) {
+                    ListActivity.startListActivity(headerUserData.getUser_id(), 0, Const.CATEGORY_FOLLOWER, FlexibleUserProfActivity.this);
                 }
             });
 
-            holder.usercheerRipple.setOnClickListener(new View.OnClickListener() {
+            holder.usercheerRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
                 @Override
-                public void onClick(View v) {
-                    Message msg =
-                            sHandler.obtainMessage(Const.INTENT_TO_LIST, headerUserData.getUser_id(), Const.CATEGORY_USER_CHEER, FlexibleUserProfActivity.this);
-                    sHandler.sendMessageDelayed(msg, 750);
+                public void onComplete(RippleView rippleView) {
+                    ListActivity.startListActivity(headerUserData.getUser_id(), 0, Const.CATEGORY_USER_CHEER, FlexibleUserProfActivity.this);
                 }
             });
 
@@ -854,12 +838,10 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
             }
 
             //リップルエフェクトを見せてからIntentを飛ばす
-            viewHolder.tenpoRipple.setOnClickListener(new View.OnClickListener() {
+            viewHolder.tenpoRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
                 @Override
-                public void onClick(View v) {
-                    Message msg =
-                            sHandler.obtainMessage(Const.INTENT_TO_RESTPAGE, user.getPost_rest_id(), user.getPost_rest_id(), FlexibleUserProfActivity.this);
-                    sHandler.sendMessageDelayed(msg, 750);
+                public void onComplete(RippleView rippleView) {
+                    FlexibleTenpoActivity.startTenpoActivity(user.getPost_rest_id(), user.getRestname(), FlexibleUserProfActivity.this);
                 }
             });
 
@@ -892,12 +874,10 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
                 viewHolder.likes_ripple.setClickable(false);
             }
 
-            viewHolder.comments_ripple.setOnClickListener(new View.OnClickListener() {
+            viewHolder.comments_ripple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
                 @Override
-                public void onClick(View v) {
-                    Message msg =
-                            sHandler.obtainMessage(Const.INTENT_TO_COMMENT, Integer.parseInt(user.getPost_id()), Integer.parseInt(user.getPost_id()), FlexibleUserProfActivity.this);
-                    sHandler.sendMessageDelayed(msg, 750);
+                public void onComplete(RippleView rippleView) {
+                    CommentActivity.startCommentActivity(Integer.parseInt(user.getPost_id()), FlexibleUserProfActivity.this);
                 }
             });
 

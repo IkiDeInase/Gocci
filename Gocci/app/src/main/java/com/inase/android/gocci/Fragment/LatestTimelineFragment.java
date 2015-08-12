@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Point;
-import android.graphics.SurfaceTexture;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -15,16 +14,12 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Surface;
-import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.widget.AbsListView;
-import android.widget.ArrayAdapter;
 import android.widget.Toast;
-import android.widget.VideoView;
 
+import com.andexert.library.RippleView;
 import com.cocosw.bottomsheet.BottomSheet;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -32,7 +27,6 @@ import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.share.Sharer;
 import com.facebook.share.widget.ShareDialog;
-import com.github.ksoichiro.android.observablescrollview.ObservableListView;
 import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
@@ -45,7 +39,6 @@ import com.inase.android.gocci.Event.BusHolder;
 import com.inase.android.gocci.Event.PageChangeVideoStopEvent;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.VideoPlayer.HlsRendererBuilder;
-import com.inase.android.gocci.VideoPlayer.SquareExoVideoView;
 import com.inase.android.gocci.VideoPlayer.VideoPlayer;
 import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.LocaleFormatHelper;
@@ -633,7 +626,7 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
                 @Override
                 public void onClick(View v) {
                     GocciTimelineActivity activity = (GocciTimelineActivity) getActivity();
-                    activity.onUserClicked(user.getPost_user_id());
+                    activity.onUserClicked(user.getPost_user_id(), user.getUsername());
                 }
             });
 
@@ -641,7 +634,7 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
                 @Override
                 public void onClick(View v) {
                     GocciTimelineActivity activity = (GocciTimelineActivity) getActivity();
-                    activity.onUserClicked(user.getPost_user_id());
+                    activity.onUserClicked(user.getPost_user_id(), user.getUsername());
                 }
             });
 
@@ -705,11 +698,11 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
             }
 
             //リップルエフェクトを見せてからIntentを飛ばす
-            holder.tenpoRipple.setOnClickListener(new View.OnClickListener() {
+            holder.tenpoRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
                 @Override
-                public void onClick(View v) {
+                public void onComplete(RippleView rippleView) {
                     GocciTimelineActivity activity = (GocciTimelineActivity) getActivity();
-                    activity.onTenpoClicked(user.getPost_rest_id());
+                    activity.onTenpoClicked(user.getPost_rest_id(), user.getRestname());
                 }
             });
 
@@ -742,9 +735,9 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
                 holder.likes_ripple.setClickable(false);
             }
 
-            holder.comments_ripple.setOnClickListener(new View.OnClickListener() {
+            holder.comments_ripple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
                 @Override
-                public void onClick(View v) {
+                public void onComplete(RippleView rippleView) {
                     GocciTimelineActivity activity = (GocciTimelineActivity) getActivity();
                     activity.onCommentClicked(Integer.parseInt(user.getPost_id()));
                 }

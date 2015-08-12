@@ -34,8 +34,7 @@
         android:layout_alignParentRight="true"
         android:src="@drawable/ic_comment_white_36dp"
         android:layout_margin="16dp"
-        app:backgroundTint="@color/fab"
-         />
+        app:backgroundTint="@color/fab" />
 
     <com.pnikosis.materialishprogress.ProgressWheel
         android:id="@+id/commentprogress_wheel"

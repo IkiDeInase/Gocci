@@ -14,12 +14,12 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Toast;
 
+import com.andexert.library.RippleView;
 import com.cocosw.bottomsheet.BottomSheet;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -39,7 +39,6 @@ import com.inase.android.gocci.Event.BusHolder;
 import com.inase.android.gocci.Event.PageChangeVideoStopEvent;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.VideoPlayer.HlsRendererBuilder;
-import com.inase.android.gocci.VideoPlayer.SquareExoVideoView;
 import com.inase.android.gocci.VideoPlayer.VideoPlayer;
 import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;
@@ -611,7 +610,7 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
                 @Override
                 public void onClick(View v) {
                     GocciTimelineActivity activity = (GocciTimelineActivity) getActivity();
-                    activity.onUserClicked(user.getPost_user_id());
+                    activity.onUserClicked(user.getPost_user_id(), user.getUsername());
                 }
             });
 
@@ -619,7 +618,7 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
                 @Override
                 public void onClick(View v) {
                     GocciTimelineActivity activity = (GocciTimelineActivity) getActivity();
-                    activity.onUserClicked(user.getPost_user_id());
+                    activity.onUserClicked(user.getPost_user_id(), user.getUsername());
                 }
             });
 
@@ -683,11 +682,11 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
             }
 
             //リップルエフェクトを見せてからIntentを飛ばす
-            holder.tenpoRipple.setOnClickListener(new View.OnClickListener() {
+            holder.tenpoRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
                 @Override
-                public void onClick(View v) {
+                public void onComplete(RippleView rippleView) {
                     GocciTimelineActivity activity = (GocciTimelineActivity) getActivity();
-                    activity.onTenpoClicked(user.getPost_rest_id());
+                    activity.onTenpoClicked(user.getPost_rest_id(), user.getRestname());
                 }
             });
 
@@ -720,9 +719,9 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
                 holder.likes_ripple.setClickable(false);
             }
 
-            holder.comments_ripple.setOnClickListener(new View.OnClickListener() {
+            holder.comments_ripple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
                 @Override
-                public void onClick(View v) {
+                public void onComplete(RippleView rippleView) {
                     GocciTimelineActivity activity = (GocciTimelineActivity) getActivity();
                     activity.onCommentClicked(Integer.parseInt(user.getPost_id()));
                 }

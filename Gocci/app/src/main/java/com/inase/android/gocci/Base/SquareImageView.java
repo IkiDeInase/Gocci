@@ -9,6 +9,7 @@ import android.widget.ImageView;
  */
 public class SquareImageView extends ImageView {
     private AttributeSet mAttributeSet;
+
     public SquareImageView(Context context) {
         super(context);
     }

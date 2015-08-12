@@ -24,6 +24,7 @@
                 android:fitsSystemWindows="true"
                 app:contentScrim="@color/material_drawer_primary"
                 app:expandedTitleMargin="12dp"
+                app:expandedTitleTextAppearance="@style/HeaderTitleStyle"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
                 <ImageView

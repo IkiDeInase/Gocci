@@ -251,6 +251,7 @@
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:background="@color/gocci_button"
+            android:alpha="0.5"
             android:gravity="center">
 
             <TextView
