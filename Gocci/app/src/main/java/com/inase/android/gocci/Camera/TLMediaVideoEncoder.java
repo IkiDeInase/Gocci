@@ -200,11 +200,11 @@ public class TLMediaVideoEncoder extends TLMediaEncoder {
     public int getMaxBitrate() {
         if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_1080P)) {
             Log.e("解像度入りました", "1080P");
-            mMaxBitrate = 8000000;
+            mMaxBitrate = 2500000;
             return mMaxBitrate;
         } else if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_720P)) {
             Log.e("解像度入りました", "720P");
-            mMaxBitrate = 5000000;
+            mMaxBitrate = 2500000;
             return mMaxBitrate;
         } else if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_480P)) {
             Log.e("解像度入りました", "480P");

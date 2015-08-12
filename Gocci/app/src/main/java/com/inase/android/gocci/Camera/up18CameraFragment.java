@@ -437,6 +437,10 @@ public class up18CameraFragment extends Fragment implements ViewPager.OnPageChan
         mCameraView.onPause();
         super.onPause();
 
+        if (dialogBuilder.isShowing()) {
+            dialogBuilder.dismiss();
+        }
+
         if (isLocationUpdating) {
             stopLocationUpdates();
         }

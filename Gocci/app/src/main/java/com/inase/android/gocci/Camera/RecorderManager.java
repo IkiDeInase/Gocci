@@ -214,11 +214,11 @@ public class RecorderManager {
     public CamcorderProfile getBaseRecordingProfile() {
         if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_1080P)) {
             Log.e("解像度入りました", "1080P");
-            mBitrate = 8000000;
+            mBitrate = 2500000;
             return CamcorderProfile.get(CamcorderProfile.QUALITY_1080P);
         } else if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_720P)) {
             Log.e("解像度入りました", "720P");
-            mBitrate = 5000000;
+            mBitrate = 2500000;
             return CamcorderProfile.get(CamcorderProfile.QUALITY_720P);
         } else if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_480P)) {
             Log.e("解像度入りました", "480P");

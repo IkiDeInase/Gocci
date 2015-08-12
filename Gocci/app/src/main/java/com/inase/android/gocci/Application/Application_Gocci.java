@@ -17,8 +17,9 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.crashlytics.android.Crashlytics;
 import com.facebook.FacebookSdk;
 import com.google.android.gms.analytics.GoogleAnalytics;
-import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.google.android.gms.iid.InstanceID;
 import com.inase.android.gocci.Event.BusHolder;
 import com.inase.android.gocci.Event.CreateProviderFinishEvent;
 import com.inase.android.gocci.Event.SNSMatchFinishEvent;
@@ -35,6 +36,7 @@ import org.apache.http.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -78,6 +80,7 @@ public class Application_Gocci extends Application {
         }
         return transferUtility;
     }
+
     public double getFirstLatitude() {
         return mLatitude;
     }
@@ -88,49 +91,20 @@ public class Application_Gocci extends Application {
 
     private static final String PROPERTY_ID = "UA-63362687-1";
 
-    public enum TrackerName {
-        APP_TRACKER, // Tracker used only in this app.
-        GLOBAL_TRACKER, // Tracker used by all the apps from a company. eg: roll-up tracking.
-        ECOMMERCE_TRACKER, // Tracker used by all ecommerce transactions from a company.
-    }
-
-    HashMap<TrackerName, Tracker> mTrackers = new HashMap<TrackerName, Tracker>();
+    public static GoogleAnalytics analytics;
+    public static Tracker tracker;
 
     public Application_Gocci() {
         super();
     }
 
-    public synchronized Tracker getTracker(TrackerName trackerId) {
-        if (!mTrackers.containsKey(trackerId)) {
-
+    synchronized public Tracker getDefaultTracker() {
+        if (tracker == null) {
             GoogleAnalytics analytics = GoogleAnalytics.getInstance(this);
-            Tracker t = (trackerId == TrackerName.APP_TRACKER) ? analytics.newTracker(PROPERTY_ID)
-                    : (trackerId == TrackerName.GLOBAL_TRACKER) ? analytics.newTracker(R.xml.global_tracker)
-                    : analytics.newTracker(R.xml.ecommerce_tracker);
-            t.enableAdvertisingIdCollection(true);
-            mTrackers.put(trackerId, t);
-
+            // To enable debug logging use: adb shell setprop log.tag.GAv4 DEBUG
+            tracker = analytics.newTracker(R.xml.global_tracker);
         }
-        return mTrackers.get(trackerId);
-    }
-
-    public static void sendGAScreen(Context context, String screenName) {
-        Tracker t = ((Application_Gocci) context.getApplicationContext()).getTracker(Application_Gocci.TrackerName.APP_TRACKER);
-        t.setScreenName(screenName);
-        t.send(new HitBuilders.AppViewBuilder().build());
-    }
-
-    public static void sendGAEvent(Context context, String category, String action, String label) {
-        if (label.length() == 0) {
-            label = "-";
-        }
-        Tracker t = ((Application_Gocci) context.getApplicationContext()).getTracker(TrackerName.APP_TRACKER);
-        t.send(new HitBuilders.EventBuilder()
-                .setCategory(category)
-                .setAction(action)
-                .setLabel(label)
-                .setValue(0)
-                .build());
+        return tracker;
     }
 
     public static void SNSInit(final Context context, final String providerName, final String token) {
@@ -264,6 +238,14 @@ public class Application_Gocci extends Application {
                 new Crashlytics());
 
         FacebookSdk.sdkInitialize(this);
+
+        analytics = GoogleAnalytics.getInstance(this);
+        analytics.setLocalDispatchPeriod(1800);
+
+        tracker = analytics.newTracker(PROPERTY_ID); // Replace with actual tracker/property Id
+        tracker.enableExceptionReporting(true);
+        tracker.enableAdvertisingIdCollection(true);
+        tracker.enableAutoActivityTracking(true);
 
     }
 

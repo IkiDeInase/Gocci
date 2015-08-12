@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
 import com.facebook.AccessToken;
@@ -58,7 +59,7 @@ public class SplashActivity extends AppCompatActivity {
                     Const.ANALYTICS_ID, //Amazon Mobile Analytics App ID
                     Const.IDENTITY_POOL_ID //Amazon Cognito Identity Pool ID
             );
-        } catch(InitializationException ex) {
+        } catch (InitializationException ex) {
             Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
         }
 
@@ -192,7 +193,7 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if(analytics != null) {
+        if (analytics != null) {
             analytics.getSessionClient().resumeSession();
         }
         BusHolder.get().register(self);
@@ -201,7 +202,7 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        if(analytics != null) {
+        if (analytics != null) {
             analytics.getSessionClient().pauseSession();
             analytics.getEventClient().submitEvents();
         }

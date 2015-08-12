@@ -334,6 +334,10 @@ public class down18CameraFragment extends Fragment implements ViewPager.OnPageCh
     public void onPause() {
         super.onPause();
 
+        if (dialogBuilder.isShowing()) {
+            dialogBuilder.dismiss();
+        }
+
         if (isLocationUpdating) {
             stopLocationUpdates();
         }

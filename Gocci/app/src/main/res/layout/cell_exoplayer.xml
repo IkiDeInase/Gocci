@@ -3,13 +3,15 @@
     android:id="@+id/videoFrame"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginRight="0.1dp"
-    android:layout_marginLeft="0.1dp">
+    android:background="@color/solid_black"
+    >
 
     <com.inase.android.gocci.VideoPlayer.SquareExoVideoView
         android:id="@+id/square_video_exo"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginRight="0.00001dp"
+        android:layout_marginLeft="0.00001dp"
         android:layout_gravity="center_horizontal" />
 
     <com.inase.android.gocci.Base.SquareImageView
