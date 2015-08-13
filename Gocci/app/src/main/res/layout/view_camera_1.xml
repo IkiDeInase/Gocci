@@ -1,13 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="155.0dip"
-    android:background="@color/capture_background">
-
-    <FrameLayout
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_centerInParent="true">
+<FrameLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
         <com.inase.android.gocci.Base.CircleProgressBar
             android:layout_width="match_parent"
@@ -22,5 +17,3 @@
             android:layout_gravity="center"
             android:background="@drawable/ic_new_camera2x" />
     </FrameLayout>
-
-</RelativeLayout>

@@ -4,7 +4,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/capture_background">
+    android:background="#424242">
 
     <com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner
         android:layout_width="match_parent"
@@ -22,8 +22,9 @@
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:id="@+id/restname_spinner"
-        android:layout_marginTop="8dp"
-        android:textSize="@dimen/small_text" />
+        android:layout_marginTop="56dp"
+        android:textSize="@dimen/small_text"
+        android:focusableInTouchMode="true" />
 
     <RelativeLayout
         android:layout_width="match_parent"

@@ -31,6 +31,14 @@ public class MySurfaceView extends SurfaceView implements
         initCameraManager(paramContext);
     }
 
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        int width = MeasureSpec.getSize(widthMeasureSpec);
+        setMeasuredDimension(width, width);
+    }
+
+
     public void initCameraManager(Context paramContext) {
         cameraManager = down18CameraFragment.getCameraManager();
         getHolder().addCallback(this);

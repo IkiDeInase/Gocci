@@ -17,7 +17,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
-import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -53,9 +52,6 @@ import com.inase.android.gocci.R;
 import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.ogaclejapan.smarttablayout.SmartTabLayout;
-import com.ogaclejapan.smarttablayout.utils.ViewPagerItemAdapter;
-import com.ogaclejapan.smarttablayout.utils.ViewPagerItems;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner;
@@ -71,8 +67,9 @@ import java.util.List;
 
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
+import me.next.slidebottompanel.SlideBottomPanel;
 
-public class up18CameraFragment extends Fragment implements ViewPager.OnPageChangeListener, SensorEventListener, LocationListener,
+public class up18CameraFragment extends Fragment implements SensorEventListener, LocationListener,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         ResultCallback<LocationSettingsResult> {
@@ -130,13 +127,6 @@ public class up18CameraFragment extends Fragment implements ViewPager.OnPageChan
     private double latitude;
     private double longitude;
 
-    private boolean onScroll = false;
-
-    private boolean isPlaying = false;
-    private boolean isFirst = true;
-
-    private ViewPagerItemAdapter adapter;
-
     public static final int MAX_TIME = 7000;
     private boolean isMax = false;
     private long videoStartTime;
@@ -150,6 +140,10 @@ public class up18CameraFragment extends Fragment implements ViewPager.OnPageChan
     private MaterialEditText edit_value;
     private MaterialEditText edit_comment;
     private ImageButton restaddButton;
+
+    private ArrayAdapter<String> restAdapter;
+
+    private SlideBottomPanel sbv;
 
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
 
@@ -195,7 +189,6 @@ public class up18CameraFragment extends Fragment implements ViewPager.OnPageChan
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_camera_up18, container, false);
-        isFirst = true;
 
         dialogBuilder = NiftyDialogBuilder.getInstance(getActivity());
         dialogBuilder
@@ -228,7 +221,6 @@ public class up18CameraFragment extends Fragment implements ViewPager.OnPageChan
                             @Override
                             public void onPositive(MaterialDialog dialog) {
                                 super.onPositive(dialog);
-                                isPlaying = false;
                                 getActivity().finish();
                             }
 
@@ -239,6 +231,66 @@ public class up18CameraFragment extends Fragment implements ViewPager.OnPageChan
                         }).show();
             }
         });
+
+        toukouButton = (ImageButton) rootView.findViewById(R.id.toukouButton);
+        progress = (CircleProgressBar) rootView.findViewById(R.id.circleProgress);
+
+        toukouButton.setOnTouchListener(mOnTouchListener);
+
+        sbv = (SlideBottomPanel) rootView.findViewById(R.id.sbv);
+
+        restname_spinner = (MaterialBetterSpinner) rootView.findViewById(R.id.restname_spinner);
+        category_spinner = (MaterialBetterSpinner) rootView.findViewById(R.id.category_spinner);
+        mood_spinner = (MaterialBetterSpinner) rootView.findViewById(R.id.mood_spinner);
+        edit_value = (MaterialEditText) rootView.findViewById(R.id.edit_value);
+        edit_comment = (MaterialEditText) rootView.findViewById(R.id.edit_comment);
+
+        restaddButton = (ImageButton) rootView.findViewById(R.id.restaddButton);
+
+        restname_spinner.setIconRight(R.drawable.ic_arrow_drop_down_white_24dp);
+        category_spinner.setIconRight(R.drawable.ic_arrow_drop_down_white_24dp);
+        mood_spinner.setIconRight(R.drawable.ic_arrow_drop_down_white_24dp);
+
+        final String[] CATEGORY = getResources().getStringArray(R.array.list_category);
+        final String[] MOOD = getResources().getStringArray(R.array.list_mood);
+
+        ArrayAdapter<String> categoryAdapter = new ArrayAdapter<String>(getActivity(),
+                android.R.layout.simple_dropdown_item_1line, CATEGORY);
+        category_spinner.setAdapter(categoryAdapter);
+        category_spinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                mCategory_id = position + 2;
+            }
+        });
+
+        ArrayAdapter<String> moodAdapter = new ArrayAdapter<>(getActivity(),
+                android.R.layout.simple_dropdown_item_1line, MOOD);
+        mood_spinner.setAdapter(moodAdapter);
+        mood_spinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                mTag_id = position + 2;
+            }
+        });
+
+        restAdapter = new ArrayAdapter<String>(getActivity(),
+                android.R.layout.simple_dropdown_item_1line);
+        restname_spinner.setAdapter(restAdapter);
+        restname_spinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                mRest_id = GocciCameraActivity.rest_id.get(position);
+            }
+        });
+
+        restaddButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createTenpo();
+            }
+        });
+        /*
         ViewPager viewPager = (ViewPager) rootView.findViewById(R.id.viewpager);
         viewPager.setOffscreenPageLimit(2);
         SmartTabLayout viewPagerTab = (SmartTabLayout) rootView.findViewById(R.id.viewpagertab);
@@ -252,6 +304,7 @@ public class up18CameraFragment extends Fragment implements ViewPager.OnPageChan
         viewPagerTab.setViewPager(viewPager);
         viewPagerTab.setOnPageChangeListener(this);
 
+*/
         handler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
@@ -314,7 +367,7 @@ public class up18CameraFragment extends Fragment implements ViewPager.OnPageChan
                         GocciCameraActivity.restname.add(rest_name);
                         GocciCameraActivity.rest_id.add(rest_id);
                     }
-
+                    restAdapter.addAll(GocciCameraActivity.restname);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -332,13 +385,11 @@ public class up18CameraFragment extends Fragment implements ViewPager.OnPageChan
         //recorderManager.reset();
 
         //ここで記入済みの値を持って行こう
-        if (onScroll) {
-            if (edit_value.getText().length() != 0) {
-                mValue = edit_value.getText().toString();
-            }
-            if (edit_comment.getText().length() != 0) {
-                mMemo = edit_comment.getText().toString();
-            }
+        if (edit_value.getText().length() != 0) {
+            mValue = edit_value.getText().toString();
+        }
+        if (edit_comment.getText().length() != 0) {
+            mMemo = edit_comment.getText().toString();
         }
 
         Intent intent = new Intent(getActivity(), CameraPreviewActivity.class);
@@ -813,87 +864,6 @@ public class up18CameraFragment extends Fragment implements ViewPager.OnPageChan
         return during;
     }
 
-    @Override
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-        if (isFirst && position == 0) {
-            View page = adapter.getPage(position);
-            toukouButton = (ImageButton) page.findViewById(R.id.toukouButton);
-            progress = (CircleProgressBar) page.findViewById(R.id.circleProgress);
-
-            toukouButton.setOnTouchListener(mOnTouchListener);
-
-            isFirst = false;
-        }
-    }
-
-    @Override
-    public void onPageSelected(int position) {
-        View page = adapter.getPage(position);
-
-        switch (position) {
-            case 0:
-
-                break;
-            case 1:
-                onScroll = true;
-
-                restname_spinner = (MaterialBetterSpinner) page.findViewById(R.id.restname_spinner);
-                category_spinner = (MaterialBetterSpinner) page.findViewById(R.id.category_spinner);
-                mood_spinner = (MaterialBetterSpinner) page.findViewById(R.id.mood_spinner);
-                edit_value = (MaterialEditText) page.findViewById(R.id.edit_value);
-                edit_comment = (MaterialEditText) page.findViewById(R.id.edit_comment);
-
-                restaddButton = (ImageButton) page.findViewById(R.id.restaddButton);
-
-                restname_spinner.setIconRight(R.drawable.ic_arrow_drop_down_white_24dp);
-                category_spinner.setIconRight(R.drawable.ic_arrow_drop_down_white_24dp);
-                mood_spinner.setIconRight(R.drawable.ic_arrow_drop_down_white_24dp);
-
-                final String[] CATEGORY = getResources().getStringArray(R.array.list_category);
-                final String[] MOOD = getResources().getStringArray(R.array.list_mood);
-
-                ArrayAdapter<String> categoryAdapter = new ArrayAdapter<String>(getActivity(),
-                        android.R.layout.simple_dropdown_item_1line, CATEGORY);
-                category_spinner.setAdapter(categoryAdapter);
-                category_spinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        mCategory_id = position + 2;
-                    }
-                });
-
-                ArrayAdapter<String> moodAdapter = new ArrayAdapter<>(getActivity(),
-                        android.R.layout.simple_dropdown_item_1line, MOOD);
-                mood_spinner.setAdapter(moodAdapter);
-                mood_spinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        mTag_id = position + 2;
-                    }
-                });
-
-                ArrayAdapter<String> restAdapter = new ArrayAdapter<>(getActivity(),
-                        android.R.layout.simple_dropdown_item_1line, GocciCameraActivity.restname);
-                restname_spinner.setAdapter(restAdapter);
-                restname_spinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        mRest_id = GocciCameraActivity.rest_id.get(position);
-                    }
-                });
-
-                restaddButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        createTenpo();
-                    }
-                });
-
-                break;
-        }
-
-    }
-
     private void createTenpo() {
         new MaterialDialog.Builder(getActivity())
                 .title("店舗追加")
@@ -956,17 +926,6 @@ public class up18CameraFragment extends Fragment implements ViewPager.OnPageChan
                     }
                 })
                 .show();
-    }
-
-    @Override
-    public void onPageScrollStateChanged(int state) {
-        if (ViewPager.SCROLL_STATE_DRAGGING == state) {
-            //ボタンクリックできないように
-            toukouButton.setClickable(false);
-        } else {
-            toukouButton.setClickable(true);
-        }
-
     }
 
     private boolean checkPlayServices() {

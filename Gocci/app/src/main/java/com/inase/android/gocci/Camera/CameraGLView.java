@@ -67,6 +67,13 @@ public final class CameraGLView extends GLSurfaceView {
     }
 
     @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        int width = MeasureSpec.getSize(widthMeasureSpec);
+        setMeasuredDimension(width, width);
+    }
+
+    @Override
     public void onResume() {
         if (DEBUG) Log.v(TAG, "onResume:");
         super.onResume();

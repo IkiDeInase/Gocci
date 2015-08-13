@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:wheel="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.inase.android.gocci.Camera.MySurfaceView
+        android:id="@+id/cameraView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <RelativeLayout
+        android:id="@+id/top_mask"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/capture_top_mask">
+
+        <ImageView
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_centerInParent="true"
+            android:src="@drawable/ic_gocci_white" />
+
+        <LinearLayout
+            android:layout_width="56.0dip"
+            android:layout_height="fill_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:gravity="center">
+
+            <Button
+                android:id="@+id/backButton"
+                android:layout_width="32.0dip"
+                android:layout_height="32.0dip"
+                android:background="@drawable/btn_capture_x" />
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/bottom_mask"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/cameraView"
+        android:layout_gravity="bottom"
+        android:background="#424242">
+
+        <include
+            layout="@layout/view_camera_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="32dp" />
+
+    </RelativeLayout>
+
+    <com.pnikosis.materialishprogress.ProgressWheel
+        android:id="@+id/cameraprogress_wheel"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        wheel:matProg_barColor="@color/gocci_header"
+        wheel:matProg_progressIndeterminate="true" />
+</RelativeLayout>

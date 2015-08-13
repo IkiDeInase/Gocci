@@ -39,6 +39,7 @@ import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.share.Sharer;
 import com.facebook.share.widget.ShareDialog;
+import com.flaviofaria.kenburnsview.KenBurnsView;
 import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
@@ -59,6 +60,7 @@ import com.inase.android.gocci.Event.NotificationNumberEvent;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.VideoPlayer.HlsRendererBuilder;
 import com.inase.android.gocci.VideoPlayer.VideoPlayer;
+import com.inase.android.gocci.View.CustomKenBurnsView;
 import com.inase.android.gocci.View.DrawerProfHeader;
 import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;
@@ -131,7 +133,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
     private final FlexibleTenpoActivity self = this;
 
     private CollapsingToolbarLayout collapsingToolbarLayout;
-
+    private CustomKenBurnsView kenBurnsView;
     private AppBarLayout appBarLayout;
 
     private VideoPlayer player;
@@ -321,6 +323,8 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
 
         collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         collapsingToolbarLayout.setTitle(intent.getStringExtra("rest_name"));
+
+        kenBurnsView = (CustomKenBurnsView) findViewById(R.id.background_Image);
 
         cheer_number = (TextView) findViewById(R.id.cheer_number);
         cheer_number.setText(String.valueOf(mTotal_cheer_num));

@@ -18,7 +18,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.provider.Settings;
-import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -59,9 +58,6 @@ import com.inase.android.gocci.R;
 import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.ogaclejapan.smarttablayout.SmartTabLayout;
-import com.ogaclejapan.smarttablayout.utils.ViewPagerItemAdapter;
-import com.ogaclejapan.smarttablayout.utils.ViewPagerItems;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner;
@@ -86,11 +82,12 @@ import java.util.Locale;
 
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
+import me.next.slidebottompanel.SlideBottomPanel;
 
 /**
  * Created by kinagafuji on 15/06/26.
  */
-public class down18CameraFragment extends Fragment implements ViewPager.OnPageChangeListener, SensorEventListener, LocationListener,
+public class down18CameraFragment extends Fragment implements SensorEventListener, LocationListener,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         ResultCallback<LocationSettingsResult> {
@@ -114,13 +111,6 @@ public class down18CameraFragment extends Fragment implements ViewPager.OnPageCh
     private String mMemo = "";
     private boolean mIsnewRestname = false;
 
-    private boolean onScroll = false;
-
-    private boolean isPlaying = false;
-    private boolean isFirst = true;
-
-    private ViewPagerItemAdapter adapter;
-
     private ImageButton toukouButton;
 
     private double latitude;
@@ -132,6 +122,10 @@ public class down18CameraFragment extends Fragment implements ViewPager.OnPageCh
     private MaterialEditText edit_value;
     private MaterialEditText edit_comment;
     private ImageButton restaddButton;
+
+    private ArrayAdapter<String> restAdapter;
+
+    private SlideBottomPanel sbv;
 
     private SensorManager mSensorManager;
     private boolean mIsMagSensor;
@@ -171,11 +165,13 @@ public class down18CameraFragment extends Fragment implements ViewPager.OnPageCh
 
     private LocationManager mLocationManager;
 
+    public down18CameraFragment() {
+
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        isFirst = true;
-
         mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         if (checkPlayServices()) {
             // Building the GoogleApi client
@@ -213,18 +209,93 @@ public class down18CameraFragment extends Fragment implements ViewPager.OnPageCh
             }
         });
 
-        ViewPager viewPager = (ViewPager) rootView.findViewById(R.id.viewpager);
-        viewPager.setOffscreenPageLimit(2);
-        SmartTabLayout viewPagerTab = (SmartTabLayout) rootView.findViewById(R.id.viewpagertab);
+        toukouButton = (ImageButton) rootView.findViewById(R.id.toukouButton);
+        progress = (CircleProgressBar) rootView.findViewById(R.id.circleProgress);
 
-        adapter = new ViewPagerItemAdapter(ViewPagerItems.with(getActivity())
-                .add(R.string.lat, R.layout.view_camera_1)
-                .add(R.string.lon, R.layout.view_camera_2)
-                .create());
+        toukouButton.setOnTouchListener(new View.OnTouchListener() {
 
-        viewPager.setAdapter(adapter);
-        viewPagerTab.setViewPager(viewPager);
-        viewPagerTab.setOnPageChangeListener(this);
+            @Override
+            public boolean onTouch(View arg0, MotionEvent motionEvent) {
+                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                    try {
+                        // sign.setPressed(true);
+                        new Handler().post(new Runnable() {
+                            @Override
+                            public void run() {
+                                cameraManager.getCamera().autoFocus(null);
+                            }
+                        });
+                        recorderManager.startRecord(true);
+
+                    } finally {
+                        muteAll(true);
+                    }
+                } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                    try {
+                        // sign.setPressed(false);
+                        recorderManager.stopRecord();
+                    } finally {
+                        muteAll(false);
+                        //
+                    }
+                }
+                return true;
+            }
+        });
+
+        sbv = (SlideBottomPanel) rootView.findViewById(R.id.sbv);
+
+        restname_spinner = (MaterialBetterSpinner) rootView.findViewById(R.id.restname_spinner);
+        category_spinner = (MaterialBetterSpinner) rootView.findViewById(R.id.category_spinner);
+        mood_spinner = (MaterialBetterSpinner) rootView.findViewById(R.id.mood_spinner);
+        edit_value = (MaterialEditText) rootView.findViewById(R.id.edit_value);
+        edit_comment = (MaterialEditText) rootView.findViewById(R.id.edit_comment);
+
+        restaddButton = (ImageButton) rootView.findViewById(R.id.restaddButton);
+
+        restname_spinner.setIconRight(R.drawable.ic_arrow_drop_down_white_24dp);
+        category_spinner.setIconRight(R.drawable.ic_arrow_drop_down_white_24dp);
+        mood_spinner.setIconRight(R.drawable.ic_arrow_drop_down_white_24dp);
+
+        final String[] CATEGORY = getResources().getStringArray(R.array.list_category);
+        final String[] MOOD = getResources().getStringArray(R.array.list_mood);
+
+        ArrayAdapter<String> categoryAdapter = new ArrayAdapter<String>(getActivity(),
+                android.R.layout.simple_dropdown_item_1line, CATEGORY);
+        category_spinner.setAdapter(categoryAdapter);
+        category_spinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                mCategory_id = position + 2;
+            }
+        });
+
+        ArrayAdapter<String> moodAdapter = new ArrayAdapter<>(getActivity(),
+                android.R.layout.simple_dropdown_item_1line, MOOD);
+        mood_spinner.setAdapter(moodAdapter);
+        mood_spinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                mTag_id = position + 2;
+            }
+        });
+
+        restAdapter = new ArrayAdapter<String>(getActivity(),
+                android.R.layout.simple_dropdown_item_1line);
+        restname_spinner.setAdapter(restAdapter);
+        restname_spinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                mRest_id = GocciCameraActivity.rest_id.get(position);
+            }
+        });
+
+        restaddButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createTenpo();
+            }
+        });
 
         handler = new Handler() {
             @Override
@@ -447,7 +518,7 @@ public class down18CameraFragment extends Fragment implements ViewPager.OnPageCh
                         GocciCameraActivity.restname.add(rest_name);
                         GocciCameraActivity.rest_id.add(rest_id);
                     }
-
+                    restAdapter.addAll(GocciCameraActivity.restname);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -501,7 +572,6 @@ public class down18CameraFragment extends Fragment implements ViewPager.OnPageCh
                     @Override
                     public void onPositive(MaterialDialog dialog) {
                         super.onPositive(dialog);
-                        isPlaying = false;
                         recorderManager.reset();
                         getActivity().finish();
                     }
@@ -514,13 +584,11 @@ public class down18CameraFragment extends Fragment implements ViewPager.OnPageCh
     }
 
     public void onFinishPressed() {
-        if (!isPlaying && recorderManager.getVideoTempFiles().size() != 0) {
+        if (recorderManager.getVideoTempFiles().size() != 0) {
             Toast.makeText(getActivity(), "確認画面に進みます", Toast.LENGTH_SHORT).show();
             combineFiles();
-            isPlaying = true;
         } else {
             recorderManager.reset();
-            isPlaying = false;
         }
     }
 
@@ -528,13 +596,11 @@ public class down18CameraFragment extends Fragment implements ViewPager.OnPageCh
         recorderManager.reset();
 
         //ここで記入済みの値を持って行こう
-        if (onScroll) {
-            if (edit_value.getText().length() != 0) {
-                mValue = edit_value.getText().toString();
-            }
-            if (edit_comment.getText().length() != 0) {
-                mMemo = edit_comment.getText().toString();
-            }
+        if (edit_value.getText().length() != 0) {
+            mValue = edit_value.getText().toString();
+        }
+        if (edit_comment.getText().length() != 0) {
+            mMemo = edit_comment.getText().toString();
         }
 
         Intent intent = new Intent(getActivity(), CameraPreviewActivity.class);
@@ -625,115 +691,6 @@ public class down18CameraFragment extends Fragment implements ViewPager.OnPageCh
         handler.removeCallbacks(progressRunnable);
     }
 
-    @Override
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-        if (isFirst && position == 0) {
-            View page = adapter.getPage(position);
-            toukouButton = (ImageButton) page.findViewById(R.id.toukouButton);
-            progress = (CircleProgressBar) page.findViewById(R.id.circleProgress);
-
-            toukouButton.setOnTouchListener(new View.OnTouchListener() {
-
-                @Override
-                public boolean onTouch(View arg0, MotionEvent motionEvent) {
-                    if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                        try {
-                            // sign.setPressed(true);
-                            new Handler().post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    cameraManager.getCamera().autoFocus(null);
-                                }
-                            });
-                            recorderManager.startRecord(true);
-
-                        } finally {
-                            muteAll(true);
-                        }
-                    } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                        try {
-                            // sign.setPressed(false);
-                            recorderManager.stopRecord();
-                        } finally {
-                            muteAll(false);
-                            //
-                        }
-                    }
-                    return true;
-                }
-            });
-
-            isFirst = false;
-        }
-    }
-
-    @Override
-    public void onPageSelected(int position) {
-        View page = adapter.getPage(position);
-
-        switch (position) {
-            case 0:
-
-                break;
-            case 1:
-                onScroll = true;
-                restname_spinner = (MaterialBetterSpinner) page.findViewById(R.id.restname_spinner);
-                category_spinner = (MaterialBetterSpinner) page.findViewById(R.id.category_spinner);
-                mood_spinner = (MaterialBetterSpinner) page.findViewById(R.id.mood_spinner);
-                edit_value = (MaterialEditText) page.findViewById(R.id.edit_value);
-                edit_comment = (MaterialEditText) page.findViewById(R.id.edit_comment);
-
-                restaddButton = (ImageButton) page.findViewById(R.id.restaddButton);
-
-                restname_spinner.setIconRight(R.drawable.ic_arrow_drop_down_white_24dp);
-                category_spinner.setIconRight(R.drawable.ic_arrow_drop_down_white_24dp);
-                mood_spinner.setIconRight(R.drawable.ic_arrow_drop_down_white_24dp);
-
-                String[] CATEGORY = getResources().getStringArray(R.array.list_category);
-                String[] MOOD = getResources().getStringArray(R.array.list_mood);
-
-                ArrayAdapter<String> categoryAdapter = new ArrayAdapter<>(getActivity(),
-                        android.R.layout.simple_dropdown_item_1line, CATEGORY);
-                category_spinner.setAdapter(categoryAdapter);
-                category_spinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        mCategory_id = position + 2;
-                    }
-                });
-
-                ArrayAdapter<String> moodAdapter = new ArrayAdapter<>(getActivity(),
-                        android.R.layout.simple_dropdown_item_1line, MOOD);
-                mood_spinner.setAdapter(moodAdapter);
-                mood_spinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        mTag_id = position + 2;
-                    }
-                });
-
-                ArrayAdapter<String> restAdapter = new ArrayAdapter<>(getActivity(),
-                        android.R.layout.simple_dropdown_item_1line, GocciCameraActivity.restname);
-                restname_spinner.setAdapter(restAdapter);
-                restname_spinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        mRest_id = GocciCameraActivity.rest_id.get(position);
-                    }
-                });
-
-                restaddButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        createTenpo();
-                    }
-                });
-
-                break;
-        }
-
-    }
-
     private void createTenpo() {
         new MaterialDialog.Builder(getActivity())
                 .title("店舗追加")
@@ -795,17 +752,6 @@ public class down18CameraFragment extends Fragment implements ViewPager.OnPageCh
                     }
                 })
                 .show();
-    }
-
-    @Override
-    public void onPageScrollStateChanged(int state) {
-        if (ViewPager.SCROLL_STATE_DRAGGING == state) {
-            //ボタンクリックできないように
-            toukouButton.setClickable(false);
-        } else {
-            toukouButton.setClickable(true);
-        }
-
     }
 
     private class ProgressRunnable implements Runnable {
