@@ -27,6 +27,7 @@ import com.inase.android.gocci.common.CacheManager;
 import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.squareup.leakcanary.LeakCanary;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 
@@ -224,6 +225,7 @@ public class Application_Gocci extends Application {
     public void onCreate() {
         super.onCreate();
         Log.v(TAG, "Gocci起動");
+        LeakCanary.install(this);
         CacheManager.getInstance(getApplicationContext()).clearCache();
         //Example: single kit
         TwitterAuthConfig authConfig =

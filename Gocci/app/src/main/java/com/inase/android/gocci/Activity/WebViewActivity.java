@@ -24,7 +24,7 @@ public class WebViewActivity extends AppCompatActivity {
     private static MobileAnalyticsManager analytics;
 
     public static void startWebViewActivity(int category, Activity startingActivity) {
-        Intent intent = new Intent(startingActivity, FlexibleUserProfActivity.class);
+        Intent intent = new Intent(startingActivity, WebViewActivity.class);
         intent.putExtra("category", category);
         startingActivity.startActivity(intent);
         startingActivity.overridePendingTransition(R.anim.activity_in, R.anim.activity_out);
