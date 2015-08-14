@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -50,7 +51,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class ListActivity extends AppCompatActivity {
+public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOffsetChangedListener {
 
     private int mCategory;
     private int mId;
@@ -67,6 +68,8 @@ public class ListActivity extends AppCompatActivity {
     private UserCheerAdapter usercheerAdapter;
     private WantAdapter wantAdapter;
     private RestCheerAdapter restcheerAdapter;
+
+    private AppBarLayout appBarLayout;
 
     private Drawer result;
 
@@ -133,6 +136,7 @@ public class ListActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setHasFixedSize(true);
         refresh = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
+        refresh.setColorSchemeResources(R.color.gocci_1, R.color.gocci_2, R.color.gocci_3, R.color.gocci_4);
         refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -145,6 +149,8 @@ public class ListActivity extends AppCompatActivity {
                 }
             }
         });
+
+        appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
@@ -245,6 +251,8 @@ public class ListActivity extends AppCompatActivity {
             analytics.getSessionClient().pauseSession();
             analytics.getEventClient().submitEvents();
         }
+
+        appBarLayout.removeOnOffsetChangedListener(this);
     }
 
     @Override
@@ -253,6 +261,8 @@ public class ListActivity extends AppCompatActivity {
         if (analytics != null) {
             analytics.getSessionClient().resumeSession();
         }
+
+        appBarLayout.addOnOffsetChangedListener(this);
     }
 
     @Override
@@ -730,6 +740,11 @@ public class ListActivity extends AppCompatActivity {
 
         });
 
+    }
+
+    @Override
+    public void onOffsetChanged(AppBarLayout appBarLayout, int i) {
+        refresh.setEnabled(i == 0);
     }
 
     public static class FollowFollowerViewHolder extends RecyclerView.ViewHolder {

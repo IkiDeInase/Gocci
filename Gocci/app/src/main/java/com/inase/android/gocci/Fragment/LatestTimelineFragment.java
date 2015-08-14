@@ -75,6 +75,8 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private ProgressWheel progress;
 
+    private AppBarLayout appBarLayout;
+
     private Point mDisplaySize;
     private String mPlayingPostId;
     private boolean mPlayBlockFlag;
@@ -212,6 +214,8 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
 
         fab = (FloatingActionButton) getActivity().findViewById(R.id.toukouButton);
 
+        appBarLayout = (AppBarLayout) getActivity().findViewById(R.id.appbar);
+
         mLatestTimelineAdapter = new LatestTimelineAdapter(getActivity());
 
         if (Util.getConnectedState(getActivity()) != Util.NetworkStatus.OFF) {
@@ -224,6 +228,7 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
         }
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.gocci_1, R.color.gocci_2, R.color.gocci_3, R.color.gocci_4);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -252,6 +257,8 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
         // Subscriberとして登録する
         BusHolder.get().register(this);
         audioCapabilitiesReceiver.register();
+
+        appBarLayout.addOnOffsetChangedListener(this);
     }
 
     @Override
@@ -265,6 +272,8 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
         releasePlayer();
         audioCapabilitiesReceiver.unregister();
         //getPlayingViewHolder().mVideoThumbnail.setVisibility(View.VISIBLE);
+
+        appBarLayout.removeOnOffsetChangedListener(this);
     }
 
     @Override
@@ -558,11 +567,7 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
 
     @Override
     public void onOffsetChanged(AppBarLayout appBarLayout, int i) {
-        if (i == 0) {
-            mSwipeRefreshLayout.setEnabled(true);
-        } else {
-            mSwipeRefreshLayout.setEnabled(false);
-        }
+        mSwipeRefreshLayout.setEnabled(i == 0);
     }
 
     @Override

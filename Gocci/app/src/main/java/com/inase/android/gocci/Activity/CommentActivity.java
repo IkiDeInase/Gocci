@@ -81,7 +81,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import io.fabric.sdk.android.Fabric;
 
-public class CommentActivity extends AppCompatActivity implements AudioCapabilitiesReceiver.Listener, ObservableScrollViewCallbacks {
+public class CommentActivity extends AppCompatActivity implements AudioCapabilitiesReceiver.Listener, ObservableScrollViewCallbacks, AppBarLayout.OnOffsetChangedListener {
 
     private ObservableRecyclerView mCommentRecyclerView;
     private LinearLayoutManager mLayoutManager;
@@ -94,6 +94,8 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
     private FloatingActionButton mCommentButton;
 
     private CommentActivity self = this;
+
+    private AppBarLayout appBarLayout;
 
     private Point mDisplaySize;
     private String mPlayingPostId;
@@ -110,8 +112,6 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
     private String title;
 
     private Drawer result;
-
-    private AppBarLayout appBarLayout;
 
     private VideoPlayer player;
     private boolean playerNeedsPrepare;
@@ -309,6 +309,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
         });
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.gocci_1, R.color.gocci_2, R.color.gocci_3, R.color.gocci_4);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -321,6 +322,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
                 }
             }
         });
+
         appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
 
         mCommentUrl = Const.getCommentAPI(mPost_id);
@@ -336,6 +338,8 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
             analytics.getSessionClient().resumeSession();
         }
         audioCapabilitiesReceiver.register();
+
+        appBarLayout.addOnOffsetChangedListener(this);
     }
 
     @Override
@@ -353,7 +357,9 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
         }
         releasePlayer();
         audioCapabilitiesReceiver.unregister();
-        getPlayingViewHolder().mVideoThumbnail.setVisibility(View.VISIBLE);
+        //getPlayingViewHolder().mVideoThumbnail.setVisibility(View.VISIBLE);
+
+        appBarLayout.removeOnOffsetChangedListener(this);
     }
 
     @Override
@@ -673,6 +679,11 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
         } else if (scrollState == ScrollState.DOWN) {
             mCommentButton.show();
         }
+    }
+
+    @Override
+    public void onOffsetChanged(AppBarLayout appBarLayout, int i) {
+        mSwipeRefreshLayout.setEnabled(i == 0);
     }
 
     static class CommentViewHolder extends RecyclerView.ViewHolder {

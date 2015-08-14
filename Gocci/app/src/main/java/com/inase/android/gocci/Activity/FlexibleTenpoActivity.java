@@ -377,6 +377,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
         });
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.gocci_1, R.color.gocci_2, R.color.gocci_3, R.color.gocci_4);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -715,11 +716,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
 
     @Override
     public void onOffsetChanged(AppBarLayout appBarLayout, int i) {
-        if (i == 0) {
-            mSwipeRefreshLayout.setEnabled(true);
-        } else {
-            mSwipeRefreshLayout.setEnabled(false);
-        }
+        mSwipeRefreshLayout.setEnabled(i == 0);
     }
 
     public class TenpoHeaderViewHolder extends RecyclerView.ViewHolder implements OnMapReadyCallback {

@@ -8,6 +8,7 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -73,7 +74,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import io.fabric.sdk.android.Fabric;
 
-public class FlexibleUserProfActivity extends AppCompatActivity implements AudioCapabilitiesReceiver.Listener {
+public class FlexibleUserProfActivity extends AppCompatActivity implements AudioCapabilitiesReceiver.Listener, AppBarLayout.OnOffsetChangedListener {
 
     private String mProfUrl;
 
@@ -82,6 +83,8 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
     private ArrayList<PostData> mUserProfusers = new ArrayList<PostData>();
     private LinearLayoutManager mLayoutManager;
     private SwipeRefreshLayout mSwipeRefreshLayout;
+
+    private AppBarLayout appBarLayout;
 
     private HeaderData headerUserData;
 
@@ -230,6 +233,8 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
         mUserProfRecyclerView.setHasFixedSize(true);
         mUserProfRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
 
+        appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
+
         getSignupAsync(FlexibleUserProfActivity.this);
 
         result = new DrawerBuilder()
@@ -332,6 +337,7 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
         });
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.gocci_1, R.color.gocci_2, R.color.gocci_3, R.color.gocci_4);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -360,6 +366,8 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
         releasePlayer();
         audioCapabilitiesReceiver.unregister();
         getPlayingViewHolder().mVideoThumbnail.setVisibility(View.VISIBLE);
+
+        appBarLayout.removeOnOffsetChangedListener(this);
     }
 
     @Override
@@ -370,6 +378,8 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
         }
         BusHolder.get().register(self);
         audioCapabilitiesReceiver.register();
+
+        appBarLayout.addOnOffsetChangedListener(this);
     }
 
     @Override
@@ -619,6 +629,11 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
             }
         }
         return viewHolder;
+    }
+
+    @Override
+    public void onOffsetChanged(AppBarLayout appBarLayout, int i) {
+        mSwipeRefreshLayout.setEnabled(i == 0);
     }
 
     static class UserProfHeaderViewHolder extends RecyclerView.ViewHolder {

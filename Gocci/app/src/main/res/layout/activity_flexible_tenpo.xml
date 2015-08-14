@@ -34,7 +34,6 @@
                     android:fitsSystemWindows="true"
                     android:scaleType="centerCrop"
                     android:src="@drawable/ic_background_login"
-                    app:imageRatio="1"
                     app:layout_collapseMode="parallax" />
 
                 <android.support.v7.widget.Toolbar

@@ -92,6 +92,8 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private ProgressWheel progress;
 
+    private AppBarLayout appBarLayout;
+
     private ImageView edit_background;
     private ImageView edit_picture;
     private TextView edit_username;
@@ -185,11 +187,14 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
             }
         });
 
+        appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
+
         progress = (ProgressWheel) findViewById(R.id.progress_wheel);
 
         getSignupAsync(this);//サインアップとJSON
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.gocci_1, R.color.gocci_2, R.color.gocci_3, R.color.gocci_4);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -253,6 +258,8 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
             analytics.getSessionClient().resumeSession();
         }
         BusHolder.get().register(self);
+
+        appBarLayout.addOnOffsetChangedListener(this);
     }
 
     @Override
@@ -263,6 +270,8 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
             analytics.getEventClient().submitEvents();
         }
         BusHolder.get().unregister(self);
+
+        appBarLayout.removeOnOffsetChangedListener(this);
     }
 
     @Subscribe
@@ -485,11 +494,7 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
 
     @Override
     public void onOffsetChanged(AppBarLayout appBarLayout, int i) {
-        if (i == 0) {
-            mSwipeRefreshLayout.setEnabled(true);
-        } else {
-            mSwipeRefreshLayout.setEnabled(false);
-        }
+        mSwipeRefreshLayout.setEnabled(i == 0);
     }
 
     static class MyProfHeaderViewHolder extends RecyclerView.ViewHolder {

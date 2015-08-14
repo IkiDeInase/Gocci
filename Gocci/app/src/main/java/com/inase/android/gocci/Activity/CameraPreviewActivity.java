@@ -126,8 +126,6 @@ public class CameraPreviewActivity extends AppCompatActivity {
 
         mVideoFile = new File(mVideoUrl);
 
-        postMovieBackground(CameraPreviewActivity.this);
-
         FacebookSdk.sdkInitialize(getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
         shareDialog = new ShareDialog(this);
@@ -227,6 +225,7 @@ public class CameraPreviewActivity extends AppCompatActivity {
         videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
+                postMovieBackground(CameraPreviewActivity.this);
                 mp.start();
                 mp.setLooping(true);
             }

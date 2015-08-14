@@ -93,4 +93,10 @@
     <color name="value">#ee8221</color>
     <color name="category">#2b77bf</color>
     <color name="atmosphere">#dd2c2b</color>
+
+    <color name="gocci_1">#fa927d</color>
+    <color name="gocci_2">#f97e64</color>
+    <color name="gocci_3">#f8694c</color>
+    <color name="gocci_4">#f75533</color>
+
 </resources>
