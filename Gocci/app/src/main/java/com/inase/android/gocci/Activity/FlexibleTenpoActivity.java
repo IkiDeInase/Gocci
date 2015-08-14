@@ -11,6 +11,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -132,6 +134,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
 
     private final FlexibleTenpoActivity self = this;
 
+    private CoordinatorLayout coordinatorLayout;
     private CollapsingToolbarLayout collapsingToolbarLayout;
     private CustomKenBurnsView kenBurnsView;
     private AppBarLayout appBarLayout;
@@ -392,6 +395,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
         });
 
         appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
+        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
     }
 
     @Override
@@ -496,7 +500,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
 
     @Subscribe
     public void subscribe(NotificationNumberEvent event) {
-        android.support.design.widget.Snackbar.make(mTenpoRecyclerView, event.mMessage, android.support.design.widget.Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(coordinatorLayout, event.mMessage, android.support.design.widget.Snackbar.LENGTH_SHORT).show();
     }
 
     @Override

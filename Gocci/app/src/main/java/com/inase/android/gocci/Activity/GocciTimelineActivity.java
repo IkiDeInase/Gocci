@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.MenuItemCompat;
@@ -56,6 +57,8 @@ public class GocciTimelineActivity extends AppCompatActivity {
     private Drawer result;
 
     private static MobileAnalyticsManager analytics;
+
+    private CoordinatorLayout coordinatorLayout;
 
     private static Handler sHandler = new Handler() {
         @Override
@@ -172,6 +175,8 @@ public class GocciTimelineActivity extends AppCompatActivity {
             }
         });
 
+        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
+
         fab = (FloatingActionButton) findViewById(R.id.toukouButton);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -209,8 +214,7 @@ public class GocciTimelineActivity extends AppCompatActivity {
 
     @Subscribe
     public void subscribe(NotificationNumberEvent event) {
-        Snackbar.make(fab, event.mMessage, Snackbar.LENGTH_SHORT).show();
-        fab.hide();
+        Snackbar.make(coordinatorLayout, event.mMessage, Snackbar.LENGTH_SHORT).show();
         //２1文字で改行っぽい
         notificationNumber.setVisibility(View.VISIBLE);
         notificationNumber.setText(String.valueOf(event.mNotificationNumber));

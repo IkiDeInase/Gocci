@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -69,6 +70,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
     private WantAdapter wantAdapter;
     private RestCheerAdapter restcheerAdapter;
 
+    private CoordinatorLayout coordinatorLayout;
     private AppBarLayout appBarLayout;
 
     private Drawer result;
@@ -150,6 +152,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
             }
         });
 
+        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
         appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
@@ -278,7 +281,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
     @Subscribe
     public void subscribe(NotificationNumberEvent event) {
-        Snackbar.make(mRecyclerView, event.mMessage, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(coordinatorLayout, event.mMessage, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override

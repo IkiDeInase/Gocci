@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -84,6 +85,7 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
     private LinearLayoutManager mLayoutManager;
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
+    private CoordinatorLayout coordinatorLayout;
     private AppBarLayout appBarLayout;
 
     private HeaderData headerUserData;
@@ -233,6 +235,7 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
         mUserProfRecyclerView.setHasFixedSize(true);
         mUserProfRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
 
+        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
         appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
 
         getSignupAsync(FlexibleUserProfActivity.this);
@@ -425,7 +428,7 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
 
     @Subscribe
     public void subscribe(NotificationNumberEvent event) {
-        Snackbar.make(mUserProfRecyclerView, event.mMessage, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(coordinatorLayout, event.mMessage, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override

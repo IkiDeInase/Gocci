@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -95,6 +96,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
 
     private CommentActivity self = this;
 
+    private CoordinatorLayout coordinatorLayout;
     private AppBarLayout appBarLayout;
 
     private Point mDisplaySize;
@@ -323,6 +325,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
             }
         });
 
+        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
         appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
 
         mCommentUrl = Const.getCommentAPI(mPost_id);
@@ -371,7 +374,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
 
     @Subscribe
     public void subscribe(NotificationNumberEvent event) {
-        Snackbar.make(mCommentButton, event.mMessage, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(coordinatorLayout, event.mMessage, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override

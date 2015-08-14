@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -92,6 +93,7 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private ProgressWheel progress;
 
+    private CoordinatorLayout coordinatorLayout;
     private AppBarLayout appBarLayout;
 
     private ImageView edit_background;
@@ -187,6 +189,7 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
             }
         });
 
+        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
         appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
 
         progress = (ProgressWheel) findViewById(R.id.progress_wheel);
@@ -276,7 +279,7 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
 
     @Subscribe
     public void subscribe(NotificationNumberEvent event) {
-        Snackbar.make(notificationNumber, event.mMessage, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(coordinatorLayout, event.mMessage, Snackbar.LENGTH_SHORT).show();
         notificationNumber.setVisibility(View.VISIBLE);
         notificationNumber.setText(String.valueOf(event.mNotificationNumber));
     }
