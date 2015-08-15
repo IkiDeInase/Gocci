@@ -616,6 +616,7 @@ public class down18CameraFragment extends Fragment implements SensorEventListene
         intent.putExtra("lon", longitude);
         startActivity(intent);
         getActivity().overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+        getActivity().finish();
     }
 
     private void combineFiles() {

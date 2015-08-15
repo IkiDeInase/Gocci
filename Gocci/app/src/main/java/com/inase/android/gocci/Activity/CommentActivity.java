@@ -748,7 +748,12 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
         private void bindHeader(final Const.ExoViewHolder holder, final PostData user) {
             holder.user_name.setText(user.getUsername());
             holder.datetime.setText(user.getPost_date());
-            holder.comment.setText(user.getMemo());
+
+            if (!user.getMemo().equals("none")) {
+                holder.comment.setText(user.getMemo());
+            } else {
+                holder.comment.setText("");
+            }
 
             Picasso.with(context)
                     .load(user.getProfile_img())

@@ -280,6 +280,9 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
     @Subscribe
     public void subscribe(NotificationNumberEvent event) {
         Snackbar.make(coordinatorLayout, event.mMessage, Snackbar.LENGTH_SHORT).show();
+        if (event.mMessage.equals("投稿が完了しました。")) {
+            getRefreshAsync(GocciMyprofActivity.this);
+        }
         notificationNumber.setVisibility(View.VISIBLE);
         notificationNumber.setText(String.valueOf(event.mNotificationNumber));
     }

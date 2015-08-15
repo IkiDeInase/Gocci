@@ -36,6 +36,7 @@ import com.inase.android.gocci.Activity.GocciTimelineActivity;
 import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.Base.RoundedTransformation;
 import com.inase.android.gocci.Event.BusHolder;
+import com.inase.android.gocci.Event.NotificationNumberEvent;
 import com.inase.android.gocci.Event.PageChangeVideoStopEvent;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.VideoPlayer.HlsRendererBuilder;
@@ -303,6 +304,13 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
                 }
                 Log.e("Otto発動", "動画再生停止");
                 break;
+        }
+    }
+
+    @Subscribe
+    public void subscribe(NotificationNumberEvent event) {
+        if (event.mMessage.equals("投稿が完了しました。")) {
+            getRefreshAsync(getActivity());
         }
     }
 
@@ -603,7 +611,11 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
 
             holder.datetime.setText(user.getPost_date());
 
-            holder.comment.setText(user.getMemo());
+            if (!user.getMemo().equals("none")) {
+                holder.comment.setText(user.getMemo());
+            } else {
+                holder.comment.setText("");
+            }
 
             Picasso.with(mContext)
                     .load(user.getProfile_img())

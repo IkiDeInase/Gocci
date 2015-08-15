@@ -17,9 +17,6 @@ import com.inase.android.gocci.Event.NotificationNumberEvent;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.common.SavedData;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 /**
  * Created by kinagafuji on 15/08/12.
  */
@@ -60,34 +57,28 @@ public class MyGcmListenerService extends GcmListenerService {
      * @param msg GCM message received.
      */
     private void sendNotification(String msg) {
-        try {
-            JSONObject json = new JSONObject(msg);
-            String message = json.getString("message");
+        int badge_num = SavedData.getNotification(getApplicationContext());
+        BusHolder.get().post(new NotificationNumberEvent(badge_num + 1, msg));
+        SavedData.setNotification(getApplicationContext(), badge_num + 1);
 
-            int badge_num = SavedData.getNotification(getApplicationContext());
-            BusHolder.get().post(new NotificationNumberEvent(badge_num + 1, message));
-            SavedData.setNotification(getApplicationContext(), badge_num + 1);
+        Intent intent = new Intent(this, SplashActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+                PendingIntent.FLAG_ONE_SHOT);
 
-            Intent intent = new Intent(this, SplashActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
-                    PendingIntent.FLAG_ONE_SHOT);
+        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.drawable.ic_gocci_push)
+                .setContentTitle("Gocciからのお知らせ")
+                .setContentText(msg)
+                .setAutoCancel(true)
+                .setSound(defaultSoundUri)
+                .setContentIntent(pendingIntent);
 
-            Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-                    .setSmallIcon(R.drawable.ic_gocci_push)
-                    .setContentTitle("Gocciからのお知らせ")
-                    .setContentText(message)
-                    .setAutoCancel(true)
-                    .setSound(defaultSoundUri)
-                    .setContentIntent(pendingIntent);
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-            NotificationManager notificationManager =
-                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
 
-            notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
     }
 }

@@ -89,7 +89,6 @@ public class CameraPreviewActivity extends AppCompatActivity {
     private CallbackManager callbackManager;
     private ShareDialog shareDialog;
 
-    private boolean isUpload;
     private boolean isError;
 
     private static MobileAnalyticsManager analytics;
@@ -109,7 +108,6 @@ public class CameraPreviewActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_camera_preview);
 
-        isUpload = false;
         isError = false;
 
         Intent intent = getIntent();
@@ -294,32 +292,31 @@ public class CameraPreviewActivity extends AppCompatActivity {
         toukou_ripple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
             @Override
             public void onComplete(RippleView rippleView) {
-                if (!isError) {
-                    if (isUpload) {
-                        if (mRest_id != 1) {
-                            if (edit_value.getText().length() != 0) {
-                                mValue = edit_value.getText().toString();
-                            } else {
-                                mValue = "0";
-                            }
-                            if (edit_comment.getText().length() != 0) {
-                                mMemo = edit_comment.getText().toString();
-                            } else {
-                                mMemo = "none";
-                            }
-                            if (cheerCheck.isChecked()) {
-                                mCheer_flag = 1;
-                            }
-                            postMovieAsync(CameraPreviewActivity.this);
+                if (Util.getConnectedState(CameraPreviewActivity.this) != Util.NetworkStatus.OFF) {
+                    if (isError) {
+                        isError = false;
+                        postMovieBackground(CameraPreviewActivity.this);
+                    }
+                    if (mRest_id != 1) {
+                        if (edit_value.getText().length() != 0) {
+                            mValue = edit_value.getText().toString();
                         } else {
-                            Toast.makeText(CameraPreviewActivity.this, "店名は入力してください", Toast.LENGTH_SHORT).show();
+                            mValue = "0";
                         }
+                        if (edit_comment.getText().length() != 0) {
+                            mMemo = edit_comment.getText().toString();
+                        } else {
+                            mMemo = "none";
+                        }
+                        if (cheerCheck.isChecked()) {
+                            mCheer_flag = 1;
+                        }
+                        postMovieAsync(CameraPreviewActivity.this);
                     } else {
-                        Toast.makeText(CameraPreviewActivity.this, "動画の準備が終わるまで少しお待ち下さい", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(CameraPreviewActivity.this, "店名は入力してください", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    isError = false;
-                    postMovieBackground(CameraPreviewActivity.this);
+                    Toast.makeText(CameraPreviewActivity.this, "回線が悪いようです。。。", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -438,8 +435,6 @@ public class CameraPreviewActivity extends AppCompatActivity {
             @Override
             public void onStateChanged(int id, TransferState state) {
                 if (state == TransferState.COMPLETED) {
-                    toukou_ripple.setAlpha(1);
-                    isUpload = true;
                     isError = false;
                 }
             }
@@ -452,7 +447,7 @@ public class CameraPreviewActivity extends AppCompatActivity {
             @Override
             public void onError(int id, Exception ex) {
                 isError = true;
-                Toast.makeText(CameraPreviewActivity.this, "動画の準備に失敗しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(CameraPreviewActivity.this, "回線が悪いようです。。。", Toast.LENGTH_SHORT).show();
             }
         });
     }

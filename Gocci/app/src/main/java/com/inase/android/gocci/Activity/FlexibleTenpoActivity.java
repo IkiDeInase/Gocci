@@ -915,7 +915,11 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
 
             holder.datetime.setText(user.getPost_date());
 
-            holder.comment.setText(user.getMemo());
+            if (!user.getMemo().equals("none")) {
+                holder.comment.setText(user.getMemo());
+            } else {
+                holder.comment.setText("");
+            }
 
             Picasso.with(FlexibleTenpoActivity.this)
                     .load(user.getProfile_img())

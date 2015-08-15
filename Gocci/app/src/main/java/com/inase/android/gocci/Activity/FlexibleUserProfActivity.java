@@ -787,7 +787,12 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
         private void bindPost(final Const.ExoViewHolder viewHolder, final int position, final PostData user) {
             viewHolder.user_name.setText(user.getUsername());
             viewHolder.datetime.setText(user.getPost_date());
-            viewHolder.comment.setText(user.getMemo());
+
+            if (!user.getMemo().equals("none")) {
+                viewHolder.comment.setText(user.getMemo());
+            } else {
+                viewHolder.comment.setText("");
+            }
 
             Picasso.with(mContext)
                     .load(user.getProfile_img())

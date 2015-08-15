@@ -405,6 +405,7 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
         intent.putExtra("lon", longitude);
         startActivity(intent);
         getActivity().overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+        getActivity().finish();
     }
 
     @Override
