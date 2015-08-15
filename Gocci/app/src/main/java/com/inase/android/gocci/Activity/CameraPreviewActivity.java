@@ -223,7 +223,6 @@ public class CameraPreviewActivity extends AppCompatActivity {
         videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
-                postMovieBackground(CameraPreviewActivity.this);
                 mp.start();
                 mp.setLooping(true);
             }
@@ -293,10 +292,6 @@ public class CameraPreviewActivity extends AppCompatActivity {
             @Override
             public void onComplete(RippleView rippleView) {
                 if (Util.getConnectedState(CameraPreviewActivity.this) != Util.NetworkStatus.OFF) {
-                    if (isError) {
-                        isError = false;
-                        postMovieBackground(CameraPreviewActivity.this);
-                    }
                     if (mRest_id != 1) {
                         if (edit_value.getText().length() != 0) {
                             mValue = edit_value.getText().toString();
@@ -311,6 +306,7 @@ public class CameraPreviewActivity extends AppCompatActivity {
                         if (cheerCheck.isChecked()) {
                             mCheer_flag = 1;
                         }
+                        postMovieBackground(CameraPreviewActivity.this);
                         postMovieAsync(CameraPreviewActivity.this);
                     } else {
                         Toast.makeText(CameraPreviewActivity.this, "店名は入力してください", Toast.LENGTH_SHORT).show();
@@ -470,9 +466,8 @@ public class CameraPreviewActivity extends AppCompatActivity {
                     String message = response.getString("message");
                     int code = response.getInt("code");
 
-                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-
                     if (code == 200 && message.equals("投稿しました")) {
+                        Toast.makeText(context, "投稿完了までは少し時間がかかります", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(context, GocciTimelineActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
