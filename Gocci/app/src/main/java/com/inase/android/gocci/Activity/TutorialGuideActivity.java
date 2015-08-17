@@ -1,7 +1,6 @@
 package com.inase.android.gocci.Activity;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -24,36 +23,26 @@ import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManag
 import com.andexert.library.RippleView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.inase.android.gocci.Fragment.CreateUserNameFragment;
 import com.inase.android.gocci.Fragment.SocialAuthenticationFragment;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.data.RegistrationIntentService;
 import com.nineoldandroids.view.ViewHelper;
-import com.pnikosis.materialishprogress.ProgressWheel;
 
 public class TutorialGuideActivity extends AppCompatActivity {
 
     static final int NUM_PAGES = 5;
 
-    ViewPager pager;
+    public ViewPager pager;
     PagerAdapter pagerAdapter;
     LinearLayout circles;
     TextView login_session_text;
     boolean isOpaque = true;
 
-    private ProgressWheel progress;
-
-    public static final String EXTRA_MESSAGE = "message";
-    public static final String PROPERTY_REG_ID = "registration_id";
-    private static final String PROPERTY_APP_VERSION = "appVersion";
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
     static final String TAG = "GCMDemo";
-
-    private GoogleCloudMessaging gcm;
-    private String regid;
 
     private static MobileAnalyticsManager analytics;
 
@@ -81,8 +70,6 @@ public class TutorialGuideActivity extends AppCompatActivity {
             Log.e(TAG, "No valid Google Play Services APK found.");
         }
 
-        progress = (ProgressWheel) findViewById(R.id.progress_wheel);
-
         login_session_text = TextView.class.cast(findViewById(R.id.have_text));
         login_session_text.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,23 +81,12 @@ public class TutorialGuideActivity extends AppCompatActivity {
         pager = (ViewPager) findViewById(R.id.pager);
         pagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
         pager.setAdapter(pagerAdapter);
-        pager.setOffscreenPageLimit(5);
-        pager.setPageTransformer(true, new CrossfadePageTransformer());
+        pager.setOffscreenPageLimit(4);
+        //pager.setPageTransformer(true, new CrossfadePageTransformer());
         pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
-                if (position == NUM_PAGES - 1 && positionOffset > 0) {
-                    if (isOpaque) {
-                        pager.setBackgroundColor(Color.TRANSPARENT);
-                        isOpaque = false;
-                    }
-                } else {
-                    if (!isOpaque) {
-                        pager.setBackgroundColor(getResources().getColor(R.color.primary_material_light));
-                        isOpaque = true;
-                    }
-                }
             }
 
             @Override
@@ -170,7 +146,7 @@ public class TutorialGuideActivity extends AppCompatActivity {
         float scale = getResources().getDisplayMetrics().density;
         int padding = (int) (5 * scale + 0.5f);
 
-        for (int i = 0; i < NUM_PAGES; i++) {
+        for (int i = 0; i < NUM_PAGES - 1; i++) {
             ImageView circle = new ImageView(this);
             circle.setImageResource(R.drawable.ic_swipe_indicator_white_18dp);
             circle.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -183,8 +159,8 @@ public class TutorialGuideActivity extends AppCompatActivity {
     }
 
     private void setIndicator(int index) {
-        if (index < NUM_PAGES) {
-            for (int i = 0; i < NUM_PAGES; i++) {
+        if (index < NUM_PAGES - 1) {
+            for (int i = 0; i < NUM_PAGES - 1; i++) {
                 ImageView circle = (ImageView) circles.getChildAt(i);
                 if (i == index) {
                     circle.setColorFilter(getResources().getColor(R.color.text_selected));
@@ -200,7 +176,7 @@ public class TutorialGuideActivity extends AppCompatActivity {
         if (pager.getCurrentItem() == 0) {
             super.onBackPressed();
         } else {
-            pager.setCurrentItem(pager.getCurrentItem() - 1);
+            pager.setCurrentItem(pager.getCurrentItem() - 1, true);
         }
     }
 

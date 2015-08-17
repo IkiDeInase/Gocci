@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.github.jorgecastilloprz.FABProgressCircle;
 import com.github.jorgecastilloprz.listeners.FABProgressListener;
+import com.inase.android.gocci.Activity.TutorialGuideActivity;
 import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.common.Const;
@@ -93,7 +94,13 @@ public class CreateUserNameFragment extends Fragment implements FABProgressListe
     }
 
     private void startVisibleUsername() {
-        createdUsername.animate().alphaBy(100).setDuration(500).setStartDelay(200);
+        createdUsername.animate().alphaBy(100).setDuration(500).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                TutorialGuideActivity activity = (TutorialGuideActivity) getActivity();
+                activity.pager.setCurrentItem(4, true);
+            }
+        }).setStartDelay(200);
     }
 
     private void setLogin(final Context context) {

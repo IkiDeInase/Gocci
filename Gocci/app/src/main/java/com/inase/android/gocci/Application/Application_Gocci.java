@@ -58,6 +58,10 @@ public class Application_Gocci extends Application {
         mLongitude = longitude;
     }
 
+    public static CognitoCachingCredentialsProvider getLoginProvider() {
+        return credentialsProvider;
+    }
+
     public static CognitoCachingCredentialsProvider getProvider(Context context) {
         if (credentialsProvider == null) {
             credentialsProvider = new CognitoCachingCredentialsProvider(context, Const.IDENTITY_POOL_ID, Const.REGION);
