@@ -132,11 +132,11 @@ public class SocialAuthenticationFragment extends Fragment {
                 }
             }
         });
-        skip_ripple.setOnClickListener(new View.OnClickListener() {
+        skip_ripple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
             @Override
-            public void onClick(View v) {
+            public void onComplete(RippleView rippleView) {
                 if (Application_Gocci.getLoginProvider() != null) {
-                    goTimeline(500);
+                    goTimeline(0);
                 } else {
                     Toast.makeText(getActivity(), "希望のユーザー名を入力してください", Toast.LENGTH_SHORT).show();
                 }
