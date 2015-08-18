@@ -844,20 +844,20 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
             viewHolder.rest_name.setText(user.getRestname());
             //viewHolder.locality.setText(user.getLocality());
 
-            if (!user.getCategory().equals("none")) {
+            if (!user.getCategory().equals("タグなし")) {
                 viewHolder.category.setText(user.getCategory());
             } else {
-                viewHolder.category.setText("タグなし");
+                viewHolder.category.setText("　　　　");
             }
-            if (!user.getTag().equals("none")) {
+            if (!user.getTag().equals("タグなし")) {
                 viewHolder.atmosphere.setText(user.getTag());
             } else {
-                viewHolder.atmosphere.setText("タグなし");
+                viewHolder.atmosphere.setText("　　　　");
             }
             if (!user.getValue().equals("0")) {
                 viewHolder.value.setText(user.getValue());
             } else {
-                viewHolder.value.setText("タグなし");
+                viewHolder.value.setText("　　　　");
             }
 
             //リップルエフェクトを見せてからIntentを飛ばす

@@ -682,12 +682,12 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
             holder.rest_name.setText(user.getRestname());
             //viewHolder.locality.setText(user.getLocality());
 
-            if (!user.getCategory().equals("none")) {
+            if (!user.getCategory().equals("タグなし")) {
                 holder.category.setText(user.getCategory());
             } else {
                 holder.category.setText("　　　　");
             }
-            if (!user.getTag().equals("none")) {
+            if (!user.getTag().equals("タグなし")) {
                 holder.atmosphere.setText(user.getTag());
             } else {
                 holder.atmosphere.setText("　　　　");

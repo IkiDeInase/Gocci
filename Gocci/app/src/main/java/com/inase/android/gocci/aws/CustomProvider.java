@@ -36,7 +36,7 @@ public class CustomProvider extends AWSAbstractCognitoDeveloperIdentityProvider 
 
     @Override
     public String getProviderName() {
-        return "test.login.gocci";
+        return Const.ENDPOINT_INASE;
     }
 
     @Override
