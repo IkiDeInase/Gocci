@@ -532,6 +532,12 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
                     e.printStackTrace();
                 }
 
+                if (!mTenpousers.isEmpty()) {
+                    Picasso.with(context).load(mTenpousers.get(0).getThumbnail()).fit().into(kenBurnsView);
+                } else {
+                    Picasso.with(context).load(R.drawable.ic_background_login).fit().into(kenBurnsView);
+                }
+
                 mTenpoRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
                 mTenpoRecyclerView.setAdapter(mTenpoAdapter);
             }
@@ -704,8 +710,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
     @Override
     public void onScrollChanged(int i, boolean b, boolean b1) {
         //ヘッダー通り過ぎた
-        Log.e("スクロール", String.valueOf(i));
-        isSee = i > 350;
+        isSee = i > 250;
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.inase.android.gocci.Activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.TextInputLayout;
@@ -66,6 +67,8 @@ public class LoginSessionActivity extends AppCompatActivity {
     private Application_Gocci gocci;
 
     private String profile_img;
+    private String token;
+    private String providerName;
 
     private static MobileAnalyticsManager analytics;
 
@@ -147,8 +150,10 @@ public class LoginSessionActivity extends AppCompatActivity {
                 if (profile != null) {
                     profile_img = "https://graph.facebook.com/" + profile.getId() + "/picture";
                 }
+                token = AccessToken.getCurrentAccessToken().getToken();
+                providerName = Const.ENDPOINT_FACEBOOK;
 
-                Application_Gocci.SNSInit(LoginSessionActivity.this, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken());
+                Application_Gocci.SNSInit(LoginSessionActivity.this, Const.ENDPOINT_FACEBOOK, token);
                 //Application_Gocci.addLogins("graph.facebook.com", loginResult.getAccessToken().getToken());
 
                 //postLoginAsync(LoginActivity.this, mName, mPictureImageUrl, TAG_SNS_FACEBOOK);
@@ -176,8 +181,10 @@ public class LoginSessionActivity extends AppCompatActivity {
 
                 String username = session.getUserName();
                 profile_img = "http://www.paper-glasses.com/api/twipi/" + username;
+                token = authToken.token + ";" + authToken.secret;
+                providerName = Const.ENDPOINT_TWITTER;
 
-                Application_Gocci.SNSInit(LoginSessionActivity.this, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret);
+                Application_Gocci.SNSInit(LoginSessionActivity.this, Const.ENDPOINT_TWITTER, token);
                 //Application_Gocci.addLogins("api.twitter.com", authToken.token + ";" + authToken.secret);
             }
 
@@ -249,7 +256,56 @@ public class LoginSessionActivity extends AppCompatActivity {
                             Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                         }
                     } else {
+                        //Toast.makeText(context, "まだアカウントを作成していません", Toast.LENGTH_SHORT).show();
+                        //新しいAPiを叩く
+                        snsConversionAsync(context, providerName, token, profile_img, Build.VERSION.RELEASE, Build.MODEL, SavedData.getRegId(context));
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                progress.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onFinish() {
+                //progress.setVisibility(View.INVISIBLE);
+            }
+        });
+    }
+
+    private void snsConversionAsync(final Context context, String providerName, String token, String profile_img, String os, String model, String register_id) {
+        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
+        Const.asyncHttpClient.get(context, Const.getAuthSNSConversionAPI(providerName, token, profile_img, os, model, register_id), new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                try {
+                    if (response.has("message")) {
+                        int code = response.getInt("code");
+                        String user_id = response.getString("user_id");
+                        String username = response.getString("username");
+                        String profile_img = response.getString("profile_img");
+                        String identity_id = response.getString("identity_id");
+                        int badge_num = response.getInt("badge_num");
+                        String message = response.getString("message");
+                        String token = response.getString("token");
+
+                        if (code == 200) {
+                            SavedData.setWelcome(context, username, profile_img, user_id, identity_id, badge_num);
+
+                            Intent intent = new Intent(context, GocciTimelineActivity.class);
+                            startActivity(intent);
+                            overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+                            finish();
+                        } else {
+                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
                         Toast.makeText(context, "まだアカウントを作成していません", Toast.LENGTH_SHORT).show();
+
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -262,7 +318,7 @@ public class LoginSessionActivity extends AppCompatActivity {
 
             @Override
             public void onFinish() {
-                progress.setVisibility(View.INVISIBLE);
+                progress.setVisibility(View.GONE);
             }
         });
     }

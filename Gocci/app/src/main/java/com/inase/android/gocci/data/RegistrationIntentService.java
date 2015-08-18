@@ -12,6 +12,7 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.common.SavedData;
+import com.inase.android.gocci.common.Util;
 
 import java.io.IOException;
 
@@ -77,7 +78,15 @@ public class RegistrationIntentService extends IntentService {
      */
     private void sendRegistrationToServer(String token) {
         // Add custom implementation, as needed.
-        SavedData.setRegId(this, token);
+        String regid = SavedData.getRegId(this);
+        if (regid == null) {
+            SavedData.setRegId(this, token);
+        } else {
+            if (!regid.equals(token)) {
+                //サーバー送る
+                Util.postRefreshRegId(this, token);
+            }
+        }
     }
 
     /**

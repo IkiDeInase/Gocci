@@ -60,6 +60,12 @@ public class Const {
                 "&token=" + token + "&profile_img=" + profile_img;
     }
 
+    public static String getAuthSNSConversionAPI(String providerName, String token, String profile_img, String os, String model, String register_id) {
+        return URL_PREFIX + VERSION_NUMBER + "/mobile/auth/sns_conversion/?profile_img=" + profile_img +
+                "&token=" + token + "&provider=" + providerName + "&os=android_" + os +
+                "&model=" + model + "&register_id=" + register_id;
+    }
+
     public static String getTimelineAPI() {
         return URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline";
     }
@@ -161,6 +167,11 @@ public class Const {
     public static String getPostRestAddAPI(String restname, double lat, double lon) {
         return URL_PREFIX + VERSION_NUMBER + "/mobile/post/restadd/?rest_name=" + restname +
                 "&lat=" + lat + "&lon=" + lon;
+    }
+
+    public static String getPostRefreshRegId(String token, String user_id, String os) {
+        return URL_PREFIX + VERSION_NUMBER + "/mobile/background/update_register_id/?user_id=" + user_id +
+                "&os=android_" + os + "&register_id=" + token;
     }
 
     public static final int FLAG_CHANGE_NAME = 0;
