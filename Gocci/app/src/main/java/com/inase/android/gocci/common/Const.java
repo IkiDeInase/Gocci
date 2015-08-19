@@ -19,14 +19,18 @@ import com.loopj.android.http.AsyncHttpClient;
  */
 public class Const {
     public static final int VERSION_NUMBER = 1;
+    //public static final String URL_PREFIX = "http://test.api.gocci.me/v";
     public static final String URL_PREFIX = "https://api.gocci.me/v";
 
     //AWS SN　ログイン　エンドポイント
     public static final String ENDPOINT_FACEBOOK = "graph.facebook.com";
     public static final String ENDPOINT_TWITTER = "api.twitter.com";
     public static final String ENDPOINT_INASE = "login.gocci";
+    //public static final String ENDPOINT_INASE = "test.login.gocci";
 
     public static final String IDENTITY_POOL_ID = "us-east-1:b0252276-27e1-4069-be84-3383d4b3f897";
+    //public static final String IDENTITY_POOL_ID = "us-east-1:2ef43520-856b-4641-b4a1-e08dfc07f802";
+
     public static final String ANALYTICS_ID = "9cc17c8116ae40738002f10d907bbd16";
 
     public static final Regions REGION = Regions.US_EAST_1;
@@ -34,6 +38,10 @@ public class Const {
     public static final String POST_MOVIE_BUCKET_NAME = "gocci.movies.bucket.jp";
     public static final String GET_MOVIE_BUCKET_NAME = "gocci.imgs.provider.jp";
     public static final String POST_PHOTO_BUCKET_NAME = "gocci.movies.provider.jp";
+//    public static final String POST_MOVIE_BUCKET_NAME = "gocci.movies.bucket.jp-test";
+//    public static final String GET_MOVIE_BUCKET_NAME = "gocci.movies.provider.jp-test";
+//    public static final String POST_PHOTO_BUCKET_NAME = "gocci.imgs.provider.jp-test";
+
 
     public static String getAuthWelcomeAPI(String identity_id, int flag) {
         return URL_PREFIX + VERSION_NUMBER + "/mobile/auth/welcome/?identity_id=" + identity_id +

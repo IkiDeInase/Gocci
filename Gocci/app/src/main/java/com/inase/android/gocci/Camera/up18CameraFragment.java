@@ -247,10 +247,6 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
 
         restaddButton = (ImageButton) rootView.findViewById(R.id.restaddButton);
 
-        restname_spinner.setIconRight(R.drawable.ic_arrow_drop_down_white_24dp);
-        category_spinner.setIconRight(R.drawable.ic_arrow_drop_down_white_24dp);
-        mood_spinner.setIconRight(R.drawable.ic_arrow_drop_down_white_24dp);
-
         final String[] CATEGORY = getResources().getStringArray(R.array.list_category);
         final String[] MOOD = getResources().getStringArray(R.array.list_mood);
 
