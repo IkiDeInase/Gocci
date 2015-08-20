@@ -28,7 +28,6 @@
                 android:layout_height="wrap_content"
                 android:fitsSystemWindows="true"
                 android:scaleType="centerCrop"
-                android:src="@color/view_background"
                 app:layout_collapseMode="parallax" />
 
             <android.support.v7.widget.Toolbar

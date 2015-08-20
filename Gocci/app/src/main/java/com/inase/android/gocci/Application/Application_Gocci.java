@@ -38,6 +38,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+import cat.ereza.customactivityoncrash.CustomActivityOnCrash;
 import io.fabric.sdk.android.Fabric;
 
 public class Application_Gocci extends Application {
@@ -241,6 +242,8 @@ public class Application_Gocci extends Application {
                 new Crashlytics());
 
         FacebookSdk.sdkInitialize(this);
+
+        CustomActivityOnCrash.install(this);
 
         analytics = GoogleAnalytics.getInstance(this);
         analytics.setLocalDispatchPeriod(1800);

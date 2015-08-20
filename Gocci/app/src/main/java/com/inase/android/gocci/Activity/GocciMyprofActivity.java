@@ -131,6 +131,9 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
                 case Const.INTENT_TO_ADVICE:
                     Util.setAdviceDialog(activity);
                     break;
+                case Const.INTENT_TO_SETTING:
+                    SettingsActivity.startSettingActivity(activity);
+                    break;
             }
         }
     };
@@ -168,26 +171,26 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
         mProfRecyclerView.setLayoutManager(mLayoutManager);
         mProfRecyclerView.setHasFixedSize(true);
         mProfRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
-        mProfRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                visibleItemCount = mProfRecyclerView.getChildCount();
-                totalItemCount = mLayoutManager.getItemCount();
-                int[] firstVisibleItems = null;
-                firstVisibleItems = mLayoutManager.findFirstVisibleItemPositions(firstVisibleItems);
-                if (firstVisibleItems != null && firstVisibleItems.length > 0) {
-                    pastVisibleItems = firstVisibleItems[0];
-                }
-
-                if (loading) {
-                    if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
-                        loading = false;
-                        //Toast.makeText(getActivity(), "LoadMoreなタイミング", Toast.LENGTH_LONG).show();
-                    }
-                }
-            }
-        });
+//        mProfRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+//            @Override
+//            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+//                super.onScrollStateChanged(recyclerView, newState);
+//                visibleItemCount = mProfRecyclerView.getChildCount();
+//                totalItemCount = mLayoutManager.getItemCount();
+//                int[] firstVisibleItems = null;
+//                firstVisibleItems = mLayoutManager.findFirstVisibleItemPositions(firstVisibleItems);
+//                if (firstVisibleItems != null && firstVisibleItems.length > 0) {
+//                    pastVisibleItems = firstVisibleItems[0];
+//                }
+//
+//                if (loading) {
+//                    if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
+//                        loading = false;
+//                        //Toast.makeText(getActivity(), "LoadMoreなタイミング", Toast.LENGTH_LONG).show();
+//                    }
+//                }
+//            }
+//        });
 
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
         appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
@@ -221,7 +224,8 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
                         new DividerDrawerItem(),
                         new PrimaryDrawerItem().withName("要望を送る").withIcon(GoogleMaterial.Icon.gmd_send).withCheckable(false).withIdentifier(3),
                         new PrimaryDrawerItem().withName("利用規約とポリシー").withIcon(GoogleMaterial.Icon.gmd_visibility).withCheckable(false).withIdentifier(4),
-                        new PrimaryDrawerItem().withName("ライセンス情報").withIcon(GoogleMaterial.Icon.gmd_build).withCheckable(false).withIdentifier(5)
+                        new PrimaryDrawerItem().withName("ライセンス情報").withIcon(GoogleMaterial.Icon.gmd_build).withCheckable(false).withIdentifier(5),
+                        new PrimaryDrawerItem().withName("設定").withIcon(GoogleMaterial.Icon.gmd_settings).withCheckable(false).withIdentifier(6)
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
@@ -243,6 +247,10 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
                             } else if (drawerItem.getIdentifier() == 5) {
                                 Message msg =
                                         sHandler.obtainMessage(Const.INTENT_TO_LICENSE, 0, 0, GocciMyprofActivity.this);
+                                sHandler.sendMessageDelayed(msg, 500);
+                            } else if (drawerItem.getIdentifier() == 6) {
+                                Message msg =
+                                        sHandler.obtainMessage(Const.INTENT_TO_SETTING, 0, 0, GocciMyprofActivity.this);
                                 sHandler.sendMessageDelayed(msg, 500);
                             }
                         }
@@ -797,25 +805,29 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
 
     private void postChangeProfileAsync(final Context context, final String post_date, final File file, final String url) {
         if (post_date != null) {
-            TransferObserver transferObserver = Application_Gocci.getTransfer(context).upload(Const.POST_PHOTO_BUCKET_NAME, post_date + ".png", file);
-            transferObserver.setTransferListener(new TransferListener() {
-                @Override
-                public void onStateChanged(int id, TransferState state) {
-                    if (state == TransferState.COMPLETED) {
-                        postChangeProf(context, url);
+            if (file != null) {
+                TransferObserver transferObserver = Application_Gocci.getTransfer(context).upload(Const.POST_PHOTO_BUCKET_NAME, post_date + ".png", file);
+                transferObserver.setTransferListener(new TransferListener() {
+                    @Override
+                    public void onStateChanged(int id, TransferState state) {
+                        if (state == TransferState.COMPLETED) {
+                            postChangeProf(context, url);
+                        }
                     }
-                }
 
-                @Override
-                public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                    @Override
+                    public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
 
-                }
+                    }
 
-                @Override
-                public void onError(int id, Exception ex) {
+                    @Override
+                    public void onError(int id, Exception ex) {
 
-                }
-            });
+                    }
+                });
+            } else {
+                postChangeProf(context, url);
+            }
         }
     }
 
@@ -838,7 +850,12 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
                         String name = response.getString("username");
                         String picture = response.getString("profile_img");
 
-                        SavedData.changeProfile(context, name, picture);
+                        if (name.equals("変更に失敗しました")) {
+                            SavedData.changeProfile(context, SavedData.getServerName(context), picture);
+                            Toast.makeText(context, "ユーザー名は変更できませんでした", Toast.LENGTH_SHORT).show();
+                        } else {
+                            SavedData.changeProfile(context, name, picture);
+                        }
 
                         Intent intent = getIntent();
                         overridePendingTransition(0, 0);

@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Point;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,6 +27,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -42,6 +45,7 @@ import com.facebook.FacebookSdk;
 import com.facebook.share.Sharer;
 import com.facebook.share.widget.ShareDialog;
 import com.flaviofaria.kenburnsview.KenBurnsView;
+import com.flaviofaria.kenburnsview.RandomTransitionGenerator;
 import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
@@ -78,6 +82,7 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
 import org.apache.http.Header;
@@ -186,6 +191,9 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
                 case Const.INTENT_TO_ADVICE:
                     Util.setAdviceDialog(activity);
                     break;
+                case Const.INTENT_TO_SETTING:
+                    SettingsActivity.startSettingActivity(activity);
+                    break;
             }
         }
     };
@@ -277,7 +285,8 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
                         new DividerDrawerItem(),
                         new PrimaryDrawerItem().withName("要望を送る").withIcon(GoogleMaterial.Icon.gmd_send).withCheckable(false).withIdentifier(3),
                         new PrimaryDrawerItem().withName("利用規約とポリシー").withIcon(GoogleMaterial.Icon.gmd_visibility).withCheckable(false).withIdentifier(4),
-                        new PrimaryDrawerItem().withName("ライセンス情報").withIcon(GoogleMaterial.Icon.gmd_build).withCheckable(false).withIdentifier(5)
+                        new PrimaryDrawerItem().withName("ライセンス情報").withIcon(GoogleMaterial.Icon.gmd_build).withCheckable(false).withIdentifier(5),
+                        new PrimaryDrawerItem().withName("設定").withIcon(GoogleMaterial.Icon.gmd_settings).withCheckable(false).withIdentifier(6)
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
@@ -303,6 +312,10 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
                             } else if (drawerItem.getIdentifier() == 5) {
                                 Message msg =
                                         sHandler.obtainMessage(Const.INTENT_TO_LICENSE, 0, 0, FlexibleTenpoActivity.this);
+                                sHandler.sendMessageDelayed(msg, 500);
+                            } else if (drawerItem.getIdentifier() == 6) {
+                                Message msg =
+                                        sHandler.obtainMessage(Const.INTENT_TO_SETTING, 0, 0, FlexibleTenpoActivity.this);
                                 sHandler.sendMessageDelayed(msg, 500);
                             }
                         }
@@ -533,9 +546,24 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
                 }
 
                 if (!mTenpousers.isEmpty()) {
-                    Picasso.with(context).load(mTenpousers.get(0).getThumbnail()).fit().into(kenBurnsView);
+                    Picasso.with(context).load(mTenpousers.get(0).getThumbnail()).into(new Target() {
+                        @Override
+                        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                            kenBurnsView.setImageBitmap(bitmap);
+                        }
+
+                        @Override
+                        public void onBitmapFailed(Drawable errorDrawable) {
+
+                        }
+
+                        @Override
+                        public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                        }
+                    });
                 } else {
-                    Picasso.with(context).load(R.drawable.ic_background_login).fit().into(kenBurnsView);
+                    kenBurnsView.setImageResource(R.drawable.ic_background_login);
                 }
 
                 mTenpoRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
