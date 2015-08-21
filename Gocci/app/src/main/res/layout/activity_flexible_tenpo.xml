@@ -55,8 +55,6 @@
     <FrameLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
         android:layout_marginRight="16dp"
         app:layout_anchor="@id/appbar"
         app:layout_anchorGravity="top|right">

@@ -149,7 +149,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
                     Util.setAdviceDialog(activity);
                     break;
                 case Const.INTENT_TO_SETTING:
-                    SettingsActivity.startSettingActivity(activity);
+                    SettingActivity.startSettingActivity(activity);
                     break;
             }
         }

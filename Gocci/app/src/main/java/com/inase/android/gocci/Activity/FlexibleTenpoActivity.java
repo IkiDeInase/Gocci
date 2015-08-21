@@ -27,7 +27,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -44,8 +43,6 @@ import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.share.Sharer;
 import com.facebook.share.widget.ShareDialog;
-import com.flaviofaria.kenburnsview.KenBurnsView;
-import com.flaviofaria.kenburnsview.RandomTransitionGenerator;
 import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
@@ -192,7 +189,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
                     Util.setAdviceDialog(activity);
                     break;
                 case Const.INTENT_TO_SETTING:
-                    SettingsActivity.startSettingActivity(activity);
+                    SettingActivity.startSettingActivity(activity);
                     break;
             }
         }

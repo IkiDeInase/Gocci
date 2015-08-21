@@ -159,7 +159,7 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
                     Util.setAdviceDialog(activity);
                     break;
                 case Const.INTENT_TO_SETTING:
-                    SettingsActivity.startSettingActivity(activity);
+                    SettingActivity.startSettingActivity(activity);
                     break;
             }
         }

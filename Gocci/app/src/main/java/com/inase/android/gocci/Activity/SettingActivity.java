@@ -1,37 +1,26 @@
 package com.inase.android.gocci.Activity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.PopupWindow;
-import android.widget.TextView;
 
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
-import com.inase.android.gocci.Base.ToukouPopup;
 import com.inase.android.gocci.Event.BusHolder;
 import com.inase.android.gocci.Event.NotificationNumberEvent;
-import com.inase.android.gocci.Event.PageChangeVideoStopEvent;
-import com.inase.android.gocci.Fragment.LatestTimelineFragment;
-import com.inase.android.gocci.Fragment.TrendTimelineFragment;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.View.DrawerProfHeader;
-import com.inase.android.gocci.View.NotificationListView;
 import com.inase.android.gocci.common.Const;
-import com.inase.android.gocci.common.SavedData;
 import com.inase.android.gocci.common.Util;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
@@ -39,34 +28,36 @@ import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
-import com.ogaclejapan.smarttablayout.SmartTabLayout;
-import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
-import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
 import com.squareup.otto.Subscribe;
 
-public class GocciTimelineActivity extends AppCompatActivity {
+public class SettingActivity extends AppCompatActivity {
 
-    private final GocciTimelineActivity self = this;
-
-    private TextView notificationNumber;
-
-    private FloatingActionButton fab;
-
-    public static int mShowPosition = 0;
+    private final SettingActivity self = this;
 
     private Drawer result;
 
     private static MobileAnalyticsManager analytics;
 
+    private Toolbar tool_bar;
     private CoordinatorLayout coordinatorLayout;
+
+    public static void startSettingActivity(Activity startingActivity) {
+        Intent intent = new Intent(startingActivity, SettingActivity.class);
+        startingActivity.startActivity(intent);
+        startingActivity.overridePendingTransition(R.anim.activity_in, R.anim.activity_out);
+    }
 
     private static Handler sHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            GocciTimelineActivity activity
-                    = (GocciTimelineActivity) msg.obj;
+            SettingActivity activity
+                    = (SettingActivity) msg.obj;
             switch (msg.what) {
+                case Const.INTENT_TO_TIMELINE:
+                    activity.startActivity(new Intent(activity, GocciTimelineActivity.class));
+                    activity.overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+                    break;
                 case Const.INTENT_TO_MYPAGE:
                     GocciMyprofActivity.startMyProfActivity(activity);
                     break;
@@ -99,17 +90,15 @@ public class GocciTimelineActivity extends AppCompatActivity {
             Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
         }
 
+        setContentView(R.layout.activity_settings);
 
-        setContentView(R.layout.activity_gocci_timeline);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
-        toolbar.setLogo(R.drawable.ic_gocci_moji_white45);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("");
+        tool_bar = (Toolbar) findViewById(R.id.tool_bar);
+        setSupportActionBar(tool_bar);
+        getSupportActionBar().setTitle("設定");
 
         result = new DrawerBuilder()
                 .withActivity(this)
-                .withToolbar(toolbar)
+                .withToolbar(tool_bar)
                 .withHeader(new DrawerProfHeader(this))
                 .addDrawerItems(
                         new PrimaryDrawerItem().withName("タイムライン").withIcon(GoogleMaterial.Icon.gmd_home).withIdentifier(1).withCheckable(false),
@@ -125,73 +114,52 @@ public class GocciTimelineActivity extends AppCompatActivity {
                     public boolean onItemClick(AdapterView<?> parent, View view, int position, long id, IDrawerItem drawerItem) {
                         // do something with the clicked item :D
                         if (drawerItem != null) {
-                            if (drawerItem.getIdentifier() == 2) {
+                            if (drawerItem.getIdentifier() == 1) {
                                 Message msg =
-                                        sHandler.obtainMessage(Const.INTENT_TO_MYPAGE, 0, 0, GocciTimelineActivity.this);
+                                        sHandler.obtainMessage(Const.INTENT_TO_TIMELINE, 0, 0, SettingActivity.this);
+                                sHandler.sendMessageDelayed(msg, 500);
+                            } else if (drawerItem.getIdentifier() == 2) {
+                                Message msg =
+                                        sHandler.obtainMessage(Const.INTENT_TO_MYPAGE, 0, 0, SettingActivity.this);
                                 sHandler.sendMessageDelayed(msg, 500);
                             } else if (drawerItem.getIdentifier() == 3) {
                                 Message msg =
-                                        sHandler.obtainMessage(Const.INTENT_TO_ADVICE, 0, 0, GocciTimelineActivity.this);
+                                        sHandler.obtainMessage(Const.INTENT_TO_ADVICE, 0, 0, SettingActivity.this);
                                 sHandler.sendMessageDelayed(msg, 500);
                             } else if (drawerItem.getIdentifier() == 4) {
                                 Message msg =
-                                        sHandler.obtainMessage(Const.INTENT_TO_POLICY, 0, 0, GocciTimelineActivity.this);
+                                        sHandler.obtainMessage(Const.INTENT_TO_POLICY, 0, 0, SettingActivity.this);
                                 sHandler.sendMessageDelayed(msg, 500);
                             } else if (drawerItem.getIdentifier() == 5) {
                                 Message msg =
-                                        sHandler.obtainMessage(Const.INTENT_TO_LICENSE, 0, 0, GocciTimelineActivity.this);
+                                        sHandler.obtainMessage(Const.INTENT_TO_LICENSE, 0, 0, SettingActivity.this);
                                 sHandler.sendMessageDelayed(msg, 500);
                             } else if (drawerItem.getIdentifier() == 6) {
                                 Message msg =
-                                        sHandler.obtainMessage(Const.INTENT_TO_SETTING, 0, 0, GocciTimelineActivity.this);
+                                        sHandler.obtainMessage(Const.INTENT_TO_SETTING, 0, 0, SettingActivity.this);
                                 sHandler.sendMessageDelayed(msg, 500);
                             }
                         }
                         return false;
                     }
                 })
-                .withSelectedItem(0)
                 .withSavedInstance(savedInstanceState)
+                .withSelectedItem(-1)
+                .withOnDrawerNavigationListener(new Drawer.OnDrawerNavigationListener() {
+                    @Override
+                    public boolean onNavigationClickListener(View view) {
+                        finish();
+                        overridePendingTransition(R.anim.activity_back_in, R.anim.activity_back_out);
+                        return true;
+                    }
+                })
                 .build();
 
-        FragmentPagerItemAdapter adapter = new FragmentPagerItemAdapter(
-                getSupportFragmentManager(), FragmentPagerItems.with(this)
-                .add(R.string.tab_near, LatestTimelineFragment.class)
-                .add(R.string.tab_follow_cheer, TrendTimelineFragment.class)
-                .create());
-
-        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
-        viewPager.setAdapter(adapter);
-
-        SmartTabLayout viewPagerTab = (SmartTabLayout) findViewById(R.id.viewpagertab);
-        viewPagerTab.setViewPager(viewPager);
-        viewPagerTab.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                BusHolder.get().post(new PageChangeVideoStopEvent(position));
-                mShowPosition = position;
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-                if (state == 2) fab.hide();
-                if (state == 0) fab.show();
-            }
-        });
+        result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(false);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
 
-        fab = (FloatingActionButton) findViewById(R.id.toukouButton);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(GocciTimelineActivity.this, GocciCameraActivity.class));
-            }
-        });
     }
 
     @Override
@@ -223,56 +191,17 @@ public class GocciTimelineActivity extends AppCompatActivity {
     @Subscribe
     public void subscribe(NotificationNumberEvent event) {
         Snackbar.make(coordinatorLayout, event.mMessage, Snackbar.LENGTH_SHORT).show();
-        //２1文字で改行っぽい
-        notificationNumber.setVisibility(View.VISIBLE);
-        notificationNumber.setText(String.valueOf(event.mNotificationNumber));
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.bell_notification, menu);
-        // お知らせ未読件数バッジ表示
-        MenuItem item = menu.findItem(R.id.badge);
-        MenuItemCompat.setActionView(item, R.layout.toolbar_notification_icon);
-        View view = MenuItemCompat.getActionView(item);
-        notificationNumber = (TextView) view.findViewById(R.id.notification_number);
-        int notifications = SavedData.getNotification(this);
-
-        // バッジの数字を更新。0の場合はバッジを表示させない
-
-        if (notifications == 0) {
-            notificationNumber.setVisibility(View.INVISIBLE);
-        } else {
-            notificationNumber.setText(String.valueOf(notifications));
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                overridePendingTransition(R.anim.activity_back_in, R.anim.activity_back_out);
+                return true;
         }
-
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.e("ログ", "通知クリック");
-                notificationNumber.setVisibility(View.INVISIBLE);
-                SavedData.setNotification(GocciTimelineActivity.this, 0);
-                View notification = new NotificationListView(GocciTimelineActivity.this);
-
-                final PopupWindow window = ToukouPopup.newBasicPopupWindow(GocciTimelineActivity.this);
-
-                View header = notification.findViewById(R.id.headerView);
-                header.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (window.isShowing()) {
-                            window.dismiss();
-                        }
-                    }
-                });
-                window.setContentView(notification);
-                //int totalHeight = getWindowManager().getDefaultDisplay().getHeight();
-                int[] location = new int[2];
-                v.getLocationOnScreen(location);
-                ToukouPopup.showLikeQuickAction(window, notification, v, GocciTimelineActivity.this.getWindowManager(), 0, 0);
-            }
-        });
-        return super.onCreateOptionsMenu(menu);
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -281,19 +210,7 @@ public class GocciTimelineActivity extends AppCompatActivity {
             result.closeDrawer();
         } else {
             super.onBackPressed();
-            overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+            overridePendingTransition(R.anim.activity_back_in, R.anim.activity_back_out);
         }
-    }
-
-    public void onUserClicked(int user_id, String username) {
-        FlexibleUserProfActivity.startUserProfActivity(user_id, username, GocciTimelineActivity.this);
-    }
-
-    public void onTenpoClicked(int rest_id, String restname) {
-        FlexibleTenpoActivity.startTenpoActivity(rest_id, restname, GocciTimelineActivity.this);
-    }
-
-    public void onCommentClicked(int post_id) {
-        CommentActivity.startCommentActivity(post_id, GocciTimelineActivity.this);
     }
 }

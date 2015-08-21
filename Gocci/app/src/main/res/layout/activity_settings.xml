@@ -1,0 +1,398 @@
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/coordinator_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/appbar">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/tool_bar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/gocci_header"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:layout_scrollFlags="scroll|enterAlways">
+
+        </android.support.v7.widget.Toolbar>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.widget.NestedScrollView
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="アカウント"
+                android:id="@+id/header_account"
+                android:textColor="@color/nameblack"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="16dp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:id="@+id/header_account_line"
+                android:layout_below="@+id/header_account"
+                android:background="#e0e0e0"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="4dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="地域・言語"
+                android:id="@+id/account_locale"
+                android:layout_marginLeft="24dp"
+                android:layout_below="@+id/header_account_line"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"
+                android:textColor="@color/namegrey"
+                android:textSize="16sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:id="@+id/account_locale_line"
+                android:layout_below="@+id/account_locale"
+                android:background="#e0e0e0"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="日本"
+                android:id="@+id/locale"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="false"
+                android:textColor="@color/nameblack"
+                android:layout_marginRight="24dp"
+                android:layout_alignBottom="@+id/account_locale" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="パスワードを設定する"
+                android:id="@+id/account_password"
+                android:layout_marginLeft="24dp"
+                android:layout_below="@+id/account_locale_line"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"
+                android:textColor="@color/namegrey"
+                android:textSize="16dp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:id="@+id/account_password_line"
+                android:layout_below="@+id/account_password"
+                android:background="#e0e0e0"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="通知"
+                android:id="@+id/account_notification"
+                android:layout_marginLeft="24dp"
+                android:layout_below="@+id/account_password_line"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"
+                android:textColor="@color/namegrey"
+                android:textSize="16sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:id="@+id/account_notification_line"
+                android:layout_below="@+id/account_notification"
+                android:background="#e0e0e0"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="友だち"
+                android:id="@+id/header_friend"
+                android:layout_below="@+id/account_notification_line"
+                android:textColor="@color/nameblack"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="24dp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:id="@+id/header_friend_line"
+                android:layout_below="@+id/header_friend"
+                android:background="#e0e0e0"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="4dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="友だちを探す"
+                android:id="@+id/friend_search"
+                android:layout_marginLeft="24dp"
+                android:layout_below="@+id/header_friend_line"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"
+                android:textColor="@color/namegrey"
+                android:textSize="16sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:id="@+id/friend_search_line"
+                android:layout_below="@+id/friend_search"
+                android:background="#e0e0e0"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Gocciに招待"
+                android:id="@+id/friend_invite"
+                android:layout_marginLeft="24dp"
+                android:layout_below="@+id/friend_search_line"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"
+                android:textColor="@color/namegrey"
+                android:textSize="16sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:id="@+id/friend_invite_line"
+                android:layout_below="@+id/friend_invite"
+                android:background="#e0e0e0"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ソーシャルネットワーク"
+                android:id="@+id/header_socialnetwork"
+                android:layout_below="@+id/friend_invite_line"
+                android:textColor="@color/nameblack"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="24dp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:id="@+id/header_socialnetwork_line"
+                android:layout_below="@+id/header_socialnetwork"
+                android:background="#e0e0e0"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="4dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Twitter"
+                android:id="@+id/socialnetwork_twitter"
+                android:layout_marginLeft="24dp"
+                android:layout_below="@+id/header_socialnetwork_line"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"
+                android:textColor="@color/namegrey"
+                android:textSize="16sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:id="@+id/socialnetwork_twitter_line"
+                android:layout_below="@+id/socialnetwork_twitter"
+                android:background="#e0e0e0"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Facebook"
+                android:id="@+id/socialnetwork_facebook"
+                android:layout_marginLeft="24dp"
+                android:layout_below="@+id/socialnetwork_twitter_line"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"
+                android:textColor="@color/namegrey"
+                android:textSize="16sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:id="@+id/socialnetwork_facebook_line"
+                android:layout_below="@+id/socialnetwork_facebook"
+                android:background="#e0e0e0"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="サポート"
+                android:id="@+id/header_support"
+                android:layout_below="@+id/socialnetwork_facebook_line"
+                android:textColor="@color/nameblack"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="24dp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:id="@+id/header_support_line"
+                android:layout_below="@+id/header_support"
+                android:background="#e0e0e0"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="4dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="動画の自動再生"
+                android:id="@+id/support_autoplay"
+                android:layout_marginLeft="24dp"
+                android:layout_below="@+id/header_support_line"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"
+                android:textColor="@color/namegrey"
+                android:textSize="16sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:id="@+id/support_autoplay_line"
+                android:layout_below="@+id/support_autoplay"
+                android:background="#e0e0e0"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="要望・問題を報告する"
+                android:id="@+id/support_advise"
+                android:layout_marginLeft="24dp"
+                android:layout_below="@+id/support_autoplay_line"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"
+                android:textColor="@color/namegrey"
+                android:textSize="16sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:id="@+id/support_advise_line"
+                android:layout_below="@+id/support_advise"
+                android:background="#e0e0e0"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="利用規約とポリシー"
+                android:id="@+id/support_policy"
+                android:layout_marginLeft="24dp"
+                android:layout_below="@+id/support_advise_line"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"
+                android:textColor="@color/namegrey"
+                android:textSize="16dp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:id="@+id/support_policy_line"
+                android:layout_below="@+id/support_policy"
+                android:background="#e0e0e0"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ソースライブラリ"
+                android:id="@+id/support_source"
+                android:layout_marginLeft="24dp"
+                android:layout_below="@+id/support_policy_line"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"
+                android:textColor="@color/namegrey"
+                android:textSize="16dp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:id="@+id/support_source_line"
+                android:layout_below="@+id/support_source"
+                android:background="#e0e0e0"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="アカウントの削除"
+                android:id="@+id/support_delete"
+                android:layout_marginLeft="24dp"
+                android:layout_below="@+id/support_source_line"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"
+                android:textColor="@color/namegrey"
+                android:textSize="16dp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:id="@+id/support_delete_line"
+                android:layout_below="@+id/support_delete"
+                android:background="#e0e0e0"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp" />
+
+            <com.andexert.library.RippleView
+                android:id="@+id/logout_Ripple"
+                android:layout_width="match_parent"
+                android:layout_height="42dp"
+                android:layout_centerHorizontal="true"
+                android:layout_margin="24dp"
+                android:background="@color/gocci_button"
+                android:gravity="center"
+                android:layout_below="@+id/support_delete_line">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ログアウト"
+                    android:textColor="#ffffff"
+                    android:textSize="@dimen/accent_text" />
+            </com.andexert.library.RippleView>
+        </RelativeLayout>
+
+    </android.support.v4.widget.NestedScrollView>
+
+</android.support.design.widget.CoordinatorLayout>
