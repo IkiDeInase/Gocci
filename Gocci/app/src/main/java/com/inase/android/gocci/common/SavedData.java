@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 
 import com.loopj.android.http.PersistentCookieStore;
 
+import java.util.StringTokenizer;
+
 /**
  * Created by kinagafuji on 15/05/06.
  */
@@ -129,6 +131,30 @@ public class SavedData {
         SharedPreferences.Editor editor = prefs.edit();
         editor.putInt(KEY_FLAG, flag);
         editor.apply();
+    }
+
+    public static void setSettingNotifications(Context context, Integer[] notifications) {
+        SharedPreferences prefs = context.getSharedPreferences("pref", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        StringBuilder str = new StringBuilder();
+        for (int i = 0; i < notifications.length; i++) {
+            str.append(notifications[i]).append(",");
+        }
+        editor.putString("notifications", str.toString());
+        editor.putInt("notifications_size", notifications.length);
+        editor.apply();
+    }
+
+    public static Integer[] getSettingNotifications(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences("pref", Context.MODE_PRIVATE);
+        String savedString = prefs.getString("notifications", "0,1,2,3");
+        int size = prefs.getInt("notifications_size", 4);
+        StringTokenizer st = new StringTokenizer(savedString, ",");
+        Integer[] savedList = new Integer[size];
+        for (int i = 0; i < size; i++) {
+            savedList[i] = Integer.parseInt(st.nextToken());
+        }
+        return savedList;
     }
 
     public static PersistentCookieStore getCookieStore(Context context) {

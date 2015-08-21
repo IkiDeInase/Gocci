@@ -56,4 +56,14 @@
     <string name="please">希望のユーザー名</string>
     <string name="title_activity_web_view">WebViewActivity</string>
 
+    <string name="japan">日本</string>
+
+    <string name="gochi">ゴチ</string>
+    <string name="follow">フォロー</string>
+    <string name="notification">運営からのお知らせ</string>
+
+    <string name="two">モバイルネットワークとWi-Fiで再生</string>
+    <string name="one">Wi-Fiでのみ再生</string>
+    <string name="zero">自動再生しない</string>
+
 </resources>

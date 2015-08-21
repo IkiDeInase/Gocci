@@ -31,4 +31,21 @@
         <item>@string/seeWantList</item>
     </array>
 
+    <array name="locale">
+        <item>@string/japan</item>
+    </array>
+
+    <array name="notice">
+        <item>@string/gochi</item>
+        <item>@string/comment</item>
+        <item>@string/follow</item>
+        <item>@string/notification</item>
+    </array>
+
+    <array name="autoplay">
+        <item>@string/two</item>
+        <item>@string/one</item>
+        <item>@string/zero</item>
+    </array>
+
 </resources>

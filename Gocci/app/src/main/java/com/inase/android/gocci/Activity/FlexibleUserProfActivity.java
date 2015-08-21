@@ -149,12 +149,6 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
                 case Const.INTENT_TO_MYPAGE:
                     GocciMyprofActivity.startMyProfActivity(activity);
                     break;
-                case Const.INTENT_TO_POLICY:
-                    WebViewActivity.startWebViewActivity(1, activity);
-                    break;
-                case Const.INTENT_TO_LICENSE:
-                    WebViewActivity.startWebViewActivity(2, activity);
-                    break;
                 case Const.INTENT_TO_ADVICE:
                     Util.setAdviceDialog(activity);
                     break;
@@ -252,9 +246,7 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
                         new PrimaryDrawerItem().withName("マイページ").withIcon(GoogleMaterial.Icon.gmd_person).withIdentifier(2).withCheckable(false),
                         new DividerDrawerItem(),
                         new PrimaryDrawerItem().withName("要望を送る").withIcon(GoogleMaterial.Icon.gmd_send).withCheckable(false).withIdentifier(3),
-                        new PrimaryDrawerItem().withName("利用規約とポリシー").withIcon(GoogleMaterial.Icon.gmd_visibility).withCheckable(false).withIdentifier(4),
-                        new PrimaryDrawerItem().withName("ライセンス情報").withIcon(GoogleMaterial.Icon.gmd_build).withCheckable(false).withIdentifier(5),
-                        new PrimaryDrawerItem().withName("設定").withIcon(GoogleMaterial.Icon.gmd_settings).withCheckable(false).withIdentifier(6)
+                        new PrimaryDrawerItem().withName("設定").withIcon(GoogleMaterial.Icon.gmd_settings).withCheckable(false).withIdentifier(4)
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
@@ -274,14 +266,6 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
                                         sHandler.obtainMessage(Const.INTENT_TO_ADVICE, 0, 0, FlexibleUserProfActivity.this);
                                 sHandler.sendMessageDelayed(msg, 500);
                             } else if (drawerItem.getIdentifier() == 4) {
-                                Message msg =
-                                        sHandler.obtainMessage(Const.INTENT_TO_POLICY, 0, 0, FlexibleUserProfActivity.this);
-                                sHandler.sendMessageDelayed(msg, 500);
-                            } else if (drawerItem.getIdentifier() == 5) {
-                                Message msg =
-                                        sHandler.obtainMessage(Const.INTENT_TO_LICENSE, 0, 0, FlexibleUserProfActivity.this);
-                                sHandler.sendMessageDelayed(msg, 500);
-                            } else if (drawerItem.getIdentifier() == 6) {
                                 Message msg =
                                         sHandler.obtainMessage(Const.INTENT_TO_SETTING, 0, 0, FlexibleUserProfActivity.this);
                                 sHandler.sendMessageDelayed(msg, 500);

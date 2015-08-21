@@ -24,7 +24,7 @@
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v4.widget.NestedScrollView
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+       app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -38,8 +38,8 @@
                 android:text="アカウント"
                 android:id="@+id/header_account"
                 android:textColor="@color/nameblack"
-                android:layout_marginLeft="16dp"
-                android:layout_marginTop="16dp" />
+                android:layout_marginTop="16dp"
+                android:layout_marginLeft="16dp" />
 
             <View
                 android:layout_width="match_parent"
@@ -52,7 +52,7 @@
                 android:layout_marginTop="4dp" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="地域・言語"
                 android:id="@+id/account_locale"
@@ -61,7 +61,8 @@
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="12dp"
                 android:textColor="@color/namegrey"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:visibility="gone" />
 
             <View
                 android:layout_width="match_parent"
@@ -70,7 +71,8 @@
                 android:layout_below="@+id/account_locale"
                 android:background="#e0e0e0"
                 android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp" />
+                android:layout_marginRight="16dp"
+                android:visibility="gone" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -81,10 +83,11 @@
                 android:layout_alignParentEnd="false"
                 android:textColor="@color/nameblack"
                 android:layout_marginRight="24dp"
-                android:layout_alignBottom="@+id/account_locale" />
+                android:layout_alignBottom="@+id/account_locale"
+                android:visibility="gone" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="パスワードを設定する"
                 android:id="@+id/account_password"
@@ -93,7 +96,8 @@
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="12dp"
                 android:textColor="@color/namegrey"
-                android:textSize="16dp" />
+                android:textSize="16dp"
+                android:visibility="gone" />
 
             <View
                 android:layout_width="match_parent"
@@ -102,10 +106,11 @@
                 android:layout_below="@+id/account_password"
                 android:background="#e0e0e0"
                 android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp" />
+                android:layout_marginRight="16dp"
+                android:visibility="gone" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="通知"
                 android:id="@+id/account_notification"
@@ -146,7 +151,7 @@
                 android:layout_marginTop="4dp" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="友だちを探す"
                 android:id="@+id/friend_search"
@@ -167,7 +172,7 @@
                 android:layout_marginRight="16dp" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Gocciに招待"
                 android:id="@+id/friend_invite"
@@ -176,7 +181,8 @@
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="12dp"
                 android:textColor="@color/namegrey"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:visibility="gone" />
 
             <View
                 android:layout_width="match_parent"
@@ -185,7 +191,8 @@
                 android:layout_below="@+id/friend_invite"
                 android:background="#e0e0e0"
                 android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp" />
+                android:layout_marginRight="16dp"
+                android:visibility="gone" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -208,7 +215,7 @@
                 android:layout_marginTop="4dp" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Twitter"
                 android:id="@+id/socialnetwork_twitter"
@@ -229,7 +236,7 @@
                 android:layout_marginRight="16dp" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Facebook"
                 android:id="@+id/socialnetwork_facebook"
@@ -270,7 +277,7 @@
                 android:layout_marginTop="4dp" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="動画の自動再生"
                 android:id="@+id/support_autoplay"
@@ -291,7 +298,7 @@
                 android:layout_marginRight="16dp" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="要望・問題を報告する"
                 android:id="@+id/support_advise"
@@ -312,7 +319,7 @@
                 android:layout_marginRight="16dp" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="利用規約とポリシー"
                 android:id="@+id/support_policy"
@@ -333,7 +340,7 @@
                 android:layout_marginRight="16dp" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="ソースライブラリ"
                 android:id="@+id/support_source"
@@ -354,7 +361,7 @@
                 android:layout_marginRight="16dp" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="アカウントの削除"
                 android:id="@+id/support_delete"
@@ -363,7 +370,8 @@
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="12dp"
                 android:textColor="@color/namegrey"
-                android:textSize="16dp" />
+                android:textSize="16dp"
+                android:visibility="gone" />
 
             <View
                 android:layout_width="match_parent"
@@ -372,7 +380,8 @@
                 android:layout_below="@+id/support_delete"
                 android:background="#e0e0e0"
                 android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp" />
+                android:layout_marginRight="16dp"
+                android:visibility="gone" />
 
             <com.andexert.library.RippleView
                 android:id="@+id/logout_Ripple"
@@ -382,7 +391,8 @@
                 android:layout_margin="24dp"
                 android:background="@color/gocci_button"
                 android:gravity="center"
-                android:layout_below="@+id/support_delete_line">
+                android:layout_below="@+id/support_delete_line"
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -391,6 +401,53 @@
                     android:textColor="#ffffff"
                     android:textSize="@dimen/accent_text" />
             </com.andexert.library.RippleView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="連携していません"
+                android:id="@+id/twitterSetting"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="false"
+                android:layout_alignBottom="@+id/socialnetwork_twitter"
+                android:layout_marginRight="24dp"
+                android:textColor="@color/nameblack" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="連携していません"
+                android:id="@+id/facebookSetting"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="false"
+                android:layout_alignBottom="@+id/socialnetwork_facebook"
+                android:layout_marginRight="24dp"
+                android:textColor="@color/nameblack" />
+
+            <com.facebook.login.widget.LoginButton
+                android:id="@+id/login_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginRight="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginBottom="4dp"
+                android:layout_marginTop="16dp"
+                android:visibility="gone" />
+
+            <com.inase.android.gocci.Base.GocciTwitterLoginButton
+                android:id="@+id/twitter_login_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/sign_up_button_twitter"
+                android:text="twitterでアカウント作成/ログイン"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:visibility="gone" />
         </RelativeLayout>
 
     </android.support.v4.widget.NestedScrollView>
