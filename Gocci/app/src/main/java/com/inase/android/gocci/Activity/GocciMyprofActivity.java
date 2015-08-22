@@ -476,7 +476,6 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
                         mProfusers.remove(position);
                         mMyProfAdapter.notifyDataSetChanged();
                     }
-                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -788,30 +787,28 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
     }
 
     private void postChangeProfileAsync(final Context context, final String post_date, final File file, final String url) {
-        if (post_date != null) {
-            if (file != null) {
-                TransferObserver transferObserver = Application_Gocci.getTransfer(context).upload(Const.POST_PHOTO_BUCKET_NAME, post_date + ".png", file);
-                transferObserver.setTransferListener(new TransferListener() {
-                    @Override
-                    public void onStateChanged(int id, TransferState state) {
-                        if (state == TransferState.COMPLETED) {
-                            postChangeProf(context, url);
-                        }
+        if (file != null || post_date != null) {
+            TransferObserver transferObserver = Application_Gocci.getTransfer(context).upload(Const.POST_PHOTO_BUCKET_NAME, post_date + ".png", file);
+            transferObserver.setTransferListener(new TransferListener() {
+                @Override
+                public void onStateChanged(int id, TransferState state) {
+                    if (state == TransferState.COMPLETED) {
+                        postChangeProf(context, url);
                     }
+                }
 
-                    @Override
-                    public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                @Override
+                public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
 
-                    }
+                }
 
-                    @Override
-                    public void onError(int id, Exception ex) {
+                @Override
+                public void onError(int id, Exception ex) {
 
-                    }
-                });
-            } else {
-                postChangeProf(context, url);
-            }
+                }
+            });
+        } else {
+            postChangeProf(context, url);
         }
     }
 
@@ -830,13 +827,12 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
                     String message = response.getString("message");
 
                     if (message.equals("プロフィールを変更しました")) {
-                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                         String name = response.getString("username");
                         String picture = response.getString("profile_img");
 
                         if (name.equals("変更に失敗しました")) {
                             SavedData.changeProfile(context, SavedData.getServerName(context), picture);
-                            Toast.makeText(context, "ユーザー名は変更できませんでした", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, "ユーザー名は同じアカウントが存在するため変更できませんでした", Toast.LENGTH_SHORT).show();
                         } else {
                             SavedData.changeProfile(context, name, picture);
                         }
