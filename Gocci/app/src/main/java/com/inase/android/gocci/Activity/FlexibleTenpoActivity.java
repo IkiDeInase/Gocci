@@ -464,7 +464,9 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
             if (mPlayingPostId != null && isSee) {
                 this.audioCapabilities = audioCapabilities;
                 releasePlayer();
-                preparePlayer(getPlayingViewHolder(), getVideoPath());
+                if (Util.isMovieAutoPlay(this)) {
+                    preparePlayer(getPlayingViewHolder(), getVideoPath());
+                }
             }
         } else {
             player.setBackgrounded(false);
@@ -693,7 +695,9 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
             final String path = userData.getMovie();
             Log.e("DEBUG", "[ProgressBar GONE] cache Path: " + path);
             releasePlayer();
-            preparePlayer(currentViewHolder, path);
+            if (Util.isMovieAutoPlay(this)) {
+                preparePlayer(currentViewHolder, path);
+            }
         }
     }
 
@@ -986,11 +990,12 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
                             player.getPlayerControl().pause();
                         } else {
                             player.getPlayerControl().start();
-                            holder.mVideoThumbnail.setVisibility(View.INVISIBLE);
                         }
                     } else {
-                        releasePlayer();
-                        preparePlayer(holder, user.getMovie());
+                        if (!Util.isMovieAutoPlay(context)) {
+                            releasePlayer();
+                            preparePlayer(holder, user.getMovie());
+                        }
                     }
                 }
             });

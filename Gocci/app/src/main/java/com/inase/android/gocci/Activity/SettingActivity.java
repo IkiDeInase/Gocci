@@ -372,13 +372,13 @@ public class SettingActivity extends AppCompatActivity {
         autoplaySetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int selected = 0;
+                int selected = SavedData.getSettingAutoPlay(SettingActivity.this);
                 new MaterialDialog.Builder(SettingActivity.this)
                         .items(R.array.autoplay)
                         .itemsCallbackSingleChoice(selected, new MaterialDialog.ListCallbackSingleChoice() {
                             @Override
                             public boolean onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
-                                Toast.makeText(SettingActivity.this, text.toString(), Toast.LENGTH_SHORT).show();
+                                SavedData.setSettingAutoPlay(SettingActivity.this, which);
                                 return true;
                             }
                         })

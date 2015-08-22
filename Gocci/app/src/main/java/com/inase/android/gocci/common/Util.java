@@ -112,6 +112,31 @@ public class Util {
         return status;
     }
 
+    public static boolean isMovieAutoPlay(Context context) {
+        //0 Wi-Fi + Mobile / 1 Wi-Fi / 2 none
+        int setting = SavedData.getSettingAutoPlay(context);
+        if (setting == 2) {
+            return false;
+        }
+        switch (getConnectedState(context)) {
+            case OFF:
+                return false;
+            case WIFI:
+            case WIMAX:
+                return true;
+            case MOBILE:
+            case LTE:
+                switch (setting) {
+                    case 0:
+                        return true;
+                    case 1:
+                        return false;
+                }
+            default:
+                return true;
+        }
+    }
+
     private static int screenWidth = 0;
     private static int screenHeight = 0;
 

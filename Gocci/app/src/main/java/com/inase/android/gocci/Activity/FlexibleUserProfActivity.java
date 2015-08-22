@@ -430,7 +430,9 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
             if (mPlayingPostId != null) {
                 this.audioCapabilities = audioCapabilities;
                 releasePlayer();
-                preparePlayer(getPlayingViewHolder(), getVideoPath());
+                if (Util.isMovieAutoPlay(this)) {
+                    preparePlayer(getPlayingViewHolder(), getVideoPath());
+                }
             }
         } else {
             player.setBackgrounded(false);
@@ -603,7 +605,9 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
             final String path = userData.getMovie();
             Log.e("DEBUG", "[ProgressBar GONE] cache Path: " + path);
             releasePlayer();
-            preparePlayer(currentViewHolder, path);
+            if (Util.isMovieAutoPlay(this)) {
+                preparePlayer(currentViewHolder, path);
+            }
         }
     }
 
@@ -824,11 +828,12 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
                             player.getPlayerControl().pause();
                         } else {
                             player.getPlayerControl().start();
-                            viewHolder.mVideoThumbnail.setVisibility(View.INVISIBLE);
                         }
                     } else {
-                        releasePlayer();
-                        preparePlayer(viewHolder, user.getMovie());
+                        if (!Util.isMovieAutoPlay(FlexibleUserProfActivity.this)) {
+                            releasePlayer();
+                            preparePlayer(viewHolder, user.getMovie());
+                        }
                     }
                 }
             });

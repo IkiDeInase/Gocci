@@ -393,7 +393,9 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
             if (mPlayingPostId != null) {
                 this.audioCapabilities = audioCapabilities;
                 releasePlayer();
-                preparePlayer(getPlayingViewHolder(), headerUser.getMovie());
+                if (Util.isMovieAutoPlay(this)) {
+                    preparePlayer(getPlayingViewHolder(), headerUser.getMovie());
+                }
             }
         } else {
             player.setBackgrounded(false);
@@ -639,7 +641,9 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
             final String path = headerUser.getMovie();
             Log.e("DEBUG", "[ProgressBar GONE] cache Path: " + path);
             releasePlayer();
-            preparePlayer(currentViewHolder, path);
+            if (Util.isMovieAutoPlay(this)) {
+                preparePlayer(currentViewHolder, path);
+            }
         }
     }
 
@@ -798,11 +802,12 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
                             player.getPlayerControl().pause();
                         } else {
                             player.getPlayerControl().start();
-                            holder.mVideoThumbnail.setVisibility(View.INVISIBLE);
                         }
                     } else {
-                        releasePlayer();
-                        preparePlayer(holder, user.getMovie());
+                        if (!Util.isMovieAutoPlay(context)) {
+                            releasePlayer();
+                            preparePlayer(holder, user.getMovie());
+                        }
                     }
                 }
             });

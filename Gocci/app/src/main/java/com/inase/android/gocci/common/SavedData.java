@@ -157,6 +157,18 @@ public class SavedData {
         return savedList;
     }
 
+    public static void setSettingAutoPlay(Context context, int setting) {
+        SharedPreferences prefs = context.getSharedPreferences("pref", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt("autoplay", setting);
+        editor.apply();
+    }
+
+    public static int getSettingAutoPlay(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences("pref", Context.MODE_PRIVATE);
+        return prefs.getInt("autoplay", 0);
+    }
+
     public static PersistentCookieStore getCookieStore(Context context) {
         return new PersistentCookieStore(context);
     }

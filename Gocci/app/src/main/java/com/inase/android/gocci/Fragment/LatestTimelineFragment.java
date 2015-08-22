@@ -7,7 +7,6 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -221,9 +220,6 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
         mLatestTimelineAdapter = new LatestTimelineAdapter(getActivity());
 
         if (Util.getConnectedState(getActivity()) != Util.NetworkStatus.OFF) {
-            if (Util.getConnectedState(getActivity()) == Util.NetworkStatus.MOBILE) {
-                Toast.makeText(getActivity(), "回線が悪いので、動画が流れなくなります", Toast.LENGTH_LONG).show();
-            }
             getSignupAsync(getActivity());
         } else {
             Toast.makeText(getActivity(), "通信に失敗しました", Toast.LENGTH_LONG).show();
@@ -293,18 +289,26 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
                 //タイムラインが呼ばれた時の処理
                 //path!=nullで　viewholder!=nullじゃない　
                 if (player != null) {
-                    player.getPlayerControl().start();
+                    if (!Util.isMovieAutoPlay(getActivity())) {
+                        releasePlayer();
+                    } else {
+                        player.getPlayerControl().start();
+                    }
                     Log.e("Otto発動", "動画再生復帰");
                 } else {
-                    preparePlayer(getPlayingViewHolder(), getVideoPath());
+                    if (Util.isMovieAutoPlay(getActivity())) {
+                        preparePlayer(getPlayingViewHolder(), getVideoPath());
+                    }
                 }
                 break;
             case 1:
                 mPlayBlockFlag = true;
                 //タイムライン以外のfragmentが可視化している場合
-                if (player.getPlayerControl().isPlaying()) {
-                    player.getPlayerControl().pause();
-                    Log.e("DEBUG", "subscribe 動画再生停止");
+                if (player != null) {
+                    if (player.getPlayerControl().isPlaying()) {
+                        player.getPlayerControl().pause();
+                        Log.e("DEBUG", "subscribe 動画再生停止");
+                    }
                 }
                 Log.e("Otto発動", "動画再生停止");
                 break;
@@ -325,7 +329,9 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
             if (mPlayingPostId != null && GocciTimelineActivity.mShowPosition == 0) {
                 this.audioCapabilities = audioCapabilities;
                 releasePlayer();
-                preparePlayer(getPlayingViewHolder(), getVideoPath());
+                if (Util.isMovieAutoPlay(getActivity())) {
+                    preparePlayer(getPlayingViewHolder(), getVideoPath());
+                }
             }
         } else {
             player.setBackgrounded(false);
@@ -551,7 +557,9 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
             final String path = userData.getMovie();
             Log.e("DEBUG", "[ProgressBar GONE] cache Path: " + path);
             releasePlayer();
-            preparePlayer(currentViewHolder, path);
+            if (Util.isMovieAutoPlay(getActivity())) {
+                preparePlayer(currentViewHolder, path);
+            }
         }
     }
 
@@ -687,11 +695,12 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
                             player.getPlayerControl().pause();
                         } else {
                             player.getPlayerControl().start();
-                            holder.mVideoThumbnail.setVisibility(View.INVISIBLE);
                         }
                     } else {
-                        releasePlayer();
-                        preparePlayer(holder, user.getMovie());
+                        if (!Util.isMovieAutoPlay(getActivity())) {
+                            releasePlayer();
+                            preparePlayer(holder, user.getMovie());
+                        }
                     }
                 }
             });

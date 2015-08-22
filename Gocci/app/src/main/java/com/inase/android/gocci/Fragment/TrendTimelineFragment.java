@@ -218,9 +218,6 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
         mTrendTimelineAdapter = new TrendTimelineAdapter(getActivity());
 
         if (Util.getConnectedState(getActivity()) != Util.NetworkStatus.OFF) {
-            if (Util.getConnectedState(getActivity()) == Util.NetworkStatus.MOBILE) {
-                Toast.makeText(getActivity(), "回線が悪いので、動画が流れなくなります", Toast.LENGTH_LONG).show();
-            }
             getSignupAsync(getActivity());
         } else {
             Toast.makeText(getActivity(), "通信に失敗しました", Toast.LENGTH_LONG).show();
@@ -289,18 +286,25 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
                 mPlayBlockFlag = false;
                 //path!=nullで　viewholder!=nullじゃない　
                 if (player != null) {
-                    player.getPlayerControl().start();
-                    Log.e("Otto発動", "動画再生復帰");
+                    if (!Util.isMovieAutoPlay(getActivity())) {
+                        releasePlayer();
+                    } else {
+                        player.getPlayerControl().start();
+                    }
                 } else {
-                    preparePlayer(getPlayingViewHolder(), getVideoPath());
+                    if (Util.isMovieAutoPlay(getActivity())) {
+                        preparePlayer(getPlayingViewHolder(), getVideoPath());
+                    }
                 }
                 break;
             case 0:
                 mPlayBlockFlag = true;
                 //タイムライン以外のfragmentが可視化している場合
-                if (player.getPlayerControl().isPlaying()) {
-                    player.getPlayerControl().pause();
-                    Log.e("DEBUG", "subscribe 動画再生停止");
+                if (player != null) {
+                    if (player.getPlayerControl().isPlaying()) {
+                        player.getPlayerControl().pause();
+                        Log.e("DEBUG", "subscribe 動画再生停止");
+                    }
                 }
                 Log.e("Otto発動", "動画再生停止");
                 break;
@@ -321,7 +325,9 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
             if (mPlayingPostId != null && GocciTimelineActivity.mShowPosition == 1) {
                 this.audioCapabilities = audioCapabilities;
                 releasePlayer();
-                preparePlayer(getPlayingViewHolder(), getVideoPath());
+                if (Util.isMovieAutoPlay(getActivity())) {
+                    preparePlayer(getPlayingViewHolder(), getVideoPath());
+                }
             }
         } else {
             player.setBackgrounded(false);
@@ -533,7 +539,9 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
             final String path = userData.getMovie();
             Log.e("DEBUG", "[ProgressBar GONE] cache Path: " + path);
             releasePlayer();
-            preparePlayer(currentViewHolder, path);
+            if (Util.isMovieAutoPlay(getActivity())) {
+                preparePlayer(currentViewHolder, path);
+            }
         }
     }
 
@@ -670,11 +678,12 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
                             player.getPlayerControl().pause();
                         } else {
                             player.getPlayerControl().start();
-                            holder.mVideoThumbnail.setVisibility(View.INVISIBLE);
                         }
                     } else {
-                        releasePlayer();
-                        preparePlayer(holder, user.getMovie());
+                        if (!Util.isMovieAutoPlay(getActivity())) {
+                            releasePlayer();
+                            preparePlayer(holder, user.getMovie());
+                        }
                     }
                 }
             });
