@@ -13,6 +13,8 @@ import android.util.ArraySet;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 import android.widget.AdapterView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,6 +28,7 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.Profile;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.inase.android.gocci.Application.Application_Gocci;
@@ -54,6 +57,7 @@ import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 
 import org.apache.http.Header;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -65,7 +69,6 @@ public class SettingActivity extends AppCompatActivity {
     private final SettingActivity self = this;
 
     private CallbackManager callbackManager;
-    private  TwitterSession session;
 
     private Drawer result;
 
@@ -255,7 +258,7 @@ public class SettingActivity extends AppCompatActivity {
             }
         });
 
-        session =
+        TwitterSession session =
                 Twitter.getSessionManager().getActiveSession();
         if (session != null) {
             twitterAuth.setText(session.getUserName());
@@ -348,6 +351,8 @@ public class SettingActivity extends AppCompatActivity {
                                 public void onPositive(MaterialDialog dialog) {
                                     super.onPositive(dialog);
                                     //SNSUnLinkとログアウト
+                                    TwitterSession session =
+                                            Twitter.getSessionManager().getActiveSession();
                                     TwitterAuthToken authToken = session.getAuthToken();
                                     snsUnLinkAsync(Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret);
                                 }
@@ -495,17 +500,41 @@ public class SettingActivity extends AppCompatActivity {
         }
     }
 
-    private void snsUnLinkAsync(String providerName, String token) {
+    private void snsUnLinkAsync(final String providerName, String token) {
         Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(this));
         Const.asyncHttpClient.get(this, Const.getAuthSNSUnLinkAPI(providerName, token), new JsonHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-
+                Toast.makeText(SettingActivity.this, "通信に失敗しました", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                try {
+                    String message = response.getString("message");
+                    int code = response.getInt("code");
 
+                    if (message.equals("SNS連携解除しました") && code == 200) {
+                        switch (providerName) {
+                            case Const.ENDPOINT_TWITTER:
+                                twitterAuth.setText("連携していません");
+                                isTwitterSetting = false;
+                                CookieSyncManager.createInstance(SettingActivity.this);
+                                CookieManager cookieManager = CookieManager.getInstance();
+                                cookieManager.removeSessionCookie();
+                                Twitter.getSessionManager().clearActiveSession();
+                                Twitter.logOut();
+                                break;
+                            case Const.ENDPOINT_FACEBOOK:
+                                facebookAuth.setText("連携していません");
+                                isFacebookSetting = false;
+                                LoginManager.getInstance().logOut();
+                                break;
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
