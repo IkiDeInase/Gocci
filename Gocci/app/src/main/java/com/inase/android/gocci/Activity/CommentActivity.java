@@ -351,7 +351,6 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
         }
         releasePlayer();
         audioCapabilitiesReceiver.unregister();
-        //getPlayingViewHolder().mVideoThumbnail.setVisibility(View.VISIBLE);
 
         appBarLayout.removeOnOffsetChangedListener(this);
     }
@@ -628,6 +627,14 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
         // TODO:実装
         if (!headerUser.getPost_id().equals(mPlayingPostId)) {
             Log.d("DEBUG", "postId change");
+
+            // 前回の動画再生停止処理
+            final Const.ExoViewHolder oldViewHolder = getPlayingViewHolder();
+            if (oldViewHolder != null) {
+                Log.d("DEBUG", "MOVIE::changeMovie 再生停止 postId:" + mPlayingPostId);
+                Log.e("DEBUG", "changeMovie 動画再生停止");
+                oldViewHolder.mVideoThumbnail.setVisibility(View.VISIBLE);
+            }
 
             mPlayingPostId = headerUser.getPost_id();
             final Const.ExoViewHolder currentViewHolder = getPlayingViewHolder();
