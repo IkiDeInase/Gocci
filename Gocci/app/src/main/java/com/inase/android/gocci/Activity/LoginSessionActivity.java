@@ -231,7 +231,7 @@ public class LoginSessionActivity extends AppCompatActivity {
 
     private void welcomeAsync(final Context context, final String identity_id) {
         Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(context, Const.getAuthLoginAPI(identity_id), new JsonHttpResponseHandler() {
+        Const.asyncHttpClient.get(context, Const.getAuthSNSLoginAPI(identity_id, Build.VERSION.RELEASE, Build.MODEL, SavedData.getRegId(context)), new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 try {

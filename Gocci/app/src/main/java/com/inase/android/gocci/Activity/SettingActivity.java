@@ -37,6 +37,8 @@ import com.inase.android.gocci.View.DrawerProfHeader;
 import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;
 import com.inase.android.gocci.common.Util;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.TextHttpResponseHandler;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
@@ -51,6 +53,7 @@ import com.twitter.sdk.android.core.TwitterAuthToken;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 
+import org.apache.http.Header;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -62,6 +65,7 @@ public class SettingActivity extends AppCompatActivity {
     private final SettingActivity self = this;
 
     private CallbackManager callbackManager;
+    private  TwitterSession session;
 
     private Drawer result;
 
@@ -114,9 +118,6 @@ public class SettingActivity extends AppCompatActivity {
                 case Const.INTENT_TO_ADVICE:
                     Util.setAdviceDialog(activity);
                     break;
-                case Const.INTENT_TO_SETTING:
-                    SettingActivity.startSettingActivity(activity);
-                    break;
             }
         }
     };
@@ -147,16 +148,15 @@ public class SettingActivity extends AppCompatActivity {
                 .withToolbar(tool_bar)
                 .withHeader(new DrawerProfHeader(this))
                 .addDrawerItems(
-                        new PrimaryDrawerItem().withName("タイムライン").withIcon(GoogleMaterial.Icon.gmd_home).withIdentifier(1).withCheckable(false),
-                        new PrimaryDrawerItem().withName("マイページ").withIcon(GoogleMaterial.Icon.gmd_person).withIdentifier(2).withCheckable(false),
+                        new PrimaryDrawerItem().withName("タイムライン").withIcon(GoogleMaterial.Icon.gmd_home).withIdentifier(1).withSelectable(false),
+                        new PrimaryDrawerItem().withName("マイページ").withIcon(GoogleMaterial.Icon.gmd_person).withIdentifier(2).withSelectable(false),
                         new DividerDrawerItem(),
-                        new PrimaryDrawerItem().withName("要望を送る").withIcon(GoogleMaterial.Icon.gmd_send).withCheckable(false).withIdentifier(3),
-                        new PrimaryDrawerItem().withName("設定").withIcon(GoogleMaterial.Icon.gmd_settings).withCheckable(false).withIdentifier(4)
+                        new PrimaryDrawerItem().withName("要望を送る").withIcon(GoogleMaterial.Icon.gmd_send).withSelectable(false).withIdentifier(3),
+                        new PrimaryDrawerItem().withName("設定").withIcon(GoogleMaterial.Icon.gmd_settings).withSelectable(false).withIdentifier(4)
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
-                    public boolean onItemClick(AdapterView<?> parent, View view, int position, long id, IDrawerItem drawerItem) {
-                        // do something with the clicked item :D
+                    public boolean onItemClick(View view, int i, IDrawerItem drawerItem) {
                         if (drawerItem != null) {
                             if (drawerItem.getIdentifier() == 1) {
                                 Message msg =
@@ -170,17 +170,12 @@ public class SettingActivity extends AppCompatActivity {
                                 Message msg =
                                         sHandler.obtainMessage(Const.INTENT_TO_ADVICE, 0, 0, SettingActivity.this);
                                 sHandler.sendMessageDelayed(msg, 500);
-                            } else if (drawerItem.getIdentifier() == 4) {
-                                Message msg =
-                                        sHandler.obtainMessage(Const.INTENT_TO_SETTING, 0, 0, SettingActivity.this);
-                                sHandler.sendMessageDelayed(msg, 500);
                             }
                         }
                         return false;
                     }
                 })
                 .withSavedInstance(savedInstanceState)
-                .withSelectedItem(-1)
                 .withOnDrawerNavigationListener(new Drawer.OnDrawerNavigationListener() {
                     @Override
                     public boolean onNavigationClickListener(View view) {
@@ -192,6 +187,7 @@ public class SettingActivity extends AppCompatActivity {
                 .build();
 
         result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(false);
+        result.setSelection(4);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
@@ -259,7 +255,7 @@ public class SettingActivity extends AppCompatActivity {
             }
         });
 
-        TwitterSession session =
+        session =
                 Twitter.getSessionManager().getActiveSession();
         if (session != null) {
             twitterAuth.setText(session.getUserName());
@@ -347,6 +343,15 @@ public class SettingActivity extends AppCompatActivity {
                             .content("Twitterの連携を解除してもいいですか？")
                             .positiveText("解除する")
                             .negativeText("いいえ")
+                            .callback(new MaterialDialog.ButtonCallback() {
+                                @Override
+                                public void onPositive(MaterialDialog dialog) {
+                                    super.onPositive(dialog);
+                                    //SNSUnLinkとログアウト
+                                    TwitterAuthToken authToken = session.getAuthToken();
+                                    snsUnLinkAsync(Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret);
+                                }
+                            })
                             .show();
                 } else {
                     //ログイン
@@ -363,6 +368,13 @@ public class SettingActivity extends AppCompatActivity {
                             .content("Facebookの連携を解除してもいいですか？")
                             .positiveText("解除する")
                             .negativeText("いいえ")
+                            .callback(new MaterialDialog.ButtonCallback() {
+                                @Override
+                                public void onPositive(MaterialDialog dialog) {
+                                    super.onPositive(dialog);
+                                    snsUnLinkAsync(Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken());
+                                }
+                            })
                             .show();
                 } else {
                     facebookLoginButton.performClick();
@@ -481,5 +493,20 @@ public class SettingActivity extends AppCompatActivity {
             super.onBackPressed();
             overridePendingTransition(R.anim.activity_back_in, R.anim.activity_back_out);
         }
+    }
+
+    private void snsUnLinkAsync(String providerName, String token) {
+        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(this));
+        Const.asyncHttpClient.get(this, Const.getAuthSNSUnLinkAPI(providerName, token), new JsonHttpResponseHandler() {
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+
+            }
+        });
     }
 }

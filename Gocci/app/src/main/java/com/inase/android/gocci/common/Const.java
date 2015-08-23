@@ -52,6 +52,11 @@ public class Const {
         return URL_PREFIX + VERSION_NUMBER + "/mobile/auth/login/?identity_id=" + identity_id;
     }
 
+    public static String getAuthSNSLoginAPI(String identity_id, String os, String model, String register_id) {
+        return URL_PREFIX + VERSION_NUMBER + "/mobile/auth/login/?identity_id=" + identity_id + "&os=android_" + os +
+                "&model=" + model + "&register_id=" + register_id;
+    }
+
     public static String getAuthSignupAPI(String username, String os, String model, String register_id) {
         return URL_PREFIX + VERSION_NUMBER + "/mobile/auth/signup/?username=" + username + "&os=android_" + os +
                 "&model=" + model + "&register_id=" + register_id;
@@ -66,6 +71,11 @@ public class Const {
     public static String getAuthSNSMatchAPI(String providerName, String token, String profile_img) {
         return URL_PREFIX + VERSION_NUMBER + "/mobile/post/sns/?provider=" + providerName +
                 "&token=" + token + "&profile_img=" + profile_img;
+    }
+
+    public static String getAuthSNSUnLinkAPI(String providerName, String token) {
+        return URL_PREFIX + VERSION_NUMBER + "/mobile/post/sns_unlink/?provider=" + providerName +
+                "&token=" + token;
     }
 
     public static String getAuthSNSConversionAPI(String providerName, String token, String profile_img, String os, String model, String register_id) {
