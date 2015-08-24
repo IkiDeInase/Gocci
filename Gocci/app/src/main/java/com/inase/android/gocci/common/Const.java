@@ -36,8 +36,8 @@ public class Const {
     public static final Regions REGION = Regions.US_EAST_1;
 
 //    public static final String POST_MOVIE_BUCKET_NAME = "gocci.movies.bucket.jp";
-//    public static final String GET_MOVIE_BUCKET_NAME = "gocci.imgs.provider.jp";
-//    public static final String POST_PHOTO_BUCKET_NAME = "gocci.movies.provider.jp";
+//    public static final String GET_MOVIE_BUCKET_NAME = "gocci.movies.provider.jp";
+//    public static final String POST_PHOTO_BUCKET_NAME = "gocci.imgs.provider.jp";
     public static final String POST_MOVIE_BUCKET_NAME = "gocci.movies.bucket.jp-test";
     public static final String GET_MOVIE_BUCKET_NAME = "gocci.movies.provider.jp-test";
     public static final String POST_PHOTO_BUCKET_NAME = "gocci.imgs.provider.jp-test";

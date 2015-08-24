@@ -116,10 +116,10 @@
                 android:id="@+id/account_notification"
                 android:layout_marginLeft="24dp"
                 android:layout_below="@+id/account_password_line"
-                android:layout_marginTop="12dp"
-                android:layout_marginBottom="12dp"
                 android:textColor="@color/namegrey"
-                android:textSize="16sp" />
+                android:textSize="18sp"
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp" />
 
             <View
                 android:layout_width="match_parent"
@@ -157,10 +157,10 @@
                 android:id="@+id/friend_search"
                 android:layout_marginLeft="24dp"
                 android:layout_below="@+id/header_friend_line"
-                android:layout_marginTop="12dp"
-                android:layout_marginBottom="12dp"
                 android:textColor="@color/namegrey"
-                android:textSize="16sp" />
+                android:textSize="18sp"
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp" />
 
             <View
                 android:layout_width="match_parent"
@@ -224,7 +224,7 @@
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="12dp"
                 android:textColor="@color/namegrey"
-                android:textSize="16sp" />
+                android:textSize="18sp" />
 
             <View
                 android:layout_width="match_parent"
@@ -245,7 +245,7 @@
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="12dp"
                 android:textColor="@color/namegrey"
-                android:textSize="16sp" />
+                android:textSize="18sp" />
 
             <View
                 android:layout_width="match_parent"
@@ -283,10 +283,10 @@
                 android:id="@+id/support_autoplay"
                 android:layout_marginLeft="24dp"
                 android:layout_below="@+id/header_support_line"
-                android:layout_marginTop="12dp"
-                android:layout_marginBottom="12dp"
                 android:textColor="@color/namegrey"
-                android:textSize="16sp" />
+                android:textSize="18sp"
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp" />
 
             <View
                 android:layout_width="match_parent"
@@ -304,10 +304,10 @@
                 android:id="@+id/support_advise"
                 android:layout_marginLeft="24dp"
                 android:layout_below="@+id/support_autoplay_line"
-                android:layout_marginTop="12dp"
-                android:layout_marginBottom="12dp"
                 android:textColor="@color/namegrey"
-                android:textSize="16sp" />
+                android:textSize="18sp"
+                android:paddingBottom="12dp"
+                android:paddingTop="12dp" />
 
             <View
                 android:layout_width="match_parent"
@@ -325,10 +325,10 @@
                 android:id="@+id/support_rule"
                 android:layout_marginLeft="24dp"
                 android:layout_below="@+id/support_advise_line"
-                android:layout_marginTop="12dp"
-                android:layout_marginBottom="12dp"
                 android:textColor="@color/namegrey"
-                android:textSize="16dp" />
+                android:textSize="18sp"
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp" />
 
             <View
                 android:layout_width="match_parent"
@@ -346,10 +346,10 @@
                 android:id="@+id/support_policy"
                 android:layout_marginLeft="24dp"
                 android:layout_below="@+id/support_rule_line"
-                android:layout_marginTop="12dp"
-                android:layout_marginBottom="12dp"
                 android:textColor="@color/namegrey"
-                android:textSize="16dp" />
+                android:textSize="18sp"
+                android:paddingBottom="12dp"
+                android:paddingTop="12dp" />
 
             <View
                 android:layout_width="match_parent"
@@ -367,10 +367,10 @@
                 android:id="@+id/support_source"
                 android:layout_marginLeft="24dp"
                 android:layout_below="@+id/support_policy_line"
-                android:layout_marginTop="12dp"
-                android:layout_marginBottom="12dp"
                 android:textColor="@color/namegrey"
-                android:textSize="16dp" />
+                android:textSize="18sp"
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp" />
 
             <View
                 android:layout_width="match_parent"
@@ -388,11 +388,10 @@
                 android:id="@+id/support_version"
                 android:layout_marginLeft="24dp"
                 android:layout_below="@+id/support_source_line"
-                android:layout_marginTop="12dp"
-                android:layout_marginBottom="12dp"
                 android:textColor="@color/namegrey"
-                android:textSize="16dp"
-                />
+                android:textSize="18sp"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -422,11 +421,11 @@
                 android:id="@+id/support_delete"
                 android:layout_marginLeft="24dp"
                 android:layout_below="@+id/support_source_line"
-                android:layout_marginTop="12dp"
-                android:layout_marginBottom="12dp"
                 android:textColor="@color/namegrey"
-                android:textSize="16dp"
-                android:visibility="gone" />
+                android:textSize="18sp"
+                android:visibility="gone"
+                android:paddingBottom="12dp"
+                android:paddingTop="12dp" />
 
             <View
                 android:layout_width="match_parent"
