@@ -321,10 +321,31 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="利用規約とポリシー"
-                android:id="@+id/support_policy"
+                android:text="利用規約"
+                android:id="@+id/support_rule"
                 android:layout_marginLeft="24dp"
                 android:layout_below="@+id/support_advise_line"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"
+                android:textColor="@color/namegrey"
+                android:textSize="16dp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:id="@+id/support_rule_line"
+                android:layout_below="@+id/support_rule"
+                android:background="#e0e0e0"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="プライバシーポリシー"
+                android:id="@+id/support_policy"
+                android:layout_marginLeft="24dp"
+                android:layout_below="@+id/support_rule_line"
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="12dp"
                 android:textColor="@color/namegrey"
@@ -359,6 +380,40 @@
                 android:background="#e0e0e0"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="バージョン"
+                android:id="@+id/support_version"
+                android:layout_marginLeft="24dp"
+                android:layout_below="@+id/support_source_line"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"
+                android:textColor="@color/namegrey"
+                android:textSize="16dp"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1.0.0"
+                android:id="@+id/version_number"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="false"
+                android:layout_alignBottom="@+id/support_version"
+                android:layout_marginRight="24dp"
+                android:textColor="@color/nameblack" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:id="@+id/support_version_line"
+                android:layout_below="@+id/support_version"
+                android:background="#e0e0e0"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:visibility="gone" />
 
             <TextView
                 android:layout_width="match_parent"

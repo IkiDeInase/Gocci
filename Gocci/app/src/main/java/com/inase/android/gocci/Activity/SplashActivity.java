@@ -14,6 +14,7 @@ import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationExcept
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
 import com.facebook.AccessToken;
 import com.inase.android.gocci.Application.Application_Gocci;
+import com.inase.android.gocci.BuildConfig;
 import com.inase.android.gocci.Event.BusHolder;
 import com.inase.android.gocci.Event.CreateProviderFinishEvent;
 import com.inase.android.gocci.R;

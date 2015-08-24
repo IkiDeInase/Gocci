@@ -18,6 +18,7 @@ import com.crashlytics.android.Crashlytics;
 import com.facebook.FacebookSdk;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
+import com.inase.android.gocci.BuildConfig;
 import com.inase.android.gocci.Event.BusHolder;
 import com.inase.android.gocci.Event.CreateProviderFinishEvent;
 import com.inase.android.gocci.Event.SNSMatchFinishEvent;
@@ -252,6 +253,8 @@ public class Application_Gocci extends Application {
         tracker.enableExceptionReporting(true);
         tracker.enableAdvertisingIdCollection(true);
         tracker.enableAutoActivityTracking(true);
+
+        SavedData.setVersionName(this, BuildConfig.VERSION_NAME);
 
     }
 

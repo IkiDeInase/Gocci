@@ -128,15 +128,13 @@ public class LoginSessionActivity extends AppCompatActivity {
         twitterRipple.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Handler handler = new Handler();
-                handler.postDelayed(new TwitterClickHandler(), 750);
+                onTwitterButtonClicked();
             }
         });
         facebookRipple.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Handler handler = new Handler();
-                handler.postDelayed(new FacebookClickHandler(), 750);
+                onFacebookButtonClicked();
             }
         });
 
@@ -345,17 +343,5 @@ public class LoginSessionActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
         twitterLoginButton.onActivityResult(requestCode, resultCode, data);
-    }
-
-    class TwitterClickHandler implements Runnable {
-        public void run() {
-            onTwitterButtonClicked();
-        }
-    }
-
-    class FacebookClickHandler implements Runnable {
-        public void run() {
-            onFacebookButtonClicked();
-        }
     }
 }

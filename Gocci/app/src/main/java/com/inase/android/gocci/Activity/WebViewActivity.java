@@ -19,9 +19,12 @@ import com.inase.android.gocci.common.Const;
 public class WebViewActivity extends AppCompatActivity {
 
     private int category;
-    // policy 1 : license 2
+    // rule 0 : policy 1 : license 2
 
     private static MobileAnalyticsManager analytics;
+
+    private static final String URL_RULE = "http://inase-inc.jp/rules/";
+    private static final String URL_POLICY = "http://inase-inc.jp/rules/privacy/";
 
     public static void startWebViewActivity(int category, Activity startingActivity) {
         Intent intent = new Intent(startingActivity, WebViewActivity.class);
@@ -58,13 +61,19 @@ public class WebViewActivity extends AppCompatActivity {
         //リンクをタップしたときに標準ブラウザを起動させない
         myWebView.setWebViewClient(new WebViewClient());
 
-        if (category == 1) {
-            myWebView.loadUrl("file:///android_asset/policy.html");
-            getSupportActionBar().setTitle("利用規約とポリシー");
-        }
-        if (category == 2) {
-            myWebView.loadUrl("file:///android_asset/license.html");
-            getSupportActionBar().setTitle("ライセンス情報");
+        switch (category) {
+            case 0:
+                myWebView.loadUrl(URL_RULE);
+                getSupportActionBar().setTitle("利用規約");
+                break;
+            case 1:
+                myWebView.loadUrl(URL_POLICY);
+                getSupportActionBar().setTitle("プライバシーポリシー");
+                break;
+            case 2:
+                myWebView.loadUrl("file:///android_asset/license.html");
+                getSupportActionBar().setTitle("ソースライブラリ");
+                break;
         }
 
         //jacascriptを許可する

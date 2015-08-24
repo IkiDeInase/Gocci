@@ -16,7 +16,9 @@ import android.widget.Toast;
 
 import com.github.jorgecastilloprz.FABProgressCircle;
 import com.github.jorgecastilloprz.listeners.FABProgressListener;
+import com.inase.android.gocci.Activity.SettingActivity;
 import com.inase.android.gocci.Activity.TutorialGuideActivity;
+import com.inase.android.gocci.Activity.WebViewActivity;
 import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.common.Const;
@@ -36,6 +38,9 @@ public class CreateUserNameFragment extends Fragment implements FABProgressListe
     private TextView createdUsername;
     private TextInputLayout inputText;
     private FloatingActionButton fab;
+
+    private TextView rule;
+    private TextView policy;
 
     public static CreateUserNameFragment newInstance() {
         CreateUserNameFragment pane = new CreateUserNameFragment();
@@ -69,6 +74,23 @@ public class CreateUserNameFragment extends Fragment implements FABProgressListe
                 } else {
                     Toast.makeText(getActivity(), "希望のユーザー名を入力してください", Toast.LENGTH_SHORT).show();
                 }
+            }
+        });
+
+        rule = (TextView) rootView.findViewById(R.id.rule);
+        policy = (TextView) rootView.findViewById(R.id.policy);
+
+        rule.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                WebViewActivity.startWebViewActivity(0, getActivity());
+            }
+        });
+
+        policy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                WebViewActivity.startWebViewActivity(1, getActivity());
             }
         });
 

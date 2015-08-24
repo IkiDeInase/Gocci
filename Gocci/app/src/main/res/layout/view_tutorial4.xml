@@ -7,8 +7,8 @@
     android:background="#FFE066">
 
     <ImageView
-        android:layout_width="175dp"
-        android:layout_height="175dp"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:layout_gravity="center_horizontal"
         android:src="@drawable/ic_gocci_cheer"
         android:layout_marginTop="75dp"
@@ -97,4 +97,73 @@
             app:elevation="4dp" />
 
     </com.github.jorgecastilloprz.FABProgressCircle>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/fabProgressCircle"
+        android:id="@+id/rules">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="登録することで、"
+            android:id="@+id/rule_header"
+            android:layout_centerHorizontal="true"
+            android:textSize="12sp"
+            android:gravity="center_horizontal"
+            android:textColor="@color/nameblack" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/rule_content"
+            android:layout_below="@+id/rule_header"
+            android:layout_centerHorizontal="true">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="利用規約"
+                android:id="@+id/rule"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@color/nameblack"
+                android:layout_toLeftOf="@+id/rule_center"
+                android:layout_below="@+id/rule_header" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="及び"
+                android:id="@+id/rule_center"
+                android:textSize="14sp"
+                android:textColor="@color/nameblack"
+                android:layout_below="@+id/rule_header"
+                android:layout_centerHorizontal="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="プライバシーポリシー"
+                android:id="@+id/policy"
+                android:textColor="@color/nameblack"
+                android:textSize="14sp"
+                android:layout_below="@+id/rule_header"
+                android:layout_toRightOf="@+id/rule_center"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="に同意するものとします。"
+            android:id="@+id/rule_footer"
+            android:textSize="12sp"
+            android:textColor="@color/nameblack"
+            android:layout_below="@+id/rule_content"
+            android:layout_centerHorizontal="true" />
+    </RelativeLayout>
+
 </RelativeLayout>

@@ -164,6 +164,18 @@ public class SavedData {
         editor.apply();
     }
 
+    public static String getVersionName(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences("pref", Context.MODE_PRIVATE);
+        return prefs.getString("version_name", "1.0.0");
+    }
+
+    public static void setVersionName(Context context, String versionName) {
+        SharedPreferences prefs = context.getSharedPreferences("pref", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("version_name", versionName);
+        editor.apply();
+    }
+
     public static int getSettingAutoPlay(Context context) {
         SharedPreferences prefs = context.getSharedPreferences("pref", Context.MODE_PRIVATE);
         return prefs.getInt("autoplay", 0);

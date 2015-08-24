@@ -33,6 +33,7 @@ import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.Base.GocciTwitterLoginButton;
+import com.inase.android.gocci.BuildConfig;
 import com.inase.android.gocci.Event.BusHolder;
 import com.inase.android.gocci.Event.NotificationNumberEvent;
 import com.inase.android.gocci.R;
@@ -86,9 +87,11 @@ public class SettingActivity extends AppCompatActivity {
     private TextView facebookSetting;
     private TextView autoplaySetting;
     private TextView adviseSetting;
+    private TextView ruleSetting;
     private TextView policySetting;
     private TextView sourceSetting;
     private TextView deleteSetting;
+    private TextView version_number;
     private RippleView logoutRipple;
     private TextView twitterAuth;
     private TextView facebookAuth;
@@ -204,9 +207,11 @@ public class SettingActivity extends AppCompatActivity {
         facebookSetting = (TextView) findViewById(R.id.socialnetwork_facebook);
         autoplaySetting = (TextView) findViewById(R.id.support_autoplay);
         adviseSetting = (TextView) findViewById(R.id.support_advise);
+        ruleSetting = (TextView) findViewById(R.id.support_rule);
         policySetting = (TextView) findViewById(R.id.support_policy);
         sourceSetting = (TextView) findViewById(R.id.support_source);
         deleteSetting = (TextView) findViewById(R.id.support_delete);
+        version_number = (TextView) findViewById(R.id.version_number);
         logoutRipple = (RippleView) findViewById(R.id.logout_Ripple);
         twitterAuth = (TextView) findViewById(R.id.twitterSetting);
         facebookAuth = (TextView) findViewById(R.id.facebookSetting);
@@ -239,15 +244,13 @@ public class SettingActivity extends AppCompatActivity {
         twitterLoginButton.setCallback(new Callback<TwitterSession>() {
             @Override
             public void success(Result<TwitterSession> result) {
-                TwitterSession session =
-                        Twitter.getSessionManager().getActiveSession();
-                TwitterAuthToken authToken = session.getAuthToken();
+                TwitterAuthToken authToken = result.data.getAuthToken();
 
-                String username = session.getUserName();
+                String username = result.data.getUserName();
                 String profile_img = "http://www.paper-glasses.com/api/twipi/" + username;
                 Application_Gocci.addLogins(SettingActivity.this, "api.twitter.com", authToken.token + ";" + authToken.secret, profile_img);
 
-                twitterAuth.setText(session.getUserName());
+                twitterAuth.setText(result.data.getUserName());
                 isTwitterSetting = true;
             }
 
@@ -409,6 +412,12 @@ public class SettingActivity extends AppCompatActivity {
                 Util.setAdviceDialog(SettingActivity.this);
             }
         });
+        ruleSetting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                WebViewActivity.startWebViewActivity(0, SettingActivity.this);
+            }
+        });
         policySetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -430,6 +439,8 @@ public class SettingActivity extends AppCompatActivity {
                         .show();
             }
         });
+
+        version_number.setText(BuildConfig.VERSION_NAME);
         logoutRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
             @Override
             public void onComplete(RippleView rippleView) {

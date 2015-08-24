@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.andexert.library.RippleView;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -89,11 +90,9 @@ public class SocialAuthenticationFragment extends Fragment {
         twitter_loginButton.setCallback(new Callback<TwitterSession>() {
             @Override
             public void success(Result<TwitterSession> result) {
-                TwitterSession session =
-                        Twitter.getSessionManager().getActiveSession();
-                TwitterAuthToken authToken = session.getAuthToken();
+                TwitterAuthToken authToken = result.data.getAuthToken();
 
-                String username = session.getUserName();
+                String username = result.data.getUserName();
                 String profile_img = "http://www.paper-glasses.com/api/twipi/" + username;
                 Application_Gocci.addLogins(getActivity(), "api.twitter.com", authToken.token + ";" + authToken.secret, profile_img);
 
@@ -116,7 +115,18 @@ public class SocialAuthenticationFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (Application_Gocci.getLoginProvider() != null) {
-                    twitter_loginButton.performClick();
+                    new MaterialDialog.Builder(getActivity()).
+                            content("すでに連携済みのアカウントがある場合、そのアカウントは使用できなくなりますがよろしいですか？")
+                            .positiveText("連携する")
+                            .negativeText("やめる")
+                            .callback(new MaterialDialog.ButtonCallback() {
+                                @Override
+                                public void onPositive(MaterialDialog dialog) {
+                                    super.onPositive(dialog);
+                                    twitter_loginButton.performClick();
+                                }
+                            })
+                            .show();
                 } else {
                     Toast.makeText(getActivity(), "希望のユーザー名を入力してください", Toast.LENGTH_SHORT).show();
                 }
@@ -126,7 +136,18 @@ public class SocialAuthenticationFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (Application_Gocci.getLoginProvider() != null) {
-                    loginButton.performClick();
+                    new MaterialDialog.Builder(getActivity()).
+                            content("すでに連携済みのアカウントがある場合、そのアカウントは使用できなくなりますがよろしいですか？")
+                            .positiveText("連携する")
+                            .negativeText("やめる")
+                            .callback(new MaterialDialog.ButtonCallback() {
+                                @Override
+                                public void onPositive(MaterialDialog dialog) {
+                                    super.onPositive(dialog);
+                                    loginButton.performClick();
+                                }
+                            })
+                            .show();
                 } else {
                     Toast.makeText(getActivity(), "希望のユーザー名を入力してください", Toast.LENGTH_SHORT).show();
                 }
