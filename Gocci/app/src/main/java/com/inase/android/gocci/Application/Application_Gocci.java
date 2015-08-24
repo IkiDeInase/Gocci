@@ -254,8 +254,6 @@ public class Application_Gocci extends Application {
         tracker.enableAdvertisingIdCollection(true);
         tracker.enableAutoActivityTracking(true);
 
-        SavedData.setVersionName(this, BuildConfig.VERSION_NAME);
-
     }
 
     @Override

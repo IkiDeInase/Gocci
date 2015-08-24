@@ -73,6 +73,11 @@ public class SplashActivity extends AppCompatActivity {
             //SavedData.setRegId(this, "APA91bFlIfRuMRWjMbKfXyC5votBewFcpj71N0j4aiSEgqvHeHsoDcCjS6TuUTxdHnj13cT_40mkflrl5aqigmPGdj5VH0njkc0MM6aMgkExqZoRVZAv8BcUEFy09ZUaxoiRXNuvktee");
             //SavedData.setIdentityId(this, "us-east-1:6b195305-171c-4b83-aa51-e0b1d38de2f2");
 
+            if (!BuildConfig.VERSION_NAME.equals(SavedData.getVersionName(this))) {
+                //バージョンアップしたよね
+                SavedData.setVersionName(this, BuildConfig.VERSION_NAME);
+            }
+
             String mIdentityId = SavedData.getIdentityId(this);
             if (!mIdentityId.equals("no identityId")) {
                 //２回目

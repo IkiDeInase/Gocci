@@ -27,6 +27,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -43,6 +44,7 @@ import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.share.Sharer;
 import com.facebook.share.widget.ShareDialog;
+import com.flaviofaria.kenburnsview.RandomTransitionGenerator;
 import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
@@ -321,6 +323,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
         collapsingToolbarLayout.setTitle(intent.getStringExtra("rest_name"));
 
         kenBurnsView = (CustomKenBurnsView) findViewById(R.id.background_Image);
+        kenBurnsView.setTransitionGenerator(new RandomTransitionGenerator(3000, new AccelerateDecelerateInterpolator()));
 
         cheer_number = (TextView) findViewById(R.id.cheer_number);
         cheer_number.setText(String.valueOf(mTotal_cheer_num));
