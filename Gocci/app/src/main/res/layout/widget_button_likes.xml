@@ -33,5 +33,5 @@
         android:layout_gravity="center_vertical"
         android:layout_marginLeft="2dp"
         android:textColor="@color/like_comment_share_color"
-        android:id="@+id/" />
+        />
 </LinearLayout>
