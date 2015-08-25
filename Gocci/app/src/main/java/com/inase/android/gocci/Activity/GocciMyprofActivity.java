@@ -857,7 +857,7 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
 
             @Override
             public void onFinish() {
-                progress.setVisibility(View.INVISIBLE);
+                progress.setVisibility(View.GONE);
             }
         });
     }

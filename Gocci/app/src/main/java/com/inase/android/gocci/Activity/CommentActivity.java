@@ -89,15 +89,11 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
     private ArrayList<HeaderData> mCommentusers = new ArrayList<>();
     private CommentAdapter mCommentAdapter;
     private SwipeRefreshLayout mSwipeRefreshLayout;
-
-    private ProgressWheel mCommentProgress;
-
     private FloatingActionButton mCommentButton;
-
-    private CommentActivity self = this;
-
     private CoordinatorLayout coordinatorLayout;
     private AppBarLayout appBarLayout;
+
+    private CommentActivity self = this;
 
     private Point mDisplaySize;
     private String mPlayingPostId;
@@ -109,16 +105,12 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
 
     private PostData headerUser;
     private String mPost_id;
-
     private String mCommentUrl;
     private String title;
 
     private Drawer result;
-
     private VideoPlayer player;
     private boolean playerNeedsPrepare;
-
-    private long playerPosition;
 
     private AudioCapabilitiesReceiver audioCapabilitiesReceiver;
     private AudioCapabilities audioCapabilities;
@@ -273,7 +265,6 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
         result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        mCommentProgress = (ProgressWheel) findViewById(R.id.commentprogress_wheel);
         mCommentRecyclerView = (ObservableRecyclerView) findViewById(R.id.list);
         mLayoutManager = new LinearLayoutManager(this);
         mCommentRecyclerView.setLayoutManager(mLayoutManager);
@@ -321,7 +312,6 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
 
         mCommentUrl = Const.getCommentAPI(mPost_id);
         getSignupAsync(this);
-
     }
 
     @Override
@@ -405,7 +395,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
         Const.asyncHttpClient.get(context, mCommentUrl, new TextHttpResponseHandler() {
             @Override
             public void onStart() {
-                mCommentProgress.setVisibility(View.VISIBLE);
+                mSwipeRefreshLayout.setRefreshing(true);
             }
 
             @Override
@@ -442,7 +432,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
             public void onFinish() {
                 Log.d("DEBUG", "ProgressDialog dismiss getTimeline finish");
 //                mTimelineDialog.dismiss();
-                mCommentProgress.setVisibility(View.INVISIBLE);
+                mSwipeRefreshLayout.setRefreshing(false);
             }
         });
     }
@@ -495,7 +485,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
 
             @Override
             public void onStart() {
-                mCommentProgress.setVisibility(View.VISIBLE);
+                mSwipeRefreshLayout.setRefreshing(true);
             }
 
             @Override
@@ -545,7 +535,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
             public void onFinish() {
                 Log.d("DEBUG", "ProgressDialog dismiss getTimeline finish");
 //                mTimelineDialog.dismiss();
-                mCommentProgress.setVisibility(View.GONE);
+                mSwipeRefreshLayout.setRefreshing(false);
             }
         });
     }

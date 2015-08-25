@@ -74,7 +74,6 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
     private ArrayList<PostData> mTimelineusers = new ArrayList<>();
     private LatestTimelineAdapter mLatestTimelineAdapter;
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    private ProgressWheel progress;
 
     private AppBarLayout appBarLayout;
 
@@ -204,7 +203,6 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
         mPlayingPostId = null;
         mViewHolderHash = new ConcurrentHashMap<>();
 
-        progress = (ProgressWheel) view.findViewById(R.id.progress);
         mTimelineRecyclerView = (ObservableRecyclerView) view.findViewById(R.id.list);
         mLayoutManager = new LinearLayoutManager(getActivity());
         mTimelineRecyclerView.setLayoutManager(mLayoutManager);
@@ -409,7 +407,7 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
 
             @Override
             public void onStart() {
-                progress.setVisibility(View.VISIBLE);
+                mSwipeRefreshLayout.setRefreshing(true);
             }
 
             @Override
@@ -439,7 +437,7 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
             public void onFinish() {
                 Log.d("DEBUG", "ProgressDialog dismiss getTimeline finish");
 //                mTimelineDialog.dismiss();
-                progress.setVisibility(View.GONE);
+                mSwipeRefreshLayout.setRefreshing(false);
             }
         });
     }
