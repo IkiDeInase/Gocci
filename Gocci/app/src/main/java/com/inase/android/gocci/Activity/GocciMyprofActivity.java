@@ -202,7 +202,7 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
                 if (Util.getConnectedState(GocciMyprofActivity.this) != Util.NetworkStatus.OFF) {
                     getRefreshAsync(GocciMyprofActivity.this);
                 } else {
-                    Toast.makeText(GocciMyprofActivity.this, "通信に失敗しました", Toast.LENGTH_LONG).show();
+                    Toast.makeText(GocciMyprofActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
                     mSwipeRefreshLayout.setRefreshing(false);
                 }
             }
@@ -213,11 +213,11 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
                 .withToolbar(toolbar)
                 .withHeader(new DrawerProfHeader(this))
                 .addDrawerItems(
-                        new PrimaryDrawerItem().withName("タイムライン").withIcon(GoogleMaterial.Icon.gmd_home).withIdentifier(1).withSelectable(false),
-                        new PrimaryDrawerItem().withName("マイページ").withIcon(GoogleMaterial.Icon.gmd_person).withIdentifier(2).withSelectable(false),
+                        new PrimaryDrawerItem().withName(getString(R.string.timeline)).withIcon(GoogleMaterial.Icon.gmd_home).withIdentifier(1).withSelectable(false),
+                        new PrimaryDrawerItem().withName(getString(R.string.mypage)).withIcon(GoogleMaterial.Icon.gmd_person).withIdentifier(2).withSelectable(false),
                         new DividerDrawerItem(),
-                        new PrimaryDrawerItem().withName("アドバイスを送る").withIcon(GoogleMaterial.Icon.gmd_send).withSelectable(false).withIdentifier(3),
-                        new PrimaryDrawerItem().withName("設定").withIcon(GoogleMaterial.Icon.gmd_settings).withSelectable(false).withIdentifier(4)
+                        new PrimaryDrawerItem().withName(getString(R.string.send_advice)).withIcon(GoogleMaterial.Icon.gmd_send).withSelectable(false).withIdentifier(3),
+                        new PrimaryDrawerItem().withName(getString(R.string.settings)).withIcon(GoogleMaterial.Icon.gmd_settings).withSelectable(false).withIdentifier(4)
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
@@ -272,11 +272,12 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
     @Subscribe
     public void subscribe(NotificationNumberEvent event) {
         Snackbar.make(coordinatorLayout, event.mMessage, Snackbar.LENGTH_SHORT).show();
-        if (event.mMessage.equals("投稿が完了しました。")) {
+        if (event.mMessage.equals(getString(R.string.videoposting_complete))) {
             getRefreshAsync(GocciMyprofActivity.this);
+        } else {
+            notificationNumber.setVisibility(View.VISIBLE);
+            notificationNumber.setText(String.valueOf(event.mNotificationNumber));
         }
-        notificationNumber.setVisibility(View.VISIBLE);
-        notificationNumber.setText(String.valueOf(event.mNotificationNumber));
     }
 
     @Override
@@ -309,7 +310,6 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e("ログ", "通知クリック");
                 notificationNumber.setVisibility(View.INVISIBLE);
                 SavedData.setNotification(GocciMyprofActivity.this, 0);
                 View notification = new NotificationListView(GocciMyprofActivity.this);
@@ -381,7 +381,7 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                Toast.makeText(context, "読み取りに失敗しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -413,7 +413,7 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                Toast.makeText(context, "読み取りに失敗しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -445,10 +445,9 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
 
     private void setDeleteDialog(final String post_id, final int position) {
         new MaterialDialog.Builder(this)
-                .title("投稿の削除")
-                .content("この投稿を削除しますか？")
-                .positiveText("する")
-                .negativeText("いいえ")
+                .content(getString(R.string.check_delete_post))
+                .positiveText(getString(R.string.check_delete_yeah))
+                .negativeText(getString(R.string.check_delete_no))
                 .callback(new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onPositive(MaterialDialog dialog) {
@@ -468,11 +467,10 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
         Const.asyncHttpClient.get(context, Const.getPostDeleteAPI(post_id), new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                Log.e("ジェイソン成功", String.valueOf(response));
                 try {
                     String message = response.getString("message");
 
-                    if (message.equals("投稿を消去しました")) {
+                    if (message.equals(getString(R.string.delete_post_complete_message))) {
                         mProfusers.remove(position);
                         mMyProfAdapter.notifyDataSetChanged();
                     }
@@ -484,7 +482,7 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 //mMaterialDialog.dismiss();
-                Toast.makeText(context, "削除に失敗しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -638,9 +636,9 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
                 @Override
                 public void onClick(View v) {
                     final MaterialDialog dialog = new MaterialDialog.Builder(context)
-                            .title("変えたい箇所を押してみよう")
+                            .title(getString(R.string.change_profile_dialog_title))
                             .customView(R.layout.view_header_myprof_edit, false)
-                            .positiveText("変更する")
+                            .positiveText(getString(R.string.change_profile_dialog_yeah))
                             .callback(new MaterialDialog.ButtonCallback() {
                                 @Override
                                 public void onPositive(MaterialDialog dialog) {
@@ -712,7 +710,7 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
                                 public boolean onKey(View v, int keyCode, KeyEvent event) {
                                     if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
                                         if (edit_username_edit.getText().toString().isEmpty()) {
-                                            Toast.makeText(context, "名前の入力が不正です", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(context, getString(R.string.cheat_input_username), Toast.LENGTH_SHORT).show();
                                             return false;
                                         } else {
                                             inputMethodManager.hideSoftInputFromWindow(edit_username_edit.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
@@ -818,7 +816,7 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Toast.makeText(context, "プロフィール変更に失敗しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -826,13 +824,13 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
                 try {
                     String message = response.getString("message");
 
-                    if (message.equals("プロフィールを変更しました")) {
+                    if (message.equals(getString(R.string.change_profile_dialog_complete))) {
                         String name = response.getString("username");
                         String picture = response.getString("profile_img");
 
-                        if (name.equals("変更に失敗しました")) {
+                        if (name.equals(getString(R.string.change_profile_dialog_error_username))) {
                             SavedData.changeProfile(context, SavedData.getServerName(context), picture);
-                            Toast.makeText(context, "ユーザー名は同じアカウントが存在するため変更できませんでした", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, getString(R.string.change_profile_dialog_error_username_message), Toast.LENGTH_SHORT).show();
                         } else {
                             SavedData.changeProfile(context, name, picture);
                         }

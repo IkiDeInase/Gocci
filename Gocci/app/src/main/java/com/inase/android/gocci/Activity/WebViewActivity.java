@@ -64,15 +64,15 @@ public class WebViewActivity extends AppCompatActivity {
         switch (category) {
             case 0:
                 myWebView.loadUrl(URL_RULE);
-                getSupportActionBar().setTitle("利用規約");
+                getSupportActionBar().setTitle(getString(R.string.rule));
                 break;
             case 1:
                 myWebView.loadUrl(URL_POLICY);
-                getSupportActionBar().setTitle("プライバシーポリシー");
+                getSupportActionBar().setTitle(getString(R.string.policy));
                 break;
             case 2:
                 myWebView.loadUrl("file:///android_asset/license.html");
-                getSupportActionBar().setTitle("ソースライブラリ");
+                getSupportActionBar().setTitle(getString(R.string.source));
                 break;
         }
 

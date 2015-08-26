@@ -12,16 +12,16 @@
         android:id="@+id/appbar"
         >
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/tool_bar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/gocci_header"
-        app:layout_scrollFlags="scroll|enterAlways"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/tool_bar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/gocci_header"
+            app:layout_scrollFlags="scroll|enterAlways"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
-    </android.support.v7.widget.Toolbar>
+        </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>
 
@@ -43,7 +43,7 @@
         android:layout_height="wrap_content"
         app:layout_anchor="@id/coordinator_layout"
         app:layout_anchorGravity="bottom|right"
-        android:layout_marginRight="16dp"
+        android:layout_margin="16dp"
         android:src="@drawable/ic_comment_white_36dp"
         app:backgroundTint="@color/fab" />
 

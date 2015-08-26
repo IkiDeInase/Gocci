@@ -115,7 +115,7 @@ public class NotificationListView extends RelativeLayout {
 
             @Override
             public void onFailure(int statusCode, org.apache.http.Header[] headers, java.lang.Throwable throwable, org.json.JSONObject errorResponse) {
-                Toast.makeText(getContext(), "読み取りに失敗しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), context.getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -193,15 +193,15 @@ public class NotificationListView extends RelativeLayout {
 
             switch (user.getNotice()) {
                 case "like":
-                    mNotificationHolder.notice_sub.setText("さんからいいねされました");
+                    mNotificationHolder.notice_sub.setText(getContext().getString(R.string.notice_from_gochi));
 
                     break;
                 case "follow":
-                    mNotificationHolder.notice_sub.setText("さんからフォローされました");
+                    mNotificationHolder.notice_sub.setText(getContext().getString(R.string.notice_from_follow));
 
                     break;
                 case "comment":
-                    mNotificationHolder.notice_sub.setText("さんからコメントされました");
+                    mNotificationHolder.notice_sub.setText(getContext().getString(R.string.notice_from_comment));
 
                     break;
             }

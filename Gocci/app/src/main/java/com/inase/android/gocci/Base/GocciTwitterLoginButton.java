@@ -29,7 +29,7 @@ public class GocciTwitterLoginButton extends TwitterLoginButton {
         setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
         setBackgroundResource(R.drawable.sign_up_button_twitter);
         setTextSize(16);
-        setText("twitterアカウントでサインイン");
+        setText(getContext().getString(R.string.twitter_login_text));
         setPadding(0, 0, 0, 0);
         setTextColor(getResources().getColor(R.color.custom_text_selected));
         setTypeface(getTypeface());

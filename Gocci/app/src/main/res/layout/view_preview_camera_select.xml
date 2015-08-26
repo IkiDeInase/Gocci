@@ -35,7 +35,7 @@
                 android:layout_alignParentBottom="false"
                 android:layout_centerVertical="true"
                 android:layout_toLeftOf="@+id/restaddButton"
-                android:text="今いるお店が上のリストにないときは........"
+                android:text="@string/add_restname_text"
                 android:textColor="@color/nameblack"
                 android:textSize="@dimen/small_text" />
 
@@ -124,7 +124,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="false"
                 android:layout_centerVertical="true"
-                android:text="このお店を応援する"
+                android:text="@string/add_cheer_text"
                 android:textColor="@color/nameblack"
                 android:layout_marginLeft="16dp"
                 android:textSize="@dimen/small_text"
@@ -159,7 +159,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="16dp"
                 android:layout_toRightOf="@+id/twitterImage"
-                android:text="Twitter"
+                android:text="@string/setting_socialnetwork_twitter"
                 android:textColor="@color/namegrey"
                 android:textSize="@dimen/small_text" />
 
@@ -194,7 +194,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="16dp"
                 android:layout_toRightOf="@+id/facebookImage"
-                android:text="Facebook"
+                android:text="@string/setting_socialnetwork_facebook"
                 android:textColor="@color/namegrey"
                 android:textSize="@dimen/small_text" />
 
@@ -229,7 +229,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="16dp"
                 android:layout_toRightOf="@+id/instagramImage"
-                android:text="Instagram"
+                android:text="@string/setting_socialnetwork_instagram"
                 android:textColor="@color/namegrey"
                 android:textSize="@dimen/small_text" />
 
@@ -256,8 +256,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:alpha="0.9"
-                android:text="投稿する"
+                android:text="@string/do_post"
                 android:textColor="#ffffff"
                 android:textSize="@dimen/accent_text" />
 

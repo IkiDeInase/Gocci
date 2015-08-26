@@ -109,9 +109,7 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
     private ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
         @Override
         public void onGlobalLayout() {
-            Log.e("DEBUG", "onGlobalLayout called: " + mPlayingPostId);
             changeMovie();
-            Log.e("DEBUG", "onGlobalLayout  changeMovie called: " + mPlayingPostId);
             if (mPlayingPostId != null) {
                 mTimelineRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
@@ -177,17 +175,17 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
         shareDialog.registerCallback(callbackManager, new FacebookCallback<Sharer.Result>() {
             @Override
             public void onSuccess(Sharer.Result result) {
-                Toast.makeText(getActivity(), "シェアが完了しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), getString(R.string.complete_share), Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onCancel() {
-                Toast.makeText(getActivity(), "キャンセルしました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), getString(R.string.cancel_share), Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onError(FacebookException e) {
-                Toast.makeText(getActivity(), "シェアに失敗しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), getString(R.string.error_share), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -220,7 +218,7 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
         if (Util.getConnectedState(getActivity()) != Util.NetworkStatus.OFF) {
             getSignupAsync(getActivity());
         } else {
-            Toast.makeText(getActivity(), "通信に失敗しました", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
         }
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
@@ -232,7 +230,7 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
                 if (Util.getConnectedState(getActivity()) != Util.NetworkStatus.OFF) {
                     getRefreshAsync(getActivity());
                 } else {
-                    Toast.makeText(getActivity(), "通信に失敗しました", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
                     mSwipeRefreshLayout.setRefreshing(false);
                 }
             }
@@ -292,7 +290,6 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
                     } else {
                         player.getPlayerControl().start();
                     }
-                    Log.e("Otto発動", "動画再生復帰");
                 } else {
                     if (Util.isMovieAutoPlay(getActivity())) {
                         preparePlayer(getPlayingViewHolder(), getVideoPath());
@@ -305,17 +302,15 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
                 if (player != null) {
                     if (player.getPlayerControl().isPlaying()) {
                         player.getPlayerControl().pause();
-                        Log.e("DEBUG", "subscribe 動画再生停止");
                     }
                 }
-                Log.e("Otto発動", "動画再生停止");
                 break;
         }
     }
 
     @Subscribe
     public void subscribe(NotificationNumberEvent event) {
-        if (event.mMessage.equals("投稿が完了しました。")) {
+        if (event.mMessage.equals(getString(R.string.videoposting_complete))) {
             getRefreshAsync(getActivity());
         }
     }
@@ -412,13 +407,12 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                Toast.makeText(getActivity(), "読み取りに失敗しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 try {
-                    Log.e("LATESTTIMELINEACTIVITY", String.valueOf(response));
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject jsonObject = response.getJSONObject(i);
                         mTimelineusers.add(PostData.createPostData(jsonObject));
@@ -435,7 +429,6 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
 
             @Override
             public void onFinish() {
-                Log.d("DEBUG", "ProgressDialog dismiss getTimeline finish");
 //                mTimelineDialog.dismiss();
                 mSwipeRefreshLayout.setRefreshing(false);
             }
@@ -447,7 +440,7 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
         Const.asyncHttpClient.get(context, Const.getTimelineAPI(), new JsonHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                Toast.makeText(getActivity(), "読み取りに失敗しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -455,7 +448,6 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
                 mTimelineusers.clear();
                 isEndScrioll = false;
                 try {
-                    Log.e("LATESTTIMELINEFRAGMENT", String.valueOf(response));
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject jsonObject = response.getJSONObject(i);
                         mTimelineusers.add(PostData.createPostData(jsonObject));
@@ -473,7 +465,6 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
 
             @Override
             public void onFinish() {
-                Log.d("DEBUG", "ProgressDialog dismiss getRefresh finish");
                 //mTimelineSwipe.setRefreshing(false);
                 mSwipeRefreshLayout.setRefreshing(false);
             }
@@ -485,14 +476,13 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
         Const.asyncHttpClient.get(context, Const.getTimelineNextApi(call), new JsonHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                Toast.makeText(getActivity(), "読み取りに失敗しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
                 //mTimelineSwipe.setRefreshing(false);
             }
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 try {
-                    Log.e("LATESTTIMELINEFRAGMENT", String.valueOf(response));
                     if (response.length() != 0) {
                         for (int i = 0; i < response.length(); i++) {
                             JSONObject jsonObject = response.getJSONObject(i);
@@ -514,7 +504,6 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
 
             @Override
             public void onFinish() {
-                Log.d("DEBUG", "ProgressDialog dismiss AddJson Finish");
                 //mTimelineSwipe.setRefreshing(false);
             }
 
@@ -522,7 +511,6 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
     }
 
     private void changeMovie() {
-        Log.e("DEBUG", "changeMovie called");
         // TODO:実装
         final int position = mTimelineRecyclerView.getChildAdapterPosition(mTimelineRecyclerView.findChildViewUnder(mDisplaySize.x / 2, mDisplaySize.y / 2));
         if (mLatestTimelineAdapter.isEmpty()) {
@@ -534,26 +522,19 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
 
         final PostData userData = mLatestTimelineAdapter.getItem(position);
         if (!userData.getPost_id().equals(mPlayingPostId)) {
-            Log.d("DEBUG", "postId change");
-
             // 前回の動画再生停止処理
             final Const.ExoViewHolder oldViewHolder = getPlayingViewHolder();
             if (oldViewHolder != null) {
-                Log.d("DEBUG", "MOVIE::changeMovie 再生停止 postId:" + mPlayingPostId);
-                Log.e("DEBUG", "changeMovie 動画再生停止");
                 oldViewHolder.mVideoThumbnail.setVisibility(View.VISIBLE);
             }
 
             mPlayingPostId = userData.getPost_id();
             final Const.ExoViewHolder currentViewHolder = getPlayingViewHolder();
-            Log.d("DEBUG", "MOVIE::changeMovie 動画再生処理開始 postId:" + mPlayingPostId);
             if (mPlayBlockFlag) {
-                Log.d("DEBUG", "startMovie play block status");
                 return;
             }
 
             final String path = userData.getMovie();
-            Log.e("DEBUG", "[ProgressBar GONE] cache Path: " + path);
             releasePlayer();
             if (Util.isMovieAutoPlay(getActivity())) {
                 preparePlayer(currentViewHolder, path);
@@ -568,7 +549,6 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
      */
     private Const.ExoViewHolder getPlayingViewHolder() {
         Const.ExoViewHolder viewHolder = null;
-        Log.d("DEBUG", "getPlayingViewHolder :" + mPlayingPostId);
         if (mPlayingPostId != null) {
             for (Map.Entry<Const.ExoViewHolder, String> entry : mViewHolderHash.entrySet()) {
                 if (entry.getValue().equals(mPlayingPostId)) {
@@ -706,12 +686,12 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
             holder.rest_name.setText(user.getRestname());
             //viewHolder.locality.setText(user.getLocality());
 
-            if (!user.getCategory().equals("タグなし")) {
+            if (!user.getCategory().equals(getString(R.string.nothing_tag))) {
                 holder.category.setText(user.getCategory());
             } else {
                 holder.category.setText("　　　　");
             }
-            if (!user.getTag().equals("タグなし")) {
+            if (!user.getTag().equals(getString(R.string.nothing_tag))) {
                 holder.atmosphere.setText(user.getTag());
             } else {
                 holder.atmosphere.setText("　　　　");
@@ -744,7 +724,6 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
                 holder.likes_ripple.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Log.e("いいねをクリック", user.getPost_id());
                         user.setGochi_flag(1);
                         user.setGochi_num(currentgoodnum + 1);
 
@@ -777,14 +756,14 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
                             public void onClick(DialogInterface dialog, int which) {
                                 switch (which) {
                                     case R.id.facebook_share:
-                                        Toast.makeText(getActivity(), "シェアの準備をしています", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(getActivity(), getString(R.string.preparing_share), Toast.LENGTH_LONG).show();
                                         Util.facebookVideoShare(getActivity(), shareDialog, user.getShare());
                                         break;
                                     case R.id.twitter_share:
                                         Util.twitterShare(getActivity(), holder.mVideoThumbnail, user.getRestname());
                                         break;
                                     case R.id.other_share:
-                                        Toast.makeText(getActivity(), "シェアの準備をしています", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(getActivity(), getString(R.string.preparing_share), Toast.LENGTH_LONG).show();
                                         Util.instaVideoShare(getActivity(), user.getRestname(), user.getShare());
                                         break;
                                     case R.id.close:
@@ -793,7 +772,7 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
                             }
                         }).show();
                     } else {
-                        Toast.makeText(getActivity(), "もうちょっと待ってから押してみましょう", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), getString(R.string.preparing_share_error), Toast.LENGTH_SHORT).show();
                     }
                 }
             });

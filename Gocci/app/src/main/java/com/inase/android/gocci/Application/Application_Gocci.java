@@ -85,6 +85,10 @@ public class Application_Gocci extends Application {
         return transferUtility;
     }
 
+    public static TransferUtility getShareTransfer() {
+        return transferUtility;
+    }
+
     public double getFirstLatitude() {
         return mLatitude;
     }
@@ -193,7 +197,7 @@ public class Application_Gocci extends Application {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Toast.makeText(context, "通信に失敗しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
 
             @Override

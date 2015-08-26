@@ -18,7 +18,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="それでは、"
+        android:text="@string/about_gocci7"
         android:layout_gravity="center_horizontal"
         android:textSize="20sp"
         android:textStyle="bold"
@@ -31,7 +31,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Gocciへようこそ！"
+        android:text="@string/about_gocci8"
         android:layout_gravity="center_horizontal"
         android:textSize="24sp"
         android:textStyle="bold"
@@ -107,7 +107,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="登録することで、"
+            android:text="@string/notes1"
             android:id="@+id/rule_header"
             android:layout_centerHorizontal="true"
             android:textSize="12sp"
@@ -125,7 +125,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="利用規約"
+                android:text="@string/rule"
                 android:id="@+id/rule"
                 android:textSize="14sp"
                 android:textStyle="bold"
@@ -136,7 +136,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="及び"
+                android:text="@string/notes2"
                 android:id="@+id/rule_center"
                 android:textSize="14sp"
                 android:textColor="@color/nameblack"
@@ -146,7 +146,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="プライバシーポリシー"
+                android:text="@string/policy"
                 android:id="@+id/policy"
                 android:textColor="@color/nameblack"
                 android:textSize="14sp"
@@ -158,7 +158,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="に同意するものとします。"
+            android:text="@string/notes3"
             android:id="@+id/rule_footer"
             android:textSize="12sp"
             android:textColor="@color/nameblack"

@@ -105,9 +105,7 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
     private ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
         @Override
         public void onGlobalLayout() {
-            Log.e("DEBUG", "onGlobalLayout called: " + mPlayingPostId);
             changeMovie();
-            Log.e("DEBUG", "onGlobalLayout  changeMovie called: " + mPlayingPostId);
             if (mPlayingPostId != null) {
                 mTimelineRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
@@ -127,17 +125,17 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
         shareDialog.registerCallback(callbackManager, new FacebookCallback<Sharer.Result>() {
             @Override
             public void onSuccess(Sharer.Result result) {
-                Toast.makeText(getActivity(), "シェアが完了しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), getString(R.string.complete_share), Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onCancel() {
-                Toast.makeText(getActivity(), "キャンセルしました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), getString(R.string.cancel_share), Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onError(FacebookException e) {
-                Toast.makeText(getActivity(), "シェアに失敗しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), getString(R.string.error_share), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -169,18 +167,15 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
                     // スクロールしていない
                     case RecyclerView.SCROLL_STATE_IDLE:
                         //mBusy = false;
-                        Log.d("DEBUG", "SCROLL_STATE_IDLE");
                         changeMovie();
                         break;
                     // スクロール中
                     case RecyclerView.SCROLL_STATE_DRAGGING:
                         //mBusy = true;
-                        Log.d("DEBUG", "SCROLL_STATE_DRAGGING");
                         break;
                     // はじいたとき
                     case RecyclerView.SCROLL_STATE_SETTLING:
                         //mBusy = true;
-                        Log.d("DEBUG", "SCROLL_STATE_SETTLING");
                         break;
                 }
 
@@ -220,7 +215,7 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
         if (Util.getConnectedState(getActivity()) != Util.NetworkStatus.OFF) {
             getSignupAsync(getActivity());
         } else {
-            Toast.makeText(getActivity(), "通信に失敗しました", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
         }
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
@@ -232,7 +227,7 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
                 if (Util.getConnectedState(getActivity()) != Util.NetworkStatus.OFF) {
                     getRefreshAsync(getActivity());
                 } else {
-                    Toast.makeText(getActivity(), "通信に失敗しました", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
                     mSwipeRefreshLayout.setRefreshing(false);
                 }
             }
@@ -303,17 +298,15 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
                 if (player != null) {
                     if (player.getPlayerControl().isPlaying()) {
                         player.getPlayerControl().pause();
-                        Log.e("DEBUG", "subscribe 動画再生停止");
                     }
                 }
-                Log.e("Otto発動", "動画再生停止");
                 break;
         }
     }
 
     @Subscribe
     public void subscribe(NotificationNumberEvent event) {
-        if (event.mMessage.equals("投稿が完了しました。")) {
+        if (event.mMessage.equals(getString(R.string.videoposting_complete))) {
             getRefreshAsync(getActivity());
         }
     }
@@ -404,13 +397,12 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                Toast.makeText(getActivity(), "読み取りに失敗しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 try {
-                    Log.e("TRENDTIMELINEACTIVITY", String.valueOf(response));
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject jsonObject = response.getJSONObject(i);
                         mTimelineusers.add(PostData.createPostData(jsonObject));
@@ -432,7 +424,7 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
         Const.asyncHttpClient.get(context, Const.getPopularAPI(), new JsonHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                Toast.makeText(getActivity(), "読み取りに失敗しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -440,7 +432,6 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
                 mTimelineusers.clear();
                 isEndScrioll = false;
                 try {
-                    Log.e("LATESTTIMELINEFRAGMENT", String.valueOf(response));
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject jsonObject = response.getJSONObject(i);
                         mTimelineusers.add(PostData.createPostData(jsonObject));
@@ -458,7 +449,6 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
 
             @Override
             public void onFinish() {
-                Log.d("DEBUG", "ProgressDialog dismiss getRefresh finish");
                 //mTimelineSwipe.setRefreshing(false);
                 mSwipeRefreshLayout.setRefreshing(false);
             }
@@ -470,14 +460,12 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
         Const.asyncHttpClient.get(context, Const.getPopularNextApi(call), new JsonHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                Toast.makeText(getActivity(), "読み取りに失敗しました", Toast.LENGTH_SHORT).show();
-                //mTimelineSwipe.setRefreshing(false);
+                Toast.makeText(getActivity(), getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 try {
-                    Log.e("TRENDTIMELINEFRAGMENT", String.valueOf(response));
                     if (response.length() != 0) {
                         for (int i = 0; i < response.length(); i++) {
                             JSONObject jsonObject = response.getJSONObject(i);
@@ -499,7 +487,6 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
 
             @Override
             public void onFinish() {
-                Log.d("DEBUG", "ProgressDialog dismiss AddJson Finish");
                 //mTimelineSwipe.setRefreshing(false);
             }
 
@@ -507,7 +494,6 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
     }
 
     private void changeMovie() {
-        Log.e("DEBUG", "changeMovie called");
         // TODO:実装
         final int position = mTimelineRecyclerView.getChildAdapterPosition(mTimelineRecyclerView.findChildViewUnder(mDisplaySize.x / 2, mDisplaySize.y / 2));
         if (mTrendTimelineAdapter.isEmpty()) {
@@ -519,25 +505,18 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
 
         final PostData userData = mTrendTimelineAdapter.getItem(position);
         if (!userData.getPost_id().equals(mPlayingPostId)) {
-            Log.d("DEBUG", "postId change");
-
             final Const.ExoViewHolder oldViewHolder = getPlayingViewHolder();
             if (oldViewHolder != null) {
-                Log.d("DEBUG", "MOVIE::changeMovie 再生停止 postId:" + mPlayingPostId);
-                Log.e("DEBUG", "changeMovie 動画再生停止");
                 oldViewHolder.mVideoThumbnail.setVisibility(View.VISIBLE);
             }
 
             mPlayingPostId = userData.getPost_id();
             final Const.ExoViewHolder currentViewHolder = getPlayingViewHolder();
-            Log.d("DEBUG", "MOVIE::changeMovie 動画再生処理開始 postId:" + mPlayingPostId);
             if (mPlayBlockFlag) {
-                Log.d("DEBUG", "startMovie play block status");
                 return;
             }
 
             final String path = userData.getMovie();
-            Log.e("DEBUG", "[ProgressBar GONE] cache Path: " + path);
             releasePlayer();
             if (Util.isMovieAutoPlay(getActivity())) {
                 preparePlayer(currentViewHolder, path);
@@ -552,7 +531,6 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
      */
     private Const.ExoViewHolder getPlayingViewHolder() {
         Const.ExoViewHolder viewHolder = null;
-        Log.d("DEBUG", "getPlayingViewHolder :" + mPlayingPostId);
         if (mPlayingPostId != null) {
             for (Map.Entry<Const.ExoViewHolder, String> entry : mViewHolderHash.entrySet()) {
                 if (entry.getValue().equals(mPlayingPostId)) {
@@ -691,12 +669,12 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
             holder.rest_name.setText(user.getRestname());
             //viewHolder.locality.setText(user.getLocality());
 
-            if (!user.getCategory().equals("タグなし")) {
+            if (!user.getCategory().equals(getString(R.string.nothing_tag))) {
                 holder.category.setText(user.getCategory());
             } else {
                 holder.category.setText("　　　　");
             }
-            if (!user.getTag().equals("タグなし")) {
+            if (!user.getTag().equals(getString(R.string.nothing_tag))) {
                 holder.atmosphere.setText(user.getTag());
             } else {
                 holder.atmosphere.setText("　　　　");
@@ -729,7 +707,6 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
                 holder.likes_ripple.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Log.e("いいねをクリック", user.getPost_id());
                         user.setGochi_flag(1);
                         user.setGochi_num(currentgoodnum + 1);
 
@@ -762,14 +739,14 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
                             public void onClick(DialogInterface dialog, int which) {
                                 switch (which) {
                                     case R.id.facebook_share:
-                                        Toast.makeText(getActivity(), "シェアの準備をしています", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(getActivity(), getString(R.string.preparing_share), Toast.LENGTH_LONG).show();
                                         Util.facebookVideoShare(getActivity(), shareDialog, user.getShare());
                                         break;
                                     case R.id.twitter_share:
                                         Util.twitterShare(getActivity(), holder.mVideoThumbnail, user.getRestname());
                                         break;
                                     case R.id.other_share:
-                                        Toast.makeText(getActivity(), "シェアの準備をしています", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(getActivity(), getString(R.string.preparing_share), Toast.LENGTH_LONG).show();
                                         Util.instaVideoShare(getActivity(), user.getRestname(), user.getShare());
                                         break;
                                     case R.id.close:
@@ -778,7 +755,7 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
                             }
                         }).show();
                     } else {
-                        Toast.makeText(getActivity(), "もうちょっと待ってから押してみましょう", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), getString(R.string.preparing_share_error), Toast.LENGTH_SHORT).show();
                     }
                 }
             });

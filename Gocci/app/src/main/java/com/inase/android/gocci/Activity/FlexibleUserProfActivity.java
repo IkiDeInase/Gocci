@@ -126,9 +126,7 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
     private ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
         @Override
         public void onGlobalLayout() {
-            Log.e("DEBUG", "onGlobalLayout called: " + mPlayingPostId);
             changeMovie();
-            Log.e("DEBUG", "onGlobalLayout  changeMovie called: " + mPlayingPostId);
             if (mPlayingPostId != null) {
                 mUserProfRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
@@ -193,17 +191,17 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
         shareDialog.registerCallback(callbackManager, new FacebookCallback<Sharer.Result>() {
             @Override
             public void onSuccess(Sharer.Result result) {
-                Toast.makeText(FlexibleUserProfActivity.this, "シェアが完了しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(FlexibleUserProfActivity.this, getString(R.string.complete_share), Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onCancel() {
-                Toast.makeText(FlexibleUserProfActivity.this, "キャンセルしました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(FlexibleUserProfActivity.this, getString(R.string.cancel_share), Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onError(FacebookException e) {
-                Toast.makeText(FlexibleUserProfActivity.this, "シェアに失敗しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(FlexibleUserProfActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -242,11 +240,11 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
                 .withToolbar(toolbar)
                 .withHeader(new DrawerProfHeader(this))
                 .addDrawerItems(
-                        new PrimaryDrawerItem().withName("タイムライン").withIcon(GoogleMaterial.Icon.gmd_home).withIdentifier(1).withSelectable(false),
-                        new PrimaryDrawerItem().withName("マイページ").withIcon(GoogleMaterial.Icon.gmd_person).withIdentifier(2).withSelectable(false),
+                        new PrimaryDrawerItem().withName(getString(R.string.timeline)).withIcon(GoogleMaterial.Icon.gmd_home).withIdentifier(1).withSelectable(false),
+                        new PrimaryDrawerItem().withName(getString(R.string.mypage)).withIcon(GoogleMaterial.Icon.gmd_person).withIdentifier(2).withSelectable(false),
                         new DividerDrawerItem(),
-                        new PrimaryDrawerItem().withName("アドバイスを送る").withIcon(GoogleMaterial.Icon.gmd_send).withSelectable(false).withIdentifier(3),
-                        new PrimaryDrawerItem().withName("設定").withIcon(GoogleMaterial.Icon.gmd_settings).withSelectable(false).withIdentifier(4)
+                        new PrimaryDrawerItem().withName(getString(R.string.send_advice)).withIcon(GoogleMaterial.Icon.gmd_send).withSelectable(false).withIdentifier(3),
+                        new PrimaryDrawerItem().withName(getString(R.string.settings)).withIcon(GoogleMaterial.Icon.gmd_settings).withSelectable(false).withIdentifier(4)
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
@@ -296,18 +294,15 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
                     // スクロールしていない
                     case RecyclerView.SCROLL_STATE_IDLE:
                         //mBusy = false;
-                        Log.d("DEBUG", "SCROLL_STATE_IDLE");
                         changeMovie();
                         break;
                     // スクロール中
                     case RecyclerView.SCROLL_STATE_DRAGGING:
                         //mBusy = true;
-                        Log.d("DEBUG", "SCROLL_STATE_DRAGGING");
                         break;
                     // はじいたとき
                     case RecyclerView.SCROLL_STATE_SETTLING:
                         //mBusy = true;
-                        Log.d("DEBUG", "SCROLL_STATE_SETTLING");
                         break;
                 }
 
@@ -339,7 +334,7 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
                 if (Util.getConnectedState(FlexibleUserProfActivity.this) != Util.NetworkStatus.OFF) {
                     getRefreshAsync(FlexibleUserProfActivity.this);
                 } else {
-                    Toast.makeText(FlexibleUserProfActivity.this, "通信に失敗しました", Toast.LENGTH_LONG).show();
+                    Toast.makeText(FlexibleUserProfActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
                     mSwipeRefreshLayout.setRefreshing(false);
                 }
             }
@@ -453,7 +448,7 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                Toast.makeText(FlexibleUserProfActivity.this, "読み取りに失敗しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(FlexibleUserProfActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -486,7 +481,7 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                Toast.makeText(FlexibleUserProfActivity.this, "読み取りに失敗しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(FlexibleUserProfActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -578,7 +573,6 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
     }
 
     private void changeMovie() {
-        Log.e("DEBUG", "changeMovie called");
         // TODO:実装
         final int position = mUserProfRecyclerView.getChildAdapterPosition(mUserProfRecyclerView.findChildViewUnder(mDisplaySize.x / 2, mDisplaySize.y / 2));
         if (mUserProfAdapter.isEmpty()) {
@@ -590,26 +584,20 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
 
         final PostData userData = mUserProfAdapter.getItem(position - 1);
         if (!userData.getPost_id().equals(mPlayingPostId)) {
-            Log.d("DEBUG", "postId change");
 
             // 前回の動画再生停止処理
             final Const.ExoViewHolder oldViewHolder = getPlayingViewHolder();
             if (oldViewHolder != null) {
-                Log.d("DEBUG", "MOVIE::changeMovie 再生停止 postId:" + mPlayingPostId);
-                Log.e("DEBUG", "changeMovie 動画再生停止");
                 oldViewHolder.mVideoThumbnail.setVisibility(View.VISIBLE);
             }
 
             mPlayingPostId = userData.getPost_id();
             final Const.ExoViewHolder currentViewHolder = getPlayingViewHolder();
-            Log.d("DEBUG", "MOVIE::changeMovie 動画再生処理開始 postId:" + mPlayingPostId);
             if (mPlayBlockFlag) {
-                Log.d("DEBUG", "startMovie play block status");
                 return;
             }
 
             final String path = userData.getMovie();
-            Log.e("DEBUG", "[ProgressBar GONE] cache Path: " + path);
             releasePlayer();
             if (Util.isMovieAutoPlay(this)) {
                 preparePlayer(currentViewHolder, path);
@@ -617,14 +605,8 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
         }
     }
 
-    /**
-     * 現在再生中のViewHolderを取得
-     *
-     * @return
-     */
     private Const.ExoViewHolder getPlayingViewHolder() {
         Const.ExoViewHolder viewHolder = null;
-        Log.d("DEBUG", "getPlayingViewHolder :" + mPlayingPostId);
         if (mPlayingPostId != null) {
             for (Map.Entry<Const.ExoViewHolder, String> entry : mViewHolderHash.entrySet()) {
                 if (entry.getValue().equals(mPlayingPostId)) {
@@ -756,13 +738,13 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
                     .into(holder.userprof_picture);
 
             if (headerUserData.getFollow_flag() == 0) {
-                holder.follow_text.setText("フォローする");
+                holder.follow_text.setText(getString(R.string.do_follow));
             } else {
-                holder.follow_text.setText("フォロー解除する");
+                holder.follow_text.setText(getString(R.string.do_unfollow));
             }
 
             if (headerUserData.getUsername().equals(SavedData.getServerName(mContext))) {
-                holder.follow_text.setText("これはあなたです");
+                holder.follow_text.setText(getString(R.string.do_yours));
             }
 
             holder.userprof_follow.setOnClickListener(new View.OnClickListener() {
@@ -772,11 +754,11 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
                     switch (holder.follow_text.getText().toString()) {
                         case "フォローする":
                             Util.followAsync(FlexibleUserProfActivity.this, headerUserData);
-                            holder.follow_text.setText("フォロー解除する");
+                            holder.follow_text.setText(getString(R.string.do_unfollow));
                             break;
                         case "フォロー解除する":
                             Util.unfollowAsync(FlexibleUserProfActivity.this, headerUserData);
-                            holder.follow_text.setText("フォローする");
+                            holder.follow_text.setText(getString(R.string.do_follow));
                             break;
                         case "これはあなたです":
                             break;
@@ -847,18 +829,18 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
             viewHolder.rest_name.setText(user.getRestname());
             //viewHolder.locality.setText(user.getLocality());
 
-            if (!user.getCategory().equals("タグなし")) {
+            if (!user.getCategory().equals(getString(R.string.nothing_tag))) {
                 viewHolder.category.setText(user.getCategory());
             } else {
                 viewHolder.category.setText("　　　　");
             }
-            if (!user.getTag().equals("タグなし")) {
+            if (!user.getTag().equals(getString(R.string.nothing_tag))) {
                 viewHolder.atmosphere.setText(user.getTag());
             } else {
                 viewHolder.atmosphere.setText("　　　　");
             }
             if (!user.getValue().equals("0")) {
-                viewHolder.value.setText(user.getValue());
+                viewHolder.value.setText(user.getValue() + "円");
             } else {
                 viewHolder.value.setText("　　　　");
             }
@@ -884,8 +866,6 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
                 viewHolder.likes_ripple.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Log.e("いいねをクリック", user.getPost_id());
-
                         user.setGochi_flag(1);
                         user.setGochi_num(currentgoodnum + 1);
                         viewHolder.likes.setText(String.valueOf(currentgoodnum + 1));
@@ -910,20 +890,20 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
             viewHolder.share_ripple.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (Application_Gocci.getTransfer(FlexibleUserProfActivity.this) != null) {
+                    if (Application_Gocci.getShareTransfer() != null) {
                         new BottomSheet.Builder(mContext, R.style.BottomSheet_StyleDialog).sheet(R.menu.menu_share).listener(new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 switch (which) {
                                     case R.id.facebook_share:
-                                        Toast.makeText(FlexibleUserProfActivity.this, "シェアの準備をしています", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(FlexibleUserProfActivity.this, getString(R.string.preparing_share), Toast.LENGTH_LONG).show();
                                         Util.facebookVideoShare(FlexibleUserProfActivity.this, shareDialog, user.getShare());
                                         break;
                                     case R.id.twitter_share:
                                         Util.twitterShare(FlexibleUserProfActivity.this, viewHolder.mVideoThumbnail, user.getRestname());
                                         break;
                                     case R.id.other_share:
-                                        Toast.makeText(FlexibleUserProfActivity.this, "シェアの準備をしています", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(FlexibleUserProfActivity.this, getString(R.string.preparing_share), Toast.LENGTH_LONG).show();
                                         Util.instaVideoShare(FlexibleUserProfActivity.this, user.getRestname(), user.getShare());
                                         break;
                                     case R.id.close:
@@ -932,7 +912,7 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
                             }
                         }).show();
                     } else {
-                        Toast.makeText(FlexibleUserProfActivity.this, "もうちょっと待ってから押してみましょう", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(FlexibleUserProfActivity.this, getString(R.string.preparing_share_error), Toast.LENGTH_SHORT).show();
                     }
                 }
             });

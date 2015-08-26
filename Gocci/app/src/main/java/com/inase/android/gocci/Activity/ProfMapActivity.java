@@ -88,7 +88,6 @@ public class ProfMapActivity extends AppCompatActivity implements ClusterManager
             mImageView.setImageDrawable(photolog.mDrawable);
             Bitmap icon = mIconGenerator.makeIcon();
             markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon)).title(photolog.mRestname + "(" + photolog.mDatetime + ")");
-            Log.e("ログ", "onBeforeClusterItemRendered");
         }
 
         @Override
@@ -112,7 +111,6 @@ public class ProfMapActivity extends AppCompatActivity implements ClusterManager
             mClusterImageView.setImageDrawable(multiDrawable);
             Bitmap icon = mClusterIconGenerator.makeIcon(String.valueOf(cluster.getSize()));
             markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon));
-            Log.e("ログ", "onBeforeClusterRendered");
         }
 
         @Override
@@ -125,7 +123,6 @@ public class ProfMapActivity extends AppCompatActivity implements ClusterManager
     @Override
     public boolean onClusterClick(Cluster<PhotoLog> cluster) {
         // Show a toast with some info when the cluster is clicked.
-        Log.e("ログ", "onClusterClick");
         String restname = cluster.getItems().iterator().next().mRestname;
         boolean isSame = true;
         for (PhotoLog photoLog : cluster.getItems()) {
@@ -146,20 +143,17 @@ public class ProfMapActivity extends AppCompatActivity implements ClusterManager
     @Override
     public void onClusterInfoWindowClick(Cluster<PhotoLog> cluster) {
         // Does nothing, but you could go to a list of the users.
-        Log.e("ログ", "onClusterInfoWindowClick");
     }
 
     @Override
     public boolean onClusterItemClick(PhotoLog item) {
         // Does nothing, but you could go into the user's profile page, for example.
-        Log.e("ログ", "onClusterItemClick");
         return false;
     }
 
     @Override
     public void onClusterItemInfoWindowClick(PhotoLog item) {
         // Does nothing, but you could go into the user's profile page, for example.
-        Log.e("ログ", "onClusterItemInfoWindowClick");
         CommentActivity.startCommentActivity(Integer.parseInt(item.userdata.getPost_id()), ProfMapActivity.this);
     }
 
@@ -204,7 +198,7 @@ public class ProfMapActivity extends AppCompatActivity implements ClusterManager
         Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
         //toolbar.inflateMenu(R.menu.toolbar_menu);
         //toolbar.setLogo(R.drawable.ic_gocci_moji_white45);
-        toolbar.setTitle("マップログ");
+        toolbar.setTitle(getString(R.string.maplog));
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }

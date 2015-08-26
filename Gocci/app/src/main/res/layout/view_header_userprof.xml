@@ -49,7 +49,7 @@
             android:paddingLeft="32dp"
             android:paddingRight="32dp"
             android:paddingTop="8dp"
-            android:text="フォローする"
+            android:text="@string/do_follow"
             android:textColor="#ffffff"
             android:textSize="@dimen/normal_text" />
     </com.andexert.library.RippleView>
@@ -88,7 +88,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginBottom="4dp"
                 android:singleLine="false"
-                android:text="フォロー"
+                android:text="@string/follow_list"
                 android:textColor="@color/namegrey"
                 android:textSize="12sp" />
 
@@ -118,7 +118,7 @@
                 android:layout_below="@+id/follower_num"
                 android:layout_centerHorizontal="true"
                 android:layout_marginBottom="4dp"
-                android:text="フォロワー"
+                android:text="@string/follower_list"
                 android:textColor="@color/namegrey"
                 android:textSize="12sp" />
 
@@ -148,7 +148,7 @@
                 android:layout_below="@+id/usercheer_num"
                 android:layout_centerHorizontal="true"
                 android:layout_marginBottom="4dp"
-                android:text="応援店"
+                android:text="@string/cheer_list"
                 android:textColor="@color/namegrey"
                 android:textSize="12sp" />
 

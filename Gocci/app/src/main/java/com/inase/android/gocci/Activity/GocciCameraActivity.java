@@ -79,14 +79,14 @@ public class GocciCameraActivity extends AppCompatActivity {
             case REQUEST_CHECK_SETTINGS:
                 switch (resultCode) {
                     case Activity.RESULT_OK:
-                        Log.e("ログ", "User agreed to make required location settings changes.");
+                        Log.d("DEBUG", "User agreed to make required location settings changes.");
                         //firstLocation();
                         isLocationOnOff = true;
                         break;
                     case Activity.RESULT_CANCELED:
-                        Log.e("ログ", "User chose not to make required location settings changes.");
+                        Log.d("DEBUG", "User chose not to make required location settings changes.");
                         //ダイアログをキャンセルした
-                        Toast.makeText(this, "位置情報機能が取れないので、カメラを終了します", Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, getString(R.string.finish_camera_location_error), Toast.LENGTH_LONG).show();
                         isLocationOnOff = false;
                         finish();
                         break;
@@ -98,10 +98,9 @@ public class GocciCameraActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         new MaterialDialog.Builder(this)
-                .title("確認")
-                .content("すでに録画中の場合、その動画は初期化されますがよろしいですか？")
-                .positiveText("戻る")
-                .negativeText("いいえ")
+                .content(getString(R.string.check_videoposting_cancel))
+                .positiveText(getString(R.string.check_videoposting_yeah))
+                .negativeText(getString(R.string.check_videoposting_no))
                 .callback(new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onPositive(MaterialDialog dialog) {
@@ -115,6 +114,5 @@ public class GocciCameraActivity extends AppCompatActivity {
                     }
                 }).show();
     }
-
 }
 

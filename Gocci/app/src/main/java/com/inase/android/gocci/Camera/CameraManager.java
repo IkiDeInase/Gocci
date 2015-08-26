@@ -56,13 +56,11 @@ public class CameraManager {
         }
         try {
             parameters.setPreviewSize(640, 480);
-            Log.e("セットビデオサイズ", "既存のやつ");
             camera.setParameters(parameters);
             defaultSize = null;
         } catch (Exception e) {
             e.printStackTrace();
             parameters.setPreviewSize(defaultSize.width, defaultSize.height);
-            Log.e("デフォルトビデオサイズ", defaultSize.width + "/" + defaultSize.height);
             camera.setParameters(parameters);
         }
 

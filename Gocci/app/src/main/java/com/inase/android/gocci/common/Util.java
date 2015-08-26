@@ -280,16 +280,16 @@ public class Util {
 
     public static void setAdviceDialog(final Context context) {
         new MaterialDialog.Builder(context)
-                .title("アドバイスを送る")
-                .content("コメントを入力してください")
+                .title(context.getString(R.string.advice_title))
+                .content(context.getString(R.string.advice_message))
                 .inputType(InputType.TYPE_CLASS_TEXT)
                 .input(null, null, new MaterialDialog.InputCallback() {
                     @Override
                     public void onInput(MaterialDialog materialDialog, CharSequence charSequence) {
-                        Log.e("えでぃっと", String.valueOf(charSequence));
+
                     }
                 })
-                .positiveText("Gocciに送る")
+                .positiveText(context.getString(R.string.advice_yeah))
                 .positiveColorRes(R.color.gocci_header)
                 .callback(new MaterialDialog.ButtonCallback() {
                     @Override
@@ -300,7 +300,7 @@ public class Util {
                         if (!message.isEmpty()) {
                             postAdviceAsync(context, message);
                         } else {
-                            Toast.makeText(context, "文字を入力してください", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, context.getString(R.string.advice_alert), Toast.LENGTH_SHORT).show();
                         }
                     }
                 }).show();
@@ -317,7 +317,7 @@ public class Util {
                     int code = response.getInt(KEY_CODE);
 
                     if (code == 200) {
-                        Toast.makeText(context, "ご協力ありがとうございました！", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, context.getString(R.string.advice_complete), Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                     }
@@ -328,17 +328,17 @@ public class Util {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Toast.makeText(context, "送信に失敗しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     public static void setViolateDialog(final Context context, final String post_id) {
         new MaterialDialog.Builder(context)
-                .title("投稿の違反報告")
-                .content("この投稿を違反報告しますか？")
-                .positiveText("報告する")
-                .negativeText("いいえ")
+                .title(context.getString(R.string.violate_title))
+                .content(context.getString(R.string.violate_message))
+                .positiveText(context.getString(R.string.violate_yeah))
+                .negativeText(context.getString(R.string.violate_no))
                 .callback(new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onPositive(MaterialDialog dialog) {
@@ -375,7 +375,7 @@ public class Util {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 //mMaterialDialog.dismiss();
-                Toast.makeText(context, "違反報告に失敗しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -405,7 +405,7 @@ public class Util {
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 headerData.setGochi_flag(0);
                 headerData.setGochi_num(headerData.getGochi_num() - 1);
-                Toast.makeText(context, "いいねに失敗しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -431,7 +431,7 @@ public class Util {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Toast.makeText(context, "フォローできませんでした", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -457,7 +457,7 @@ public class Util {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Toast.makeText(context, "フォロー解除できませんでした", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -483,7 +483,7 @@ public class Util {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Toast.makeText(context, "行きたい店リストに追加できませんでした", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -509,7 +509,7 @@ public class Util {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Toast.makeText(context, "行きたい店リストから解除できませんでした", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -532,7 +532,7 @@ public class Util {
                         dialog.show(content);
                     } else {
                         // ...sharing failed, handle error
-                        Toast.makeText(context, "facebookシェアに失敗しました", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, context.getString(R.string.error_share), Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -544,7 +544,7 @@ public class Util {
 
             @Override
             public void onError(int id, Exception ex) {
-                Toast.makeText(context, "facebookシェアに失敗しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, context.getString(R.string.error_share), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -559,7 +559,7 @@ public class Util {
             builder.show();
         } else {
             // ...sharing failed, handle error
-            Toast.makeText(context, "twitterシェアに失敗しました", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, context.getString(R.string.error_share), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -591,7 +591,7 @@ public class Util {
 
             @Override
             public void onError(int id, Exception ex) {
-                Toast.makeText(context, "instagramシェアに失敗しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, context.getString(R.string.error_share), Toast.LENGTH_SHORT).show();
             }
         });
     }

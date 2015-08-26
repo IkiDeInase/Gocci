@@ -17,7 +17,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="SNS連携しましょう"
+        android:text="@string/about_gocci9"
         android:id="@+id/text_1"
         android:layout_gravity="center_horizontal"
         android:textColor="@color/white"
@@ -67,7 +67,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="ツイッター連携する"
+            android:text="@string/auth_twitter_message"
             android:textColor="#ffffff"
             android:textSize="@dimen/accent_text" />
 
@@ -87,7 +87,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="フェイスブック連携する"
+            android:text="@string/auth_facebook_message"
             android:textColor="#ffffff"
             android:textSize="@dimen/accent_text" />
 
@@ -108,7 +108,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="連携せずに始める"
+            android:text="@string/auth_skip"
             android:textColor="#ffffff"
             android:textSize="@dimen/accent_text" />
     </com.andexert.library.RippleView>

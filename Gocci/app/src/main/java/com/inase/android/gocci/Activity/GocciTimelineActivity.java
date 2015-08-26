@@ -93,7 +93,6 @@ public class GocciTimelineActivity extends AppCompatActivity {
             Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
         }
 
-
         setContentView(R.layout.activity_gocci_timeline);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
@@ -106,11 +105,11 @@ public class GocciTimelineActivity extends AppCompatActivity {
                 .withToolbar(toolbar)
                 .withHeader(new DrawerProfHeader(this))
                 .addDrawerItems(
-                        new PrimaryDrawerItem().withName("タイムライン").withIcon(GoogleMaterial.Icon.gmd_home).withIdentifier(1).withSelectable(false),
-                        new PrimaryDrawerItem().withName("マイページ").withIcon(GoogleMaterial.Icon.gmd_person).withIdentifier(2).withSelectable(false),
+                        new PrimaryDrawerItem().withName(getString(R.string.timeline)).withIcon(GoogleMaterial.Icon.gmd_home).withIdentifier(1).withSelectable(false),
+                        new PrimaryDrawerItem().withName(getString(R.string.mypage)).withIcon(GoogleMaterial.Icon.gmd_person).withIdentifier(2).withSelectable(false),
                         new DividerDrawerItem(),
-                        new PrimaryDrawerItem().withName("アドバイスを送る").withIcon(GoogleMaterial.Icon.gmd_send).withSelectable(false).withIdentifier(3),
-                        new PrimaryDrawerItem().withName("設定").withIcon(GoogleMaterial.Icon.gmd_settings).withSelectable(false).withIdentifier(4)
+                        new PrimaryDrawerItem().withName(getString(R.string.send_advice)).withIcon(GoogleMaterial.Icon.gmd_send).withSelectable(false).withIdentifier(3),
+                        new PrimaryDrawerItem().withName(getString(R.string.settings)).withIcon(GoogleMaterial.Icon.gmd_settings).withSelectable(false).withIdentifier(4)
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
@@ -208,8 +207,10 @@ public class GocciTimelineActivity extends AppCompatActivity {
     public void subscribe(NotificationNumberEvent event) {
         Snackbar.make(coordinatorLayout, event.mMessage, Snackbar.LENGTH_SHORT).show();
         //２1文字で改行っぽい
-        notificationNumber.setVisibility(View.VISIBLE);
-        notificationNumber.setText(String.valueOf(event.mNotificationNumber));
+        if (!event.mMessage.equals(getString(R.string.videoposting_complete))) {
+            notificationNumber.setVisibility(View.VISIBLE);
+            notificationNumber.setText(String.valueOf(event.mNotificationNumber));
+        }
     }
 
     @Override
@@ -233,7 +234,6 @@ public class GocciTimelineActivity extends AppCompatActivity {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e("ログ", "通知クリック");
                 notificationNumber.setVisibility(View.INVISIBLE);
                 SavedData.setNotification(GocciTimelineActivity.this, 0);
                 View notification = new NotificationListView(GocciTimelineActivity.this);

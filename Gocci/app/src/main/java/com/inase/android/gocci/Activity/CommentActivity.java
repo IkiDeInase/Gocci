@@ -151,7 +151,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
 
     public static void startCommentActivityOnContext(int post_id, Context context) {
         Intent intent = new Intent(context, CommentActivity.class);
-        intent.putExtra("title", "コメント");
+        intent.putExtra("title", context.getString(R.string.comment));
         intent.putExtra("post_id", post_id);
         context.startActivity(intent);
     }
@@ -183,17 +183,17 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
         shareDialog.registerCallback(callbackManager, new FacebookCallback<Sharer.Result>() {
             @Override
             public void onSuccess(Sharer.Result result) {
-                Toast.makeText(CommentActivity.this, "シェアが完了しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(CommentActivity.this, getString(R.string.complete_share), Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onCancel() {
-                Toast.makeText(CommentActivity.this, "キャンセルしました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(CommentActivity.this, getString(R.string.cancel_share), Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onError(FacebookException e) {
-                Toast.makeText(CommentActivity.this, "シェアに失敗しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(CommentActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -209,9 +209,9 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
         Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
         if (title.equals("Activity.GocciMyprofActivity")) {
-            getSupportActionBar().setTitle("マイページ");
+            getSupportActionBar().setTitle(getString(R.string.mypage));
         } else {
-            getSupportActionBar().setTitle("コメント");
+            getSupportActionBar().setTitle(getString(R.string.comment));
         }
 
         result = new DrawerBuilder()
@@ -219,11 +219,11 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
                 .withToolbar(toolbar)
                 .withHeader(new DrawerProfHeader(this))
                 .addDrawerItems(
-                        new PrimaryDrawerItem().withName("タイムライン").withIcon(GoogleMaterial.Icon.gmd_home).withIdentifier(1).withSelectable(false),
-                        new PrimaryDrawerItem().withName("マイページ").withIcon(GoogleMaterial.Icon.gmd_person).withIdentifier(2).withSelectable(false),
+                        new PrimaryDrawerItem().withName(getString(R.string.timeline)).withIcon(GoogleMaterial.Icon.gmd_home).withIdentifier(1).withSelectable(false),
+                        new PrimaryDrawerItem().withName(getString(R.string.mypage)).withIcon(GoogleMaterial.Icon.gmd_person).withIdentifier(2).withSelectable(false),
                         new DividerDrawerItem(),
-                        new PrimaryDrawerItem().withName("アドバイスを送る").withIcon(GoogleMaterial.Icon.gmd_send).withSelectable(false).withIdentifier(3),
-                        new PrimaryDrawerItem().withName("設定").withIcon(GoogleMaterial.Icon.gmd_settings).withSelectable(false).withIdentifier(4)
+                        new PrimaryDrawerItem().withName(getString(R.string.send_advice)).withIcon(GoogleMaterial.Icon.gmd_send).withSelectable(false).withIdentifier(3),
+                        new PrimaryDrawerItem().withName(getString(R.string.settings)).withIcon(GoogleMaterial.Icon.gmd_settings).withSelectable(false).withIdentifier(4)
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
@@ -276,7 +276,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
             @Override
             public void onClick(View v) {
                 new MaterialDialog.Builder(CommentActivity.this)
-                        .title("コメント画面")
+                        .title(getString(R.string.comment))
                         .titleColorRes(R.color.namegrey)
                         .inputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_IME_MULTI_LINE)
                         .inputMaxLength(140)
@@ -287,7 +287,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
                                 postCommentAsync(CommentActivity.this, Const.getPostCommentAPI(mPost_id, input.toString()));
                             }
                         })
-                        .positiveText("送る")
+                        .positiveText(getString(R.string.post_comment))
                         .show();
             }
         });
@@ -301,7 +301,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
                 if (Util.getConnectedState(CommentActivity.this) != Util.NetworkStatus.OFF) {
                     getRefreshAsync(CommentActivity.this);
                 } else {
-                    Toast.makeText(CommentActivity.this, "通信に失敗しました", Toast.LENGTH_LONG).show();
+                    Toast.makeText(CommentActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
                     mSwipeRefreshLayout.setRefreshing(false);
                 }
             }
@@ -400,13 +400,12 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                Toast.makeText(context, "読み取りに失敗しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, String responseString) {
                 try {
-                    Log.e("COMMENTACTIVITY", responseString);
                     JSONObject json = new JSONObject(responseString);
                     JSONArray array = new JSONArray(json.getString("comments"));
                     JSONObject obj = new JSONObject(json.getString("post"));
@@ -430,8 +429,6 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
 
             @Override
             public void onFinish() {
-                Log.d("DEBUG", "ProgressDialog dismiss getTimeline finish");
-//                mTimelineDialog.dismiss();
                 mSwipeRefreshLayout.setRefreshing(false);
             }
         });
@@ -442,14 +439,13 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
         Const.asyncHttpClient.get(context, mCommentUrl, new TextHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                Toast.makeText(context, "読み取りに失敗しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, String responseString) {
                 mCommentusers.clear();
                 try {
-                    Log.e("COMMENTACTIVITY", responseString);
                     JSONObject json = new JSONObject(responseString);
                     JSONArray array = new JSONArray(json.getString("comments"));
                     JSONObject obj = new JSONObject(json.getString("post"));
@@ -467,12 +463,10 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
                 Collections.reverse(mCommentusers);
 
                 mCommentAdapter.notifyDataSetChanged();
-                //changeMovie();
             }
 
             @Override
             public void onFinish() {
-                Log.d("DEBUG", "ProgressDialog dismiss getTimeline finish");
 //                mTimelineDialog.dismiss();
                 mSwipeRefreshLayout.setRefreshing(false);
             }
@@ -494,14 +488,13 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
                 Const.asyncHttpClient.get(context, mCommentUrl, new TextHttpResponseHandler() {
                     @Override
                     public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                        Toast.makeText(context, "読み取りに失敗しました", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, String responseString) {
                         mCommentusers.clear();
                         try {
-                            Log.e("COMMENTACTIVITY", responseString);
                             JSONObject json = new JSONObject(responseString);
                             JSONArray array = new JSONArray(json.getString("comments"));
                             JSONObject obj = new JSONObject(json.getString("post"));
@@ -528,12 +521,11 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
 
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                Toast.makeText(context, "コメント送信に失敗しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onFinish() {
-                Log.d("DEBUG", "ProgressDialog dismiss getTimeline finish");
 //                mTimelineDialog.dismiss();
                 mSwipeRefreshLayout.setRefreshing(false);
             }
@@ -613,29 +605,23 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
     }
 
     private void changeMovie() {
-        Log.e("DEBUG", "changeMovie called");
         // TODO:実装
         if (!headerUser.getPost_id().equals(mPlayingPostId)) {
-            Log.d("DEBUG", "postId change");
 
             // 前回の動画再生停止処理
             final Const.ExoViewHolder oldViewHolder = getPlayingViewHolder();
             if (oldViewHolder != null) {
-                Log.d("DEBUG", "MOVIE::changeMovie 再生停止 postId:" + mPlayingPostId);
-                Log.e("DEBUG", "changeMovie 動画再生停止");
                 oldViewHolder.mVideoThumbnail.setVisibility(View.VISIBLE);
             }
 
             mPlayingPostId = headerUser.getPost_id();
             final Const.ExoViewHolder currentViewHolder = getPlayingViewHolder();
-            Log.d("DEBUG", "MOVIE::changeMovie 動画再生処理開始 postId:" + mPlayingPostId);
             if (mPlayBlockFlag) {
                 Log.d("DEBUG", "startMovie play block status");
                 return;
             }
 
             final String path = headerUser.getMovie();
-            Log.e("DEBUG", "[ProgressBar GONE] cache Path: " + path);
             releasePlayer();
             if (Util.isMovieAutoPlay(this)) {
                 preparePlayer(currentViewHolder, path);
@@ -645,7 +631,6 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
 
     private Const.ExoViewHolder getPlayingViewHolder() {
         Const.ExoViewHolder viewHolder = null;
-        Log.d("DEBUG", "getPlayingViewHolder :" + mPlayingPostId);
         if (mPlayingPostId != null) {
             for (Map.Entry<Const.ExoViewHolder, String> entry : mViewHolderHash.entrySet()) {
                 if (entry.getValue().equals(mPlayingPostId)) {
@@ -811,12 +796,12 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
             holder.rest_name.setText(user.getRestname());
             //viewHolder.locality.setText(user.getLocality());
 
-            if (!user.getCategory().equals("タグなし")) {
+            if (!user.getCategory().equals(getString(R.string.nothing_tag))) {
                 holder.category.setText(user.getCategory());
             } else {
                 holder.category.setText("　　　　");
             }
-            if (!user.getTag().equals("タグなし")) {
+            if (!user.getTag().equals(getString(R.string.nothing_tag))) {
                 holder.atmosphere.setText(user.getTag());
             } else {
                 holder.atmosphere.setText("　　　　");
@@ -848,7 +833,6 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
                 holder.likes_ripple.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Log.e("いいねをクリック", user.getPost_id());
                         user.setGochi_flag(1);
                         user.setGochi_num(currentgoodnum + 1);
 
@@ -874,20 +858,20 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
             holder.share_ripple.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (Application_Gocci.getTransfer(context) != null) {
+                    if (Application_Gocci.getShareTransfer() != null) {
                         new BottomSheet.Builder(context, R.style.BottomSheet_StyleDialog).sheet(R.menu.menu_share).listener(new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 switch (which) {
                                     case R.id.facebook_share:
-                                        Toast.makeText(context, "シェアの準備をしています", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(context, getString(R.string.preparing_share), Toast.LENGTH_LONG).show();
                                         Util.facebookVideoShare(context, shareDialog, user.getShare());
                                         break;
                                     case R.id.twitter_share:
                                         Util.twitterShare(context, holder.mVideoThumbnail, user.getRestname());
                                         break;
                                     case R.id.other_share:
-                                        Toast.makeText(context, "シェアの準備をしています", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(context, getString(R.string.preparing_share), Toast.LENGTH_LONG).show();
                                         Util.instaVideoShare(context, user.getRestname(), user.getShare());
                                         break;
                                     case R.id.close:
@@ -896,7 +880,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
                             }
                         }).show();
                     } else {
-                        Toast.makeText(context, "もうちょっと待ってから押してみましょう", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, getString(R.string.preparing_share_error), Toast.LENGTH_SHORT).show();
                     }
                 }
             });
@@ -918,14 +902,14 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
             holder.user_name.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    FlexibleUserProfActivity.startUserProfActivity(users.getUser_id(), users.getUsername(), CommentActivity.this);
+                    FlexibleUserProfActivity.startUserProfActivity(users.getComment_user_id(), users.getUsername(), CommentActivity.this);
                 }
             });
 
             holder.commentUserImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    FlexibleUserProfActivity.startUserProfActivity(users.getUser_id(), users.getUsername(), CommentActivity.this);
+                    FlexibleUserProfActivity.startUserProfActivity(users.getComment_user_id(), users.getUsername(), CommentActivity.this);
                 }
             });
         }

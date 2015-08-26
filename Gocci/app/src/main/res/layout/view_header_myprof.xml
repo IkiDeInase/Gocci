@@ -45,7 +45,7 @@
             android:paddingLeft="12dp"
             android:paddingRight="12dp"
             android:paddingTop="8dp"
-            android:text="プロフィールを編集する"
+            android:text="@string/edit_profile"
             android:textColor="#ffffff"
             android:textSize="@dimen/small_text" />
     </com.andexert.library.RippleView>
@@ -85,7 +85,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginBottom="16dp"
                 android:singleLine="false"
-                android:text="フォロー"
+                android:text="@string/follow_list"
                 android:textColor="@color/namegrey"
                 android:textSize="12sp" />
 
@@ -115,7 +115,7 @@
                 android:layout_below="@+id/follower_num"
                 android:layout_centerHorizontal="true"
                 android:layout_marginBottom="16dp"
-                android:text="フォロワー"
+                android:text="@string/follower_list"
                 android:textColor="@color/namegrey"
                 android:textSize="12sp" />
 
@@ -145,7 +145,7 @@
                 android:layout_below="@+id/usercheer_num"
                 android:layout_centerHorizontal="true"
                 android:layout_marginBottom="16dp"
-                android:text="応援店"
+                android:text="@string/cheer_list"
                 android:textColor="@color/namegrey"
                 android:textSize="12sp" />
 
@@ -175,7 +175,7 @@
                 android:layout_below="@+id/want_num"
                 android:layout_centerHorizontal="true"
                 android:layout_marginBottom="16dp"
-                android:text="行きたい店"
+                android:text="@string/want_list"
                 android:textColor="@color/namegrey"
                 android:textSize="12sp" />
 

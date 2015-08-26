@@ -72,7 +72,7 @@ public class CreateUserNameFragment extends Fragment implements FABProgressListe
                     fab.setClickable(false);
                     setLogin(getActivity());
                 } else {
-                    Toast.makeText(getActivity(), "希望のユーザー名を入力してください", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), getString(R.string.please_input_username), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -154,7 +154,7 @@ public class CreateUserNameFragment extends Fragment implements FABProgressListe
                             Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                         }
                     } else {
-                        inputText.setError("このユーザー名はすでに登録されています");
+                        inputText.setError(getString(R.string.multiple_username));
                         circle.hide();
                         fab.setClickable(true);
                         //setLoginDialog(context);
@@ -166,7 +166,7 @@ public class CreateUserNameFragment extends Fragment implements FABProgressListe
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
-                Toast.makeText(context, "ログインに失敗しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
                 fab.setClickable(true);
                 circle.hide();
             }

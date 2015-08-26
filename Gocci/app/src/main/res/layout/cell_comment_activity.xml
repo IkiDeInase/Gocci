@@ -39,14 +39,15 @@
 
     <TextView
         android:id="@+id/usercomment"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:maxLength="50"
         android:text="@string/comment"
         android:textColor="@color/namegrey"
         android:textSize="@dimen/small_text"
         android:layout_toRightOf="@+id/commentUserImage"
-        android:layout_below="@+id/user_name" />
+        android:layout_below="@+id/user_name"
+        android:layout_toLeftOf="@+id/date_time" />
 
     <View
         android:layout_width="match_parent"

@@ -143,7 +143,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 if (Util.getConnectedState(ListActivity.this) != Util.NetworkStatus.OFF) {
                     getRefreshJSON(mUrl, mCategory, ListActivity.this);
                 } else {
-                    Toast.makeText(ListActivity.this, "通信に失敗しました", Toast.LENGTH_LONG).show();
+                    Toast.makeText(ListActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
                     refresh.setRefreshing(false);
                 }
             }
@@ -160,11 +160,11 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 .withToolbar(toolbar)
                 .withHeader(new DrawerProfHeader(this))
                 .addDrawerItems(
-                        new PrimaryDrawerItem().withName("タイムライン").withIcon(GoogleMaterial.Icon.gmd_home).withIdentifier(1).withSelectable(false),
-                        new PrimaryDrawerItem().withName("マイページ").withIcon(GoogleMaterial.Icon.gmd_person).withIdentifier(2).withSelectable(false),
+                        new PrimaryDrawerItem().withName(getString(R.string.timeline)).withIcon(GoogleMaterial.Icon.gmd_home).withIdentifier(1).withSelectable(false),
+                        new PrimaryDrawerItem().withName(getString(R.string.mypage)).withIcon(GoogleMaterial.Icon.gmd_person).withIdentifier(2).withSelectable(false),
                         new DividerDrawerItem(),
-                        new PrimaryDrawerItem().withName("アドバイスを送る").withIcon(GoogleMaterial.Icon.gmd_send).withSelectable(false).withIdentifier(3),
-                        new PrimaryDrawerItem().withName("設定").withIcon(GoogleMaterial.Icon.gmd_settings).withSelectable(false).withIdentifier(4)
+                        new PrimaryDrawerItem().withName(getString(R.string.send_advice)).withIcon(GoogleMaterial.Icon.gmd_send).withSelectable(false).withIdentifier(3),
+                        new PrimaryDrawerItem().withName(getString(R.string.settings)).withIcon(GoogleMaterial.Icon.gmd_settings).withSelectable(false).withIdentifier(4)
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
@@ -208,33 +208,32 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
         switch (mCategory) {
             case Const.CATEGORY_FOLLOW:
-                getSupportActionBar().setTitle("フォロー");
+                getSupportActionBar().setTitle(getString(R.string.follow_list));
                 followefollowerAdapter = new FollowFollowerAdapter(this);
                 mUrl = Const.getFollowAPI(mId);
                 break;
             case Const.CATEGORY_FOLLOWER:
-                getSupportActionBar().setTitle("フォロワー");
+                getSupportActionBar().setTitle(getString(R.string.follower_list));
                 followefollowerAdapter = new FollowFollowerAdapter(this);
                 mUrl = Const.getFollowerAPI(mId);
                 break;
             case Const.CATEGORY_USER_CHEER:
-                getSupportActionBar().setTitle("応援店");
+                getSupportActionBar().setTitle(getString(R.string.cheer_list));
                 usercheerAdapter = new UserCheerAdapter(this);
                 mUrl = Const.getUserCheerAPI(mId);
                 break;
             case Const.CATEGORY_WANT:
-                getSupportActionBar().setTitle("行きたい店");
+                getSupportActionBar().setTitle(getString(R.string.want_list));
                 wantAdapter = new WantAdapter(this);
                 mUrl = Const.getWantAPI(mId);
                 break;
             case Const.CATEGORY_REST_CHEER:
-                getSupportActionBar().setTitle("応援しているユーザー");
+                getSupportActionBar().setTitle(getString(R.string.cheer_user_list));
                 restcheerAdapter = new RestCheerAdapter(this);
                 mUrl = Const.getRestCheerAPI(mId);
                 break;
         }
 
-        Log.e("ログ", mUrl);
         getJSON(mUrl, mCategory, this);
     }
 
@@ -363,7 +362,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                Log.e("ジェイソン失敗", String.valueOf(errorResponse));
+                Toast.makeText(ListActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
 
         });
@@ -376,7 +375,6 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                Log.e("ジェイソン成功", String.valueOf(response));
                 try {
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject jsonObject = response.getJSONObject(i);
@@ -402,7 +400,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                Log.e("ジェイソン失敗", String.valueOf(errorResponse));
+                Toast.makeText(ListActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
 
         });
@@ -415,7 +413,6 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                Log.e("ジェイソン成功", String.valueOf(response));
                 try {
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject jsonObject = response.getJSONObject(i);
@@ -439,7 +436,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                Log.e("ジェイソン失敗", String.valueOf(errorResponse));
+                Toast.makeText(ListActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
 
         });
@@ -475,7 +472,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                Log.e("ジェイソン失敗", String.valueOf(errorResponse));
+                Toast.makeText(ListActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
 
         });
@@ -488,7 +485,6 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                Log.e("ジェイソン成功", String.valueOf(response));
                 try {
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject jsonObject = response.getJSONObject(i);
@@ -514,7 +510,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                Log.e("ジェイソン失敗", String.valueOf(errorResponse));
+                Toast.makeText(ListActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
 
         });
@@ -527,7 +523,6 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                Log.e("ジェイソン成功", String.valueOf(response));
                 users.clear();
                 try {
                     for (int i = 0; i < response.length(); i++) {
@@ -554,7 +549,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                Log.e("ジェイソン失敗", String.valueOf(errorResponse));
+                Toast.makeText(ListActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -572,7 +567,6 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                Log.e("ジェイソン成功", String.valueOf(response));
                 users.clear();
                 try {
                     for (int i = 0; i < response.length(); i++) {
@@ -599,7 +593,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                Log.e("ジェイソン失敗", String.valueOf(errorResponse));
+                Toast.makeText(ListActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -616,7 +610,6 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                Log.e("ジェイソン成功", String.valueOf(response));
                 users.clear();
                 try {
                     for (int i = 0; i < response.length(); i++) {
@@ -641,7 +634,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                Log.e("ジェイソン失敗", String.valueOf(errorResponse));
+                Toast.makeText(ListActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -659,7 +652,6 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                Log.e("ジェイソン成功", String.valueOf(response));
                 users.clear();
                 try {
                     for (int i = 0; i < response.length(); i++) {
@@ -684,7 +676,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                Log.e("ジェイソン失敗", String.valueOf(errorResponse));
+                Toast.makeText(ListActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -702,7 +694,6 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                Log.e("ジェイソン成功", String.valueOf(response));
                 users.clear();
                 try {
                     for (int i = 0; i < response.length(); i++) {
@@ -729,7 +720,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                Log.e("ジェイソン失敗", String.valueOf(errorResponse));
+                Toast.makeText(ListActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
 
         });

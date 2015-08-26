@@ -133,7 +133,7 @@ public class SplashActivity extends AppCompatActivity {
                             Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                         }
                     } else {
-                        Toast.makeText(context, "ログインに失敗しました", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, getString(R.string.login_failure), Toast.LENGTH_SHORT).show();
                         handler = new Handler();
                         runnable = new loginRunnable();
                         handler.postDelayed(runnable, 1000);
@@ -145,7 +145,7 @@ public class SplashActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Toast.makeText(context, "ログインに失敗しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
                 handler = new Handler();
                 runnable = new loginRunnable();
                 handler.postDelayed(runnable, 1000);
@@ -182,12 +182,12 @@ public class SplashActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                Log.e("ログ", responseString);
+                Toast.makeText(context, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Toast.makeText(context, "ログインに失敗しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
                 handler = new Handler();
                 runnable = new loginRunnable();
                 handler.postDelayed(runnable, 1000);

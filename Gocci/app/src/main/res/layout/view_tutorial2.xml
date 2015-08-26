@@ -34,7 +34,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="７秒で"
+        android:text="@string/about_gocci3"
         android:id="@+id/text_1"
         android:layout_alignParentTop="false"
         android:layout_centerHorizontal="true"
@@ -47,7 +47,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="外観→内装→食事を撮りましょう"
+        android:text="@string/about_gocci4"
         android:textSize="16sp"
         android:layout_gravity="center_horizontal"
         android:textColor="@color/white"

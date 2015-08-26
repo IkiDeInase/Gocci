@@ -130,17 +130,17 @@ public class CameraPreviewActivity extends AppCompatActivity {
         shareDialog.registerCallback(callbackManager, new FacebookCallback<Sharer.Result>() {
             @Override
             public void onSuccess(Sharer.Result result) {
-                Toast.makeText(CameraPreviewActivity.this, "シェアが完了しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(CameraPreviewActivity.this, getString(R.string.complete_share), Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onCancel() {
-                Toast.makeText(CameraPreviewActivity.this, "キャンセルしました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(CameraPreviewActivity.this, getString(R.string.cancel_share), Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onError(FacebookException e) {
-                Toast.makeText(CameraPreviewActivity.this, "シェアに失敗しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(CameraPreviewActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -234,17 +234,17 @@ public class CameraPreviewActivity extends AppCompatActivity {
                 Uri bmpUri = Util.getUri(mVideoUrl);
                 if (bmpUri != null) {
                     if (mRestname.equals("")) {
-                        Toast.makeText(CameraPreviewActivity.this, "店名を入力してください", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(CameraPreviewActivity.this, getString(R.string.please_input_restname), Toast.LENGTH_SHORT).show();
                     } else {
                         TweetComposer.Builder builder = new TweetComposer.Builder(CameraPreviewActivity.this)
-                                .text("#" + mRestname.replaceAll("\\s+", "") + " #Gocci #FoodPorn")
+                                .text("#" + mRestname.replaceAll("\\s+", "") + " #Gocci")
                                 .image(bmpUri);
 
                         builder.show();
                     }
                 } else {
                     // ...sharing failed, handle error
-                    Toast.makeText(CameraPreviewActivity.this, "twitterシェアに失敗しました", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CameraPreviewActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -263,7 +263,7 @@ public class CameraPreviewActivity extends AppCompatActivity {
                     shareDialog.show(content);
                 } else {
                     // ...sharing failed, handle error
-                    Toast.makeText(CameraPreviewActivity.this, "facebookシェアに失敗しました", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CameraPreviewActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -279,11 +279,11 @@ public class CameraPreviewActivity extends AppCompatActivity {
                     // Add the URI and the caption to the Intent.
                     share.putExtra(Intent.EXTRA_STREAM, uri);
                     share.setPackage("com.instagram.android");
-                    share.putExtra(Intent.EXTRA_TEXT, "#" + mRestname.replaceAll("\\s+", "") + " #Gocci #FoodPorn");
+                    share.putExtra(Intent.EXTRA_TEXT, "#" + mRestname.replaceAll("\\s+", "") + " #Gocci");
                     // Broadcast the Intent.
                     startActivity(Intent.createChooser(share, "Share to"));
                 } else {
-                    Toast.makeText(CameraPreviewActivity.this, "店名を入力してください", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CameraPreviewActivity.this, getString(R.string.please_input_restname), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -309,10 +309,10 @@ public class CameraPreviewActivity extends AppCompatActivity {
                         postMovieBackground(CameraPreviewActivity.this);
                         postMovieAsync(CameraPreviewActivity.this);
                     } else {
-                        Toast.makeText(CameraPreviewActivity.this, "店名は入力してください", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(CameraPreviewActivity.this, getString(R.string.please_input_restname), Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    Toast.makeText(CameraPreviewActivity.this, "回線が悪いようです。。。", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CameraPreviewActivity.this, getString(R.string.bad_internet_connection), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -338,10 +338,9 @@ public class CameraPreviewActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         new MaterialDialog.Builder(this)
-                .title("確認")
-                .content("ここで戻ると、この動画は初期化されますがよろしいですか？")
-                .positiveText("戻る")
-                .negativeText("いいえ")
+                .content(getString(R.string.check_videoposting_cancel))
+                .positiveText(getString(R.string.check_videoposting_yeah))
+                .negativeText(getString(R.string.check_videoposting_no))
                 .callback(new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onPositive(MaterialDialog dialog) {
@@ -364,16 +363,15 @@ public class CameraPreviewActivity extends AppCompatActivity {
 
     private void createTenpo() {
         new MaterialDialog.Builder(CameraPreviewActivity.this)
-                .title("店舗追加")
-                .content("あなたのいるお店の名前を入力してください。※位置情報は現在の位置を使います。")
-                .input("店舗名", null, new MaterialDialog.InputCallback() {
+                .content(getString(R.string.add_restname))
+                .input(getString(R.string.restname), null, new MaterialDialog.InputCallback() {
                     @Override
                     public void onInput(MaterialDialog materialDialog, CharSequence charSequence) {
                         materialDialog.getActionButton(DialogAction.POSITIVE).setEnabled(charSequence.length() > 0);
                     }
                 })
                 .alwaysCallInputCallback()
-                .positiveText("送信する")
+                .positiveText(getString(R.string.add_restname_post))
                 .callback(new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onPositive(MaterialDialog dialog) {
@@ -389,17 +387,15 @@ public class CameraPreviewActivity extends AppCompatActivity {
 
                             @Override
                             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                                Toast.makeText(CameraPreviewActivity.this, "通信に失敗しました", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(CameraPreviewActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
                             }
 
                             @Override
                             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                                Log.e("ジェイソン成功", String.valueOf(response));
-
                                 try {
                                     String message = response.getString("message");
 
-                                    if (message.equals("店舗を追加しました")) {
+                                    if (message.equals(getString(R.string.add_restname_complete_message))) {
                                         Toast.makeText(CameraPreviewActivity.this, message, Toast.LENGTH_SHORT).show();
                                         //店名をセット
                                         mIsnewRestname = true;
@@ -443,7 +439,7 @@ public class CameraPreviewActivity extends AppCompatActivity {
             @Override
             public void onError(int id, Exception ex) {
                 isError = true;
-                Toast.makeText(CameraPreviewActivity.this, "回線が悪いようです。。。", Toast.LENGTH_SHORT).show();
+                Toast.makeText(CameraPreviewActivity.this, getString(R.string.bad_internet_connection), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -457,7 +453,7 @@ public class CameraPreviewActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Toast.makeText(context, "投稿に失敗しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, getString(R.string.videoposting_failure), Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -466,15 +462,15 @@ public class CameraPreviewActivity extends AppCompatActivity {
                     String message = response.getString("message");
                     int code = response.getInt("code");
 
-                    if (code == 200 && message.equals("投稿しました")) {
-                        Toast.makeText(context, "投稿完了までは少し時間がかかります", Toast.LENGTH_SHORT).show();
+                    if (code == 200 && message.equals(getString(R.string.videoposting_success))) {
+                        Toast.makeText(context, getString(R.string.videoposting_message), Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(context, GocciTimelineActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
                         finish();
                     } else {
-                        Toast.makeText(context, "投稿に失敗しました", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, getString(R.string.videoposting_failure), Toast.LENGTH_SHORT).show();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

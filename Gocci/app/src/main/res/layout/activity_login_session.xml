@@ -18,7 +18,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="ユーザー名とパスワードでログイン"
+        android:text="@string/login_username_and_password"
         android:layout_gravity="center_horizontal"
         android:textStyle="bold"
         android:textColor="@color/nameblack"
@@ -85,7 +85,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="ログイン"
+            android:text="@string/login"
             android:textColor="#ffffff"
             android:textSize="@dimen/accent_text" />
     </com.andexert.library.RippleView>
@@ -126,7 +126,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="SNS でログイン"
+        android:text="@string/login_sns"
         android:textSize="@dimen/normal_text"
         android:textColor="@color/nameblack"
         android:textStyle="bold"
@@ -150,7 +150,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="ツイッターでログイン"
+            android:text="@string/login_with_twitter"
             android:textColor="#ffffff"
             android:textSize="@dimen/accent_text" />
 
@@ -170,7 +170,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="フェイスブックでログイン"
+            android:text="@string/login_with_facebook"
             android:textColor="#ffffff"
             android:textSize="@dimen/accent_text" />
 

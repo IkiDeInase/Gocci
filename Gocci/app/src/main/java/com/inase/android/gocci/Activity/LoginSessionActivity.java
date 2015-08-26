@@ -108,7 +108,7 @@ public class LoginSessionActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("ログインする");
+        getSupportActionBar().setTitle(getString(R.string.login));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         gocci = (Application_Gocci) getApplication();
@@ -159,12 +159,12 @@ public class LoginSessionActivity extends AppCompatActivity {
 
             @Override
             public void onCancel() {
-                Log.e("ログ", "キャンセル");
+                Toast.makeText(LoginSessionActivity.this, getString(R.string.cancel_login), Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onError(FacebookException e) {
-                Toast.makeText(LoginSessionActivity.this, "ログインに失敗しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginSessionActivity.this, getString(R.string.error_login), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -189,7 +189,7 @@ public class LoginSessionActivity extends AppCompatActivity {
             @Override
             public void failure(TwitterException exception) {
                 // Do something on failure
-                Toast.makeText(LoginSessionActivity.this, "ログインに失敗しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginSessionActivity.this, getString(R.string.error_login), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -197,7 +197,7 @@ public class LoginSessionActivity extends AppCompatActivity {
         loginRipple.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(LoginSessionActivity.this, "ログインに失敗しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(LoginSessionActivity.this, getString(R.string.error_login), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -265,6 +265,7 @@ public class LoginSessionActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Toast.makeText(LoginSessionActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
                 progress.setVisibility(View.GONE);
             }
 
@@ -302,7 +303,7 @@ public class LoginSessionActivity extends AppCompatActivity {
                             Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                         }
                     } else {
-                        Toast.makeText(context, "まだアカウントを作成していません", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, getString(R.string.error_account_no_exist), Toast.LENGTH_SHORT).show();
 
                     }
                 } catch (JSONException e) {
@@ -312,6 +313,7 @@ public class LoginSessionActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Toast.makeText(LoginSessionActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
 
             @Override

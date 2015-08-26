@@ -192,8 +192,8 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
 
         dialogBuilder = NiftyDialogBuilder.getInstance(getActivity());
         dialogBuilder
-                .withTitle("Gocciカメラ")
-                .withMessage("このカメラはボタンをタップしている間だけ録画されます。縦向きで投稿するようにしてください！")
+                .withTitle(getString(R.string.camera_title))
+                .withMessage(getString(R.string.camera_message))
                 .withDuration(500)                                          //def
                 .withEffect(Effectstype.SlideBottom)
                 .show();
@@ -213,10 +213,9 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
             @Override
             public void onClick(View v) {
                 new MaterialDialog.Builder(getActivity())
-                        .title("確認")
-                        .content("すでに録画中の場合、その動画は初期化されますがよろしいですか？")
-                        .positiveText("戻る")
-                        .negativeText("いいえ")
+                        .content(getString(R.string.check_videoposting_cancel))
+                        .positiveText(getString(R.string.check_videoposting_yeah))
+                        .negativeText(getString(R.string.check_videoposting_no))
                         .callback(new MaterialDialog.ButtonCallback() {
                             @Override
                             public void onPositive(MaterialDialog dialog) {
@@ -311,7 +310,6 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
                     cameraProgress.setVisibility(View.VISIBLE);
                     //onFinishPressed();
                     if (!isFinish) {
-                        Log.e("終了ログ", String.valueOf(msg.arg1));
                         progress.setProgress(100);
                         pauseRecording();
                         stopRecording();
@@ -337,7 +335,6 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
     }
 
     private void getLocation(final Context context, Location location) {
-        Log.e("ログ", "get位置呼ばれたよ");
         latitude = location.getLatitude();
         longitude = location.getLongitude();
         String mSearch_mapUrl = Const.getNearAPI(latitude, longitude);
@@ -371,7 +368,7 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
 
             @Override
             public void onFailure(int statusCode, org.apache.http.Header[] headers, java.lang.Throwable throwable, org.json.JSONObject errorResponse) {
-                Toast.makeText(context, "読み取りに失敗しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
 
         });
@@ -450,11 +447,11 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
         } else {
             if (!mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                 new MaterialDialog.Builder(getActivity())
-                        .title("位置情報取得について")
-                        .content("位置情報を使いたいのですが、GPSが無効になっています。" + "設定を変更しますか？")
-                        .positiveText("はい")
+                        .title(getString(R.string.camera_location_title))
+                        .content(getString(R.string.camera_location_message))
+                        .positiveText(getString(R.string.camera_location_yeah))
                         .positiveColorRes(R.color.gocci_header)
-                        .negativeText("いいえ")
+                        .negativeText(getString(R.string.camera_location_no))
                         .negativeColorRes(R.color.material_drawer_primary_light)
                         .callback(new MaterialDialog.ButtonCallback() {
                             @Override
@@ -467,7 +464,7 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
                             @Override
                             public void onNegative(MaterialDialog dialog) {
                                 super.onNegative(dialog);
-                                Toast.makeText(getActivity(), "カメラを閉じます", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getActivity(), getString(R.string.camera_location_cancel), Toast.LENGTH_LONG).show();
                             }
                         }).show();
 
@@ -590,7 +587,6 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
                     //画質あげる
                     mVideoEncoder.prepare();
                 } catch (Exception e) {
-                    Log.e(TAG, "startRecording:", e);
                     mVideoEncoder.release();
                     mVideoEncoder = null;
                     throw e;
@@ -794,8 +790,8 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
             if (degree <= -60) {
                 if (!dialogBuilder.isShowing()) {
                     dialogBuilder
-                            .withTitle("Gocciカメラ")
-                            .withMessage("このカメラでは、縦向きで投稿するようにしてください！")
+                            .withTitle(getString(R.string.camera_title))
+                            .withMessage(getString(R.string.camera_alert))
                             .withDuration(500)                                          //def
                             .withEffect(Effectstype.SlideBottom)
                             .isCancelableOnTouchOutside(false)
@@ -810,8 +806,8 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
             if (60 < degree) {
                 if (!dialogBuilder.isShowing()) {
                     dialogBuilder
-                            .withTitle("Gocciカメラ")
-                            .withMessage("このカメラでは、縦向きで投稿するようにしてください！")
+                            .withTitle(getString(R.string.camera_title))
+                            .withMessage(getString(R.string.camera_alert))
                             .withDuration(500)                                          //def
                             .withEffect(Effectstype.SlideBottom)
                             .isCancelableOnTouchOutside(false)
@@ -863,23 +859,20 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
 
     private void createTenpo() {
         new MaterialDialog.Builder(getActivity())
-                .title("店舗追加")
-                .content("あなたのいるお店の名前を入力してください。※位置情報は現在の位置を使います。")
-                .input("店舗名", null, new MaterialDialog.InputCallback() {
+                .content(getString(R.string.add_restname))
+                .input(getString(R.string.restname), null, new MaterialDialog.InputCallback() {
                     @Override
                     public void onInput(MaterialDialog materialDialog, CharSequence charSequence) {
                         materialDialog.getActionButton(DialogAction.POSITIVE).setEnabled(charSequence.length() > 0);
                     }
                 })
                 .alwaysCallInputCallback()
-                .positiveText("送信する")
+                .positiveText(getString(R.string.add_restname_post))
                 .callback(new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onPositive(MaterialDialog dialog) {
                         super.onPositive(dialog);
                         mRest_name = dialog.getInputEditText().getText().toString();
-
-                        /* TODO rest_idを発行してもらう　*/
 
                         Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(getActivity()));
                         Const.asyncHttpClient.get(getActivity(), Const.getPostRestAddAPI(mRest_name, latitude, longitude), new JsonHttpResponseHandler() {
@@ -890,7 +883,7 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
 
                             @Override
                             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                                Toast.makeText(getActivity(), "通信に失敗しました", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getActivity(), getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
                             }
 
                             @Override
@@ -899,7 +892,7 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
                                 try {
                                     String message = response.getString("message");
 
-                                    if (message.equals("店舗を追加しました")) {
+                                    if (message.equals(getString(R.string.add_restname_complete_message))) {
                                         Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
                                         //店名をセット
                                         mIsnewRestname = true;
@@ -950,7 +943,7 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
                 if (location != null) {
                     getLocation(getActivity(), location);
                 } else {
-                    Toast.makeText(getActivity(), "位置情報が読み取れないため、カメラを閉じます", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), getString(R.string.finish_causedby_location), Toast.LENGTH_LONG).show();
                     getActivity().finish();
                 }
             }
@@ -958,7 +951,6 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
     }
 
     protected synchronized void buildGoogleApiClient() {
-        Log.e("DEBUG", "Building GoogleApiClient");
         mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -1042,7 +1034,7 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
             case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
                 Log.e("ログ", "Location settings are inadequate, and cannot be fixed here. Dialog " +
                         "not created.");
-                Toast.makeText(getActivity(), "位置情報機が取れないので、カメラを終了します", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), getString(R.string.finish_causedby_location), Toast.LENGTH_LONG).show();
                 getActivity().finish();
                 break;
         }

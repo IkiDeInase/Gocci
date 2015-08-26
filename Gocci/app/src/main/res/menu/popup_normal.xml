@@ -2,11 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/violation"
-        android:title="この投稿を違反報告する"
+        android:title="@string/popup_violate"
         android:icon="@drawable/ic_icon_violation" />
     <divider />
     <item
         android:id="@+id/close"
-        android:title="閉じる"
+        android:title="@string/close"
         android:icon="@drawable/ic_icon_close" />
 </menu>

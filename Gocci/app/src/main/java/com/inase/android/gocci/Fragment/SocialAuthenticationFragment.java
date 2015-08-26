@@ -78,12 +78,12 @@ public class SocialAuthenticationFragment extends Fragment {
 
             @Override
             public void onCancel() {
-                Log.e("ログ", "キャンセル");
+                Toast.makeText(getActivity(), getString(R.string.cancel_login), Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onError(FacebookException e) {
-                Toast.makeText(getActivity(), "ログインに失敗しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), getString(R.string.error_login), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -107,7 +107,7 @@ public class SocialAuthenticationFragment extends Fragment {
             @Override
             public void failure(TwitterException exception) {
                 // Do something on failure
-                Toast.makeText(getActivity(), "ログインに失敗しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), getString(R.string.error_login), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -116,9 +116,9 @@ public class SocialAuthenticationFragment extends Fragment {
             public void onClick(View v) {
                 if (Application_Gocci.getLoginProvider() != null) {
                     new MaterialDialog.Builder(getActivity()).
-                            content("すでに連携済みのアカウントがある場合、そのアカウントは使用できなくなりますがよろしいですか？")
-                            .positiveText("連携する")
-                            .negativeText("やめる")
+                            content(getString(R.string.add_sns_message))
+                            .positiveText(getString(R.string.add_sns_yeah))
+                            .negativeText(getString(R.string.add_sns_no))
                             .callback(new MaterialDialog.ButtonCallback() {
                                 @Override
                                 public void onPositive(MaterialDialog dialog) {
@@ -128,7 +128,7 @@ public class SocialAuthenticationFragment extends Fragment {
                             })
                             .show();
                 } else {
-                    Toast.makeText(getActivity(), "希望のユーザー名を入力してください", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), getString(R.string.please_input_username), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -137,9 +137,9 @@ public class SocialAuthenticationFragment extends Fragment {
             public void onClick(View v) {
                 if (Application_Gocci.getLoginProvider() != null) {
                     new MaterialDialog.Builder(getActivity()).
-                            content("すでに連携済みのアカウントがある場合、そのアカウントは使用できなくなりますがよろしいですか？")
-                            .positiveText("連携する")
-                            .negativeText("やめる")
+                            content(getString(R.string.add_sns_message))
+                            .positiveText(getString(R.string.add_sns_yeah))
+                            .negativeText(getString(R.string.add_sns_no))
                             .callback(new MaterialDialog.ButtonCallback() {
                                 @Override
                                 public void onPositive(MaterialDialog dialog) {
@@ -149,7 +149,7 @@ public class SocialAuthenticationFragment extends Fragment {
                             })
                             .show();
                 } else {
-                    Toast.makeText(getActivity(), "希望のユーザー名を入力してください", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), getString(R.string.please_input_username), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -159,7 +159,7 @@ public class SocialAuthenticationFragment extends Fragment {
                 if (Application_Gocci.getLoginProvider() != null) {
                     goTimeline(0);
                 } else {
-                    Toast.makeText(getActivity(), "希望のユーザー名を入力してください", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), getString(R.string.please_input_username), Toast.LENGTH_SHORT).show();
                 }
             }
         });

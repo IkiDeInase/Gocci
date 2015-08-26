@@ -24,6 +24,14 @@ public class SavedData {
     private static final String KEY_IDENTITYID = "identityId";
     private static final String KEY_FLAG = "flag";
 
+    private static final String KEY_NOTIFICATIONS = "notifications";
+    private static final String KEY_NOTIFICATIONS_SIZE = "notifications_size";
+
+    private static final String KEY_VERSION_NAME = "version_name";
+    private static final String KEY_AUTOPLAY = "autoplay";
+
+    private static final String KEY_REGIONS = "regions";
+
     public static void setWelcome(Context context, String username, String picture, String user_id, String identityId, int badge_num) {
         SharedPreferences prefs = context.getSharedPreferences("pref", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
@@ -140,15 +148,15 @@ public class SavedData {
         for (int i = 0; i < notifications.length; i++) {
             str.append(notifications[i]).append(",");
         }
-        editor.putString("notifications", str.toString());
-        editor.putInt("notifications_size", notifications.length);
+        editor.putString(KEY_NOTIFICATIONS, str.toString());
+        editor.putInt(KEY_NOTIFICATIONS_SIZE, notifications.length);
         editor.apply();
     }
 
     public static Integer[] getSettingNotifications(Context context) {
         SharedPreferences prefs = context.getSharedPreferences("pref", Context.MODE_PRIVATE);
-        String savedString = prefs.getString("notifications", "0,1,2,3");
-        int size = prefs.getInt("notifications_size", 4);
+        String savedString = prefs.getString(KEY_NOTIFICATIONS, "0,1,2,3");
+        int size = prefs.getInt(KEY_NOTIFICATIONS_SIZE, 4);
         StringTokenizer st = new StringTokenizer(savedString, ",");
         Integer[] savedList = new Integer[size];
         for (int i = 0; i < size; i++) {
@@ -160,25 +168,37 @@ public class SavedData {
     public static void setSettingAutoPlay(Context context, int setting) {
         SharedPreferences prefs = context.getSharedPreferences("pref", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putInt("autoplay", setting);
+        editor.putInt(KEY_AUTOPLAY, setting);
         editor.apply();
     }
 
     public static String getVersionName(Context context) {
         SharedPreferences prefs = context.getSharedPreferences("pref", Context.MODE_PRIVATE);
-        return prefs.getString("version_name", "1.0.0");
+        return prefs.getString(KEY_VERSION_NAME, "1.0.0");
     }
 
     public static void setVersionName(Context context, String versionName) {
         SharedPreferences prefs = context.getSharedPreferences("pref", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putString("version_name", versionName);
+        editor.putString(KEY_VERSION_NAME, versionName);
         editor.apply();
     }
 
     public static int getSettingAutoPlay(Context context) {
         SharedPreferences prefs = context.getSharedPreferences("pref", Context.MODE_PRIVATE);
-        return prefs.getInt("autoplay", 0);
+        return prefs.getInt(KEY_AUTOPLAY, 0);
+    }
+
+    public static int getSettingRegions(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences("pref", Context.MODE_PRIVATE);
+        return prefs.getInt(KEY_REGIONS, 0);
+    }
+
+    public static void setSettingRegions(Context context, int region) {
+        SharedPreferences prefs = context.getSharedPreferences("pref", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt(KEY_REGIONS, region);
+        editor.apply();
     }
 
     public static PersistentCookieStore getCookieStore(Context context) {

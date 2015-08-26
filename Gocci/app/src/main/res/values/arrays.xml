@@ -32,7 +32,8 @@
     </array>
 
     <array name="locale">
-        <item>@string/japan</item>
+        <item>@string/japanese</item>
+        <!--<item>@string/english</item>-->
     </array>
 
     <array name="notice">

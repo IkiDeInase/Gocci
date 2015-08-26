@@ -64,6 +64,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Locale;
 
 public class SettingActivity extends AppCompatActivity {
 
@@ -97,6 +98,7 @@ public class SettingActivity extends AppCompatActivity {
     private TextView facebookAuth;
     private LoginButton facebookLoginButton;
     private GocciTwitterLoginButton twitterLoginButton;
+    private TextView locale;
 
     private boolean isTwitterSetting;
     private boolean isFacebookSetting;
@@ -147,18 +149,18 @@ public class SettingActivity extends AppCompatActivity {
 
         tool_bar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(tool_bar);
-        getSupportActionBar().setTitle("設定");
+        getSupportActionBar().setTitle(getString(R.string.settings));
 
         result = new DrawerBuilder()
                 .withActivity(this)
                 .withToolbar(tool_bar)
                 .withHeader(new DrawerProfHeader(this))
                 .addDrawerItems(
-                        new PrimaryDrawerItem().withName("タイムライン").withIcon(GoogleMaterial.Icon.gmd_home).withIdentifier(1).withSelectable(false),
-                        new PrimaryDrawerItem().withName("マイページ").withIcon(GoogleMaterial.Icon.gmd_person).withIdentifier(2).withSelectable(false),
+                        new PrimaryDrawerItem().withName(getString(R.string.timeline)).withIcon(GoogleMaterial.Icon.gmd_home).withIdentifier(1).withSelectable(false),
+                        new PrimaryDrawerItem().withName(getString(R.string.mypage)).withIcon(GoogleMaterial.Icon.gmd_person).withIdentifier(2).withSelectable(false),
                         new DividerDrawerItem(),
-                        new PrimaryDrawerItem().withName("アドバイスを送る").withIcon(GoogleMaterial.Icon.gmd_send).withSelectable(false).withIdentifier(3),
-                        new PrimaryDrawerItem().withName("設定").withIcon(GoogleMaterial.Icon.gmd_settings).withSelectable(false).withIdentifier(4)
+                        new PrimaryDrawerItem().withName(getString(R.string.send_advice)).withIcon(GoogleMaterial.Icon.gmd_send).withSelectable(false).withIdentifier(3),
+                        new PrimaryDrawerItem().withName(getString(R.string.settings)).withIcon(GoogleMaterial.Icon.gmd_settings).withSelectable(false).withIdentifier(4)
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
@@ -217,6 +219,7 @@ public class SettingActivity extends AppCompatActivity {
         facebookAuth = (TextView) findViewById(R.id.facebookSetting);
         facebookLoginButton = (LoginButton) findViewById(R.id.login_button);
         twitterLoginButton = (GocciTwitterLoginButton) findViewById(R.id.twitter_login_button);
+        locale = (TextView) findViewById(R.id.locale);
 
         facebookLoginButton.setReadPermissions("public_profile");
         facebookLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
@@ -232,12 +235,12 @@ public class SettingActivity extends AppCompatActivity {
 
             @Override
             public void onCancel() {
-                Log.e("ログ", "キャンセル");
+                Toast.makeText(SettingActivity.this, getString(R.string.cancel_login), Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onError(FacebookException e) {
-                Toast.makeText(SettingActivity.this, "ログインに失敗しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(SettingActivity.this, getString(R.string.error_login), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -257,7 +260,7 @@ public class SettingActivity extends AppCompatActivity {
             @Override
             public void failure(TwitterException exception) {
                 // Do something on failure
-                Toast.makeText(SettingActivity.this, "ログインに失敗しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(SettingActivity.this, getString(R.string.error_login), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -281,17 +284,17 @@ public class SettingActivity extends AppCompatActivity {
         localeSetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int selected = 0;
+                int selected = SavedData.getSettingRegions(SettingActivity.this);
                 new MaterialDialog.Builder(SettingActivity.this)
                         .items(R.array.locale)
                         .itemsCallbackSingleChoice(selected, new MaterialDialog.ListCallbackSingleChoice() {
                             @Override
                             public boolean onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
-                                Toast.makeText(SettingActivity.this, text.toString(), Toast.LENGTH_SHORT).show();
+                                SavedData.setSettingRegions(SettingActivity.this, which);
                                 return true;
                             }
                         })
-                        .positiveText("決定")
+                        .positiveText(getString(R.string.check_change_yeah))
                         .show();
             }
         });
@@ -299,8 +302,8 @@ public class SettingActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 new MaterialDialog.Builder(SettingActivity.this)
-                        .content("実装までしばらくお待ちください。")
-                        .positiveText("閉じる")
+                        .content(getString(R.string.check_not_implemented_message))
+                        .positiveText(getString(R.string.check_not_implemented_yeah))
                         .show();
             }
         });
@@ -318,7 +321,7 @@ public class SettingActivity extends AppCompatActivity {
                                 return true; // allow selection
                             }
                         })
-                        .positiveText("決定")
+                        .positiveText(getString(R.string.check_change_yeah))
                         .show();
             }
         });
@@ -326,8 +329,8 @@ public class SettingActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 new MaterialDialog.Builder(SettingActivity.this)
-                        .content("実装までしばらくお待ちください。")
-                        .positiveText("閉じる")
+                        .content(getString(R.string.check_not_implemented_message))
+                        .positiveText(getString(R.string.check_not_implemented_yeah))
                         .show();
             }
         });
@@ -335,8 +338,8 @@ public class SettingActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 new MaterialDialog.Builder(SettingActivity.this)
-                        .content("実装までしばらくお待ちください。")
-                        .positiveText("閉じる")
+                        .content(getString(R.string.check_not_implemented_message))
+                        .positiveText(getString(R.string.check_not_implemented_yeah))
                         .show();
             }
         });
@@ -346,9 +349,9 @@ public class SettingActivity extends AppCompatActivity {
                 if (isTwitterSetting) {
                     //ログアウトダイアログ
                     new MaterialDialog.Builder(SettingActivity.this)
-                            .content("Twitterの連携を解除してもいいですか？")
-                            .positiveText("解除する")
-                            .negativeText("いいえ")
+                            .content(getString(R.string.remove_auth_twitter_message))
+                            .positiveText(R.string.remove_auth_yeah)
+                            .negativeText(R.string.remove_auth_no)
                             .callback(new MaterialDialog.ButtonCallback() {
                                 @Override
                                 public void onPositive(MaterialDialog dialog) {
@@ -373,9 +376,9 @@ public class SettingActivity extends AppCompatActivity {
                 if (isFacebookSetting) {
                     //ログアウトダイアログ
                     new MaterialDialog.Builder(SettingActivity.this)
-                            .content("Facebookの連携を解除してもいいですか？")
-                            .positiveText("解除する")
-                            .negativeText("いいえ")
+                            .content(getString(R.string.remove_auth_facebook_message))
+                            .positiveText(R.string.remove_auth_yeah)
+                            .negativeText(R.string.remove_auth_no)
                             .callback(new MaterialDialog.ButtonCallback() {
                                 @Override
                                 public void onPositive(MaterialDialog dialog) {
@@ -402,7 +405,7 @@ public class SettingActivity extends AppCompatActivity {
                                 return true;
                             }
                         })
-                        .positiveText("決定")
+                        .positiveText(getString(R.string.check_change_yeah))
                         .show();
             }
         });
@@ -434,19 +437,22 @@ public class SettingActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 new MaterialDialog.Builder(SettingActivity.this)
-                        .content("実装までしばらくお待ちください。")
-                        .positiveText("閉じる")
+                        .content(getString(R.string.check_not_implemented_message))
+                        .positiveText(getString(R.string.check_not_implemented_yeah))
                         .show();
             }
         });
 
         version_number.setText(BuildConfig.VERSION_NAME);
+
+        locale.setText(getString(R.string.japanese));
+
         logoutRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
             @Override
             public void onComplete(RippleView rippleView) {
                 new MaterialDialog.Builder(SettingActivity.this)
-                        .content("実装までしばらくお待ちください。")
-                        .positiveText("閉じる")
+                        .content(getString(R.string.check_not_implemented_message))
+                        .positiveText(getString(R.string.check_not_implemented_yeah))
                         .show();
             }
         });
@@ -516,7 +522,7 @@ public class SettingActivity extends AppCompatActivity {
         Const.asyncHttpClient.get(this, Const.getAuthSNSUnLinkAPI(providerName, token), new JsonHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Toast.makeText(SettingActivity.this, "通信に失敗しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(SettingActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -525,10 +531,10 @@ public class SettingActivity extends AppCompatActivity {
                     String message = response.getString("message");
                     int code = response.getInt("code");
 
-                    if (message.equals("SNS連携解除しました") && code == 200) {
+                    if (message.equals(getString(R.string.auth_sns_complete_message)) && code == 200) {
                         switch (providerName) {
                             case Const.ENDPOINT_TWITTER:
-                                twitterAuth.setText("連携していません");
+                                twitterAuth.setText(getString(R.string.no_auth_message));
                                 isTwitterSetting = false;
                                 CookieSyncManager.createInstance(SettingActivity.this);
                                 CookieManager cookieManager = CookieManager.getInstance();
@@ -537,7 +543,7 @@ public class SettingActivity extends AppCompatActivity {
                                 Twitter.logOut();
                                 break;
                             case Const.ENDPOINT_FACEBOOK:
-                                facebookAuth.setText("連携していません");
+                                facebookAuth.setText(getString(R.string.no_auth_message));
                                 isFacebookSetting = false;
                                 LoginManager.getInstance().logOut();
                                 break;

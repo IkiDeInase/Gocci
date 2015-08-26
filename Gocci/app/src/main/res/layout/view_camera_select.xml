@@ -33,7 +33,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="今いるお店が上のリストにないときは........"
+            android:text="@string/add_restname_text"
             android:id="@+id/infoText"
             android:textColor="#ffffff"
             android:textSize="@dimen/small_text"

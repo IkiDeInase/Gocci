@@ -156,11 +156,9 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
     private ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
         @Override
         public void onGlobalLayout() {
-            Log.e("DEBUG", "onGlobalLayout called: " + mPlayingPostId);
             if (isSee) {
                 changeMovie();
             }
-            Log.e("DEBUG", "onGlobalLayout  changeMovie called: " + mPlayingPostId);
             if (mPlayingPostId != null || !isExist) {
                 mTenpoRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
@@ -223,17 +221,17 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
         shareDialog.registerCallback(callbackManager, new FacebookCallback<Sharer.Result>() {
             @Override
             public void onSuccess(Sharer.Result result) {
-                Toast.makeText(FlexibleTenpoActivity.this, "シェアが完了しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(FlexibleTenpoActivity.this, getString(R.string.complete_share), Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onCancel() {
-                Toast.makeText(FlexibleTenpoActivity.this, "キャンセルしました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(FlexibleTenpoActivity.this, getString(R.string.cancel_share), Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onError(FacebookException e) {
-                Toast.makeText(FlexibleTenpoActivity.this, "シェアに失敗しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(FlexibleTenpoActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -273,11 +271,11 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
                 .withToolbar(toolbar)
                 .withHeader(new DrawerProfHeader(this))
                 .addDrawerItems(
-                        new PrimaryDrawerItem().withName("タイムライン").withIcon(GoogleMaterial.Icon.gmd_home).withIdentifier(1).withSelectable(false),
-                        new PrimaryDrawerItem().withName("マイページ").withIcon(GoogleMaterial.Icon.gmd_person).withIdentifier(2).withSelectable(false),
+                        new PrimaryDrawerItem().withName(getString(R.string.timeline)).withIcon(GoogleMaterial.Icon.gmd_home).withIdentifier(1).withSelectable(false),
+                        new PrimaryDrawerItem().withName(getString(R.string.mypage)).withIcon(GoogleMaterial.Icon.gmd_person).withIdentifier(2).withSelectable(false),
                         new DividerDrawerItem(),
-                        new PrimaryDrawerItem().withName("アドバイスを送る").withIcon(GoogleMaterial.Icon.gmd_send).withSelectable(false).withIdentifier(3),
-                        new PrimaryDrawerItem().withName("設定").withIcon(GoogleMaterial.Icon.gmd_settings).withSelectable(false).withIdentifier(4)
+                        new PrimaryDrawerItem().withName(getString(R.string.send_advice)).withIcon(GoogleMaterial.Icon.gmd_send).withSelectable(false).withIdentifier(3),
+                        new PrimaryDrawerItem().withName(getString(R.string.settings)).withIcon(GoogleMaterial.Icon.gmd_settings).withSelectable(false).withIdentifier(4)
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
@@ -323,7 +321,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
         collapsingToolbarLayout.setTitle(intent.getStringExtra("rest_name"));
 
         kenBurnsView = (CustomKenBurnsView) findViewById(R.id.background_Image);
-        kenBurnsView.setTransitionGenerator(new RandomTransitionGenerator(3000, new AccelerateDecelerateInterpolator()));
+        kenBurnsView.setTransitionGenerator(new RandomTransitionGenerator(4500, new AccelerateDecelerateInterpolator()));
 
         cheer_number = (TextView) findViewById(R.id.cheer_number);
         cheer_number.setText(String.valueOf(mTotal_cheer_num));
@@ -335,7 +333,6 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
                     // スクロールしていない
                     case RecyclerView.SCROLL_STATE_IDLE:
                         //mBusy = false;
-                        Log.d("DEBUG", "SCROLL_STATE_IDLE");
                         if (isSee) {
                             changeMovie();
                         }
@@ -343,12 +340,10 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
                     // スクロール中
                     case RecyclerView.SCROLL_STATE_DRAGGING:
                         //mBusy = true;
-                        Log.d("DEBUG", "SCROLL_STATE_DRAGGING");
                         break;
                     // はじいたとき
                     case RecyclerView.SCROLL_STATE_SETTLING:
                         //mBusy = true;
-                        Log.d("DEBUG", "SCROLL_STATE_SETTLING");
                         break;
                 }
 
@@ -384,7 +379,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
                 if (Util.getConnectedState(FlexibleTenpoActivity.this) != Util.NetworkStatus.OFF) {
                     getRefreshAsync(FlexibleTenpoActivity.this);
                 } else {
-                    Toast.makeText(FlexibleTenpoActivity.this, "通信に失敗しました", Toast.LENGTH_LONG).show();
+                    Toast.makeText(FlexibleTenpoActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
                     mSwipeRefreshLayout.setRefreshing(false);
                 }
             }
@@ -555,12 +550,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                Toast.makeText(FlexibleTenpoActivity.this, "読み取りに失敗しました", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onFinish() {
-                Log.d("DEBUG", "ProgressDialog dismiss getTimeline finish");
+                Toast.makeText(FlexibleTenpoActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -594,7 +584,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                Toast.makeText(FlexibleTenpoActivity.this, "読み取りに失敗しました", Toast.LENGTH_SHORT).show();
+                Toast.makeText(FlexibleTenpoActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -670,7 +660,6 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
     }
 
     private void changeMovie() {
-        Log.e("DEBUG", "changeMovie called");
         // TODO:実装
         final int position = mTenpoRecyclerView.getChildAdapterPosition(mTenpoRecyclerView.findChildViewUnder(mDisplaySize.x / 2, mDisplaySize.y / 2));
         if (mTenpoAdapter.isEmpty()) {
@@ -682,26 +671,20 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
 
         final PostData userData = mTenpoAdapter.getItem(position - 1);
         if (!userData.getPost_id().equals(mPlayingPostId)) {
-            Log.d("DEBUG", "postId change");
 
             // 前回の動画再生停止処理
             final Const.ExoViewHolder oldViewHolder = getPlayingViewHolder();
             if (oldViewHolder != null) {
-                Log.d("DEBUG", "MOVIE::changeMovie 再生停止 postId:" + mPlayingPostId);
-                Log.e("DEBUG", "changeMovie 動画再生停止");
                 oldViewHolder.mVideoThumbnail.setVisibility(View.VISIBLE);
             }
 
             mPlayingPostId = userData.getPost_id();
             final Const.ExoViewHolder currentViewHolder = getPlayingViewHolder();
-            Log.d("DEBUG", "MOVIE::changeMovie 動画再生処理開始 postId:" + mPlayingPostId);
             if (mPlayBlockFlag) {
-                Log.d("DEBUG", "startMovie play block status");
                 return;
             }
 
             final String path = userData.getMovie();
-            Log.e("DEBUG", "[ProgressBar GONE] cache Path: " + path);
             releasePlayer();
             if (Util.isMovieAutoPlay(this)) {
                 preparePlayer(currentViewHolder, path);
@@ -716,7 +699,6 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
      */
     private Const.ExoViewHolder getPlayingViewHolder() {
         Const.ExoViewHolder viewHolder = null;
-        Log.d("DEBUG", "getPlayingViewHolder :" + mPlayingPostId);
         if (mPlayingPostId != null) {
             for (Map.Entry<Const.ExoViewHolder, String> entry : mViewHolderHash.entrySet()) {
                 if (entry.getValue().equals(mPlayingPostId)) {
@@ -848,23 +830,23 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
         private void bindHeader(final TenpoHeaderViewHolder holder) {
             if (headerTenpoData.getWant_flag() == 0) {
                 holder.check_Image.setImageResource(R.drawable.ic_like_white);
-                holder.check_text.setText("行きたい店に認定");
+                holder.check_text.setText(getString(R.string.add_want));
             } else {
                 holder.check_Image.setImageResource(R.drawable.ic_favorite_orange);
-                holder.check_text.setText("行きたい店を取消");
+                holder.check_text.setText(getString(R.string.remove_want));
             }
 
             holder.checkRipple.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (holder.check_text.getText().toString().equals("行きたい店に認定")) {
+                    if (holder.check_text.getText().toString().equals(getString(R.string.add_want))) {
                         holder.check_Image.setImageResource(R.drawable.ic_favorite_orange);
-                        holder.check_text.setText("行きたい店を取消");
+                        holder.check_text.setText(getString(R.string.remove_want));
 
                         Util.wantAsync(context, headerTenpoData);
                     } else {
                         holder.check_Image.setImageResource(R.drawable.ic_like_white);
-                        holder.check_text.setText("行きたい店に認定");
+                        holder.check_text.setText(getString(R.string.add_want));
 
                         Util.unwantAsync(context, headerTenpoData);
                     }
@@ -897,12 +879,11 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
                 public void onComplete(RippleView rippleView) {
                     if (!headerTenpoData.getHomepage().equals("none")) {
                         new MaterialDialog.Builder(FlexibleTenpoActivity.this)
-                                .title("その他メニュー")
                                 .items(R.array.list_tenpo_menu)
                                 .itemsCallback(new com.afollestad.materialdialogs.MaterialDialog.ListCallback() {
                                     @Override
                                     public void onSelection(com.afollestad.materialdialogs.MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
-                                        if (charSequence.toString().equals("ホームページを見る")) {
+                                        if (charSequence.toString().equals(getString(R.string.seeHomepage))) {
                                             Uri uri = Uri.parse(headerTenpoData.getHomepage());
                                             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                                             startActivity(intent);
@@ -912,7 +893,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
                                 })
                                 .show();
                     } else {
-                        Toast.makeText(FlexibleTenpoActivity.this, "その他メニューはありません", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(FlexibleTenpoActivity.this, getString(R.string.nothing_etc), Toast.LENGTH_SHORT).show();
                     }
                 }
             });
@@ -1012,12 +993,12 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
             holder.rest_name.setText(user.getRestname());
             //viewHolder.locality.setText(user.getLocality());
 
-            if (!user.getCategory().equals("タグなし")) {
+            if (!user.getCategory().equals(getString(R.string.nothing_tag))) {
                 holder.category.setText(user.getCategory());
             } else {
                 holder.category.setText("　　　　");
             }
-            if (!user.getTag().equals("タグなし")) {
+            if (!user.getTag().equals(getString(R.string.nothing_tag))) {
                 holder.atmosphere.setText(user.getTag());
             } else {
                 holder.atmosphere.setText("　　　　");
@@ -1041,7 +1022,6 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
                 holder.likes_ripple.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Log.e("いいねをクリック", user.getPost_id());
                         user.setGochi_flag(1);
                         user.setGochi_num(currentgoodnum + 1);
 
@@ -1067,20 +1047,20 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
             holder.share_ripple.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (Application_Gocci.getTransfer(context) != null) {
+                    if (Application_Gocci.getShareTransfer() != null) {
                         new BottomSheet.Builder(context, R.style.BottomSheet_StyleDialog).sheet(R.menu.menu_share).listener(new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 switch (which) {
                                     case R.id.facebook_share:
-                                        Toast.makeText(FlexibleTenpoActivity.this, "シェアの準備をしています", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(FlexibleTenpoActivity.this, getString(R.string.preparing_share), Toast.LENGTH_LONG).show();
                                         Util.facebookVideoShare(context, shareDialog, user.getShare());
                                         break;
                                     case R.id.twitter_share:
                                         Util.twitterShare(context, holder.mVideoThumbnail, user.getRestname());
                                         break;
                                     case R.id.other_share:
-                                        Toast.makeText(FlexibleTenpoActivity.this, "シェアの準備をしています", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(FlexibleTenpoActivity.this, getString(R.string.preparing_share), Toast.LENGTH_LONG).show();
                                         Util.instaVideoShare(context, user.getRestname(), user.getShare());
                                         break;
                                     case R.id.close:
@@ -1089,7 +1069,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
                             }
                         }).show();
                     } else {
-                        Toast.makeText(FlexibleTenpoActivity.this, "もうちょっと待ってから押してみましょう", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(FlexibleTenpoActivity.this, getString(R.string.preparing_share_error), Toast.LENGTH_SHORT).show();
                     }
                 }
             });
