@@ -29,8 +29,8 @@ android {
         applicationId 'com.inase.android.gocci'
         minSdkVersion 16
         targetSdkVersion 23
-        versionCode 26
-        versionName '2.1.5'
+        versionCode 27
+        versionName '2.1.7'
         multiDexEnabled true
         resConfigs "en", "ja"
     }
@@ -46,6 +46,13 @@ android {
         javaMaxHeapSize "2g" // ヒープの最大を 2GB にする
     }
     productFlavors {
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
+        // Or, if you prefer, you can continue to check for errors in release builds,
+        // but continue the build even when errors are found:
+        abortOnError false
     }
 }
 
