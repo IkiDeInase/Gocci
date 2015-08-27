@@ -562,7 +562,9 @@ public class down18CameraFragment extends Fragment implements SensorEventListene
         new MaterialDialog.Builder(getActivity())
                 .content(getString(R.string.check_videoposting_cancel))
                 .positiveText(getString(R.string.check_videoposting_yeah))
+                .positiveColorRes(R.color.gocci_header)
                 .negativeText(getString(R.string.check_videoposting_no))
+                .negativeColorRes(R.color.gocci_header)
                 .callback(new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onPositive(MaterialDialog dialog) {
@@ -695,8 +697,10 @@ public class down18CameraFragment extends Fragment implements SensorEventListene
                         materialDialog.getActionButton(DialogAction.POSITIVE).setEnabled(charSequence.length() > 0);
                     }
                 })
+                .widgetColorRes(R.color.gocci_header)
                 .alwaysCallInputCallback()
                 .positiveText(getString(R.string.add_restname_post))
+                .positiveColorRes(R.color.gocci_header)
                 .callback(new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onPositive(MaterialDialog dialog) {

@@ -287,7 +287,9 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
                                 postCommentAsync(CommentActivity.this, Const.getPostCommentAPI(mPost_id, input.toString()));
                             }
                         })
+                        .widgetColorRes(R.color.gocci_header)
                         .positiveText(getString(R.string.post_comment))
+                        .positiveColorRes(R.color.gocci_header)
                         .show();
             }
         });

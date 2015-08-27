@@ -294,7 +294,9 @@ public class SettingActivity extends AppCompatActivity {
                                 return true;
                             }
                         })
+                        .widgetColorRes(R.color.gocci_header)
                         .positiveText(getString(R.string.check_change_yeah))
+                        .positiveColorRes(R.color.gocci_header)
                         .show();
             }
         });
@@ -304,6 +306,7 @@ public class SettingActivity extends AppCompatActivity {
                 new MaterialDialog.Builder(SettingActivity.this)
                         .content(getString(R.string.check_not_implemented_message))
                         .positiveText(getString(R.string.check_not_implemented_yeah))
+                        .positiveColorRes(R.color.gocci_header)
                         .show();
             }
         });
@@ -321,7 +324,9 @@ public class SettingActivity extends AppCompatActivity {
                                 return true; // allow selection
                             }
                         })
+                        .widgetColorRes(R.color.gocci_header)
                         .positiveText(getString(R.string.check_change_yeah))
+                        .positiveColorRes(R.color.gocci_header)
                         .show();
             }
         });
@@ -331,6 +336,7 @@ public class SettingActivity extends AppCompatActivity {
                 new MaterialDialog.Builder(SettingActivity.this)
                         .content(getString(R.string.check_not_implemented_message))
                         .positiveText(getString(R.string.check_not_implemented_yeah))
+                        .positiveColorRes(R.color.gocci_header)
                         .show();
             }
         });
@@ -340,6 +346,7 @@ public class SettingActivity extends AppCompatActivity {
                 new MaterialDialog.Builder(SettingActivity.this)
                         .content(getString(R.string.check_not_implemented_message))
                         .positiveText(getString(R.string.check_not_implemented_yeah))
+                        .positiveColorRes(R.color.gocci_header)
                         .show();
             }
         });
@@ -351,7 +358,9 @@ public class SettingActivity extends AppCompatActivity {
                     new MaterialDialog.Builder(SettingActivity.this)
                             .content(getString(R.string.remove_auth_twitter_message))
                             .positiveText(R.string.remove_auth_yeah)
+                            .positiveColorRes(R.color.gocci_header)
                             .negativeText(R.string.remove_auth_no)
+                            .negativeColorRes(R.color.gocci_header)
                             .callback(new MaterialDialog.ButtonCallback() {
                                 @Override
                                 public void onPositive(MaterialDialog dialog) {
@@ -378,7 +387,9 @@ public class SettingActivity extends AppCompatActivity {
                     new MaterialDialog.Builder(SettingActivity.this)
                             .content(getString(R.string.remove_auth_facebook_message))
                             .positiveText(R.string.remove_auth_yeah)
+                            .positiveColorRes(R.color.gocci_header)
                             .negativeText(R.string.remove_auth_no)
+                            .negativeColorRes(R.color.gocci_header)
                             .callback(new MaterialDialog.ButtonCallback() {
                                 @Override
                                 public void onPositive(MaterialDialog dialog) {
@@ -405,7 +416,9 @@ public class SettingActivity extends AppCompatActivity {
                                 return true;
                             }
                         })
+                        .widgetColorRes(R.color.gocci_header)
                         .positiveText(getString(R.string.check_change_yeah))
+                        .positiveColorRes(R.color.gocci_header)
                         .show();
             }
         });
@@ -439,6 +452,7 @@ public class SettingActivity extends AppCompatActivity {
                 new MaterialDialog.Builder(SettingActivity.this)
                         .content(getString(R.string.check_not_implemented_message))
                         .positiveText(getString(R.string.check_not_implemented_yeah))
+                        .positiveColorRes(R.color.gocci_header)
                         .show();
             }
         });
@@ -453,6 +467,7 @@ public class SettingActivity extends AppCompatActivity {
                 new MaterialDialog.Builder(SettingActivity.this)
                         .content(getString(R.string.check_not_implemented_message))
                         .positiveText(getString(R.string.check_not_implemented_yeah))
+                        .positiveColorRes(R.color.gocci_header)
                         .show();
             }
         });

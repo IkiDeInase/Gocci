@@ -118,7 +118,9 @@ public class SocialAuthenticationFragment extends Fragment {
                     new MaterialDialog.Builder(getActivity()).
                             content(getString(R.string.add_sns_message))
                             .positiveText(getString(R.string.add_sns_yeah))
+                            .positiveColorRes(R.color.gocci_header)
                             .negativeText(getString(R.string.add_sns_no))
+                            .negativeColorRes(R.color.gocci_header)
                             .callback(new MaterialDialog.ButtonCallback() {
                                 @Override
                                 public void onPositive(MaterialDialog dialog) {
@@ -139,7 +141,9 @@ public class SocialAuthenticationFragment extends Fragment {
                     new MaterialDialog.Builder(getActivity()).
                             content(getString(R.string.add_sns_message))
                             .positiveText(getString(R.string.add_sns_yeah))
+                            .positiveColorRes(R.color.gocci_header)
                             .negativeText(getString(R.string.add_sns_no))
+                            .negativeColorRes(R.color.gocci_header)
                             .callback(new MaterialDialog.ButtonCallback() {
                                 @Override
                                 public void onPositive(MaterialDialog dialog) {

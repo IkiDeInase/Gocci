@@ -447,7 +447,9 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
         new MaterialDialog.Builder(this)
                 .content(getString(R.string.check_delete_post))
                 .positiveText(getString(R.string.check_delete_yeah))
+                .positiveColorRes(R.color.gocci_header)
                 .negativeText(getString(R.string.check_delete_no))
+                .negativeColorRes(R.color.gocci_header)
                 .callback(new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onPositive(MaterialDialog dialog) {
@@ -639,6 +641,7 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
                             .title(getString(R.string.change_profile_dialog_title))
                             .customView(R.layout.view_header_myprof_edit, false)
                             .positiveText(getString(R.string.change_profile_dialog_yeah))
+                            .positiveColorRes(R.color.gocci_header)
                             .callback(new MaterialDialog.ButtonCallback() {
                                 @Override
                                 public void onPositive(MaterialDialog dialog) {

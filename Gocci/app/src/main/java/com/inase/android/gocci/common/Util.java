@@ -289,6 +289,7 @@ public class Util {
 
                     }
                 })
+                .widgetColorRes(R.color.gocci_header)
                 .positiveText(context.getString(R.string.advice_yeah))
                 .positiveColorRes(R.color.gocci_header)
                 .callback(new MaterialDialog.ButtonCallback() {
@@ -338,7 +339,9 @@ public class Util {
                 .title(context.getString(R.string.violate_title))
                 .content(context.getString(R.string.violate_message))
                 .positiveText(context.getString(R.string.violate_yeah))
+                .positiveColorRes(R.color.gocci_header)
                 .negativeText(context.getString(R.string.violate_no))
+                .negativeColorRes(R.color.gocci_header)
                 .callback(new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onPositive(MaterialDialog dialog) {

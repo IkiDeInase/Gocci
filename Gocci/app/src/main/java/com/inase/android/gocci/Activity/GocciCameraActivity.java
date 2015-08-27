@@ -100,7 +100,9 @@ public class GocciCameraActivity extends AppCompatActivity {
         new MaterialDialog.Builder(this)
                 .content(getString(R.string.check_videoposting_cancel))
                 .positiveText(getString(R.string.check_videoposting_yeah))
+                .positiveColorRes(R.color.gocci_header)
                 .negativeText(getString(R.string.check_videoposting_no))
+                .negativeColorRes(R.color.gocci_header)
                 .callback(new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onPositive(MaterialDialog dialog) {
