@@ -281,6 +281,17 @@ public class SettingActivity extends AppCompatActivity {
             isFacebookSetting = false;
         }
 
+        if (isFacebookSetting != Application_Gocci.getProvider(this).getLogins().containsKey(Const.ENDPOINT_FACEBOOK)) {
+            logoutFacebook();
+            isFacebookSetting = false;
+            facebookAuth.setText(getString(R.string.no_auth_message));
+        }
+        if (isTwitterSetting != Application_Gocci.getProvider(this).getLogins().containsKey(Const.ENDPOINT_TWITTER)) {
+            logoutTwitter();
+            isTwitterSetting = false;
+            twitterAuth.setText(getString(R.string.no_auth_message));
+        }
+
         localeSetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -532,6 +543,18 @@ public class SettingActivity extends AppCompatActivity {
         }
     }
 
+    private void logoutFacebook() {
+        LoginManager.getInstance().logOut();
+    }
+
+    private void logoutTwitter() {
+        CookieSyncManager.createInstance(SettingActivity.this);
+        CookieManager cookieManager = CookieManager.getInstance();
+        cookieManager.removeSessionCookie();
+        Twitter.getSessionManager().clearActiveSession();
+        Twitter.logOut();
+    }
+
     private void snsUnLinkAsync(final String providerName, String token) {
         Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(this));
         Const.asyncHttpClient.get(this, Const.getAuthSNSUnLinkAPI(providerName, token), new JsonHttpResponseHandler() {
@@ -551,16 +574,12 @@ public class SettingActivity extends AppCompatActivity {
                             case Const.ENDPOINT_TWITTER:
                                 twitterAuth.setText(getString(R.string.no_auth_message));
                                 isTwitterSetting = false;
-                                CookieSyncManager.createInstance(SettingActivity.this);
-                                CookieManager cookieManager = CookieManager.getInstance();
-                                cookieManager.removeSessionCookie();
-                                Twitter.getSessionManager().clearActiveSession();
-                                Twitter.logOut();
+                                logoutTwitter();
                                 break;
                             case Const.ENDPOINT_FACEBOOK:
                                 facebookAuth.setText(getString(R.string.no_auth_message));
                                 isFacebookSetting = false;
-                                LoginManager.getInstance().logOut();
+                                logoutFacebook();
                                 break;
                         }
                     }
