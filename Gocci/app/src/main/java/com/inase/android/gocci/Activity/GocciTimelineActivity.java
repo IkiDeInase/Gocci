@@ -51,6 +51,8 @@ public class GocciTimelineActivity extends AppCompatActivity {
     private TextView notificationNumber;
 
     private FloatingActionButton fab;
+    private FloatingActionButton cameraFab;
+    private FloatingActionButton sortFab;
 
     public static int mShowPosition = 0;
 
@@ -59,6 +61,8 @@ public class GocciTimelineActivity extends AppCompatActivity {
     private static MobileAnalyticsManager analytics;
 
     private CoordinatorLayout coordinatorLayout;
+
+    public boolean fabSelected;
 
     private static Handler sHandler = new Handler() {
         @Override
@@ -161,20 +165,44 @@ public class GocciTimelineActivity extends AppCompatActivity {
 
             @Override
             public void onPageScrollStateChanged(int state) {
-                if (state == 2) fab.hide();
+                if (state == 2){
+                    if (fabSelected) {
+                        Util.rotateToUnSelect(fab);
+                        hideMiniButtons();
+                        fabSelected = !fabSelected;
+                    }
+                    fab.hide();
+                }
                 if (state == 0) fab.show();
             }
         });
 
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
 
-        fab = (FloatingActionButton) findViewById(R.id.toukouButton);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fabButtonClick();
+            }
+        });
+        sortFab = (FloatingActionButton) findViewById(R.id.fab_mini_1);
+        sortFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+        cameraFab = (FloatingActionButton) findViewById(R.id.fab_mini_2);
+        cameraFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(GocciTimelineActivity.this, GocciCameraActivity.class));
             }
         });
+
+        Util.animateOut(sortFab, 0L, null);
+        Util.animateOut(cameraFab, 0L, null);
     }
 
     @Override
@@ -279,5 +307,38 @@ public class GocciTimelineActivity extends AppCompatActivity {
 
     public void onCommentClicked(int post_id) {
         CommentActivity.startCommentActivity(post_id, GocciTimelineActivity.this);
+    }
+
+    public void fabButtonClick() {
+        if (fabSelected) {
+            Util.rotateToUnSelect(fab);
+            hideMiniButtons();
+        } else {
+            Util.rotateToSelect(fab);
+            showMiniButtons();
+        }
+        fab.setPressed(fabSelected);
+        fab.jumpDrawablesToCurrentState();
+        fabSelected = !fabSelected;
+    }
+
+    public void showMiniButtons() {
+        Util.animateInFast(sortFab, null);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Util.animateInFast(cameraFab, null);
+            }
+        }, 20);
+    }
+
+    public void hideMiniButtons() {
+        Util.animateOutFast(cameraFab, null);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Util.animateOutFast(sortFab, null);
+            }
+        }, 20);
     }
 }

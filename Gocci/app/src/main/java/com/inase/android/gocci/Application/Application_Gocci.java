@@ -208,6 +208,7 @@ public class Application_Gocci extends Application {
                     String profile_img = response.getString("profile_img");
 
                     if (code == 200) {
+                        SavedData.setServerPicture(context, profile_img);
                         BusHolder.get().post(new SNSMatchFinishEvent(message, profile_img));
 
                         new AsyncTask<Void, Void, Void>() {

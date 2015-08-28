@@ -191,6 +191,10 @@ public class Const {
                 "&os=android_" + os + "&register_id=" + token;
     }
 
+    public static String getPostSearchUser(String username) {
+        return URL_PREFIX + VERSION_NUMBER + "/mobile/get/user_search/?username=" + username;
+    }
+
     public static final int FLAG_CHANGE_NAME = 0;
     public static final int FLAG_CHANGE_PICTURE = 1;
     public static final int FLAG_CHANGE_BOTH = 2;

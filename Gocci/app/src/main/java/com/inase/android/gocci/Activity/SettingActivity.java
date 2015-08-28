@@ -9,6 +9,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
 import android.util.ArraySet;
 import android.util.Log;
 import android.view.MenuItem;
@@ -267,6 +268,10 @@ public class SettingActivity extends AppCompatActivity {
         TwitterSession session =
                 Twitter.getSessionManager().getActiveSession();
         if (session != null) {
+            TwitterAuthToken authToken = session.getAuthToken();
+            String username = session.getUserName();
+            String profile_img = "http://www.paper-glasses.com/api/twipi/" + username;
+            Application_Gocci.addLogins(SettingActivity.this, "api.twitter.com", authToken.token + ";" + authToken.secret, profile_img);
             twitterAuth.setText(session.getUserName());
             isTwitterSetting = true;
         } else {
@@ -275,21 +280,12 @@ public class SettingActivity extends AppCompatActivity {
 
         Profile profile = Profile.getCurrentProfile();
         if (profile != null) {
+            String profile_img = "https://graph.facebook.com/" + profile.getId() + "/picture";
+            Application_Gocci.addLogins(SettingActivity.this, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), profile_img);
             facebookAuth.setText(profile.getName());
             isFacebookSetting = true;
         } else {
             isFacebookSetting = false;
-        }
-
-        if (isFacebookSetting != Application_Gocci.getProvider(this).getLogins().containsKey(Const.ENDPOINT_FACEBOOK)) {
-            logoutFacebook();
-            isFacebookSetting = false;
-            facebookAuth.setText(getString(R.string.no_auth_message));
-        }
-        if (isTwitterSetting != Application_Gocci.getProvider(this).getLogins().containsKey(Const.ENDPOINT_TWITTER)) {
-            logoutTwitter();
-            isTwitterSetting = false;
-            twitterAuth.setText(getString(R.string.no_auth_message));
         }
 
         localeSetting.setOnClickListener(new View.OnClickListener() {
@@ -345,8 +341,16 @@ public class SettingActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 new MaterialDialog.Builder(SettingActivity.this)
-                        .content(getString(R.string.check_not_implemented_message))
-                        .positiveText(getString(R.string.check_not_implemented_yeah))
+                        .inputType(InputType.TYPE_CLASS_TEXT)
+                        .input(getString(R.string.search_friend_hint), null, false, new MaterialDialog.InputCallback() {
+                            @Override
+                            public void onInput(MaterialDialog dialog, CharSequence input) {
+                                // Do something
+                                Util.searchUserPost(SettingActivity.this, SettingActivity.this, input.toString());
+                            }
+                        })
+                        .widgetColorRes(R.color.gocci_header)
+                        .positiveText(getString(R.string.search_friend_yeah))
                         .positiveColorRes(R.color.gocci_header)
                         .show();
             }

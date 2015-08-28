@@ -1,5 +1,7 @@
 package com.inase.android.gocci.common;
 
+import android.animation.Animator;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -14,11 +16,23 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.view.ViewPropertyAnimatorListener;
+import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.telephony.TelephonyManager;
 import android.text.InputType;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Display;
+import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.view.WindowManager;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.Interpolator;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -29,12 +43,15 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.facebook.share.model.ShareVideo;
 import com.facebook.share.model.ShareVideoContent;
 import com.facebook.share.widget.ShareDialog;
+import com.inase.android.gocci.Activity.FlexibleUserProfActivity;
 import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.data.HeaderData;
 import com.inase.android.gocci.data.PostData;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.nineoldandroids.animation.ObjectAnimator;
+import com.nineoldandroids.animation.PropertyValuesHolder;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
 import org.apache.http.Header;
@@ -56,6 +73,8 @@ public class Util {
 
     private static final String KEY_MESSAGE = "message";
     private static final String KEY_CODE = "code";
+
+    private static final String KEY_USER_ID = "user_id";
 
     /**
      * ファイルの拡張子を返す(ex: hoge.html -> .html)
@@ -281,6 +300,7 @@ public class Util {
     public static void setAdviceDialog(final Context context) {
         new MaterialDialog.Builder(context)
                 .title(context.getString(R.string.advice_title))
+                .titleColorRes(R.color.namegrey)
                 .content(context.getString(R.string.advice_message))
                 .inputType(InputType.TYPE_CLASS_TEXT)
                 .input(null, null, new MaterialDialog.InputCallback() {
@@ -337,6 +357,7 @@ public class Util {
     public static void setViolateDialog(final Context context, final String post_id) {
         new MaterialDialog.Builder(context)
                 .title(context.getString(R.string.violate_title))
+                .titleColorRes(R.color.namegrey)
                 .content(context.getString(R.string.violate_message))
                 .positiveText(context.getString(R.string.violate_yeah))
                 .positiveColorRes(R.color.gocci_header)
@@ -597,5 +618,213 @@ public class Util {
                 Toast.makeText(context, context.getString(R.string.error_share), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    public static void searchUserPost(final Activity activiy, final Context context, final String username) {
+        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
+        Const.asyncHttpClient.get(context, Const.getPostSearchUser(username), new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                try {
+                    String message = response.getString(KEY_MESSAGE);
+                    int code = response.getInt(KEY_CODE);
+                    int user_id = response.getInt(KEY_USER_ID);
+
+                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+
+                    if (code == 200) {
+                        FlexibleUserProfActivity.startUserProfActivity(user_id, username, activiy);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private static final long DEFAULT_DURATION = 200L;
+    private static final String ROTATION = "rotation";
+    private static final Interpolator FAST_OUT_SLOW_IN_INTERPOLATOR = new FastOutSlowInInterpolator();
+
+    public static void rotateToSelect(final FloatingActionButton fab) {
+        rotate(fab, 45f);
+    }
+
+    public static void rotateToUnSelect(final FloatingActionButton fab) {
+        rotate(fab, 0f);
+    }
+
+    private static void rotate(final FloatingActionButton fab, float value) {
+        PropertyValuesHolder holder = PropertyValuesHolder.ofFloat(ROTATION, value);
+        ObjectAnimator animator = ObjectAnimator.ofPropertyValuesHolder(fab, holder).setDuration(150L);
+        animator.setInterpolator(FAST_OUT_SLOW_IN_INTERPOLATOR);
+        animator.start();
+    }
+
+    public static void animateIn(final FloatingActionButton fab) {
+        animateIn(fab, DEFAULT_DURATION, null);
+    }
+
+    public static void animateInFast(final FloatingActionButton fab, final AnimateCallback callback) {
+        animateIn(fab, 100L, callback);
+    }
+
+    public static void animateIn(final FloatingActionButton fab, long duration, final AnimateCallback callback) {
+        fab.setVisibility(View.VISIBLE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            ViewCompat.animate(fab)
+                    .scaleX(1.0F)
+                    .scaleY(1.0F)
+                    .alpha(1.0F)
+                    .setDuration(duration)
+                    .setInterpolator(FAST_OUT_SLOW_IN_INTERPOLATOR)
+                    .withLayer()
+                    .setListener(new ViewPropertyAnimatorListener() {
+                        public void onAnimationStart(View view) {
+                            if (callback != null) callback.onAnimationStart();
+                        }
+
+                        public void onAnimationCancel(View view) {
+                        }
+
+                        public void onAnimationEnd(View view) {
+                            view.setVisibility(View.VISIBLE);
+                            if (callback != null) callback.onAnimationEnd();
+                        }
+                    }).start();
+        } else {
+            Animation anim = AnimationUtils.loadAnimation(fab.getContext(), R.anim.fab_in);
+            anim.setDuration(duration);
+            anim.setInterpolator(FAST_OUT_SLOW_IN_INTERPOLATOR);
+            anim.setAnimationListener(new AnimationListenerAdapter() {
+                public void onAnimationStart(Animation animation) {
+                    if (callback != null) callback.onAnimationStart();
+                }
+
+                public void onAnimationEnd(Animation animation) {
+                    fab.setVisibility(View.VISIBLE);
+                    if (callback != null) callback.onAnimationEnd();
+                }
+            });
+            fab.startAnimation(anim);
+        }
+    }
+
+    public static void animateOut(final FloatingActionButton fab) {
+        animateOut(fab, DEFAULT_DURATION, null);
+    }
+
+    public static void animateOutFast(final FloatingActionButton fab, final AnimateCallback callback) {
+        animateOut(fab, 30L, callback);
+    }
+
+    public static void animateOut(final FloatingActionButton fab, final AnimateCallback callback) {
+        animateOut(fab, DEFAULT_DURATION, callback);
+    }
+
+    public static void animateOut(final FloatingActionButton fab, long duration, final AnimateCallback callback) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            ViewCompat.animate(fab)
+                    .scaleX(0.0F)
+                    .scaleY(0.0F).alpha(0.0F)
+                    .setInterpolator(FAST_OUT_SLOW_IN_INTERPOLATOR)
+                    .setDuration(duration)
+                    .withLayer()
+                    .setListener(new ViewPropertyAnimatorListener() {
+                        public void onAnimationStart(View view) {
+                            if (callback != null) callback.onAnimationStart();
+                        }
+
+                        public void onAnimationCancel(View view) {
+                        }
+
+                        public void onAnimationEnd(View view) {
+                            view.setVisibility(View.INVISIBLE);
+                            if (callback != null) callback.onAnimationEnd();
+                        }
+                    }).start();
+        } else {
+            Animation anim = AnimationUtils.loadAnimation(fab.getContext(), R.anim.fab_out);
+            anim.setInterpolator(FAST_OUT_SLOW_IN_INTERPOLATOR);
+            anim.setDuration(duration);
+            anim.setAnimationListener(new AnimationListenerAdapter() {
+                public void onAnimationStart(Animation animation) {
+                    if (callback != null) callback.onAnimationStart();
+                }
+
+                public void onAnimationEnd(Animation animation) {
+                    fab.setVisibility(View.INVISIBLE);
+                    if (callback != null) callback.onAnimationEnd();
+                }
+            });
+            fab.startAnimation(anim);
+        }
+    }
+
+    public static void moveIn(final FloatingActionButton fab, View view, ViewPropertyAnimatorListener listener) {
+        int marginRight;
+        int marginBottom;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            marginRight = 16;
+            marginBottom = 16;
+        } else {
+            marginRight = 8;
+            marginBottom = 0;
+        }
+        ViewCompat.animate(fab)
+                .translationX(-(view.getWidth() / 2) + (fab.getWidth() / 2) + dpToPx(view.getContext(), marginRight))
+                .translationY(-(view.getHeight() / 2) + (fab.getHeight() / 2) + dpToPx(view.getContext(), marginBottom))
+                .setInterpolator(new AccelerateInterpolator())
+                .setDuration(150L)
+                .withLayer()
+                .setListener(listener)
+                .start();
+    }
+
+    public static void moveOut(final FloatingActionButton fab, ViewPropertyAnimatorListener listener) {
+        ViewCompat.animate(fab)
+                .translationX(0)
+                .translationY(0)
+                .setInterpolator(new AccelerateDecelerateInterpolator())
+                .setDuration(150L)
+                .withLayer()
+                .setListener(listener)
+                .start();
+    }
+
+    public static float dpToPx(Context context, float value) {
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, value,
+                context.getResources().getDisplayMetrics());
+    }
+
+    public interface AnimateCallback {
+        public void onAnimationStart();
+
+        public void onAnimationEnd();
+    }
+
+    public interface RevealCallback {
+        public void onRevealStart();
+
+        public void onRevealEnd();
+    }
+
+    static class AnimationListenerAdapter implements Animation.AnimationListener {
+        AnimationListenerAdapter() {
+        }
+
+        public void onAnimationStart(Animation animation) {
+        }
+
+        public void onAnimationEnd(Animation animation) {
+        }
+
+        public void onAnimationRepeat(Animation animation) {
+        }
     }
 }

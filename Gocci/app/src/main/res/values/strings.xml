@@ -260,4 +260,6 @@
 
     <string name="popup_violate">この投稿を違反報告する</string>
 
+    <string name="search_friend_hint">ユーザー名を入力してください</string>
+    <string name="search_friend_yeah">探す</string>
 </resources>
