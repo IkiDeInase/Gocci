@@ -93,8 +93,6 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
     private boolean isEndScrioll = false;
 
     private FloatingActionButton fab;
-    private FloatingActionButton cameraFab;
-    private FloatingActionButton sortFab;
 
     private VideoPlayer player;
     private boolean playerNeedsPrepare;
@@ -209,8 +207,6 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
         });
 
         fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
-        sortFab = (FloatingActionButton) getActivity().findViewById(R.id.fab_mini_1);
-        cameraFab = (FloatingActionButton) getActivity().findViewById(R.id.fab_mini_2);
 
         appBarLayout = (AppBarLayout) getActivity().findViewById(R.id.appbar);
 
@@ -564,12 +560,6 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
     @Override
     public void onUpOrCancelMotionEvent(ScrollState scrollState) {
         if (scrollState == ScrollState.UP) {
-            GocciTimelineActivity activity = (GocciTimelineActivity) getActivity();
-            if (activity.fabSelected) {
-                Util.rotateToUnSelect(fab);
-                activity.hideMiniButtons();
-                activity.fabSelected = !activity.fabSelected;
-            }
             fab.hide();
         } else if (scrollState == ScrollState.DOWN) {
             fab.show();

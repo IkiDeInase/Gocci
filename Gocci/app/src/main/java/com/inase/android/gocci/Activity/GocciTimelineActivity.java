@@ -7,6 +7,7 @@ import android.os.Message;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -18,6 +19,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
@@ -51,8 +53,6 @@ public class GocciTimelineActivity extends AppCompatActivity {
     private TextView notificationNumber;
 
     private FloatingActionButton fab;
-    private FloatingActionButton cameraFab;
-    private FloatingActionButton sortFab;
 
     public static int mShowPosition = 0;
 
@@ -61,8 +61,6 @@ public class GocciTimelineActivity extends AppCompatActivity {
     private static MobileAnalyticsManager analytics;
 
     private CoordinatorLayout coordinatorLayout;
-
-    public boolean fabSelected;
 
     private static Handler sHandler = new Handler() {
         @Override
@@ -141,16 +139,16 @@ public class GocciTimelineActivity extends AppCompatActivity {
 
         result.setSelection(1);
 
-        FragmentPagerItemAdapter adapter = new FragmentPagerItemAdapter(
+        final FragmentPagerItemAdapter adapter = new FragmentPagerItemAdapter(
                 getSupportFragmentManager(), FragmentPagerItems.with(this)
                 .add(R.string.tab_near, LatestTimelineFragment.class)
                 .add(R.string.tab_follow_cheer, TrendTimelineFragment.class)
                 .create());
 
-        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
+        final ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
         viewPager.setAdapter(adapter);
 
-        SmartTabLayout viewPagerTab = (SmartTabLayout) findViewById(R.id.viewpagertab);
+        final SmartTabLayout viewPagerTab = (SmartTabLayout) findViewById(R.id.viewpagertab);
         viewPagerTab.setViewPager(viewPager);
         viewPagerTab.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -165,14 +163,7 @@ public class GocciTimelineActivity extends AppCompatActivity {
 
             @Override
             public void onPageScrollStateChanged(int state) {
-                if (state == 2){
-                    if (fabSelected) {
-                        Util.rotateToUnSelect(fab);
-                        hideMiniButtons();
-                        fabSelected = !fabSelected;
-                    }
-                    fab.hide();
-                }
+                if (state == 2) fab.hide();
                 if (state == 0) fab.show();
             }
         });
@@ -183,26 +174,18 @@ public class GocciTimelineActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                fabButtonClick();
+                switch (viewPager.getCurrentItem()) {
+                    case 0:
+                        LatestTimelineFragment latestTimelineFragment = (LatestTimelineFragment) adapter.getPage(0);
+                        Toast.makeText(GocciTimelineActivity.this ,"LATEST", Toast.LENGTH_SHORT).show();
+                        break;
+                    case 1:
+                        TrendTimelineFragment trendTimelineFragment = (TrendTimelineFragment) adapter.getPage(1);
+                        Toast.makeText(GocciTimelineActivity.this ,"TREND", Toast.LENGTH_SHORT).show();
+                        break;
+                }
             }
         });
-        sortFab = (FloatingActionButton) findViewById(R.id.fab_mini_1);
-        sortFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-        cameraFab = (FloatingActionButton) findViewById(R.id.fab_mini_2);
-        cameraFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(GocciTimelineActivity.this, GocciCameraActivity.class));
-            }
-        });
-
-        Util.animateOut(sortFab, 0L, null);
-        Util.animateOut(cameraFab, 0L, null);
     }
 
     @Override
@@ -246,6 +229,7 @@ public class GocciTimelineActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.bell_notification, menu);
         // お知らせ未読件数バッジ表示
         MenuItem item = menu.findItem(R.id.badge);
+        MenuItem cameraitem = menu.findItem(R.id.camera);
         MenuItemCompat.setActionView(item, R.layout.toolbar_notification_icon);
         View view = MenuItemCompat.getActionView(item);
         notificationNumber = (TextView) view.findViewById(R.id.notification_number);
@@ -284,6 +268,14 @@ public class GocciTimelineActivity extends AppCompatActivity {
                 ToukouPopup.showLikeQuickAction(window, notification, v, GocciTimelineActivity.this.getWindowManager(), 0, 0);
             }
         });
+
+        cameraitem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                startActivity(new Intent(GocciTimelineActivity.this, GocciCameraActivity.class));
+                return false;
+            }
+        });
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -307,38 +299,5 @@ public class GocciTimelineActivity extends AppCompatActivity {
 
     public void onCommentClicked(int post_id) {
         CommentActivity.startCommentActivity(post_id, GocciTimelineActivity.this);
-    }
-
-    public void fabButtonClick() {
-        if (fabSelected) {
-            Util.rotateToUnSelect(fab);
-            hideMiniButtons();
-        } else {
-            Util.rotateToSelect(fab);
-            showMiniButtons();
-        }
-        fab.setPressed(fabSelected);
-        fab.jumpDrawablesToCurrentState();
-        fabSelected = !fabSelected;
-    }
-
-    public void showMiniButtons() {
-        Util.animateInFast(sortFab, null);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Util.animateInFast(cameraFab, null);
-            }
-        }, 20);
-    }
-
-    public void hideMiniButtons() {
-        Util.animateOutFast(cameraFab, null);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Util.animateOutFast(sortFab, null);
-            }
-        }, 20);
     }
 }

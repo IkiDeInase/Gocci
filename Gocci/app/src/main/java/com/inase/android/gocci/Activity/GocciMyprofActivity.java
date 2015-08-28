@@ -292,6 +292,7 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
         getMenuInflater().inflate(R.menu.bell_notification, menu);
         // お知らせ未読件数バッジ表示
         MenuItem item = menu.findItem(R.id.badge);
+        MenuItem cameraitem = menu.findItem(R.id.camera);
         MenuItemCompat.setActionView(item, R.layout.toolbar_notification_icon);
         View view = MenuItemCompat.getActionView(item);
         notificationNumber = (TextView) view.findViewById(R.id.notification_number);
@@ -331,6 +332,14 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
                 int[] location = new int[2];
                 v.getLocationOnScreen(location);
                 ToukouPopup.showLikeQuickAction(window, notification, v, GocciMyprofActivity.this.getWindowManager(), 0, 0);
+            }
+        });
+
+        cameraitem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                startActivity(new Intent(GocciMyprofActivity.this, GocciCameraActivity.class));
+                return false;
             }
         });
         return super.onCreateOptionsMenu(menu);
