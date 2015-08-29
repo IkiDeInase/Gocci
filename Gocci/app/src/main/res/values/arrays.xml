@@ -18,6 +18,19 @@
         <item>@string/sonota</item>
     </array>
 
+    <array name="list_value">
+        <item>@string/value750</item>
+        <item>@string/value1500</item>
+        <item>@string/value3000</item>
+        <item>@string/valueOver</item>
+    </array>
+
+    <array name="list_sort">
+        <item>@string/line_latest</item>
+        <item>@string/line_gochi</item>
+        <item>@string/line_near</item>
+    </array>
+
     <array name="list_mood">
         <item>@string/nigi</item>
         <item>@string/yutta</item>

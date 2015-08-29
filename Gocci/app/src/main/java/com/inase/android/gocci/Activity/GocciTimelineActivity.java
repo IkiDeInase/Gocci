@@ -11,18 +11,21 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
+import com.andexert.library.RippleView;
 import com.inase.android.gocci.Base.ToukouPopup;
 import com.inase.android.gocci.Event.BusHolder;
 import com.inase.android.gocci.Event.NotificationNumberEvent;
@@ -35,16 +38,19 @@ import com.inase.android.gocci.View.NotificationListView;
 import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;
 import com.inase.android.gocci.common.Util;
+import com.konifar.fab_transformation.FabTransformation;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.mikepenz.materialize.color.Material;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
 import com.squareup.otto.Subscribe;
+import com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner;
 
 public class GocciTimelineActivity extends AppCompatActivity {
 
@@ -61,6 +67,15 @@ public class GocciTimelineActivity extends AppCompatActivity {
     private static MobileAnalyticsManager analytics;
 
     private CoordinatorLayout coordinatorLayout;
+
+    private CardView sheet;
+    private View overlay;
+
+    private MaterialBetterSpinner category_spinner;
+    private MaterialBetterSpinner value_spinner;
+    private MaterialBetterSpinner mood_spinner;
+    private MaterialBetterSpinner sort_spinner;
+    private RippleView filter_ripple;
 
     private static Handler sHandler = new Handler() {
         @Override
@@ -174,18 +189,57 @@ public class GocciTimelineActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                switch (viewPager.getCurrentItem()) {
-                    case 0:
-                        LatestTimelineFragment latestTimelineFragment = (LatestTimelineFragment) adapter.getPage(0);
-                        Toast.makeText(GocciTimelineActivity.this ,"LATEST", Toast.LENGTH_SHORT).show();
-                        break;
-                    case 1:
-                        TrendTimelineFragment trendTimelineFragment = (TrendTimelineFragment) adapter.getPage(1);
-                        Toast.makeText(GocciTimelineActivity.this ,"TREND", Toast.LENGTH_SHORT).show();
-                        break;
+//                switch (viewPager.getCurrentItem()) {
+//                    case 0:
+//                        LatestTimelineFragment latestTimelineFragment = (LatestTimelineFragment) adapter.getPage(0);
+//                        Toast.makeText(GocciTimelineActivity.this ,"LATEST", Toast.LENGTH_SHORT).show();
+//                        break;
+//                    case 1:
+//                        TrendTimelineFragment trendTimelineFragment = (TrendTimelineFragment) adapter.getPage(1);
+//                        Toast.makeText(GocciTimelineActivity.this ,"TREND", Toast.LENGTH_SHORT).show();
+//                        break;
+//                }
+                if (fab.getVisibility() == View.VISIBLE) {
+                    FabTransformation.with(fab).setOverlay(overlay).transformTo(sheet);
                 }
             }
         });
+
+        sheet = (CardView) findViewById(R.id.sheet);
+        overlay = (View) findViewById(R.id.overlay);
+
+        overlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (fab.getVisibility() != View.VISIBLE) {
+                    FabTransformation.with(fab).setOverlay(overlay).transformFrom(sheet);
+                }
+            }
+        });
+
+        category_spinner = (MaterialBetterSpinner) findViewById(R.id.category_spinner);
+        value_spinner = (MaterialBetterSpinner) findViewById(R.id.value_spinner);
+        mood_spinner = (MaterialBetterSpinner) findViewById(R.id.mood_spinner);
+        sort_spinner = (MaterialBetterSpinner) findViewById(R.id.sort_spinner);
+        filter_ripple = (RippleView) findViewById(R.id.filter_Ripple);
+
+        String[] CATEGORY = getResources().getStringArray(R.array.list_category);
+        String[] VALUE = getResources().getStringArray(R.array.list_value);
+        String[] MOOD = getResources().getStringArray(R.array.list_mood);
+        String[] SORT = getResources().getStringArray(R.array.list_sort);
+
+        ArrayAdapter<String> categoryAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_dropdown_item_1line, CATEGORY);
+        ArrayAdapter<String> valueAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_dropdown_item_1line, VALUE);
+        ArrayAdapter<String> moodAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_dropdown_item_1line, MOOD);
+        ArrayAdapter<String> sortAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_dropdown_item_1line, SORT);
+        category_spinner.setAdapter(categoryAdapter);
+        value_spinner.setAdapter(valueAdapter);
+        mood_spinner.setAdapter(moodAdapter);
+        sort_spinner.setAdapter(sortAdapter);
     }
 
     @Override
@@ -283,6 +337,8 @@ public class GocciTimelineActivity extends AppCompatActivity {
     public void onBackPressed() {
         if (result != null && result.isDrawerOpen()) {
             result.closeDrawer();
+        } else if (fab.getVisibility() != View.VISIBLE) {
+            FabTransformation.with(fab).setOverlay(overlay).transformFrom(sheet);
         } else {
             super.onBackPressed();
             overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
