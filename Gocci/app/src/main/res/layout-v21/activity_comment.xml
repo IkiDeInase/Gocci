@@ -44,7 +44,7 @@
         app:layout_anchor="@id/coordinator_layout"
         app:layout_anchorGravity="bottom|right"
         android:layout_margin="16dp"
-        android:src="@drawable/ic_comment_white_36dp"
+        android:src="@drawable/ic_send_white"
         app:backgroundTint="@color/fab" />
 
 </android.support.design.widget.CoordinatorLayout>

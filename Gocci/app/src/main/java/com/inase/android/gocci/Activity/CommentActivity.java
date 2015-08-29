@@ -24,7 +24,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -55,6 +58,7 @@ import com.inase.android.gocci.View.DrawerProfHeader;
 import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;
 import com.inase.android.gocci.common.Util;
+import com.inase.android.gocci.data.CommentUserData;
 import com.inase.android.gocci.data.HeaderData;
 import com.inase.android.gocci.data.PostData;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -76,6 +80,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -416,7 +421,10 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
 
                     for (int i = 0; i < array.length(); i++) {
                         JSONObject jsonObject = array.getJSONObject(i);
-                        mCommentusers.add(HeaderData.createCommentHeaderData(jsonObject));
+                        String comment = jsonObject.getString("comment");
+                        if (!comment.equals("none")) {
+                            mCommentusers.add(HeaderData.createCommentHeaderData(jsonObject));
+                        }
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -456,7 +464,10 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
 
                     for (int i = 0; i < array.length(); i++) {
                         JSONObject jsonObject = array.getJSONObject(i);
-                        mCommentusers.add(HeaderData.createCommentHeaderData(jsonObject));
+                        String comment = jsonObject.getString("comment");
+                        if (!comment.equals("none")) {
+                            mCommentusers.add(HeaderData.createCommentHeaderData(jsonObject));
+                        }
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -505,7 +516,10 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
 
                             for (int i = 0; i < array.length(); i++) {
                                 JSONObject jsonObject = array.getJSONObject(i);
-                                mCommentusers.add(HeaderData.createCommentHeaderData(jsonObject));
+                                String comment = jsonObject.getString("comment");
+                                if (!comment.equals("none")) {
+                                    mCommentusers.add(HeaderData.createCommentHeaderData(jsonObject));
+                                }
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -673,6 +687,8 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
         private TextView user_name;
         private TextView date_time;
         private TextView usercomment;
+        private LinearLayout re_user;
+        private ImageButton replyButton;
 
         public CommentViewHolder(View view) {
             super(view);
@@ -680,6 +696,8 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
             user_name = (TextView) view.findViewById(R.id.user_name);
             date_time = (TextView) view.findViewById(R.id.date_time);
             usercomment = (TextView) view.findViewById(R.id.usercomment);
+            re_user = (LinearLayout) view.findViewById(R.id.re_user);
+            replyButton = (ImageButton) view.findViewById(R.id.replyButton);
         }
     }
 
@@ -914,6 +932,55 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
                     FlexibleUserProfActivity.startUserProfActivity(users.getComment_user_id(), users.getUsername(), CommentActivity.this);
                 }
             });
+
+            holder.replyButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //Toast.makeText(context, Arrays.asList(users.getComment_user_data()).toString(), Toast.LENGTH_SHORT).show();
+                    final StringBuilder user_name = new StringBuilder();
+                    final StringBuilder user_id = new StringBuilder();
+                    user_name.append("@" + users.getUsername() + " ");
+                    user_id.append(users.getUser_id());
+                    for (CommentUserData data : users.getComment_user_data()) {
+                        user_name.append("@" + data.getUserName() + " ");
+                        user_id.append("," + data.getUser_id());
+                    }
+                    new MaterialDialog.Builder(CommentActivity.this)
+                            .title(getString(R.string.comment))
+                            .titleColorRes(R.color.namegrey)
+                            .inputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_IME_MULTI_LINE)
+                            .inputMaxLength(140)
+                            .input(null, user_name.toString(), false, new MaterialDialog.InputCallback() {
+                                @Override
+                                public void onInput(MaterialDialog dialog, CharSequence input) {
+                                    // Do something
+                                    String comment = input.toString().replace(user_name.toString(), "");
+                                    postCommentAsync(CommentActivity.this, Const.getPostCommentWithNoticeAPI(mPost_id, comment, user_id.toString()));
+                                }
+                            })
+                            .widgetColorRes(R.color.gocci_header)
+                            .positiveText(getString(R.string.post_comment))
+                            .positiveColorRes(R.color.gocci_header)
+                            .show();
+                }
+            });
+
+            if (!users.getComment_user_data().isEmpty()) {
+                for (final CommentUserData data : users.getComment_user_data()) {
+                    TextView userText = new TextView(context);
+                    userText.setText(" @" + data.getUserName());
+                    userText.setSingleLine();
+                    userText.setTextSize(12);
+                    userText.setTextColor(getResources().getColor(R.color.gocci_header));
+                    userText.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            FlexibleUserProfActivity.startUserProfActivity(data.getUser_id(), data.getUserName(), CommentActivity.this);
+                        }
+                    });
+                    holder.re_user.addView(userText, LinearLayout.LayoutParams.WRAP_CONTENT);
+                }
+            }
         }
 
         @Override

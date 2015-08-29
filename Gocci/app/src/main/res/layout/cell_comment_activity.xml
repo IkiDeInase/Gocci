@@ -25,6 +25,17 @@
         android:layout_toRightOf="@+id/commentUserImage"
         android:layout_marginTop="12dp" />
 
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/re_user"
+        android:layout_toRightOf="@+id/user_name"
+        android:layout_toLeftOf="@+id/date_time"
+        android:layout_alignTop="@+id/user_name">
+
+        </LinearLayout>
+
     <TextView
         android:id="@+id/date_time"
         android:layout_width="wrap_content"
@@ -37,7 +48,24 @@
         android:layout_alignParentRight="true"
         android:layout_marginRight="12dp" />
 
-    <TextView
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/horizon_bar"
+        android:layout_toRightOf="@+id/commentUserImage"
+        android:layout_below="@+id/user_name"
+        android:layout_alignRight="@+id/date_time">
+
+        <ImageButton
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:id="@+id/replyButton"
+            android:background="@drawable/ic_send_grey600_36dp"
+            android:layout_marginRight="4dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true" />
+
+        <TextView
         android:id="@+id/usercomment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -45,9 +73,10 @@
         android:text="@string/comment"
         android:textColor="@color/namegrey"
         android:textSize="@dimen/small_text"
-        android:layout_toRightOf="@+id/commentUserImage"
-        android:layout_below="@+id/user_name"
-        android:layout_toLeftOf="@+id/date_time" />
+            android:layout_toLeftOf="@+id/replyButton"
+            android:layout_marginRight="16dp" />
+
+    </RelativeLayout>
 
     <View
         android:layout_width="match_parent"
@@ -56,6 +85,7 @@
         android:layout_marginRight="12dp"
         android:background="#c5c6c9"
         android:layout_marginTop="8dp"
-        android:layout_below="@+id/usercomment" />
+        android:layout_below="@+id/horizon_bar"
+        android:id="@+id/footer" />
 
 </RelativeLayout>

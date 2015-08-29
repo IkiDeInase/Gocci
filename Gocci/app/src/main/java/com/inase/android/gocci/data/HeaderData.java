@@ -1,7 +1,12 @@
 package com.inase.android.gocci.data;
 
+import com.google.gson.internal.bind.ArrayTypeAdapter;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 /**
  * Created by kinagafuji on 15/07/06.
@@ -14,6 +19,7 @@ public class HeaderData {
     private static final String TAG_PROFILE_IMG = "profile_img";
     private static final String TAG_COMMENT = "comment";
     private static final String TAG_COMMENT_DATE = "comment_date";
+    private static final String TAG_RE_USER_ID = "re_user_id";
 
     //追加店舗ページ
     private static final String TAG_REST_ID = "rest_id";
@@ -51,6 +57,7 @@ public class HeaderData {
     private String profile_img;
     private String comment;
     private String comment_date;
+    private ArrayList<CommentUserData> comment_user_data = new ArrayList<>();
 
     //店舗ページ
     private int rest_id;
@@ -88,12 +95,13 @@ public class HeaderData {
     }
 
     //コメント
-    public HeaderData(int comment_user_id, String username, String profile_img, String comment, String comment_date) {
+    public HeaderData(int comment_user_id, String username, String profile_img, String comment, String comment_date, ArrayList<CommentUserData> comment_user_data) {
         this.comment_user_id = comment_user_id;
         this.username = username;
         this.profile_img = profile_img;
         this.comment = comment;
         this.comment_date = comment_date;
+        this.comment_user_data = comment_user_data;
     }
 
     //店舗
@@ -143,8 +151,14 @@ public class HeaderData {
             String profile_img = jsonObject.getString(TAG_PROFILE_IMG);
             String comment = jsonObject.getString(TAG_COMMENT);
             String comment_date = jsonObject.getString(TAG_COMMENT_DATE);
+            ArrayList<CommentUserData> commentUserDatas = new ArrayList<>();
+            JSONArray re_user_id_array = jsonObject.getJSONArray(TAG_RE_USER_ID);
+            for (int i = 0; i < re_user_id_array.length(); i++) {
+                JSONObject re_user_id_obj = re_user_id_array.getJSONObject(i);
+                commentUserDatas.add(CommentUserData.createCommentUserData(re_user_id_obj));
+            }
 
-            return new HeaderData(comment_user_id, username, profile_img, comment, comment_date);
+            return new HeaderData(comment_user_id, username, profile_img, comment, comment_date, commentUserDatas);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -419,5 +433,9 @@ public class HeaderData {
 
     public void setNotice_date(String notice_date) {
         this.notice_date = notice_date;
+    }
+
+    public ArrayList<CommentUserData> getComment_user_data() {
+        return comment_user_data;
     }
 }
