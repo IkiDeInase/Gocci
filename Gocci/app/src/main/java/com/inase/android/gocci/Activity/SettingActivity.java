@@ -311,10 +311,30 @@ public class SettingActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 new MaterialDialog.Builder(SettingActivity.this)
-                        .content(getString(R.string.check_not_implemented_message))
-                        .positiveText(getString(R.string.check_not_implemented_yeah))
+                        .content(getString(R.string.password_message))
+                        .contentColorRes(R.color.namegrey)
+                        .inputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD)
+                        .input(null, null, new MaterialDialog.InputCallback() {
+                            @Override
+                            public void onInput(MaterialDialog materialDialog, CharSequence charSequence) {
+
+                            }
+                        })
+                        .widgetColorRes(R.color.gocci_header)
+                        .positiveText(getString(R.string.password_yeah))
                         .positiveColorRes(R.color.gocci_header)
-                        .show();
+                        .callback(new MaterialDialog.ButtonCallback() {
+                            @Override
+                            public void onPositive(MaterialDialog dialog) {
+                                super.onPositive(dialog);
+                                String password = dialog.getInputEditText().getText().toString();
+                                if (!password.isEmpty()) {
+                                    Util.passwordAsync(SettingActivity.this, password);
+                                } else {
+                                    Toast.makeText(SettingActivity.this, getString(R.string.cheat_input_password), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        }).show();
             }
         });
         notificationSetting.setOnClickListener(new View.OnClickListener() {

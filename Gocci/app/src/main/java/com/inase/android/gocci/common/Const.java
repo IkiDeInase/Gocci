@@ -52,7 +52,7 @@ public class Const {
     }
 
     public static String getAuthSNSLoginAPI(String identity_id, String os, String model, String register_id) {
-        return URL_PREFIX + VERSION_NUMBER + "/mobile/auth/login/?identity_id=" + identity_id + "&os=android_" + os +
+        return URL_PREFIX + VERSION_NUMBER + "/mobile/auth/sns_login/?identity_id=" + identity_id + "&os=android_" + os +
                 "&model=" + model + "&register_id=" + register_id;
     }
 
@@ -81,6 +81,11 @@ public class Const {
         return URL_PREFIX + VERSION_NUMBER + "/mobile/auth/sns_conversion/?profile_img=" + profile_img +
                 "&token=" + token + "&provider=" + providerName + "&os=android_" + os +
                 "&model=" + model + "&register_id=" + register_id;
+    }
+
+    public static String getAuthUsernamePasswordAPI(String username, String password, String os, String model, String register_id) {
+        return URL_PREFIX + VERSION_NUMBER + "/mobile/auth/pass_login/?username=" + username +
+                "&pass=" + password + "&os=android_" + os + "&model=" + model + "&register_id=" + register_id;
     }
 
     public static String getTimelineAPI() {
@@ -173,6 +178,14 @@ public class Const {
 
     public static String getPostCommentAPI(String post_id, String comment) {
         return URL_PREFIX + VERSION_NUMBER + "/mobile/post/comment/?post_id=" + post_id + "&comment=" + comment;
+    }
+
+    public static String getPostCommentWithNoticeAPI(String post_id, String comment, String re_user_id) {
+        return URL_PREFIX + VERSION_NUMBER + "/mobile/post/comment/?post_id=" + post_id + "&comment=" + comment + "&re_user_id=" + re_user_id;
+    }
+
+    public static String getPostPasswordAPI(String password) {
+        return URL_PREFIX + VERSION_NUMBER + "/mobile/post/password/?pass=" + password;
     }
 
     public static String getPostMovieAPI(int rest_id, String movie, int category_id, int tag_id, String value, String memo, int cheer_flag) {

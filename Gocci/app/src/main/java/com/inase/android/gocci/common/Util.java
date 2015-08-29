@@ -1,6 +1,5 @@
 package com.inase.android.gocci.common;
 
-import android.animation.Animator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -22,11 +21,9 @@ import android.support.v4.view.ViewPropertyAnimatorListener;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.telephony.TelephonyManager;
 import android.text.InputType;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
-import android.view.ViewAnimationUtils;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
@@ -526,6 +523,27 @@ public class Util {
                     } else {
                         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                     }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public static void passwordAsync(final Context context, final String password) {
+        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
+        Const.asyncHttpClient.get(context, Const.getPostPasswordAPI(password), new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                try {
+                    String message = response.getString(KEY_MESSAGE);
+                    int code = response.getInt(KEY_CODE);
+                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

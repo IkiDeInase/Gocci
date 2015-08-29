@@ -96,8 +96,7 @@
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="12dp"
                 android:textColor="@color/namegrey"
-                android:textSize="16dp"
-                android:visibility="gone" />
+                android:textSize="16dp" />
 
             <View
                 android:layout_width="match_parent"
@@ -106,8 +105,7 @@
                 android:layout_below="@+id/account_password"
                 android:background="#e0e0e0"
                 android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:visibility="gone" />
+                android:layout_marginRight="16dp" />
 
             <TextView
                 android:layout_width="match_parent"

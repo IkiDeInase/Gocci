@@ -197,7 +197,14 @@ public class LoginSessionActivity extends AppCompatActivity {
         loginRipple.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(LoginSessionActivity.this, getString(R.string.error_login), Toast.LENGTH_SHORT).show();
+                usernameEdit.setError("");
+                passwordEdit.setError("");
+                if (usernameEdit.getEditText().getText().toString().isEmpty() || passwordEdit.getEditText().getText().toString().isEmpty()) {
+                    usernameEdit.setError(getString(R.string.cheat_input));
+                    passwordEdit.setError(getString(R.string.cheat_input));
+                } else {
+                    passwordAsync(LoginSessionActivity.this, usernameEdit.getEditText().getText().toString(), passwordEdit.getEditText().getText().toString());
+                }
             }
         });
     }
@@ -272,6 +279,61 @@ public class LoginSessionActivity extends AppCompatActivity {
             @Override
             public void onFinish() {
                 //progress.setVisibility(View.INVISIBLE);
+            }
+        });
+    }
+
+    private void passwordAsync(final Context context, String username, String password) {
+        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
+        Const.asyncHttpClient.get(context, Const.getAuthUsernamePasswordAPI(username, password, Build.VERSION.RELEASE, Build.MODEL, SavedData.getRegId(context)), new JsonHttpResponseHandler() {
+            @Override
+            public void onStart() {
+                progress.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                try {
+                    if (response.has("message")) {
+                        int code = response.getInt("code");
+                        String user_id = response.getString("user_id");
+                        String username = response.getString("username");
+                        String profile_img = response.getString("profile_img");
+                        String identity_id = response.getString("identity_id");
+                        int badge_num = response.getInt("badge_num");
+                        String message = response.getString("message");
+                        String token = response.getString("token");
+
+                        if (code == 200) {
+                            Application_Gocci.GuestInit(context, identity_id, token, user_id);
+                            SavedData.setWelcome(context, username, profile_img, user_id, identity_id, badge_num);
+                            //ノーマル
+                            SavedData.setFlag(LoginSessionActivity.this, 0);
+
+                            Intent intent = new Intent(context, GocciTimelineActivity.class);
+                            startActivity(intent);
+                            overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+                            finish();
+                        } else {
+                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(context, getString(R.string.error_login), Toast.LENGTH_SHORT).show();
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Toast.makeText(LoginSessionActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFinish() {
+                progress.setVisibility(View.GONE);
             }
         });
     }
