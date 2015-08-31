@@ -940,7 +940,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
                     final StringBuilder user_name = new StringBuilder();
                     final StringBuilder user_id = new StringBuilder();
                     user_name.append("@" + users.getUsername() + " ");
-                    user_id.append(users.getUser_id());
+                    user_id.append(users.getComment_user_id());
                     for (CommentUserData data : users.getComment_user_data()) {
                         user_name.append("@" + data.getUserName() + " ");
                         user_id.append("," + data.getUser_id());

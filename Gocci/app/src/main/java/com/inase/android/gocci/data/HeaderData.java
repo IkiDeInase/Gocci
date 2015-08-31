@@ -19,7 +19,7 @@ public class HeaderData {
     private static final String TAG_PROFILE_IMG = "profile_img";
     private static final String TAG_COMMENT = "comment";
     private static final String TAG_COMMENT_DATE = "comment_date";
-    private static final String TAG_RE_USER_ID = "re_user_id";
+    private static final String TAG_RE_USER = "re_user";
 
     //追加店舗ページ
     private static final String TAG_REST_ID = "rest_id";
@@ -152,10 +152,10 @@ public class HeaderData {
             String comment = jsonObject.getString(TAG_COMMENT);
             String comment_date = jsonObject.getString(TAG_COMMENT_DATE);
             ArrayList<CommentUserData> commentUserDatas = new ArrayList<>();
-            JSONArray re_user_id_array = jsonObject.getJSONArray(TAG_RE_USER_ID);
-            for (int i = 0; i < re_user_id_array.length(); i++) {
-                JSONObject re_user_id_obj = re_user_id_array.getJSONObject(i);
-                commentUserDatas.add(CommentUserData.createCommentUserData(re_user_id_obj));
+            JSONArray re_user_array = jsonObject.getJSONArray(TAG_RE_USER);
+            for (int i = 0; i < re_user_array.length(); i++) {
+                JSONObject re_user_obj = re_user_array.getJSONObject(i);
+                commentUserDatas.add(CommentUserData.createCommentUserData(re_user_obj));
             }
 
             return new HeaderData(comment_user_id, username, profile_img, comment, comment_date, commentUserDatas);
