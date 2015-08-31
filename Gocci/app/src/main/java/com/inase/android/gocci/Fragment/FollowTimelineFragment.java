@@ -287,8 +287,10 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
                         player.getPlayerControl().start();
                     }
                 } else {
-                    if (Util.isMovieAutoPlay(getActivity())) {
-                        preparePlayer(getPlayingViewHolder(), getVideoPath());
+                    if (!mTimelineusers.isEmpty()) {
+                        if (Util.isMovieAutoPlay(getActivity())) {
+                            preparePlayer(getPlayingViewHolder(), getVideoPath());
+                        }
                     }
                 }
                 break;

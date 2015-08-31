@@ -10,8 +10,8 @@
     <string name="lat">経度</string>
     <string name="lon">緯度</string>
 
-    <string name="tab_near">全体</string>
-    <string name="tab_follow_cheer">人気</string>
+    <string name="tab_latest">全体</string>
+    <string name="tab_follow">フォロー</string>
 
     <string name="timeline">タイムライン</string>
     <string name="mypage">マイページ</string>
@@ -57,12 +57,14 @@
     <string name="category">カテゴリー</string>
     <string name="atmosphere">雰囲気</string>
     <string name="value">価格</string>
+    <string name="value_property">価格帯</string>
     <string name="value_strong">価格(数字のみ)</string>
     <string name="distance">距離</string>
     <string name="email">メールアドレス</string>
     <string name="password">パスワード</string>
     <string name="want">行きたい店に認定</string>
     <string name="please">希望のユーザー名</string>
+    <string name="sort">並び替え</string>
 
     <string name="japanese">日本語</string>
     <string name="english">英語</string>
@@ -142,6 +144,10 @@
 
     <string name="check_change_yeah">変更する</string>
 
+    <string name="cheat_input">入力が不正なようです</string>
+
+    <string name="cheat_input_password">希望のパスワードを入力してください</string>
+
     <string name="check_not_implemented_message">実装までしばらくお待ちください。</string>
     <string name="check_not_implemented_yeah">閉じる</string>
 
@@ -157,10 +163,12 @@
 
     <string name="login">ログイン</string>
 
+    <string name="filter">絞り込む</string>
+
     <string name="maplog">マップログ</string>
 
-    <string name="auth_twitter_message">ツイッター連携する</string>
-    <string name="auth_facebook_message">フェイスブック連携する</string>
+    <string name="auth_twitter_message">Twitter 連携する</string>
+    <string name="auth_facebook_message">Facebook 連携する</string>
     <string name="auth_skip">連携せずに始める</string>
     <string name="remove_auth_twitter_message">Twitterの連携を解除してもいいですか？</string>
     <string name="remove_auth_facebook_message">Facebookの連携を解除してもいいですか？</string>
@@ -176,7 +184,7 @@
     <string name="policy">プライバシーポリシー</string>
     <string name="source">ソースライブラリ</string>
 
-    <string name="twitter_login_text">twitterアカウントでサインイン</string>
+    <string name="twitter_login_text">Twitter アカウントでサインイン</string>
 
     <string name="camera_title">Gocciカメラ</string>
     <string name="camera_message">このカメラはボタンをタップしている間だけ録画されます。縦向きで投稿するようにしてください！</string>
@@ -211,12 +219,12 @@
 
     <string name="login_username_and_password">ユーザー名とパスワードでログイン</string>
     <string name="login_sns">SNS でログイン</string>
-    <string name="login_with_twitter">ツイッターでログイン</string>
-    <string name="login_with_facebook">フェイスブックでログイン</string>
+    <string name="login_with_twitter">Twitter でログイン</string>
+    <string name="login_with_facebook">Facebook でログイン</string>
 
     <string name="setting_account">アカウント</string>
     <string name="setting_account_language">言語</string>
-    <string name="setting_account_password">パスワードを設定する</string>
+    <string name="setting_account_password">パスワードを設定・変更する</string>
     <string name="setting_account_notification">通知</string>
     <string name="setting_friend">友だち</string>
     <string name="setting_friend_search">友だちを探す</string>
@@ -253,11 +261,29 @@
     <string name="notes2">及び</string>
     <string name="notes3">に同意するものとします。</string>
 
-    <string name="share_facebook">フェイスブック シェアする</string>
-    <string name="share_twitter">ツイッター シェアする</string>
-    <string name="share_instagram">インスタグラム シェアする</string>
+    <string name="share_facebook">Facebook シェアする</string>
+    <string name="share_twitter">Twitter シェアする</string>
+    <string name="share_instagram">Instagram シェアする</string>
     <string name="close">閉じる</string>
 
     <string name="popup_violate">この投稿を違反報告する</string>
 
+    <string name="search_friend_hint">ユーザー名を入力してください</string>
+    <string name="search_friend_yeah">探す</string>
+
+    <string name="password_message">希望のパスワードを入力してください</string>
+    <string name="password_yeah">設定する</string>
+
+    <string name="no_tag">タグなし</string>
+
+    <string name="cheap">格安</string>
+    <string name="normal">普通</string>
+    <string name="pre_rich">ちょいリッチ</string>
+    <string name="rich">リッチ</string>
+
+    <string name="line_latest">最新順</string>
+    <string name="line_gochi">Gochi順</string>
+    <string name="line_near">近い順</string>
+
+    <string name="login_error_pass">ユーザー名またはパスワードが正しくありません</string>
 </resources>

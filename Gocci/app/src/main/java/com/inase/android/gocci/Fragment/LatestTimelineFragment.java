@@ -12,7 +12,6 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,7 +47,6 @@ import com.inase.android.gocci.common.SavedData;
 import com.inase.android.gocci.common.Util;
 import com.inase.android.gocci.data.PostData;
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.pnikosis.materialishprogress.ProgressWheel;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
@@ -292,8 +290,10 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
                         player.getPlayerControl().start();
                     }
                 } else {
-                    if (Util.isMovieAutoPlay(getActivity())) {
-                        preparePlayer(getPlayingViewHolder(), getVideoPath());
+                    if (!mTimelineusers.isEmpty()) {
+                        if (Util.isMovieAutoPlay(getActivity())) {
+                            preparePlayer(getPlayingViewHolder(), getVideoPath());
+                        }
                     }
                 }
                 break;

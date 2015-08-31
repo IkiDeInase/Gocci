@@ -16,7 +16,6 @@ import android.widget.Toast;
 
 import com.github.jorgecastilloprz.FABProgressCircle;
 import com.github.jorgecastilloprz.listeners.FABProgressListener;
-import com.inase.android.gocci.Activity.SettingActivity;
 import com.inase.android.gocci.Activity.TutorialGuideActivity;
 import com.inase.android.gocci.Activity.WebViewActivity;
 import com.inase.android.gocci.Application.Application_Gocci;

@@ -34,7 +34,7 @@
         android:layout_toLeftOf="@+id/date_time"
         android:layout_alignTop="@+id/user_name">
 
-        </LinearLayout>
+    </LinearLayout>
 
     <TextView
         android:id="@+id/date_time"
@@ -66,13 +66,13 @@
             android:layout_alignParentRight="true" />
 
         <TextView
-        android:id="@+id/usercomment"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:maxLength="50"
-        android:text="@string/comment"
-        android:textColor="@color/namegrey"
-        android:textSize="@dimen/small_text"
+            android:id="@+id/usercomment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLength="50"
+            android:text="@string/comment"
+            android:textColor="@color/namegrey"
+            android:textSize="@dimen/small_text"
             android:layout_toLeftOf="@+id/replyButton"
             android:layout_marginRight="16dp" />
 

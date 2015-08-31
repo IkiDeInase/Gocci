@@ -1,7 +1,5 @@
 package com.inase.android.gocci.data;
 
-import com.google.gson.internal.bind.ArrayTypeAdapter;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

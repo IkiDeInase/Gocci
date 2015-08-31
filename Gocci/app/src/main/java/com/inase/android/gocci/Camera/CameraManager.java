@@ -5,7 +5,6 @@ import android.hardware.Camera.CameraInfo;
 import android.hardware.Camera.Parameters;
 import android.hardware.Camera.Size;
 import android.os.Build;
-import android.util.Log;
 import android.view.SurfaceHolder;
 
 import java.io.IOException;

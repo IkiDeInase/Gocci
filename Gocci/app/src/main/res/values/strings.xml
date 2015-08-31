@@ -167,8 +167,8 @@
 
     <string name="maplog">マップログ</string>
 
-    <string name="auth_twitter_message">ツイッター連携する</string>
-    <string name="auth_facebook_message">フェイスブック連携する</string>
+    <string name="auth_twitter_message">Twitter 連携する</string>
+    <string name="auth_facebook_message">Facebook 連携する</string>
     <string name="auth_skip">連携せずに始める</string>
     <string name="remove_auth_twitter_message">Twitterの連携を解除してもいいですか？</string>
     <string name="remove_auth_facebook_message">Facebookの連携を解除してもいいですか？</string>
@@ -219,8 +219,8 @@
 
     <string name="login_username_and_password">ユーザー名とパスワードでログイン</string>
     <string name="login_sns">SNS でログイン</string>
-    <string name="login_with_twitter">ツイッターでログイン</string>
-    <string name="login_with_facebook">フェイスブックでログイン</string>
+    <string name="login_with_twitter">Twitter でログイン</string>
+    <string name="login_with_facebook">Facebok でログイン</string>
 
     <string name="setting_account">アカウント</string>
     <string name="setting_account_language">言語</string>
@@ -261,9 +261,9 @@
     <string name="notes2">及び</string>
     <string name="notes3">に同意するものとします。</string>
 
-    <string name="share_facebook">フェイスブック シェアする</string>
-    <string name="share_twitter">ツイッター シェアする</string>
-    <string name="share_instagram">インスタグラム シェアする</string>
+    <string name="share_facebook">Facebook シェアする</string>
+    <string name="share_twitter">Twitter シェアする</string>
+    <string name="share_instagram">Instagram シェアする</string>
     <string name="close">閉じる</string>
 
     <string name="popup_violate">この投稿を違反報告する</string>

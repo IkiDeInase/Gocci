@@ -18,7 +18,6 @@ import com.crashlytics.android.Crashlytics;
 import com.facebook.FacebookSdk;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
-import com.inase.android.gocci.BuildConfig;
 import com.inase.android.gocci.Event.BusHolder;
 import com.inase.android.gocci.Event.CreateProviderFinishEvent;
 import com.inase.android.gocci.Event.SNSMatchFinishEvent;

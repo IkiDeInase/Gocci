@@ -25,7 +25,7 @@
         android:layout_height="20dp"
         android:layout_marginTop="8dp"
         android:layout_gravity="center_horizontal"
-        android:src="@drawable/bs_ic_clear_light"/>
+        android:src="@drawable/bs_ic_clear_light" />
 
     <com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner
         android:id="@+id/value_spinner"
@@ -44,7 +44,7 @@
         android:layout_height="20dp"
         android:layout_marginTop="8dp"
         android:layout_gravity="center_horizontal"
-        android:src="@drawable/bs_ic_clear_light"/>
+        android:src="@drawable/bs_ic_clear_light" />
 
     <com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner
         android:id="@+id/sort_spinner"
@@ -72,7 +72,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:src="@drawable/ic_search_white_24dp"/>
+            android:src="@drawable/ic_search_white_24dp" />
 
         <TextView
             android:layout_width="wrap_content"
