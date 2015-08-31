@@ -292,7 +292,7 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
         getMenuInflater().inflate(R.menu.bell_notification, menu);
         // お知らせ未読件数バッジ表示
         MenuItem item = menu.findItem(R.id.badge);
-        MenuItem cameraitem = menu.findItem(R.id.camera);
+        //MenuItem cameraitem = menu.findItem(R.id.camera);
         MenuItemCompat.setActionView(item, R.layout.toolbar_notification_icon);
         View view = MenuItemCompat.getActionView(item);
         notificationNumber = (TextView) view.findViewById(R.id.notification_number);
@@ -335,13 +335,13 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
             }
         });
 
-        cameraitem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                startActivity(new Intent(GocciMyprofActivity.this, GocciCameraActivity.class));
-                return false;
-            }
-        });
+//        cameraitem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+//            @Override
+//            public boolean onMenuItemClick(MenuItem item) {
+//                startActivity(new Intent(GocciMyprofActivity.this, GocciCameraActivity.class));
+//                return false;
+//            }
+//        });
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -748,9 +748,7 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
             holder.locationButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(context, ProfMapActivity.class);
-                    startActivity(intent);
-                    overridePendingTransition(R.anim.activity_in, R.anim.activity_out);
+                    ProfMapActivity.startProfMapActivity(mProfusers, GocciMyprofActivity.this);
                 }
             });
         }
@@ -775,7 +773,7 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
             holder.squareImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    CommentActivity.startCommentActivity(Integer.parseInt(mProfusers.get(position - 1).getPost_id()), GocciMyprofActivity.this);
+                    CommentActivity.startCommentActivity(Integer.parseInt(users.getPost_id()), GocciMyprofActivity.this);
                 }
             });
 

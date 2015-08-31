@@ -2,9 +2,7 @@ package com.inase.android.gocci.Activity;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -13,17 +11,14 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,22 +26,11 @@ import android.widget.Toast;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
 import com.andexert.library.RippleView;
-import com.cocosw.bottomsheet.BottomSheet;
-import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
-import com.facebook.FacebookSdk;
-import com.facebook.share.Sharer;
-import com.facebook.share.widget.ShareDialog;
-import com.google.android.exoplayer.audio.AudioCapabilities;
-import com.google.android.exoplayer.audio.AudioCapabilitiesReceiver;
-import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.Base.RoundedTransformation;
+import com.inase.android.gocci.Base.SquareImageView;
 import com.inase.android.gocci.Event.BusHolder;
 import com.inase.android.gocci.Event.NotificationNumberEvent;
 import com.inase.android.gocci.R;
-import com.inase.android.gocci.VideoPlayer.HlsRendererBuilder;
-import com.inase.android.gocci.VideoPlayer.VideoPlayer;
 import com.inase.android.gocci.View.DrawerProfHeader;
 import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;
@@ -61,8 +45,8 @@ import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.squareup.otto.Subscribe;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
-import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
 import org.apache.http.Header;
 import org.json.JSONArray;
@@ -70,19 +54,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
-import io.fabric.sdk.android.Fabric;
-
-public class FlexibleUserProfActivity extends AppCompatActivity implements AudioCapabilitiesReceiver.Listener, AppBarLayout.OnOffsetChangedListener {
+public class FlexibleUserProfActivity extends AppCompatActivity implements AppBarLayout.OnOffsetChangedListener {
 
     private String mProfUrl;
 
     private RecyclerView mUserProfRecyclerView;
     private UserProfAdapter mUserProfAdapter;
     private ArrayList<PostData> mUserProfusers = new ArrayList<PostData>();
-    private LinearLayoutManager mLayoutManager;
+    private StaggeredGridLayoutManager mLayoutManager;
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
     private CoordinatorLayout coordinatorLayout;
@@ -92,46 +72,13 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
 
     private int mUser_id;
 
-    private CallbackManager callbackManager;
-    private ShareDialog shareDialog;
-
-    private AttributeSet mVideoAttr;
-
-    private Point mDisplaySize;
-    private String mPlayingPostId;
-    private boolean mPlayBlockFlag;
-    private ConcurrentHashMap<Const.ExoViewHolder, String> mViewHolderHash;  // Value: PosterId
-
-    private int previousTotal = 0;
-    private boolean loading = true;
-    private int visibleThreshold = 5;
-    int firstVisibleItem, visibleItemCount, totalItemCount;
-
     private final FlexibleUserProfActivity self = this;
 
     private Drawer result;
 
     private Toolbar toolbar;
 
-    private VideoPlayer player;
-    private boolean playerNeedsPrepare;
-
-    private long playerPosition;
-
-    private AudioCapabilitiesReceiver audioCapabilitiesReceiver;
-    private AudioCapabilities audioCapabilities;
-
     private static MobileAnalyticsManager analytics;
-
-    private ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
-        @Override
-        public void onGlobalLayout() {
-            changeMovie();
-            if (mPlayingPostId != null) {
-                mUserProfRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-            }
-        }
-    };
 
     private static Handler sHandler = new Handler() {
         @Override
@@ -178,39 +125,7 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
             Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
         }
 
-        audioCapabilitiesReceiver = new AudioCapabilitiesReceiver(getApplicationContext(), this);
-        // 画面回転に対応するならonResumeが安全かも
-        mDisplaySize = new Point();
-        getWindowManager().getDefaultDisplay().getSize(mDisplaySize);
-
         setContentView(R.layout.activity_flexible_user_prof);
-
-        FacebookSdk.sdkInitialize(getApplicationContext());
-        callbackManager = CallbackManager.Factory.create();
-        shareDialog = new ShareDialog(this);
-        shareDialog.registerCallback(callbackManager, new FacebookCallback<Sharer.Result>() {
-            @Override
-            public void onSuccess(Sharer.Result result) {
-                Toast.makeText(FlexibleUserProfActivity.this, getString(R.string.complete_share), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onCancel() {
-                Toast.makeText(FlexibleUserProfActivity.this, getString(R.string.cancel_share), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onError(FacebookException e) {
-                Toast.makeText(FlexibleUserProfActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        Fabric.with(this, new TweetComposer());
-
-        mPlayBlockFlag = false;
-        // 初期化処理
-        mPlayingPostId = null;
-        mViewHolderHash = new ConcurrentHashMap<>();
 
         Intent userintent = getIntent();
         mUser_id = userintent.getIntExtra("user_id", 0);
@@ -224,7 +139,7 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
         setSupportActionBar(toolbar);
 
         mUserProfRecyclerView = (RecyclerView) findViewById(R.id.list);
-        mLayoutManager = new LinearLayoutManager(this);
+        mLayoutManager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
         mUserProfAdapter = new UserProfAdapter(FlexibleUserProfActivity.this);
         mUserProfRecyclerView.setLayoutManager(mLayoutManager);
         mUserProfRecyclerView.setHasFixedSize(true);
@@ -286,45 +201,6 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
         result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        mUserProfRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                switch (newState) {
-                    // スクロールしていない
-                    case RecyclerView.SCROLL_STATE_IDLE:
-                        //mBusy = false;
-                        changeMovie();
-                        break;
-                    // スクロール中
-                    case RecyclerView.SCROLL_STATE_DRAGGING:
-                        //mBusy = true;
-                        break;
-                    // はじいたとき
-                    case RecyclerView.SCROLL_STATE_SETTLING:
-                        //mBusy = true;
-                        break;
-                }
-
-                visibleItemCount = mUserProfRecyclerView.getChildCount();
-                totalItemCount = mLayoutManager.getItemCount();
-                firstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
-
-                if (loading) {
-                    if (totalItemCount > previousTotal) {
-                        loading = false;
-                        previousTotal = totalItemCount;
-                    }
-                }
-                if (!loading && (totalItemCount - visibleItemCount)
-                        <= (firstVisibleItem + visibleThreshold)) {
-                    // End has been reached
-
-                    loading = true;
-                }
-            }
-        });
-
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
         mSwipeRefreshLayout.setColorSchemeResources(R.color.gocci_1, R.color.gocci_2, R.color.gocci_3, R.color.gocci_4);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -349,11 +225,6 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
             analytics.getEventClient().submitEvents();
         }
         BusHolder.get().unregister(self);
-        if (player != null) {
-            player.blockingClearSurface();
-        }
-        releasePlayer();
-        audioCapabilitiesReceiver.unregister();
 
         appBarLayout.removeOnOffsetChangedListener(this);
     }
@@ -365,22 +236,8 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
             analytics.getSessionClient().resumeSession();
         }
         BusHolder.get().register(self);
-        audioCapabilitiesReceiver.register();
 
         appBarLayout.addOnOffsetChangedListener(this);
-    }
-
-    @Override
-    public final void onDestroy() {
-        releasePlayer();
-        super.onDestroy();
-
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -416,32 +273,6 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
         Snackbar.make(coordinatorLayout, event.mMessage, Snackbar.LENGTH_SHORT).show();
     }
 
-    @Override
-    public void onAudioCapabilitiesChanged(AudioCapabilities audioCapabilities) {
-        boolean audioCapabilitiesChanged = !audioCapabilities.equals(this.audioCapabilities);
-        if (player == null || audioCapabilitiesChanged) {
-            if (mPlayingPostId != null) {
-                this.audioCapabilities = audioCapabilities;
-                releasePlayer();
-                if (Util.isMovieAutoPlay(this)) {
-                    preparePlayer(getPlayingViewHolder(), getVideoPath());
-                }
-            }
-        } else {
-            player.setBackgrounded(false);
-        }
-    }
-
-    private String getVideoPath() {
-        final int position = mUserProfRecyclerView.getChildAdapterPosition(mUserProfRecyclerView.findChildViewUnder(mDisplaySize.x / 2, mDisplaySize.y / 2));
-        final PostData userData = mUserProfAdapter.getItem(position - 1);
-        if (!userData.getPost_id().equals(mPlayingPostId)) {
-            return null;
-        }
-        //return mCacheManager.getCachePath(userData.getPost_id(), userData.getMovie());
-        return userData.getMovie();
-    }
-
     private void getSignupAsync(final Context context) {
         Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
         Const.asyncHttpClient.get(context, mProfUrl, new TextHttpResponseHandler() {
@@ -469,7 +300,6 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
                     e.printStackTrace();
                 }
 
-                mUserProfRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
                 mUserProfRecyclerView.setAdapter(mUserProfAdapter);
             }
         });
@@ -503,9 +333,6 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
                     e.printStackTrace();
                 }
 
-                mPlayingPostId = null;
-                mViewHolderHash.clear();
-                mUserProfRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
                 mUserProfAdapter.notifyDataSetChanged();
             }
 
@@ -517,107 +344,6 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
         });
     }
 
-    private void preparePlayer(final Const.ExoViewHolder viewHolder, String path) {
-        if (player == null) {
-            player = new VideoPlayer(new HlsRendererBuilder(this, com.google.android.exoplayer.util.Util.getUserAgent(this, "Gocci"), path,
-                    audioCapabilities));
-            player.addListener(new VideoPlayer.Listener() {
-                @Override
-                public void onStateChanged(boolean playWhenReady, int playbackState) {
-                    switch (playbackState) {
-                        case VideoPlayer.STATE_BUFFERING:
-                            break;
-                        case VideoPlayer.STATE_ENDED:
-                            player.seekTo(0);
-                            break;
-                        case VideoPlayer.STATE_IDLE:
-                            break;
-                        case VideoPlayer.STATE_PREPARING:
-                            break;
-                        case VideoPlayer.STATE_READY:
-                            break;
-                        default:
-                            break;
-                    }
-                }
-
-                @Override
-                public void onError(Exception e) {
-                    playerNeedsPrepare = true;
-                }
-
-                @Override
-                public void onVideoSizeChanged(int width, int height, float pixelWidthAspectRatio) {
-                    viewHolder.mVideoThumbnail.setVisibility(View.GONE);
-                    viewHolder.videoFrame.setAspectRatio(
-                            height == 0 ? 1 : (width * pixelWidthAspectRatio) / height);
-                }
-            });
-            //player.seekTo(playerPosition);
-            playerNeedsPrepare = true;
-        }
-        if (playerNeedsPrepare) {
-            player.prepare();
-            playerNeedsPrepare = false;
-        }
-        player.setSurface(viewHolder.movie.getHolder().getSurface());
-        player.setPlayWhenReady(true);
-    }
-
-    private void releasePlayer() {
-        if (player != null) {
-            //playerPosition = player.getCurrentPosition();
-            player.release();
-            player = null;
-        }
-    }
-
-    private void changeMovie() {
-        // TODO:実装
-        final int position = mUserProfRecyclerView.getChildAdapterPosition(mUserProfRecyclerView.findChildViewUnder(mDisplaySize.x / 2, mDisplaySize.y / 2));
-        if (mUserProfAdapter.isEmpty()) {
-            return;
-        }
-        if (position - 1 < 0) {
-            return;
-        }
-
-        final PostData userData = mUserProfAdapter.getItem(position - 1);
-        if (!userData.getPost_id().equals(mPlayingPostId)) {
-
-            // 前回の動画再生停止処理
-            final Const.ExoViewHolder oldViewHolder = getPlayingViewHolder();
-            if (oldViewHolder != null) {
-                oldViewHolder.mVideoThumbnail.setVisibility(View.VISIBLE);
-            }
-
-            mPlayingPostId = userData.getPost_id();
-            final Const.ExoViewHolder currentViewHolder = getPlayingViewHolder();
-            if (mPlayBlockFlag) {
-                return;
-            }
-
-            final String path = userData.getMovie();
-            releasePlayer();
-            if (Util.isMovieAutoPlay(this)) {
-                preparePlayer(currentViewHolder, path);
-            }
-        }
-    }
-
-    private Const.ExoViewHolder getPlayingViewHolder() {
-        Const.ExoViewHolder viewHolder = null;
-        if (mPlayingPostId != null) {
-            for (Map.Entry<Const.ExoViewHolder, String> entry : mViewHolderHash.entrySet()) {
-                if (entry.getValue().equals(mPlayingPostId)) {
-                    viewHolder = entry.getKey();
-                    break;
-                }
-            }
-        }
-        return viewHolder;
-    }
-
     @Override
     public void onOffsetChanged(AppBarLayout appBarLayout, int i) {
         mSwipeRefreshLayout.setEnabled(i == 0);
@@ -626,6 +352,7 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
     static class UserProfHeaderViewHolder extends RecyclerView.ViewHolder {
         private ImageView userprof_background;
         private ImageView userprof_picture;
+        private ImageView locationButton;
         private TextView userprof_username;
         private RippleView userprof_follow;
         private TextView follow_num;
@@ -640,6 +367,7 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
             super(view);
             userprof_background = (ImageView) view.findViewById(R.id.userprof_background);
             userprof_picture = (ImageView) view.findViewById(R.id.userprof_picture);
+            locationButton = (ImageView) view.findViewById(R.id.location);
             userprof_username = (TextView) view.findViewById(R.id.userprof_username);
             userprof_follow = (RippleView) view.findViewById(R.id.userprof_follow);
             follow_num = (TextView) view.findViewById(R.id.follow_num);
@@ -652,15 +380,30 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
         }
     }
 
+    static class GridViewHolder extends RecyclerView.ViewHolder {
+        private SquareImageView squareImage;
+
+        public GridViewHolder(View view) {
+            super(view);
+            squareImage = (SquareImageView) view.findViewById(R.id.squareImage);
+        }
+    }
+
     public class UserProfAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         private Context mContext;
+        private int cellSize;
+
+        private boolean lockedAnimations = false;
+        private long profileHeaderAnimationStartTime = 0;
+        private int lastAnimatedItem = 0;
 
         public static final int TYPE_PROFILE_HEADER = 0;
         public static final int TYPE_POST = 1;
 
         public UserProfAdapter(Context context) {
             mContext = context;
+            this.cellSize = Util.getScreenWidth(context) / 3;
         }
 
         public PostData getItem(int position) {
@@ -684,10 +427,18 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             if (TYPE_PROFILE_HEADER == viewType) {
                 final View view = LayoutInflater.from(mContext).inflate(R.layout.view_header_userprof, parent, false);
+                StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams) view.getLayoutParams();
+                layoutParams.setFullSpan(true);
+                view.setLayoutParams(layoutParams);
                 return new UserProfHeaderViewHolder(view);
             } else {
-                final View view = LayoutInflater.from(mContext).inflate(R.layout.cell_exo_timeline, parent, false);
-                return new Const.ExoViewHolder(view);
+                final View view = LayoutInflater.from(mContext).inflate(R.layout.cell_grid, parent, false);
+                StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams) view.getLayoutParams();
+                layoutParams.height = cellSize;
+                layoutParams.width = cellSize;
+                layoutParams.setFullSpan(false);
+                view.setLayoutParams(layoutParams);
+                return new GridViewHolder(view);
             }
         }
 
@@ -698,7 +449,7 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
                 bindHeader((UserProfHeaderViewHolder) holder);
             } else {
                 PostData users = mUserProfusers.get(position - 1);
-                bindPost((Const.ExoViewHolder) holder, position, users);
+                bindPost((GridViewHolder) holder, position, users);
             }
         }
 
@@ -763,161 +514,42 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements Audio
                         case "これはあなたです":
                             break;
                     }
+                }
+            });
 
+            holder.locationButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ProfMapActivity.startProfMapActivity(mUserProfusers, FlexibleUserProfActivity.this);
                 }
             });
         }
 
-        private void bindPost(final Const.ExoViewHolder viewHolder, final int position, final PostData user) {
-            viewHolder.user_name.setText(user.getUsername());
-            viewHolder.datetime.setText(user.getPost_date());
-
-            if (!user.getMemo().equals("none")) {
-                viewHolder.comment.setText(user.getMemo());
-            } else {
-                viewHolder.comment.setText("");
-            }
-
-            Picasso.with(mContext)
-                    .load(user.getProfile_img())
-                    .placeholder(R.drawable.ic_userpicture)
-                    .transform(new RoundedTransformation())
-                    .into(viewHolder.circleImage);
-
-            viewHolder.menuRipple.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    new BottomSheet.Builder(FlexibleUserProfActivity.this, R.style.BottomSheet_StyleDialog).sheet(R.menu.popup_normal).listener(new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            switch (which) {
-                                case R.id.violation:
-                                    Util.setViolateDialog(FlexibleUserProfActivity.this, user.getPost_id());
-                                    break;
-                                case R.id.close:
-                                    dialog.dismiss();
-                            }
-                        }
-                    }).show();
-                }
-            });
-
+        private void bindPost(final GridViewHolder holder, final int position, final PostData user) {
             Picasso.with(mContext)
                     .load(user.getThumbnail())
-                    .placeholder(R.color.videobackground)
-                    .into(viewHolder.mVideoThumbnail);
-            viewHolder.mVideoThumbnail.setVisibility(View.VISIBLE);
+                    .resize(cellSize, cellSize)
+                    .centerCrop()
+                    .into(holder.squareImage, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            //animatePhoto(holder);
+                        }
 
-            viewHolder.videoFrame.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onError() {
+
+                        }
+                    });
+
+            holder.squareImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (player != null) {
-                        if (player.getPlayerControl().isPlaying()) {
-                            player.getPlayerControl().pause();
-                        } else {
-                            player.getPlayerControl().start();
-                        }
-                    } else {
-                        if (!Util.isMovieAutoPlay(FlexibleUserProfActivity.this)) {
-                            releasePlayer();
-                            preparePlayer(viewHolder, user.getMovie());
-                        }
-                    }
-                }
-            });
-
-            viewHolder.rest_name.setText(user.getRestname());
-            //viewHolder.locality.setText(user.getLocality());
-
-            if (!user.getCategory().equals(getString(R.string.nothing_tag))) {
-                viewHolder.category.setText(user.getCategory());
-            } else {
-                viewHolder.category.setText("　　　　");
-            }
-            if (!user.getTag().equals(getString(R.string.nothing_tag))) {
-                viewHolder.atmosphere.setText(user.getTag());
-            } else {
-                viewHolder.atmosphere.setText("　　　　");
-            }
-            if (!user.getValue().equals("0")) {
-                viewHolder.value.setText(user.getValue() + "円");
-            } else {
-                viewHolder.value.setText("　　　　");
-            }
-
-            //リップルエフェクトを見せてからIntentを飛ばす
-            viewHolder.tenpoRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
-                @Override
-                public void onComplete(RippleView rippleView) {
-                    FlexibleTenpoActivity.startTenpoActivity(user.getPost_rest_id(), user.getRestname(), FlexibleUserProfActivity.this);
-                }
-            });
-
-            final int currentgoodnum = user.getGochi_num();
-            final int currentcommentnum = user.getComment_num();
-
-            viewHolder.likes.setText(String.valueOf(currentgoodnum));
-            viewHolder.comments.setText(String.valueOf(currentcommentnum));
-
-            if (user.getGochi_flag() == 0) {
-                viewHolder.likes_ripple.setClickable(true);
-                viewHolder.likes_Image.setImageResource(R.drawable.ic_icon_beef);
-
-                viewHolder.likes_ripple.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        user.setGochi_flag(1);
-                        user.setGochi_num(currentgoodnum + 1);
-                        viewHolder.likes.setText(String.valueOf(currentgoodnum + 1));
-                        viewHolder.likes_Image.setImageResource(R.drawable.ic_icon_beef_orange);
-                        viewHolder.likes_ripple.setClickable(false);
-
-                        Util.postGochiAsync(FlexibleUserProfActivity.this, user);
-                    }
-                });
-            } else {
-                viewHolder.likes_Image.setImageResource(R.drawable.ic_icon_beef_orange);
-                viewHolder.likes_ripple.setClickable(false);
-            }
-
-            viewHolder.comments_ripple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
-                @Override
-                public void onComplete(RippleView rippleView) {
                     CommentActivity.startCommentActivity(Integer.parseInt(user.getPost_id()), FlexibleUserProfActivity.this);
                 }
             });
 
-            viewHolder.share_ripple.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (Application_Gocci.getShareTransfer() != null) {
-                        new BottomSheet.Builder(mContext, R.style.BottomSheet_StyleDialog).sheet(R.menu.menu_share).listener(new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                switch (which) {
-                                    case R.id.facebook_share:
-                                        Toast.makeText(FlexibleUserProfActivity.this, getString(R.string.preparing_share), Toast.LENGTH_LONG).show();
-                                        Util.facebookVideoShare(FlexibleUserProfActivity.this, shareDialog, user.getShare());
-                                        break;
-                                    case R.id.twitter_share:
-                                        Util.twitterShare(FlexibleUserProfActivity.this, viewHolder.mVideoThumbnail, user.getRestname());
-                                        break;
-                                    case R.id.other_share:
-                                        Toast.makeText(FlexibleUserProfActivity.this, getString(R.string.preparing_share), Toast.LENGTH_LONG).show();
-                                        Util.instaVideoShare(FlexibleUserProfActivity.this, user.getRestname(), user.getShare());
-                                        break;
-                                    case R.id.close:
-                                        dialog.dismiss();
-                                }
-                            }
-                        }).show();
-                    } else {
-                        Toast.makeText(FlexibleUserProfActivity.this, getString(R.string.preparing_share_error), Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
-
-            mViewHolderHash.put(viewHolder, user.getPost_id());
+            if (lastAnimatedItem < position) lastAnimatedItem = position;
         }
 
         @Override

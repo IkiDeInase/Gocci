@@ -7,6 +7,7 @@
     </array>
 
     <array name="list_category">
+        <item>@string/no_tag</item>
         <item>@string/wa</item>
         <item>@string/you</item>
         <item>@string/tyuu</item>
@@ -19,10 +20,10 @@
     </array>
 
     <array name="list_value">
-        <item>@string/value750</item>
-        <item>@string/value1500</item>
-        <item>@string/value3000</item>
-        <item>@string/valueOver</item>
+        <item>@string/cheap</item>
+        <item>@string/normal</item>
+        <item>@string/pre_rich</item>
+        <item>@string/rich</item>
     </array>
 
     <array name="list_sort">
@@ -32,6 +33,7 @@
     </array>
 
     <array name="list_mood">
+        <item>@string/no_tag</item>
         <item>@string/nigi</item>
         <item>@string/yutta</item>
     </array>

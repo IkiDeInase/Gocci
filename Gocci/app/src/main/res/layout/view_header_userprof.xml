@@ -62,7 +62,7 @@
         android:src="@drawable/ic_userpicture"
         android:layout_marginLeft="16dp"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="32dp" />
+        android:layout_marginBottom="24dp" />
 
     <LinearLayout
         android:id="@+id/numBar"
@@ -169,9 +169,46 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_below="@+id/userprof_picture"
+        android:layout_below="@+id/tabbar"
         android:id="@+id/viewFotter"
         android:layout_gravity="bottom"
         android:background="#c5c6c9" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/userprof_picture"
+        android:id="@+id/viewheader"
+        android:layout_gravity="bottom"
+        android:background="#c5c6c9" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tabbar"
+        android:layout_below="@+id/userprof_picture">
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/grid"
+            android:layout_weight="1"
+            android:src="@drawable/ic_apps_grey600_24dp"
+            android:padding="8dp" />
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="#c5c6c9" />
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/location"
+            android:layout_weight="1"
+            android:src="@drawable/ic_place_grey600_24dp"
+            android:padding="8dp" />
+    </LinearLayout>
 
 </RelativeLayout>

@@ -1,8 +1,10 @@
 package com.inase.android.gocci.Activity;
 
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -58,6 +60,17 @@ public class ProfMapActivity extends AppCompatActivity implements ClusterManager
     private ProgressWheel progress;
 
     private static MobileAnalyticsManager analytics;
+
+    private static ArrayList<PostData> mList = new ArrayList<>();
+
+    public static void startProfMapActivity(ArrayList<PostData> list, Activity startingActivity) {
+        mList.clear();
+        list.clear();
+        mList = list;
+        Intent intent = new Intent(startingActivity, ProfMapActivity.class);
+        startingActivity.startActivity(intent);
+        startingActivity.overridePendingTransition(R.anim.activity_in, R.anim.activity_out);
+    }
 
     private class PhotoLogRenderer extends DefaultClusterRenderer<PhotoLog> {
         private final IconGenerator mIconGenerator = new IconGenerator(getApplicationContext());
@@ -285,7 +298,7 @@ public class ProfMapActivity extends AppCompatActivity implements ClusterManager
 
         @Override
         protected Void doInBackground(Void... params) {
-            for (PostData data : GocciMyprofActivity.mProfusers) {
+            for (PostData data : mList) {
                 try {
                     list.add(new PhotoLog(data, new BitmapDrawable(Picasso.with(context).load(data.getThumbnail()).get())));
                 } catch (IOException e) {
