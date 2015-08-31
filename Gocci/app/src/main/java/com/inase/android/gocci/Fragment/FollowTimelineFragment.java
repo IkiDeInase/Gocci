@@ -12,7 +12,6 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,13 +64,13 @@ import io.fabric.sdk.android.Fabric;
 /**
  * Created by kinagafuji on 15/06/11.
  */
-public class TrendTimelineFragment extends Fragment implements AudioCapabilitiesReceiver.Listener, AppBarLayout.OnOffsetChangedListener,
+public class FollowTimelineFragment extends Fragment implements AudioCapabilitiesReceiver.Listener, AppBarLayout.OnOffsetChangedListener,
         ObservableScrollViewCallbacks {
 
     private ObservableRecyclerView mTimelineRecyclerView;
     private LinearLayoutManager mLayoutManager;
     private ArrayList<PostData> mTimelineusers = new ArrayList<>();
-    private TrendTimelineAdapter mTrendTimelineAdapter;
+    private FollowTimelineAdapter mFollowTimelineAdapter;
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
     private AppBarLayout appBarLayout;
@@ -211,7 +210,7 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
 
         appBarLayout = (AppBarLayout) getActivity().findViewById(R.id.appbar);
 
-        mTrendTimelineAdapter = new TrendTimelineAdapter(getActivity());
+        mFollowTimelineAdapter = new FollowTimelineAdapter(getActivity());
 
         if (Util.getConnectedState(getActivity()) != Util.NetworkStatus.OFF) {
             getSignupAsync(getActivity());
@@ -337,7 +336,7 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
 
     private String getVideoPath() {
         final int position = mTimelineRecyclerView.getChildAdapterPosition(mTimelineRecyclerView.findChildViewUnder(mDisplaySize.x / 2, mDisplaySize.y / 2));
-        final PostData userData = mTrendTimelineAdapter.getItem(position);
+        final PostData userData = mFollowTimelineAdapter.getItem(position);
         if (!userData.getPost_id().equals(mPlayingPostId)) {
             return null;
         }
@@ -401,7 +400,7 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
 
     private void getSignupAsync(final Context context) {
         Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(context, Const.getPopularAPI(), new JsonHttpResponseHandler() {
+        Const.asyncHttpClient.get(context, Const.getFollowlineApi(), new JsonHttpResponseHandler() {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
@@ -421,7 +420,7 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
                 }
 
                 mTimelineRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
-                mTimelineRecyclerView.setAdapter(mTrendTimelineAdapter);
+                mTimelineRecyclerView.setAdapter(mFollowTimelineAdapter);
                 //getTimelineDateJson(context);
             }
         });
@@ -429,7 +428,7 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
 
     private void getRefreshAsync(final Context context) {
         Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(context, Const.getPopularAPI(), new JsonHttpResponseHandler() {
+        Const.asyncHttpClient.get(context, Const.getFollowlineApi(), new JsonHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
                 Toast.makeText(getActivity(), getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
@@ -452,7 +451,7 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
                 mPlayingPostId = null;
                 mViewHolderHash.clear();
                 mTimelineRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
-                mTrendTimelineAdapter.notifyDataSetChanged();
+                mFollowTimelineAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -465,7 +464,7 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
 
     private void getAddJsonAsync(final Context context, final int call) {
         Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(context, Const.getPopularNextApi(call), new JsonHttpResponseHandler() {
+        Const.asyncHttpClient.get(context, Const.getFollowlineNextApi(call), new JsonHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
                 Toast.makeText(getActivity(), getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
@@ -482,7 +481,7 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
 
                         mPlayingPostId = null;
                         mTimelineRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
-                        mTrendTimelineAdapter.notifyDataSetChanged();
+                        mFollowTimelineAdapter.notifyDataSetChanged();
 
                         mNextCount++;
                     } else {
@@ -533,7 +532,7 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
                 mPlayingPostId = null;
                 mViewHolderHash.clear();
                 mTimelineRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
-                mTrendTimelineAdapter.notifyDataSetChanged();
+                mFollowTimelineAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -546,14 +545,14 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
     private void changeMovie() {
         // TODO:実装
         final int position = mTimelineRecyclerView.getChildAdapterPosition(mTimelineRecyclerView.findChildViewUnder(mDisplaySize.x / 2, mDisplaySize.y / 2));
-        if (mTrendTimelineAdapter.isEmpty()) {
+        if (mFollowTimelineAdapter.isEmpty()) {
             return;
         }
         if (position < 0) {
             return;
         }
 
-        final PostData userData = mTrendTimelineAdapter.getItem(position);
+        final PostData userData = mFollowTimelineAdapter.getItem(position);
         if (!userData.getPost_id().equals(mPlayingPostId)) {
             final Const.ExoViewHolder oldViewHolder = getPlayingViewHolder();
             if (oldViewHolder != null) {
@@ -616,11 +615,11 @@ public class TrendTimelineFragment extends Fragment implements AudioCapabilities
         }
     }
 
-    public class TrendTimelineAdapter extends RecyclerView.Adapter<Const.ExoViewHolder> {
+    public class FollowTimelineAdapter extends RecyclerView.Adapter<Const.ExoViewHolder> {
 
         private Context mContext;
 
-        public TrendTimelineAdapter(Context context) {
+        public FollowTimelineAdapter(Context context) {
             mContext = context;
         }
 

@@ -318,8 +318,7 @@ public class LoginSessionActivity extends AppCompatActivity {
                             Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                         }
                     } else {
-                        Toast.makeText(context, getString(R.string.error_login), Toast.LENGTH_SHORT).show();
-
+                        Toast.makeText(context, getString(R.string.login_error_pass), Toast.LENGTH_SHORT).show();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

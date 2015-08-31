@@ -7,7 +7,6 @@ import android.os.Message;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -17,36 +16,30 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
 import com.andexert.library.RippleView;
 import com.inase.android.gocci.Base.ToukouPopup;
 import com.inase.android.gocci.Event.BusHolder;
-import com.inase.android.gocci.Event.FilterTimelineEvent;
 import com.inase.android.gocci.Event.NotificationNumberEvent;
 import com.inase.android.gocci.Event.PageChangeVideoStopEvent;
 import com.inase.android.gocci.Fragment.LatestTimelineFragment;
-import com.inase.android.gocci.Fragment.TrendTimelineFragment;
+import com.inase.android.gocci.Fragment.FollowTimelineFragment;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.View.DrawerProfHeader;
 import com.inase.android.gocci.View.NotificationListView;
 import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;
 import com.inase.android.gocci.common.Util;
-import com.konifar.fab_transformation.FabTransformation;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
-import com.mikepenz.materialize.color.Material;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
@@ -161,7 +154,7 @@ public class GocciTimelineActivity extends AppCompatActivity {
         final FragmentPagerItemAdapter adapter = new FragmentPagerItemAdapter(
                 getSupportFragmentManager(), FragmentPagerItems.with(this)
                 .add(R.string.tab_latest, LatestTimelineFragment.class)
-                .add(R.string.tab_follow, TrendTimelineFragment.class)
+                .add(R.string.tab_follow, FollowTimelineFragment.class)
                 .create());
 
         final ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);

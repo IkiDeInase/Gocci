@@ -93,7 +93,7 @@ public class Const {
     }
 
     public static String getTimelineNextApi(int call) {
-        return URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline_next/?call=" + call;
+        return URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline/?call=" + call;
     }
 
     public static String getPopularAPI() {
@@ -102,6 +102,14 @@ public class Const {
 
     public static String getPopularNextApi(int call) {
         return URL_PREFIX + VERSION_NUMBER + "/mobile/get/popular_next/?call=" + call;
+    }
+
+    public static String getFollowlineApi() {
+        return URL_PREFIX + VERSION_NUMBER + "/mobile/get/followline";
+    }
+
+    public static String getFollowlineNextApi(int call) {
+        return URL_PREFIX + VERSION_NUMBER + "/mobile/get/followline/?call=" + call;
     }
 
     public static String getCommentAPI(String post_id) {
