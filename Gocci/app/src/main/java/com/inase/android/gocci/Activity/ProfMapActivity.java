@@ -55,7 +55,7 @@ public class ProfMapActivity extends AppCompatActivity implements ClusterManager
 
     private MapDrawableAsync mAsync;
 
-    private static List<PhotoLog> list = new ArrayList<>();
+    private static ArrayList<PhotoLog> list = new ArrayList<>();
 
     private ProgressWheel progress;
 
@@ -64,8 +64,6 @@ public class ProfMapActivity extends AppCompatActivity implements ClusterManager
     private static ArrayList<PostData> mList = new ArrayList<>();
 
     public static void startProfMapActivity(ArrayList<PostData> data, Activity startingActivity) {
-        mList.clear();
-        list.clear();
         mList = data;
         Intent intent = new Intent(startingActivity, ProfMapActivity.class);
         startingActivity.startActivity(intent);
@@ -298,6 +296,7 @@ public class ProfMapActivity extends AppCompatActivity implements ClusterManager
 
         @Override
         protected Void doInBackground(Void... params) {
+            list.clear();
             for (PostData data : mList) {
                 try {
                     list.add(new PhotoLog(data, new BitmapDrawable(Picasso.with(context).load(data.getThumbnail()).get())));
