@@ -63,10 +63,10 @@ public class ProfMapActivity extends AppCompatActivity implements ClusterManager
 
     private static ArrayList<PostData> mList = new ArrayList<>();
 
-    public static void startProfMapActivity(ArrayList<PostData> list, Activity startingActivity) {
+    public static void startProfMapActivity(ArrayList<PostData> data, Activity startingActivity) {
         mList.clear();
         list.clear();
-        mList = list;
+        mList = data;
         Intent intent = new Intent(startingActivity, ProfMapActivity.class);
         startingActivity.startActivity(intent);
         startingActivity.overridePendingTransition(R.anim.activity_in, R.anim.activity_out);
