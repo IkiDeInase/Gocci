@@ -36,6 +36,7 @@ import com.inase.android.gocci.Activity.GocciTimelineActivity;
 import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.Base.RoundedTransformation;
 import com.inase.android.gocci.Event.BusHolder;
+import com.inase.android.gocci.Event.FilterTimelineEvent;
 import com.inase.android.gocci.Event.NotificationNumberEvent;
 import com.inase.android.gocci.Event.PageChangeVideoStopEvent;
 import com.inase.android.gocci.R;
@@ -315,6 +316,13 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
         }
     }
 
+    @Subscribe
+    public void subscribe(FilterTimelineEvent event) {
+        if (event.currentPage == 0) {
+            getFilterJsonAsync(event.filterUrl);
+        }
+    }
+
     @Override
     public void onAudioCapabilitiesChanged(AudioCapabilities audioCapabilities) {
         boolean audioCapabilitiesChanged = !audioCapabilities.equals(this.audioCapabilities);
@@ -507,6 +515,48 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
                 //mTimelineSwipe.setRefreshing(false);
             }
 
+        });
+    }
+
+    private void getFilterJsonAsync(String url) {
+        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(getActivity()));
+        Const.asyncHttpClient.get(getActivity(), url, new JsonHttpResponseHandler() {
+            @Override
+            public void onStart() {
+                mSwipeRefreshLayout.setRefreshing(true);
+                mTimelineRecyclerView.scrollVerticallyToPosition(0);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                Toast.makeText(getActivity(), getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
+                //mTimelineSwipe.setRefreshing(false);
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                mTimelineusers.clear();
+                isEndScrioll = false;
+                try {
+                    for (int i = 0; i < response.length(); i++) {
+                        JSONObject jsonObject = response.getJSONObject(i);
+                        mTimelineusers.add(PostData.createPostData(jsonObject));
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                mPlayingPostId = null;
+                mViewHolderHash.clear();
+                mTimelineRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
+                mLatestTimelineAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onFinish() {
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
         });
     }
 
