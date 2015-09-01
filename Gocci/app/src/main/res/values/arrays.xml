@@ -7,7 +7,7 @@
     </array>
 
     <array name="list_category">
-        <item>@string/no_tag</item>
+        <!--<item>@string/no_tag</item>-->
         <item>@string/wa</item>
         <item>@string/you</item>
         <item>@string/tyuu</item>
@@ -33,7 +33,7 @@
     </array>
 
     <array name="list_mood">
-        <item>@string/no_tag</item>
+        <!--<item>@string/no_tag</item>-->
         <item>@string/nigi</item>
         <item>@string/yutta</item>
     </array>
