@@ -59,6 +59,8 @@ import org.apache.http.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Locale;
+
 public class SettingActivity extends AppCompatActivity {
 
     private final SettingActivity self = this;

@@ -7,283 +7,283 @@
     <!--<string name="map_key">AIzaSyCdJXmgncMEUoEmNflVqHkSIJwA7Mmtuc0</string>-->
     <string name="facebook_app_id">673123156062598</string>
 
-    <string name="lat">経度</string>
-    <string name="lon">緯度</string>
+    <string name="lat">latitude</string>
+    <string name="lon">longitude</string>
 
-    <string name="tab_latest">全体</string>
-    <string name="tab_follow">フォロー</string>
+    <string name="tab_latest">Latest</string>
+    <string name="tab_follow">Follow</string>
 
-    <string name="timeline">タイムライン</string>
-    <string name="mypage">マイページ</string>
-    <string name="send_advice">アドバイスを送る</string>
-    <string name="settings">設定</string>
+    <string name="timeline">Timeline</string>
+    <string name="mypage">Mypage</string>
+    <string name="send_advice">Send Advice</string>
+    <string name="settings">Settings</string>
 
-    <string name="youbou">ご要望</string>
-    <string name="kujou">苦情</string>
-    <string name="ikenn">ご意見</string>
+    <string name="youbou">Want</string>
+    <string name="kujou">Crame</string>
+    <string name="ikenn">Opinion</string>
 
-    <string name="wa">和風</string>
-    <string name="you">洋風</string>
-    <string name="tyuu">中華</string>
-    <string name="care">カレー</string>
-    <string name="ramen">ラーメン</string>
-    <string name="takoku">多国籍</string>
-    <string name="cafe">カフェ</string>
-    <string name="sake">居酒屋</string>
-    <string name="sonota">その他</string>
+    <string name="wa">Wa</string>
+    <string name="you">French</string>
+    <string name="tyuu">Chinese</string>
+    <string name="care">Carry</string>
+    <string name="ramen">Ramen</string>
+    <string name="takoku">Overseas</string>
+    <string name="cafe">Cafe</string>
+    <string name="sake">Sake</string>
+    <string name="sonota">Others</string>
 
-    <string name="nigi">にぎやか</string>
-    <string name="yutta">ゆったり</string>
+    <string name="nigi">Cheer!</string>
+    <string name="yutta">Relax</string>
 
-    <string name="seeHomepage">ホームページを見る</string>
-    <string name="reserve">予約する</string>
-    <string name="go_here">ここへ行く</string>
-    <string name="etc">その他</string>
-    <string name="infomation">詳細情報</string>
-    <string name="seeWantList">行きたい店リストを見る</string>
-    <string name="add_restname_text">今いるお店が上のリストにないときは........</string>
-    <string name="add_cheer_text">このお店を応援する</string>
+    <string name="seeHomepage">Homepage</string>
+    <string name="reserve">Reservation</string>
+    <string name="go_here">Let is Go!</string>
+    <string name="etc">Others</string>
+    <string name="infomation">Information</string>
+    <string name="seeWantList">see WantsList</string>
+    <string name="add_restname_text">Nothing to restarurant in the list........</string>
+    <string name="add_cheer_text">Cheer!</string>
 
-    <string name="enjoy_eat">食を楽しもう</string>
-    <string name="introduce">グルメ動画アプリ「Gocci」</string>
-    <string name="start_gocci">Gocciを始める</string>
-    <string name="restname">店名</string>
-    <string name="restname_strong">店名(必須)</string>
-    <string name="locality">住所</string>
-    <string name="username">ユーザー名</string>
-    <string name="comment">コメント</string>
-    <string name="datetime">？日前</string>
-    <string name="notice">通知</string>
-    <string name="category">カテゴリー</string>
-    <string name="atmosphere">雰囲気</string>
-    <string name="value">価格</string>
-    <string name="value_property">価格帯</string>
-    <string name="value_strong">価格(数字のみ)</string>
-    <string name="distance">距離</string>
-    <string name="email">メールアドレス</string>
-    <string name="password">パスワード</string>
-    <string name="want">行きたい店に認定</string>
-    <string name="please">希望のユーザー名</string>
-    <string name="sort">並び替え</string>
+    <string name="enjoy_eat">Enjoy Food</string>
+    <string name="introduce">FoodMovieApp「Gocci」</string>
+    <string name="start_gocci">Start Gocci</string>
+    <string name="restname">Restname</string>
+    <string name="restname_strong">Restname(must)</string>
+    <string name="locality">Locality</string>
+    <string name="username">Username</string>
+    <string name="comment">Comment</string>
+    <string name="datetime">ago</string>
+    <string name="notice">Notification</string>
+    <string name="category">Category</string>
+    <string name="atmosphere">Atmosphere</string>
+    <string name="value">Value</string>
+    <string name="value_property">Value_property</string>
+    <string name="value_strong">Value(number)</string>
+    <string name="distance">Distance</string>
+    <string name="email">Mail-Address</string>
+    <string name="password">Password</string>
+    <string name="want">Wants!</string>
+    <string name="please">Please Username</string>
+    <string name="sort">Sort by</string>
 
-    <string name="japanese">日本語</string>
-    <string name="english">英語</string>
+    <string name="japanese">Japanese</string>
+    <string name="english">English</string>
 
-    <string name="gochi">ゴチ</string>
-    <string name="follow">フォロー</string>
-    <string name="follower">フォロワー</string>
-    <string name="notification">運営からのお知らせ</string>
+    <string name="gochi">Gochi!</string>
+    <string name="follow">Follow</string>
+    <string name="follower">Follower</string>
+    <string name="notification">Notification</string>
 
-    <string name="follow_list">フォロー</string>
-    <string name="follower_list">フォロワー</string>
-    <string name="cheer_list">応援店</string>
-    <string name="want_list">行きたい店</string>
-    <string name="cheer_user_list">応援しているユーザー</string>
+    <string name="follow_list">Follow</string>
+    <string name="follower_list">Follower</string>
+    <string name="cheer_list">Cheer</string>
+    <string name="want_list">Want</string>
+    <string name="cheer_user_list">Cheer User</string>
 
-    <string name="two">モバイルネットワークとWi-Fiで再生</string>
-    <string name="one">Wi-Fiでのみ再生</string>
-    <string name="zero">自動再生しない</string>
+    <string name="two">Both Mobile Network and Wi-Fi</string>
+    <string name="one">Wi-Fi only</string>
+    <string name="zero">No Autoplay</string>
 
-    <string name="complete_share">シェアが完了しました</string>
-    <string name="cancel_share">キャンセルしました</string>
-    <string name="error_share">シェアに失敗しました</string>
+    <string name="complete_share">Completed!</string>
+    <string name="cancel_share">Cancelled.....</string>
+    <string name="error_share">Failure.....</string>
 
-    <string name="cancel_login">キャンセルしました</string>
-    <string name="error_login">ログインに失敗しました</string>
-    <string name="error_account_no_exist">まだアカウントを作成していません</string>
+    <string name="cancel_login">Cancelled</string>
+    <string name="error_login">Failure login.....</string>
+    <string name="error_account_no_exist">nothing create User yet</string>
 
-    <string name="please_input_restname">店名を入力してください</string>
-    <string name="please_input_username">希望のユーザー名を入力してください</string>
+    <string name="please_input_restname">Please write Restname</string>
+    <string name="please_input_username">Please write Username</string>
 
-    <string name="multiple_username">このユーザー名はすでに登録されています</string>
+    <string name="multiple_username">this User already exist......</string>
 
-    <string name="bad_internet_connection">回線が悪いようです。。。</string>
+    <string name="bad_internet_connection">bad response.....</string>
 
-    <string name="check_videoposting_cancel">ここで戻ると、この動画は初期化されますがよろしいですか？</string>
-    <string name="check_videoposting_yeah">戻る</string>
-    <string name="check_videoposting_no">いいえ</string>
+    <string name="check_videoposting_cancel">Are you OK?</string>
+    <string name="check_videoposting_yeah">Go Back</string>
+    <string name="check_videoposting_no">No</string>
 
-    <string name="add_restname">あなたのいるお店の名前を入力してください。※位置情報は現在の位置を使います。</string>
-    <string name="add_restname_post">送信する</string>
+    <string name="add_restname">Please write Restname here</string>
+    <string name="add_restname_post">Submit</string>
 
-    <string name="error_internet_connection">通信に失敗しました</string>
+    <string name="error_internet_connection">Oops....Bad response.....</string>
 
-    <string name="add_restname_complete_message">店舗を追加しました</string>
+    <string name="add_restname_complete_message">Added restaurant!</string>
 
-    <string name="videoposting_failure">投稿に失敗しました</string>
-    <string name="videoposting_success">投稿しました</string>
-    <string name="videoposting_message">投稿完了までは少し時間がかかります</string>
+    <string name="videoposting_failure">Post Failure.....</string>
+    <string name="videoposting_success">Completed!</string>
+    <string name="videoposting_message">Please wait for  minute</string>
 
-    <string name="post_comment">送る</string>
+    <string name="post_comment">Send</string>
 
-    <string name="nothing_tag">タグなし</string>
+    <string name="nothing_tag">No-Tag</string>
 
-    <string name="preparing_share">シェアの準備をしています</string>
-    <string name="preparing_share_error">もうちょっと待ってから押してみましょう</string>
+    <string name="preparing_share">Preparing.....</string>
+    <string name="preparing_share_error">Please wait</string>
 
-    <string name="add_want">行きたい店に認定</string>
-    <string name="remove_want">行きたい店を取消</string>
+    <string name="add_want">Wants!</string>
+    <string name="remove_want">No Wants.....</string>
 
-    <string name="nothing_etc">その他メニューはありません</string>
+    <string name="nothing_etc">Nothing others</string>
 
-    <string name="do_follow">フォローする</string>
-    <string name="do_unfollow">フォロー解除する</string>
-    <string name="do_yours">これはあなたです</string>
+    <string name="do_follow">Follow</string>
+    <string name="do_unfollow">Remove</string>
+    <string name="do_yours">This is yours</string>
 
-    <string name="do_post">投稿する</string>
+    <string name="do_post">Submit!</string>
 
-    <string name="finish_camera_location_error">位置情報機能が取れないので、カメラを終了します</string>
+    <string name="finish_camera_location_error">Finish camera caused by nothing Location</string>
 
-    <string name="videoposting_complete">投稿が完了しました！</string>
+    <string name="videoposting_complete">Comleted!</string>
 
-    <string name="info_gocci">Gocciからのお知らせ</string>
+    <string name="info_gocci">Notification</string>
 
-    <string name="check_delete_post">この投稿を削除しますか？</string>
-    <string name="check_delete_yeah">削除する</string>
-    <string name="check_delete_no">いいえ</string>
+    <string name="check_delete_post">Are you delete this post？</string>
+    <string name="check_delete_yeah">Delete it</string>
+    <string name="check_delete_no">No</string>
 
-    <string name="check_change_yeah">変更する</string>
+    <string name="check_change_yeah">Change</string>
 
-    <string name="cheat_input">入力が不正なようです</string>
+    <string name="cheat_input">Cheat.....</string>
 
-    <string name="cheat_input_password">希望のパスワードを入力してください</string>
+    <string name="cheat_input_password">Prease write Password</string>
 
-    <string name="check_not_implemented_message">実装までしばらくお待ちください。</string>
-    <string name="check_not_implemented_yeah">閉じる</string>
+    <string name="check_not_implemented_message">Please wait.....create now</string>
+    <string name="check_not_implemented_yeah">Close</string>
 
-    <string name="delete_post_complete_message">投稿を消去しました</string>
+    <string name="delete_post_complete_message">Deleted</string>
 
-    <string name="change_profile_dialog_title">変えたい箇所を押してみよう</string>
-    <string name="change_profile_dialog_yeah">変更する</string>
-    <string name="change_profile_dialog_complete">プロフィールを変更しました</string>
-    <string name="change_profile_dialog_error_username">変更に失敗しました</string>
-    <string name="change_profile_dialog_error_username_message">ユーザー名は同じアカウントが存在するため変更できませんでした</string>
+    <string name="change_profile_dialog_title">Please click</string>
+    <string name="change_profile_dialog_yeah">change</string>
+    <string name="change_profile_dialog_complete">Profile changed!</string>
+    <string name="change_profile_dialog_error_username">Failure.....</string>
+    <string name="change_profile_dialog_error_username_message">this User already exist.....</string>
 
-    <string name="cheat_input_username">名前の入力が不正です</string>
+    <string name="cheat_input_username">cheat.....</string>
 
-    <string name="login">ログイン</string>
+    <string name="login">Login</string>
 
-    <string name="filter">絞り込む</string>
+    <string name="filter">Filterring</string>
 
-    <string name="maplog">マップログ</string>
+    <string name="maplog">MapLog</string>
 
-    <string name="auth_twitter_message">Twitter 連携する</string>
-    <string name="auth_facebook_message">Facebook 連携する</string>
-    <string name="auth_skip">連携せずに始める</string>
-    <string name="remove_auth_twitter_message">Twitterの連携を解除してもいいですか？</string>
-    <string name="remove_auth_facebook_message">Facebookの連携を解除してもいいですか？</string>
-    <string name="remove_auth_yeah">解除する</string>
-    <string name="remove_auth_no">いいえ</string>
+    <string name="auth_twitter_message">Twitter Authentication</string>
+    <string name="auth_facebook_message">Facebook Authentication</string>
+    <string name="auth_skip">Go Start!</string>
+    <string name="remove_auth_twitter_message">Are you remove Twitter Authentication?</string>
+    <string name="remove_auth_facebook_message">Are you remove Facebook Authentication?</string>
+    <string name="remove_auth_yeah">Remove it</string>
+    <string name="remove_auth_no">No</string>
 
-    <string name="auth_sns_complete_message">SNS連携解除しました</string>
-    <string name="no_auth_message">連携していません</string>
+    <string name="auth_sns_complete_message">Removed!</string>
+    <string name="no_auth_message">No Authentication</string>
 
-    <string name="login_failure">ログインに失敗しました</string>
+    <string name="login_failure">Failure.....</string>
 
-    <string name="rule">利用規約</string>
-    <string name="policy">プライバシーポリシー</string>
-    <string name="source">ソースライブラリ</string>
+    <string name="rule">Rule</string>
+    <string name="policy">Policy</string>
+    <string name="source">Source library</string>
 
-    <string name="twitter_login_text">twitterアカウントでサインイン</string>
+    <string name="twitter_login_text">Signin with Twitter</string>
 
-    <string name="camera_title">Gocciカメラ</string>
-    <string name="camera_message">このカメラはボタンをタップしている間だけ録画されます。縦向きで投稿するようにしてください！</string>
-    <string name="camera_alert">このカメラでは、縦向きで投稿するようにしてください！</string>
+    <string name="camera_title">GocciCamera</string>
+    <string name="camera_message">This camera record movie while button click. Please Landscape!</string>
+    <string name="camera_alert">Please landscape!</string>
 
-    <string name="camera_location_title">位置情報取得について</string>
-    <string name="camera_location_message">位置情報を使いたいのですが、GPSが無効になっています。" + "設定を変更しましょう</string>
-    <string name="camera_location_yeah">変更する</string>
-    <string name="camera_location_no">いいえ</string>
-    <string name="camera_location_cancel">近くの店舗表示ができなくなります</string>
+    <string name="camera_location_title">About Location Settings</string>
+    <string name="camera_location_message">Please change settings about Location</string>
+    <string name="camera_location_yeah">Change it</string>
+    <string name="camera_location_no">No</string>
+    <string name="camera_location_cancel">cannot show near restaurants!</string>
 
-    <string name="finish_causedby_location">位置情報が読み取れないため、Gocciを閉じます</string>
+    <string name="finish_causedby_location">Finish Gocci caused by Location</string>
 
-    <string name="advice_title">アドバイスを送る</string>
-    <string name="advice_message">コメントを入力してください</string>
-    <string name="advice_yeah">Gocciに送る</string>
-    <string name="advice_alert">文字を入力してください</string>
-    <string name="advice_complete">ご協力ありがとうございました！</string>
+    <string name="advice_title">Send advice</string>
+    <string name="advice_message">Please write Comment</string>
+    <string name="advice_yeah">Send Gocci</string>
+    <string name="advice_alert">Please write</string>
+    <string name="advice_complete">Thanks for helping!</string>
 
-    <string name="violate_title">投稿の違反報告</string>
-    <string name="violate_message">この投稿を違反報告しますか？</string>
-    <string name="violate_yeah">報告する</string>
-    <string name="violate_no">いいえ</string>
+    <string name="violate_title">Violate</string>
+    <string name="violate_message">This post is violate?</string>
+    <string name="violate_yeah">Yeah</string>
+    <string name="violate_no">No</string>
 
-    <string name="add_sns_message">すでに連携済みのアカウントがある場合、そのアカウントは使用できなくなりますがよろしいですか？</string>
-    <string name="add_sns_yeah">連携する</string>
-    <string name="add_sns_no">やめる</string>
+    <string name="add_sns_message">The case already sns authentication, old User cannot use never. Are you OK?</string>
+    <string name="add_sns_yeah">Yeah</string>
+    <string name="add_sns_no">No</string>
 
     <string name="notice_from_gochi">さんからgochi!されました</string>
     <string name="notice_from_comment">さんからコメントされました</string>
     <string name="notice_from_follow">さんからフォローされました</string>
 
-    <string name="login_username_and_password">ユーザー名とパスワードでログイン</string>
-    <string name="login_sns">SNS でログイン</string>
-    <string name="login_with_twitter">Twitter でログイン</string>
-    <string name="login_with_facebook">Facebok でログイン</string>
+    <string name="login_username_and_password">Login with Username and Password</string>
+    <string name="login_sns">Login with SocialNetwork</string>
+    <string name="login_with_twitter">Login with Twitter</string>
+    <string name="login_with_facebook">Login with Facebook</string>
 
-    <string name="setting_account">アカウント</string>
-    <string name="setting_account_language">言語</string>
-    <string name="setting_account_password">パスワードを設定・変更する</string>
-    <string name="setting_account_notification">通知</string>
-    <string name="setting_friend">友だち</string>
-    <string name="setting_friend_search">友だちを探す</string>
-    <string name="setting_friend_invite">Gocciに招待</string>
-    <string name="setting_socialnetwork">ソーシャルネットワーク</string>
+    <string name="setting_account">Account</string>
+    <string name="setting_account_language">Language</string>
+    <string name="setting_account_password">set Password</string>
+    <string name="setting_account_notification">Notification</string>
+    <string name="setting_friend">Friend</string>
+    <string name="setting_friend_search">Search</string>
+    <string name="setting_friend_invite">Invite</string>
+    <string name="setting_socialnetwork">SocialNetwork</string>
     <string name="setting_socialnetwork_twitter">Twitter</string>
     <string name="setting_socialnetwork_facebook">Facebook</string>
     <string name="setting_socialnetwork_instagram">Instagram</string>
-    <string name="setting_support">サポート</string>
-    <string name="setting_support_autoplay">動画の自動再生</string>
-    <string name="setting_support_advice">アドバイスを送る</string>
-    <string name="setting_support_rule">利用規約</string>
-    <string name="setting_support_policy">プライバシーポリシー</string>
-    <string name="setting_support_source">ソースライブラリ</string>
-    <string name="setting_support_version">バージョン</string>
-    <string name="setting_support_delete">アカウントを削除する</string>
-    <string name="setting_support_logout">ログアウト</string>
+    <string name="setting_support">Support</string>
+    <string name="setting_support_autoplay">AutoPlay</string>
+    <string name="setting_support_advice">Send advice</string>
+    <string name="setting_support_rule">Rule</string>
+    <string name="setting_support_policy">Policy</string>
+    <string name="setting_support_source">Sourcelibrary</string>
+    <string name="setting_support_version">Versions</string>
+    <string name="setting_support_delete">Delete user</string>
+    <string name="setting_support_logout">Logout</string>
 
-    <string name="already_have_account">すでにアカウントをお持ちの方はこちら</string>
+    <string name="already_have_account">Please click already have user!</string>
 
-    <string name="edit_profile">プロフィールを編集する</string>
+    <string name="edit_profile">Change Profile</string>
 
-    <string name="about_gocci">Gocciとは？</string>
-    <string name="about_gocci2">Gocci.は７秒のグルメ動画アプリです</string>
-    <string name="about_gocci3">７秒で</string>
-    <string name="about_gocci4">外観→内装→食事を撮りましょう</string>
-    <string name="about_gocci5">外食をわかりやすい動画で</string>
-    <string name="about_gocci6">記録しましょう</string>
-    <string name="about_gocci7">それでは、</string>
-    <string name="about_gocci8">Gocciへようこそ！</string>
-    <string name="about_gocci9">SNS連携しましょう</string>
+    <string name="about_gocci">What is Gocci</string>
+    <string name="about_gocci2">Gocci is short movie food app</string>
+    <string name="about_gocci3">Seven seconds</string>
+    <string name="about_gocci4">Record Restaurant</string>
+    <string name="about_gocci5">Record by Video!</string>
+    <string name="about_gocci6">Let is Recording</string>
+    <string name="about_gocci7">So</string>
+    <string name="about_gocci8">Wolcome to Gocci!!!</string>
+    <string name="about_gocci9">Let is Authentication</string>
 
-    <string name="notes1">登録することで、</string>
-    <string name="notes2">及び</string>
-    <string name="notes3">に同意するものとします。</string>
+    <string name="notes1">login and</string>
+    <string name="notes2">and</string>
+    <string name="notes3">lead to agree</string>
 
-    <string name="share_facebook">Facebook シェアする</string>
-    <string name="share_twitter">Twitter シェアする</string>
-    <string name="share_instagram">Instagram シェアする</string>
-    <string name="close">閉じる</string>
+    <string name="share_facebook">Share with Facebook</string>
+    <string name="share_twitter">Share with Twitter</string>
+    <string name="share_instagram">Share with Instagram</string>
+    <string name="close">Close</string>
 
-    <string name="popup_violate">この投稿を違反報告する</string>
+    <string name="popup_violate">Violate</string>
 
-    <string name="search_friend_hint">ユーザー名を入力してください</string>
-    <string name="search_friend_yeah">探す</string>
+    <string name="search_friend_hint">Please write Username</string>
+    <string name="search_friend_yeah">Search</string>
 
-    <string name="password_message">希望のパスワードを入力してください</string>
-    <string name="password_yeah">設定する</string>
+    <string name="password_message">Please write password</string>
+    <string name="password_yeah">Submit</string>
 
-    <string name="no_tag">タグなし</string>
+    <string name="no_tag">No-Tag</string>
 
-    <string name="cheap">格安</string>
-    <string name="normal">普通</string>
-    <string name="pre_rich">ちょいリッチ</string>
-    <string name="rich">リッチ</string>
+    <string name="cheap">Cheap</string>
+    <string name="normal">Common</string>
+    <string name="pre_rich">Pre-rich</string>
+    <string name="rich">Rich</string>
 
-    <string name="line_latest">最新順</string>
-    <string name="line_gochi">Gochi順</string>
-    <string name="line_near">近い順</string>
+    <string name="line_latest">Latest</string>
+    <string name="line_gochi">Popular</string>
+    <string name="line_near">Near</string>
 
-    <string name="login_error_pass">ユーザー名またはパスワードが正しくありません</string>
+    <string name="login_error_pass">do not match Username or Password!</string>
 </resources>

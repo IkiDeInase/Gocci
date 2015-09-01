@@ -258,6 +258,7 @@ public class Application_Gocci extends Application {
         tracker.enableAdvertisingIdCollection(true);
         tracker.enableAutoActivityTracking(true);
 
+
     }
 
     @Override
