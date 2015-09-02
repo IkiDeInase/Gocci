@@ -286,17 +286,22 @@ public class SettingActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 int selected = SavedData.getSettingRegions(SettingActivity.this);
+//                new MaterialDialog.Builder(SettingActivity.this)
+//                        .items(R.array.locale)
+//                        .itemsCallbackSingleChoice(selected, new MaterialDialog.ListCallbackSingleChoice() {
+//                            @Override
+//                            public boolean onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+//                                SavedData.setSettingRegions(SettingActivity.this, which);
+//                                return true;
+//                            }
+//                        })
+//                        .widgetColorRes(R.color.gocci_header)
+//                        .positiveText(getString(R.string.check_change_yeah))
+//                        .positiveColorRes(R.color.gocci_header)
+//                        .show();
                 new MaterialDialog.Builder(SettingActivity.this)
-                        .items(R.array.locale)
-                        .itemsCallbackSingleChoice(selected, new MaterialDialog.ListCallbackSingleChoice() {
-                            @Override
-                            public boolean onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
-                                SavedData.setSettingRegions(SettingActivity.this, which);
-                                return true;
-                            }
-                        })
-                        .widgetColorRes(R.color.gocci_header)
-                        .positiveText(getString(R.string.check_change_yeah))
+                        .content(getString(R.string.check_not_implemented_message))
+                        .positiveText(getString(R.string.check_not_implemented_yeah))
                         .positiveColorRes(R.color.gocci_header)
                         .show();
             }
@@ -488,7 +493,7 @@ public class SettingActivity extends AppCompatActivity {
 
         version_number.setText(BuildConfig.VERSION_NAME);
 
-        locale.setText(getString(R.string.japanese));
+        locale.setText(Locale.getDefault() == Locale.JAPAN ? getString(R.string.japanese) : getString(R.string.english));
 
         logoutRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
             @Override

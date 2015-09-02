@@ -28,8 +28,8 @@
 
     <array name="list_sort">
         <item>@string/line_latest</item>
-        <item>@string/line_gochi</item>
         <item>@string/line_near</item>
+        <item>@string/line_gochi</item>
     </array>
 
     <array name="list_mood">

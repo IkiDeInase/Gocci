@@ -224,7 +224,7 @@
 
     <string name="setting_account">Account</string>
     <string name="setting_account_language">Language</string>
-    <string name="setting_account_password">set Password</string>
+    <string name="setting_account_password">Set Password</string>
     <string name="setting_account_notification">Notification</string>
     <string name="setting_friend">Friend</string>
     <string name="setting_friend_search">Search</string>
@@ -239,7 +239,7 @@
     <string name="setting_support_rule">Rule</string>
     <string name="setting_support_policy">Policy</string>
     <string name="setting_support_source">Sourcelibrary</string>
-    <string name="setting_support_version">Versions</string>
+    <string name="setting_support_version">Version</string>
     <string name="setting_support_delete">Delete user</string>
     <string name="setting_support_logout">Logout</string>
 
