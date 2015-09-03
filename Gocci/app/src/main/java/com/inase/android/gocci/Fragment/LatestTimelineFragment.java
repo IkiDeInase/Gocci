@@ -42,7 +42,6 @@ import com.inase.android.gocci.R;
 import com.inase.android.gocci.VideoPlayer.HlsRendererBuilder;
 import com.inase.android.gocci.VideoPlayer.VideoPlayer;
 import com.inase.android.gocci.common.Const;
-import com.inase.android.gocci.common.LocaleFormatHelper;
 import com.inase.android.gocci.common.SavedData;
 import com.inase.android.gocci.common.Util;
 import com.inase.android.gocci.data.PostData;
@@ -102,8 +101,6 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
 
     private AudioCapabilitiesReceiver audioCapabilitiesReceiver;
     private AudioCapabilities audioCapabilities;
-
-    LocaleFormatHelper lfh = LocaleFormatHelper.getInstance();
 
     private ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
         @Override
@@ -747,7 +744,7 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
                 holder.atmosphere.setText("　　　　");
             }
             if (!user.getValue().equals("0")) {
-                holder.value.setText(lfh.formatPrice(user.getValue()));
+                holder.value.setText(user.getValue() + "円");
             } else {
                 holder.value.setText("　　　　");
             }

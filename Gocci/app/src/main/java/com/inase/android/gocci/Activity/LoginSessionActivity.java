@@ -253,9 +253,14 @@ public class LoginSessionActivity extends AppCompatActivity {
                             SavedData.setWelcome(context, username, profile_img, user_id, identity_id, badge_num);
 
                             Intent intent = new Intent(context, GocciTimelineActivity.class);
-                            startActivity(intent);
-                            overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+                            overridePendingTransition(0, 0);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             finish();
+
+                            overridePendingTransition(0, 0);
+                            startActivity(intent);
                         } else {
                             Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                         }
@@ -310,9 +315,14 @@ public class LoginSessionActivity extends AppCompatActivity {
                             SavedData.setFlag(LoginSessionActivity.this, 0);
 
                             Intent intent = new Intent(context, GocciTimelineActivity.class);
-                            startActivity(intent);
-                            overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+                            overridePendingTransition(0, 0);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             finish();
+
+                            overridePendingTransition(0, 0);
+                            startActivity(intent);
                         } else {
                             Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                         }
@@ -356,9 +366,14 @@ public class LoginSessionActivity extends AppCompatActivity {
                             SavedData.setWelcome(context, username, profile_img, user_id, identity_id, badge_num);
 
                             Intent intent = new Intent(context, GocciTimelineActivity.class);
-                            startActivity(intent);
-                            overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+                            overridePendingTransition(0, 0);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             finish();
+
+                            overridePendingTransition(0, 0);
+                            startActivity(intent);
                         } else {
                             Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                         }
