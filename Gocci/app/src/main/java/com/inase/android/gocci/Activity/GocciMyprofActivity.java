@@ -3,6 +3,7 @@ package com.inase.android.gocci.Activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -291,7 +292,7 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
         getMenuInflater().inflate(R.menu.bell_notification, menu);
         // お知らせ未読件数バッジ表示
         MenuItem item = menu.findItem(R.id.badge);
-        //MenuItem cameraitem = menu.findItem(R.id.camera);
+        MenuItem cameraitem = menu.findItem(R.id.camera);
         MenuItemCompat.setActionView(item, R.layout.toolbar_notification_icon);
         View view = MenuItemCompat.getActionView(item);
         notificationNumber = (TextView) view.findViewById(R.id.notification_number);
@@ -334,13 +335,44 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
             }
         });
 
-//        cameraitem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-//            @Override
-//            public boolean onMenuItemClick(MenuItem item) {
-//                startActivity(new Intent(GocciMyprofActivity.this, GocciCameraActivity.class));
-//                return false;
-//            }
-//        });
+        cameraitem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if (SavedData.getVideoUrl(GocciMyprofActivity.this).equals("") || SavedData.getLat(GocciMyprofActivity.this) == 0.0) {
+                    startActivity(new Intent(GocciMyprofActivity.this, GocciCameraActivity.class));
+                } else {
+                    new MaterialDialog.Builder(GocciMyprofActivity.this)
+                            .title(getString(R.string.already_exist_video))
+                            .titleColorRes(R.color.namegrey)
+                            .content(getString(R.string.already_exist_video_message))
+                            .contentColorRes(R.color.namegrey)
+                            .positiveText(getString(R.string.already_exist_video_yeah))
+                            .positiveColorRes(R.color.gocci_header)
+                            .negativeText(getString(R.string.already_exist_video_no))
+                            .negativeColorRes(R.color.gocci_header)
+                            .callback(new MaterialDialog.ButtonCallback() {
+                                @Override
+                                public void onPositive(MaterialDialog dialog) {
+                                    super.onPositive(dialog);
+                                    Intent intent = new Intent(GocciMyprofActivity.this, AlreadyExistCameraPreview.class);
+                                    startActivity(intent);
+                                    overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+                                }
+
+                                @Override
+                                public void onNegative(MaterialDialog dialog) {
+                                    super.onNegative(dialog);
+                                    SharedPreferences prefs = getSharedPreferences("movie", Context.MODE_PRIVATE);
+                                    SharedPreferences.Editor editor = prefs.edit();
+                                    editor.clear();
+                                    editor.apply();
+                                    startActivity(new Intent(GocciMyprofActivity.this, GocciCameraActivity.class));
+                                }
+                            }).show();
+                }
+                return false;
+            }
+        });
         return super.onCreateOptionsMenu(menu);
     }
 

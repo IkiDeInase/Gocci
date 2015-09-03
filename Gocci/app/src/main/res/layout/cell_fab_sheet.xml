@@ -18,14 +18,16 @@
         android:textColor="@color/timecolor"
         android:textSize="@dimen/small_text"
         app:met_floatingLabel="normal"
-        app:met_floatingLabelTextSize="10sp" />
+        app:met_floatingLabelTextSize="10sp"
+        android:visibility="gone" />
 
     <ImageView
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:layout_marginTop="8dp"
         android:layout_gravity="center_horizontal"
-        android:src="@drawable/bs_ic_clear_light" />
+        android:src="@drawable/bs_ic_clear_light"
+        android:visibility="gone" />
 
     <com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner
         android:id="@+id/value_spinner"
@@ -37,14 +39,16 @@
         android:textColor="@color/timecolor"
         android:textSize="@dimen/small_text"
         app:met_floatingLabel="normal"
-        app:met_floatingLabelTextSize="10sp" />
+        app:met_floatingLabelTextSize="10sp"
+        android:visibility="gone" />
 
     <ImageView
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:layout_marginTop="8dp"
         android:layout_gravity="center_horizontal"
-        android:src="@drawable/bs_ic_clear_light" />
+        android:src="@drawable/bs_ic_clear_light"
+        android:visibility="gone" />
 
     <com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner
         android:id="@+id/sort_spinner"

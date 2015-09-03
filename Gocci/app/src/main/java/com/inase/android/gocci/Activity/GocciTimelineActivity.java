@@ -1,6 +1,9 @@
 package com.inase.android.gocci.Activity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -16,14 +19,19 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
 import com.andexert.library.RippleView;
 import com.inase.android.gocci.Base.ToukouPopup;
 import com.inase.android.gocci.Event.BusHolder;
+import com.inase.android.gocci.Event.FilterTimelineEvent;
 import com.inase.android.gocci.Event.NotificationNumberEvent;
 import com.inase.android.gocci.Event.PageChangeVideoStopEvent;
 import com.inase.android.gocci.Fragment.FollowTimelineFragment;
@@ -34,6 +42,7 @@ import com.inase.android.gocci.View.NotificationListView;
 import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;
 import com.inase.android.gocci.common.Util;
+import com.konifar.fab_transformation.FabTransformation;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
@@ -45,6 +54,9 @@ import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
 import com.squareup.otto.Subscribe;
 import com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner;
+
+import io.nlopez.smartlocation.OnLocationUpdatedListener;
+import io.nlopez.smartlocation.SmartLocation;
 
 public class GocciTimelineActivity extends AppCompatActivity {
 
@@ -73,6 +85,8 @@ public class GocciTimelineActivity extends AppCompatActivity {
     private int category_id = 0;
     private int value_id = 0;
     private int sort_id = 0;
+
+    private Location nowLocation;
 
     private static Handler sHandler = new Handler() {
         @Override
@@ -196,70 +210,76 @@ public class GocciTimelineActivity extends AppCompatActivity {
 //                        Toast.makeText(GocciTimelineActivity.this ,"TREND", Toast.LENGTH_SHORT).show();
 //                        break;
 //                }
-//                if (fab.getVisibility() == View.VISIBLE) {
-//                    FabTransformation.with(fab).setOverlay(overlay).transformTo(sheet);
-//                }
-                startActivity(new Intent(GocciTimelineActivity.this, GocciCameraActivity.class));
+                if (fab.getVisibility() == View.VISIBLE) {
+                    FabTransformation.with(fab).setOverlay(overlay).transformTo(sheet);
+                }
+                //startActivity(new Intent(GocciTimelineActivity.this, GocciCameraActivity.class));
+                SmartLocation.with(GocciTimelineActivity.this).location().oneFix().start(new OnLocationUpdatedListener() {
+                    @Override
+                    public void onLocationUpdated(Location location) {
+                        nowLocation = location;
+                    }
+                });
             }
         });
-//
-//        sheet = (CardView) findViewById(R.id.sheet);
-//        overlay = (View) findViewById(R.id.overlay);
-//
-//        overlay.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (fab.getVisibility() != View.VISIBLE) {
-//                    FabTransformation.with(fab).setOverlay(overlay).transformFrom(sheet);
-//                }
-//            }
-//        });
-//
-//        category_spinner = (MaterialBetterSpinner) findViewById(R.id.category_spinner);
-//        value_spinner = (MaterialBetterSpinner) findViewById(R.id.value_spinner);
-//        sort_spinner = (MaterialBetterSpinner) findViewById(R.id.sort_spinner);
-//        filter_ripple = (RippleView) findViewById(R.id.filter_Ripple);
-//
-//        String[] CATEGORY = getResources().getStringArray(R.array.list_category);
-//        String[] VALUE = getResources().getStringArray(R.array.list_value);
-//        String[] SORT = getResources().getStringArray(R.array.list_sort);
-//
-//        ArrayAdapter<String> categoryAdapter = new ArrayAdapter<>(this,
-//                android.R.layout.simple_dropdown_item_1line, CATEGORY);
-//        category_spinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                category_id = position + 1;
-//            }
-//        });
-//        ArrayAdapter<String> valueAdapter = new ArrayAdapter<>(this,
-//                android.R.layout.simple_dropdown_item_1line, VALUE);
-//        value_spinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                value_id = position + 1;
-//            }
-//        });
-//        ArrayAdapter<String> sortAdapter = new ArrayAdapter<>(this,
-//                android.R.layout.simple_dropdown_item_1line, SORT);
-//        sort_spinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                sort_id = position + 1;
-//            }
-//        });
-//        category_spinner.setAdapter(categoryAdapter);
-//        value_spinner.setAdapter(valueAdapter);
-//        sort_spinner.setAdapter(sortAdapter);
-//
-//        filter_ripple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
-//            @Override
-//            public void onComplete(RippleView rippleView) {
-//                FabTransformation.with(fab).setOverlay(overlay).transformFrom(sheet);
-//                //Otto currentpageと絞り込みurl
-//                //BusHolder.get().post(new FilterTimelineEvent(viewPager.getCurrentItem(), url));
-//            }
-//        });
+
+        sheet = (CardView) findViewById(R.id.sheet);
+        overlay = (View) findViewById(R.id.overlay);
+
+        overlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (fab.getVisibility() != View.VISIBLE) {
+                    FabTransformation.with(fab).setOverlay(overlay).transformFrom(sheet);
+                }
+            }
+        });
+
+        category_spinner = (MaterialBetterSpinner) findViewById(R.id.category_spinner);
+        value_spinner = (MaterialBetterSpinner) findViewById(R.id.value_spinner);
+        sort_spinner = (MaterialBetterSpinner) findViewById(R.id.sort_spinner);
+        filter_ripple = (RippleView) findViewById(R.id.filter_Ripple);
+
+        String[] CATEGORY = getResources().getStringArray(R.array.list_category);
+        String[] VALUE = getResources().getStringArray(R.array.list_value);
+        String[] SORT = getResources().getStringArray(R.array.list_sort);
+
+        ArrayAdapter<String> categoryAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_dropdown_item_1line, CATEGORY);
+        category_spinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                category_id = position + 1;
+            }
+        });
+        ArrayAdapter<String> valueAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_dropdown_item_1line, VALUE);
+        value_spinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                value_id = position + 1;
+            }
+        });
+        ArrayAdapter<String> sortAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_dropdown_item_1line, SORT);
+        sort_spinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                sort_id = position;
+            }
+        });
+        category_spinner.setAdapter(categoryAdapter);
+        value_spinner.setAdapter(valueAdapter);
+        sort_spinner.setAdapter(sortAdapter);
+
+        filter_ripple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
+            @Override
+            public void onComplete(RippleView rippleView) {
+                FabTransformation.with(fab).setOverlay(overlay).transformFrom(sheet);
+                //Otto currentpageと絞り込みurl
+                BusHolder.get().post(new FilterTimelineEvent(viewPager.getCurrentItem(), Const.getTimelineCustomApi(0, 0, sort_id, nowLocation.getLongitude(), nowLocation.getLatitude())));
+            }
+        });
     }
 
     @Override
@@ -303,7 +323,7 @@ public class GocciTimelineActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.bell_notification, menu);
         // お知らせ未読件数バッジ表示
         MenuItem item = menu.findItem(R.id.badge);
-        //MenuItem cameraitem = menu.findItem(R.id.camera);
+        MenuItem cameraitem = menu.findItem(R.id.camera);
         MenuItemCompat.setActionView(item, R.layout.toolbar_notification_icon);
         View view = MenuItemCompat.getActionView(item);
         notificationNumber = (TextView) view.findViewById(R.id.notification_number);
@@ -343,13 +363,44 @@ public class GocciTimelineActivity extends AppCompatActivity {
             }
         });
 
-//        cameraitem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-//            @Override
-//            public boolean onMenuItemClick(MenuItem item) {
-//                startActivity(new Intent(GocciTimelineActivity.this, GocciCameraActivity.class));
-//                return false;
-//            }
-//        });
+        cameraitem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if (SavedData.getVideoUrl(GocciTimelineActivity.this).equals("") || SavedData.getLat(GocciTimelineActivity.this) == 0.0) {
+                    startActivity(new Intent(GocciTimelineActivity.this, GocciCameraActivity.class));
+                } else {
+                    new MaterialDialog.Builder(GocciTimelineActivity.this)
+                            .title(getString(R.string.already_exist_video))
+                            .titleColorRes(R.color.namegrey)
+                            .content(getString(R.string.already_exist_video_message))
+                            .contentColorRes(R.color.namegrey)
+                            .positiveText(getString(R.string.already_exist_video_yeah))
+                            .positiveColorRes(R.color.gocci_header)
+                            .negativeText(getString(R.string.already_exist_video_no))
+                            .negativeColorRes(R.color.gocci_header)
+                            .callback(new MaterialDialog.ButtonCallback() {
+                                @Override
+                                public void onPositive(MaterialDialog dialog) {
+                                    super.onPositive(dialog);
+                                    Intent intent = new Intent(GocciTimelineActivity.this, AlreadyExistCameraPreview.class);
+                                    startActivity(intent);
+                                    overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+                                }
+
+                                @Override
+                                public void onNegative(MaterialDialog dialog) {
+                                    super.onNegative(dialog);
+                                    SharedPreferences prefs = getSharedPreferences("movie", Context.MODE_PRIVATE);
+                                    SharedPreferences.Editor editor = prefs.edit();
+                                    editor.clear();
+                                    editor.apply();
+                                    startActivity(new Intent(GocciTimelineActivity.this, GocciCameraActivity.class));
+                                }
+                            }).show();
+                }
+                return false;
+            }
+        });
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -358,9 +409,9 @@ public class GocciTimelineActivity extends AppCompatActivity {
         if (result != null && result.isDrawerOpen()) {
             result.closeDrawer();
         }
-//        else if (fab.getVisibility() != View.VISIBLE) {
-//            FabTransformation.with(fab).setOverlay(overlay).transformFrom(sheet);
-//        }
+        else if (fab.getVisibility() != View.VISIBLE) {
+            FabTransformation.with(fab).setOverlay(overlay).transformFrom(sheet);
+        }
         else {
             super.onBackPressed();
             overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);

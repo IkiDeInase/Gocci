@@ -286,4 +286,10 @@
     <string name="line_near">Near</string>
 
     <string name="login_error_pass">do not match Username or Password!</string>
+
+    <string name="already_exist_video">Preview Message</string>
+    <string name="already_exist_video_message">Go to CameraPreview?</string>
+    <string name="already_exist_video_yeah">yeah</string>
+    <string name="already_exist_video_no">delete it</string>
+
 </resources>

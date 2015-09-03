@@ -286,4 +286,10 @@
     <string name="line_near">近い順</string>
 
     <string name="login_error_pass">ユーザー名またはパスワードが正しくありません</string>
+
+    <string name="already_exist_video">投稿されていない動画があります</string>
+    <string name="already_exist_video_message">以前の投稿を編集しますか？</string>
+    <string name="already_exist_video_yeah">編集する</string>
+    <string name="already_exist_video_no">削除する</string>
+
 </resources>

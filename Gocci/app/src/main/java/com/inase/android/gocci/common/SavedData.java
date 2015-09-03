@@ -32,6 +32,18 @@ public class SavedData {
 
     private static final String KEY_REGIONS = "regions";
 
+    private static final String KEY_REST_ID = "rest_id";
+    private static final String KEY_RESTNAME = "restname";
+    private static final String KEY_VIDEO_URL = "video_url";
+    private static final String KEY_AWS_POST_NAME = "aws_post_name";
+    private static final String KEY_CATEGORY_ID = "category_id";
+    private static final String KEY_TAG_ID = "tag_id";
+    private static final String KEY_MEMO = "memo";
+    private static final String KEY_VALUE = "value";
+    private static final String KEY_ISNEWRESTNAME = "isNewRestname";
+    private static final String KEY_LON = "lon";
+    private static final String KEY_LAT = "lat";
+
     public static void setWelcome(Context context, String username, String picture, String user_id, String identityId, int badge_num) {
         SharedPreferences prefs = context.getSharedPreferences("pref", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
@@ -199,6 +211,148 @@ public class SavedData {
         SharedPreferences.Editor editor = prefs.edit();
         editor.putInt(KEY_REGIONS, region);
         editor.apply();
+    }
+
+    public static void setPostVideoPreview(Context context, String restname, int rest_id, String video_url, String aws_post_name, int category_id, int tag_id,
+                                           String memo, String value, boolean isNewRestname, double lon, double lat) {
+        SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(KEY_RESTNAME, restname);
+        editor.putInt(KEY_REST_ID, rest_id);
+        editor.putString(KEY_VIDEO_URL, video_url);
+        editor.putString(KEY_AWS_POST_NAME, aws_post_name);
+        editor.putInt(KEY_CATEGORY_ID, category_id);
+        editor.putInt(KEY_TAG_ID, tag_id);
+        editor.putString(KEY_MEMO, memo);
+        editor.putString(KEY_VALUE, value);
+        editor.putBoolean(KEY_ISNEWRESTNAME, isNewRestname);
+        editor.putLong(KEY_LON, Double.doubleToRawLongBits(lon));
+        editor.putLong(KEY_LAT, Double.doubleToRawLongBits(lat));
+        editor.apply();
+    }
+
+    public static void setRestname(Context context, String restname) {
+        SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(KEY_RESTNAME, restname);
+        editor.apply();
+    }
+
+    public static void setRest_id(Context context, int rest_id) {
+        SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt(KEY_REST_ID, rest_id);
+        editor.apply();
+    }
+
+    public static void setCategory_id(Context context, int category_id) {
+        SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt(KEY_CATEGORY_ID, category_id);
+        editor.apply();
+    }
+
+    public static void setTag_id(Context context, int tag_id) {
+        SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt(KEY_TAG_ID, tag_id);
+        editor.apply();
+    }
+
+    public static void setMemo(Context context, String memo) {
+        SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(KEY_MEMO, memo);
+        editor.apply();
+    }
+
+    public static void setValue(Context context, String value) {
+        SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(KEY_VALUE, value);
+        editor.apply();
+    }
+
+    public static void setIsNewRestname(Context context, boolean isNew) {
+        SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean(KEY_ISNEWRESTNAME, isNew);
+        editor.apply();
+    }
+
+    public static void setLon(Context context, double longitude) {
+        SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putLong(KEY_LON, Double.doubleToRawLongBits(longitude));
+        editor.apply();
+    }
+
+    public static void setLat(Context context, double latitude) {
+        SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putLong(KEY_LAT, Double.doubleToRawLongBits(latitude));
+        editor.apply();
+    }
+
+    public static String getRestname(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
+        return prefs.getString(KEY_RESTNAME, "");
+    }
+
+    public static int getRest_id(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
+        return prefs.getInt(KEY_REST_ID, 1);
+    }
+
+    public static String getVideoUrl(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
+        return prefs.getString(KEY_VIDEO_URL, "");
+    }
+
+    public static String getAwsPostname(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
+        return prefs.getString(KEY_AWS_POST_NAME, "");
+    }
+
+    public static int getCategory_id(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
+        return prefs.getInt(KEY_CATEGORY_ID, 1);
+    }
+
+    public static int getTag_id(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
+        return prefs.getInt(KEY_TAG_ID, 1);
+    }
+
+    public static String getMemo(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
+        return prefs.getString(KEY_MEMO, "");
+    }
+
+    public static String getValue(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
+        return prefs.getString(KEY_VALUE, "");
+    }
+
+    public static boolean getIsNewRestname(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
+        return prefs.getBoolean(KEY_ISNEWRESTNAME, false);
+    }
+
+    public static double getLon(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
+        if ( !prefs.contains(KEY_LON))
+            return 0.0;
+
+        return Double.longBitsToDouble(prefs.getLong(KEY_LON, 0));
+    }
+
+    public static double getLat(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
+        if ( !prefs.contains(KEY_LAT))
+            return 0.0;
+
+        return Double.longBitsToDouble(prefs.getLong(KEY_LAT, 0));
     }
 
     public static PersistentCookieStore getCookieStore(Context context) {

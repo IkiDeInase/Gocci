@@ -96,6 +96,10 @@ public class Const {
         return URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline/?call=" + call;
     }
 
+    public static String getTimelineCustomApi(int category_id, int value_id, int order_id, double lon, double lat) {
+        return URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline/?order_id=" + order_id + "&lon=" + lon + "&lat=" + lat;
+    }
+
     public static String getPopularAPI() {
         return URL_PREFIX + VERSION_NUMBER + "/mobile/get/popular";
     }
