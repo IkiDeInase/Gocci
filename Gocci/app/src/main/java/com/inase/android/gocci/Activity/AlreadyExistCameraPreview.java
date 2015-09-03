@@ -330,11 +330,13 @@ public class AlreadyExistCameraPreview extends AppCompatActivity {
                         } else {
                             mValue = "0";
                         }
+                        SavedData.setValue(AlreadyExistCameraPreview.this, mValue);
                         if (edit_comment.getText().length() != 0) {
                             mMemo = edit_comment.getText().toString();
                         } else {
                             mMemo = "none";
                         }
+                        SavedData.setMemo(AlreadyExistCameraPreview.this, mMemo);
                         if (cheerCheck.isChecked()) {
                             mCheer_flag = 1;
                         }
