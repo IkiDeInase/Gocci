@@ -23,25 +23,34 @@ import android.telephony.TelephonyManager;
 import android.text.InputType;
 import android.util.TypedValue;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
+import com.facebook.rebound.Spring;
+import com.facebook.rebound.SpringConfig;
+import com.facebook.rebound.SpringListener;
+import com.facebook.rebound.SpringSystem;
 import com.facebook.share.model.ShareVideo;
 import com.facebook.share.model.ShareVideoContent;
 import com.facebook.share.widget.ShareDialog;
 import com.inase.android.gocci.Activity.FlexibleUserProfActivity;
 import com.inase.android.gocci.Application.Application_Gocci;
+import com.inase.android.gocci.Base.Performer;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.data.HeaderData;
 import com.inase.android.gocci.data.PostData;
@@ -844,5 +853,100 @@ public class Util {
 
         public void onAnimationRepeat(Animation animation) {
         }
+    }
+
+    private static class Destroyer implements SpringListener {
+
+        public int mMin, mMax;
+
+        protected ViewGroup mViewGroup;
+        protected View mViewToRemove;
+
+        private Destroyer(ViewGroup viewGroup, View viewToRemove, int min,
+                          int max) {
+            mViewGroup = viewGroup;
+            mViewToRemove = viewToRemove;
+
+            mMin = min;
+            mMax = max;
+        }
+
+        public boolean shouldClean(Spring spring) {
+            // these are arbitrary values to keep the view from disappearing before it is
+            // fully off the screen
+            return spring.getCurrentValue() < mMin || spring.getCurrentValue() > mMax;
+        }
+
+        public void clean(Spring spring) {
+            if (mViewGroup != null && mViewToRemove != null) {
+                mViewGroup.removeView(mViewToRemove);
+            }
+            if (spring != null) {
+                spring.destroy();
+            }
+        }
+
+        @Override
+        public void onSpringUpdate(Spring spring) {
+            if (shouldClean(spring)) {
+                clean(spring);
+            }
+        }
+
+        @Override
+        public void onSpringAtRest(Spring spring) {
+
+        }
+
+        @Override
+        public void onSpringActivate(Spring spring) {
+
+        }
+
+        @Override
+        public void onSpringEndStateChange(Spring spring) {
+
+        }
+    }
+
+    public static void createCircle(Context context, ViewGroup rootView,
+                                     SpringSystem springSystem,
+                                     SpringConfig coasting,
+                                     SpringConfig gravity,
+                                     int diameter,
+                                     Drawable backgroundDrawable) {
+
+        final Spring xSpring = springSystem.createSpring().setSpringConfig(coasting);
+        final Spring ySpring = springSystem.createSpring().setSpringConfig(gravity);
+
+        // create view
+        View view = new View(context);
+
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(diameter, diameter);
+        params.addRule(RelativeLayout.CENTER_IN_PARENT);
+        view.setLayoutParams(params);
+        view.setBackgroundDrawable(backgroundDrawable);
+
+        rootView.addView(view);
+
+        // generate random direction and magnitude
+        double magnitude = Math.random() * 1000 + 1500;
+        double angle = Math.random() * Math.PI / 2 + Math.PI / 4;
+
+        xSpring.setVelocity(magnitude * Math.cos(angle));
+        ySpring.setVelocity(-magnitude * Math.sin(angle));
+
+        int maxX = rootView.getMeasuredWidth() / 2 + diameter;
+        xSpring.addListener(new Destroyer(rootView, view, -maxX, maxX));
+
+        int maxY = rootView.getMeasuredHeight() / 2 + diameter;
+        ySpring.addListener(new Destroyer(rootView, view, -maxY, maxY));
+
+        xSpring.addListener(new Performer(view, View.TRANSLATION_X));
+        ySpring.addListener(new Performer(view, View.TRANSLATION_Y));
+
+        // set a different end value to cause the animation to play
+        xSpring.setEndValue(2);
+        ySpring.setEndValue(9001);
     }
 }
