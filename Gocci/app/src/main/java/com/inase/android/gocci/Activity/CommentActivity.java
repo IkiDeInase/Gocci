@@ -23,6 +23,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -118,6 +119,26 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
     private AudioCapabilities audioCapabilities;
 
     private static MobileAnalyticsManager analytics;
+
+    private boolean isExist = false;
+    private boolean isSee = false;
+
+    private int previousTotal = 0;
+    private boolean loading = true;
+    private int visibleThreshold = 5;
+    int firstVisibleItem, visibleItemCount, totalItemCount;
+
+    private ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
+        @Override
+        public void onGlobalLayout() {
+            if (isSee) {
+                changeMovie();
+            }
+            if (mPlayingPostId != null || !isExist) {
+                mCommentRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+            }
+        }
+    };
 
     private static Handler sHandler = new Handler() {
         @Override
@@ -316,6 +337,11 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
             }
         });
 
+        mCommentAdapter = new CommentAdapter(CommentActivity.this);
+
+        mCommentUrl = Const.getCommentAPI(mPost_id);
+        getSignupAsync(this);
+
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
         mSwipeRefreshLayout.setColorSchemeResources(R.color.gocci_1, R.color.gocci_2, R.color.gocci_3, R.color.gocci_4);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -334,8 +360,57 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
         appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
 
-        mCommentUrl = Const.getCommentAPI(mPost_id);
-        getSignupAsync(this);
+        mCommentRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                switch (newState) {
+                    // スクロールしていない
+                    case RecyclerView.SCROLL_STATE_IDLE:
+                        //mBusy = false;
+                        if (isSee) {
+                            changeMovie();
+                        } else {
+                            final Const.ExoViewHolder oldViewHolder = getPlayingViewHolder();
+                            if (oldViewHolder != null) {
+                                oldViewHolder.mVideoThumbnail.setVisibility(View.VISIBLE);
+                                releasePlayer();
+                            }
+                            mPlayingPostId = null;
+                        }
+                        break;
+                    // スクロール中
+                    case RecyclerView.SCROLL_STATE_DRAGGING:
+                        //mBusy = true;
+                        break;
+                    // はじいたとき
+                    case RecyclerView.SCROLL_STATE_SETTLING:
+                        //mBusy = true;
+                        break;
+                }
+
+                visibleItemCount = mCommentRecyclerView.getChildCount();
+                totalItemCount = mLayoutManager.getItemCount();
+                firstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
+
+                //投稿はある
+//投稿がない
+                isExist = totalItemCount != 1;
+
+                if (loading) {
+                    if (totalItemCount > previousTotal) {
+                        loading = false;
+                        previousTotal = totalItemCount;
+                    }
+                }
+                if (!loading && (totalItemCount - visibleItemCount)
+                        <= (firstVisibleItem + visibleThreshold)) {
+                    // End has been reached
+
+                    loading = true;
+                }
+            }
+        });
     }
 
     @Override
@@ -449,7 +524,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
 
                 Collections.reverse(mCommentusers);
 
-                mCommentAdapter = new CommentAdapter(CommentActivity.this);
+                mCommentRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
                 mCommentRecyclerView.setAdapter(mCommentAdapter);
                 //changeMovie();
             }
@@ -492,6 +567,9 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
 
                 Collections.reverse(mCommentusers);
 
+                mPlayingPostId = null;
+                mViewHolderHash.clear();
+                mCommentRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
                 mCommentAdapter.notifyDataSetChanged();
             }
 
@@ -546,6 +624,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
 
                         mPlayingPostId = null;
                         mViewHolderHash.clear();
+                        mCommentRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
                         mCommentAdapter.notifyDataSetChanged();
                         //changeMovie();
                     }
@@ -683,7 +762,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
 
     @Override
     public void onScrollChanged(int i, boolean b, boolean b1) {
-
+        isSee = i < 750;
     }
 
     @Override
