@@ -78,6 +78,9 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
     private static MobileAnalyticsManager analytics;
 
+    private TextView empty_text;
+    private ImageView empty_image;
+
     public static void startListActivity(int id, int isMypage, int category, Activity startingActivity) {
         Intent intent = new Intent(startingActivity, ListActivity.class);
         intent.putExtra("id", id);
@@ -219,29 +222,37 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
         result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        empty_text = (TextView) findViewById(R.id.empty_text);
+        empty_image = (ImageView) findViewById(R.id.empty_image);
+
         switch (mCategory) {
             case Const.CATEGORY_FOLLOW:
                 getSupportActionBar().setTitle(getString(R.string.follow_list));
+                empty_text.setText(getString(R.string.follow_empty_text));
                 followefollowerAdapter = new FollowFollowerAdapter(this);
                 mUrl = Const.getFollowAPI(mId);
                 break;
             case Const.CATEGORY_FOLLOWER:
                 getSupportActionBar().setTitle(getString(R.string.follower_list));
+                empty_text.setText(getString(R.string.follower_empty_text));
                 followefollowerAdapter = new FollowFollowerAdapter(this);
                 mUrl = Const.getFollowerAPI(mId);
                 break;
             case Const.CATEGORY_USER_CHEER:
                 getSupportActionBar().setTitle(getString(R.string.cheer_list));
+                empty_text.setText(getString(R.string.cheer_empty_text));
                 usercheerAdapter = new UserCheerAdapter(this);
                 mUrl = Const.getUserCheerAPI(mId);
                 break;
             case Const.CATEGORY_WANT:
                 getSupportActionBar().setTitle(getString(R.string.want_list));
+                empty_text.setText(getString(R.string.want_empty_text));
                 wantAdapter = new WantAdapter(this);
                 mUrl = Const.getWantAPI(mId);
                 break;
             case Const.CATEGORY_REST_CHEER:
                 getSupportActionBar().setTitle(getString(R.string.cheer_user_list));
+                empty_text.setText(getString(R.string.usercheer_empty_text));
                 restcheerAdapter = new RestCheerAdapter(this);
                 mUrl = Const.getRestCheerAPI(mId);
                 break;
@@ -371,6 +382,15 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 }
 
                 mRecyclerView.setAdapter(followefollowerAdapter);
+
+                if (users.isEmpty()) {
+                    empty_image.setVisibility(View.VISIBLE);
+                    empty_text.setVisibility(View.VISIBLE);
+                }
+                else {
+                    empty_image.setVisibility(View.GONE);
+                    empty_text.setVisibility(View.GONE);
+                }
             }
 
             @Override
@@ -409,6 +429,15 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 }
 
                 mRecyclerView.setAdapter(followefollowerAdapter);
+
+                if (users.isEmpty()) {
+                    empty_image.setVisibility(View.VISIBLE);
+                    empty_text.setVisibility(View.VISIBLE);
+                }
+                else {
+                    empty_image.setVisibility(View.GONE);
+                    empty_text.setVisibility(View.GONE);
+                }
             }
 
             @Override
@@ -445,6 +474,15 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 }
 
                 mRecyclerView.setAdapter(usercheerAdapter);
+
+                if (users.isEmpty()) {
+                    empty_image.setVisibility(View.VISIBLE);
+                    empty_text.setVisibility(View.VISIBLE);
+                }
+                else {
+                    empty_image.setVisibility(View.GONE);
+                    empty_text.setVisibility(View.GONE);
+                }
             }
 
             @Override
@@ -481,6 +519,15 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 }
 
                 mRecyclerView.setAdapter(wantAdapter);
+
+                if (users.isEmpty()) {
+                    empty_image.setVisibility(View.VISIBLE);
+                    empty_text.setVisibility(View.VISIBLE);
+                }
+                else {
+                    empty_image.setVisibility(View.GONE);
+                    empty_text.setVisibility(View.GONE);
+                }
             }
 
             @Override
@@ -519,6 +566,15 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 }
 
                 mRecyclerView.setAdapter(restcheerAdapter);
+
+                if (users.isEmpty()) {
+                    empty_image.setVisibility(View.VISIBLE);
+                    empty_text.setVisibility(View.VISIBLE);
+                }
+                else {
+                    empty_image.setVisibility(View.GONE);
+                    empty_text.setVisibility(View.GONE);
+                }
             }
 
             @Override
@@ -558,6 +614,15 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 }
 
                 followefollowerAdapter.notifyDataSetChanged();
+
+                if (users.isEmpty()) {
+                    empty_image.setVisibility(View.VISIBLE);
+                    empty_text.setVisibility(View.VISIBLE);
+                }
+                else {
+                    empty_image.setVisibility(View.GONE);
+                    empty_text.setVisibility(View.GONE);
+                }
             }
 
             @Override
@@ -602,6 +667,15 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 }
 
                 followefollowerAdapter.notifyDataSetChanged();
+
+                if (users.isEmpty()) {
+                    empty_image.setVisibility(View.VISIBLE);
+                    empty_text.setVisibility(View.VISIBLE);
+                }
+                else {
+                    empty_image.setVisibility(View.GONE);
+                    empty_text.setVisibility(View.GONE);
+                }
             }
 
             @Override
@@ -643,6 +717,15 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 }
 
                 usercheerAdapter.notifyDataSetChanged();
+
+                if (users.isEmpty()) {
+                    empty_image.setVisibility(View.VISIBLE);
+                    empty_text.setVisibility(View.VISIBLE);
+                }
+                else {
+                    empty_image.setVisibility(View.GONE);
+                    empty_text.setVisibility(View.GONE);
+                }
             }
 
             @Override
@@ -685,6 +768,15 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 }
 
                 wantAdapter.notifyDataSetChanged();
+
+                if (users.isEmpty()) {
+                    empty_image.setVisibility(View.VISIBLE);
+                    empty_text.setVisibility(View.VISIBLE);
+                }
+                else {
+                    empty_image.setVisibility(View.GONE);
+                    empty_text.setVisibility(View.GONE);
+                }
             }
 
             @Override
@@ -729,6 +821,15 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 }
 
                 restcheerAdapter.notifyDataSetChanged();
+
+                if (users.isEmpty()) {
+                    empty_image.setVisibility(View.VISIBLE);
+                    empty_text.setVisibility(View.VISIBLE);
+                }
+                else {
+                    empty_image.setVisibility(View.GONE);
+                    empty_text.setVisibility(View.GONE);
+                }
             }
 
             @Override

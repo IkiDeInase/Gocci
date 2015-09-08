@@ -81,6 +81,9 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
 
     private static MobileAnalyticsManager analytics;
 
+    private TextView empty_text;
+    private ImageView empty_image;
+
     private static Handler sHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -148,6 +151,9 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
 
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
         appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
+
+        empty_text = (TextView) findViewById(R.id.empty_text);
+        empty_image = (ImageView) findViewById(R.id.empty_image);
 
         getSignupAsync(FlexibleUserProfActivity.this);
 
@@ -314,6 +320,15 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
                 }
 
                 mUserProfRecyclerView.setAdapter(mUserProfAdapter);
+
+                if (mUserProfusers.isEmpty()) {
+                    empty_image.setVisibility(View.VISIBLE);
+                    empty_text.setVisibility(View.VISIBLE);
+                }
+                else {
+                    empty_image.setVisibility(View.GONE);
+                    empty_text.setVisibility(View.GONE);
+                }
             }
         });
     }
@@ -347,6 +362,15 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
                 }
 
                 mUserProfAdapter.notifyDataSetChanged();
+
+                if (mUserProfusers.isEmpty()) {
+                    empty_image.setVisibility(View.VISIBLE);
+                    empty_text.setVisibility(View.VISIBLE);
+                }
+                else {
+                    empty_image.setVisibility(View.GONE);
+                    empty_text.setVisibility(View.GONE);
+                }
             }
 
             @Override

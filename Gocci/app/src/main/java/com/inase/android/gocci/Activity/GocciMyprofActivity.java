@@ -112,6 +112,9 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
 
     private static MobileAnalyticsManager analytics;
 
+    private TextView empty_text;
+    private ImageView empty_image;
+
     private static Handler sHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -191,6 +194,9 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
         appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
 
         progress = (ProgressWheel) findViewById(R.id.progress_wheel);
+
+        empty_text = (TextView) findViewById(R.id.empty_text);
+        empty_image = (ImageView) findViewById(R.id.empty_image);
 
         getSignupAsync(this);//サインアップとJSON
 
@@ -456,6 +462,15 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
                 }
                 mMyProfAdapter = new MyProfileAdapter(context);
                 mProfRecyclerView.setAdapter(mMyProfAdapter);
+
+                if (mProfusers.isEmpty()) {
+                    empty_image.setVisibility(View.VISIBLE);
+                    empty_text.setVisibility(View.VISIBLE);
+                }
+                else {
+                    empty_image.setVisibility(View.GONE);
+                    empty_text.setVisibility(View.GONE);
+                }
             }
         });
     }
@@ -487,6 +502,15 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
                     e.printStackTrace();
                 }
                 mMyProfAdapter.notifyDataSetChanged();
+
+                if (mProfusers.isEmpty()) {
+                    empty_image.setVisibility(View.VISIBLE);
+                    empty_text.setVisibility(View.VISIBLE);
+                }
+                else {
+                    empty_image.setVisibility(View.GONE);
+                    empty_text.setVisibility(View.GONE);
+                }
             }
 
             @Override
@@ -528,6 +552,15 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
                     if (message.equals(getString(R.string.delete_post_complete_message))) {
                         mProfusers.remove(position);
                         mMyProfAdapter.notifyDataSetChanged();
+
+                        if (mProfusers.isEmpty()) {
+                            empty_image.setVisibility(View.VISIBLE);
+                            empty_text.setVisibility(View.VISIBLE);
+                        }
+                        else {
+                            empty_image.setVisibility(View.GONE);
+                            empty_text.setVisibility(View.GONE);
+                        }
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

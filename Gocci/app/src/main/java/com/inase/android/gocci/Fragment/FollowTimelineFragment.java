@@ -16,6 +16,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.andexert.library.RippleView;
@@ -103,6 +105,9 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
 
     private AudioCapabilitiesReceiver audioCapabilitiesReceiver;
     private AudioCapabilities audioCapabilities;
+
+    private TextView empty_text;
+    private ImageView empty_image;
 
     private ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
         @Override
@@ -211,6 +216,9 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
         fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
 
         appBarLayout = (AppBarLayout) getActivity().findViewById(R.id.appbar);
+
+        empty_image = (ImageView) view.findViewById(R.id.empty_image);
+        empty_text = (TextView) view.findViewById(R.id.empty_text);
 
         mFollowTimelineAdapter = new FollowTimelineAdapter(getActivity());
 
@@ -439,6 +447,15 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
                 mTimelineRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
                 mTimelineRecyclerView.setAdapter(mFollowTimelineAdapter);
                 //getTimelineDateJson(context);
+
+                if (mTimelineusers.isEmpty()) {
+                    empty_image.setVisibility(View.VISIBLE);
+                    empty_text.setVisibility(View.VISIBLE);
+                }
+                else {
+                    empty_image.setVisibility(View.GONE);
+                    empty_text.setVisibility(View.GONE);
+                }
             }
         });
     }
@@ -469,6 +486,15 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
                 mViewHolderHash.clear();
                 mTimelineRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
                 mFollowTimelineAdapter.notifyDataSetChanged();
+
+                if (mTimelineusers.isEmpty()) {
+                    empty_image.setVisibility(View.VISIBLE);
+                    empty_text.setVisibility(View.VISIBLE);
+                }
+                else {
+                    empty_image.setVisibility(View.GONE);
+                    empty_text.setVisibility(View.GONE);
+                }
             }
 
             @Override
@@ -550,6 +576,15 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
                 mViewHolderHash.clear();
                 mTimelineRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
                 mFollowTimelineAdapter.notifyDataSetChanged();
+
+                if (mTimelineusers.isEmpty()) {
+                    empty_image.setVisibility(View.VISIBLE);
+                    empty_text.setVisibility(View.VISIBLE);
+                }
+                else {
+                    empty_image.setVisibility(View.GONE);
+                    empty_text.setVisibility(View.GONE);
+                }
             }
 
             @Override

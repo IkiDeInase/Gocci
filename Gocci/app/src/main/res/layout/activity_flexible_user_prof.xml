@@ -22,11 +22,15 @@
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swipeContainer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:layout_height="match_parent">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/list"
@@ -34,4 +38,27 @@
             android:layout_height="match_parent" />
     </android.support.v4.widget.SwipeRefreshLayout>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
+            android:text="@string/userpage_empty_text"
+            android:id="@+id/empty_text"
+            android:paddingBottom="152dp"
+            android:textSize="@dimen/accent_text"
+            android:textColor="@color/namegrey"
+            android:visibility="gone" />
+
+        <ImageView
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:id="@+id/empty_image"
+            android:layout_above="@+id/empty_text"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/ic_gocci_eat"
+            android:layout_marginBottom="24dp"
+            android:visibility="gone" />
+
+    </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>

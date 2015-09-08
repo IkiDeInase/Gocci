@@ -295,4 +295,14 @@
     <string name="setting_support_mute">音声をミュートにする</string>
     <string name="setting_support_unmute">音声のミュートを解除する</string>
 
+    <string name="userpage_empty_text">まだ投稿がありません</string>
+
+    <string name="follow_timeline_empty_text">フォローユーザーの投稿がありません</string>
+
+    <string name="follow_empty_text">まだフォローユーザーがいません</string>
+    <string name="follower_empty_text">まだフォロワーユーザーがいません</string>
+    <string name="cheer_empty_text">まだ応援している店がありません</string>
+    <string name="want_empty_text">まだ行きたい店がありません</string>
+    <string name="usercheer_empty_text">まだ応援しているユーザーがいません</string>
+
 </resources>
