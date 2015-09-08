@@ -82,6 +82,7 @@ public class SettingActivity extends AppCompatActivity {
     private TextView twitterSetting;
     private TextView facebookSetting;
     private TextView autoplaySetting;
+    private TextView muteSetting;
     private TextView adviseSetting;
     private TextView ruleSetting;
     private TextView policySetting;
@@ -203,6 +204,7 @@ public class SettingActivity extends AppCompatActivity {
         twitterSetting = (TextView) findViewById(R.id.socialnetwork_twitter);
         facebookSetting = (TextView) findViewById(R.id.socialnetwork_facebook);
         autoplaySetting = (TextView) findViewById(R.id.support_autoplay);
+        muteSetting = (TextView) findViewById(R.id.support_mute);
         adviseSetting = (TextView) findViewById(R.id.support_advise);
         ruleSetting = (TextView) findViewById(R.id.support_rule);
         policySetting = (TextView) findViewById(R.id.support_policy);
@@ -456,6 +458,19 @@ public class SettingActivity extends AppCompatActivity {
                         .show();
             }
         });
+        muteSetting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //-1　mute / 0 unmute
+                if (muteSetting.getText().equals(getString(R.string.setting_support_mute))) {
+                    muteSetting.setText(getString(R.string.setting_support_unmute));
+                    SavedData.setSettingMute(SettingActivity.this, -1);
+                } else {
+                    muteSetting.setText(getString(R.string.setting_support_mute));
+                    SavedData.setSettingMute(SettingActivity.this, 0);
+                }
+            }
+        });
         adviseSetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -492,6 +507,8 @@ public class SettingActivity extends AppCompatActivity {
         });
 
         version_number.setText(BuildConfig.VERSION_NAME);
+
+        muteSetting.setText(SavedData.getSettingMute(SettingActivity.this) == 0 ? getString(R.string.setting_support_mute) : getString(R.string.setting_support_unmute));
 
         locale.setText(Locale.getDefault() == Locale.JAPAN ? getString(R.string.japanese) : getString(R.string.english));
 

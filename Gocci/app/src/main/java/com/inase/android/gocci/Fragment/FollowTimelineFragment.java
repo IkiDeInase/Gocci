@@ -38,6 +38,7 @@ import com.inase.android.gocci.Event.BusHolder;
 import com.inase.android.gocci.Event.FilterTimelineEvent;
 import com.inase.android.gocci.Event.NotificationNumberEvent;
 import com.inase.android.gocci.Event.PageChangeVideoStopEvent;
+import com.inase.android.gocci.Event.TimelineMuteChangeEvent;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.VideoPlayer.HlsRendererBuilder;
 import com.inase.android.gocci.VideoPlayer.VideoPlayer;
@@ -320,6 +321,13 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
         }
     }
 
+    @Subscribe
+    public void subscribe(TimelineMuteChangeEvent event) {
+        if (player != null) {
+            player.selectTrack(VideoPlayer.TYPE_AUDIO, event.mute);
+        }
+    }
+
     @Override
     public void onAudioCapabilitiesChanged(AudioCapabilities audioCapabilities) {
         boolean audioCapabilitiesChanged = !audioCapabilities.equals(this.audioCapabilities);
@@ -390,6 +398,12 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
         }
         player.setSurface(viewHolder.movie.getHolder().getSurface());
         player.setPlayWhenReady(true);
+
+        if (SavedData.getSettingMute(getActivity()) == -1) {
+            player.selectTrack(VideoPlayer.TYPE_AUDIO, -1);
+        } else {
+            player.selectTrack(VideoPlayer.TYPE_AUDIO, 0);
+        }
     }
 
     private void releasePlayer() {

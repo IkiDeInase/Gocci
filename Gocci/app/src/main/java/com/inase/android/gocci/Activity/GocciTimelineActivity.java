@@ -34,6 +34,7 @@ import com.inase.android.gocci.Event.BusHolder;
 import com.inase.android.gocci.Event.FilterTimelineEvent;
 import com.inase.android.gocci.Event.NotificationNumberEvent;
 import com.inase.android.gocci.Event.PageChangeVideoStopEvent;
+import com.inase.android.gocci.Event.TimelineMuteChangeEvent;
 import com.inase.android.gocci.Fragment.FollowTimelineFragment;
 import com.inase.android.gocci.Fragment.LatestTimelineFragment;
 import com.inase.android.gocci.R;
@@ -46,6 +47,7 @@ import com.konifar.fab_transformation.FabTransformation;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.holder.StringHolder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
@@ -137,6 +139,7 @@ public class GocciTimelineActivity extends AppCompatActivity {
                         new PrimaryDrawerItem().withName(getString(R.string.mypage)).withIcon(GoogleMaterial.Icon.gmd_person).withIdentifier(2).withSelectable(false),
                         new DividerDrawerItem(),
                         new PrimaryDrawerItem().withName(getString(R.string.send_advice)).withIcon(GoogleMaterial.Icon.gmd_send).withSelectable(false).withIdentifier(3),
+                        new PrimaryDrawerItem().withName(SavedData.getSettingMute(this) == 0 ? getString(R.string.setting_support_mute) : getString(R.string.setting_support_unmute)).withIcon(GoogleMaterial.Icon.gmd_volume_mute).withSelectable(false).withIdentifier(5),
                         new PrimaryDrawerItem().withName(getString(R.string.settings)).withIcon(GoogleMaterial.Icon.gmd_settings).withSelectable(false).withIdentifier(4)
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
@@ -155,6 +158,19 @@ public class GocciTimelineActivity extends AppCompatActivity {
                                 Message msg =
                                         sHandler.obtainMessage(Const.INTENT_TO_SETTING, 0, 0, GocciTimelineActivity.this);
                                 sHandler.sendMessageDelayed(msg, 500);
+                            } else if (drawerItem.getIdentifier() == 5) {
+                                switch (SavedData.getSettingMute(GocciTimelineActivity.this)) {
+                                    case 0:
+                                        BusHolder.get().post(new TimelineMuteChangeEvent(-1));
+                                        SavedData.setSettingMute(GocciTimelineActivity.this, -1);
+                                        result.updateName(5, new StringHolder(getString(R.string.setting_support_unmute)));
+                                        break;
+                                    case -1:
+                                        BusHolder.get().post(new TimelineMuteChangeEvent(0));
+                                        SavedData.setSettingMute(GocciTimelineActivity.this, 0);
+                                        result.updateName(5, new StringHolder(getString(R.string.setting_support_mute)));
+                                        break;
+                                }
                             }
                         }
                         return false;

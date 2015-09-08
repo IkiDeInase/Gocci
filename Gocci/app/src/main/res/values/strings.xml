@@ -292,4 +292,7 @@
     <string name="already_exist_video_yeah">yeah</string>
     <string name="already_exist_video_no">delete it</string>
 
+    <string name="setting_support_mute">mute on!</string>
+    <string name="setting_support_unmute">unmute on!</string>
+
 </resources>

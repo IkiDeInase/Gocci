@@ -29,6 +29,10 @@ public class SavedData {
 
     private static final String KEY_VERSION_NAME = "version_name";
     private static final String KEY_AUTOPLAY = "autoplay";
+    private static final String KEY_MUTE = "mute";
+
+    private static final int STATE_MUTE = -1;
+    private static final int STATE_UNMUTE = 0;
 
     private static final String KEY_REGIONS = "regions";
 
@@ -184,6 +188,13 @@ public class SavedData {
         editor.apply();
     }
 
+    public static void setSettingMute(Context context, int setting) {
+        SharedPreferences prefs = context.getSharedPreferences("pref", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt(KEY_MUTE, setting);
+        editor.apply();
+    }
+
     public static String getVersionName(Context context) {
         SharedPreferences prefs = context.getSharedPreferences("pref", Context.MODE_PRIVATE);
         return prefs.getString(KEY_VERSION_NAME, "1.0.0");
@@ -199,6 +210,11 @@ public class SavedData {
     public static int getSettingAutoPlay(Context context) {
         SharedPreferences prefs = context.getSharedPreferences("pref", Context.MODE_PRIVATE);
         return prefs.getInt(KEY_AUTOPLAY, 0);
+    }
+
+    public static int getSettingMute(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences("pref", Context.MODE_PRIVATE);
+        return prefs.getInt(KEY_MUTE, STATE_UNMUTE);
     }
 
     public static int getSettingRegions(Context context) {

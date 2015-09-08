@@ -64,6 +64,7 @@ import com.loopj.android.http.TextHttpResponseHandler;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.holder.StringHolder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
@@ -224,6 +225,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
                         new PrimaryDrawerItem().withName(getString(R.string.mypage)).withIcon(GoogleMaterial.Icon.gmd_person).withIdentifier(2).withSelectable(false),
                         new DividerDrawerItem(),
                         new PrimaryDrawerItem().withName(getString(R.string.send_advice)).withIcon(GoogleMaterial.Icon.gmd_send).withSelectable(false).withIdentifier(3),
+                        new PrimaryDrawerItem().withName(SavedData.getSettingMute(this) == 0 ? getString(R.string.setting_support_mute) : getString(R.string.setting_support_unmute)).withIcon(GoogleMaterial.Icon.gmd_volume_mute).withSelectable(false).withIdentifier(5),
                         new PrimaryDrawerItem().withName(getString(R.string.settings)).withIcon(GoogleMaterial.Icon.gmd_settings).withSelectable(false).withIdentifier(4)
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
@@ -246,6 +248,25 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
                                 Message msg =
                                         sHandler.obtainMessage(Const.INTENT_TO_SETTING, 0, 0, CommentActivity.this);
                                 sHandler.sendMessageDelayed(msg, 500);
+                            } else if (drawerItem.getIdentifier() == 5) {
+                                switch (SavedData.getSettingMute(CommentActivity.this)) {
+                                    case 0:
+                                        SavedData.setSettingMute(CommentActivity.this, -1);
+                                        result.updateName(5, new StringHolder(getString(R.string.setting_support_unmute)));
+
+                                        if (player != null) {
+                                            player.selectTrack(VideoPlayer.TYPE_AUDIO, -1);
+                                        }
+                                        break;
+                                    case -1:
+                                        SavedData.setSettingMute(CommentActivity.this, 0);
+                                        result.updateName(5, new StringHolder(getString(R.string.setting_support_mute)));
+
+                                        if (player != null) {
+                                            player.selectTrack(VideoPlayer.TYPE_AUDIO, 0);
+                                        }
+                                        break;
+                                }
                             }
                         }
                         return false;
@@ -606,6 +627,12 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
         }
         player.setSurface(viewHolder.movie.getHolder().getSurface());
         player.setPlayWhenReady(true);
+
+        if (SavedData.getSettingMute(this) == -1) {
+            player.selectTrack(VideoPlayer.TYPE_AUDIO, -1);
+        } else {
+            player.selectTrack(VideoPlayer.TYPE_AUDIO, 0);
+        }
     }
 
     private void releasePlayer() {

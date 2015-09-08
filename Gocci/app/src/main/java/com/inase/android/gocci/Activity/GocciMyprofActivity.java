@@ -58,6 +58,7 @@ import com.loopj.android.http.TextHttpResponseHandler;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.holder.StringHolder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
@@ -217,6 +218,7 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
                         new PrimaryDrawerItem().withName(getString(R.string.mypage)).withIcon(GoogleMaterial.Icon.gmd_person).withIdentifier(2).withSelectable(false),
                         new DividerDrawerItem(),
                         new PrimaryDrawerItem().withName(getString(R.string.send_advice)).withIcon(GoogleMaterial.Icon.gmd_send).withSelectable(false).withIdentifier(3),
+                        new PrimaryDrawerItem().withName(SavedData.getSettingMute(this) == 0 ? getString(R.string.setting_support_mute) : getString(R.string.setting_support_unmute)).withIcon(GoogleMaterial.Icon.gmd_volume_mute).withSelectable(false).withIdentifier(5),
                         new PrimaryDrawerItem().withName(getString(R.string.settings)).withIcon(GoogleMaterial.Icon.gmd_settings).withSelectable(false).withIdentifier(4)
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
@@ -235,6 +237,17 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
                                 Message msg =
                                         sHandler.obtainMessage(Const.INTENT_TO_SETTING, 0, 0, GocciMyprofActivity.this);
                                 sHandler.sendMessageDelayed(msg, 500);
+                            } else if (drawerItem.getIdentifier() == 5) {
+                                switch (SavedData.getSettingMute(GocciMyprofActivity.this)) {
+                                    case 0:
+                                        SavedData.setSettingMute(GocciMyprofActivity.this, -1);
+                                        result.updateName(5, new StringHolder(getString(R.string.setting_support_unmute)));
+                                        break;
+                                    case -1:
+                                        SavedData.setSettingMute(GocciMyprofActivity.this, 0);
+                                        result.updateName(5, new StringHolder(getString(R.string.setting_support_mute)));
+                                        break;
+                                }
                             }
                         }
                         return false;

@@ -292,4 +292,7 @@
     <string name="already_exist_video_yeah">編集する</string>
     <string name="already_exist_video_no">削除する</string>
 
+    <string name="setting_support_mute">音声をミュートにする</string>
+    <string name="setting_support_unmute">音声のミュートを解除する</string>
+
 </resources>
