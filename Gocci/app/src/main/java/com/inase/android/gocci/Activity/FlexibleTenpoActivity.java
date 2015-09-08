@@ -954,6 +954,13 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
                 holder.comment.setText("");
             }
 
+            holder.comment.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    CommentActivity.startCommentActivity(Integer.parseInt(user.getPost_id()), FlexibleTenpoActivity.this);
+                }
+            });
+
             Picasso.with(FlexibleTenpoActivity.this)
                     .load(user.getProfile_img())
                     .placeholder(R.drawable.ic_userpicture)

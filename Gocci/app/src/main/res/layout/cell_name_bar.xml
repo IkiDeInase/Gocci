@@ -25,13 +25,14 @@
 
         <TextView
             android:id="@+id/user_name"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:singleLine="true"
             android:text="@string/username"
             android:textColor="@color/namegrey"
             android:textSize="@dimen/accent_text"
-            android:layout_toLeftOf="@+id/time_text" />
+            android:layout_toLeftOf="@+id/time_text"
+            android:layout_alignParentLeft="true" />
 
         <TextView
             android:id="@+id/time_text"

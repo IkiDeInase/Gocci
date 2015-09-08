@@ -31,6 +31,7 @@ import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCal
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.google.android.exoplayer.audio.AudioCapabilities;
 import com.google.android.exoplayer.audio.AudioCapabilitiesReceiver;
+import com.inase.android.gocci.Activity.CommentActivity;
 import com.inase.android.gocci.Activity.GocciTimelineActivity;
 import com.inase.android.gocci.Application.Application_Gocci;
 import com.inase.android.gocci.Base.RoundedTransformation;
@@ -680,6 +681,13 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
             } else {
                 holder.comment.setText("");
             }
+
+            holder.comment.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    CommentActivity.startCommentActivity(Integer.parseInt(user.getPost_id()), getActivity());
+                }
+            });
 
             Picasso.with(mContext)
                     .load(user.getProfile_img())
