@@ -60,7 +60,8 @@
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="12dp"
                 android:textColor="@color/namegrey"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                android:visibility="gone" />
 
             <View
                 android:layout_width="match_parent"
@@ -69,7 +70,8 @@
                 android:layout_below="@+id/account_locale"
                 android:background="#e0e0e0"
                 android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp" />
+                android:layout_marginRight="16dp"
+                android:visibility="gone" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -80,7 +82,8 @@
                 android:layout_alignParentEnd="false"
                 android:textColor="@color/nameblack"
                 android:layout_marginRight="24dp"
-                android:layout_alignBottom="@+id/account_locale" />
+                android:layout_alignBottom="@+id/account_locale"
+                android:visibility="gone" />
 
             <TextView
                 android:layout_width="match_parent"
