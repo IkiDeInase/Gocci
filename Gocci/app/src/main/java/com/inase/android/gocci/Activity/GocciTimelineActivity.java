@@ -69,6 +69,10 @@ public class GocciTimelineActivity extends AppCompatActivity {
     private FloatingActionButton fab;
 
     public static int mShowPosition = 0;
+    public static int mLatestSort_id = 0;
+    public static int mFollowSort_id = 0;
+
+    private String[] SORT;
 
     private Drawer result;
 
@@ -84,11 +88,7 @@ public class GocciTimelineActivity extends AppCompatActivity {
     private MaterialBetterSpinner sort_spinner;
     private RippleView filter_ripple;
 
-    private int category_id = 0;
-    private int value_id = 0;
-    private int sort_id = 0;
-
-    private Location nowLocation;
+    public static Location nowLocation;
 
     private static Handler sHandler = new Handler() {
         @Override
@@ -201,6 +201,7 @@ public class GocciTimelineActivity extends AppCompatActivity {
             public void onPageSelected(int position) {
                 BusHolder.get().post(new PageChangeVideoStopEvent(position));
                 mShowPosition = position;
+                sort_spinner.setText(mShowPosition == 0 ? SORT[mLatestSort_id] : SORT[mFollowSort_id]);
             }
 
             @Override
@@ -258,14 +259,14 @@ public class GocciTimelineActivity extends AppCompatActivity {
 
         String[] CATEGORY = getResources().getStringArray(R.array.list_category);
         String[] VALUE = getResources().getStringArray(R.array.list_value);
-        String[] SORT = getResources().getStringArray(R.array.list_sort);
+        SORT = getResources().getStringArray(R.array.list_sort);
 
         ArrayAdapter<String> categoryAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_dropdown_item_1line, CATEGORY);
         category_spinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                category_id = position + 1;
+                //category_id = position + 1;
             }
         });
         ArrayAdapter<String> valueAdapter = new ArrayAdapter<>(this,
@@ -273,7 +274,7 @@ public class GocciTimelineActivity extends AppCompatActivity {
         value_spinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                value_id = position + 1;
+                //value_id = position + 1;
             }
         });
         ArrayAdapter<String> sortAdapter = new ArrayAdapter<>(this,
@@ -281,7 +282,11 @@ public class GocciTimelineActivity extends AppCompatActivity {
         sort_spinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                sort_id = position;
+                if (mShowPosition == 0) {
+                    mLatestSort_id = position;
+                } else {
+                    mFollowSort_id = position;
+                }
             }
         });
         category_spinner.setAdapter(categoryAdapter);
@@ -293,7 +298,8 @@ public class GocciTimelineActivity extends AppCompatActivity {
             public void onComplete(RippleView rippleView) {
                 FabTransformation.with(fab).setOverlay(overlay).transformFrom(sheet);
                 //Otto currentpageと絞り込みurl
-                BusHolder.get().post(new FilterTimelineEvent(viewPager.getCurrentItem(), Const.getTimelineCustomApi(0, 0, sort_id, nowLocation.getLongitude(), nowLocation.getLatitude())));
+                    BusHolder.get().post(new FilterTimelineEvent(mShowPosition, Const.getCustomTimelineAPI(mShowPosition, mLatestSort_id, mFollowSort_id,
+                            nowLocation.getLongitude(), nowLocation.getLatitude(), 0)));
             }
         });
     }

@@ -88,24 +88,79 @@ public class Const {
                 "&pass=" + password + "&os=android_" + os + "&model=" + model + "&register_id=" + register_id;
     }
 
-    public static String getTimelineAPI() {
+    public static String getCustomTimelineAPI(int position, int latest_id, int follow_id, double lon, double lat, int call) {
+        String url = null;
+        if (position == 0) {
+            switch (latest_id) {
+                case 0:
+                    if (call == 0) {
+                        //全体の最新順
+                        url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline";
+                    } else {
+                        //全体の最新順の更新
+                        url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline/?call=" + call;
+                    }
+                    break;
+                case 1:
+                    if (call == 0) {
+                        //全体の近い順
+                        url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline/?order_id=" + latest_id + "&lon=" + lon + "&lat=" + lat;
+                    } else {
+                        //全体の近い順の更新
+                        url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline/?order_id=" + latest_id + "&lon=" + lon + "&lat=" + lat + "&call=" + call;
+                    }
+                    break;
+                case 2:
+                    if (call == 0) {
+                        //全体の人気順
+                        url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline/?order_id=" + latest_id;
+                    } else {
+                        //全体の人気順の更新
+                        url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline/?order_id=" + latest_id + "&call=" + call;
+                    }
+                    break;
+            }
+        } else {
+            switch (follow_id) {
+                case 0:
+                    if (call == 0) {
+                        //フォローの最新順
+                        url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/followline";
+                    } else {
+                        //フォローの最新順の更新
+                        url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/followline/?call=" + call;;
+                    }
+                    break;
+                case 1:
+                    if (call == 0) {
+                        //フォローの近い順
+                        url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/followline/?order_id=" + follow_id + "&lon=" + lon + "&lat=" + lat;
+                    } else {
+                        //フォローの近い順の更新
+                        url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/followline/?order_id=" + follow_id + "&lon=" + lon + "&lat=" + lat + "&call=" + call;
+                    }
+                    break;
+                case 2:
+                    if (call == 0) {
+                        //フォローの人気順
+                        url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/followline/?order_id=" + follow_id;
+                    } else {
+                        //フォローの人気順の更新
+                        url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/followline/?order_id=" + follow_id + "&call=" + call;
+                    }
+                    break;
+            }
+        }
+
+        return url;
+    }
+
+    public static String getLatestAPI() {
         return URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline";
     }
 
-    public static String getTimelineNextApi(int call) {
+    public static String getLatestNextApi(int call) {
         return URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline/?call=" + call;
-    }
-
-    public static String getTimelineCustomApi(int category_id, int value_id, int order_id, double lon, double lat) {
-        return URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline/?order_id=" + order_id + "&lon=" + lon + "&lat=" + lat;
-    }
-
-    public static String getPopularAPI() {
-        return URL_PREFIX + VERSION_NUMBER + "/mobile/get/popular";
-    }
-
-    public static String getPopularNextApi(int call) {
-        return URL_PREFIX + VERSION_NUMBER + "/mobile/get/popular_next/?call=" + call;
     }
 
     public static String getFollowlineApi() {

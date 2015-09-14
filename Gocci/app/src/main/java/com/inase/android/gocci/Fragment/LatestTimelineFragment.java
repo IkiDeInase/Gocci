@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Point;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -62,6 +63,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.fabric.sdk.android.Fabric;
+import io.nlopez.smartlocation.OnLocationUpdatedListener;
+import io.nlopez.smartlocation.SmartLocation;
 
 /**
  * Created by kinagafuji on 15/06/08.
@@ -418,7 +421,7 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
 
     private void getSignupAsync(final Context context) {
         Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(context, Const.getTimelineAPI(), new JsonHttpResponseHandler() {
+        Const.asyncHttpClient.get(context, Const.getLatestAPI(), new JsonHttpResponseHandler() {
 
             @Override
             public void onStart() {
@@ -456,44 +459,54 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
     }
 
     private void getRefreshAsync(final Context context) {
-        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(getActivity()));
-        Const.asyncHttpClient.get(context, Const.getTimelineAPI(), new JsonHttpResponseHandler() {
+        SmartLocation.with(context).location().oneFix().start(new OnLocationUpdatedListener() {
             @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                Toast.makeText(getActivity(), getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                mTimelineusers.clear();
-                isEndScrioll = false;
-                try {
-                    for (int i = 0; i < response.length(); i++) {
-                        JSONObject jsonObject = response.getJSONObject(i);
-                        mTimelineusers.add(PostData.createPostData(jsonObject));
+            public void onLocationUpdated(Location location) {
+                GocciTimelineActivity.nowLocation = location;
+                Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(getActivity()));
+                Const.asyncHttpClient.get(context, Const.getCustomTimelineAPI(GocciTimelineActivity.mShowPosition, GocciTimelineActivity.mLatestSort_id, GocciTimelineActivity.mFollowSort_id,
+                        GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLongitude() : 0.0,
+                        GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLatitude() : 0.0, 0), new JsonHttpResponseHandler() {
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                        Toast.makeText(getActivity(), getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
                     }
 
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                        mTimelineusers.clear();
+                        isEndScrioll = false;
+                        try {
+                            for (int i = 0; i < response.length(); i++) {
+                                JSONObject jsonObject = response.getJSONObject(i);
+                                mTimelineusers.add(PostData.createPostData(jsonObject));
+                            }
 
-                mPlayingPostId = null;
-                mViewHolderHash.clear();
-                mTimelineRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
-                mLatestTimelineAdapter.notifyDataSetChanged();
-            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
 
-            @Override
-            public void onFinish() {
-                //mTimelineSwipe.setRefreshing(false);
-                mSwipeRefreshLayout.setRefreshing(false);
+                        mPlayingPostId = null;
+                        mViewHolderHash.clear();
+                        mTimelineRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
+                        mLatestTimelineAdapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        //mTimelineSwipe.setRefreshing(false);
+                        mSwipeRefreshLayout.setRefreshing(false);
+                    }
+                });
             }
         });
     }
 
     private void getAddJsonAsync(final Context context, final int call) {
         Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(context, Const.getTimelineNextApi(call), new JsonHttpResponseHandler() {
+        Const.asyncHttpClient.get(context, Const.getCustomTimelineAPI(GocciTimelineActivity.mShowPosition, GocciTimelineActivity.mLatestSort_id, GocciTimelineActivity.mFollowSort_id,
+                GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLongitude() : 0.0,
+                GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLatitude() : 0.0, call), new JsonHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
                 Toast.makeText(getActivity(), getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
