@@ -49,4 +49,25 @@
             android:visibility="invisible" />
     </android.support.v7.widget.CardView>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="@string/notification_empty_text"
+        android:id="@+id/empty_text"
+        android:textSize="@dimen/accent_text"
+        android:textColor="@color/namegrey"
+        android:layout_below="@+id/empty_image"
+        android:layout_marginTop="24dp"
+        android:visibility="gone" />
+
+    <ImageView
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:id="@+id/empty_image"
+        android:src="@drawable/ic_gocci_wao"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="120dp"
+        android:visibility="gone" />
+
 </RelativeLayout>

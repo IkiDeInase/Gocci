@@ -304,5 +304,6 @@
     <string name="cheer_empty_text">まだ応援している店がありません</string>
     <string name="want_empty_text">まだ行きたい店がありません</string>
     <string name="usercheer_empty_text">まだ応援しているユーザーがいません</string>
+    <string name="notification_empty_text">まだ通知がありません</string>
 
 </resources>

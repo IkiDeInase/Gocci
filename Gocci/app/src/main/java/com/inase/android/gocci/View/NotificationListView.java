@@ -42,6 +42,9 @@ public class NotificationListView extends RelativeLayout {
     private NotificationAdapter mNotificationAdapter;
     private ArrayList<HeaderData> mNotificationUsers = new ArrayList<>();
 
+    private TextView empty_text;
+    private ImageView empty_image;
+
     public NotificationListView(final Context context) {
         super(context);
 
@@ -49,6 +52,9 @@ public class NotificationListView extends RelativeLayout {
 
         mNotificationProgress = (ProgressWheel) inflateView.findViewById(R.id.progress);
         mNotificationList = (ListView) inflateView.findViewById(R.id.notification_list);
+
+        empty_image = (ImageView) inflateView.findViewById(R.id.empty_image);
+        empty_text = (TextView) inflateView.findViewById(R.id.empty_text);
 
         mNotificationList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -111,6 +117,14 @@ public class NotificationListView extends RelativeLayout {
                 mNotificationAdapter = new NotificationAdapter(context, 0, mNotificationUsers);
                 mNotificationList.setAdapter(mNotificationAdapter);
 
+                if (mNotificationUsers.isEmpty()) {
+                    empty_image.setVisibility(View.VISIBLE);
+                    empty_text.setVisibility(View.VISIBLE);
+                }
+                else {
+                    empty_image.setVisibility(View.GONE);
+                    empty_text.setVisibility(View.GONE);
+                }
             }
 
             @Override
