@@ -202,7 +202,7 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
         //mCameraView.setVideoSize(1280, 720);
         mCameraView.setVideoSize(640, 480);
         //mCameraView.setOnTouchListener(mOnTouchListener);
-        cameraProgress = (ProgressWheel) rootView.findViewById(R.id.cameraprogress_wheel);
+        cameraProgress = (ProgressWheel) rootView.findViewById(R.id.progress_wheel);
         //progress = (CircleProgressBar) rootView.findViewById(R.id.circleProgress);
         //mRecordButton.setOnTouchListener(mOnTouchListener);
         //progress = (CircleProgressBar) rootView.findViewById(R.id.circleProgress);
@@ -246,7 +246,7 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
         edit_value = (MaterialEditText) rootView.findViewById(R.id.edit_value);
         edit_comment = (MaterialEditText) rootView.findViewById(R.id.edit_comment);
 
-        restaddButton = (ImageButton) rootView.findViewById(R.id.restaddButton);
+        restaddButton = (ImageButton) rootView.findViewById(R.id.rest_add_button);
 
         final String[] CATEGORY = getResources().getStringArray(R.array.list_category);
         final String[] MOOD = getResources().getStringArray(R.array.list_mood);

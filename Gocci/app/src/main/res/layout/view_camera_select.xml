@@ -33,17 +33,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/add_restname_text"
-            android:id="@+id/infoText"
+            android:id="@+id/info_text"
             android:textColor="#ffffff"
             android:textSize="@dimen/small_text"
             android:layout_alignParentBottom="false"
             android:layout_centerVertical="true"
-            android:layout_toLeftOf="@+id/restaddButton" />
+            android:layout_toLeftOf="@+id/rest_add_button" />
 
         <ImageButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/restaddButton"
+            android:id="@+id/rest_add_button"
             android:background="@drawable/ic_info_outline_white_36dp"
             android:layout_marginLeft="16dp"
             android:layout_alignParentRight="true"

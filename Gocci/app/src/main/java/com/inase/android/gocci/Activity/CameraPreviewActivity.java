@@ -176,7 +176,7 @@ public class CameraPreviewActivity extends AppCompatActivity {
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
 
-        ImageButton addrestButton = (ImageButton) findViewById(R.id.restaddButton);
+        ImageButton addrestButton = (ImageButton) findViewById(R.id.rest_add_button);
         addrestButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -184,24 +184,24 @@ public class CameraPreviewActivity extends AppCompatActivity {
             }
         });
 
-        RelativeLayout addrestView = (RelativeLayout) findViewById(R.id.addRestView);
+        RelativeLayout addrestView = (RelativeLayout) findViewById(R.id.add_rest_view);
         if (mIsnewRestname) {
             addrestView.setVisibility(View.GONE);
         }
 
-        videoView = (SquareVideoView) findViewById(R.id.previewVideo);
-        mPostProgress = (ProgressWheel) findViewById(R.id.cameraprogress_wheel);
+        videoView = (SquareVideoView) findViewById(R.id.preview_video);
+        mPostProgress = (ProgressWheel) findViewById(R.id.progress_wheel);
 
         restname_spinner = (MaterialBetterSpinner) findViewById(R.id.restname_spinner);
         category_spinner = (MaterialBetterSpinner) findViewById(R.id.category_spinner);
         mood_spinner = (MaterialBetterSpinner) findViewById(R.id.mood_spinner);
         edit_value = (MaterialEditText) findViewById(R.id.edit_value);
         edit_comment = (MaterialEditText) findViewById(R.id.edit_comment);
-        cheerCheck = (CheckBox) findViewById(R.id.cheerCheck);
-        twitterButton = (ImageButton) findViewById(R.id.twitterButton);
-        facebookButton = (ImageButton) findViewById(R.id.facebookButton);
-        instagramButton = (ImageButton) findViewById(R.id.instagramButton);
-        toukou_ripple = (RippleView) findViewById(R.id.toukou_button_Ripple);
+        cheerCheck = (CheckBox) findViewById(R.id.check_cheer);
+        twitterButton = (ImageButton) findViewById(R.id.button_twitter);
+        facebookButton = (ImageButton) findViewById(R.id.button_facebook);
+        instagramButton = (ImageButton) findViewById(R.id.button_instagram);
+        toukou_ripple = (RippleView) findViewById(R.id.toukou_button_ripple);
 
         String[] CATEGORY = getResources().getStringArray(R.array.list_category);
         String[] MOOD = getResources().getStringArray(R.array.list_mood);

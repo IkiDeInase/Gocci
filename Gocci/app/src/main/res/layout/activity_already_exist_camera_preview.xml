@@ -7,7 +7,7 @@
     <com.inase.android.gocci.Base.SquareVideoView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/previewVideo" />
+        android:id="@+id/preview_video" />
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/tool_bar"
@@ -34,7 +34,7 @@
         android:layout_centerHorizontal="true" />
 
     <com.pnikosis.materialishprogress.ProgressWheel
-        android:id="@+id/cameraprogress_wheel"
+        android:id="@+id/progress_wheel"
         android:layout_width="@dimen/progress_size"
         android:layout_height="@dimen/progress_size"
         wheel:matProg_barColor="@color/gocci_header"
