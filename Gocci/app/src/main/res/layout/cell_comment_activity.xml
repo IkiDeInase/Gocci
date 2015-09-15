@@ -4,7 +4,7 @@
     android:background="@color/materialwhite">
 
     <ImageView
-        android:id="@+id/commentUserImage"
+        android:id="@+id/comment_user_image"
         android:layout_width="35dp"
         android:layout_height="35dp"
         android:src="@drawable/ic_userpicture"
@@ -22,7 +22,7 @@
         android:text="@string/username"
         android:textColor="@color/namegrey"
         android:textSize="@dimen/normal_text"
-        android:layout_toRightOf="@+id/commentUserImage"
+        android:layout_toRightOf="@+id/comment_user_image"
         android:layout_marginTop="12dp" />
 
     <LinearLayout
@@ -52,28 +52,28 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/horizon_bar"
-        android:layout_toRightOf="@+id/commentUserImage"
+        android:layout_toRightOf="@+id/comment_user_image"
         android:layout_below="@+id/user_name"
         android:layout_alignRight="@+id/date_time">
 
         <ImageButton
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:id="@+id/replyButton"
+            android:id="@+id/reply_button"
             android:background="@drawable/ic_send_grey600_36dp"
             android:layout_marginRight="4dp"
             android:layout_centerVertical="true"
             android:layout_alignParentRight="true" />
 
         <TextView
-            android:id="@+id/usercomment"
+            android:id="@+id/user_comment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:maxLength="50"
             android:text="@string/comment"
             android:textColor="@color/namegrey"
             android:textSize="@dimen/small_text"
-            android:layout_toLeftOf="@+id/replyButton"
+            android:layout_toLeftOf="@+id/reply_button"
             android:layout_marginRight="16dp" />
 
     </RelativeLayout>

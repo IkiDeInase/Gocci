@@ -83,18 +83,50 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.fabric.sdk.android.Fabric;
 
 public class CommentActivity extends AppCompatActivity implements AudioCapabilitiesReceiver.Listener, ObservableScrollViewCallbacks, AppBarLayout.OnOffsetChangedListener {
 
-    private ObservableRecyclerView mCommentRecyclerView;
+    @Bind(R.id.tool_bar)
+    Toolbar mToolBar;
+    @Bind(R.id.list)
+    ObservableRecyclerView mCommentRecyclerView;
+    @Bind(R.id.swipe_container)
+    SwipeRefreshLayout mSwipeContainer;
+    @Bind(R.id.app_bar)
+    AppBarLayout mAppBar;
+    @Bind(R.id.coordinator_layout)
+    CoordinatorLayout mCoordinatorLayout;
+    @Bind(R.id.comment_button)
+    FloatingActionButton mCommentButton;
+
+    @OnClick(R.id.comment_button)
+    public void comment() {
+        new MaterialDialog.Builder(CommentActivity.this)
+                .title(getString(R.string.comment))
+                .titleColorRes(R.color.namegrey)
+                .inputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_IME_MULTI_LINE)
+                .inputMaxLength(140)
+                .input(null, null, false, new MaterialDialog.InputCallback() {
+                    @Override
+                    public void onInput(MaterialDialog dialog, CharSequence input) {
+                        // Do something
+                        postCommentAsync(CommentActivity.this, Const.getPostCommentAPI(mPost_id, input.toString()));
+                    }
+                })
+                .widgetColorRes(R.color.gocci_header)
+                .positiveText(getString(R.string.post_comment))
+                .positiveColorRes(R.color.gocci_header)
+                .show();
+    }
+
+
     private LinearLayoutManager mLayoutManager;
     private ArrayList<HeaderData> mCommentusers = new ArrayList<>();
     private CommentAdapter mCommentAdapter;
-    private SwipeRefreshLayout mSwipeRefreshLayout;
-    private FloatingActionButton mCommentButton;
-    private CoordinatorLayout coordinatorLayout;
-    private AppBarLayout appBarLayout;
 
     private CommentActivity self = this;
 
@@ -194,6 +226,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
         }
 
         setContentView(R.layout.activity_comment);
+        ButterKnife.bind(this);
 
         audioCapabilitiesReceiver = new AudioCapabilitiesReceiver(getApplicationContext(), this);
         // 画面回転に対応するならonResumeが安全かも
@@ -229,8 +262,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
         mPlayingPostId = null;
         mViewHolderHash = new ConcurrentHashMap<>();
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
-        setSupportActionBar(toolbar);
+        setSupportActionBar(mToolBar);
         if (title.equals("Activity.GocciMyprofActivity")) {
             getSupportActionBar().setTitle(getString(R.string.mypage));
         } else {
@@ -239,7 +271,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
 
         result = new DrawerBuilder()
                 .withActivity(this)
-                .withToolbar(toolbar)
+                .withToolbar(mToolBar)
                 .withHeader(new DrawerProfHeader(this))
                 .addDrawerItems(
                         new PrimaryDrawerItem().withName(getString(R.string.timeline)).withIcon(GoogleMaterial.Icon.gmd_home).withIdentifier(1).withSelectable(false),
@@ -308,57 +340,30 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
         result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        mCommentRecyclerView = (ObservableRecyclerView) findViewById(R.id.list);
         mLayoutManager = new LinearLayoutManager(this);
         mCommentRecyclerView.setLayoutManager(mLayoutManager);
         mCommentRecyclerView.setHasFixedSize(true);
         mCommentRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
         mCommentRecyclerView.setScrollViewCallbacks(this);
-        mCommentButton = (FloatingActionButton) findViewById(R.id.commentButton);
-        mCommentButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new MaterialDialog.Builder(CommentActivity.this)
-                        .title(getString(R.string.comment))
-                        .titleColorRes(R.color.namegrey)
-                        .inputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_IME_MULTI_LINE)
-                        .inputMaxLength(140)
-                        .input(null, null, false, new MaterialDialog.InputCallback() {
-                            @Override
-                            public void onInput(MaterialDialog dialog, CharSequence input) {
-                                // Do something
-                                postCommentAsync(CommentActivity.this, Const.getPostCommentAPI(mPost_id, input.toString()));
-                            }
-                        })
-                        .widgetColorRes(R.color.gocci_header)
-                        .positiveText(getString(R.string.post_comment))
-                        .positiveColorRes(R.color.gocci_header)
-                        .show();
-            }
-        });
 
         mCommentAdapter = new CommentAdapter(CommentActivity.this);
 
         mCommentUrl = Const.getCommentAPI(mPost_id);
         getSignupAsync(this);
 
-        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
-        mSwipeRefreshLayout.setColorSchemeResources(R.color.gocci_1, R.color.gocci_2, R.color.gocci_3, R.color.gocci_4);
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        mSwipeContainer.setColorSchemeResources(R.color.gocci_1, R.color.gocci_2, R.color.gocci_3, R.color.gocci_4);
+        mSwipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mSwipeRefreshLayout.setRefreshing(true);
+                mSwipeContainer.setRefreshing(true);
                 if (Util.getConnectedState(CommentActivity.this) != Util.NetworkStatus.OFF) {
                     getRefreshAsync(CommentActivity.this);
                 } else {
                     Toast.makeText(CommentActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
-                    mSwipeRefreshLayout.setRefreshing(false);
+                    mSwipeContainer.setRefreshing(false);
                 }
             }
         });
-
-        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
-        appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
 
         mCommentRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -422,7 +427,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
         }
         audioCapabilitiesReceiver.register();
 
-        appBarLayout.addOnOffsetChangedListener(this);
+        mAppBar.addOnOffsetChangedListener(this);
     }
 
     @Override
@@ -441,7 +446,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
         releasePlayer();
         audioCapabilitiesReceiver.unregister();
 
-        appBarLayout.removeOnOffsetChangedListener(this);
+        mAppBar.removeOnOffsetChangedListener(this);
     }
 
     @Override
@@ -453,7 +458,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
 
     @Subscribe
     public void subscribe(NotificationNumberEvent event) {
-        Snackbar.make(coordinatorLayout, event.mMessage, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(mCoordinatorLayout, event.mMessage, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
@@ -494,7 +499,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
         Const.asyncHttpClient.get(context, mCommentUrl, new TextHttpResponseHandler() {
             @Override
             public void onStart() {
-                mSwipeRefreshLayout.setRefreshing(true);
+                mSwipeContainer.setRefreshing(true);
             }
 
             @Override
@@ -531,7 +536,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
 
             @Override
             public void onFinish() {
-                mSwipeRefreshLayout.setRefreshing(false);
+                mSwipeContainer.setRefreshing(false);
             }
         });
     }
@@ -576,7 +581,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
             @Override
             public void onFinish() {
 //                mTimelineDialog.dismiss();
-                mSwipeRefreshLayout.setRefreshing(false);
+                mSwipeContainer.setRefreshing(false);
             }
         });
     }
@@ -587,7 +592,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
 
             @Override
             public void onStart() {
-                mSwipeRefreshLayout.setRefreshing(true);
+                mSwipeContainer.setRefreshing(true);
             }
 
             @Override
@@ -639,7 +644,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
             @Override
             public void onFinish() {
 //                mTimelineDialog.dismiss();
-                mSwipeRefreshLayout.setRefreshing(false);
+                mSwipeContainer.setRefreshing(false);
             }
         });
     }
@@ -781,25 +786,26 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
 
     @Override
     public void onOffsetChanged(AppBarLayout appBarLayout, int i) {
-        mSwipeRefreshLayout.setEnabled(i == 0);
+        mSwipeContainer.setEnabled(i == 0);
     }
 
     static class CommentViewHolder extends RecyclerView.ViewHolder {
-        private ImageView commentUserImage;
-        private TextView user_name;
-        private TextView date_time;
-        private TextView usercomment;
-        private LinearLayout re_user;
-        private ImageButton replyButton;
+        @Bind(R.id.comment_user_image)
+        ImageView mCommentUserImage;
+        @Bind(R.id.user_name)
+        TextView mUserName;
+        @Bind(R.id.date_time)
+        TextView mDateTime;
+        @Bind(R.id.user_comment)
+        TextView mUserComment;
+        @Bind(R.id.re_user)
+        LinearLayout mReUser;
+        @Bind(R.id.reply_button)
+        ImageButton mReplyButton;
 
         public CommentViewHolder(View view) {
             super(view);
-            commentUserImage = (ImageView) view.findViewById(R.id.commentUserImage);
-            user_name = (TextView) view.findViewById(R.id.user_name);
-            date_time = (TextView) view.findViewById(R.id.date_time);
-            usercomment = (TextView) view.findViewById(R.id.usercomment);
-            re_user = (LinearLayout) view.findViewById(R.id.re_user);
-            replyButton = (ImageButton) view.findViewById(R.id.replyButton);
+            ButterKnife.bind(this, view);
         }
     }
 
@@ -1016,26 +1022,26 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
                     .load(users.getProfile_img())
                     .placeholder(R.drawable.ic_userpicture)
                     .transform(new RoundedTransformation())
-                    .into(holder.commentUserImage);
-            holder.user_name.setText(users.getUsername());
-            holder.date_time.setText(users.getComment_date());
-            holder.usercomment.setText(users.getComment());
+                    .into(holder.mCommentUserImage);
+            holder.mUserName.setText(users.getUsername());
+            holder.mDateTime.setText(users.getComment_date());
+            holder.mUserComment.setText(users.getComment());
 
-            holder.user_name.setOnClickListener(new View.OnClickListener() {
+            holder.mUserName.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     FlexibleUserProfActivity.startUserProfActivity(users.getComment_user_id(), users.getUsername(), CommentActivity.this);
                 }
             });
 
-            holder.commentUserImage.setOnClickListener(new View.OnClickListener() {
+            holder.mCommentUserImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     FlexibleUserProfActivity.startUserProfActivity(users.getComment_user_id(), users.getUsername(), CommentActivity.this);
                 }
             });
 
-            holder.replyButton.setOnClickListener(new View.OnClickListener() {
+            holder.mReplyButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     //Toast.makeText(context, Arrays.asList(users.getComment_user_data()).toString(), Toast.LENGTH_SHORT).show();
@@ -1080,7 +1086,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
                             FlexibleUserProfActivity.startUserProfActivity(data.getUser_id(), data.getUserName(), CommentActivity.this);
                         }
                     });
-                    holder.re_user.addView(userText, LinearLayout.LayoutParams.WRAP_CONTENT);
+                    holder.mReUser.addView(userText, LinearLayout.LayoutParams.WRAP_CONTENT);
                 }
             }
         }

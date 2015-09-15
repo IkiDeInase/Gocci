@@ -146,7 +146,7 @@
             android:layout_marginTop="8dp">
 
             <ImageView
-                android:id="@+id/image_cheer"
+                android:id="@+id/image_twitter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
@@ -157,7 +157,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="16dp"
-                android:layout_toRightOf="@+id/image_cheer"
+                android:layout_toRightOf="@+id/image_twitter"
                 android:text="@string/setting_socialnetwork_twitter"
                 android:textColor="@color/namegrey"
                 android:textSize="@dimen/small_text" />

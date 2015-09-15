@@ -14,7 +14,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -71,12 +70,6 @@ public class AlreadyExistCameraPreview extends AppCompatActivity {
     Toolbar mToolBar;
     @Bind(R.id.restname_spinner)
     MaterialBetterSpinner mRestnameSpinner;
-    @Bind(R.id.info_text)
-    TextView mInfoText;
-    @Bind(R.id.rest_add_button)
-    ImageButton mRestAddButton;
-    @Bind(R.id.add_rest_view)
-    RelativeLayout mAddRestView;
     @Bind(R.id.category_spinner)
     MaterialBetterSpinner mCategorySpinner;
     @Bind(R.id.mood_spinner)
@@ -87,24 +80,14 @@ public class AlreadyExistCameraPreview extends AppCompatActivity {
     MaterialEditText mEditComment;
     @Bind(R.id.check_cheer)
     CheckBox mCheckCheer;
-    @Bind(R.id.image_cheer)
-    ImageView mImageCheer;
-    @Bind(R.id.button_twitter)
-    ImageButton mButtonTwitter;
-    @Bind(R.id.image_facebook)
-    ImageView mImageFacebook;
-    @Bind(R.id.button_facebook)
-    ImageButton mButtonFacebook;
-    @Bind(R.id.image_instagram)
-    ImageView mImageInstagram;
-    @Bind(R.id.button_instagram)
-    ImageButton mButtonInstagram;
     @Bind(R.id.toukou_button_ripple)
     RippleView mToukouButtonRipple;
     @Bind(R.id.progress_wheel)
     ProgressWheel mProgressWheel;
+    @Bind(R.id.add_rest_view)
+    RelativeLayout mAddRestView;
 
-    @OnClick(R.id.add_rest_view)
+    @OnClick(R.id.rest_add_button)
     public void restAdd() {
         createTenpo();
     }
@@ -352,9 +335,8 @@ public class AlreadyExistCameraPreview extends AppCompatActivity {
             }
         });
 
-        RelativeLayout addrestView = (RelativeLayout) findViewById(R.id.add_rest_view);
         if (mIsnewRestname || !mRestname.equals("")) {
-            addrestView.setVisibility(View.GONE);
+            mAddRestView.setVisibility(View.GONE);
         }
     }
 
