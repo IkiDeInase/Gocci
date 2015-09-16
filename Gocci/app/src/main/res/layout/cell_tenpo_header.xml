@@ -14,7 +14,7 @@
         <com.andexert.library.RippleView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:id="@+id/checkRipple"
+            android:id="@+id/check_ripple"
             ripple:rv_color="@android:color/black"
             android:layout_weight="1">
 
@@ -43,7 +43,7 @@
         <com.andexert.library.RippleView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:id="@+id/callRipple"
+            android:id="@+id/call_ripple"
             ripple:rv_color="@android:color/black"
             android:layout_weight="1">
 
@@ -71,7 +71,7 @@
         <com.andexert.library.RippleView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:id="@+id/gohereRipple"
+            android:id="@+id/go_here_ripple"
             ripple:rv_color="@android:color/black"
             android:layout_weight="1">
 
@@ -99,7 +99,7 @@
         <com.andexert.library.RippleView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:id="@+id/etcRipple"
+            android:id="@+id/etc_ripple"
             ripple:rv_color="@android:color/black"
             android:layout_weight="1">
 

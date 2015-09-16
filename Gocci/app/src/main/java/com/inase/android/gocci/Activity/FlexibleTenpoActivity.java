@@ -93,9 +93,30 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import io.fabric.sdk.android.Fabric;
 
 public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCapabilitiesReceiver.Listener, ObservableScrollViewCallbacks, AppBarLayout.OnOffsetChangedListener {
+
+    @Bind(R.id.background_image)
+    CustomKenBurnsView mBackgroundImage;
+    @Bind(R.id.tool_bar)
+    Toolbar mToolBar;
+    @Bind(R.id.collapsing_toolbar)
+    CollapsingToolbarLayout mCollapsingToolbar;
+    @Bind(R.id.app_bar)
+    AppBarLayout mAppBar;
+    @Bind(R.id.list)
+    ObservableRecyclerView mTenpoRecyclerView;
+    @Bind(R.id.swipe_container)
+    SwipeRefreshLayout mSwipeContainer;
+    @Bind(R.id.cheer_flag)
+    ImageView mCheerFlag;
+    @Bind(R.id.cheer_number)
+    TextView mCheerNumber;
+    @Bind(R.id.coordinator_layout)
+    CoordinatorLayout mCoordinatorLayout;
 
     private String mTenpoUrl;
 
@@ -107,9 +128,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
 
     private ArrayList<PostData> mTenpousers = new ArrayList<PostData>();
     private TenpoAdapter mTenpoAdapter;
-    private ObservableRecyclerView mTenpoRecyclerView;
     private LinearLayoutManager mLayoutManager;
-    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     private HeaderData headerTenpoData;
 
@@ -137,11 +156,6 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
     private Drawer result;
 
     private final FlexibleTenpoActivity self = this;
-
-    private CoordinatorLayout coordinatorLayout;
-    private CollapsingToolbarLayout collapsingToolbarLayout;
-    private CustomKenBurnsView kenBurnsView;
-    private AppBarLayout appBarLayout;
 
     private VideoPlayer player;
     private boolean playerNeedsPrepare;
@@ -244,18 +258,17 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
         mViewHolderHash = new ConcurrentHashMap<>();
 
         setContentView(R.layout.activity_flexible_tenpo);
+        ButterKnife.bind(this);
 
         Intent intent = getIntent();
         mRest_id = intent.getIntExtra("rest_id", 0);
 
         mTenpoUrl = Const.getRestpageAPI(mRest_id);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
         //toolbar.inflateMenu(R.menu.toolbar_menu);
         //toolbar.setLogo(R.drawable.ic_gocci_moji_white45);
-        setSupportActionBar(toolbar);
+        setSupportActionBar(mToolBar);
 
-        mTenpoRecyclerView = (ObservableRecyclerView) findViewById(R.id.list);
         mLayoutManager = new LinearLayoutManager(this);
         mTenpoRecyclerView.setLayoutManager(mLayoutManager);
         mTenpoRecyclerView.setHasFixedSize(true);
@@ -268,7 +281,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
 
         result = new DrawerBuilder()
                 .withActivity(this)
-                .withToolbar(toolbar)
+                .withToolbar(mToolBar)
                 .withHeader(new DrawerProfHeader(this))
                 .addDrawerItems(
                         new PrimaryDrawerItem().withName(getString(R.string.timeline)).withIcon(GoogleMaterial.Icon.gmd_home).withIdentifier(1).withSelectable(false),
@@ -337,14 +350,10 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
         result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        collapsingToolbarLayout.setTitle(intent.getStringExtra("rest_name"));
+        mCollapsingToolbar.setTitle(intent.getStringExtra("rest_name"));
+        mBackgroundImage.setTransitionGenerator(new RandomTransitionGenerator(4500, new AccelerateDecelerateInterpolator()));
 
-        kenBurnsView = (CustomKenBurnsView) findViewById(R.id.background_Image);
-        kenBurnsView.setTransitionGenerator(new RandomTransitionGenerator(4500, new AccelerateDecelerateInterpolator()));
-
-        cheer_number = (TextView) findViewById(R.id.cheer_number);
-        cheer_number.setText(String.valueOf(mTotal_cheer_num));
+        mCheerNumber.setText(String.valueOf(mTotal_cheer_num));
         mTenpoRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -390,23 +399,19 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
             }
         });
 
-        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
-        mSwipeRefreshLayout.setColorSchemeResources(R.color.gocci_1, R.color.gocci_2, R.color.gocci_3, R.color.gocci_4);
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        mSwipeContainer.setColorSchemeResources(R.color.gocci_1, R.color.gocci_2, R.color.gocci_3, R.color.gocci_4);
+        mSwipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mSwipeRefreshLayout.setRefreshing(true);
+                mSwipeContainer.setRefreshing(true);
                 if (Util.getConnectedState(FlexibleTenpoActivity.this) != Util.NetworkStatus.OFF) {
                     getRefreshAsync(FlexibleTenpoActivity.this);
                 } else {
                     Toast.makeText(FlexibleTenpoActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
-                    mSwipeRefreshLayout.setRefreshing(false);
+                    mSwipeContainer.setRefreshing(false);
                 }
             }
         });
-
-        appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
-        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
     }
 
     @Override
@@ -445,7 +450,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
         releasePlayer();
         audioCapabilitiesReceiver.unregister();
 
-        appBarLayout.removeOnOffsetChangedListener(this);
+        mAppBar.removeOnOffsetChangedListener(this);
 
     }
 
@@ -461,7 +466,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
         }
 
         audioCapabilitiesReceiver.register();
-        appBarLayout.addOnOffsetChangedListener(this);
+        mAppBar.addOnOffsetChangedListener(this);
 
     }
 
@@ -511,7 +516,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
 
     @Subscribe
     public void subscribe(NotificationNumberEvent event) {
-        Snackbar.make(coordinatorLayout, event.mMessage, android.support.design.widget.Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(mCoordinatorLayout, event.mMessage, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
@@ -547,7 +552,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
                     Picasso.with(context).load(mTenpousers.get(0).getThumbnail()).into(new Target() {
                         @Override
                         public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                            kenBurnsView.setImageBitmap(bitmap);
+                            mBackgroundImage.setImageBitmap(bitmap);
                         }
 
                         @Override
@@ -561,7 +566,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
                         }
                     });
                 } else {
-                    kenBurnsView.setImageResource(R.drawable.ic_background_login);
+                    mBackgroundImage.setImageResource(R.drawable.ic_background_login);
                 }
 
                 mTenpoRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
@@ -609,7 +614,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
 
             @Override
             public void onFinish() {
-                mSwipeRefreshLayout.setRefreshing(false);
+                mSwipeContainer.setRefreshing(false);
             }
         });
     }
@@ -656,7 +661,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
                 @Override
                 public void onVideoSizeChanged(int width, int height, float pixelWidthAspectRatio) {
                     viewHolder.mVideoThumbnail.setVisibility(View.GONE);
-                    viewHolder.videoFrame.setAspectRatio(
+                    viewHolder.mVideoFrame.setAspectRatio(
                             height == 0 ? 1 : (width * pixelWidthAspectRatio) / height);
                 }
             });
@@ -667,7 +672,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
             player.prepare();
             playerNeedsPrepare = false;
         }
-        player.setSurface(viewHolder.movie.getHolder().getSurface());
+        player.setSurface(viewHolder.mSquareVideoExo.getHolder().getSurface());
         player.setPlayWhenReady(true);
 
         if (SavedData.getSettingMute(this) == -1) {
@@ -754,36 +759,37 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
 
     @Override
     public void onOffsetChanged(AppBarLayout appBarLayout, int i) {
-        mSwipeRefreshLayout.setEnabled(i == 0);
+        mSwipeContainer.setEnabled(i == 0);
     }
 
     public class TenpoHeaderViewHolder extends RecyclerView.ViewHolder implements OnMapReadyCallback {
-        private TextView tenpo_category;
-        private RippleView checkRipple;
-        private ImageView check_Image;
-        private TextView check_text;
-        private RippleView callRipple;
-        private RippleView gohereRipple;
-        private RippleView etcRipple;
-        private MapView mMapView;
+        @Bind(R.id.category)
+        TextView mTenpoCategory;
+        @Bind(R.id.check_ripple)
+        RippleView mCheckRipple;
+        @Bind(R.id.check_image)
+        ImageView mCheckImage;
+        @Bind(R.id.check_text)
+        TextView mCheckText;
+        @Bind(R.id.call_ripple)
+        RippleView mCallRipple;
+        @Bind(R.id.go_here_ripple)
+        RippleView mGoHereRipple;
+        @Bind(R.id.etc_ripple)
+        RippleView mEtcRipple;
+        @Bind(R.id.map)
+        MapView mMap;
         private GoogleMap mGoogleMap;
 
         public TenpoHeaderViewHolder(View view) {
             super(view);
-            tenpo_category = (TextView) view.findViewById(R.id.category);
-            checkRipple = (RippleView) view.findViewById(R.id.checkRipple);
-            check_Image = (ImageView) view.findViewById(R.id.check_image);
-            check_text = (TextView) view.findViewById(R.id.check_text);
-            callRipple = (RippleView) view.findViewById(R.id.callRipple);
-            gohereRipple = (RippleView) view.findViewById(R.id.gohereRipple);
-            etcRipple = (RippleView) view.findViewById(R.id.etcRipple);
-            mMapView = (MapView) view.findViewById(R.id.map);
+            ButterKnife.bind(this, view);
 
-            if (mMapView != null) {
-                mMapView.onCreate(null);
-                mMapView.onResume();
-                mapView = mMapView;
-                mMapView.getMapAsync(this);
+            if (mMap != null) {
+                mMap.onCreate(null);
+                mMap.onResume();
+                mapView = mMap;
+                mMap.getMapAsync(this);
             }
         }
 
@@ -855,30 +861,30 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
 
         private void bindHeader(final TenpoHeaderViewHolder holder) {
             if (headerTenpoData.getWant_flag() == 0) {
-                holder.check_Image.setImageResource(R.drawable.ic_like_white);
-                holder.check_text.setText(getString(R.string.add_want));
+                holder.mCheckImage.setImageResource(R.drawable.ic_like_white);
+                holder.mCheckText.setText(getString(R.string.add_want));
             } else {
-                holder.check_Image.setImageResource(R.drawable.ic_favorite_orange);
-                holder.check_text.setText(getString(R.string.remove_want));
+                holder.mCheckImage.setImageResource(R.drawable.ic_favorite_orange);
+                holder.mCheckText.setText(getString(R.string.remove_want));
             }
 
-            holder.checkRipple.setOnClickListener(new View.OnClickListener() {
+            holder.mCheckRipple.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (holder.check_text.getText().toString().equals(getString(R.string.add_want))) {
-                        holder.check_Image.setImageResource(R.drawable.ic_favorite_orange);
-                        holder.check_text.setText(getString(R.string.remove_want));
+                    if (holder.mCheckText.getText().toString().equals(getString(R.string.add_want))) {
+                        holder.mCheckImage.setImageResource(R.drawable.ic_favorite_orange);
+                        holder.mCheckText.setText(getString(R.string.remove_want));
 
                         Util.wantAsync(context, headerTenpoData);
                     } else {
-                        holder.check_Image.setImageResource(R.drawable.ic_like_white);
-                        holder.check_text.setText(getString(R.string.add_want));
+                        holder.mCheckImage.setImageResource(R.drawable.ic_like_white);
+                        holder.mCheckText.setText(getString(R.string.add_want));
 
                         Util.unwantAsync(context, headerTenpoData);
                     }
                 }
             });
-            holder.callRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
+            holder.mCallRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
                 @Override
                 public void onComplete(RippleView rippleView) {
                     Intent intent = new Intent(
@@ -889,7 +895,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
                 }
             });
 
-            holder.gohereRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
+            holder.mGoHereRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
                 @Override
                 public void onComplete(RippleView rippleView) {
                     Uri gmmIntentUri = Uri.parse("google.navigation:q=" + headerTenpoData.getLat() + "," + headerTenpoData.getLon() + "&mode=w");
@@ -900,15 +906,15 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
                 }
             });
 
-            holder.etcRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
+            holder.mEtcRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
                 @Override
                 public void onComplete(RippleView rippleView) {
                     if (!headerTenpoData.getHomepage().equals("none")) {
                         new MaterialDialog.Builder(FlexibleTenpoActivity.this)
                                 .items(R.array.list_tenpo_menu)
-                                .itemsCallback(new com.afollestad.materialdialogs.MaterialDialog.ListCallback() {
+                                .itemsCallback(new MaterialDialog.ListCallback() {
                                     @Override
-                                    public void onSelection(com.afollestad.materialdialogs.MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
+                                    public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
                                         if (charSequence.toString().equals(getString(R.string.seeHomepage))) {
                                             Uri uri = Uri.parse(headerTenpoData.getHomepage());
                                             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
@@ -925,7 +931,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
             });
 
             if (holder.mGoogleMap == null) {
-                holder.mGoogleMap = holder.mMapView.getMap();
+                holder.mGoogleMap = holder.mMap.getMap();
             }
             if (holder.mGoogleMap != null) {
                 //move map to the 'location'
@@ -940,21 +946,21 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
                 holder.mGoogleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
             }
 
-            holder.tenpo_category.setText(headerTenpoData.getRest_category());
+            holder.mTenpoCategory.setText(headerTenpoData.getRest_category());
         }
 
         private void bindPost(final Const.ExoViewHolder holder, final int position, final PostData user) {
-            holder.user_name.setText(user.getUsername());
+            holder.mUserName.setText(user.getUsername());
 
-            holder.datetime.setText(user.getPost_date());
+            holder.mTimeText.setText(user.getPost_date());
 
             if (!user.getMemo().equals("none")) {
-                holder.comment.setText(user.getMemo());
+                holder.mComment.setText(user.getMemo());
             } else {
-                holder.comment.setText("");
+                holder.mComment.setText("");
             }
 
-            holder.comment.setOnClickListener(new View.OnClickListener() {
+            holder.mComment.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     CommentActivity.startCommentActivity(Integer.parseInt(user.getPost_id()), FlexibleTenpoActivity.this);
@@ -965,23 +971,23 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
                     .load(user.getProfile_img())
                     .placeholder(R.drawable.ic_userpicture)
                     .transform(new RoundedTransformation())
-                    .into(holder.circleImage);
+                    .into(holder.mCircleImage);
 
-            holder.user_name.setOnClickListener(new View.OnClickListener() {
+            holder.mUserName.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     FlexibleUserProfActivity.startUserProfActivity(user.getPost_user_id(), user.getUsername(), FlexibleTenpoActivity.this);
                 }
             });
 
-            holder.circleImage.setOnClickListener(new View.OnClickListener() {
+            holder.mCircleImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     FlexibleUserProfActivity.startUserProfActivity(user.getPost_user_id(), user.getUsername(), FlexibleTenpoActivity.this);
                 }
             });
 
-            holder.menuRipple.setOnClickListener(new View.OnClickListener() {
+            holder.mMenuRipple.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     new BottomSheet.Builder(FlexibleTenpoActivity.this, R.style.BottomSheet_StyleDialog).sheet(R.menu.popup_normal).listener(new DialogInterface.OnClickListener() {
@@ -1004,7 +1010,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
                     .into(holder.mVideoThumbnail);
             holder.mVideoThumbnail.setVisibility(View.VISIBLE);
 
-            holder.videoFrame.setOnClickListener(new View.OnClickListener() {
+            holder.mVideoFrame.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (player != null) {
@@ -1023,61 +1029,61 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
             });
 
 
-            holder.rest_name.setText(user.getRestname());
+            holder.mRestname.setText(user.getRestname());
             //viewHolder.locality.setText(user.getLocality());
 
             if (!user.getCategory().equals(getString(R.string.nothing_tag))) {
-                holder.category.setText(user.getCategory());
+                holder.mCategory.setText(user.getCategory());
             } else {
-                holder.category.setText("　　　　");
+                holder.mCategory.setText("　　　　");
             }
             if (!user.getTag().equals(getString(R.string.nothing_tag))) {
-                holder.atmosphere.setText(user.getTag());
+                holder.mMood.setText(user.getTag());
             } else {
-                holder.atmosphere.setText("　　　　");
+                holder.mMood.setText("　　　　");
             }
             if (!user.getValue().equals("0")) {
-                holder.value.setText(user.getValue() + "円");
+                holder.mValue.setText(user.getValue() + "円");
             } else {
-                holder.value.setText("　　　　");
+                holder.mValue.setText("　　　　");
             }
 
             final int currentgoodnum = user.getGochi_num();
             final int currentcommentnum = user.getComment_num();
 
-            holder.likes.setText(String.valueOf(currentgoodnum));
-            holder.comments.setText(String.valueOf(currentcommentnum));
+            holder.mLikesNumber.setText(String.valueOf(currentgoodnum));
+            holder.mCommentsNumber.setText(String.valueOf(currentcommentnum));
 
             if (user.getGochi_flag() == 0) {
-                holder.likes_ripple.setClickable(true);
-                holder.likes_Image.setImageResource(R.drawable.ic_icon_beef);
+                holder.mLikesRipple.setClickable(true);
+                holder.mLikesImage.setImageResource(R.drawable.ic_icon_beef);
 
-                holder.likes_ripple.setOnClickListener(new View.OnClickListener() {
+                holder.mLikesRipple.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         user.setGochi_flag(1);
                         user.setGochi_num(currentgoodnum + 1);
 
-                        holder.likes.setText(String.valueOf((currentgoodnum + 1)));
-                        holder.likes_Image.setImageResource(R.drawable.ic_icon_beef_orange);
-                        holder.likes_ripple.setClickable(false);
+                        holder.mLikesNumber.setText(String.valueOf((currentgoodnum + 1)));
+                        holder.mLikesImage.setImageResource(R.drawable.ic_icon_beef_orange);
+                        holder.mLikesRipple.setClickable(false);
 
                         Util.postGochiAsync(context, user);
                     }
                 });
             } else {
-                holder.likes_Image.setImageResource(R.drawable.ic_icon_beef_orange);
-                holder.likes_ripple.setClickable(false);
+                holder.mLikesImage.setImageResource(R.drawable.ic_icon_beef_orange);
+                holder.mLikesRipple.setClickable(false);
             }
 
-            holder.comments_ripple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
+            holder.mCommentsRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
                 @Override
                 public void onComplete(RippleView rippleView) {
                     CommentActivity.startCommentActivity(Integer.parseInt(user.getPost_id()), FlexibleTenpoActivity.this);
                 }
             });
 
-            holder.share_ripple.setOnClickListener(new View.OnClickListener() {
+            holder.mShareRipple.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (Application_Gocci.getShareTransfer() != null) {

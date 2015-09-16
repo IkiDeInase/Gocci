@@ -198,7 +198,7 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
                 .withEffect(Effectstype.SlideBottom)
                 .show();
 
-        mCameraView = (CameraGLView) rootView.findViewById(R.id.cameraView);
+        mCameraView = (CameraGLView) rootView.findViewById(R.id.camera_view);
         //mCameraView.setVideoSize(1280, 720);
         mCameraView.setVideoSize(640, 480);
         //mCameraView.setOnTouchListener(mOnTouchListener);
@@ -233,8 +233,8 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
             }
         });
 
-        toukouButton = (ImageButton) rootView.findViewById(R.id.toukouButton);
-        progress = (CircleProgressBar) rootView.findViewById(R.id.circleProgress);
+        toukouButton = (ImageButton) rootView.findViewById(R.id.toukou_button);
+        progress = (CircleProgressBar) rootView.findViewById(R.id.circle_progress);
 
         toukouButton.setOnTouchListener(mOnTouchListener);
 

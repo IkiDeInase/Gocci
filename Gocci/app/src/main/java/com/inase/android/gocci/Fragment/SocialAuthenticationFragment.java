@@ -32,14 +32,67 @@ import com.twitter.sdk.android.core.TwitterAuthToken;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 /**
  * Created by kinagafuji on 15/08/05.
  */
 public class SocialAuthenticationFragment extends Fragment {
 
+    @Bind(R.id.login_button)
+    LoginButton mFacebookLoginButton;
+    @Bind(R.id.twitter_login_button)
+    GocciTwitterLoginButton mTwitterLoginButton;
+    @Bind(R.id.skip_Ripple)
+    RippleView mSkipRipple;
+
+    @OnClick(R.id.twitter_ripple)
+    public void twitter() {
+        if (Application_Gocci.getLoginProvider() != null) {
+            new MaterialDialog.Builder(getActivity()).
+                    content(getString(R.string.add_sns_message))
+                    .positiveText(getString(R.string.add_sns_yeah))
+                    .positiveColorRes(R.color.gocci_header)
+                    .negativeText(getString(R.string.add_sns_no))
+                    .negativeColorRes(R.color.gocci_header)
+                    .callback(new MaterialDialog.ButtonCallback() {
+                        @Override
+                        public void onPositive(MaterialDialog dialog) {
+                            super.onPositive(dialog);
+                            mTwitterLoginButton.performClick();
+                        }
+                    })
+                    .show();
+        } else {
+            Toast.makeText(getActivity(), getString(R.string.please_input_username), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @OnClick(R.id.facebook_ripple)
+    public void facebook() {
+        if (Application_Gocci.getLoginProvider() != null) {
+            new MaterialDialog.Builder(getActivity()).
+                    content(getString(R.string.add_sns_message))
+                    .positiveText(getString(R.string.add_sns_yeah))
+                    .positiveColorRes(R.color.gocci_header)
+                    .negativeText(getString(R.string.add_sns_no))
+                    .negativeColorRes(R.color.gocci_header)
+                    .callback(new MaterialDialog.ButtonCallback() {
+                        @Override
+                        public void onPositive(MaterialDialog dialog) {
+                            super.onPositive(dialog);
+                            mFacebookLoginButton.performClick();
+                        }
+                    })
+                    .show();
+        } else {
+            Toast.makeText(getActivity(), getString(R.string.please_input_username), Toast.LENGTH_SHORT).show();
+        }
+    }
+
     private CallbackManager callbackManager;
-    private GocciTwitterLoginButton twitter_loginButton;
-    private LoginButton loginButton;
 
     public static SocialAuthenticationFragment newInstance() {
         SocialAuthenticationFragment pane = new SocialAuthenticationFragment();
@@ -49,16 +102,12 @@ public class SocialAuthenticationFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.view_tutorial5, container, false);
-
+        ButterKnife.bind(this, rootView);
+        
         callbackManager = CallbackManager.Factory.create();
-        loginButton = (LoginButton) rootView.findViewById(R.id.login_button);
-        twitter_loginButton = (GocciTwitterLoginButton) rootView.findViewById(R.id.twitter_login_button);
-        RippleView twitter_ripple = (RippleView) rootView.findViewById(R.id.twitter_Ripple);
-        RippleView facebook_ripple = (RippleView) rootView.findViewById(R.id.facebook_Ripple);
-        RippleView skip_ripple = (RippleView) rootView.findViewById(R.id.skip_Ripple);
 
-        loginButton.setReadPermissions("public_profile");
-        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+        mFacebookLoginButton.setReadPermissions("public_profile");
+        mFacebookLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 Profile profile = Profile.getCurrentProfile();
@@ -84,7 +133,7 @@ public class SocialAuthenticationFragment extends Fragment {
             }
         });
 
-        twitter_loginButton.setCallback(new Callback<TwitterSession>() {
+        mTwitterLoginButton.setCallback(new Callback<TwitterSession>() {
             @Override
             public void success(Result<TwitterSession> result) {
                 TwitterAuthToken authToken = result.data.getAuthToken();
@@ -108,53 +157,7 @@ public class SocialAuthenticationFragment extends Fragment {
             }
         });
 
-        twitter_ripple.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (Application_Gocci.getLoginProvider() != null) {
-                    new MaterialDialog.Builder(getActivity()).
-                            content(getString(R.string.add_sns_message))
-                            .positiveText(getString(R.string.add_sns_yeah))
-                            .positiveColorRes(R.color.gocci_header)
-                            .negativeText(getString(R.string.add_sns_no))
-                            .negativeColorRes(R.color.gocci_header)
-                            .callback(new MaterialDialog.ButtonCallback() {
-                                @Override
-                                public void onPositive(MaterialDialog dialog) {
-                                    super.onPositive(dialog);
-                                    twitter_loginButton.performClick();
-                                }
-                            })
-                            .show();
-                } else {
-                    Toast.makeText(getActivity(), getString(R.string.please_input_username), Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-        facebook_ripple.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (Application_Gocci.getLoginProvider() != null) {
-                    new MaterialDialog.Builder(getActivity()).
-                            content(getString(R.string.add_sns_message))
-                            .positiveText(getString(R.string.add_sns_yeah))
-                            .positiveColorRes(R.color.gocci_header)
-                            .negativeText(getString(R.string.add_sns_no))
-                            .negativeColorRes(R.color.gocci_header)
-                            .callback(new MaterialDialog.ButtonCallback() {
-                                @Override
-                                public void onPositive(MaterialDialog dialog) {
-                                    super.onPositive(dialog);
-                                    loginButton.performClick();
-                                }
-                            })
-                            .show();
-                } else {
-                    Toast.makeText(getActivity(), getString(R.string.please_input_username), Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-        skip_ripple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
+        mSkipRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
             @Override
             public void onComplete(RippleView rippleView) {
                 if (Application_Gocci.getLoginProvider() != null) {
@@ -188,7 +191,7 @@ public class SocialAuthenticationFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        twitter_loginButton.onActivityResult(requestCode, resultCode, data);
+        mTwitterLoginButton.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
@@ -205,4 +208,9 @@ public class SocialAuthenticationFragment extends Fragment {
         }, time);
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.unbind(this);
+    }
 }

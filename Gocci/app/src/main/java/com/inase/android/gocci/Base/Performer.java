@@ -4,8 +4,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Property;
 import android.view.View;
+
 import com.facebook.rebound.Spring;
 import com.facebook.rebound.SpringListener;
+
 /**
  * Created by kinagafuji on 15/09/07.
  */
@@ -25,8 +27,7 @@ public class Performer implements SpringListener {
     /**
      * Constructor. Note that a {@link View} must be specified by {@link #setTarget(View)}.
      *
-     * @param property
-     * 		the view property to modify.
+     * @param property the view property to modify.
      */
     public Performer(@NonNull Property<View, Float> property) {
         this(null, property);
@@ -35,10 +36,8 @@ public class Performer implements SpringListener {
     /**
      * Constructor.
      *
-     * @param target
-     * 		the view to modify.
-     * @param property
-     * 		the view property to modify.
+     * @param target   the view to modify.
+     * @param property the view property to modify.
      */
     public Performer(@Nullable View target, @NonNull Property<View, Float> property) {
         this.mTarget = target;

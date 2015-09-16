@@ -10,7 +10,7 @@
         android:src="@drawable/ic_userpicture" />
 
     <com.andexert.library.RippleView
-        android:id="@+id/wantButton"
+        android:id="@+id/want_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
@@ -18,14 +18,14 @@
         android:padding="12dp">
 
         <ImageView
-            android:id="@+id/deletewantButton"
+            android:id="@+id/delete_want_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_like_red"
             android:visibility="invisible" />
 
         <ImageView
-            android:id="@+id/addwantButton"
+            android:id="@+id/add_want_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_like_white"
@@ -41,7 +41,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/restname"
+            android:id="@+id/rest_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"

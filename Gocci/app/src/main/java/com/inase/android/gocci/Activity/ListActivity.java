@@ -51,9 +51,26 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
 public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOffsetChangedListener {
+
+    @Bind(R.id.tool_bar)
+    Toolbar mToolBar;
+    @Bind(R.id.app_bar)
+    AppBarLayout mAppBar;
+    @Bind(R.id.list)
+    RecyclerView mRecyclerView;
+    @Bind(R.id.swipe_refresh)
+    SwipeRefreshLayout mSwipeRefresh;
+    @Bind(R.id.empty_text)
+    TextView mEmptyText;
+    @Bind(R.id.empty_image)
+    ImageView mEmptyImage;
+    @Bind(R.id.coordinator_layout)
+    CoordinatorLayout mCoordinatorLayout;
 
     private int mCategory;
     private int mId;
@@ -62,24 +79,16 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
     private ArrayList<HeaderData> users = new ArrayList<>();
 
-    private RecyclerView mRecyclerView;
     private LinearLayoutManager mLayoutManager;
-    private SwipeRefreshLayout refresh;
 
     private FollowFollowerAdapter followefollowerAdapter;
     private UserCheerAdapter usercheerAdapter;
     private WantAdapter wantAdapter;
     private RestCheerAdapter restcheerAdapter;
 
-    private CoordinatorLayout coordinatorLayout;
-    private AppBarLayout appBarLayout;
-
     private Drawer result;
 
     private static MobileAnalyticsManager analytics;
-
-    private TextView empty_text;
-    private ImageView empty_image;
 
     public static void startListActivity(int id, int isMypage, int category, Activity startingActivity) {
         Intent intent = new Intent(startingActivity, ListActivity.class);
@@ -128,40 +137,35 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
         }
 
         setContentView(R.layout.activity_follower_followee_cheer_list);
+        ButterKnife.bind(this);
 
         Intent intent = getIntent();
         mCategory = intent.getIntExtra("category", 0);
         mId = intent.getIntExtra("id", 0);
         isMypage = intent.getIntExtra("check", 0);
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.list);
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setHasFixedSize(true);
-        refresh = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
-        refresh.setColorSchemeResources(R.color.gocci_1, R.color.gocci_2, R.color.gocci_3, R.color.gocci_4);
-        refresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        mSwipeRefresh.setColorSchemeResources(R.color.gocci_1, R.color.gocci_2, R.color.gocci_3, R.color.gocci_4);
+        mSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                refresh.setRefreshing(true);
+                mSwipeRefresh.setRefreshing(true);
                 if (Util.getConnectedState(ListActivity.this) != Util.NetworkStatus.OFF) {
                     getRefreshJSON(mUrl, mCategory, ListActivity.this);
                 } else {
                     Toast.makeText(ListActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
-                    refresh.setRefreshing(false);
+                    mSwipeRefresh.setRefreshing(false);
                 }
             }
         });
 
-        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
-        appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
-        setSupportActionBar(toolbar);
+        setSupportActionBar(mToolBar);
 
         result = new DrawerBuilder()
                 .withActivity(this)
-                .withToolbar(toolbar)
+                .withToolbar(mToolBar)
                 .withHeader(new DrawerProfHeader(this))
                 .addDrawerItems(
                         new PrimaryDrawerItem().withName(getString(R.string.timeline)).withIcon(GoogleMaterial.Icon.gmd_home).withIdentifier(1).withSelectable(false),
@@ -222,37 +226,34 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
         result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        empty_text = (TextView) findViewById(R.id.empty_text);
-        empty_image = (ImageView) findViewById(R.id.empty_image);
-
         switch (mCategory) {
             case Const.CATEGORY_FOLLOW:
                 getSupportActionBar().setTitle(getString(R.string.follow_list));
-                empty_text.setText(getString(R.string.follow_empty_text));
+                mEmptyText.setText(getString(R.string.follow_empty_text));
                 followefollowerAdapter = new FollowFollowerAdapter(this);
                 mUrl = Const.getFollowAPI(mId);
                 break;
             case Const.CATEGORY_FOLLOWER:
                 getSupportActionBar().setTitle(getString(R.string.follower_list));
-                empty_text.setText(getString(R.string.follower_empty_text));
+                mEmptyText.setText(getString(R.string.follower_empty_text));
                 followefollowerAdapter = new FollowFollowerAdapter(this);
                 mUrl = Const.getFollowerAPI(mId);
                 break;
             case Const.CATEGORY_USER_CHEER:
                 getSupportActionBar().setTitle(getString(R.string.cheer_list));
-                empty_text.setText(getString(R.string.cheer_empty_text));
+                mEmptyText.setText(getString(R.string.cheer_empty_text));
                 usercheerAdapter = new UserCheerAdapter(this);
                 mUrl = Const.getUserCheerAPI(mId);
                 break;
             case Const.CATEGORY_WANT:
                 getSupportActionBar().setTitle(getString(R.string.want_list));
-                empty_text.setText(getString(R.string.want_empty_text));
+                mEmptyText.setText(getString(R.string.want_empty_text));
                 wantAdapter = new WantAdapter(this);
                 mUrl = Const.getWantAPI(mId);
                 break;
             case Const.CATEGORY_REST_CHEER:
                 getSupportActionBar().setTitle(getString(R.string.cheer_user_list));
-                empty_text.setText(getString(R.string.usercheer_empty_text));
+                mEmptyText.setText(getString(R.string.usercheer_empty_text));
                 restcheerAdapter = new RestCheerAdapter(this);
                 mUrl = Const.getRestCheerAPI(mId);
                 break;
@@ -269,7 +270,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
             analytics.getEventClient().submitEvents();
         }
 
-        appBarLayout.removeOnOffsetChangedListener(this);
+        mAppBar.removeOnOffsetChangedListener(this);
     }
 
     @Override
@@ -279,7 +280,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
             analytics.getSessionClient().resumeSession();
         }
 
-        appBarLayout.addOnOffsetChangedListener(this);
+        mAppBar.addOnOffsetChangedListener(this);
     }
 
     @Override
@@ -295,7 +296,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
     @Subscribe
     public void subscribe(NotificationNumberEvent event) {
-        Snackbar.make(coordinatorLayout, event.mMessage, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(mCoordinatorLayout, event.mMessage, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
@@ -384,12 +385,11 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 mRecyclerView.setAdapter(followefollowerAdapter);
 
                 if (users.isEmpty()) {
-                    empty_image.setVisibility(View.VISIBLE);
-                    empty_text.setVisibility(View.VISIBLE);
-                }
-                else {
-                    empty_image.setVisibility(View.GONE);
-                    empty_text.setVisibility(View.GONE);
+                    mEmptyImage.setVisibility(View.VISIBLE);
+                    mEmptyText.setVisibility(View.VISIBLE);
+                } else {
+                    mEmptyImage.setVisibility(View.GONE);
+                    mEmptyText.setVisibility(View.GONE);
                 }
             }
 
@@ -431,12 +431,11 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 mRecyclerView.setAdapter(followefollowerAdapter);
 
                 if (users.isEmpty()) {
-                    empty_image.setVisibility(View.VISIBLE);
-                    empty_text.setVisibility(View.VISIBLE);
-                }
-                else {
-                    empty_image.setVisibility(View.GONE);
-                    empty_text.setVisibility(View.GONE);
+                    mEmptyImage.setVisibility(View.VISIBLE);
+                    mEmptyText.setVisibility(View.VISIBLE);
+                } else {
+                    mEmptyImage.setVisibility(View.GONE);
+                    mEmptyText.setVisibility(View.GONE);
                 }
             }
 
@@ -476,12 +475,11 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 mRecyclerView.setAdapter(usercheerAdapter);
 
                 if (users.isEmpty()) {
-                    empty_image.setVisibility(View.VISIBLE);
-                    empty_text.setVisibility(View.VISIBLE);
-                }
-                else {
-                    empty_image.setVisibility(View.GONE);
-                    empty_text.setVisibility(View.GONE);
+                    mEmptyImage.setVisibility(View.VISIBLE);
+                    mEmptyText.setVisibility(View.VISIBLE);
+                } else {
+                    mEmptyImage.setVisibility(View.GONE);
+                    mEmptyText.setVisibility(View.GONE);
                 }
             }
 
@@ -521,12 +519,11 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 mRecyclerView.setAdapter(wantAdapter);
 
                 if (users.isEmpty()) {
-                    empty_image.setVisibility(View.VISIBLE);
-                    empty_text.setVisibility(View.VISIBLE);
-                }
-                else {
-                    empty_image.setVisibility(View.GONE);
-                    empty_text.setVisibility(View.GONE);
+                    mEmptyImage.setVisibility(View.VISIBLE);
+                    mEmptyText.setVisibility(View.VISIBLE);
+                } else {
+                    mEmptyImage.setVisibility(View.GONE);
+                    mEmptyText.setVisibility(View.GONE);
                 }
             }
 
@@ -568,12 +565,11 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 mRecyclerView.setAdapter(restcheerAdapter);
 
                 if (users.isEmpty()) {
-                    empty_image.setVisibility(View.VISIBLE);
-                    empty_text.setVisibility(View.VISIBLE);
-                }
-                else {
-                    empty_image.setVisibility(View.GONE);
-                    empty_text.setVisibility(View.GONE);
+                    mEmptyImage.setVisibility(View.VISIBLE);
+                    mEmptyText.setVisibility(View.VISIBLE);
+                } else {
+                    mEmptyImage.setVisibility(View.GONE);
+                    mEmptyText.setVisibility(View.GONE);
                 }
             }
 
@@ -616,12 +612,11 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 followefollowerAdapter.notifyDataSetChanged();
 
                 if (users.isEmpty()) {
-                    empty_image.setVisibility(View.VISIBLE);
-                    empty_text.setVisibility(View.VISIBLE);
-                }
-                else {
-                    empty_image.setVisibility(View.GONE);
-                    empty_text.setVisibility(View.GONE);
+                    mEmptyImage.setVisibility(View.VISIBLE);
+                    mEmptyText.setVisibility(View.VISIBLE);
+                } else {
+                    mEmptyImage.setVisibility(View.GONE);
+                    mEmptyText.setVisibility(View.GONE);
                 }
             }
 
@@ -632,7 +627,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
             @Override
             public void onFinish() {
-                refresh.setRefreshing(false);
+                mSwipeRefresh.setRefreshing(false);
             }
 
         });
@@ -669,12 +664,11 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 followefollowerAdapter.notifyDataSetChanged();
 
                 if (users.isEmpty()) {
-                    empty_image.setVisibility(View.VISIBLE);
-                    empty_text.setVisibility(View.VISIBLE);
-                }
-                else {
-                    empty_image.setVisibility(View.GONE);
-                    empty_text.setVisibility(View.GONE);
+                    mEmptyImage.setVisibility(View.VISIBLE);
+                    mEmptyText.setVisibility(View.VISIBLE);
+                } else {
+                    mEmptyImage.setVisibility(View.GONE);
+                    mEmptyText.setVisibility(View.GONE);
                 }
             }
 
@@ -685,7 +679,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
             @Override
             public void onFinish() {
-                refresh.setRefreshing(false);
+                mSwipeRefresh.setRefreshing(false);
             }
         });
 
@@ -719,12 +713,11 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 usercheerAdapter.notifyDataSetChanged();
 
                 if (users.isEmpty()) {
-                    empty_image.setVisibility(View.VISIBLE);
-                    empty_text.setVisibility(View.VISIBLE);
-                }
-                else {
-                    empty_image.setVisibility(View.GONE);
-                    empty_text.setVisibility(View.GONE);
+                    mEmptyImage.setVisibility(View.VISIBLE);
+                    mEmptyText.setVisibility(View.VISIBLE);
+                } else {
+                    mEmptyImage.setVisibility(View.GONE);
+                    mEmptyText.setVisibility(View.GONE);
                 }
             }
 
@@ -735,7 +728,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
             @Override
             public void onFinish() {
-                refresh.setRefreshing(false);
+                mSwipeRefresh.setRefreshing(false);
             }
 
         });
@@ -770,12 +763,11 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 wantAdapter.notifyDataSetChanged();
 
                 if (users.isEmpty()) {
-                    empty_image.setVisibility(View.VISIBLE);
-                    empty_text.setVisibility(View.VISIBLE);
-                }
-                else {
-                    empty_image.setVisibility(View.GONE);
-                    empty_text.setVisibility(View.GONE);
+                    mEmptyImage.setVisibility(View.VISIBLE);
+                    mEmptyText.setVisibility(View.VISIBLE);
+                } else {
+                    mEmptyImage.setVisibility(View.GONE);
+                    mEmptyText.setVisibility(View.GONE);
                 }
             }
 
@@ -786,7 +778,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
             @Override
             public void onFinish() {
-                refresh.setRefreshing(false);
+                mSwipeRefresh.setRefreshing(false);
             }
 
         });
@@ -823,12 +815,11 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 restcheerAdapter.notifyDataSetChanged();
 
                 if (users.isEmpty()) {
-                    empty_image.setVisibility(View.VISIBLE);
-                    empty_text.setVisibility(View.VISIBLE);
-                }
-                else {
-                    empty_image.setVisibility(View.GONE);
-                    empty_text.setVisibility(View.GONE);
+                    mEmptyImage.setVisibility(View.VISIBLE);
+                    mEmptyText.setVisibility(View.VISIBLE);
+                } else {
+                    mEmptyImage.setVisibility(View.GONE);
+                    mEmptyText.setVisibility(View.GONE);
                 }
             }
 
@@ -843,76 +834,76 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
     @Override
     public void onOffsetChanged(AppBarLayout appBarLayout, int i) {
-        refresh.setEnabled(i == 0);
+        mSwipeRefresh.setEnabled(i == 0);
     }
 
     public static class FollowFollowerViewHolder extends RecyclerView.ViewHolder {
-        ImageView userpicture;
-        TextView username;
-        ImageView addfollowButton;
-        ImageView deletefollowButton;
-        RippleView accountRipple;
+        @Bind(R.id.follow_follower_picture)
+        ImageView mFollowFollowerPicture;
+        @Bind(R.id.user_name)
+        TextView mUserName;
+        @Bind(R.id.add_follow_button)
+        ImageView mAddFollowButton;
+        @Bind(R.id.delete_follow_button)
+        ImageView mDeleteFollowButton;
+        @Bind(R.id.account_button)
+        RippleView mAccountRipple;
 
         public FollowFollowerViewHolder(View view) {
             super(view);
-            this.userpicture = (ImageView) view.findViewById(R.id.follower_followee_picture);
-            this.username = (TextView) view.findViewById(R.id.username);
-            this.addfollowButton = (ImageView) view.findViewById(R.id.addfollowButton);
-            this.deletefollowButton = (ImageView) view.findViewById(R.id.deletefollowButton);
-            this.accountRipple = (RippleView) view.findViewById(R.id.accountButton);
+            ButterKnife.bind(this, view);
         }
     }
 
     public static class UserCheerViewHolder extends RecyclerView.ViewHolder {
-        ImageView restpicture;
-        TextView restname;
-        TextView locality;
-        //ImageView deletecheerButton;
-        //RippleView cheerRipple;
+        @Bind(R.id.cheer_picture)
+        ImageView mCheerPicture;
+        @Bind(R.id.rest_name)
+        TextView mRestName;
+        @Bind(R.id.locality)
+        TextView mLocality;
 
         public UserCheerViewHolder(View view) {
             super(view);
-            this.restpicture = (ImageView) view.findViewById(R.id.cheer_picture);
-            this.restname = (TextView) view.findViewById(R.id.restname);
-            this.locality = (TextView) view.findViewById(R.id.locality);
-            //this.deletecheerButton = (ImageView) view.findViewById(R.id.deleteCheerButton);
-            //this.cheerRipple = (RippleView) view.findViewById(R.id.cheerButton);
+            ButterKnife.bind(this, view);
         }
     }
 
     public static class WantViewHolder extends RecyclerView.ViewHolder {
-        ImageView restpicture;
-        TextView restname;
-        TextView locality;
-        ImageView deletewantButton;
-        ImageView addwantButton;
-        RippleView wantRipple;
+        @Bind(R.id.want_picture)
+        ImageView mWantPicture;
+        @Bind(R.id.rest_name)
+        TextView mRestName;
+        @Bind(R.id.locality)
+        TextView mLocality;
+        @Bind(R.id.delete_want_button)
+        ImageView mDeleteWantButton;
+        @Bind(R.id.add_want_button)
+        ImageView mAddWantButton;
+        @Bind(R.id.want_button)
+        RippleView mWantRipple;
 
         public WantViewHolder(View view) {
             super(view);
-            this.restpicture = (ImageView) view.findViewById(R.id.want_picture);
-            this.restname = (TextView) view.findViewById(R.id.restname);
-            this.locality = (TextView) view.findViewById(R.id.locality);
-            this.deletewantButton = (ImageView) view.findViewById(R.id.deletewantButton);
-            this.addwantButton = (ImageView) view.findViewById(R.id.addwantButton);
-            this.wantRipple = (RippleView) view.findViewById(R.id.wantButton);
+            ButterKnife.bind(this, view);
         }
     }
 
     public static class RestCheerViewHolder extends RecyclerView.ViewHolder {
-        ImageView userpicture;
-        TextView username;
-        ImageView addfollowButton;
-        ImageView deletefollowButton;
-        RippleView accountRipple;
+        @Bind(R.id.tenpo_cheer_picture)
+        ImageView mTenpoCheerPicture;
+        @Bind(R.id.user_name)
+        TextView mUserName;
+        @Bind(R.id.add_follow_button)
+        ImageView mAddFollowButton;
+        @Bind(R.id.delete_follow_button)
+        ImageView mDeleteFollowButton;
+        @Bind(R.id.account_button)
+        RippleView mAccountRipple;
 
         public RestCheerViewHolder(View view) {
             super(view);
-            this.userpicture = (ImageView) view.findViewById(R.id.tenpo_cheer_picture);
-            this.username = (TextView) view.findViewById(R.id.username);
-            this.addfollowButton = (ImageView) view.findViewById(R.id.addfollowButton);
-            this.deletefollowButton = (ImageView) view.findViewById(R.id.deletefollowButton);
-            this.accountRipple = (RippleView) view.findViewById(R.id.accountButton);
+            ButterKnife.bind(this, view);
         }
     }
 
@@ -935,22 +926,22 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
         public void onBindViewHolder(FollowFollowerViewHolder viewHolder, final int position) {
             final HeaderData user = users.get(position);
 
-            viewHolder.username.setText(user.getUsername());
+            viewHolder.mUserName.setText(user.getUsername());
 
             Picasso.with(mContext)
                     .load(user.getProfile_img())
                     .placeholder(R.drawable.ic_userpicture)
                     .transform(new RoundedTransformation())
-                    .into(viewHolder.userpicture);
+                    .into(viewHolder.mFollowFollowerPicture);
 
-            viewHolder.username.setOnClickListener(new View.OnClickListener() {
+            viewHolder.mUserName.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     FlexibleUserProfActivity.startUserProfActivity(user.getUser_id(), user.getUsername(), ListActivity.this);
                 }
             });
 
-            viewHolder.userpicture.setOnClickListener(new View.OnClickListener() {
+            viewHolder.mFollowFollowerPicture.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     FlexibleUserProfActivity.startUserProfActivity(user.getUser_id(), user.getUsername(), ListActivity.this);
@@ -961,18 +952,18 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
             switch (mCategory) {
                 case Const.CATEGORY_FOLLOW:
                     if (isMypage == 1) {
-                        viewHolder.deletefollowButton.setVisibility(View.VISIBLE);
+                        viewHolder.mDeleteFollowButton.setVisibility(View.VISIBLE);
                         final FollowFollowerViewHolder finalViewHolder = viewHolder;
-                        viewHolder.accountRipple.setOnClickListener(new View.OnClickListener() {
+                        viewHolder.mAccountRipple.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                if (finalViewHolder.deletefollowButton.isShown()) {
-                                    finalViewHolder.deletefollowButton.setVisibility(View.INVISIBLE);
-                                    finalViewHolder.addfollowButton.setVisibility(View.VISIBLE);
+                                if (finalViewHolder.mDeleteFollowButton.isShown()) {
+                                    finalViewHolder.mDeleteFollowButton.setVisibility(View.INVISIBLE);
+                                    finalViewHolder.mAddFollowButton.setVisibility(View.VISIBLE);
                                     Util.unfollowAsync(ListActivity.this, user);
                                 } else {
-                                    finalViewHolder.deletefollowButton.setVisibility(View.VISIBLE);
-                                    finalViewHolder.addfollowButton.setVisibility(View.INVISIBLE);
+                                    finalViewHolder.mDeleteFollowButton.setVisibility(View.VISIBLE);
+                                    finalViewHolder.mAddFollowButton.setVisibility(View.INVISIBLE);
                                     Util.followAsync(ListActivity.this, user);
                                 }
                             }
@@ -982,21 +973,21 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 case Const.CATEGORY_FOLLOWER:
                     if (isMypage == 1) {
                         if (user.getFollow_flag() == 0) {
-                            viewHolder.addfollowButton.setVisibility(View.VISIBLE);
+                            viewHolder.mAddFollowButton.setVisibility(View.VISIBLE);
                         } else {
-                            viewHolder.deletefollowButton.setVisibility(View.VISIBLE);
+                            viewHolder.mDeleteFollowButton.setVisibility(View.VISIBLE);
                         }
                         final FollowFollowerViewHolder finalViewHolder1 = viewHolder;
-                        viewHolder.accountRipple.setOnClickListener(new View.OnClickListener() {
+                        viewHolder.mAccountRipple.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                if (finalViewHolder1.addfollowButton.isShown()) {
-                                    finalViewHolder1.addfollowButton.setVisibility(View.INVISIBLE);
-                                    finalViewHolder1.deletefollowButton.setVisibility(View.VISIBLE);
+                                if (finalViewHolder1.mAddFollowButton.isShown()) {
+                                    finalViewHolder1.mAddFollowButton.setVisibility(View.INVISIBLE);
+                                    finalViewHolder1.mDeleteFollowButton.setVisibility(View.VISIBLE);
                                     Util.followAsync(ListActivity.this, user);
                                 } else {
-                                    finalViewHolder1.addfollowButton.setVisibility(View.VISIBLE);
-                                    finalViewHolder1.deletefollowButton.setVisibility(View.INVISIBLE);
+                                    finalViewHolder1.mAddFollowButton.setVisibility(View.VISIBLE);
+                                    finalViewHolder1.mDeleteFollowButton.setVisibility(View.INVISIBLE);
                                     Util.unfollowAsync(ListActivity.this, user);
                                 }
                             }
@@ -1031,8 +1022,8 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
         public void onBindViewHolder(UserCheerViewHolder viewHolder, final int position) {
             final HeaderData user = users.get(position);
 
-            viewHolder.restname.setText(user.getRestname());
-            viewHolder.locality.setText(user.getLocality());
+            viewHolder.mRestName.setText(user.getRestname());
+            viewHolder.mLocality.setText(user.getLocality());
 
             /*
             Picasso.with(mContext)
@@ -1042,14 +1033,14 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                     .into(viewHolder.restpicture);
                     */
 
-            viewHolder.restname.setOnClickListener(new View.OnClickListener() {
+            viewHolder.mRestName.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     FlexibleTenpoActivity.startTenpoActivity(user.getRest_id(), user.getRestname(), ListActivity.this);
                 }
             });
 
-            viewHolder.restpicture.setOnClickListener(new View.OnClickListener() {
+            viewHolder.mCheerPicture.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     FlexibleTenpoActivity.startTenpoActivity(user.getRest_id(), user.getRestname(), ListActivity.this);
@@ -1081,8 +1072,8 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
         public void onBindViewHolder(WantViewHolder viewHolder, final int position) {
             final HeaderData user = users.get(position);
 
-            viewHolder.restname.setText(user.getRestname());
-            viewHolder.locality.setText(user.getLocality());
+            viewHolder.mRestName.setText(user.getRestname());
+            viewHolder.mLocality.setText(user.getLocality());
 
             /*
             Picasso.with(mContext)
@@ -1092,32 +1083,32 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                     .into(viewHolder.restpicture);
                     */
 
-            viewHolder.restname.setOnClickListener(new View.OnClickListener() {
+            viewHolder.mRestName.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     FlexibleTenpoActivity.startTenpoActivity(user.getRest_id(), user.getRestname(), ListActivity.this);
                 }
             });
 
-            viewHolder.restpicture.setOnClickListener(new View.OnClickListener() {
+            viewHolder.mWantPicture.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     FlexibleTenpoActivity.startTenpoActivity(user.getRest_id(), user.getRestname(), ListActivity.this);
                 }
             });
 
-            viewHolder.deletewantButton.setVisibility(View.VISIBLE);
+            viewHolder.mDeleteWantButton.setVisibility(View.VISIBLE);
             final WantViewHolder finalViewHolder = viewHolder;
-            viewHolder.wantRipple.setOnClickListener(new View.OnClickListener() {
+            viewHolder.mWantRipple.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (finalViewHolder.deletewantButton.isShown()) {
-                        finalViewHolder.deletewantButton.setVisibility(View.INVISIBLE);
-                        finalViewHolder.addwantButton.setVisibility(View.VISIBLE);
+                    if (finalViewHolder.mDeleteWantButton.isShown()) {
+                        finalViewHolder.mDeleteWantButton.setVisibility(View.INVISIBLE);
+                        finalViewHolder.mAddWantButton.setVisibility(View.VISIBLE);
                         Util.unwantAsync(ListActivity.this, user);
                     } else {
-                        finalViewHolder.deletewantButton.setVisibility(View.VISIBLE);
-                        finalViewHolder.addwantButton.setVisibility(View.INVISIBLE);
+                        finalViewHolder.mDeleteWantButton.setVisibility(View.VISIBLE);
+                        finalViewHolder.mAddWantButton.setVisibility(View.INVISIBLE);
                         Util.wantAsync(ListActivity.this, user);
                     }
                 }
@@ -1149,22 +1140,22 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
         public void onBindViewHolder(RestCheerViewHolder viewHolder, final int position) {
             final HeaderData user = users.get(position);
 
-            viewHolder.username.setText(user.getUsername());
+            viewHolder.mUserName.setText(user.getUsername());
 
             Picasso.with(mContext)
                     .load(user.getProfile_img())
                     .placeholder(R.drawable.ic_userpicture)
                     .transform(new RoundedTransformation())
-                    .into(viewHolder.userpicture);
+                    .into(viewHolder.mTenpoCheerPicture);
 
-            viewHolder.username.setOnClickListener(new View.OnClickListener() {
+            viewHolder.mUserName.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     FlexibleUserProfActivity.startUserProfActivity(user.getUser_id(), user.getUsername(), ListActivity.this);
                 }
             });
 
-            viewHolder.userpicture.setOnClickListener(new View.OnClickListener() {
+            viewHolder.mTenpoCheerPicture.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     FlexibleUserProfActivity.startUserProfActivity(user.getUser_id(), user.getUsername(), ListActivity.this);
@@ -1172,21 +1163,21 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
             });
 
             if (user.getFollow_flag() == 0) {
-                viewHolder.addfollowButton.setVisibility(View.VISIBLE);
+                viewHolder.mAddFollowButton.setVisibility(View.VISIBLE);
             } else {
-                viewHolder.deletefollowButton.setVisibility(View.VISIBLE);
+                viewHolder.mDeleteFollowButton.setVisibility(View.VISIBLE);
             }
             final RestCheerViewHolder finalViewHolder1 = viewHolder;
-            viewHolder.accountRipple.setOnClickListener(new View.OnClickListener() {
+            viewHolder.mAccountRipple.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (finalViewHolder1.addfollowButton.isShown()) {
-                        finalViewHolder1.addfollowButton.setVisibility(View.INVISIBLE);
-                        finalViewHolder1.deletefollowButton.setVisibility(View.VISIBLE);
+                    if (finalViewHolder1.mAddFollowButton.isShown()) {
+                        finalViewHolder1.mAddFollowButton.setVisibility(View.INVISIBLE);
+                        finalViewHolder1.mDeleteFollowButton.setVisibility(View.VISIBLE);
                         Util.followAsync(ListActivity.this, user);
                     } else {
-                        finalViewHolder1.addfollowButton.setVisibility(View.VISIBLE);
-                        finalViewHolder1.deletefollowButton.setVisibility(View.INVISIBLE);
+                        finalViewHolder1.mAddFollowButton.setVisibility(View.VISIBLE);
+                        finalViewHolder1.mDeleteFollowButton.setVisibility(View.INVISIBLE);
                         Util.unfollowAsync(ListActivity.this, user);
                     }
                 }

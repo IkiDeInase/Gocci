@@ -8,7 +8,7 @@
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/appbar">
+        android:id="@+id/app_bar">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/tool_bar"
@@ -21,7 +21,7 @@
         </android.support.v7.widget.Toolbar>
 
         <com.ogaclejapan.smarttablayout.SmartTabLayout
-            android:id="@+id/viewpagertab"
+            android:id="@+id/smart_tab"
             android:layout_below="@id/tool_bar"
             android:layout_width="match_parent"
             android:layout_height="48dp"
@@ -49,15 +49,15 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:id="@+id/tabBar"
+            android:id="@+id/tab_bar"
             android:background="@color/tabFooter"
-            android:layout_below="@id/viewpagertab" />
+            android:layout_below="@id/smart_tab" />
 
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v4.view.ViewPager
         android:id="@+id/viewpager"
-        android:layout_below="@id/tabBar"
+        android:layout_below="@id/tab_bar"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
@@ -85,8 +85,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_anchor="@id/coordinator_layout"
-        app:layout_anchorGravity="bottom|right"
-        >
+        app:layout_anchorGravity="bottom|right">
 
         <android.support.v7.widget.CardView
             android:id="@+id/sheet"

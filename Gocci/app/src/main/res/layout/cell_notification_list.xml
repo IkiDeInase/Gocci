@@ -6,7 +6,7 @@
     <ImageView
         android:layout_width="@dimen/userpicture_size"
         android:layout_height="@dimen/userpicture_size"
-        android:id="@+id/circleImage"
+        android:id="@+id/circle_image"
         android:src="@drawable/ic_userpicture"
         android:layout_marginLeft="12dp"
         android:layout_marginTop="12dp"
@@ -18,9 +18,9 @@
         android:id="@+id/notice_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/circleImage"
-        android:layout_toRightOf="@+id/circleImage"
-        android:layout_toEndOf="@+id/circleImage"
+        android:layout_alignTop="@+id/circle_image"
+        android:layout_toRightOf="@+id/circle_image"
+        android:layout_toEndOf="@+id/circle_image"
         android:layout_marginBottom="2dp">
 
         <TextView
@@ -40,7 +40,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="さんからいいねされました"
-            android:id="@+id/notice_subText"
+            android:id="@+id/notice_sub_text"
             android:textSize="@dimen/small_text"
             android:textColor="@color/namegrey" />
 
@@ -52,8 +52,8 @@
         android:text="@string/datetime"
         android:id="@+id/date_time"
         android:layout_centerVertical="true"
-        android:layout_toRightOf="@+id/circleImage"
-        android:layout_toEndOf="@+id/circleImage"
+        android:layout_toRightOf="@+id/circle_image"
+        android:layout_toEndOf="@+id/circle_image"
         android:textSize="@dimen/minimum_text"
         android:layout_below="@+id/notice_text"
         android:textColor="@color/nameblack" />

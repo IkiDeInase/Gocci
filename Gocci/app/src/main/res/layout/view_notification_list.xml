@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:background="@color/transparent"
-        android:id="@+id/headerView" />
+        android:id="@+id/header_view" />
 
     <ImageView
         android:layout_width="wrap_content"
@@ -19,7 +19,7 @@
         android:src="@drawable/ic_yama"
         android:layout_alignParentRight="true"
         android:layout_marginRight="16dp"
-        android:layout_below="@+id/headerView" />
+        android:layout_below="@+id/header_view" />
 
     <android.support.v7.widget.CardView
         android:layout_width="wrap_content"

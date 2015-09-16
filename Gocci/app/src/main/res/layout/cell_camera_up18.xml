@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <com.inase.android.gocci.Camera.CameraGLView
-        android:id="@+id/cameraView"
+        android:id="@+id/camera_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -44,7 +44,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_below="@+id/cameraView"
+        android:layout_below="@+id/camera_view"
         android:layout_gravity="bottom"
         android:background="#424242">
 

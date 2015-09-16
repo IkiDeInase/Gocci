@@ -5,7 +5,7 @@
     android:background="@drawable/list_bg">
 
     <ImageView
-        android:id="@+id/circleImage"
+        android:id="@+id/circle_image"
         android:layout_width="@dimen/userpicture_size"
         android:layout_height="@dimen/userpicture_size"
         android:layout_marginBottom="12dp"
@@ -17,7 +17,7 @@
 
     <RelativeLayout
         android:orientation="horizontal"
-        android:layout_toRightOf="@+id/circleImage"
+        android:layout_toRightOf="@+id/circle_image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/top_bar"
@@ -50,7 +50,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/bottom_bar"
-        android:layout_toRightOf="@+id/circleImage"
+        android:layout_toRightOf="@+id/circle_image"
         android:layout_below="@+id/top_bar">
 
         <TextView
@@ -61,13 +61,12 @@
             android:textColor="@color/namegrey"
             android:singleLine="true"
             android:id="@+id/comment"
-
             android:layout_centerVertical="true" />
 
         <ImageView
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:id="@+id/cheerMedal"
+            android:id="@+id/cheer_medal"
             android:src="@drawable/ic_userpicture"
             android:layout_alignParentRight="true"
             android:layout_marginRight="16dp"

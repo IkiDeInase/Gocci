@@ -197,11 +197,11 @@ public class down18CameraFragment extends Fragment implements SensorEventListene
                 .show();
 
         cameraProgress = (ProgressWheel) rootView.findViewById(R.id.progress_wheel);
-        MySurfaceView videoSurface = (MySurfaceView) rootView.findViewById(R.id.cameraView);
+        MySurfaceView videoSurface = (MySurfaceView) rootView.findViewById(R.id.camera_view);
         cameraManager = getCameraManager();
         recorderManager = new RecorderManager(getCameraManager(), videoSurface, getActivity());
 
-        Button backButton = (Button) rootView.findViewById(R.id.backButton);
+        Button backButton = (Button) rootView.findViewById(R.id.back_button);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -209,8 +209,8 @@ public class down18CameraFragment extends Fragment implements SensorEventListene
             }
         });
 
-        toukouButton = (ImageButton) rootView.findViewById(R.id.toukouButton);
-        progress = (CircleProgressBar) rootView.findViewById(R.id.circleProgress);
+        toukouButton = (ImageButton) rootView.findViewById(R.id.toukou_button);
+        progress = (CircleProgressBar) rootView.findViewById(R.id.circle_progress);
 
         toukouButton.setOnTouchListener(new View.OnTouchListener() {
 

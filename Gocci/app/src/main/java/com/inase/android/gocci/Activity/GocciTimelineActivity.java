@@ -23,7 +23,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
@@ -57,38 +56,70 @@ import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
 import com.squareup.otto.Subscribe;
 import com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
 
 public class GocciTimelineActivity extends AppCompatActivity {
 
     private final GocciTimelineActivity self = this;
+    @Bind(R.id.tool_bar)
+    Toolbar mToolBar;
+    @Bind(R.id.smart_tab)
+    SmartTabLayout mSmartTab;
+    @Bind(R.id.viewpager)
+    ViewPager mViewpager;
+    @Bind(R.id.overlay)
+    View mOverlay;
+    @Bind(R.id.fab)
+    FloatingActionButton mFab;
+    @Bind(R.id.category_spinner)
+    MaterialBetterSpinner mCategorySpinner;
+    @Bind(R.id.value_spinner)
+    MaterialBetterSpinner mValueSpinner;
+    @Bind(R.id.sort_spinner)
+    MaterialBetterSpinner mSortSpinner;
+    @Bind(R.id.filter_ripple)
+    RippleView mFilterRipple;
+    @Bind(R.id.sheet)
+    CardView mSheet;
+    @Bind(R.id.coordinator_layout)
+    CoordinatorLayout mCoordinatorLayout;
 
-    private TextView notificationNumber;
+    @OnClick(R.id.fab)
+    public void click() {
+        if (mFab.getVisibility() == View.VISIBLE) {
+            FabTransformation.with(mFab).setOverlay(mOverlay).transformTo(mSheet);
+        }
+        SmartLocation.with(GocciTimelineActivity.this).location().oneFix().start(new OnLocationUpdatedListener() {
+            @Override
+            public void onLocationUpdated(Location location) {
+                nowLocation = location;
+            }
+        });
+    }
 
-    private FloatingActionButton fab;
+    @OnClick(R.id.overlay)
+    public void clickOverlay() {
+        if (mFab.getVisibility() != View.VISIBLE) {
+            FabTransformation.with(mFab).setOverlay(mOverlay).transformFrom(mSheet);
+        }
+    }
+
+    private TextView mNotificationNumber;
 
     public static int mShowPosition = 0;
     public static int mLatestSort_id = 0;
     public static int mFollowSort_id = 0;
+    public static Location nowLocation;
 
     private String[] SORT;
 
     private Drawer result;
 
     private static MobileAnalyticsManager analytics;
-
-    private CoordinatorLayout coordinatorLayout;
-
-    private CardView sheet;
-    private View overlay;
-
-    private MaterialBetterSpinner category_spinner;
-    private MaterialBetterSpinner value_spinner;
-    private MaterialBetterSpinner sort_spinner;
-    private RippleView filter_ripple;
-
-    public static Location nowLocation;
 
     private static Handler sHandler = new Handler() {
         @Override
@@ -124,15 +155,15 @@ public class GocciTimelineActivity extends AppCompatActivity {
         }
 
         setContentView(R.layout.activity_gocci_timeline);
+        ButterKnife.bind(this);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
-        toolbar.setLogo(R.drawable.ic_gocci_moji_white45);
-        setSupportActionBar(toolbar);
+        mToolBar.setLogo(R.drawable.ic_gocci_moji_white45);
+        setSupportActionBar(mToolBar);
         getSupportActionBar().setTitle("");
 
         result = new DrawerBuilder()
                 .withActivity(this)
-                .withToolbar(toolbar)
+                .withToolbar(mToolBar)
                 .withHeader(new DrawerProfHeader(this))
                 .addDrawerItems(
                         new PrimaryDrawerItem().withName(getString(R.string.timeline)).withIcon(GoogleMaterial.Icon.gmd_home).withIdentifier(1).withSelectable(false),
@@ -187,12 +218,10 @@ public class GocciTimelineActivity extends AppCompatActivity {
                 .add(R.string.tab_follow, FollowTimelineFragment.class)
                 .create());
 
-        final ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
-        viewPager.setAdapter(adapter);
+        mViewpager.setAdapter(adapter);
 
-        final SmartTabLayout viewPagerTab = (SmartTabLayout) findViewById(R.id.viewpagertab);
-        viewPagerTab.setViewPager(viewPager);
-        viewPagerTab.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        mSmartTab.setViewPager(mViewpager);
+        mSmartTab.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
             }
@@ -201,61 +230,15 @@ public class GocciTimelineActivity extends AppCompatActivity {
             public void onPageSelected(int position) {
                 BusHolder.get().post(new PageChangeVideoStopEvent(position));
                 mShowPosition = position;
-                sort_spinner.setText(mShowPosition == 0 ? SORT[mLatestSort_id] : SORT[mFollowSort_id]);
+                mSortSpinner.setText(mShowPosition == 0 ? SORT[mLatestSort_id] : SORT[mFollowSort_id]);
             }
 
             @Override
             public void onPageScrollStateChanged(int state) {
-                if (state == 2) fab.hide();
-                if (state == 0) fab.show();
+                if (state == 2) mFab.hide();
+                if (state == 0) mFab.show();
             }
         });
-
-        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
-
-        fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                switch (viewPager.getCurrentItem()) {
-//                    case 0:
-//                        LatestTimelineFragment latestTimelineFragment = (LatestTimelineFragment) adapter.getPage(0);
-//                        Toast.makeText(GocciTimelineActivity.this ,"LATEST", Toast.LENGTH_SHORT).show();
-//                        break;
-//                    case 1:
-//                        TrendTimelineFragment trendTimelineFragment = (TrendTimelineFragment) adapter.getPage(1);
-//                        Toast.makeText(GocciTimelineActivity.this ,"TREND", Toast.LENGTH_SHORT).show();
-//                        break;
-//                }
-                if (fab.getVisibility() == View.VISIBLE) {
-                    FabTransformation.with(fab).setOverlay(overlay).transformTo(sheet);
-                }
-                //startActivity(new Intent(GocciTimelineActivity.this, GocciCameraActivity.class));
-                SmartLocation.with(GocciTimelineActivity.this).location().oneFix().start(new OnLocationUpdatedListener() {
-                    @Override
-                    public void onLocationUpdated(Location location) {
-                        nowLocation = location;
-                    }
-                });
-            }
-        });
-
-        sheet = (CardView) findViewById(R.id.sheet);
-        overlay = (View) findViewById(R.id.overlay);
-
-        overlay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (fab.getVisibility() != View.VISIBLE) {
-                    FabTransformation.with(fab).setOverlay(overlay).transformFrom(sheet);
-                }
-            }
-        });
-
-        category_spinner = (MaterialBetterSpinner) findViewById(R.id.category_spinner);
-        value_spinner = (MaterialBetterSpinner) findViewById(R.id.value_spinner);
-        sort_spinner = (MaterialBetterSpinner) findViewById(R.id.sort_spinner);
-        filter_ripple = (RippleView) findViewById(R.id.filter_Ripple);
 
         String[] CATEGORY = getResources().getStringArray(R.array.list_category);
         String[] VALUE = getResources().getStringArray(R.array.list_value);
@@ -263,7 +246,7 @@ public class GocciTimelineActivity extends AppCompatActivity {
 
         ArrayAdapter<String> categoryAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_dropdown_item_1line, CATEGORY);
-        category_spinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mCategorySpinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //category_id = position + 1;
@@ -271,7 +254,7 @@ public class GocciTimelineActivity extends AppCompatActivity {
         });
         ArrayAdapter<String> valueAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_dropdown_item_1line, VALUE);
-        value_spinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mValueSpinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //value_id = position + 1;
@@ -279,7 +262,7 @@ public class GocciTimelineActivity extends AppCompatActivity {
         });
         ArrayAdapter<String> sortAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_dropdown_item_1line, SORT);
-        sort_spinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mSortSpinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (mShowPosition == 0) {
@@ -289,17 +272,17 @@ public class GocciTimelineActivity extends AppCompatActivity {
                 }
             }
         });
-        category_spinner.setAdapter(categoryAdapter);
-        value_spinner.setAdapter(valueAdapter);
-        sort_spinner.setAdapter(sortAdapter);
+        mCategorySpinner.setAdapter(categoryAdapter);
+        mValueSpinner.setAdapter(valueAdapter);
+        mSortSpinner.setAdapter(sortAdapter);
 
-        filter_ripple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
+        mFilterRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
             @Override
             public void onComplete(RippleView rippleView) {
-                FabTransformation.with(fab).setOverlay(overlay).transformFrom(sheet);
+                FabTransformation.with(mFab).setOverlay(mOverlay).transformFrom(mSheet);
                 //Otto currentpageと絞り込みurl
-                    BusHolder.get().post(new FilterTimelineEvent(mShowPosition, Const.getCustomTimelineAPI(mShowPosition, mLatestSort_id, mFollowSort_id,
-                            nowLocation.getLongitude(), nowLocation.getLatitude(), 0)));
+                BusHolder.get().post(new FilterTimelineEvent(mShowPosition, Const.getCustomTimelineAPI(mShowPosition, mLatestSort_id, mFollowSort_id,
+                        nowLocation.getLongitude(), nowLocation.getLatitude(), 0)));
             }
         });
     }
@@ -332,11 +315,11 @@ public class GocciTimelineActivity extends AppCompatActivity {
 
     @Subscribe
     public void subscribe(NotificationNumberEvent event) {
-        Snackbar.make(coordinatorLayout, event.mMessage, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(mCoordinatorLayout, event.mMessage, Snackbar.LENGTH_SHORT).show();
         //２1文字で改行っぽい
         if (!event.mMessage.equals(getString(R.string.videoposting_complete))) {
-            notificationNumber.setVisibility(View.VISIBLE);
-            notificationNumber.setText(String.valueOf(event.mNotificationNumber));
+            mNotificationNumber.setVisibility(View.VISIBLE);
+            mNotificationNumber.setText(String.valueOf(event.mNotificationNumber));
         }
     }
 
@@ -348,27 +331,27 @@ public class GocciTimelineActivity extends AppCompatActivity {
         MenuItem cameraitem = menu.findItem(R.id.camera);
         MenuItemCompat.setActionView(item, R.layout.toolbar_notification_icon);
         View view = MenuItemCompat.getActionView(item);
-        notificationNumber = (TextView) view.findViewById(R.id.notification_number);
+        mNotificationNumber = (TextView) view.findViewById(R.id.notification_number);
         int notifications = SavedData.getNotification(this);
 
         // バッジの数字を更新。0の場合はバッジを表示させない
 
         if (notifications == 0) {
-            notificationNumber.setVisibility(View.INVISIBLE);
+            mNotificationNumber.setVisibility(View.INVISIBLE);
         } else {
-            notificationNumber.setText(String.valueOf(notifications));
+            mNotificationNumber.setText(String.valueOf(notifications));
         }
 
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                notificationNumber.setVisibility(View.INVISIBLE);
+                mNotificationNumber.setVisibility(View.INVISIBLE);
                 SavedData.setNotification(GocciTimelineActivity.this, 0);
                 View notification = new NotificationListView(GocciTimelineActivity.this);
 
                 final PopupWindow window = ToukouPopup.newBasicPopupWindow(GocciTimelineActivity.this);
 
-                View header = notification.findViewById(R.id.headerView);
+                View header = notification.findViewById(R.id.header_view);
                 header.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -430,11 +413,9 @@ public class GocciTimelineActivity extends AppCompatActivity {
     public void onBackPressed() {
         if (result != null && result.isDrawerOpen()) {
             result.closeDrawer();
-        }
-        else if (fab.getVisibility() != View.VISIBLE) {
-            FabTransformation.with(fab).setOverlay(overlay).transformFrom(sheet);
-        }
-        else {
+        } else if (mFab.getVisibility() != View.VISIBLE) {
+            FabTransformation.with(mFab).setOverlay(mOverlay).transformFrom(mSheet);
+        } else {
             super.onBackPressed();
             overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
         }

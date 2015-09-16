@@ -45,25 +45,33 @@ import org.apache.http.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 public class LoginSessionActivity extends AppCompatActivity {
+
+    @Bind(R.id.tool_bar)
+    Toolbar mToolBar;
+    @Bind(R.id.signin_username_edit)
+    TextInputLayout mSigninUsernameEdit;
+    @Bind(R.id.signin_pass_edit)
+    TextInputLayout mSigninPassEdit;
+    @Bind(R.id.login_ripple)
+    RippleView mLoginRipple;
+    @Bind(R.id.login_button)
+    LoginButton mFacebookLoginButton;
+    @Bind(R.id.twitter_login_button)
+    GocciTwitterLoginButton mTwitterLoginButton;
+    @Bind(R.id.twitter_ripple)
+    RippleView mTwitterRipple;
+    @Bind(R.id.facebook_ripple)
+    RippleView mFacebookRipple;
+    @Bind(R.id.progress_wheel)
+    ProgressWheel mProgressWheel;
 
     private CallbackManager callbackManager;
 
-    private LoginButton facebookLoginButton;
-    private GocciTwitterLoginButton twitterLoginButton;
-    private RippleView twitterRipple;
-    private RippleView facebookRipple;
-
-    private TextInputLayout usernameEdit;
-    private TextInputLayout passwordEdit;
-
-    private RippleView loginRipple;
-
-    private ProgressWheel progress;
-
     private final LoginSessionActivity self = this;
-
-    private Application_Gocci gocci;
 
     private String profile_img;
     private String token;
@@ -75,11 +83,11 @@ public class LoginSessionActivity extends AppCompatActivity {
         if (AccessToken.getCurrentAccessToken() != null) {
             LoginManager.getInstance().logOut();
         }
-        facebookLoginButton.performClick();
+        mFacebookLoginButton.performClick();
     }
 
     public void onTwitterButtonClicked() {
-        twitterLoginButton.performClick();
+        mTwitterLoginButton.performClick();
     }
 
     public static void startLoginSessionActivity(Activity startingActivity) {
@@ -104,44 +112,34 @@ public class LoginSessionActivity extends AppCompatActivity {
         callbackManager = CallbackManager.Factory.create();
 
         setContentView(R.layout.activity_login_session);
+        ButterKnife.bind(this);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
-        setSupportActionBar(toolbar);
+        setSupportActionBar(mToolBar);
         getSupportActionBar().setTitle(getString(R.string.login));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        gocci = (Application_Gocci) getApplication();
+        mSigninUsernameEdit.setErrorEnabled(true);
+        mSigninPassEdit.setErrorEnabled(true);
 
-        progress = (ProgressWheel) findViewById(R.id.progress_wheel);
-
-        twitterRipple = (RippleView) findViewById(R.id.twitter_Ripple);
-        facebookRipple = (RippleView) findViewById(R.id.facebook_Ripple);
-        facebookLoginButton = (LoginButton) findViewById(R.id.login_button);
-        twitterLoginButton = (GocciTwitterLoginButton) findViewById(R.id.twitter_login_button);
-
-        usernameEdit = (TextInputLayout) findViewById(R.id.signinusernameEdit);
-        usernameEdit.setErrorEnabled(true);
-        passwordEdit = (TextInputLayout) findViewById(R.id.signinpassEdit);
-        passwordEdit.setErrorEnabled(true);
-
-        twitterRipple.setOnClickListener(new View.OnClickListener() {
+        mTwitterRipple.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onTwitterButtonClicked();
             }
         });
-        facebookRipple.setOnClickListener(new View.OnClickListener() {
+
+        mFacebookRipple.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onFacebookButtonClicked();
             }
         });
 
-        facebookLoginButton.setReadPermissions("public_profile");
-        facebookLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+        mFacebookLoginButton.setReadPermissions("public_profile");
+        mFacebookLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                progress.setVisibility(View.VISIBLE);
+                mProgressWheel.setVisibility(View.VISIBLE);
 
                 Profile profile = Profile.getCurrentProfile();
                 if (profile != null) {
@@ -167,10 +165,10 @@ public class LoginSessionActivity extends AppCompatActivity {
             }
         });
 
-        twitterLoginButton.setCallback(new Callback<TwitterSession>() {
+        mTwitterLoginButton.setCallback(new Callback<TwitterSession>() {
             @Override
             public void success(Result<TwitterSession> result) {
-                progress.setVisibility(View.VISIBLE);
+                mProgressWheel.setVisibility(View.VISIBLE);
 
                 TwitterSession session =
                         Twitter.getSessionManager().getActiveSession();
@@ -192,17 +190,16 @@ public class LoginSessionActivity extends AppCompatActivity {
             }
         });
 
-        loginRipple = (RippleView) findViewById(R.id.login_Ripple);
-        loginRipple.setOnClickListener(new View.OnClickListener() {
+        mLoginRipple.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                usernameEdit.setError("");
-                passwordEdit.setError("");
-                if (usernameEdit.getEditText().getText().toString().isEmpty() || passwordEdit.getEditText().getText().toString().isEmpty()) {
-                    usernameEdit.setError(getString(R.string.cheat_input));
-                    passwordEdit.setError(getString(R.string.cheat_input));
+                mSigninUsernameEdit.setError("");
+                mSigninPassEdit.setError("");
+                if (mSigninUsernameEdit.getEditText().getText().toString().isEmpty() || mSigninPassEdit.getEditText().getText().toString().isEmpty()) {
+                    mSigninUsernameEdit.setError(getString(R.string.cheat_input));
+                    mSigninPassEdit.setError(getString(R.string.cheat_input));
                 } else {
-                    passwordAsync(LoginSessionActivity.this, usernameEdit.getEditText().getText().toString(), passwordEdit.getEditText().getText().toString());
+                    passwordAsync(LoginSessionActivity.this, mSigninUsernameEdit.getEditText().getText().toString(), mSigninPassEdit.getEditText().getText().toString());
                 }
             }
         });
@@ -277,7 +274,7 @@ public class LoginSessionActivity extends AppCompatActivity {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 Toast.makeText(LoginSessionActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-                progress.setVisibility(View.GONE);
+                mProgressWheel.setVisibility(View.GONE);
             }
 
             @Override
@@ -292,7 +289,7 @@ public class LoginSessionActivity extends AppCompatActivity {
         Const.asyncHttpClient.get(context, Const.getAuthUsernamePasswordAPI(username, password, Build.VERSION.RELEASE, Build.MODEL, SavedData.getRegId(context)), new JsonHttpResponseHandler() {
             @Override
             public void onStart() {
-                progress.setVisibility(View.VISIBLE);
+                mProgressWheel.setVisibility(View.VISIBLE);
             }
 
             @Override
@@ -341,7 +338,7 @@ public class LoginSessionActivity extends AppCompatActivity {
 
             @Override
             public void onFinish() {
-                progress.setVisibility(View.GONE);
+                mProgressWheel.setVisibility(View.GONE);
             }
         });
     }
@@ -393,7 +390,7 @@ public class LoginSessionActivity extends AppCompatActivity {
 
             @Override
             public void onFinish() {
-                progress.setVisibility(View.GONE);
+                mProgressWheel.setVisibility(View.GONE);
             }
         });
     }
@@ -419,6 +416,6 @@ public class LoginSessionActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
-        twitterLoginButton.onActivityResult(requestCode, resultCode, data);
+        mTwitterLoginButton.onActivityResult(requestCode, resultCode, data);
     }
 }

@@ -13,6 +13,9 @@ import com.inase.android.gocci.R;
 import com.inase.android.gocci.VideoPlayer.SquareExoVideoView;
 import com.loopj.android.http.AsyncHttpClient;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 /**
  * 定数定義クラス
  * Created by kmaeda on 2015/01/22.
@@ -128,7 +131,8 @@ public class Const {
                         url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/followline";
                     } else {
                         //フォローの最新順の更新
-                        url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/followline/?call=" + call;;
+                        url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/followline/?call=" + call;
+                        ;
                     }
                     break;
                 case 1:
@@ -327,51 +331,48 @@ public class Const {
 
     public static final class ExoViewHolder extends RecyclerView.ViewHolder {
 
-        public ImageView circleImage;
-        public TextView user_name;
-        public TextView datetime;
-        public TextView comment;
-        public RippleView menuRipple;
+        @Bind(R.id.circle_image)
+        public ImageView mCircleImage;
+        @Bind(R.id.user_name)
+        public TextView mUserName;
+        @Bind(R.id.time_text)
+        public TextView mTimeText;
+        @Bind(R.id.comment)
+        public TextView mComment;
+        @Bind(R.id.menu_ripple)
+        public RippleView mMenuRipple;
+        @Bind(R.id.video_thumbnail)
         public SquareImageView mVideoThumbnail;
-        public SquareExoVideoView movie;
-        //public ImageView restaurantImage;
-        //public TextView locality;
-        public TextView rest_name;
-        public TextView category;
-        public TextView value;
-        public TextView atmosphere;
-        public RippleView tenpoRipple;
-        public TextView likes;
-        public ImageView likes_Image;
-        public TextView comments;
-        public RippleView likes_ripple;
-        public RippleView comments_ripple;
-        public RippleView share_ripple;
-        public AspectRatioFrameLayout videoFrame;
+        @Bind(R.id.square_video_exo)
+        public SquareExoVideoView mSquareVideoExo;
+        @Bind(R.id.rest_name)
+        public TextView mRestname;
+        @Bind(R.id.category)
+        public TextView mCategory;
+        @Bind(R.id.value)
+        public TextView mValue;
+        @Bind(R.id.mood)
+        public TextView mMood;
+        @Bind(R.id.tenpo_ripple)
+        public RippleView mTenpoRipple;
+        @Bind(R.id.likes_number)
+        public TextView mLikesNumber;
+        @Bind(R.id.likes_Image)
+        public ImageView mLikesImage;
+        @Bind(R.id.comments_number)
+        public TextView mCommentsNumber;
+        @Bind(R.id.likes_ripple)
+        public RippleView mLikesRipple;
+        @Bind(R.id.comments_ripple)
+        public RippleView mCommentsRipple;
+        @Bind(R.id.share_ripple)
+        public RippleView mShareRipple;
+        @Bind(R.id.video_frame)
+        public AspectRatioFrameLayout mVideoFrame;
 
         public ExoViewHolder(View view) {
             super(view);
-            circleImage = (ImageView) view.findViewById(R.id.circleImage);
-            user_name = (TextView) view.findViewById(R.id.user_name);
-            datetime = (TextView) view.findViewById(R.id.time_text);
-            comment = (TextView) view.findViewById(R.id.comment);
-            menuRipple = (RippleView) view.findViewById(R.id.menuRipple);
-            movie = (SquareExoVideoView) view.findViewById(R.id.square_video_exo);
-            mVideoThumbnail = (SquareImageView) view.findViewById(R.id.video_thumbnail);
-            //viewHolder.restaurantImage = (ImageView) convertView.findViewById(R.id.restaurantImage);
-            rest_name = (TextView) view.findViewById(R.id.rest_name);
-            //viewHolder.locality = (TextView) convertView.findViewById(R.id.locality);
-            category = (TextView) view.findViewById(R.id.category);
-            value = (TextView) view.findViewById(R.id.value);
-            atmosphere = (TextView) view.findViewById(R.id.mood);
-            tenpoRipple = (RippleView) view.findViewById(R.id.tenpoRipple);
-            likes = (TextView) view.findViewById(R.id.likes_Number);
-            likes_Image = (ImageView) view.findViewById(R.id.likes_Image);
-            comments = (TextView) view.findViewById(R.id.comments_Number);
-            likes_ripple = (RippleView) view.findViewById(R.id.likes_ripple);
-            comments_ripple = (RippleView) view.findViewById(R.id.comments_ripple);
-            share_ripple = (RippleView) view.findViewById(R.id.share_ripple);
-            videoFrame = (AspectRatioFrameLayout) view.findViewById(R.id.videoFrame);
+            ButterKnife.bind(this, view);
         }
     }
 }

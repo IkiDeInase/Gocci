@@ -16,7 +16,15 @@ import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManag
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.common.Const;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 public class WebViewActivity extends AppCompatActivity {
+
+    @Bind(R.id.tool_bar)
+    Toolbar mToolBar;
+    @Bind(R.id.web_view)
+    WebView mWebView;
 
     private int category;
     // rule 0 : policy 1 : license 2
@@ -48,36 +56,34 @@ public class WebViewActivity extends AppCompatActivity {
         }
 
         setContentView(R.layout.activity_web_view);
+        ButterKnife.bind(this);
 
         Intent intent = getIntent();
         category = intent.getIntExtra("category", 0);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
-        setSupportActionBar(toolbar);
+        setSupportActionBar(mToolBar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        WebView myWebView = (WebView) findViewById(R.id.webView);
-
         //リンクをタップしたときに標準ブラウザを起動させない
-        myWebView.setWebViewClient(new WebViewClient());
+        mWebView.setWebViewClient(new WebViewClient());
 
         switch (category) {
             case 0:
-                myWebView.loadUrl(URL_RULE);
+                mWebView.loadUrl(URL_RULE);
                 getSupportActionBar().setTitle(getString(R.string.rule));
                 break;
             case 1:
-                myWebView.loadUrl(URL_POLICY);
+                mWebView.loadUrl(URL_POLICY);
                 getSupportActionBar().setTitle(getString(R.string.policy));
                 break;
             case 2:
-                myWebView.loadUrl("file:///android_asset/license.html");
+                mWebView.loadUrl("file:///android_asset/license.html");
                 getSupportActionBar().setTitle(getString(R.string.source));
                 break;
         }
 
         //jacascriptを許可する
-        myWebView.getSettings().setJavaScriptEnabled(true);
+        mWebView.getSettings().setJavaScriptEnabled(true);
     }
 
     @Override

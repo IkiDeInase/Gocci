@@ -26,16 +26,16 @@
         android:layout_marginTop="16dp"
         android:layout_below="@+id/tool_bar"
         android:layout_centerHorizontal="true"
-        android:id="@+id/usernameText" />
+        android:id="@+id/username_text" />
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:textColor="@color/timecolor"
-        android:id="@+id/signinusernameEdit"
+        android:id="@+id/signin_username_edit"
         android:layout_marginRight="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginTop="8dp"
-        android:layout_below="@+id/usernameText"
+        android:layout_below="@+id/username_text"
         android:layout_centerHorizontal="true"
         android:layout_height="wrap_content"
         android:focusableInTouchMode="true">
@@ -53,8 +53,8 @@
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:textColor="@color/timecolor"
-        android:id="@+id/signinpassEdit"
-        android:layout_below="@+id/signinusernameEdit"
+        android:id="@+id/signin_pass_edit"
+        android:layout_below="@+id/signin_username_edit"
         android:layout_centerHorizontal="true"
         android:layout_marginRight="16dp"
         android:layout_marginLeft="16dp"
@@ -72,7 +72,7 @@
     </android.support.design.widget.TextInputLayout>
 
     <com.andexert.library.RippleView
-        android:id="@+id/login_Ripple"
+        android:id="@+id/login_ripple"
         android:layout_width="match_parent"
         android:layout_height="42dp"
         android:layout_centerHorizontal="true"
@@ -80,7 +80,7 @@
         android:layout_marginRight="16dp"
         android:background="@color/gocci_button"
         android:gravity="center"
-        android:layout_below="@+id/signinpassEdit">
+        android:layout_below="@+id/signin_pass_edit">
 
         <TextView
             android:layout_width="wrap_content"
@@ -119,7 +119,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="#c5c6c9"
-        android:layout_below="@+id/login_Ripple"
+        android:layout_below="@+id/login_ripple"
         android:id="@+id/divider"
         android:layout_marginTop="16dp" />
 
@@ -134,7 +134,7 @@
         android:layout_marginTop="16dp"
         android:layout_below="@+id/divider"
         android:layout_centerHorizontal="true"
-        android:id="@+id/snsText" />
+        android:id="@+id/sns_text" />
 
     <com.andexert.library.RippleView
         android:layout_width="match_parent"
@@ -144,8 +144,8 @@
         android:layout_marginTop="8dp"
         android:background="@color/twitter_background"
         android:gravity="center"
-        android:id="@+id/twitter_Ripple"
-        android:layout_below="@+id/snsText">
+        android:id="@+id/twitter_ripple"
+        android:layout_below="@+id/sns_text">
 
         <TextView
             android:layout_width="wrap_content"
@@ -159,13 +159,13 @@
     <com.andexert.library.RippleView
         android:layout_width="match_parent"
         android:layout_height="42dp"
-        android:id="@+id/facebook_Ripple"
+        android:id="@+id/facebook_ripple"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginTop="8dp"
         android:background="@color/facebook_background"
         android:gravity="center"
-        android:layout_below="@+id/twitter_Ripple">
+        android:layout_below="@+id/twitter_ripple">
 
         <TextView
             android:layout_width="wrap_content"

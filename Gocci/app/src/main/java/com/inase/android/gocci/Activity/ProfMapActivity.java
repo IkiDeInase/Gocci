@@ -45,7 +45,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 public class ProfMapActivity extends AppCompatActivity implements ClusterManager.OnClusterClickListener<PhotoLog>, ClusterManager.OnClusterInfoWindowClickListener<PhotoLog>, ClusterManager.OnClusterItemClickListener<PhotoLog>, ClusterManager.OnClusterItemInfoWindowClickListener<PhotoLog> {
+
+    @Bind(R.id.tool_bar)
+    Toolbar mToolBar;
+    @Bind(R.id.progress_wheel)
+    ProgressWheel mProgressWheel;
 
     private SupportMapFragment fm;
 
@@ -56,8 +64,6 @@ public class ProfMapActivity extends AppCompatActivity implements ClusterManager
     private MapDrawableAsync mAsync;
 
     private static ArrayList<PhotoLog> list = new ArrayList<>();
-
-    private ProgressWheel progress;
 
     private static MobileAnalyticsManager analytics;
 
@@ -183,6 +189,7 @@ public class ProfMapActivity extends AppCompatActivity implements ClusterManager
         }
 
         setContentView(R.layout.activity_prof_map);
+        ButterKnife.bind(this);
 
         mAsync = new MapDrawableAsync(new MapDrawableAsync.Callback() {
             @Override
@@ -204,13 +211,10 @@ public class ProfMapActivity extends AppCompatActivity implements ClusterManager
         }, this);
         mAsync.execute();
 
-        progress = (ProgressWheel) findViewById(R.id.progress_wheel);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
         //toolbar.inflateMenu(R.menu.toolbar_menu);
         //toolbar.setLogo(R.drawable.ic_gocci_moji_white45);
-        toolbar.setTitle(getString(R.string.maplog));
-        setSupportActionBar(toolbar);
+        mToolBar.setTitle(getString(R.string.maplog));
+        setSupportActionBar(mToolBar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
@@ -261,7 +265,7 @@ public class ProfMapActivity extends AppCompatActivity implements ClusterManager
             mClusterManager.addItems(list);
             mClusterManager.cluster();
 
-            progress.setVisibility(View.GONE);
+            mProgressWheel.setVisibility(View.GONE);
 
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(35.681382, 139.766084), 4));
         }

@@ -16,7 +16,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
@@ -30,21 +29,31 @@ import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.data.RegistrationIntentService;
 import com.nineoldandroids.view.ViewHelper;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 public class TutorialGuideActivity extends AppCompatActivity {
 
     static final int NUM_PAGES = 5;
 
-    public ViewPager pager;
     PagerAdapter pagerAdapter;
-    LinearLayout circles;
-    TextView login_session_text;
-    boolean isOpaque = true;
 
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
     static final String TAG = "GCMDemo";
 
     private static MobileAnalyticsManager analytics;
+
+    @Bind(R.id.pager)
+    public ViewPager mPager;
+    @Bind(R.id.circles)
+    LinearLayout mCircles;
+
+    @OnClick(R.id.have_text)
+    public void session() {
+        LoginSessionActivity.startLoginSessionActivity(TutorialGuideActivity.this);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +71,7 @@ public class TutorialGuideActivity extends AppCompatActivity {
         Window window = getWindow();
         window.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         setContentView(R.layout.activity_tutorial);
+        ButterKnife.bind(this);
 
         if (checkPlayServices()) {
             Intent intent = new Intent(this, RegistrationIntentService.class);
@@ -70,20 +80,11 @@ public class TutorialGuideActivity extends AppCompatActivity {
             Log.e(TAG, "No valid Google Play Services APK found.");
         }
 
-        login_session_text = TextView.class.cast(findViewById(R.id.have_text));
-        login_session_text.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                LoginSessionActivity.startLoginSessionActivity(TutorialGuideActivity.this);
-            }
-        });
-
-        pager = (ViewPager) findViewById(R.id.pager);
         pagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
-        pager.setAdapter(pagerAdapter);
-        pager.setOffscreenPageLimit(4);
+        mPager.setAdapter(pagerAdapter);
+        mPager.setOffscreenPageLimit(4);
         //pager.setPageTransformer(true, new CrossfadePageTransformer());
-        pager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        mPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
@@ -109,8 +110,8 @@ public class TutorialGuideActivity extends AppCompatActivity {
 
         // Pass the activity result to the fragment, which will then pass the result to the login
         // button.
-        Fragment fragment = (Fragment) pagerAdapter.instantiateItem(pager, pager.getCurrentItem());
-        if (fragment != null && pager.getCurrentItem() == 4) {
+        Fragment fragment = (Fragment) pagerAdapter.instantiateItem(mPager, mPager.getCurrentItem());
+        if (fragment != null && mPager.getCurrentItem() == 4) {
             fragment.onActivityResult(requestCode, resultCode, data);
         }
     }
@@ -135,14 +136,12 @@ public class TutorialGuideActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (pager != null) {
-            pager.clearOnPageChangeListeners();
+        if (mPager != null) {
+            mPager.clearOnPageChangeListeners();
         }
     }
 
     private void buildCircles() {
-        circles = LinearLayout.class.cast(findViewById(R.id.circles));
-
         float scale = getResources().getDisplayMetrics().density;
         int padding = (int) (5 * scale + 0.5f);
 
@@ -152,7 +151,7 @@ public class TutorialGuideActivity extends AppCompatActivity {
             circle.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             circle.setAdjustViewBounds(true);
             circle.setPadding(padding, 0, padding, 0);
-            circles.addView(circle);
+            mCircles.addView(circle);
         }
 
         setIndicator(0);
@@ -161,7 +160,7 @@ public class TutorialGuideActivity extends AppCompatActivity {
     private void setIndicator(int index) {
         if (index < NUM_PAGES - 1) {
             for (int i = 0; i < NUM_PAGES - 1; i++) {
-                ImageView circle = (ImageView) circles.getChildAt(i);
+                ImageView circle = (ImageView) mCircles.getChildAt(i);
                 if (i == index) {
                     circle.setColorFilter(getResources().getColor(R.color.text_selected));
                 } else {
@@ -173,10 +172,10 @@ public class TutorialGuideActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (pager.getCurrentItem() == 0) {
+        if (mPager.getCurrentItem() == 0) {
             super.onBackPressed();
         } else {
-            pager.setCurrentItem(pager.getCurrentItem() - 1, true);
+            mPager.setCurrentItem(mPager.getCurrentItem() - 1, true);
         }
     }
 
@@ -235,8 +234,8 @@ public class TutorialGuideActivity extends AppCompatActivity {
             View object8 = page.findViewById(R.id.image_8);//Gocciくん
             View object9 = page.findViewById(R.id.image_9);//Gocciくん
 
-            RippleView twitter_ripple = (RippleView) page.findViewById(R.id.twitter_Ripple);
-            RippleView facebook_ripple = (RippleView) page.findViewById(R.id.facebook_Ripple);
+            RippleView twitter_ripple = (RippleView) page.findViewById(R.id.twitter_ripple);
+            RippleView facebook_ripple = (RippleView) page.findViewById(R.id.facebook_ripple);
             RippleView skip_ripple = (RippleView) page.findViewById(R.id.skip_Ripple);
 
             if (0 <= position && position < 1) {

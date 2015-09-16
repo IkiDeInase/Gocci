@@ -56,18 +56,31 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 public class FlexibleUserProfActivity extends AppCompatActivity implements AppBarLayout.OnOffsetChangedListener {
+
+    @Bind(R.id.tool_bar)
+    Toolbar mToolBar;
+    @Bind(R.id.app_bar)
+    AppBarLayout mAppBar;
+    @Bind(R.id.list)
+    RecyclerView mUserProfRecyclerView;
+    @Bind(R.id.swipe_container)
+    SwipeRefreshLayout mSwipeContainer;
+    @Bind(R.id.empty_text)
+    TextView mEmptyText;
+    @Bind(R.id.empty_image)
+    ImageView mEmptyImage;
+    @Bind(R.id.coordinator_layout)
+    CoordinatorLayout mCoordinatorLayout;
 
     private String mProfUrl;
 
-    private RecyclerView mUserProfRecyclerView;
     private UserProfAdapter mUserProfAdapter;
     private ArrayList<PostData> mUserProfusers = new ArrayList<PostData>();
     private StaggeredGridLayoutManager mLayoutManager;
-    private SwipeRefreshLayout mSwipeRefreshLayout;
-
-    private CoordinatorLayout coordinatorLayout;
-    private AppBarLayout appBarLayout;
 
     private HeaderData headerUserData;
 
@@ -77,12 +90,7 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
 
     private Drawer result;
 
-    private Toolbar toolbar;
-
     private static MobileAnalyticsManager analytics;
-
-    private TextView empty_text;
-    private ImageView empty_image;
 
     private static Handler sHandler = new Handler() {
         @Override
@@ -130,36 +138,29 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
         }
 
         setContentView(R.layout.activity_flexible_user_prof);
+        ButterKnife.bind(this);
 
         Intent userintent = getIntent();
         mUser_id = userintent.getIntExtra("user_id", 0);
 
         mProfUrl = Const.getUserpageAPI(mUser_id);
 
-        toolbar = (Toolbar) findViewById(R.id.tool_bar);
         //toolbar.inflateMenu(R.menu.toolbar_menu);
         //toolbar.setLogo(R.drawable.ic_gocci_moji_white45);
-        toolbar.setTitle(userintent.getStringExtra("user_name"));
-        setSupportActionBar(toolbar);
+        mToolBar.setTitle(userintent.getStringExtra("user_name"));
+        setSupportActionBar(mToolBar);
 
-        mUserProfRecyclerView = (RecyclerView) findViewById(R.id.list);
         mLayoutManager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
         mUserProfAdapter = new UserProfAdapter(FlexibleUserProfActivity.this);
         mUserProfRecyclerView.setLayoutManager(mLayoutManager);
         mUserProfRecyclerView.setHasFixedSize(true);
         mUserProfRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
 
-        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
-        appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
-
-        empty_text = (TextView) findViewById(R.id.empty_text);
-        empty_image = (ImageView) findViewById(R.id.empty_image);
-
         getSignupAsync(FlexibleUserProfActivity.this);
 
         result = new DrawerBuilder()
                 .withActivity(this)
-                .withToolbar(toolbar)
+                .withToolbar(mToolBar)
                 .withHeader(new DrawerProfHeader(this))
                 .addDrawerItems(
                         new PrimaryDrawerItem().withName(getString(R.string.timeline)).withIcon(GoogleMaterial.Icon.gmd_home).withIdentifier(1).withSelectable(false),
@@ -220,17 +221,16 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
         result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
-        mSwipeRefreshLayout.setColorSchemeResources(R.color.gocci_1, R.color.gocci_2, R.color.gocci_3, R.color.gocci_4);
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        mSwipeContainer.setColorSchemeResources(R.color.gocci_1, R.color.gocci_2, R.color.gocci_3, R.color.gocci_4);
+        mSwipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mSwipeRefreshLayout.setRefreshing(true);
+                mSwipeContainer.setRefreshing(true);
                 if (Util.getConnectedState(FlexibleUserProfActivity.this) != Util.NetworkStatus.OFF) {
                     getRefreshAsync(FlexibleUserProfActivity.this);
                 } else {
                     Toast.makeText(FlexibleUserProfActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
-                    mSwipeRefreshLayout.setRefreshing(false);
+                    mSwipeContainer.setRefreshing(false);
                 }
             }
         });
@@ -245,7 +245,7 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
         }
         BusHolder.get().unregister(self);
 
-        appBarLayout.removeOnOffsetChangedListener(this);
+        mAppBar.removeOnOffsetChangedListener(this);
     }
 
     @Override
@@ -256,7 +256,7 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
         }
         BusHolder.get().register(self);
 
-        appBarLayout.addOnOffsetChangedListener(this);
+        mAppBar.addOnOffsetChangedListener(this);
     }
 
     @Override
@@ -289,7 +289,7 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
 
     @Subscribe
     public void subscribe(NotificationNumberEvent event) {
-        Snackbar.make(coordinatorLayout, event.mMessage, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(mCoordinatorLayout, event.mMessage, Snackbar.LENGTH_SHORT).show();
     }
 
     private void getSignupAsync(final Context context) {
@@ -322,12 +322,11 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
                 mUserProfRecyclerView.setAdapter(mUserProfAdapter);
 
                 if (mUserProfusers.isEmpty()) {
-                    empty_image.setVisibility(View.VISIBLE);
-                    empty_text.setVisibility(View.VISIBLE);
-                }
-                else {
-                    empty_image.setVisibility(View.GONE);
-                    empty_text.setVisibility(View.GONE);
+                    mEmptyImage.setVisibility(View.VISIBLE);
+                    mEmptyText.setVisibility(View.VISIBLE);
+                } else {
+                    mEmptyImage.setVisibility(View.GONE);
+                    mEmptyText.setVisibility(View.GONE);
                 }
             }
         });
@@ -364,18 +363,17 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
                 mUserProfAdapter.notifyDataSetChanged();
 
                 if (mUserProfusers.isEmpty()) {
-                    empty_image.setVisibility(View.VISIBLE);
-                    empty_text.setVisibility(View.VISIBLE);
-                }
-                else {
-                    empty_image.setVisibility(View.GONE);
-                    empty_text.setVisibility(View.GONE);
+                    mEmptyImage.setVisibility(View.VISIBLE);
+                    mEmptyText.setVisibility(View.VISIBLE);
+                } else {
+                    mEmptyImage.setVisibility(View.GONE);
+                    mEmptyText.setVisibility(View.GONE);
                 }
             }
 
             @Override
             public void onFinish() {
-                mSwipeRefreshLayout.setRefreshing(false);
+                mSwipeContainer.setRefreshing(false);
             }
 
         });
@@ -383,46 +381,48 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
 
     @Override
     public void onOffsetChanged(AppBarLayout appBarLayout, int i) {
-        mSwipeRefreshLayout.setEnabled(i == 0);
+        mSwipeContainer.setEnabled(i == 0);
     }
 
     static class UserProfHeaderViewHolder extends RecyclerView.ViewHolder {
-        private ImageView userprof_background;
-        private ImageView userprof_picture;
-        private ImageView locationButton;
-        private TextView userprof_username;
-        private RippleView userprof_follow;
-        private TextView follow_num;
-        private TextView follower_num;
-        private TextView usercheer_num;
-        private TextView follow_text;
-        private RippleView followRipple;
-        private RippleView followerRipple;
-        private RippleView usercheerRipple;
+        @Bind(R.id.userprof_background)
+        ImageView mUserprofBackground;
+        @Bind(R.id.userprof_picture)
+        ImageView mUserprofPicture;
+        @Bind(R.id.location)
+        ImageView mLocationButton;
+        @Bind(R.id.userprof_username)
+        TextView mUserprofUsername;
+        @Bind(R.id.userprof_follow)
+        RippleView mUserprof_Follow;
+        @Bind(R.id.follow_num)
+        TextView mFollowNum;
+        @Bind(R.id.follower_num)
+        TextView mFollowerNum;
+        @Bind(R.id.usercheer_num)
+        TextView mUsercheerNum;
+        @Bind(R.id.follow_text)
+        TextView mFollowText;
+        @Bind(R.id.follow_ripple)
+        RippleView mFollowRipple;
+        @Bind(R.id.follower_ripple)
+        RippleView mFollowerRipple;
+        @Bind(R.id.usercheer_ripple)
+        RippleView mUsercheerRipple;
 
         public UserProfHeaderViewHolder(View view) {
             super(view);
-            userprof_background = (ImageView) view.findViewById(R.id.userprof_background);
-            userprof_picture = (ImageView) view.findViewById(R.id.userprof_picture);
-            locationButton = (ImageView) view.findViewById(R.id.location);
-            userprof_username = (TextView) view.findViewById(R.id.userprof_username);
-            userprof_follow = (RippleView) view.findViewById(R.id.userprof_follow);
-            follow_num = (TextView) view.findViewById(R.id.follow_num);
-            follower_num = (TextView) view.findViewById(R.id.follower_num);
-            usercheer_num = (TextView) view.findViewById(R.id.usercheer_num);
-            follow_text = (TextView) view.findViewById(R.id.followText);
-            followRipple = (RippleView) view.findViewById(R.id.followRipple);
-            followerRipple = (RippleView) view.findViewById(R.id.followerRipple);
-            usercheerRipple = (RippleView) view.findViewById(R.id.usercheerRipple);
+            ButterKnife.bind(this, view);
         }
     }
 
     static class GridViewHolder extends RecyclerView.ViewHolder {
-        private SquareImageView squareImage;
+        @Bind(R.id.square_image)
+        SquareImageView mSquareImage;
 
         public GridViewHolder(View view) {
             super(view);
-            squareImage = (SquareImageView) view.findViewById(R.id.squareImage);
+            ButterKnife.bind(this, view);
         }
     }
 
@@ -491,27 +491,27 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
         }
 
         private void bindHeader(final UserProfHeaderViewHolder holder) {
-            holder.userprof_username.setText(headerUserData.getUsername());
+            holder.mUserprofUsername.setText(headerUserData.getUsername());
 
-            holder.follow_num.setText(String.valueOf(headerUserData.getFollow_num()));
-            holder.follower_num.setText(String.valueOf(headerUserData.getFollower_num()));
-            holder.usercheer_num.setText(String.valueOf(headerUserData.getCheer_num()));
+            holder.mFollowNum.setText(String.valueOf(headerUserData.getFollow_num()));
+            holder.mFollowerNum.setText(String.valueOf(headerUserData.getFollower_num()));
+            holder.mUsercheerNum.setText(String.valueOf(headerUserData.getCheer_num()));
 
-            holder.followRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
+            holder.mFollowRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
                 @Override
                 public void onComplete(RippleView rippleView) {
                     ListActivity.startListActivity(headerUserData.getUser_id(), 0, Const.CATEGORY_FOLLOW, FlexibleUserProfActivity.this);
                 }
             });
 
-            holder.followerRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
+            holder.mFollowerRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
                 @Override
                 public void onComplete(RippleView rippleView) {
                     ListActivity.startListActivity(headerUserData.getUser_id(), 0, Const.CATEGORY_FOLLOWER, FlexibleUserProfActivity.this);
                 }
             });
 
-            holder.usercheerRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
+            holder.mUsercheerRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
                 @Override
                 public void onComplete(RippleView rippleView) {
                     ListActivity.startListActivity(headerUserData.getUser_id(), 0, Const.CATEGORY_USER_CHEER, FlexibleUserProfActivity.this);
@@ -523,30 +523,30 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
                     .fit()
                     .placeholder(R.drawable.ic_userpicture)
                     .transform(new RoundedTransformation())
-                    .into(holder.userprof_picture);
+                    .into(holder.mUserprofPicture);
 
             if (headerUserData.getFollow_flag() == 0) {
-                holder.follow_text.setText(getString(R.string.do_follow));
+                holder.mFollowText.setText(getString(R.string.do_follow));
             } else {
-                holder.follow_text.setText(getString(R.string.do_unfollow));
+                holder.mFollowText.setText(getString(R.string.do_unfollow));
             }
 
             if (headerUserData.getUsername().equals(SavedData.getServerName(mContext))) {
-                holder.follow_text.setText(getString(R.string.do_yours));
+                holder.mFollowText.setText(getString(R.string.do_yours));
             }
 
-            holder.userprof_follow.setOnClickListener(new View.OnClickListener() {
+            holder.mUserprof_Follow.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     //お気に入りするときの処理
-                    switch (holder.follow_text.getText().toString()) {
+                    switch (holder.mFollowText.getText().toString()) {
                         case "フォローする":
                             Util.followAsync(FlexibleUserProfActivity.this, headerUserData);
-                            holder.follow_text.setText(getString(R.string.do_unfollow));
+                            holder.mFollowText.setText(getString(R.string.do_unfollow));
                             break;
                         case "フォロー解除する":
                             Util.unfollowAsync(FlexibleUserProfActivity.this, headerUserData);
-                            holder.follow_text.setText(getString(R.string.do_follow));
+                            holder.mFollowText.setText(getString(R.string.do_follow));
                             break;
                         case "これはあなたです":
                             break;
@@ -554,7 +554,7 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
                 }
             });
 
-            holder.locationButton.setOnClickListener(new View.OnClickListener() {
+            holder.mLocationButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     ProfMapActivity.startProfMapActivity(mUserProfusers, FlexibleUserProfActivity.this);
@@ -567,7 +567,7 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
                     .load(user.getThumbnail())
                     .resize(cellSize, cellSize)
                     .centerCrop()
-                    .into(holder.squareImage, new Callback() {
+                    .into(holder.mSquareImage, new Callback() {
                         @Override
                         public void onSuccess() {
                             //animatePhoto(holder);
@@ -579,7 +579,7 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
                         }
                     });
 
-            holder.squareImage.setOnClickListener(new View.OnClickListener() {
+            holder.mSquareImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     CommentActivity.startCommentActivity(Integer.parseInt(user.getPost_id()), FlexibleUserProfActivity.this);

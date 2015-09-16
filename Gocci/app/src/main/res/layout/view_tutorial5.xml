@@ -59,7 +59,7 @@
         android:layout_marginRight="32dp"
         android:background="@color/twitter_background"
         android:gravity="center"
-        android:id="@+id/twitter_Ripple"
+        android:id="@+id/twitter_ripple"
         android:layout_below="@+id/text_1"
         android:layout_marginTop="16dp"
         android:layout_centerHorizontal="true">
@@ -76,13 +76,13 @@
     <com.andexert.library.RippleView
         android:layout_width="match_parent"
         android:layout_height="42dp"
-        android:id="@+id/facebook_Ripple"
+        android:id="@+id/facebook_ripple"
         android:layout_marginLeft="32dp"
         android:layout_marginRight="32dp"
         android:layout_marginTop="16dp"
         android:background="@color/facebook_background"
         android:gravity="center"
-        android:layout_below="@+id/twitter_Ripple">
+        android:layout_below="@+id/twitter_ripple">
 
         <TextView
             android:layout_width="wrap_content"
@@ -97,7 +97,7 @@
         android:id="@+id/skip_Ripple"
         android:layout_width="match_parent"
         android:layout_height="42dp"
-        android:layout_below="@+id/facebook_Ripple"
+        android:layout_below="@+id/facebook_ripple"
         android:layout_centerHorizontal="true"
         android:layout_marginLeft="32dp"
         android:layout_marginRight="32dp"

@@ -39,7 +39,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/restname"
-            android:id="@+id/restname"
+            android:id="@+id/rest_name"
             android:textStyle="bold"
             android:textSize="@dimen/accent_text"
             android:singleLine="true"

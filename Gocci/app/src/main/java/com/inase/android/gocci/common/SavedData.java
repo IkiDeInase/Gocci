@@ -357,7 +357,7 @@ public class SavedData {
 
     public static double getLon(Context context) {
         SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
-        if ( !prefs.contains(KEY_LON))
+        if (!prefs.contains(KEY_LON))
             return 0.0;
 
         return Double.longBitsToDouble(prefs.getLong(KEY_LON, 0));
@@ -365,7 +365,7 @@ public class SavedData {
 
     public static double getLat(Context context) {
         SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
-        if ( !prefs.contains(KEY_LAT))
+        if (!prefs.contains(KEY_LAT))
             return 0.0;
 
         return Double.longBitsToDouble(prefs.getLong(KEY_LAT, 0));

@@ -698,7 +698,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
                 @Override
                 public void onVideoSizeChanged(int width, int height, float pixelWidthAspectRatio) {
                     viewHolder.mVideoThumbnail.setVisibility(View.GONE);
-                    viewHolder.videoFrame.setAspectRatio(
+                    viewHolder.mVideoFrame.setAspectRatio(
                             height == 0 ? 1 : (width * pixelWidthAspectRatio) / height);
                 }
             });
@@ -709,7 +709,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
             player.prepare();
             playerNeedsPrepare = false;
         }
-        player.setSurface(viewHolder.movie.getHolder().getSurface());
+        player.setSurface(viewHolder.mSquareVideoExo.getHolder().getSurface());
         player.setPlayWhenReady(true);
 
         if (SavedData.getSettingMute(this) == -1) {
@@ -851,36 +851,36 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
         }
 
         private void bindHeader(final Const.ExoViewHolder holder, final PostData user) {
-            holder.user_name.setText(user.getUsername());
-            holder.datetime.setText(user.getPost_date());
+            holder.mUserName.setText(user.getUsername());
+            holder.mTimeText.setText(user.getPost_date());
 
             if (!user.getMemo().equals("none")) {
-                holder.comment.setText(user.getMemo());
+                holder.mComment.setText(user.getMemo());
             } else {
-                holder.comment.setText("");
+                holder.mComment.setText("");
             }
 
             Picasso.with(context)
                     .load(user.getProfile_img())
                     .placeholder(R.drawable.ic_userpicture)
                     .transform(new RoundedTransformation())
-                    .into(holder.circleImage);
+                    .into(holder.mCircleImage);
 
-            holder.user_name.setOnClickListener(new View.OnClickListener() {
+            holder.mUserName.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     FlexibleUserProfActivity.startUserProfActivity(user.getPost_user_id(), user.getUsername(), CommentActivity.this);
                 }
             });
 
-            holder.circleImage.setOnClickListener(new View.OnClickListener() {
+            holder.mCircleImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     FlexibleUserProfActivity.startUserProfActivity(user.getPost_user_id(), user.getUsername(), CommentActivity.this);
                 }
             });
 
-            holder.menuRipple.setOnClickListener(new View.OnClickListener() {
+            holder.mMenuRipple.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     new BottomSheet.Builder(context, R.style.BottomSheet_StyleDialog).sheet(R.menu.popup_normal).listener(new DialogInterface.OnClickListener() {
@@ -903,7 +903,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
                     .into(holder.mVideoThumbnail);
             holder.mVideoThumbnail.setVisibility(View.VISIBLE);
 
-            holder.videoFrame.setOnClickListener(new View.OnClickListener() {
+            holder.mVideoFrame.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (player != null) {
@@ -921,27 +921,27 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
                 }
             });
 
-            holder.rest_name.setText(user.getRestname());
+            holder.mRestname.setText(user.getRestname());
             //viewHolder.locality.setText(user.getLocality());
 
             if (!user.getCategory().equals(getString(R.string.nothing_tag))) {
-                holder.category.setText(user.getCategory());
+                holder.mCategory.setText(user.getCategory());
             } else {
-                holder.category.setText("　　　　");
+                holder.mCategory.setText("　　　　");
             }
             if (!user.getTag().equals(getString(R.string.nothing_tag))) {
-                holder.atmosphere.setText(user.getTag());
+                holder.mMood.setText(user.getTag());
             } else {
-                holder.atmosphere.setText("　　　　");
+                holder.mMood.setText("　　　　");
             }
             if (!user.getValue().equals("0")) {
-                holder.value.setText(user.getValue() + "円");
+                holder.mValue.setText(user.getValue() + "円");
             } else {
-                holder.value.setText("　　　　");
+                holder.mValue.setText("　　　　");
             }
 
             //リップルエフェクトを見せてからIntentを飛ばす
-            holder.tenpoRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
+            holder.mTenpoRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
                 @Override
                 public void onComplete(RippleView rippleView) {
                     FlexibleTenpoActivity.startTenpoActivity(user.getPost_rest_id(), user.getRestname(), CommentActivity.this);
@@ -951,39 +951,39 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
             final int currentgoodnum = user.getGochi_num();
             final int currentcommentnum = user.getComment_num();
 
-            holder.likes.setText(String.valueOf(currentgoodnum));
-            holder.comments.setText(String.valueOf(currentcommentnum));
+            holder.mLikesNumber.setText(String.valueOf(currentgoodnum));
+            holder.mCommentsNumber.setText(String.valueOf(currentcommentnum));
 
             if (user.getGochi_flag() == 0) {
-                holder.likes_ripple.setClickable(true);
-                holder.likes_Image.setImageResource(R.drawable.ic_icon_beef);
+                holder.mLikesRipple.setClickable(true);
+                holder.mLikesImage.setImageResource(R.drawable.ic_icon_beef);
 
-                holder.likes_ripple.setOnClickListener(new View.OnClickListener() {
+                holder.mLikesRipple.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         user.setGochi_flag(1);
                         user.setGochi_num(currentgoodnum + 1);
 
-                        holder.likes.setText(String.valueOf((currentgoodnum + 1)));
-                        holder.likes_Image.setImageResource(R.drawable.ic_icon_beef_orange);
-                        holder.likes_ripple.setClickable(false);
+                        holder.mLikesNumber.setText(String.valueOf((currentgoodnum + 1)));
+                        holder.mLikesImage.setImageResource(R.drawable.ic_icon_beef_orange);
+                        holder.mLikesRipple.setClickable(false);
 
                         Util.postGochiAsync(CommentActivity.this, user);
                     }
                 });
             } else {
-                holder.likes_Image.setImageResource(R.drawable.ic_icon_beef_orange);
-                holder.likes_ripple.setClickable(false);
+                holder.mLikesImage.setImageResource(R.drawable.ic_icon_beef_orange);
+                holder.mLikesRipple.setClickable(false);
             }
 
-            holder.comments_ripple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
+            holder.mCommentsRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
                 @Override
                 public void onComplete(RippleView rippleView) {
                     mCommentButton.performClick();
                 }
             });
 
-            holder.share_ripple.setOnClickListener(new View.OnClickListener() {
+            holder.mShareRipple.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (Application_Gocci.getShareTransfer() != null) {

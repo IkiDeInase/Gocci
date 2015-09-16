@@ -32,6 +32,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 /**
  * Created by kinagafuji on 15/05/12.
  */
@@ -42,8 +45,8 @@ public class NotificationListView extends RelativeLayout {
     private NotificationAdapter mNotificationAdapter;
     private ArrayList<HeaderData> mNotificationUsers = new ArrayList<>();
 
-    private TextView empty_text;
-    private ImageView empty_image;
+    private TextView mEmpty_text;
+    private ImageView mEmpty_image;
 
     public NotificationListView(final Context context) {
         super(context);
@@ -53,8 +56,8 @@ public class NotificationListView extends RelativeLayout {
         mNotificationProgress = (ProgressWheel) inflateView.findViewById(R.id.progress);
         mNotificationList = (ListView) inflateView.findViewById(R.id.notification_list);
 
-        empty_image = (ImageView) inflateView.findViewById(R.id.empty_image);
-        empty_text = (TextView) inflateView.findViewById(R.id.empty_text);
+        mEmpty_image = (ImageView) inflateView.findViewById(R.id.empty_image);
+        mEmpty_text = (TextView) inflateView.findViewById(R.id.empty_text);
 
         mNotificationList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -118,12 +121,11 @@ public class NotificationListView extends RelativeLayout {
                 mNotificationList.setAdapter(mNotificationAdapter);
 
                 if (mNotificationUsers.isEmpty()) {
-                    empty_image.setVisibility(View.VISIBLE);
-                    empty_text.setVisibility(View.VISIBLE);
-                }
-                else {
-                    empty_image.setVisibility(View.GONE);
-                    empty_text.setVisibility(View.GONE);
+                    mEmpty_image.setVisibility(View.VISIBLE);
+                    mEmpty_text.setVisibility(View.VISIBLE);
+                } else {
+                    mEmpty_image.setVisibility(View.GONE);
+                    mEmpty_text.setVisibility(View.GONE);
                 }
             }
 
@@ -140,16 +142,17 @@ public class NotificationListView extends RelativeLayout {
     }
 
     public static class NotificationHolder {
-        ImageView picture;
-        TextView notice_username;
-        TextView notice_sub;
-        TextView date_time;
+        @Bind(R.id.circle_image)
+        ImageView mCircleImage;
+        @Bind(R.id.notice_username)
+        TextView mNoticeUsername;
+        @Bind(R.id.notice_sub_text)
+        TextView mNoticeSubText;
+        @Bind(R.id.date_time)
+        TextView mDateTime;
 
         public NotificationHolder(View view) {
-            this.picture = (ImageView) view.findViewById(R.id.circleImage);
-            this.notice_username = (TextView) view.findViewById(R.id.notice_username);
-            this.notice_sub = (TextView) view.findViewById(R.id.notice_subText);
-            this.date_time = (TextView) view.findViewById(R.id.date_time);
+            ButterKnife.bind(this, view);
         }
     }
 
@@ -174,17 +177,17 @@ public class NotificationListView extends RelativeLayout {
 
             final HeaderData user = this.getItem(position);
 
-            mNotificationHolder.notice_username.setText(user.getUsername());
-            mNotificationHolder.date_time.setText(user.getNotice_date());
+            mNotificationHolder.mNoticeUsername.setText(user.getUsername());
+            mNotificationHolder.mDateTime.setText(user.getNotice_date());
 
             Picasso.with(getContext())
                     .load(user.getProfile_img())
                     .placeholder(R.drawable.ic_userpicture)
                     .transform(new RoundedTransformation())
-                    .into(mNotificationHolder.picture);
+                    .into(mNotificationHolder.mCircleImage);
 
             //コメントのViewをクリックすると、その人のプロフィールに飛ぶ
-            mNotificationHolder.notice_username.setOnClickListener(new OnClickListener() {
+            mNotificationHolder.mNoticeUsername.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(getContext(), FlexibleUserProfActivity.class);
@@ -194,7 +197,7 @@ public class NotificationListView extends RelativeLayout {
                 }
             });
 
-            mNotificationHolder.picture.setOnClickListener(new OnClickListener() {
+            mNotificationHolder.mCircleImage.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(getContext(), FlexibleUserProfActivity.class);
@@ -207,19 +210,18 @@ public class NotificationListView extends RelativeLayout {
 
             switch (user.getNotice()) {
                 case "like":
-                    mNotificationHolder.notice_sub.setText(getContext().getString(R.string.notice_from_gochi));
+                    mNotificationHolder.mNoticeSubText.setText(getContext().getString(R.string.notice_from_gochi));
 
                     break;
                 case "follow":
-                    mNotificationHolder.notice_sub.setText(getContext().getString(R.string.notice_from_follow));
+                    mNotificationHolder.mNoticeSubText.setText(getContext().getString(R.string.notice_from_follow));
 
                     break;
                 case "comment":
-                    mNotificationHolder.notice_sub.setText(getContext().getString(R.string.notice_from_comment));
+                    mNotificationHolder.mNoticeSubText.setText(getContext().getString(R.string.notice_from_comment));
 
                     break;
             }
-
             return convertView;
         }
     }

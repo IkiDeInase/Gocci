@@ -6,7 +6,7 @@
     android:fitsSystemWindows="true">
 
     <android.support.design.widget.AppBarLayout
-        android:id="@+id/appbar"
+        android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="300dp"
         android:fitsSystemWindows="true"
@@ -23,7 +23,7 @@
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
             <com.inase.android.gocci.View.CustomKenBurnsView
-                android:id="@+id/background_Image"
+                android:id="@+id/background_image"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fitsSystemWindows="true"
@@ -41,7 +41,7 @@
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/swipeContainer"
+        android:id="@+id/swipe_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
@@ -56,7 +56,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="16dp"
-        app:layout_anchor="@id/appbar"
+        app:layout_anchor="@id/app_bar"
         app:layout_anchorGravity="top|right">
 
         <ImageView

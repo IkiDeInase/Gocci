@@ -23,7 +23,6 @@ import android.telephony.TelephonyManager;
 import android.text.InputType;
 import android.util.TypedValue;
 import android.view.Display;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -32,7 +31,6 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -910,11 +908,11 @@ public class Util {
     }
 
     public static void createCircle(Context context, ViewGroup rootView,
-                                     SpringSystem springSystem,
-                                     SpringConfig coasting,
-                                     SpringConfig gravity,
-                                     int diameter,
-                                     Drawable backgroundDrawable) {
+                                    SpringSystem springSystem,
+                                    SpringConfig coasting,
+                                    SpringConfig gravity,
+                                    int diameter,
+                                    Drawable backgroundDrawable) {
 
         final Spring xSpring = springSystem.createSpring().setSpringConfig(coasting);
         final Spring ySpring = springSystem.createSpring().setSpringConfig(gravity);

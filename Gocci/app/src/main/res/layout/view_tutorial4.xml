@@ -44,7 +44,7 @@
     <com.inase.android.gocci.Base.BlockEditTextDefaultFocusFrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/usernameFrame"
+        android:id="@+id/username_frame"
         android:layout_centerHorizontal="true"
         android:layout_marginLeft="36dp"
         android:layout_marginRight="36dp"
@@ -53,7 +53,7 @@
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
-            android:id="@+id/usernameTextInput"
+            android:id="@+id/username_textInput"
             android:layout_height="wrap_content"
             android:layout_marginRight="8dp"
             android:focusableInTouchMode="true">
@@ -71,7 +71,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/createdUsername"
+            android:id="@+id/created_username"
             android:textSize="22sp"
             android:textColor="@color/white"
             android:layout_gravity="center"
@@ -80,12 +80,12 @@
     </com.inase.android.gocci.Base.BlockEditTextDefaultFocusFrameLayout>
 
     <com.github.jorgecastilloprz.FABProgressCircle
-        android:id="@+id/fabProgressCircle"
+        android:id="@+id/fab_progress_circle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_alignBottom="@+id/usernameFrame"
-        android:layout_alignRight="@+id/usernameFrame">
+        android:layout_alignBottom="@+id/username_frame"
+        android:layout_alignRight="@+id/username_frame">
 
         <!-- You can change it with the fab from the library you want to use -->
         <android.support.design.widget.FloatingActionButton
@@ -101,7 +101,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/fabProgressCircle"
+        android:layout_below="@+id/fab_progress_circle"
         android:id="@+id/rules">
 
         <TextView

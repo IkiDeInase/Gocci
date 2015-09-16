@@ -64,6 +64,8 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import io.fabric.sdk.android.Fabric;
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
@@ -74,13 +76,21 @@ import io.nlopez.smartlocation.SmartLocation;
 public class FollowTimelineFragment extends Fragment implements AudioCapabilitiesReceiver.Listener, AppBarLayout.OnOffsetChangedListener,
         ObservableScrollViewCallbacks {
 
-    private ObservableRecyclerView mTimelineRecyclerView;
+    @Bind(R.id.list)
+    ObservableRecyclerView mTimelineRecyclerView;
+    @Bind(R.id.swipe_container)
+    SwipeRefreshLayout mSwipeContainer;
+    @Bind(R.id.empty_text)
+    TextView mEmptyText;
+    @Bind(R.id.empty_image)
+    ImageView mEmptyImage;
+
     private LinearLayoutManager mLayoutManager;
     private ArrayList<PostData> mTimelineusers = new ArrayList<>();
     private FollowTimelineAdapter mFollowTimelineAdapter;
-    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     private AppBarLayout appBarLayout;
+    private FloatingActionButton fab;
 
     private Point mDisplaySize;
     private String mPlayingPostId;
@@ -99,18 +109,11 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
     private int mNextCount = 1;
     private boolean isEndScrioll = false;
 
-    private FloatingActionButton fab;
-
     private VideoPlayer player;
     private boolean playerNeedsPrepare;
 
-    private long playerPosition;
-
     private AudioCapabilitiesReceiver audioCapabilitiesReceiver;
     private AudioCapabilities audioCapabilities;
-
-    private TextView empty_text;
-    private ImageView empty_image;
 
     private ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
         @Override
@@ -158,12 +161,11 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
         mPlayBlockFlag = true;
         View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_timeline_latest_trend, container, false);
-
+        ButterKnife.bind(this, view);
         // 初期化処理
         mPlayingPostId = null;
         mViewHolderHash = new ConcurrentHashMap<>();
 
-        mTimelineRecyclerView = (ObservableRecyclerView) view.findViewById(R.id.list);
         mLayoutManager = new LinearLayoutManager(getActivity());
         mTimelineRecyclerView.setLayoutManager(mLayoutManager);
         mTimelineRecyclerView.setHasFixedSize(true);
@@ -217,11 +219,7 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
         });
 
         fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
-
-        appBarLayout = (AppBarLayout) getActivity().findViewById(R.id.appbar);
-
-        empty_image = (ImageView) view.findViewById(R.id.empty_image);
-        empty_text = (TextView) view.findViewById(R.id.empty_text);
+        appBarLayout = (AppBarLayout) getActivity().findViewById(R.id.app_bar);
 
         mFollowTimelineAdapter = new FollowTimelineAdapter(getActivity());
 
@@ -231,17 +229,16 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
             Toast.makeText(getActivity(), getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
         }
 
-        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
-        mSwipeRefreshLayout.setColorSchemeResources(R.color.gocci_1, R.color.gocci_2, R.color.gocci_3, R.color.gocci_4);
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        mSwipeContainer.setColorSchemeResources(R.color.gocci_1, R.color.gocci_2, R.color.gocci_3, R.color.gocci_4);
+        mSwipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mSwipeRefreshLayout.setRefreshing(true);
+                mSwipeContainer.setRefreshing(true);
                 if (Util.getConnectedState(getActivity()) != Util.NetworkStatus.OFF) {
                     getRefreshAsync(getActivity());
                 } else {
                     Toast.makeText(getActivity(), getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
-                    mSwipeRefreshLayout.setRefreshing(false);
+                    mSwipeContainer.setRefreshing(false);
                 }
             }
         });
@@ -397,7 +394,7 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
                 @Override
                 public void onVideoSizeChanged(int width, int height, float pixelWidthAspectRatio) {
                     viewHolder.mVideoThumbnail.setVisibility(View.GONE);
-                    viewHolder.videoFrame.setAspectRatio(
+                    viewHolder.mVideoFrame.setAspectRatio(
                             height == 0 ? 1 : (width * pixelWidthAspectRatio) / height);
                 }
             });
@@ -408,7 +405,7 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
             player.prepare();
             playerNeedsPrepare = false;
         }
-        player.setSurface(viewHolder.movie.getHolder().getSurface());
+        player.setSurface(viewHolder.mSquareVideoExo.getHolder().getSurface());
         player.setPlayWhenReady(true);
 
         if (SavedData.getSettingMute(getActivity()) == -1) {
@@ -452,12 +449,11 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
                 //getTimelineDateJson(context);
 
                 if (mTimelineusers.isEmpty()) {
-                    empty_image.setVisibility(View.VISIBLE);
-                    empty_text.setVisibility(View.VISIBLE);
-                }
-                else {
-                    empty_image.setVisibility(View.GONE);
-                    empty_text.setVisibility(View.GONE);
+                    mEmptyImage.setVisibility(View.VISIBLE);
+                    mEmptyText.setVisibility(View.VISIBLE);
+                } else {
+                    mEmptyImage.setVisibility(View.GONE);
+                    mEmptyText.setVisibility(View.GONE);
                 }
             }
         });
@@ -496,18 +492,18 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
                         mFollowTimelineAdapter.notifyDataSetChanged();
 
                         if (mTimelineusers.isEmpty()) {
-                            empty_image.setVisibility(View.VISIBLE);
-                            empty_text.setVisibility(View.VISIBLE);
+                            mEmptyImage.setVisibility(View.VISIBLE);
+                            mEmptyText.setVisibility(View.VISIBLE);
                         } else {
-                            empty_image.setVisibility(View.GONE);
-                            empty_text.setVisibility(View.GONE);
+                            mEmptyImage.setVisibility(View.GONE);
+                            mEmptyText.setVisibility(View.GONE);
                         }
                     }
 
                     @Override
                     public void onFinish() {
                         //mTimelineSwipe.setRefreshing(false);
-                        mSwipeRefreshLayout.setRefreshing(false);
+                        mSwipeContainer.setRefreshing(false);
                     }
                 });
             }
@@ -559,7 +555,7 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
         Const.asyncHttpClient.get(getActivity(), url, new JsonHttpResponseHandler() {
             @Override
             public void onStart() {
-                mSwipeRefreshLayout.setRefreshing(true);
+                mSwipeContainer.setRefreshing(true);
                 mTimelineRecyclerView.scrollVerticallyToPosition(0);
             }
 
@@ -589,18 +585,17 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
                 mFollowTimelineAdapter.notifyDataSetChanged();
 
                 if (mTimelineusers.isEmpty()) {
-                    empty_image.setVisibility(View.VISIBLE);
-                    empty_text.setVisibility(View.VISIBLE);
-                }
-                else {
-                    empty_image.setVisibility(View.GONE);
-                    empty_text.setVisibility(View.GONE);
+                    mEmptyImage.setVisibility(View.VISIBLE);
+                    mEmptyText.setVisibility(View.VISIBLE);
+                } else {
+                    mEmptyImage.setVisibility(View.GONE);
+                    mEmptyText.setVisibility(View.GONE);
                 }
             }
 
             @Override
             public void onFinish() {
-                mSwipeRefreshLayout.setRefreshing(false);
+                mSwipeContainer.setRefreshing(false);
             }
         });
     }
@@ -656,7 +651,7 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
 
     @Override
     public void onOffsetChanged(AppBarLayout appBarLayout, int i) {
-        mSwipeRefreshLayout.setEnabled(i == 0);
+        mSwipeContainer.setEnabled(i == 0);
     }
 
     @Override
@@ -676,6 +671,12 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
         } else if (scrollState == ScrollState.DOWN) {
             fab.show();
         }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.unbind(this);
     }
 
     public class FollowTimelineAdapter extends RecyclerView.Adapter<Const.ExoViewHolder> {
@@ -705,17 +706,17 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
         public void onBindViewHolder(final Const.ExoViewHolder holder, final int position) {
             final PostData user = mTimelineusers.get(position);
 
-            holder.user_name.setText(user.getUsername());
+            holder.mUserName.setText(user.getUsername());
 
-            holder.datetime.setText(user.getPost_date());
+            holder.mTimeText.setText(user.getPost_date());
 
             if (!user.getMemo().equals("none")) {
-                holder.comment.setText(user.getMemo());
+                holder.mComment.setText(user.getMemo());
             } else {
-                holder.comment.setText("");
+                holder.mComment.setText("");
             }
 
-            holder.comment.setOnClickListener(new View.OnClickListener() {
+            holder.mComment.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     CommentActivity.startCommentActivity(Integer.parseInt(user.getPost_id()), getActivity());
@@ -726,9 +727,9 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
                     .load(user.getProfile_img())
                     .placeholder(R.drawable.ic_userpicture)
                     .transform(new RoundedTransformation())
-                    .into(holder.circleImage);
+                    .into(holder.mCircleImage);
 
-            holder.user_name.setOnClickListener(new View.OnClickListener() {
+            holder.mUserName.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     GocciTimelineActivity activity = (GocciTimelineActivity) getActivity();
@@ -736,7 +737,7 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
                 }
             });
 
-            holder.circleImage.setOnClickListener(new View.OnClickListener() {
+            holder.mCircleImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     GocciTimelineActivity activity = (GocciTimelineActivity) getActivity();
@@ -744,7 +745,7 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
                 }
             });
 
-            holder.menuRipple.setOnClickListener(new View.OnClickListener() {
+            holder.mMenuRipple.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     new BottomSheet.Builder(getActivity(), R.style.BottomSheet_StyleDialog).sheet(R.menu.popup_normal).listener(new DialogInterface.OnClickListener() {
@@ -767,7 +768,7 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
                     .into(holder.mVideoThumbnail);
             holder.mVideoThumbnail.setVisibility(View.VISIBLE);
 
-            holder.videoFrame.setOnClickListener(new View.OnClickListener() {
+            holder.mVideoFrame.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (player != null) {
@@ -785,27 +786,27 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
                 }
             });
 
-            holder.rest_name.setText(user.getRestname());
+            holder.mRestname.setText(user.getRestname());
             //viewHolder.locality.setText(user.getLocality());
 
             if (!user.getCategory().equals(getString(R.string.nothing_tag))) {
-                holder.category.setText(user.getCategory());
+                holder.mCategory.setText(user.getCategory());
             } else {
-                holder.category.setText("　　　　");
+                holder.mCategory.setText("　　　　");
             }
             if (!user.getTag().equals(getString(R.string.nothing_tag))) {
-                holder.atmosphere.setText(user.getTag());
+                holder.mMood.setText(user.getTag());
             } else {
-                holder.atmosphere.setText("　　　　");
+                holder.mMood.setText("　　　　");
             }
             if (!user.getValue().equals("0")) {
-                holder.value.setText(user.getValue() + "円");
+                holder.mValue.setText(user.getValue() + "円");
             } else {
-                holder.value.setText("　　　　");
+                holder.mValue.setText("　　　　");
             }
 
             //リップルエフェクトを見せてからIntentを飛ばす
-            holder.tenpoRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
+            holder.mTenpoRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
                 @Override
                 public void onComplete(RippleView rippleView) {
                     GocciTimelineActivity activity = (GocciTimelineActivity) getActivity();
@@ -816,32 +817,32 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
             final int currentgoodnum = user.getGochi_num();
             final int currentcommentnum = user.getComment_num();
 
-            holder.likes.setText(String.valueOf(currentgoodnum));
-            holder.comments.setText(String.valueOf(currentcommentnum));
+            holder.mLikesNumber.setText(String.valueOf(currentgoodnum));
+            holder.mCommentsNumber.setText(String.valueOf(currentcommentnum));
 
             if (user.getGochi_flag() == 0) {
-                holder.likes_ripple.setClickable(true);
-                holder.likes_Image.setImageResource(R.drawable.ic_icon_beef);
+                holder.mLikesRipple.setClickable(true);
+                holder.mLikesImage.setImageResource(R.drawable.ic_icon_beef);
 
-                holder.likes_ripple.setOnClickListener(new View.OnClickListener() {
+                holder.mLikesRipple.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         user.setGochi_flag(1);
                         user.setGochi_num(currentgoodnum + 1);
 
-                        holder.likes.setText(String.valueOf((currentgoodnum + 1)));
-                        holder.likes_Image.setImageResource(R.drawable.ic_icon_beef_orange);
-                        holder.likes_ripple.setClickable(false);
+                        holder.mLikesNumber.setText(String.valueOf((currentgoodnum + 1)));
+                        holder.mLikesImage.setImageResource(R.drawable.ic_icon_beef_orange);
+                        holder.mLikesRipple.setClickable(false);
 
                         Util.postGochiAsync(getActivity(), user);
                     }
                 });
             } else {
-                holder.likes_Image.setImageResource(R.drawable.ic_icon_beef_orange);
-                holder.likes_ripple.setClickable(false);
+                holder.mLikesImage.setImageResource(R.drawable.ic_icon_beef_orange);
+                holder.mLikesRipple.setClickable(false);
             }
 
-            holder.comments_ripple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
+            holder.mCommentsRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
                 @Override
                 public void onComplete(RippleView rippleView) {
                     GocciTimelineActivity activity = (GocciTimelineActivity) getActivity();
@@ -849,7 +850,7 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
                 }
             });
 
-            holder.share_ripple.setOnClickListener(new View.OnClickListener() {
+            holder.mShareRipple.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (Application_Gocci.getTransfer(getActivity()) != null) {
