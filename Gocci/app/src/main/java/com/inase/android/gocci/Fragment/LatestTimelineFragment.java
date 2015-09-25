@@ -55,7 +55,6 @@ import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
-import org.apache.http.Header;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -66,6 +65,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import cz.msebera.android.httpclient.Header;
 import io.fabric.sdk.android.Fabric;
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
@@ -709,7 +709,7 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
             holder.mComment.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    CommentActivity.startCommentActivity(Integer.parseInt(user.getPost_id()), getActivity());
+                    CommentActivity.startCommentActivity(Integer.parseInt(user.getPost_date()), getActivity());
                 }
             });
 

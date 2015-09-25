@@ -24,7 +24,7 @@ import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
-import org.apache.http.Header;
+import cz.msebera.android.httpclient.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
 

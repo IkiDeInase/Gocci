@@ -58,7 +58,7 @@ import com.nineoldandroids.animation.ObjectAnimator;
 import com.nineoldandroids.animation.PropertyValuesHolder;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
-import org.apache.http.Header;
+import cz.msebera.android.httpclient.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
 

@@ -45,7 +45,7 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 
-import org.apache.http.Header;
+import cz.msebera.android.httpclient.Header;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

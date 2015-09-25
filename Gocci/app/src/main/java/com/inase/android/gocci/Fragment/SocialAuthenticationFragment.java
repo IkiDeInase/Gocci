@@ -103,7 +103,7 @@ public class SocialAuthenticationFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.view_tutorial5, container, false);
         ButterKnife.bind(this, rootView);
-        
+
         callbackManager = CallbackManager.Factory.create();
 
         mFacebookLoginButton.setReadPermissions("public_profile");

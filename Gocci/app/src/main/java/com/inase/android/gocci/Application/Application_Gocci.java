@@ -31,7 +31,6 @@ import com.squareup.leakcanary.LeakCanary;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 
-import org.apache.http.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -39,6 +38,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import cat.ereza.customactivityoncrash.CustomActivityOnCrash;
+import cz.msebera.android.httpclient.Header;
 import io.fabric.sdk.android.Fabric;
 
 public class Application_Gocci extends Application {

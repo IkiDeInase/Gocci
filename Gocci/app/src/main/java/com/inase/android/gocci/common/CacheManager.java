@@ -7,11 +7,11 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.BinaryHttpResponseHandler;
 import com.loopj.android.http.FileAsyncHttpResponseHandler;
 
-import org.apache.http.Header;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Stack;
+
+import cz.msebera.android.httpclient.Header;
 
 /**
  * キャッシュ管理クラス

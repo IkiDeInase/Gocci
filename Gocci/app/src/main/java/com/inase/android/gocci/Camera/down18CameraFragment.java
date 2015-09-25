@@ -62,7 +62,7 @@ import com.pnikosis.materialishprogress.ProgressWheel;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner;
 
-import org.apache.http.Header;
+import cz.msebera.android.httpclient.Header;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -521,7 +521,7 @@ public class down18CameraFragment extends Fragment implements SensorEventListene
             }
 
             @Override
-            public void onFailure(int statusCode, org.apache.http.Header[] headers, java.lang.Throwable throwable, org.json.JSONObject errorResponse) {
+            public void onFailure(int statusCode, Header[] headers, java.lang.Throwable throwable, org.json.JSONObject errorResponse) {
                 Toast.makeText(context, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
 

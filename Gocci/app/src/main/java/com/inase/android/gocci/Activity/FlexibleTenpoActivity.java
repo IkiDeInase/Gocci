@@ -84,7 +84,7 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
-import org.apache.http.Header;
+import cz.msebera.android.httpclient.Header;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

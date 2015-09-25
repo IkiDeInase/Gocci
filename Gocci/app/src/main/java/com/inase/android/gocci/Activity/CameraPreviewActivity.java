@@ -45,7 +45,7 @@ import com.rengwuxian.materialedittext.MaterialEditText;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 import com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner;
 
-import org.apache.http.Header;
+import cz.msebera.android.httpclient.Header;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

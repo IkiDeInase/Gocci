@@ -55,7 +55,7 @@ import com.twitter.sdk.android.core.TwitterAuthToken;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 
-import org.apache.http.Header;
+import cz.msebera.android.httpclient.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
 
