@@ -27,7 +27,8 @@ public class UIThread implements PostExecutionThread {
      *
      * @param runnable {@link Runnable} to be executed.
      */
-    @Override public void post(Runnable runnable) {
+    @Override
+    public void post(Runnable runnable) {
         handler.post(runnable);
     }
 }

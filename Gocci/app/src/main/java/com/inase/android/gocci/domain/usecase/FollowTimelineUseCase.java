@@ -11,12 +11,15 @@ public interface FollowTimelineUseCase {
 
     interface FollowTimelineUseCaseCallback {
         void onFollowTimelineLoaded(int api, ArrayList<PostData> mPostData);
+
         void onFollowTimelineEmpty();
+
         void onError();
     }
 
     void execute(int api, String url, FollowTimelineUseCaseCallback callback);
 
     void setCallback(FollowTimelineUseCaseCallback callback);
+
     void removeCallback();
 }

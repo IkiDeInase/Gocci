@@ -3,9 +3,7 @@ package com.inase.android.gocci.datasource.api;
 import android.content.Context;
 
 import com.inase.android.gocci.common.SavedData;
-import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.SyncHttpClient;
 
 /**

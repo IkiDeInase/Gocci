@@ -1,14 +1,8 @@
 package com.inase.android.gocci.datasource.repository;
 
-import android.content.Context;
-
 import com.inase.android.gocci.Application.Application_Gocci;
-import com.inase.android.gocci.common.Const;
-import com.inase.android.gocci.common.SavedData;
 import com.inase.android.gocci.data.PostData;
 import com.inase.android.gocci.datasource.api.ApiUtil;
-import com.inase.android.gocci.datasource.api.HttpClientFactory;
-import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
@@ -25,7 +19,8 @@ import cz.msebera.android.httpclient.Header;
 public class PostDataRepositoryImpl implements PostDataRepository {
     private static PostDataRepositoryImpl sPostDataRepository;
 
-    public PostDataRepositoryImpl() {}
+    public PostDataRepositoryImpl() {
+    }
 
     public static PostDataRepositoryImpl getRepository() {
         if (sPostDataRepository == null) {
