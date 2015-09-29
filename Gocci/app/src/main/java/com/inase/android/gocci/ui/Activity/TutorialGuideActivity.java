@@ -1,4 +1,4 @@
-package com.inase.android.gocci.ui.Activity;
+package com.inase.android.gocci.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -22,8 +22,8 @@ import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManag
 import com.andexert.library.RippleView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.inase.android.gocci.ui.Fragment.CreateUserNameFragment;
-import com.inase.android.gocci.ui.Fragment.SocialAuthenticationFragment;
+import com.inase.android.gocci.ui.fragment.CreateUserNameFragment;
+import com.inase.android.gocci.ui.fragment.SocialAuthenticationFragment;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.data.RegistrationIntentService;

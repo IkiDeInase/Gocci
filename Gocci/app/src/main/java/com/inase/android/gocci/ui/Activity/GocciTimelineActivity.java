@@ -1,4 +1,4 @@
-package com.inase.android.gocci.ui.Activity;
+package com.inase.android.gocci.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -29,16 +29,16 @@ import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationExcept
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
 import com.andexert.library.RippleView;
 import com.inase.android.gocci.Base.ToukouPopup;
-import com.inase.android.gocci.Event.BusHolder;
-import com.inase.android.gocci.Event.FilterTimelineEvent;
-import com.inase.android.gocci.Event.NotificationNumberEvent;
-import com.inase.android.gocci.Event.PageChangeVideoStopEvent;
-import com.inase.android.gocci.Event.TimelineMuteChangeEvent;
-import com.inase.android.gocci.ui.Fragment.FollowTimelineFragment;
-import com.inase.android.gocci.ui.Fragment.LatestTimelineFragment;
+import com.inase.android.gocci.event.BusHolder;
+import com.inase.android.gocci.event.FilterTimelineEvent;
+import com.inase.android.gocci.event.NotificationNumberEvent;
+import com.inase.android.gocci.event.PageChangeVideoStopEvent;
+import com.inase.android.gocci.event.TimelineMuteChangeEvent;
+import com.inase.android.gocci.ui.fragment.FollowTimelineFragment;
+import com.inase.android.gocci.ui.fragment.LatestTimelineFragment;
 import com.inase.android.gocci.R;
-import com.inase.android.gocci.ui.View.DrawerProfHeader;
-import com.inase.android.gocci.ui.View.NotificationListView;
+import com.inase.android.gocci.ui.view.DrawerProfHeader;
+import com.inase.android.gocci.ui.view.NotificationListView;
 import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;
 import com.inase.android.gocci.common.Util;

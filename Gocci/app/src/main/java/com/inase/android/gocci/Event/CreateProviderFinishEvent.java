@@ -1,4 +1,4 @@
-package com.inase.android.gocci.Event;
+package com.inase.android.gocci.event;
 
 /**
  * Created by kinagafuji on 15/07/06.

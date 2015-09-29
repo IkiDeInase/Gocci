@@ -1,4 +1,4 @@
-package com.inase.android.gocci.ui.Fragment;
+package com.inase.android.gocci.ui.fragment;
 
 import android.content.Context;
 import android.content.Intent;
@@ -31,11 +31,11 @@ import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.google.android.exoplayer.audio.AudioCapabilities;
 import com.google.android.exoplayer.audio.AudioCapabilitiesReceiver;
 import com.inase.android.gocci.Base.SquareImageView;
-import com.inase.android.gocci.Event.BusHolder;
-import com.inase.android.gocci.Event.FilterTimelineEvent;
-import com.inase.android.gocci.Event.NotificationNumberEvent;
-import com.inase.android.gocci.Event.PageChangeVideoStopEvent;
-import com.inase.android.gocci.Event.TimelineMuteChangeEvent;
+import com.inase.android.gocci.event.BusHolder;
+import com.inase.android.gocci.event.FilterTimelineEvent;
+import com.inase.android.gocci.event.NotificationNumberEvent;
+import com.inase.android.gocci.event.PageChangeVideoStopEvent;
+import com.inase.android.gocci.event.TimelineMuteChangeEvent;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.VideoPlayer.HlsRendererBuilder;
 import com.inase.android.gocci.VideoPlayer.VideoPlayer;
@@ -50,10 +50,10 @@ import com.inase.android.gocci.domain.executor.UIThread;
 import com.inase.android.gocci.domain.usecase.LatestTimelineUseCase;
 import com.inase.android.gocci.domain.usecase.LatestTimelineUseCaseImpl;
 import com.inase.android.gocci.presenter.ShowLatestTimelinePresenter;
-import com.inase.android.gocci.ui.Activity.CommentActivity;
-import com.inase.android.gocci.ui.Activity.FlexibleTenpoActivity;
-import com.inase.android.gocci.ui.Activity.FlexibleUserProfActivity;
-import com.inase.android.gocci.ui.Activity.GocciTimelineActivity;
+import com.inase.android.gocci.ui.activity.CommentActivity;
+import com.inase.android.gocci.ui.activity.FlexibleTenpoActivity;
+import com.inase.android.gocci.ui.activity.FlexibleUserProfActivity;
+import com.inase.android.gocci.ui.activity.GocciTimelineActivity;
 import com.inase.android.gocci.ui.adapter.TimelineAdapter;
 import com.squareup.otto.Subscribe;
 

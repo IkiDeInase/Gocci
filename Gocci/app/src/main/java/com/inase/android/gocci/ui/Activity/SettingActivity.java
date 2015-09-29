@@ -1,4 +1,4 @@
-package com.inase.android.gocci.ui.Activity;
+package com.inase.android.gocci.ui.activity;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -30,13 +30,13 @@ import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
-import com.inase.android.gocci.Application.Application_Gocci;
+import com.inase.android.gocci.application.Application_Gocci;
 import com.inase.android.gocci.Base.GocciTwitterLoginButton;
 import com.inase.android.gocci.BuildConfig;
-import com.inase.android.gocci.Event.BusHolder;
-import com.inase.android.gocci.Event.NotificationNumberEvent;
+import com.inase.android.gocci.event.BusHolder;
+import com.inase.android.gocci.event.NotificationNumberEvent;
 import com.inase.android.gocci.R;
-import com.inase.android.gocci.ui.View.DrawerProfHeader;
+import com.inase.android.gocci.ui.view.DrawerProfHeader;
 import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;
 import com.inase.android.gocci.common.Util;

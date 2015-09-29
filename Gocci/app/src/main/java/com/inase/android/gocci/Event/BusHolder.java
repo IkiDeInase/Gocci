@@ -1,4 +1,4 @@
-package com.inase.android.gocci.Event;
+package com.inase.android.gocci.event;
 
 
 public class BusHolder {

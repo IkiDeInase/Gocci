@@ -1,4 +1,4 @@
-package com.inase.android.gocci.Event;
+package com.inase.android.gocci.event;
 
 import android.os.Handler;
 import android.os.Looper;

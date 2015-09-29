@@ -1,4 +1,4 @@
-package com.inase.android.gocci.ui.Activity;
+package com.inase.android.gocci.ui.activity;
 
 import android.app.Activity;
 import android.content.Context;
@@ -39,15 +39,15 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.andexert.library.RippleView;
-import com.inase.android.gocci.Application.Application_Gocci;
+import com.inase.android.gocci.application.Application_Gocci;
 import com.inase.android.gocci.Base.RoundedTransformation;
 import com.inase.android.gocci.Base.SquareImageView;
 import com.inase.android.gocci.Base.ToukouPopup;
-import com.inase.android.gocci.Event.BusHolder;
-import com.inase.android.gocci.Event.NotificationNumberEvent;
+import com.inase.android.gocci.event.BusHolder;
+import com.inase.android.gocci.event.NotificationNumberEvent;
 import com.inase.android.gocci.R;
-import com.inase.android.gocci.ui.View.DrawerProfHeader;
-import com.inase.android.gocci.ui.View.NotificationListView;
+import com.inase.android.gocci.ui.view.DrawerProfHeader;
+import com.inase.android.gocci.ui.view.NotificationListView;
 import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;
 import com.inase.android.gocci.common.Util;

@@ -10,7 +10,7 @@ import android.widget.Toast;
 
 import com.andexert.library.RippleView;
 import com.cocosw.bottomsheet.BottomSheet;
-import com.inase.android.gocci.Application.Application_Gocci;
+import com.inase.android.gocci.application.Application_Gocci;
 import com.inase.android.gocci.Base.RoundedTransformation;
 import com.inase.android.gocci.Base.SquareImageView;
 import com.inase.android.gocci.R;

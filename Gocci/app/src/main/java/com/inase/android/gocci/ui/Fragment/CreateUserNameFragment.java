@@ -1,4 +1,4 @@
-package com.inase.android.gocci.ui.Fragment;
+package com.inase.android.gocci.ui.fragment;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -16,9 +16,9 @@ import android.widget.Toast;
 
 import com.github.jorgecastilloprz.FABProgressCircle;
 import com.github.jorgecastilloprz.listeners.FABProgressListener;
-import com.inase.android.gocci.ui.Activity.TutorialGuideActivity;
-import com.inase.android.gocci.ui.Activity.WebViewActivity;
-import com.inase.android.gocci.Application.Application_Gocci;
+import com.inase.android.gocci.ui.activity.TutorialGuideActivity;
+import com.inase.android.gocci.ui.activity.WebViewActivity;
+import com.inase.android.gocci.application.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;

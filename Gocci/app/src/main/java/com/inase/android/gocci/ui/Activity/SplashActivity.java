@@ -1,4 +1,4 @@
-package com.inase.android.gocci.ui.Activity;
+package com.inase.android.gocci.ui.activity;
 
 
 import android.content.Context;
@@ -13,10 +13,10 @@ import android.widget.Toast;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
 import com.facebook.AccessToken;
-import com.inase.android.gocci.Application.Application_Gocci;
+import com.inase.android.gocci.application.Application_Gocci;
 import com.inase.android.gocci.BuildConfig;
-import com.inase.android.gocci.Event.BusHolder;
-import com.inase.android.gocci.Event.CreateProviderFinishEvent;
+import com.inase.android.gocci.event.BusHolder;
+import com.inase.android.gocci.event.CreateProviderFinishEvent;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;

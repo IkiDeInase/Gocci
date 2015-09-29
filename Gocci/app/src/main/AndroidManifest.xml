@@ -28,7 +28,7 @@
         android:required="true" />
 
     <application
-        android:name=".Application.Application_Gocci"
+        android:name=".application.Application_Gocci"
         android:allowBackup="true"
         android:icon="@drawable/ic_gocci_icon_circle"
         android:label="@string/app_name"
@@ -76,7 +76,7 @@
             android:enabled="true" />
 
         <activity
-            android:name=".ui.Activity.SplashActivity"
+            android:name=".ui.activity.SplashActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.NoTitleBar">
             <intent-filter>
@@ -96,18 +96,18 @@
             android:value="@string/facebook_app_id" />
 
         <activity
-            android:name=".ui.Activity.FlexibleTenpoActivity"
+            android:name=".ui.activity.FlexibleTenpoActivity"
             android:screenOrientation="portrait"
             android:theme="@style/CustomTheme" />
         <activity
-            android:name=".ui.Activity.FlexibleUserProfActivity"
+            android:name=".ui.activity.FlexibleUserProfActivity"
             android:screenOrientation="portrait"
             android:theme="@style/CustomTheme" />
         <activity
-            android:name=".ui.Activity.TutorialGuideActivity"
+            android:name=".ui.activity.TutorialGuideActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.Activity.ProfMapActivity"
+            android:name=".ui.activity.ProfMapActivity"
             android:screenOrientation="portrait" />
 
         <meta-data
@@ -120,42 +120,42 @@
             android:exported="true" />
 
         <activity
-            android:name=".ui.Activity.GocciTimelineActivity"
+            android:name=".ui.activity.GocciTimelineActivity"
             android:screenOrientation="portrait"
             android:theme="@style/CustomTheme" />
         <activity
-            android:name=".ui.Activity.GocciMyprofActivity"
+            android:name=".ui.activity.GocciMyprofActivity"
             android:screenOrientation="portrait"
             android:theme="@style/CustomTheme" />
         <activity
-            android:name=".ui.Activity.ListActivity"
+            android:name=".ui.activity.ListActivity"
             android:screenOrientation="portrait"
             android:theme="@style/CustomTheme" />
         <activity
-            android:name=".ui.Activity.CameraPreviewActivity"
+            android:name=".ui.activity.CameraPreviewActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.Activity.GocciCameraActivity"
+            android:name=".ui.activity.GocciCameraActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.NoTitleBar" />
         <activity
-            android:name=".ui.Activity.CommentActivity"
+            android:name=".ui.activity.CommentActivity"
             android:screenOrientation="portrait"
             android:theme="@style/CustomTheme" />
         <activity
-            android:name=".ui.Activity.WebViewActivity"
+            android:name=".ui.activity.WebViewActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name="com.soundcloud.android.crop.CropImageActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.Activity.LoginSessionActivity"
+            android:name=".ui.activity.LoginSessionActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.Activity.SettingActivity"
+            android:name=".ui.activity.SettingActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.Activity.AlreadyExistCameraPreview"
+            android:name=".ui.activity.AlreadyExistCameraPreview"
             android:screenOrientation="portrait" />
     </application>
 

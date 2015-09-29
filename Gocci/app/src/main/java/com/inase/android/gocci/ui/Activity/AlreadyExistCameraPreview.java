@@ -1,4 +1,4 @@
-package com.inase.android.gocci.ui.Activity;
+package com.inase.android.gocci.ui.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -33,7 +33,7 @@ import com.facebook.share.Sharer;
 import com.facebook.share.model.ShareVideo;
 import com.facebook.share.model.ShareVideoContent;
 import com.facebook.share.widget.ShareDialog;
-import com.inase.android.gocci.Application.Application_Gocci;
+import com.inase.android.gocci.application.Application_Gocci;
 import com.inase.android.gocci.Base.SquareVideoView;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.common.Const;

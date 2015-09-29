@@ -1,4 +1,4 @@
-package com.inase.android.gocci.ui.Fragment;
+package com.inase.android.gocci.ui.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,11 +18,11 @@ import com.facebook.FacebookException;
 import com.facebook.Profile;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
-import com.inase.android.gocci.ui.Activity.GocciTimelineActivity;
-import com.inase.android.gocci.Application.Application_Gocci;
+import com.inase.android.gocci.ui.activity.GocciTimelineActivity;
+import com.inase.android.gocci.application.Application_Gocci;
 import com.inase.android.gocci.Base.GocciTwitterLoginButton;
-import com.inase.android.gocci.Event.BusHolder;
-import com.inase.android.gocci.Event.SNSMatchFinishEvent;
+import com.inase.android.gocci.event.BusHolder;
+import com.inase.android.gocci.event.SNSMatchFinishEvent;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.common.Const;
 import com.squareup.otto.Subscribe;

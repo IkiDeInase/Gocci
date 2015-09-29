@@ -1,4 +1,4 @@
-package com.inase.android.gocci.Application;
+package com.inase.android.gocci.application;
 
 
 import android.app.Application;
@@ -18,9 +18,9 @@ import com.crashlytics.android.Crashlytics;
 import com.facebook.FacebookSdk;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
-import com.inase.android.gocci.Event.BusHolder;
-import com.inase.android.gocci.Event.CreateProviderFinishEvent;
-import com.inase.android.gocci.Event.SNSMatchFinishEvent;
+import com.inase.android.gocci.event.BusHolder;
+import com.inase.android.gocci.event.CreateProviderFinishEvent;
+import com.inase.android.gocci.event.SNSMatchFinishEvent;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.aws.CustomProvider;
 import com.inase.android.gocci.common.CacheManager;

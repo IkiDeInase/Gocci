@@ -1,4 +1,4 @@
-package com.inase.android.gocci.ui.Activity;
+package com.inase.android.gocci.ui.activity;
 
 import android.app.Activity;
 import android.content.Context;
@@ -27,9 +27,9 @@ import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationExcept
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
 import com.andexert.library.RippleView;
 import com.inase.android.gocci.Base.RoundedTransformation;
-import com.inase.android.gocci.Event.NotificationNumberEvent;
+import com.inase.android.gocci.event.NotificationNumberEvent;
 import com.inase.android.gocci.R;
-import com.inase.android.gocci.ui.View.DrawerProfHeader;
+import com.inase.android.gocci.ui.view.DrawerProfHeader;
 import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;
 import com.inase.android.gocci.common.Util;

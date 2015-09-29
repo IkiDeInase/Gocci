@@ -1,6 +1,6 @@
 package com.inase.android.gocci.datasource.repository;
 
-import com.inase.android.gocci.Application.Application_Gocci;
+import com.inase.android.gocci.application.Application_Gocci;
 import com.inase.android.gocci.data.PostData;
 import com.inase.android.gocci.datasource.api.ApiUtil;
 import com.loopj.android.http.JsonHttpResponseHandler;
