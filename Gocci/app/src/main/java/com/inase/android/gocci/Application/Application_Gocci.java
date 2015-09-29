@@ -27,9 +27,11 @@ import com.inase.android.gocci.common.CacheManager;
 import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.SyncHttpClient;
 import com.squareup.leakcanary.LeakCanary;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,7 +39,6 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-import cat.ereza.customactivityoncrash.CustomActivityOnCrash;
 import cz.msebera.android.httpclient.Header;
 import io.fabric.sdk.android.Fabric;
 
@@ -50,6 +51,8 @@ public class Application_Gocci extends Application {
     private static AmazonS3 s3 = null;
     private static TransferUtility transferUtility = null;
 
+    private static final SyncHttpClient sSsyncHttpClient = new SyncHttpClient();
+
     //経度緯度情報
     private double mLatitude;
     private double mLongitude;
@@ -57,6 +60,10 @@ public class Application_Gocci extends Application {
     public void setFirstLocation(double latitude, double longitude) {
         mLatitude = latitude;
         mLongitude = longitude;
+    }
+
+    public static void getHttpClient(String url, JsonHttpResponseHandler responseHandler) {
+        sSsyncHttpClient.get(url, responseHandler);
     }
 
     public static CognitoCachingCredentialsProvider getLoginProvider() {
@@ -244,11 +251,9 @@ public class Application_Gocci extends Application {
 
         // Example: multiple kits
         Fabric.with(this, new Twitter(authConfig),
-                new Crashlytics());
+                new Crashlytics(), new TweetComposer());
 
         FacebookSdk.sdkInitialize(this);
-
-        CustomActivityOnCrash.install(this);
 
         analytics = GoogleAnalytics.getInstance(this);
         analytics.setLocalDispatchPeriod(1800);
@@ -258,7 +263,7 @@ public class Application_Gocci extends Application {
         tracker.enableAdvertisingIdCollection(true);
         tracker.enableAutoActivityTracking(true);
 
-
+        sSsyncHttpClient.setCookieStore(SavedData.getCookieStore(this));
     }
 
     @Override

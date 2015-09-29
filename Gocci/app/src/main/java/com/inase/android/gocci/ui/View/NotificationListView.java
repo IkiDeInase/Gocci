@@ -1,4 +1,4 @@
-package com.inase.android.gocci.View;
+package com.inase.android.gocci.ui.View;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,8 +14,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.inase.android.gocci.Activity.CommentActivity;
-import com.inase.android.gocci.Activity.FlexibleUserProfActivity;
+import com.inase.android.gocci.ui.Activity.CommentActivity;
+import com.inase.android.gocci.ui.Activity.FlexibleUserProfActivity;
 import com.inase.android.gocci.Base.RoundedTransformation;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.common.Const;

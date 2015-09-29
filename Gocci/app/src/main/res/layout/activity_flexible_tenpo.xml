@@ -22,7 +22,7 @@
             app:expandedTitleTextAppearance="@style/HeaderTitleStyle"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
-            <com.inase.android.gocci.View.CustomKenBurnsView
+            <com.inase.android.gocci.ui.View.CustomKenBurnsView
                 android:id="@+id/background_image"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

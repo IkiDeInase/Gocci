@@ -11,7 +11,7 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
-import com.inase.android.gocci.Activity.SplashActivity;
+import com.inase.android.gocci.ui.Activity.SplashActivity;
 import com.inase.android.gocci.Event.BusHolder;
 import com.inase.android.gocci.Event.NotificationNumberEvent;
 import com.inase.android.gocci.R;

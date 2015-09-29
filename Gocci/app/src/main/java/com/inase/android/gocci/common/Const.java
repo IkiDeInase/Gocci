@@ -12,6 +12,7 @@ import com.inase.android.gocci.Base.SquareImageView;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.VideoPlayer.SquareExoVideoView;
 import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.SyncHttpClient;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -328,6 +329,7 @@ public class Const {
     public static final int CATEGORY_REST_CHEER = 5;
 
     public static final AsyncHttpClient asyncHttpClient = new AsyncHttpClient();
+    public static final SyncHttpClient syncHttpClient = new SyncHttpClient();
 
     public static final class ExoViewHolder extends RecyclerView.ViewHolder {
 

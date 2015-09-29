@@ -1,4 +1,4 @@
-package com.inase.android.gocci.View;
+package com.inase.android.gocci.ui.View;
 
 import android.content.Context;
 import android.util.AttributeSet;
