@@ -76,7 +76,7 @@
             android:enabled="true" />
 
         <activity
-            android:name=".Activity.SplashActivity"
+            android:name=".ui.Activity.SplashActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.NoTitleBar">
             <intent-filter>
@@ -96,18 +96,18 @@
             android:value="@string/facebook_app_id" />
 
         <activity
-            android:name=".Activity.FlexibleTenpoActivity"
+            android:name=".ui.Activity.FlexibleTenpoActivity"
             android:screenOrientation="portrait"
             android:theme="@style/CustomTheme" />
         <activity
-            android:name=".Activity.FlexibleUserProfActivity"
+            android:name=".ui.Activity.FlexibleUserProfActivity"
             android:screenOrientation="portrait"
             android:theme="@style/CustomTheme" />
         <activity
-            android:name=".Activity.TutorialGuideActivity"
+            android:name=".ui.Activity.TutorialGuideActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Activity.ProfMapActivity"
+            android:name=".ui.Activity.ProfMapActivity"
             android:screenOrientation="portrait" />
 
         <meta-data
@@ -120,42 +120,42 @@
             android:exported="true" />
 
         <activity
-            android:name=".Activity.GocciTimelineActivity"
+            android:name=".ui.Activity.GocciTimelineActivity"
             android:screenOrientation="portrait"
             android:theme="@style/CustomTheme" />
         <activity
-            android:name=".Activity.GocciMyprofActivity"
+            android:name=".ui.Activity.GocciMyprofActivity"
             android:screenOrientation="portrait"
             android:theme="@style/CustomTheme" />
         <activity
-            android:name=".Activity.ListActivity"
+            android:name=".ui.Activity.ListActivity"
             android:screenOrientation="portrait"
             android:theme="@style/CustomTheme" />
         <activity
-            android:name=".Activity.CameraPreviewActivity"
+            android:name=".ui.Activity.CameraPreviewActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Activity.GocciCameraActivity"
+            android:name=".ui.Activity.GocciCameraActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.NoTitleBar" />
         <activity
-            android:name=".Activity.CommentActivity"
+            android:name=".ui.Activity.CommentActivity"
             android:screenOrientation="portrait"
             android:theme="@style/CustomTheme" />
         <activity
-            android:name=".Activity.WebViewActivity"
+            android:name=".ui.Activity.WebViewActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name="com.soundcloud.android.crop.CropImageActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Activity.LoginSessionActivity"
+            android:name=".ui.Activity.LoginSessionActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Activity.SettingActivity"
+            android:name=".ui.Activity.SettingActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".Activity.AlreadyExistCameraPreview"
+            android:name=".ui.Activity.AlreadyExistCameraPreview"
             android:screenOrientation="portrait" />
     </application>
 
