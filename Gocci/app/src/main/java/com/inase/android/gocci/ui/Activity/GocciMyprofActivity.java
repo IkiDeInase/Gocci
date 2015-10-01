@@ -19,11 +19,9 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -35,26 +33,32 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
-import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
-import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
-import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
-import com.andexert.library.RippleView;
-import com.inase.android.gocci.application.Application_Gocci;
 import com.inase.android.gocci.Base.RoundedTransformation;
-import com.inase.android.gocci.Base.SquareImageView;
 import com.inase.android.gocci.Base.ToukouPopup;
-import com.inase.android.gocci.event.BusHolder;
-import com.inase.android.gocci.event.NotificationNumberEvent;
 import com.inase.android.gocci.R;
-import com.inase.android.gocci.ui.view.DrawerProfHeader;
-import com.inase.android.gocci.ui.view.NotificationListView;
 import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;
 import com.inase.android.gocci.common.Util;
 import com.inase.android.gocci.data.HeaderData;
 import com.inase.android.gocci.data.PostData;
-import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.TextHttpResponseHandler;
+import com.inase.android.gocci.datasource.api.ApiUtil;
+import com.inase.android.gocci.datasource.repository.MyPageActionRepository;
+import com.inase.android.gocci.datasource.repository.MyPageActionRepositoryImpl;
+import com.inase.android.gocci.datasource.repository.UserDataRepository;
+import com.inase.android.gocci.datasource.repository.UserDataRepositoryImpl;
+import com.inase.android.gocci.domain.executor.UIThread;
+import com.inase.android.gocci.domain.usecase.PostDeleteUseCase;
+import com.inase.android.gocci.domain.usecase.PostDeleteUseCaseImpl;
+import com.inase.android.gocci.domain.usecase.ProfChangeUseCase;
+import com.inase.android.gocci.domain.usecase.ProfChangeUseCaseImpl;
+import com.inase.android.gocci.domain.usecase.ProfUseCase;
+import com.inase.android.gocci.domain.usecase.ProfUseCaseImpl;
+import com.inase.android.gocci.event.BusHolder;
+import com.inase.android.gocci.event.NotificationNumberEvent;
+import com.inase.android.gocci.presenter.ShowMyProfPresenter;
+import com.inase.android.gocci.ui.adapter.MyProfAdapter;
+import com.inase.android.gocci.ui.view.DrawerProfHeader;
+import com.inase.android.gocci.ui.view.NotificationListView;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
@@ -65,13 +69,7 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.soundcloud.android.crop.Crop;
 import com.squareup.otto.Subscribe;
-import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
-
-import cz.msebera.android.httpclient.Header;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -79,7 +77,8 @@ import java.util.ArrayList;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayout.OnOffsetChangedListener {
+public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayout.OnOffsetChangedListener,
+        ShowMyProfPresenter.ShowProfView, MyProfAdapter.MyProfCallback {
 
     private final GocciMyprofActivity self = this;
     @Bind(R.id.tool_bar)
@@ -101,12 +100,10 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
 
     private Drawer result;
 
-    private String mProfUrl;
-
     private StaggeredGridLayoutManager mLayoutManager;
     public static ArrayList<PostData> mProfusers = new ArrayList<>();
-    private HeaderData headerUserData;
-    private MyProfileAdapter mMyProfAdapter;
+    private HeaderData mHeaderUserData;
+    private MyProfAdapter mMyProfAdapter;
 
     private TextView mNotificationNumber;
     private ImageView mEditBackground;
@@ -118,6 +115,8 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
     private boolean isName = false;
 
     private static MobileAnalyticsManager analytics;
+
+    private ShowMyProfPresenter mPresenter;
 
     private static Handler sHandler = new Handler() {
         @Override
@@ -159,6 +158,14 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
             Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
         }
 
+        UserDataRepository userDataRepositoryImpl = UserDataRepositoryImpl.getRepository();
+        MyPageActionRepository myPageActionRepositoryImpl = MyPageActionRepositoryImpl.getRepository();
+        ProfUseCase profUseCaseImpl = ProfUseCaseImpl.getUseCase(userDataRepositoryImpl, UIThread.getInstance());
+        ProfChangeUseCase profChangeUseCaseImpl = ProfChangeUseCaseImpl.getUseCase(myPageActionRepositoryImpl, UIThread.getInstance());
+        PostDeleteUseCase postDeleteUseCaseImpl = PostDeleteUseCaseImpl.getUseCase(myPageActionRepositoryImpl, UIThread.getInstance());
+        mPresenter = new ShowMyProfPresenter(profUseCaseImpl, profChangeUseCaseImpl, postDeleteUseCaseImpl);
+        mPresenter.setProfView(this);
+
         setContentView(R.layout.activity_gocci_myprof);
         ButterKnife.bind(this);
 
@@ -166,14 +173,15 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
         setSupportActionBar(mToolBar);
         getSupportActionBar().setTitle("");
 
-        mProfUrl = Const.getUserpageAPI(Integer.parseInt(SavedData.getServerUserId(this)));
-
         mLayoutManager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
         mProfRecyclerView.setLayoutManager(mLayoutManager);
         mProfRecyclerView.setHasFixedSize(true);
         mProfRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
 
-        getSignupAsync(this);//サインアップとJSON
+        mMyProfAdapter = new MyProfAdapter(this, mHeaderUserData, mProfusers);
+        mMyProfAdapter.setMyProfCallback(this);
+
+        mPresenter.getProfData(ApiUtil.USERPAGE_FIRST, Const.getUserpageAPI(Integer.parseInt(SavedData.getServerUserId(this))));
 
         mSwipeContainer.setColorSchemeResources(R.color.gocci_1, R.color.gocci_2, R.color.gocci_3, R.color.gocci_4);
         mSwipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -181,7 +189,7 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
             public void onRefresh() {
                 mSwipeContainer.setRefreshing(true);
                 if (Util.getConnectedState(GocciMyprofActivity.this) != Util.NetworkStatus.OFF) {
-                    getRefreshAsync(GocciMyprofActivity.this);
+                    mPresenter.getProfData(ApiUtil.USERPAGE_REFRESH, Const.getUserpageAPI(Integer.parseInt(SavedData.getServerUserId(GocciMyprofActivity.this))));
                 } else {
                     Toast.makeText(GocciMyprofActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
                     mSwipeContainer.setRefreshing(false);
@@ -246,8 +254,8 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
             analytics.getSessionClient().resumeSession();
         }
         BusHolder.get().register(self);
-
         mAppBar.addOnOffsetChangedListener(this);
+        mPresenter.resume();
     }
 
     @Override
@@ -258,15 +266,15 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
             analytics.getEventClient().submitEvents();
         }
         BusHolder.get().unregister(self);
-
         mAppBar.removeOnOffsetChangedListener(this);
+        mPresenter.pause();
     }
 
     @Subscribe
     public void subscribe(NotificationNumberEvent event) {
         Snackbar.make(mCoordinatorLayout, event.mMessage, Snackbar.LENGTH_SHORT).show();
         if (event.mMessage.equals(getString(R.string.videoposting_complete))) {
-            getRefreshAsync(GocciMyprofActivity.this);
+            mPresenter.getProfData(ApiUtil.USERPAGE_REFRESH, Const.getUserpageAPI(Integer.parseInt(SavedData.getServerUserId(this))));
         } else {
             mNotificationNumber.setVisibility(View.VISIBLE);
             mNotificationNumber.setText(String.valueOf(event.mNotificationNumber));
@@ -291,13 +299,9 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
         mNotificationNumber = (TextView) view.findViewById(R.id.notification_number);
         int notifications = SavedData.getNotification(this);
 
-        // バッジの数字を更新。0の場合はバッジを表示させない
-        // _unreadHogeCountはAPIなどで通信した結果を格納する想定です
-
         if (notifications == 0) {
             mNotificationNumber.setVisibility(View.INVISIBLE);
         } else {
-
             mNotificationNumber.setText(String.valueOf(notifications));
         }
 
@@ -408,90 +412,6 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
         }
     }
 
-    private void getSignupAsync(final Context context) {
-        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(context, mProfUrl, new TextHttpResponseHandler() {
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                Toast.makeText(context, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                mProfusers.clear();
-                try {
-                    JSONObject jsonObject = new JSONObject(responseString);
-                    JSONObject headerObject = jsonObject.getJSONObject("header");
-                    JSONArray postsObject = jsonObject.getJSONArray("posts");
-
-                    headerUserData = HeaderData.createUserHeaderData(headerObject);
-
-                    for (int i = 0; i < postsObject.length(); i++) {
-                        JSONObject post = postsObject.getJSONObject(i);
-                        mProfusers.add(PostData.createPostData(post));
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                mMyProfAdapter = new MyProfileAdapter(context);
-                mProfRecyclerView.setAdapter(mMyProfAdapter);
-
-                if (mProfusers.isEmpty()) {
-                    mEmptyImage.setVisibility(View.VISIBLE);
-                    mEmptyText.setVisibility(View.VISIBLE);
-                } else {
-                    mEmptyImage.setVisibility(View.GONE);
-                    mEmptyText.setVisibility(View.GONE);
-                }
-            }
-        });
-    }
-
-    private void getRefreshAsync(final Context context) {
-        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(context, mProfUrl, new TextHttpResponseHandler() {
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                Toast.makeText(context, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                mProfusers.clear();
-                try {
-                    JSONObject jsonObject = new JSONObject(responseString);
-                    JSONObject headerObject = jsonObject.getJSONObject("header");
-                    JSONArray postsObject = jsonObject.getJSONArray("posts");
-
-                    headerUserData = HeaderData.createUserHeaderData(headerObject);
-
-                    for (int i = 0; i < postsObject.length(); i++) {
-                        JSONObject post = postsObject.getJSONObject(i);
-                        mProfusers.add(PostData.createPostData(post));
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                mMyProfAdapter.notifyDataSetChanged();
-
-                if (mProfusers.isEmpty()) {
-                    mEmptyImage.setVisibility(View.VISIBLE);
-                    mEmptyText.setVisibility(View.VISIBLE);
-                } else {
-                    mEmptyImage.setVisibility(View.GONE);
-                    mEmptyText.setVisibility(View.GONE);
-                }
-            }
-
-            @Override
-            public void onFinish() {
-                mSwipeContainer.setRefreshing(false);
-            }
-        });
-    }
-
     private void setDeleteDialog(final String post_id, final int position) {
         new MaterialDialog.Builder(this)
                 .content(getString(R.string.check_delete_post))
@@ -503,7 +423,7 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
                     @Override
                     public void onPositive(MaterialDialog dialog) {
                         super.onPositive(dialog);
-                        deleteSignupAsync(GocciMyprofActivity.this, post_id, position);
+                        mPresenter.postDelete(post_id, position);
                     }
 
                     @Override
@@ -513,410 +433,248 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
                 }).show();
     }
 
-    private void deleteSignupAsync(final Context context, final String post_id, final int position) {
-        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(context, Const.getPostDeleteAPI(post_id), new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                try {
-                    String message = response.getString("message");
-
-                    if (message.equals(getString(R.string.delete_post_complete_message))) {
-                        mProfusers.remove(position);
-                        mMyProfAdapter.notifyDataSetChanged();
-
-                        if (mProfusers.isEmpty()) {
-                            mEmptyImage.setVisibility(View.VISIBLE);
-                            mEmptyText.setVisibility(View.VISIBLE);
-                        } else {
-                            mEmptyImage.setVisibility(View.GONE);
-                            mEmptyText.setVisibility(View.GONE);
-                        }
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                //mMaterialDialog.dismiss();
-                Toast.makeText(context, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
     @Override
     public void onOffsetChanged(AppBarLayout appBarLayout, int i) {
         mSwipeContainer.setEnabled(i == 0);
     }
 
-    static class MyProfHeaderViewHolder extends RecyclerView.ViewHolder {
-        @Bind(R.id.myprof_background)
-        ImageView mMyprofBackground;
-        @Bind(R.id.myprof_picture)
-        ImageView mMyprofPicture;
-        @Bind(R.id.location)
-        ImageView mLocationButton;
-        @Bind(R.id.myprof_username)
-        TextView mMyprofUsername;
-        @Bind(R.id.edit_profile)
-        RippleView mEditProfile;
-        @Bind(R.id.follow_num)
-        TextView mFollowNum;
-        @Bind(R.id.follower_num)
-        TextView mFollowerNum;
-        @Bind(R.id.usercheer_num)
-        TextView mUsercheerNum;
-        @Bind(R.id.want_num)
-        TextView mWantNum;
-        @Bind(R.id.follow_ripple)
-        RippleView mFollowRipple;
-        @Bind(R.id.follower_ripple)
-        RippleView mFollowerRipple;
-        @Bind(R.id.usercheer_ripple)
-        RippleView mUsercheerRipple;
-        @Bind(R.id.want_ripple)
-        RippleView mWantRipple;
-
-        public MyProfHeaderViewHolder(View view) {
-            super(view);
-            ButterKnife.bind(this, view);
-        }
+    @Override
+    public void onFollowListClick(int user_id) {
+        ListActivity.startListActivity(user_id, 1, Const.CATEGORY_FOLLOW, GocciMyprofActivity.this);
     }
 
-    static class GridViewHolder extends RecyclerView.ViewHolder {
-        @Bind(R.id.square_image)
-        SquareImageView mSquareImage;
-
-        public GridViewHolder(View view) {
-            super(view);
-            ButterKnife.bind(this, view);
-        }
+    @Override
+    public void onFollowerListClick(int user_id) {
+        ListActivity.startListActivity(user_id, 1, Const.CATEGORY_FOLLOWER, GocciMyprofActivity.this);
     }
 
-    public class MyProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-        public static final int TYPE_PROFILE_HEADER = 0;
-        public static final int TYPE_PHOTO = 1;
-
-        private Context context;
-        private int cellSize;
-
-        private boolean lockedAnimations = false;
-        private long profileHeaderAnimationStartTime = 0;
-        private int lastAnimatedItem = 0;
-
-        public MyProfileAdapter(Context context) {
-            this.context = context;
-            this.cellSize = Util.getScreenWidth(context) / 3;
-        }
-
-        @Override
-        public int getItemViewType(int position) {
-            if (position == 0) {
-                return TYPE_PROFILE_HEADER;
-            } else {
-                return TYPE_PHOTO;
-            }
-        }
-
-        @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            if (TYPE_PROFILE_HEADER == viewType) {
-                final View view = LayoutInflater.from(context).inflate(R.layout.view_header_myprof, parent, false);
-                StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams) view.getLayoutParams();
-                layoutParams.setFullSpan(true);
-                view.setLayoutParams(layoutParams);
-                return new MyProfHeaderViewHolder(view);
-            } else {
-                final View view = LayoutInflater.from(context).inflate(R.layout.cell_grid, parent, false);
-                StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams) view.getLayoutParams();
-                layoutParams.height = cellSize;
-                layoutParams.width = cellSize;
-                layoutParams.setFullSpan(false);
-                view.setLayoutParams(layoutParams);
-                return new GridViewHolder(view);
-            }
-        }
-
-        @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            int viewType = getItemViewType(position);
-            if (TYPE_PROFILE_HEADER == viewType) {
-                bindHeader((MyProfHeaderViewHolder) holder);
-            } else {
-                PostData users = mProfusers.get(position - 1);
-                bindPhoto((GridViewHolder) holder, position, users);
-            }
-        }
-
-        private void bindHeader(final MyProfHeaderViewHolder holder) {
-            final InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            holder.mMyprofUsername.setText(headerUserData.getUsername());
-            Picasso.with(context)
-                    .load(headerUserData.getProfile_img())
-                    .fit()
-                    .placeholder(R.drawable.ic_userpicture)
-                    .transform(new RoundedTransformation())
-                    .into(holder.mMyprofPicture);
-
-            holder.mFollowNum.setText(String.valueOf(headerUserData.getFollow_num()));
-            holder.mFollowerNum.setText(String.valueOf(headerUserData.getFollower_num()));
-            holder.mUsercheerNum.setText(String.valueOf(headerUserData.getCheer_num()));
-            holder.mWantNum.setText(String.valueOf(headerUserData.getWant_num()));
-
-            holder.mFollowRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
-                @Override
-                public void onComplete(RippleView rippleView) {
-                    ListActivity.startListActivity(headerUserData.getUser_id(), 1, Const.CATEGORY_FOLLOW, GocciMyprofActivity.this);
-                }
-            });
-
-            holder.mFollowerRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
-                @Override
-                public void onComplete(RippleView rippleView) {
-                    ListActivity.startListActivity(headerUserData.getUser_id(), 1, Const.CATEGORY_FOLLOWER, GocciMyprofActivity.this);
-                }
-            });
-
-            holder.mUsercheerRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
-                @Override
-                public void onComplete(RippleView rippleView) {
-                    ListActivity.startListActivity(headerUserData.getUser_id(), 1, Const.CATEGORY_USER_CHEER, GocciMyprofActivity.this);
-                }
-            });
-
-            holder.mWantRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
-                @Override
-                public void onComplete(RippleView rippleView) {
-                    ListActivity.startListActivity(headerUserData.getUser_id(), 1, Const.CATEGORY_WANT, GocciMyprofActivity.this);
-                }
-            });
-
-            holder.mEditProfile.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    final MaterialDialog dialog = new MaterialDialog.Builder(context)
-                            .title(getString(R.string.change_profile_dialog_title))
-                            .customView(R.layout.view_header_myprof_edit, false)
-                            .positiveText(getString(R.string.change_profile_dialog_yeah))
-                            .positiveColorRes(R.color.gocci_header)
-                            .callback(new MaterialDialog.ButtonCallback() {
-                                @Override
-                                public void onPositive(MaterialDialog dialog) {
-                                    super.onPositive(dialog);
-                                    mProgressWheel.setVisibility(View.VISIBLE);
-
-                                    String updateUrl = null;
-                                    String post_date = null;
-                                    File update_file = null;
-
-                                    if (isName && isPicture) {
-                                        //どっちも変更した
-                                        post_date = SavedData.getServerUserId(context) + "_" + Util.getDateTimeString();
-                                        update_file = Util.getLocalBitmapFile(mEditPicture, post_date);
-                                        updateUrl = Const.getPostUpdateProfileAPI(Const.FLAG_CHANGE_BOTH,
-                                                mEditUsername.getText().toString(),
-                                                post_date);
-                                        isName = false;
-                                        isPicture = false;
-                                    } else if (isPicture) {
-                                        //写真だけ変更
-                                        post_date = SavedData.getServerUserId(context) + "_" + Util.getDateTimeString();
-                                        update_file = Util.getLocalBitmapFile(mEditPicture, post_date);
-                                        updateUrl = Const.getPostUpdateProfileAPI(Const.FLAG_CHANGE_PICTURE,
-                                                null, post_date);
-                                        isPicture = false;
-                                    } else if (isName) {
-                                        //名前だけ
-                                        updateUrl = Const.getPostUpdateProfileAPI(Const.FLAG_CHANGE_NAME,
-                                                mEditUsername.getText().toString(), null);
-                                        isName = false;
-                                    }
-
-                                    if (updateUrl != null) {
-                                        postChangeProfileAsync(context, post_date, update_file, updateUrl);
-                                    }
-                                }
-                            })
-                            .build();
-
-                    mEditPicture = (ImageView) dialog.getCustomView().findViewById(R.id.myprof_picture);
-                    mEditUsername = (TextView) dialog.getCustomView().findViewById(R.id.myprof_username);
-                    mEditUsernameEdit = (EditText) dialog.getCustomView().findViewById(R.id.myprof_username_edit);
-
-                    Picasso.with(context)
-                            .load(SavedData.getServerPicture(context))
-                            .fit()
-                            .placeholder(R.drawable.ic_userpicture)
-                            .transform(new RoundedTransformation())
-                            .into(mEditPicture);
-
-                    mEditUsername.setText(SavedData.getServerName(context));
-                    mEditUsernameEdit.setHint(SavedData.getServerName(context));
-
-                    mEditPicture.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Crop.pickImage(GocciMyprofActivity.this);
-                        }
-                    });
-                    mEditUsername.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            mEditUsername.setVisibility(View.GONE);
-                            mEditUsernameEdit.setVisibility(View.VISIBLE);
-                            dialog.getActionButton(DialogAction.POSITIVE).setEnabled(false);
-                            mEditUsernameEdit.setOnKeyListener(new View.OnKeyListener() {
-                                @Override
-                                public boolean onKey(View v, int keyCode, KeyEvent event) {
-                                    if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                                        if (mEditUsernameEdit.getText().toString().isEmpty()) {
-                                            Toast.makeText(context, getString(R.string.cheat_input_username), Toast.LENGTH_SHORT).show();
-                                            return false;
-                                        } else {
-                                            inputMethodManager.hideSoftInputFromWindow(mEditUsernameEdit.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
-                                            mEditUsername.setText(mEditUsernameEdit.getText().toString());
-                                            mEditUsername.setVisibility(View.VISIBLE);
-                                            mEditUsernameEdit.setVisibility(View.GONE);
-                                            dialog.getActionButton(DialogAction.POSITIVE).setEnabled(true);
-                                            isName = true;
-                                            return true;
-                                        }
-
-                                    }
-                                    return false;
-                                }
-                            });
-                        }
-                    });
-
-                    dialog.show();
-                }
-            });
-
-            holder.mLocationButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ProfMapActivity.startProfMapActivity(mProfusers, GocciMyprofActivity.this);
-                }
-            });
-        }
-
-        private void bindPhoto(final GridViewHolder holder, final int position, final PostData users) {
-            Picasso.with(context)
-                    .load(users.getThumbnail())
-                    .resize(cellSize, cellSize)
-                    .centerCrop()
-                    .into(holder.mSquareImage, new Callback() {
-                        @Override
-                        public void onSuccess() {
-                            //animatePhoto(holder);
-                        }
-
-                        @Override
-                        public void onError() {
-
-                        }
-                    });
-
-            holder.mSquareImage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    CommentActivity.startCommentActivity(Integer.parseInt(users.getPost_id()), GocciMyprofActivity.this);
-                }
-            });
-
-            holder.mSquareImage.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    setDeleteDialog(users.getPost_id(), position - 1);
-                    return false;
-                }
-            });
-            if (lastAnimatedItem < position) lastAnimatedItem = position;
-        }
-
-        @Override
-        public int getItemCount() {
-            return mProfusers.size() + 1;
-        }
-
+    @Override
+    public void onUserCheerClick(int user_id) {
+        ListActivity.startListActivity(user_id, 1, Const.CATEGORY_USER_CHEER, GocciMyprofActivity.this);
     }
 
-    private void postChangeProfileAsync(final Context context, final String post_date, final File file, final String url) {
-        if (file != null || post_date != null) {
-            TransferObserver transferObserver = Application_Gocci.getTransfer(context).upload(Const.POST_PHOTO_BUCKET_NAME, post_date + ".png", file);
-            transferObserver.setTransferListener(new TransferListener() {
-                @Override
-                public void onStateChanged(int id, TransferState state) {
-                    if (state == TransferState.COMPLETED) {
-                        postChangeProf(context, url);
+    @Override
+    public void onWantClick(int user_id) {
+        ListActivity.startListActivity(user_id, 1, Const.CATEGORY_WANT, GocciMyprofActivity.this);
+    }
+
+    @Override
+    public void onEditProfileClick() {
+        final MaterialDialog dialog = new MaterialDialog.Builder(this)
+                .title(getString(R.string.change_profile_dialog_title))
+                .customView(R.layout.view_header_myprof_edit, false)
+                .positiveText(getString(R.string.change_profile_dialog_yeah))
+                .positiveColorRes(R.color.gocci_header)
+                .callback(new MaterialDialog.ButtonCallback() {
+                    @Override
+                    public void onPositive(MaterialDialog dialog) {
+                        super.onPositive(dialog);
+                        mProgressWheel.setVisibility(View.VISIBLE);
+
+                        String updateUrl = null;
+                        String post_date = null;
+                        File update_file = null;
+
+                        if (isName && isPicture) {
+                            //どっちも変更した
+                            post_date = SavedData.getServerUserId(GocciMyprofActivity.this) + "_" + Util.getDateTimeString();
+                            update_file = Util.getLocalBitmapFile(mEditPicture, post_date);
+                            updateUrl = Const.getPostUpdateProfileAPI(Const.FLAG_CHANGE_BOTH,
+                                    mEditUsername.getText().toString(),
+                                    post_date);
+                            isName = false;
+                            isPicture = false;
+                        } else if (isPicture) {
+                            //写真だけ変更
+                            post_date = SavedData.getServerUserId(GocciMyprofActivity.this) + "_" + Util.getDateTimeString();
+                            update_file = Util.getLocalBitmapFile(mEditPicture, post_date);
+                            updateUrl = Const.getPostUpdateProfileAPI(Const.FLAG_CHANGE_PICTURE,
+                                    null, post_date);
+                            isPicture = false;
+                        } else if (isName) {
+                            //名前だけ
+                            updateUrl = Const.getPostUpdateProfileAPI(Const.FLAG_CHANGE_NAME,
+                                    mEditUsername.getText().toString(), null);
+                            isName = false;
+                        }
+
+                        if (updateUrl != null) {
+                            mPresenter.profChange(post_date, update_file, updateUrl);
+                        }
                     }
-                }
+                })
+                .build();
 
-                @Override
-                public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+        mEditPicture = (ImageView) dialog.getCustomView().findViewById(R.id.myprof_picture);
+        mEditUsername = (TextView) dialog.getCustomView().findViewById(R.id.myprof_username);
+        mEditUsernameEdit = (EditText) dialog.getCustomView().findViewById(R.id.myprof_username_edit);
 
-                }
+        Picasso.with(GocciMyprofActivity.this)
+                .load(SavedData.getServerPicture(GocciMyprofActivity.this))
+                .fit()
+                .placeholder(R.drawable.ic_userpicture)
+                .transform(new RoundedTransformation())
+                .into(mEditPicture);
 
-                @Override
-                public void onError(int id, Exception ex) {
+        mEditUsername.setText(SavedData.getServerName(GocciMyprofActivity.this));
+        mEditUsernameEdit.setHint(SavedData.getServerName(GocciMyprofActivity.this));
 
-                }
-            });
-        } else {
-            postChangeProf(context, url);
-        }
-    }
-
-    private void postChangeProf(final Context context, String url) {
-        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(context, url, new JsonHttpResponseHandler() {
-
+        mEditPicture.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Toast.makeText(context, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                try {
-                    String message = response.getString("message");
-
-                    if (message.equals(getString(R.string.change_profile_dialog_complete))) {
-                        String name = response.getString("username");
-                        String picture = response.getString("profile_img");
-
-                        if (name.equals(getString(R.string.change_profile_dialog_error_username))) {
-                            SavedData.changeProfile(context, SavedData.getServerName(context), picture);
-                            Toast.makeText(context, getString(R.string.change_profile_dialog_error_username_message), Toast.LENGTH_SHORT).show();
-                        } else {
-                            SavedData.changeProfile(context, name, picture);
-                        }
-
-                        Intent intent = getIntent();
-                        overridePendingTransition(0, 0);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        finish();
-
-                        overridePendingTransition(0, 0);
-                        startActivity(intent);
-
-                    } else {
-                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFinish() {
-                mProgressWheel.setVisibility(View.GONE);
+            public void onClick(View v) {
+                Crop.pickImage(GocciMyprofActivity.this);
             }
         });
+        mEditUsername.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mEditUsername.setVisibility(View.GONE);
+                mEditUsernameEdit.setVisibility(View.VISIBLE);
+                dialog.getActionButton(DialogAction.POSITIVE).setEnabled(false);
+                mEditUsernameEdit.setOnKeyListener(new View.OnKeyListener() {
+                    @Override
+                    public boolean onKey(View v, int keyCode, KeyEvent event) {
+                        if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                            if (mEditUsernameEdit.getText().toString().isEmpty()) {
+                                Toast.makeText(GocciMyprofActivity.this, getString(R.string.cheat_input_username), Toast.LENGTH_SHORT).show();
+                                return false;
+                            } else {
+                                final InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                                inputMethodManager.hideSoftInputFromWindow(mEditUsernameEdit.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
+                                mEditUsername.setText(mEditUsernameEdit.getText().toString());
+                                mEditUsername.setVisibility(View.VISIBLE);
+                                mEditUsernameEdit.setVisibility(View.GONE);
+                                dialog.getActionButton(DialogAction.POSITIVE).setEnabled(true);
+                                isName = true;
+                                return true;
+                            }
+
+                        }
+                        return false;
+                    }
+                });
+            }
+        });
+
+        dialog.show();
+    }
+
+    @Override
+    public void onImageClick(int post_id) {
+        CommentActivity.startCommentActivity(post_id, GocciMyprofActivity.this);
+    }
+
+    @Override
+    public void onImageLongClick(String post_id, int position) {
+        setDeleteDialog(post_id, position);
+    }
+
+    @Override
+    public void onLocationClick(ArrayList<PostData> postData) {
+        ProfMapActivity.startProfMapActivity(postData, GocciMyprofActivity.this);
+    }
+
+    @Override
+    public void showLoading() {
+        mSwipeContainer.setRefreshing(true);
+    }
+
+    @Override
+    public void hideLoading() {
+        mSwipeContainer.setRefreshing(false);
+    }
+
+    @Override
+    public void showNoResultCase(int api, HeaderData userData) {
+        mHeaderUserData = userData;
+        if (api == ApiUtil.USERPAGE_FIRST) {
+            mMyProfAdapter.setHeaderData(mHeaderUserData);
+            mProfRecyclerView.setAdapter(mMyProfAdapter);
+        } else if (api == ApiUtil.USERPAGE_REFRESH) {
+            mProfusers.clear();
+            mMyProfAdapter.setData(mHeaderUserData, mProfusers);
+        }
+        mEmptyImage.setVisibility(View.VISIBLE);
+        mEmptyText.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideNoResultCase() {
+        mEmptyImage.setVisibility(View.INVISIBLE);
+        mEmptyText.setVisibility(View.INVISIBLE);
+    }
+
+    @Override
+    public void showError() {
+        Toast.makeText(this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void hideError() {
+
+    }
+
+    @Override
+    public void showResult(int api, HeaderData userData, ArrayList<PostData> postData) {
+        mHeaderUserData = userData;
+        mProfusers.clear();
+        mProfusers.addAll(postData);
+        switch (api) {
+            case ApiUtil.USERPAGE_FIRST:
+                mMyProfAdapter.setHeaderData(mHeaderUserData);
+                mProfRecyclerView.setAdapter(mMyProfAdapter);
+                break;
+            case ApiUtil.USERPAGE_REFRESH:
+                mMyProfAdapter.setData(mHeaderUserData, mProfusers);
+                break;
+        }
+    }
+
+    @Override
+    public void profChanged(String userName, String profile_img) {
+        mProgressWheel.setVisibility(View.GONE);
+
+        if (userName.equals(getString(R.string.change_profile_dialog_error_username))) {
+            SavedData.changeProfile(this, SavedData.getServerName(this), profile_img);
+            Toast.makeText(this, getString(R.string.change_profile_dialog_error_username_message), Toast.LENGTH_SHORT).show();
+        } else {
+            SavedData.changeProfile(this, userName, profile_img);
+        }
+
+        Intent intent = getIntent();
+        overridePendingTransition(0, 0);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        finish();
+
+        overridePendingTransition(0, 0);
+        startActivity(intent);
+    }
+
+    @Override
+    public void profChangeFailed(String message) {
+        mProgressWheel.setVisibility(View.GONE);
+
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void postDeleted(int position) {
+        mProfusers.remove(position);
+        mMyProfAdapter.notifyDataSetChanged();
+
+        if (mProfusers.isEmpty()) {
+            mEmptyImage.setVisibility(View.VISIBLE);
+            mEmptyText.setVisibility(View.VISIBLE);
+        } else {
+            mEmptyImage.setVisibility(View.GONE);
+            mEmptyText.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void postDeleteFailed() {
+        Toast.makeText(this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
     }
 }

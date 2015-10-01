@@ -9,7 +9,7 @@ import java.util.ArrayList;
 /**
  * Created by kinagafuji on 15/09/25.
  */
-public class LatestTimelineUseCaseImpl extends UseCase<Integer, String> implements LatestTimelineUseCase, PostDataRepository.PostDataRepositoryCallback {
+public class LatestTimelineUseCaseImpl extends UseCase2<Integer, String> implements LatestTimelineUseCase, PostDataRepository.PostDataRepositoryCallback {
     private static LatestTimelineUseCaseImpl sUseCase;
     private final PostDataRepository mPostDataRepository;
     private PostExecutionThread mPostExecutionThread;

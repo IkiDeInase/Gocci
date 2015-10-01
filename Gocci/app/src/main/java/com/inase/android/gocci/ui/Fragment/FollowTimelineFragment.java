@@ -30,6 +30,7 @@ import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCal
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.google.android.exoplayer.audio.AudioCapabilities;
 import com.google.android.exoplayer.audio.AudioCapabilitiesReceiver;
+import com.google.android.exoplayer.drm.UnsupportedDrmException;
 import com.inase.android.gocci.Base.SquareImageView;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.FilterTimelineEvent;
@@ -109,7 +110,6 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
     private boolean playerNeedsPrepare;
 
     private AudioCapabilitiesReceiver audioCapabilitiesReceiver;
-    private AudioCapabilities audioCapabilities;
 
     private ShowFollowTimelinePresenter mPresenter;
 
@@ -189,6 +189,7 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
         });
 
         audioCapabilitiesReceiver = new AudioCapabilitiesReceiver(getActivity().getApplicationContext(), this);
+        audioCapabilitiesReceiver.register();
 
         PostDataRepository postDataRepositoryImpl = PostDataRepositoryImpl.getRepository();
         FollowTimelineUseCase followtTimelineUseCaseImpl = FollowTimelineUseCaseImpl.getUseCase(postDataRepositoryImpl, UIThread.getInstance());
@@ -251,8 +252,17 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
     public void onResume() {
         super.onResume();
         BusHolder.get().register(this);
-        audioCapabilitiesReceiver.register();
         appBarLayout.addOnOffsetChangedListener(this);
+        if (player == null) {
+            if (mPlayingPostId != null && GocciTimelineActivity.mShowPosition == 1) {
+                releasePlayer();
+                if (Util.isMovieAutoPlay(getActivity())) {
+                    preparePlayer(getPlayingViewHolder(), getVideoPath());
+                }
+            }
+        } else {
+            player.setBackgrounded(false);
+        }
         mPresenter.resume();
     }
 
@@ -264,7 +274,6 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
             player.blockingClearSurface();
         }
         releasePlayer();
-        audioCapabilitiesReceiver.unregister();
         appBarLayout.removeOnOffsetChangedListener(this);
         mPresenter.pause();
     }
@@ -277,8 +286,9 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
 
     @Override
     public void onDestroy() {
-        releasePlayer();
         super.onDestroy();
+        audioCapabilitiesReceiver.unregister();
+        releasePlayer();
     }
 
     @Subscribe
@@ -329,24 +339,22 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
     @Subscribe
     public void subscribe(TimelineMuteChangeEvent event) {
         if (player != null) {
-            player.selectTrack(VideoPlayer.TYPE_AUDIO, event.mute);
+            player.setSelectedTrack(VideoPlayer.TYPE_AUDIO, event.mute);
         }
     }
 
     @Override
     public void onAudioCapabilitiesChanged(AudioCapabilities audioCapabilities) {
-        boolean audioCapabilitiesChanged = !audioCapabilities.equals(this.audioCapabilities);
-        if (player == null || audioCapabilitiesChanged) {
-            if (mPlayingPostId != null && GocciTimelineActivity.mShowPosition == 1) {
-                this.audioCapabilities = audioCapabilities;
-                releasePlayer();
-                if (Util.isMovieAutoPlay(getActivity())) {
-                    preparePlayer(getPlayingViewHolder(), getVideoPath());
-                }
-            }
-        } else {
-            player.setBackgrounded(false);
+        if (player == null) {
+            return;
         }
+        if (mPlayingPostId != null && GocciTimelineActivity.mShowPosition == 1) {
+            releasePlayer();
+            if (Util.isMovieAutoPlay(getActivity())) {
+                preparePlayer(getPlayingViewHolder(), getVideoPath());
+            }
+        }
+        player.setBackgrounded(false);
     }
 
     private String getVideoPath() {
@@ -360,8 +368,7 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
 
     private void preparePlayer(final Const.ExoViewHolder viewHolder, String path) {
         if (player == null) {
-            player = new VideoPlayer(new HlsRendererBuilder(getActivity(), com.google.android.exoplayer.util.Util.getUserAgent(getActivity(), "Gocci"), path,
-                    audioCapabilities));
+            player = new VideoPlayer(new HlsRendererBuilder(getActivity(), com.google.android.exoplayer.util.Util.getUserAgent(getActivity(), "Gocci"), path));
             player.addListener(new VideoPlayer.Listener() {
                 @Override
                 public void onStateChanged(boolean playWhenReady, int playbackState) {
@@ -384,11 +391,19 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
 
                 @Override
                 public void onError(Exception e) {
+                    if (e instanceof UnsupportedDrmException) {
+                        // Special case DRM failures.
+                        UnsupportedDrmException unsupportedDrmException = (UnsupportedDrmException) e;
+                        int stringId = com.google.android.exoplayer.util.Util.SDK_INT < 18 ? R.string.drm_error_not_supported
+                                : unsupportedDrmException.reason == UnsupportedDrmException.REASON_UNSUPPORTED_SCHEME
+                                ? R.string.drm_error_unsupported_scheme : R.string.drm_error_unknown;
+                        Toast.makeText(getActivity().getApplicationContext(), stringId, Toast.LENGTH_LONG).show();
+                    }
                     playerNeedsPrepare = true;
                 }
 
                 @Override
-                public void onVideoSizeChanged(int width, int height, float pixelWidthAspectRatio) {
+                public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees, float pixelWidthAspectRatio) {
                     viewHolder.mVideoThumbnail.setVisibility(View.GONE);
                     viewHolder.mVideoFrame.setAspectRatio(
                             height == 0 ? 1 : (width * pixelWidthAspectRatio) / height);
@@ -405,9 +420,9 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
         player.setPlayWhenReady(true);
 
         if (SavedData.getSettingMute(getActivity()) == -1) {
-            player.selectTrack(VideoPlayer.TYPE_AUDIO, -1);
+            player.setSelectedTrack(VideoPlayer.TYPE_AUDIO, -1);
         } else {
-            player.selectTrack(VideoPlayer.TYPE_AUDIO, 0);
+            player.setSelectedTrack(VideoPlayer.TYPE_AUDIO, 0);
         }
     }
 

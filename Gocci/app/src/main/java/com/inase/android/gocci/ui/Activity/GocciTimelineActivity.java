@@ -420,16 +420,4 @@ public class GocciTimelineActivity extends AppCompatActivity {
             overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
         }
     }
-
-    public void onUserClicked(int user_id, String username) {
-        FlexibleUserProfActivity.startUserProfActivity(user_id, username, GocciTimelineActivity.this);
-    }
-
-    public void onTenpoClicked(int rest_id, String restname) {
-        FlexibleTenpoActivity.startTenpoActivity(rest_id, restname, GocciTimelineActivity.this);
-    }
-
-    public void onCommentClicked(int post_id) {
-        CommentActivity.startCommentActivity(post_id, GocciTimelineActivity.this);
-    }
 }

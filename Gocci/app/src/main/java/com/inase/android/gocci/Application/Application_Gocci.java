@@ -28,7 +28,7 @@ import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.SyncHttpClient;
-import com.squareup.leakcanary.LeakCanary;
+import com.loopj.android.http.TextHttpResponseHandler;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
@@ -46,6 +46,8 @@ public class Application_Gocci extends Application {
 
     private final String TAG = "Gocci";
 
+    private static Application_Gocci sInstance;
+
     private static CognitoCachingCredentialsProvider credentialsProvider = null;
     private static CustomProvider customProvider = null;
     private static AmazonS3 s3 = null;
@@ -62,7 +64,11 @@ public class Application_Gocci extends Application {
         mLongitude = longitude;
     }
 
-    public static void getHttpClient(String url, JsonHttpResponseHandler responseHandler) {
+    public static void getJsonHttpClient(String url, JsonHttpResponseHandler responseHandler) {
+        sSsyncHttpClient.get(url, responseHandler);
+    }
+
+    public static void getTextHttpClient(String url, TextHttpResponseHandler responseHandler) {
         sSsyncHttpClient.get(url, responseHandler);
     }
 
@@ -238,11 +244,15 @@ public class Application_Gocci extends Application {
         MultiDex.install(this);
     }
 
+    public static synchronized Application_Gocci getInstance() {
+        return sInstance;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
         Log.v(TAG, "Gocci起動");
-        LeakCanary.install(this);
+        sInstance = this;
         CacheManager.getInstance(getApplicationContext()).clearCache();
         //Example: single kit
         TwitterAuthConfig authConfig =

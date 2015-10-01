@@ -49,6 +49,7 @@ import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCal
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.google.android.exoplayer.audio.AudioCapabilities;
 import com.google.android.exoplayer.audio.AudioCapabilitiesReceiver;
+import com.google.android.exoplayer.drm.UnsupportedDrmException;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -163,7 +164,6 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
     private long playerPosition;
 
     private AudioCapabilitiesReceiver audioCapabilitiesReceiver;
-    private AudioCapabilities audioCapabilities;
 
     private static MobileAnalyticsManager analytics;
 
@@ -225,6 +225,8 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
         }
 
         audioCapabilitiesReceiver = new AudioCapabilitiesReceiver(getApplicationContext(), this);
+        audioCapabilitiesReceiver.register();
+
         // 画面回転に対応するならonResumeが安全かも
         mDisplaySize = new Point();
         getWindowManager().getDefaultDisplay().getSize(mDisplaySize);
@@ -318,7 +320,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
                                         result.updateName(5, new StringHolder(getString(R.string.setting_support_unmute)));
 
                                         if (player != null) {
-                                            player.selectTrack(VideoPlayer.TYPE_AUDIO, -1);
+                                            player.setSelectedTrack(VideoPlayer.TYPE_AUDIO, -1);
                                         }
                                         break;
                                     case -1:
@@ -326,7 +328,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
                                         result.updateName(5, new StringHolder(getString(R.string.setting_support_mute)));
 
                                         if (player != null) {
-                                            player.selectTrack(VideoPlayer.TYPE_AUDIO, 0);
+                                            player.setSelectedTrack(VideoPlayer.TYPE_AUDIO, 0);
                                         }
                                         break;
                                 }
@@ -419,8 +421,9 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
         if (mapView != null) {
             mapView.onDestroy();
         }
-        releasePlayer();
         super.onDestroy();
+        audioCapabilitiesReceiver.unregister();
+        releasePlayer();
 
     }
 
@@ -448,7 +451,6 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
             player.blockingClearSurface();
         }
         releasePlayer();
-        audioCapabilitiesReceiver.unregister();
 
         mAppBar.removeOnOffsetChangedListener(this);
 
@@ -465,9 +467,17 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
             mapView.onResume();
         }
 
-        audioCapabilitiesReceiver.register();
+        if (player == null) {
+            if (mPlayingPostId != null || !isExist) {
+                releasePlayer();
+                if (Util.isMovieAutoPlay(this)) {
+                    preparePlayer(getPlayingViewHolder(), getVideoPath());
+                }
+            }
+        } else {
+            player.setBackgrounded(false);
+        }
         mAppBar.addOnOffsetChangedListener(this);
-
     }
 
     @Override
@@ -479,18 +489,16 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
 
     @Override
     public void onAudioCapabilitiesChanged(AudioCapabilities audioCapabilities) {
-        boolean audioCapabilitiesChanged = !audioCapabilities.equals(this.audioCapabilities);
-        if (player == null || audioCapabilitiesChanged) {
-            if (mPlayingPostId != null && isSee) {
-                this.audioCapabilities = audioCapabilities;
-                releasePlayer();
-                if (Util.isMovieAutoPlay(this)) {
-                    preparePlayer(getPlayingViewHolder(), getVideoPath());
-                }
-            }
-        } else {
-            player.setBackgrounded(false);
+        if (player == null) {
+            return;
         }
+        if (mPlayingPostId != null || !isExist) {
+            releasePlayer();
+            if (Util.isMovieAutoPlay(this)) {
+                preparePlayer(getPlayingViewHolder(), getVideoPath());
+            }
+        }
+        player.setBackgrounded(false);
     }
 
     @Override
@@ -631,8 +639,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
 
     private void preparePlayer(final Const.ExoViewHolder viewHolder, String path) {
         if (player == null) {
-            player = new VideoPlayer(new HlsRendererBuilder(this, com.google.android.exoplayer.util.Util.getUserAgent(this, "Gocci"), path,
-                    audioCapabilities));
+            player = new VideoPlayer(new HlsRendererBuilder(this, com.google.android.exoplayer.util.Util.getUserAgent(this, "Gocci"), path));
             player.addListener(new VideoPlayer.Listener() {
                 @Override
                 public void onStateChanged(boolean playWhenReady, int playbackState) {
@@ -655,11 +662,19 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
 
                 @Override
                 public void onError(Exception e) {
+                    if (e instanceof UnsupportedDrmException) {
+                        // Special case DRM failures.
+                        UnsupportedDrmException unsupportedDrmException = (UnsupportedDrmException) e;
+                        int stringId = com.google.android.exoplayer.util.Util.SDK_INT < 18 ? R.string.drm_error_not_supported
+                                : unsupportedDrmException.reason == UnsupportedDrmException.REASON_UNSUPPORTED_SCHEME
+                                ? R.string.drm_error_unsupported_scheme : R.string.drm_error_unknown;
+                        Toast.makeText(getApplicationContext(), stringId, Toast.LENGTH_LONG).show();
+                    }
                     playerNeedsPrepare = true;
                 }
 
                 @Override
-                public void onVideoSizeChanged(int width, int height, float pixelWidthAspectRatio) {
+                public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees, float pixelWidthAspectRatio) {
                     viewHolder.mVideoThumbnail.setVisibility(View.GONE);
                     viewHolder.mVideoFrame.setAspectRatio(
                             height == 0 ? 1 : (width * pixelWidthAspectRatio) / height);
@@ -676,9 +691,9 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
         player.setPlayWhenReady(true);
 
         if (SavedData.getSettingMute(this) == -1) {
-            player.selectTrack(VideoPlayer.TYPE_AUDIO, -1);
+            player.setSelectedTrack(VideoPlayer.TYPE_AUDIO, -1);
         } else {
-            player.selectTrack(VideoPlayer.TYPE_AUDIO, 0);
+            player.setSelectedTrack(VideoPlayer.TYPE_AUDIO, 0);
         }
     }
 

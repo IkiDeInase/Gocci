@@ -30,27 +30,24 @@ import java.io.IOException;
  */
 public class HlsRendererBuilder implements VideoPlayer.RendererBuilder {
 
-    private static final int BUFFER_SEGMENT_SIZE = 256 * 1024;
-    private static final int BUFFER_SEGMENTS = 64;
+    private static final int BUFFER_SEGMENT_SIZE = 64 * 1024;
+    private static final int BUFFER_SEGMENTS = 256;
 
     private final Context context;
     private final String userAgent;
     private final String url;
-    private final AudioCapabilities audioCapabilities;
 
     private AsyncRendererBuilder currentAsyncBuilder;
 
-    public HlsRendererBuilder(Context context, String userAgent, String url, AudioCapabilities audioCapabilities) {
+    public HlsRendererBuilder(Context context, String userAgent, String url) {
         this.context = context;
         this.userAgent = userAgent;
         this.url = url;
-        this.audioCapabilities = audioCapabilities;
     }
 
     @Override
     public void buildRenderers(VideoPlayer player) {
-        currentAsyncBuilder = new AsyncRendererBuilder(context, userAgent, url, audioCapabilities,
-                player);
+        currentAsyncBuilder = new AsyncRendererBuilder(context, userAgent, url, player);
         currentAsyncBuilder.init();
     }
 
@@ -67,18 +64,15 @@ public class HlsRendererBuilder implements VideoPlayer.RendererBuilder {
         private final Context context;
         private final String userAgent;
         private final String url;
-        private final AudioCapabilities audioCapabilities;
         private final VideoPlayer player;
         private final ManifestFetcher<HlsPlaylist> playlistFetcher;
 
         private boolean canceled;
 
-        public AsyncRendererBuilder(Context context, String userAgent, String url,
-                                    AudioCapabilities audioCapabilities, VideoPlayer player) {
+        public AsyncRendererBuilder(Context context, String userAgent, String url, VideoPlayer player) {
             this.context = context;
             this.userAgent = userAgent;
             this.url = url;
-            this.audioCapabilities = audioCapabilities;
             this.player = player;
             HlsPlaylistParser parser = new HlsPlaylistParser();
             playlistFetcher = new ManifestFetcher<>(url, new DefaultUriDataSource(context, userAgent),
@@ -130,17 +124,18 @@ public class HlsRendererBuilder implements VideoPlayer.RendererBuilder {
 
             DataSource dataSource = new DefaultUriDataSource(context, bandwidthMeter, userAgent);
             HlsChunkSource chunkSource = new HlsChunkSource(dataSource, url, manifest, bandwidthMeter,
-                    variantIndices, HlsChunkSource.ADAPTIVE_MODE_SPLICE, audioCapabilities);
+                    variantIndices, HlsChunkSource.ADAPTIVE_MODE_SPLICE);
             HlsSampleSource sampleSource = new HlsSampleSource(chunkSource, loadControl,
                     BUFFER_SEGMENTS * BUFFER_SEGMENT_SIZE, mainHandler, player, VideoPlayer.TYPE_VIDEO);
             MediaCodecVideoTrackRenderer videoRenderer = new MediaCodecVideoTrackRenderer(sampleSource,
                     MediaCodec.VIDEO_SCALING_MODE_SCALE_TO_FIT, 5000, mainHandler, player, 50);
-            MediaCodecAudioTrackRenderer audioRenderer = new MediaCodecAudioTrackRenderer(sampleSource);
+            MediaCodecAudioTrackRenderer audioRenderer = new MediaCodecAudioTrackRenderer(sampleSource,
+                    null, true, player.getMainHandler(), player, AudioCapabilities.getCapabilities(context));
 
             TrackRenderer[] renderers = new TrackRenderer[VideoPlayer.RENDERER_COUNT];
             renderers[VideoPlayer.TYPE_VIDEO] = videoRenderer;
             renderers[VideoPlayer.TYPE_AUDIO] = audioRenderer;
-            player.onRenderers(null, null, renderers, bandwidthMeter);
+            player.onRenderers(renderers, bandwidthMeter);
         }
 
     }

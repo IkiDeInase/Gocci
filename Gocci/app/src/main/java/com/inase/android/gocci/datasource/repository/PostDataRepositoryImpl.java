@@ -32,7 +32,7 @@ public class PostDataRepositoryImpl implements PostDataRepository {
     @Override
     public void getPostDataList(final int api, String url, final PostDataRepositoryCallback cb) {
         final ArrayList<PostData> mPostData = new ArrayList<>();
-        Application_Gocci.getHttpClient(url, new JsonHttpResponseHandler() {
+        Application_Gocci.getJsonHttpClient(url, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 try {

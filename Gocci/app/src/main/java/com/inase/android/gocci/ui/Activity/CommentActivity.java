@@ -46,6 +46,7 @@ import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCal
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.google.android.exoplayer.audio.AudioCapabilities;
 import com.google.android.exoplayer.audio.AudioCapabilitiesReceiver;
+import com.google.android.exoplayer.drm.UnsupportedDrmException;
 import com.inase.android.gocci.application.Application_Gocci;
 import com.inase.android.gocci.Base.RoundedTransformation;
 import com.inase.android.gocci.event.BusHolder;
@@ -148,7 +149,6 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
     private boolean playerNeedsPrepare;
 
     private AudioCapabilitiesReceiver audioCapabilitiesReceiver;
-    private AudioCapabilities audioCapabilities;
 
     private static MobileAnalyticsManager analytics;
 
@@ -229,6 +229,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
         ButterKnife.bind(this);
 
         audioCapabilitiesReceiver = new AudioCapabilitiesReceiver(getApplicationContext(), this);
+        audioCapabilitiesReceiver.register();
         // 画面回転に対応するならonResumeが安全かも
         mDisplaySize = new Point();
         getWindowManager().getDefaultDisplay().getSize(mDisplaySize);
@@ -308,7 +309,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
                                         result.updateName(5, new StringHolder(getString(R.string.setting_support_unmute)));
 
                                         if (player != null) {
-                                            player.selectTrack(VideoPlayer.TYPE_AUDIO, -1);
+                                            player.setSelectedTrack(VideoPlayer.TYPE_AUDIO, -1);
                                         }
                                         break;
                                     case -1:
@@ -316,7 +317,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
                                         result.updateName(5, new StringHolder(getString(R.string.setting_support_mute)));
 
                                         if (player != null) {
-                                            player.selectTrack(VideoPlayer.TYPE_AUDIO, 0);
+                                            player.setSelectedTrack(VideoPlayer.TYPE_AUDIO, 0);
                                         }
                                         break;
                                 }
@@ -425,7 +426,13 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
         if (analytics != null) {
             analytics.getSessionClient().resumeSession();
         }
-        audioCapabilitiesReceiver.register();
+        if (player == null) {
+            if (Util.isMovieAutoPlay(this)) {
+                preparePlayer(getPlayingViewHolder(), headerUser.getMovie());
+            }
+        } else {
+            player.setBackgrounded(false);
+        }
 
         mAppBar.addOnOffsetChangedListener(this);
     }
@@ -444,16 +451,15 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
             player.blockingClearSurface();
         }
         releasePlayer();
-        audioCapabilitiesReceiver.unregister();
 
         mAppBar.removeOnOffsetChangedListener(this);
     }
 
     @Override
     public void onDestroy() {
-        releasePlayer();
         super.onDestroy();
-
+        audioCapabilitiesReceiver.unregister();
+        releasePlayer();
     }
 
     @Subscribe
@@ -480,18 +486,12 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
 
     @Override
     public void onAudioCapabilitiesChanged(AudioCapabilities audioCapabilities) {
-        boolean audioCapabilitiesChanged = !audioCapabilities.equals(this.audioCapabilities);
-        if (player == null || audioCapabilitiesChanged) {
-            if (mPlayingPostId != null) {
-                this.audioCapabilities = audioCapabilities;
-                releasePlayer();
-                if (Util.isMovieAutoPlay(this)) {
-                    preparePlayer(getPlayingViewHolder(), headerUser.getMovie());
-                }
-            }
-        } else {
-            player.setBackgrounded(false);
+        if (player == null) {
+            return;
         }
+        releasePlayer();
+        preparePlayer(getPlayingViewHolder(), headerUser.getMovie());
+        player.setBackgrounded(false);
     }
 
     private void getSignupAsync(final Context context) {
@@ -668,8 +668,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
 
     private void preparePlayer(final Const.ExoViewHolder viewHolder, String path) {
         if (player == null) {
-            player = new VideoPlayer(new HlsRendererBuilder(this, com.google.android.exoplayer.util.Util.getUserAgent(this, "Gocci"), path,
-                    audioCapabilities));
+            player = new VideoPlayer(new HlsRendererBuilder(this, com.google.android.exoplayer.util.Util.getUserAgent(this, "Gocci"), path));
             player.addListener(new VideoPlayer.Listener() {
                 @Override
                 public void onStateChanged(boolean playWhenReady, int playbackState) {
@@ -692,11 +691,19 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
 
                 @Override
                 public void onError(Exception e) {
+                    if (e instanceof UnsupportedDrmException) {
+                        // Special case DRM failures.
+                        UnsupportedDrmException unsupportedDrmException = (UnsupportedDrmException) e;
+                        int stringId = com.google.android.exoplayer.util.Util.SDK_INT < 18 ? R.string.drm_error_not_supported
+                                : unsupportedDrmException.reason == UnsupportedDrmException.REASON_UNSUPPORTED_SCHEME
+                                ? R.string.drm_error_unsupported_scheme : R.string.drm_error_unknown;
+                        Toast.makeText(getApplicationContext(), stringId, Toast.LENGTH_LONG).show();
+                    }
                     playerNeedsPrepare = true;
                 }
 
                 @Override
-                public void onVideoSizeChanged(int width, int height, float pixelWidthAspectRatio) {
+                public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees, float pixelWidthAspectRatio) {
                     viewHolder.mVideoThumbnail.setVisibility(View.GONE);
                     viewHolder.mVideoFrame.setAspectRatio(
                             height == 0 ? 1 : (width * pixelWidthAspectRatio) / height);
@@ -713,9 +720,9 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
         player.setPlayWhenReady(true);
 
         if (SavedData.getSettingMute(this) == -1) {
-            player.selectTrack(VideoPlayer.TYPE_AUDIO, -1);
+            player.setSelectedTrack(VideoPlayer.TYPE_AUDIO, -1);
         } else {
-            player.selectTrack(VideoPlayer.TYPE_AUDIO, 0);
+            player.setSelectedTrack(VideoPlayer.TYPE_AUDIO, 0);
         }
     }
 

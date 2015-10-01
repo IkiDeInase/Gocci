@@ -1,7 +1,8 @@
 package com.inase.android.gocci.domain.usecase;
 
+import com.inase.android.gocci.data.HeaderData;
 import com.inase.android.gocci.data.PostData;
-import com.inase.android.gocci.datasource.repository.PostDataRepository;
+import com.inase.android.gocci.datasource.repository.UserDataRepository;
 import com.inase.android.gocci.domain.executor.PostExecutionThread;
 
 import java.util.ArrayList;
@@ -9,37 +10,37 @@ import java.util.ArrayList;
 /**
  * Created by kinagafuji on 15/09/29.
  */
-public class FollowTimelineUseCaseImpl extends UseCase2<Integer, String> implements FollowTimelineUseCase, PostDataRepository.PostDataRepositoryCallback {
-    private static FollowTimelineUseCaseImpl sUseCase;
-    private final PostDataRepository mPostDataRepository;
+public class ProfUseCaseImpl extends UseCase2<Integer, String> implements ProfUseCase, UserDataRepository.UserDataRepositoryCallback {
+    private static ProfUseCaseImpl sUseCase;
+    private final UserDataRepository mUserDataRepository;
     private PostExecutionThread mPostExecutionThread;
-    private FollowTimelineUseCase.FollowTimelineUseCaseCallback mCallback;
+    private ProfUseCaseCallback mCallback;
 
-    public static FollowTimelineUseCaseImpl getUseCase(PostDataRepository postDataRepository, PostExecutionThread postExecutionThread) {
+    public static ProfUseCaseImpl getUseCase(UserDataRepository userDataRepository, PostExecutionThread postExecutionThread) {
         if (sUseCase == null) {
-            sUseCase = new FollowTimelineUseCaseImpl(postDataRepository, postExecutionThread);
+            sUseCase = new ProfUseCaseImpl(userDataRepository, postExecutionThread);
         }
         return sUseCase;
     }
 
-    public FollowTimelineUseCaseImpl(PostDataRepository postDataRepository, PostExecutionThread postExecutionThread) {
-        mPostDataRepository = postDataRepository;
+    public ProfUseCaseImpl(UserDataRepository userDataRepository, PostExecutionThread postExecutionThread) {
+        mUserDataRepository = userDataRepository;
         mPostExecutionThread = postExecutionThread;
     }
 
     @Override
-    public void execute(int api, String url, FollowTimelineUseCase.FollowTimelineUseCaseCallback callback) {
+    public void execute(int api, String url, ProfUseCaseCallback callback) {
         mCallback = callback;
         this.start(api, url);
     }
 
     @Override
     protected void call(Integer param1, String param2) {
-        mPostDataRepository.getPostDataList(param1, param2, this);
+        mUserDataRepository.getUserDataList(param1, param2, this);
     }
 
     @Override
-    public void setCallback(FollowTimelineUseCase.FollowTimelineUseCaseCallback callback) {
+    public void setCallback(ProfUseCaseCallback callback) {
         mCallback = callback;
     }
 
@@ -49,24 +50,24 @@ public class FollowTimelineUseCaseImpl extends UseCase2<Integer, String> impleme
     }
 
     @Override
-    public void onPostDataLoaded(final int api, final ArrayList<PostData> postData) {
+    public void onUserDataLoaded(final int api, final HeaderData userData, final ArrayList<PostData> postData) {
         mPostExecutionThread.post(new Runnable() {
             @Override
             public void run() {
                 if (mCallback != null) {
-                    mCallback.onFollowTimelineLoaded(api, postData);
+                    mCallback.onProfLoaded(api, userData, postData);
                 }
             }
         });
     }
 
     @Override
-    public void onPostDataEmpty() {
+    public void onUserDataEmpty(final int api, final HeaderData userData) {
         mPostExecutionThread.post(new Runnable() {
             @Override
             public void run() {
                 if (mCallback != null) {
-                    mCallback.onFollowTimelineEmpty();
+                    mCallback.onProfEmpty(api, userData);
                 }
             }
         });
