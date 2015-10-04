@@ -166,7 +166,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
             if (isSee) {
                 changeMovie();
             }
-            if (mPlayingPostId != null || !isExist) {
+            if (mPlayingPostId != null) {
                 mCommentRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         }
@@ -427,8 +427,10 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
             analytics.getSessionClient().resumeSession();
         }
         if (player == null) {
-            if (Util.isMovieAutoPlay(this)) {
-                preparePlayer(getPlayingViewHolder(), headerUser.getMovie());
+            if (mPlayingPostId != null) {
+                if (Util.isMovieAutoPlay(this)) {
+                    preparePlayer(getPlayingViewHolder(), headerUser.getMovie());
+                }
             }
         } else {
             player.setBackgrounded(false);
@@ -489,8 +491,12 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
         if (player == null) {
             return;
         }
-        releasePlayer();
-        preparePlayer(getPlayingViewHolder(), headerUser.getMovie());
+        if (mPlayingPostId != null) {
+            releasePlayer();
+            if (Util.isMovieAutoPlay(this)) {
+                preparePlayer(getPlayingViewHolder(), headerUser.getMovie());
+            }
+        }
         player.setBackgrounded(false);
     }
 
