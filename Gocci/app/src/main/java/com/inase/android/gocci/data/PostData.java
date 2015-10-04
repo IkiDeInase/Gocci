@@ -29,6 +29,8 @@ public class PostData {
     private static final String TAG_LAT = "Y(lon_lat)";
     private static final String TAG_SHARE = "share";
 
+    private static final String TAG_DISTANCE = "distance";
+
     //JSON用のsetter/getter
 
     //タイムライン
@@ -54,6 +56,8 @@ public class PostData {
     private double lat;
     private double lon;
     private String share;
+
+    private int distance;
 
     public PostData() {
     }
@@ -87,6 +91,37 @@ public class PostData {
         this.share = share;
     }
 
+    public PostData(String post_id, int post_user_id, String username, String profile_img, int post_rest_id,
+                    String restname, String movie, String thumbnail, String category, String tag,
+                    String value, String memo, String post_date, int cheer_flag, int gochi_num,
+                    int comment_num, int want_flag, int follow_flag, int gochi_flag, double lat,
+                    double lon, String share, int distance) {
+        this.post_id = post_id;
+        this.post_user_id = post_user_id;
+        this.username = username;
+        this.profile_img = profile_img;
+        this.post_rest_id = post_rest_id;
+        this.restname = restname;
+        this.movie = movie;
+        this.thumbnail = thumbnail;
+        this.category = category;
+        this.tag = tag;
+        this.value = value;
+        this.memo = memo;
+        this.post_date = post_date;
+        this.cheer_flag = cheer_flag;
+        this.gochi_num = gochi_num;
+        this.comment_num = comment_num;
+        this.want_flag = want_flag;
+        this.follow_flag = follow_flag;
+        this.gochi_flag = gochi_flag;
+        this.lat = lat;
+        this.lon = lon;
+        this.share = share;
+
+        this.distance = distance;
+    }
+
     public static PostData createPostData(JSONObject jsonObject) {
         try {
             String post_id = jsonObject.getString(TAG_POST_ID);
@@ -117,6 +152,45 @@ public class PostData {
                     value, memo, post_date, cheer_flag, gochi_num,
                     comment_num, want_flag, follow_flag, gochi_flag, lat,
                     lon, share);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static PostData createDistPostData(JSONObject jsonObject) {
+        try {
+            String post_id = jsonObject.getString(TAG_POST_ID);
+            int post_user_id = jsonObject.getInt(TAG_POST_USER_ID);
+            String username = jsonObject.getString(TAG_USERNAME);
+            String profile_img = jsonObject.getString(TAG_PROFILE_IMG);
+            int post_rest_id = jsonObject.getInt(TAG_POST_REST_ID);
+            String restname = jsonObject.getString(TAG_RESTNAME);
+            String movie = jsonObject.getString(TAG_MOVIE);
+            String thumbnail = jsonObject.getString(TAG_THUMBNAIL);
+            String category = jsonObject.getString(TAG_CATEGORY);
+            String tag = jsonObject.getString(TAG_TAG);
+            String value = jsonObject.getString(TAG_VALUE);
+            String memo = jsonObject.getString(TAG_MEMO);
+            String post_date = jsonObject.getString(TAG_POST_DATE);
+            int cheer_flag = jsonObject.getInt(TAG_CHEER_FLAG);
+            int gochi_num = jsonObject.getInt(TAG_GOCHI_NUM);
+            int comment_num = jsonObject.getInt(TAG_COMMENT_NUM);
+            int want_flag = jsonObject.getInt(TAG_WANT_FLAG);
+            int follow_flag = jsonObject.getInt(TAG_FOLLOW_FLAG);
+            int gochi_flag = jsonObject.getInt(TAG_GOCHI_FLAG);
+            double lat = jsonObject.getDouble(TAG_LAT);
+            double lon = jsonObject.getDouble(TAG_LON);
+            String share = jsonObject.getString(TAG_SHARE);
+
+            int distance = jsonObject.getInt(TAG_DISTANCE);
+
+            return new PostData(post_id, post_user_id, username, profile_img, post_rest_id,
+                    restname, movie, thumbnail, category, tag,
+                    value, memo, post_date, cheer_flag, gochi_num,
+                    comment_num, want_flag, follow_flag, gochi_flag, lat,
+                    lon, share, distance);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -298,5 +372,13 @@ public class PostData {
 
     public void setShare(String share) {
         this.share = share;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
+
+    public void setDistance(int distance) {
+        this.distance = distance;
     }
 }

@@ -160,6 +160,56 @@ public class Const {
         return url;
     }
 
+    public static String getCustomTagCategoryAPI(int category_id, int order_id, double lon, double lat, int call) {
+        String url = null;
+        switch (order_id) {
+            case 0:
+                if (call == 0) {
+                    url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline/?category_id=" + category_id;
+                } else {
+                    url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline/?category_id=" + category_id + "&call=" + call;
+                }
+                break;
+            case 1:
+                if (call == 0) {
+                    //フォローの近い順
+                    url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline/?category_id=" + category_id + "&order_id=" + order_id + "&lon=" + lon + "&lat=" + lat;
+                } else {
+                    //フォローの近い順の更新
+                    url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline/?category_id=" + category_id + "&order_id=" + order_id + "&lon=" + lon + "&lat=" + lat + "&call=" + call;
+                }
+            break;
+            case 2:
+                if (call == 0) {
+                    //フォローの人気順
+                    url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline/?category_id=" + category_id + "&order_id=" + order_id;
+                } else {
+                    //フォローの人気順の更新
+                    url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline/?category_id=" + category_id + "&order_id=" + order_id + "&call=" + call;
+                }
+                break;
+        }
+        return url;
+    }
+
+    public static String getCustomGridSearchAPI(double lon, double lat, int call, int category_id) {
+        String url = null;
+        if (call == 0) {
+            if (category_id == 0) {
+                url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline/?order_id=1&lon=" + lon + "&lat=" + lat;
+            } else {
+                url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline/?order_id=1&lon=" + lon + "&lat=" + lat + "&category_id=" + category_id;
+            }
+        } else {
+            if (category_id == 0) {
+                url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline/?order_id=1&lon=" + lon + "&lat=" + lat + "&call=" + call;
+            } else {
+                url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline/?order_id=1&lon=" + lon + "&lat=" + lat + "&call=" + call + "&category_id=" + category_id;
+            }
+        }
+        return url;
+    }
+
     public static String getLatestAPI() {
         return URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline";
     }
@@ -321,6 +371,9 @@ public class Const {
     public static final int INTENT_TO_ADVICE = 8;
     public static final int INTENT_TO_LIST = 9;
     public static final int INTENT_TO_SETTING = 10;
+
+    public static final int INTENT_TO_TAGCATEGORY = 11;
+    public static final int INTENT_TO_GRIDSEARCH = 12;
 
     public static final int CATEGORY_FOLLOW = 1;
     public static final int CATEGORY_FOLLOWER = 2;
