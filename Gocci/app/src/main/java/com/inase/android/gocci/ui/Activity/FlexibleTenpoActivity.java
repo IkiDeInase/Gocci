@@ -437,7 +437,9 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
             player.blockingClearSurface();
         }
         releasePlayer();
-
+        if (getPlayingViewHolder() != null) {
+            getPlayingViewHolder().mVideoThumbnail.setVisibility(View.VISIBLE);
+        }
         mAppBar.removeOnOffsetChangedListener(this);
         mPresenter.pause();
     }

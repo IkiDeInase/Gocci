@@ -453,7 +453,9 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
             player.blockingClearSurface();
         }
         releasePlayer();
-
+        if (getPlayingViewHolder() != null) {
+            getPlayingViewHolder().mVideoThumbnail.setVisibility(View.VISIBLE);
+        }
         mAppBar.removeOnOffsetChangedListener(this);
     }
 

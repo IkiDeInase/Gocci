@@ -79,16 +79,16 @@ public class UserAndRestDataRepositoryImpl implements UserAndRestDataRepository 
                     JSONObject headerObject = jsonObject.getJSONObject("restaurants");
                     JSONArray postsObject = jsonObject.getJSONArray("posts");
 
-                    HeaderData mUserData = HeaderData.createUserHeaderData(headerObject);
+                    HeaderData mRestData = HeaderData.createTenpoHeaderData(headerObject);
 
                     if (postsObject.length() != 0) {
                         for (int i = 0; i < postsObject.length(); i++) {
                             JSONObject post = postsObject.getJSONObject(i);
                             mPostData.add(PostData.createPostData(post));
                         }
-                        cb.onUserAndRestDataLoaded(api, mUserData, mPostData);
+                        cb.onUserAndRestDataLoaded(api, mRestData, mPostData);
                     } else {
-                        cb.onUserAndRestDataEmpty(api, mUserData);
+                        cb.onUserAndRestDataEmpty(api, mRestData);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

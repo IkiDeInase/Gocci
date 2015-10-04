@@ -274,6 +274,9 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
             player.blockingClearSurface();
         }
         releasePlayer();
+        if (getPlayingViewHolder() != null) {
+            getPlayingViewHolder().mVideoThumbnail.setVisibility(View.VISIBLE);
+        }
         appBarLayout.removeOnOffsetChangedListener(this);
         mPresenter.pause();
     }

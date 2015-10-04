@@ -273,6 +273,9 @@ public class TagCategoryFragment extends Fragment implements AudioCapabilitiesRe
             player.blockingClearSurface();
         }
         releasePlayer();
+        if (getPlayingViewHolder() != null) {
+            getPlayingViewHolder().mVideoThumbnail.setVisibility(View.VISIBLE);
+        }
         appBarLayout.removeOnOffsetChangedListener(this);
     }
 
