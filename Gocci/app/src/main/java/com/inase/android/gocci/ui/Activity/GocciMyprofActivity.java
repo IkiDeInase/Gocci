@@ -44,15 +44,15 @@ import com.inase.android.gocci.data.PostData;
 import com.inase.android.gocci.datasource.api.ApiUtil;
 import com.inase.android.gocci.datasource.repository.MyPageActionRepository;
 import com.inase.android.gocci.datasource.repository.MyPageActionRepositoryImpl;
-import com.inase.android.gocci.datasource.repository.UserDataRepository;
-import com.inase.android.gocci.datasource.repository.UserDataRepositoryImpl;
+import com.inase.android.gocci.datasource.repository.UserAndRestDataRepository;
+import com.inase.android.gocci.datasource.repository.UserAndRestDataRepositoryImpl;
 import com.inase.android.gocci.domain.executor.UIThread;
 import com.inase.android.gocci.domain.usecase.PostDeleteUseCase;
 import com.inase.android.gocci.domain.usecase.PostDeleteUseCaseImpl;
 import com.inase.android.gocci.domain.usecase.ProfChangeUseCase;
 import com.inase.android.gocci.domain.usecase.ProfChangeUseCaseImpl;
-import com.inase.android.gocci.domain.usecase.ProfUseCase;
-import com.inase.android.gocci.domain.usecase.ProfUseCaseImpl;
+import com.inase.android.gocci.domain.usecase.UserAndRestUseCase;
+import com.inase.android.gocci.domain.usecase.ProfPageUseCaseImpl;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.NotificationNumberEvent;
 import com.inase.android.gocci.presenter.ShowMyProfPresenter;
@@ -158,12 +158,12 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
             Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
         }
 
-        UserDataRepository userDataRepositoryImpl = UserDataRepositoryImpl.getRepository();
+        UserAndRestDataRepository userAndRestDataRepositoryImpl = UserAndRestDataRepositoryImpl.getRepository();
         MyPageActionRepository myPageActionRepositoryImpl = MyPageActionRepositoryImpl.getRepository();
-        ProfUseCase profUseCaseImpl = ProfUseCaseImpl.getUseCase(userDataRepositoryImpl, UIThread.getInstance());
+        UserAndRestUseCase userAndRestUseCaseImpl = ProfPageUseCaseImpl.getUseCase(userAndRestDataRepositoryImpl, UIThread.getInstance());
         ProfChangeUseCase profChangeUseCaseImpl = ProfChangeUseCaseImpl.getUseCase(myPageActionRepositoryImpl, UIThread.getInstance());
         PostDeleteUseCase postDeleteUseCaseImpl = PostDeleteUseCaseImpl.getUseCase(myPageActionRepositoryImpl, UIThread.getInstance());
-        mPresenter = new ShowMyProfPresenter(profUseCaseImpl, profChangeUseCaseImpl, postDeleteUseCaseImpl);
+        mPresenter = new ShowMyProfPresenter(userAndRestUseCaseImpl, profChangeUseCaseImpl, postDeleteUseCaseImpl);
         mPresenter.setProfView(this);
 
         setContentView(R.layout.activity_gocci_myprof);

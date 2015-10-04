@@ -4,7 +4,7 @@ import com.inase.android.gocci.data.HeaderData;
 import com.inase.android.gocci.data.PostData;
 import com.inase.android.gocci.domain.usecase.PostDeleteUseCase;
 import com.inase.android.gocci.domain.usecase.ProfChangeUseCase;
-import com.inase.android.gocci.domain.usecase.ProfUseCase;
+import com.inase.android.gocci.domain.usecase.UserAndRestUseCase;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -12,16 +12,16 @@ import java.util.ArrayList;
 /**
  * Created by kinagafuji on 15/09/29.
  */
-public class ShowMyProfPresenter extends Presenter implements ProfUseCase.ProfUseCaseCallback,
+public class ShowMyProfPresenter extends Presenter implements UserAndRestUseCase.UserAndRestUseCaseCallback,
         ProfChangeUseCase.ProfChangeUseCaseCallback, PostDeleteUseCase.PostDeleteUseCaseCallback {
 
-    private ProfUseCase mProfUseCase;
+    private UserAndRestUseCase mUserAndRestUseCase;
     private ProfChangeUseCase mProfChangeUseCase;
     private PostDeleteUseCase mPostDeleteUseCase;
     private ShowProfView mShowProfView;
 
-    public ShowMyProfPresenter(ProfUseCase profUseCase, ProfChangeUseCase profChangeUseCase, PostDeleteUseCase postDeleteUseCase) {
-        mProfUseCase = profUseCase;
+    public ShowMyProfPresenter(UserAndRestUseCase userAndRestUseCase, ProfChangeUseCase profChangeUseCase, PostDeleteUseCase postDeleteUseCase) {
+        mUserAndRestUseCase = userAndRestUseCase;
         mProfChangeUseCase = profChangeUseCase;
         mPostDeleteUseCase = postDeleteUseCase;
     }
@@ -32,7 +32,7 @@ public class ShowMyProfPresenter extends Presenter implements ProfUseCase.ProfUs
 
     public void getProfData(int api, String url) {
         mShowProfView.showLoading();
-        mProfUseCase.execute(api, url, this);
+        mUserAndRestUseCase.execute(api, url, this);
     }
 
     public void profChange(String post_date, File file, String url) {
@@ -45,7 +45,7 @@ public class ShowMyProfPresenter extends Presenter implements ProfUseCase.ProfUs
     }
 
     @Override
-    public void onProfLoaded(int api, HeaderData mUserdata, ArrayList<PostData> mPostData) {
+    public void onDataLoaded(int api, HeaderData mUserdata, ArrayList<PostData> mPostData) {
         mShowProfView.hideLoading();
         mShowProfView.hideNoResultCase();
         mShowProfView.hideError();
@@ -53,7 +53,7 @@ public class ShowMyProfPresenter extends Presenter implements ProfUseCase.ProfUs
     }
 
     @Override
-    public void onProfEmpty(int api, HeaderData mUserData) {
+    public void onDataEmpty(int api, HeaderData mUserData) {
         mShowProfView.hideLoading();
         mShowProfView.hideError();
         mShowProfView.showNoResultCase(api, mUserData);
@@ -95,14 +95,14 @@ public class ShowMyProfPresenter extends Presenter implements ProfUseCase.ProfUs
 
     @Override
     public void resume() {
-        mProfUseCase.setCallback(this);
+        mUserAndRestUseCase.setCallback(this);
         mProfChangeUseCase.setCallback(this);
         mPostDeleteUseCase.setCallback(this);
     }
 
     @Override
     public void pause() {
-        mProfUseCase.removeCallback();
+        mUserAndRestUseCase.removeCallback();
         mProfChangeUseCase.removeCallback();
         mPostDeleteUseCase.removeCallback();
     }

@@ -2,7 +2,7 @@ package com.inase.android.gocci.domain.usecase;
 
 import com.inase.android.gocci.data.HeaderData;
 import com.inase.android.gocci.data.PostData;
-import com.inase.android.gocci.datasource.repository.UserDataRepository;
+import com.inase.android.gocci.datasource.repository.UserAndRestDataRepository;
 import com.inase.android.gocci.domain.executor.PostExecutionThread;
 
 import java.util.ArrayList;
@@ -10,37 +10,37 @@ import java.util.ArrayList;
 /**
  * Created by kinagafuji on 15/09/29.
  */
-public class ProfUseCaseImpl extends UseCase2<Integer, String> implements ProfUseCase, UserDataRepository.UserDataRepositoryCallback {
-    private static ProfUseCaseImpl sUseCase;
-    private final UserDataRepository mUserDataRepository;
+public class ProfPageUseCaseImpl extends UseCase2<Integer, String> implements UserAndRestUseCase, UserAndRestDataRepository.UserAndRestDataRepositoryCallback {
+    private static ProfPageUseCaseImpl sUseCase;
+    private final UserAndRestDataRepository mUserAndRestDataRepository;
     private PostExecutionThread mPostExecutionThread;
-    private ProfUseCaseCallback mCallback;
+    private UserAndRestUseCaseCallback mCallback;
 
-    public static ProfUseCaseImpl getUseCase(UserDataRepository userDataRepository, PostExecutionThread postExecutionThread) {
+    public static ProfPageUseCaseImpl getUseCase(UserAndRestDataRepository userAndRestDataRepository, PostExecutionThread postExecutionThread) {
         if (sUseCase == null) {
-            sUseCase = new ProfUseCaseImpl(userDataRepository, postExecutionThread);
+            sUseCase = new ProfPageUseCaseImpl(userAndRestDataRepository, postExecutionThread);
         }
         return sUseCase;
     }
 
-    public ProfUseCaseImpl(UserDataRepository userDataRepository, PostExecutionThread postExecutionThread) {
-        mUserDataRepository = userDataRepository;
+    public ProfPageUseCaseImpl(UserAndRestDataRepository userAndRestDataRepository, PostExecutionThread postExecutionThread) {
+        mUserAndRestDataRepository = userAndRestDataRepository;
         mPostExecutionThread = postExecutionThread;
     }
 
     @Override
-    public void execute(int api, String url, ProfUseCaseCallback callback) {
+    public void execute(int api, String url, UserAndRestUseCaseCallback callback) {
         mCallback = callback;
         this.start(api, url);
     }
 
     @Override
     protected void call(Integer param1, String param2) {
-        mUserDataRepository.getUserDataList(param1, param2, this);
+        mUserAndRestDataRepository.getUserDataList(param1, param2, this);
     }
 
     @Override
-    public void setCallback(ProfUseCaseCallback callback) {
+    public void setCallback(UserAndRestUseCaseCallback callback) {
         mCallback = callback;
     }
 
@@ -50,24 +50,24 @@ public class ProfUseCaseImpl extends UseCase2<Integer, String> implements ProfUs
     }
 
     @Override
-    public void onUserDataLoaded(final int api, final HeaderData userData, final ArrayList<PostData> postData) {
+    public void onUserAndRestDataLoaded(final int api, final HeaderData userData, final ArrayList<PostData> postData) {
         mPostExecutionThread.post(new Runnable() {
             @Override
             public void run() {
                 if (mCallback != null) {
-                    mCallback.onProfLoaded(api, userData, postData);
+                    mCallback.onDataLoaded(api, userData, postData);
                 }
             }
         });
     }
 
     @Override
-    public void onUserDataEmpty(final int api, final HeaderData userData) {
+    public void onUserAndRestDataEmpty(final int api, final HeaderData userData) {
         mPostExecutionThread.post(new Runnable() {
             @Override
             public void run() {
                 if (mCallback != null) {
-                    mCallback.onProfEmpty(api, userData);
+                    mCallback.onDataEmpty(api, userData);
                 }
             }
         });

@@ -1,7 +1,6 @@
 package com.inase.android.gocci.ui.activity;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,29 +14,31 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
-import com.andexert.library.RippleView;
-import com.inase.android.gocci.Base.RoundedTransformation;
-import com.inase.android.gocci.Base.SquareImageView;
+import com.inase.android.gocci.datasource.api.ApiUtil;
+import com.inase.android.gocci.datasource.repository.UserAndRestDataRepository;
+import com.inase.android.gocci.datasource.repository.UserAndRestDataRepositoryImpl;
+import com.inase.android.gocci.domain.executor.UIThread;
+import com.inase.android.gocci.domain.usecase.UserAndRestUseCase;
+import com.inase.android.gocci.domain.usecase.ProfPageUseCaseImpl;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.NotificationNumberEvent;
 import com.inase.android.gocci.R;
+import com.inase.android.gocci.presenter.ShowUserProfPresenter;
+import com.inase.android.gocci.ui.adapter.UserProfAdapter;
 import com.inase.android.gocci.ui.view.DrawerProfHeader;
 import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;
 import com.inase.android.gocci.common.Util;
 import com.inase.android.gocci.data.HeaderData;
 import com.inase.android.gocci.data.PostData;
-import com.loopj.android.http.TextHttpResponseHandler;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
@@ -46,20 +47,14 @@ import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.squareup.otto.Subscribe;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
-
-import cz.msebera.android.httpclient.Header;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class FlexibleUserProfActivity extends AppCompatActivity implements AppBarLayout.OnOffsetChangedListener {
+public class FlexibleUserProfActivity extends AppCompatActivity implements AppBarLayout.OnOffsetChangedListener,
+        ShowUserProfPresenter.ShowUserProfView, UserProfAdapter.UserProfCallback {
 
     @Bind(R.id.tool_bar)
     Toolbar mToolBar;
@@ -76,8 +71,6 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
     @Bind(R.id.coordinator_layout)
     CoordinatorLayout mCoordinatorLayout;
 
-    private String mProfUrl;
-
     private UserProfAdapter mUserProfAdapter;
     private ArrayList<PostData> mUserProfusers = new ArrayList<PostData>();
     private StaggeredGridLayoutManager mLayoutManager;
@@ -91,6 +84,8 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
     private Drawer result;
 
     private static MobileAnalyticsManager analytics;
+
+    private ShowUserProfPresenter mPresenter;
 
     private static Handler sHandler = new Handler() {
         @Override
@@ -137,13 +132,16 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
             Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
         }
 
+        UserAndRestDataRepository userAndRestDataRepositoryImpl = UserAndRestDataRepositoryImpl.getRepository();
+        UserAndRestUseCase userAndRestUseCaseImpl = ProfPageUseCaseImpl.getUseCase(userAndRestDataRepositoryImpl, UIThread.getInstance());
+        mPresenter = new ShowUserProfPresenter(userAndRestUseCaseImpl);
+        mPresenter.setProfView(this);
+
         setContentView(R.layout.activity_flexible_user_prof);
         ButterKnife.bind(this);
 
         Intent userintent = getIntent();
         mUser_id = userintent.getIntExtra("user_id", 0);
-
-        mProfUrl = Const.getUserpageAPI(mUser_id);
 
         //toolbar.inflateMenu(R.menu.toolbar_menu);
         //toolbar.setLogo(R.drawable.ic_gocci_moji_white45);
@@ -151,12 +149,14 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
         setSupportActionBar(mToolBar);
 
         mLayoutManager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
-        mUserProfAdapter = new UserProfAdapter(FlexibleUserProfActivity.this);
         mUserProfRecyclerView.setLayoutManager(mLayoutManager);
         mUserProfRecyclerView.setHasFixedSize(true);
         mUserProfRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
 
-        getSignupAsync(FlexibleUserProfActivity.this);
+        mUserProfAdapter = new UserProfAdapter(this, headerUserData, mUserProfusers);
+        mUserProfAdapter.setUserProfCallback(this);
+
+        mPresenter.getProfData(ApiUtil.USERPAGE_FIRST, Const.getUserpageAPI(mUser_id));
 
         result = new DrawerBuilder()
                 .withActivity(this)
@@ -227,7 +227,7 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
             public void onRefresh() {
                 mSwipeContainer.setRefreshing(true);
                 if (Util.getConnectedState(FlexibleUserProfActivity.this) != Util.NetworkStatus.OFF) {
-                    getRefreshAsync(FlexibleUserProfActivity.this);
+                    mPresenter.getProfData(ApiUtil.USERPAGE_REFRESH, Const.getUserpageAPI(mUser_id));
                 } else {
                     Toast.makeText(FlexibleUserProfActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
                     mSwipeContainer.setRefreshing(false);
@@ -244,8 +244,8 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
             analytics.getEventClient().submitEvents();
         }
         BusHolder.get().unregister(self);
-
         mAppBar.removeOnOffsetChangedListener(this);
+        mPresenter.pause();
     }
 
     @Override
@@ -255,8 +255,8 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
             analytics.getSessionClient().resumeSession();
         }
         BusHolder.get().register(self);
-
         mAppBar.addOnOffsetChangedListener(this);
+        mPresenter.resume();
     }
 
     @Override
@@ -292,307 +292,89 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
         Snackbar.make(mCoordinatorLayout, event.mMessage, Snackbar.LENGTH_SHORT).show();
     }
 
-    private void getSignupAsync(final Context context) {
-        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(context, mProfUrl, new TextHttpResponseHandler() {
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                Toast.makeText(FlexibleUserProfActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                try {
-                    JSONObject jsonObject = new JSONObject(responseString);
-                    JSONObject headerObject = jsonObject.getJSONObject("header");
-                    JSONArray postsObject = jsonObject.getJSONArray("posts");
-
-                    headerUserData = HeaderData.createUserHeaderData(headerObject);
-
-                    for (int i = 0; i < postsObject.length(); i++) {
-                        JSONObject post = postsObject.getJSONObject(i);
-                        mUserProfusers.add(PostData.createPostData(post));
-                    }
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                mUserProfRecyclerView.setAdapter(mUserProfAdapter);
-
-                if (mUserProfusers.isEmpty()) {
-                    mEmptyImage.setVisibility(View.VISIBLE);
-                    mEmptyText.setVisibility(View.VISIBLE);
-                } else {
-                    mEmptyImage.setVisibility(View.GONE);
-                    mEmptyText.setVisibility(View.GONE);
-                }
-            }
-        });
-    }
-
-    private void getRefreshAsync(final Context context) {
-        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(context, mProfUrl, new TextHttpResponseHandler() {
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                Toast.makeText(FlexibleUserProfActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                mUserProfusers.clear();
-                try {
-                    JSONObject jsonObject = new JSONObject(responseString);
-                    JSONObject headerObject = jsonObject.getJSONObject("header");
-                    JSONArray postsObject = jsonObject.getJSONArray("posts");
-
-                    headerUserData = HeaderData.createUserHeaderData(headerObject);
-
-                    for (int i = 0; i < postsObject.length(); i++) {
-                        JSONObject post = postsObject.getJSONObject(i);
-                        mUserProfusers.add(PostData.createPostData(post));
-                    }
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                mUserProfAdapter.notifyDataSetChanged();
-
-                if (mUserProfusers.isEmpty()) {
-                    mEmptyImage.setVisibility(View.VISIBLE);
-                    mEmptyText.setVisibility(View.VISIBLE);
-                } else {
-                    mEmptyImage.setVisibility(View.GONE);
-                    mEmptyText.setVisibility(View.GONE);
-                }
-            }
-
-            @Override
-            public void onFinish() {
-                mSwipeContainer.setRefreshing(false);
-            }
-
-        });
-    }
-
     @Override
     public void onOffsetChanged(AppBarLayout appBarLayout, int i) {
         mSwipeContainer.setEnabled(i == 0);
     }
 
-    static class UserProfHeaderViewHolder extends RecyclerView.ViewHolder {
-        @Bind(R.id.userprof_background)
-        ImageView mUserprofBackground;
-        @Bind(R.id.userprof_picture)
-        ImageView mUserprofPicture;
-        @Bind(R.id.location)
-        ImageView mLocationButton;
-        @Bind(R.id.userprof_username)
-        TextView mUserprofUsername;
-        @Bind(R.id.userprof_follow)
-        RippleView mUserprof_Follow;
-        @Bind(R.id.follow_num)
-        TextView mFollowNum;
-        @Bind(R.id.follower_num)
-        TextView mFollowerNum;
-        @Bind(R.id.usercheer_num)
-        TextView mUsercheerNum;
-        @Bind(R.id.follow_text)
-        TextView mFollowText;
-        @Bind(R.id.follow_ripple)
-        RippleView mFollowRipple;
-        @Bind(R.id.follower_ripple)
-        RippleView mFollowerRipple;
-        @Bind(R.id.usercheer_ripple)
-        RippleView mUsercheerRipple;
+    @Override
+    public void showLoading() {
+        mSwipeContainer.setRefreshing(true);
+    }
 
-        public UserProfHeaderViewHolder(View view) {
-            super(view);
-            ButterKnife.bind(this, view);
+    @Override
+    public void hideLoading() {
+        mSwipeContainer.setRefreshing(false);
+    }
+
+    @Override
+    public void showNoResultCase(int api, HeaderData mUserData) {
+        headerUserData = mUserData;
+        if (api == ApiUtil.USERPAGE_FIRST) {
+            mUserProfAdapter.setHeaderData(headerUserData);
+            mUserProfRecyclerView.setAdapter(mUserProfAdapter);
+        } else if (api == ApiUtil.USERPAGE_REFRESH) {
+            mUserProfusers.clear();
+            mUserProfAdapter.setData(headerUserData, mUserProfusers);
+        }
+        mEmptyImage.setVisibility(View.VISIBLE);
+        mEmptyText.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideNoResultCase() {
+        mEmptyImage.setVisibility(View.INVISIBLE);
+        mEmptyText.setVisibility(View.INVISIBLE);
+    }
+
+    @Override
+    public void showError() {
+        Toast.makeText(this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void hideError() {
+
+    }
+
+    @Override
+    public void showResult(int api, HeaderData mUserData, ArrayList<PostData> mPostData) {
+        headerUserData = mUserData;
+        mUserProfusers.clear();
+        mUserProfusers.addAll(mPostData);
+        switch (api) {
+            case ApiUtil.USERPAGE_FIRST:
+                mUserProfAdapter.setHeaderData(headerUserData);
+                mUserProfRecyclerView.setAdapter(mUserProfAdapter);
+                break;
+            case ApiUtil.USERPAGE_REFRESH:
+                mUserProfAdapter.setData(headerUserData, mUserProfusers);
+                break;
         }
     }
 
-    static class GridViewHolder extends RecyclerView.ViewHolder {
-        @Bind(R.id.square_image)
-        SquareImageView mSquareImage;
-
-        public GridViewHolder(View view) {
-            super(view);
-            ButterKnife.bind(this, view);
-        }
+    @Override
+    public void onFollowListClick(int user_id) {
+        ListActivity.startListActivity(user_id, 0, Const.CATEGORY_FOLLOW, FlexibleUserProfActivity.this);
     }
 
-    public class UserProfAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    @Override
+    public void onFollowerListClick(int user_id) {
+        ListActivity.startListActivity(user_id, 0, Const.CATEGORY_FOLLOWER, FlexibleUserProfActivity.this);
+    }
 
-        private Context mContext;
-        private int cellSize;
+    @Override
+    public void onUserCheerClick(int user_id) {
+        ListActivity.startListActivity(user_id, 0, Const.CATEGORY_USER_CHEER, FlexibleUserProfActivity.this);
+    }
 
-        private boolean lockedAnimations = false;
-        private long profileHeaderAnimationStartTime = 0;
-        private int lastAnimatedItem = 0;
+    @Override
+    public void onImageClick(int post_id) {
+        CommentActivity.startCommentActivity(post_id, FlexibleUserProfActivity.this);
+    }
 
-        public static final int TYPE_PROFILE_HEADER = 0;
-        public static final int TYPE_POST = 1;
-
-        public UserProfAdapter(Context context) {
-            mContext = context;
-            this.cellSize = Util.getScreenWidth(context) / 3;
-        }
-
-        public PostData getItem(int position) {
-            return mUserProfusers.get(position);
-        }
-
-        public boolean isEmpty() {
-            return mUserProfusers.isEmpty();
-        }
-
-        @Override
-        public int getItemViewType(int position) {
-            if (position == 0) {
-                return TYPE_PROFILE_HEADER;
-            } else {
-                return TYPE_POST;
-            }
-        }
-
-        @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            if (TYPE_PROFILE_HEADER == viewType) {
-                final View view = LayoutInflater.from(mContext).inflate(R.layout.view_header_userprof, parent, false);
-                StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams) view.getLayoutParams();
-                layoutParams.setFullSpan(true);
-                view.setLayoutParams(layoutParams);
-                return new UserProfHeaderViewHolder(view);
-            } else {
-                final View view = LayoutInflater.from(mContext).inflate(R.layout.cell_grid, parent, false);
-                StaggeredGridLayoutManager.LayoutParams layoutParams = (StaggeredGridLayoutManager.LayoutParams) view.getLayoutParams();
-                layoutParams.height = cellSize;
-                layoutParams.width = cellSize;
-                layoutParams.setFullSpan(false);
-                view.setLayoutParams(layoutParams);
-                return new GridViewHolder(view);
-            }
-        }
-
-        @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            int viewType = getItemViewType(position);
-            if (TYPE_PROFILE_HEADER == viewType) {
-                bindHeader((UserProfHeaderViewHolder) holder);
-            } else {
-                PostData users = mUserProfusers.get(position - 1);
-                bindPost((GridViewHolder) holder, position, users);
-            }
-        }
-
-        private void bindHeader(final UserProfHeaderViewHolder holder) {
-            holder.mUserprofUsername.setText(headerUserData.getUsername());
-
-            holder.mFollowNum.setText(String.valueOf(headerUserData.getFollow_num()));
-            holder.mFollowerNum.setText(String.valueOf(headerUserData.getFollower_num()));
-            holder.mUsercheerNum.setText(String.valueOf(headerUserData.getCheer_num()));
-
-            holder.mFollowRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
-                @Override
-                public void onComplete(RippleView rippleView) {
-                    ListActivity.startListActivity(headerUserData.getUser_id(), 0, Const.CATEGORY_FOLLOW, FlexibleUserProfActivity.this);
-                }
-            });
-
-            holder.mFollowerRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
-                @Override
-                public void onComplete(RippleView rippleView) {
-                    ListActivity.startListActivity(headerUserData.getUser_id(), 0, Const.CATEGORY_FOLLOWER, FlexibleUserProfActivity.this);
-                }
-            });
-
-            holder.mUsercheerRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
-                @Override
-                public void onComplete(RippleView rippleView) {
-                    ListActivity.startListActivity(headerUserData.getUser_id(), 0, Const.CATEGORY_USER_CHEER, FlexibleUserProfActivity.this);
-                }
-            });
-
-            Picasso.with(FlexibleUserProfActivity.this)
-                    .load(headerUserData.getProfile_img())
-                    .fit()
-                    .placeholder(R.drawable.ic_userpicture)
-                    .transform(new RoundedTransformation())
-                    .into(holder.mUserprofPicture);
-
-            if (headerUserData.getFollow_flag() == 0) {
-                holder.mFollowText.setText(getString(R.string.do_follow));
-            } else {
-                holder.mFollowText.setText(getString(R.string.do_unfollow));
-            }
-
-            if (headerUserData.getUsername().equals(SavedData.getServerName(mContext))) {
-                holder.mFollowText.setText(getString(R.string.do_yours));
-            }
-
-            holder.mUserprof_Follow.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //お気に入りするときの処理
-                    switch (holder.mFollowText.getText().toString()) {
-                        case "フォローする":
-                            Util.followAsync(FlexibleUserProfActivity.this, headerUserData);
-                            holder.mFollowText.setText(getString(R.string.do_unfollow));
-                            break;
-                        case "フォロー解除する":
-                            Util.unfollowAsync(FlexibleUserProfActivity.this, headerUserData);
-                            holder.mFollowText.setText(getString(R.string.do_follow));
-                            break;
-                        case "これはあなたです":
-                            break;
-                    }
-                }
-            });
-
-            holder.mLocationButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    ProfMapActivity.startProfMapActivity(mUserProfusers, FlexibleUserProfActivity.this);
-                }
-            });
-        }
-
-        private void bindPost(final GridViewHolder holder, final int position, final PostData user) {
-            Picasso.with(mContext)
-                    .load(user.getThumbnail())
-                    .resize(cellSize, cellSize)
-                    .centerCrop()
-                    .into(holder.mSquareImage, new Callback() {
-                        @Override
-                        public void onSuccess() {
-                            //animatePhoto(holder);
-                        }
-
-                        @Override
-                        public void onError() {
-
-                        }
-                    });
-
-            holder.mSquareImage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    CommentActivity.startCommentActivity(Integer.parseInt(user.getPost_id()), FlexibleUserProfActivity.this);
-                }
-            });
-
-            if (lastAnimatedItem < position) lastAnimatedItem = position;
-        }
-
-        @Override
-        public int getItemCount() {
-            return mUserProfusers.size() + 1;
-        }
-
+    @Override
+    public void onLocationClick(ArrayList<PostData> postData) {
+        ProfMapActivity.startProfMapActivity(postData, FlexibleUserProfActivity.this);
     }
 }

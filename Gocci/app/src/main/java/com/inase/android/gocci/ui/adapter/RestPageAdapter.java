@@ -1,0 +1,426 @@
+package com.inase.android.gocci.ui.adapter;
+
+import android.content.Context;
+import android.content.DialogInterface;
+import android.net.Uri;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.andexert.library.RippleView;
+import com.cocosw.bottomsheet.BottomSheet;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.inase.android.gocci.Base.RoundedTransformation;
+import com.inase.android.gocci.Base.SquareImageView;
+import com.inase.android.gocci.R;
+import com.inase.android.gocci.application.Application_Gocci;
+import com.inase.android.gocci.common.Const;
+import com.inase.android.gocci.common.Util;
+import com.inase.android.gocci.data.HeaderData;
+import com.inase.android.gocci.data.PostData;
+import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
+/**
+ * Created by kinagafuji on 15/10/04.
+ */
+public class RestPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    public static final int TYPE_TENPO_HEADER = 0;
+    public static final int TYPE_POST = 1;
+
+    private Context mContext;
+    private HeaderData mRestData;
+    private ArrayList<PostData> mPostData = new ArrayList<>();
+
+    private RestPageCallback mCallback;
+
+    private MapView mMapView;
+
+    public RestPageAdapter(Context context, HeaderData restData, ArrayList<PostData> postData) {
+        this.mContext = context;
+        this.mRestData = restData;
+        this.mPostData = postData;
+    }
+
+    public void setRestPageCallback(RestPageCallback callback) {
+        mCallback = callback;
+    }
+
+    public void setData(HeaderData headerData, ArrayList<PostData> postData) {
+        mRestData = headerData;
+        mPostData = postData;
+        this.notifyDataSetChanged();
+    }
+
+    public void setHeaderData(HeaderData headerData) {
+        mRestData = headerData;
+    }
+
+    public MapView getMapView() {
+        return mMapView;
+    }
+
+    public PostData getItem(int position) {
+        return mPostData.get(position);
+    }
+
+    public boolean isEmpty() {
+        return mPostData.isEmpty();
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (position == 0) {
+            return TYPE_TENPO_HEADER;
+        } else {
+            return TYPE_POST;
+        }
+    }
+
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if (TYPE_TENPO_HEADER == viewType) {
+            final View view = LayoutInflater.from(mContext).inflate(R.layout.cell_tenpo_header, parent, false);
+            return new TenpoHeaderViewHolder(view);
+        } else {
+            final View view = LayoutInflater.from(mContext).inflate(R.layout.cell_exo_timeline, parent, false);
+            return new Const.ExoViewHolder(view);
+        }
+    }
+
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        int viewType = getItemViewType(position);
+        if (TYPE_TENPO_HEADER == viewType) {
+            bindHeader((TenpoHeaderViewHolder) holder);
+        } else {
+            PostData users = mPostData.get(position - 1);
+            bindPost((Const.ExoViewHolder) holder, users);
+        }
+    }
+
+    private void bindHeader(final TenpoHeaderViewHolder holder) {
+        if (mRestData.getWant_flag() == 0) {
+            holder.mCheckImage.setImageResource(R.drawable.ic_like_white);
+            holder.mCheckText.setText(mContext.getString(R.string.add_want));
+        } else {
+            holder.mCheckImage.setImageResource(R.drawable.ic_favorite_orange);
+            holder.mCheckText.setText(mContext.getString(R.string.remove_want));
+        }
+
+        holder.mCheckRipple.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (holder.mCheckText.getText().toString().equals(mContext.getString(R.string.add_want))) {
+                    holder.mCheckImage.setImageResource(R.drawable.ic_favorite_orange);
+                    holder.mCheckText.setText(mContext.getString(R.string.remove_want));
+
+                    Util.wantAsync(mContext, mRestData);
+                } else {
+                    holder.mCheckImage.setImageResource(R.drawable.ic_like_white);
+                    holder.mCheckText.setText(mContext.getString(R.string.add_want));
+
+                    Util.unwantAsync(mContext, mRestData);
+                }
+            }
+        });
+        holder.mCallRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
+            @Override
+            public void onComplete(RippleView rippleView) {
+                mCallback.onCallClick(Uri.parse("tel:" + mRestData.getTell()));
+            }
+        });
+
+        holder.mGoHereRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
+            @Override
+            public void onComplete(RippleView rippleView) {
+                mCallback.onGoHereClick(Uri.parse("google.navigation:q=" + mRestData.getLat() + "," + mRestData.getLon() + "&mode=w"));
+            }
+        });
+
+        holder.mEtcRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
+            @Override
+            public void onComplete(RippleView rippleView) {
+                if (!mRestData.getHomepage().equals("none")) {
+                    new MaterialDialog.Builder(mContext)
+                            .items(R.array.list_tenpo_menu)
+                            .itemsCallback(new MaterialDialog.ListCallback() {
+                                @Override
+                                public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
+                                    if (charSequence.toString().equals(mContext.getString(R.string.seeHomepage))) {
+                                        mCallback.onHomePageClick(Uri.parse(mRestData.getHomepage()));
+                                    }
+                                }
+                            })
+                            .show();
+                } else {
+                    Toast.makeText(mContext, mContext.getString(R.string.nothing_etc), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        if (holder.mGoogleMap == null) {
+            holder.mGoogleMap = holder.mMap.getMap();
+        }
+        if (holder.mGoogleMap != null) {
+            //move map to the 'location'
+            LatLng lng = new LatLng(mRestData.getLat(), mRestData.getLon());
+            holder.mGoogleMap.getUiSettings().setCompassEnabled(false);
+            holder.mGoogleMap.addMarker(new MarkerOptions().position(lng).title(mRestData.getRestname()));
+            CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .target(lng)
+                    .zoom(15)
+                    .tilt(50)
+                    .build();
+            holder.mGoogleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        }
+
+        holder.mTenpoCategory.setText(mRestData.getRest_category());
+    }
+
+    private void bindPost(final Const.ExoViewHolder holder, final PostData user) {
+        holder.mUserName.setText(user.getUsername());
+
+        holder.mTimeText.setText(user.getPost_date());
+
+        if (!user.getMemo().equals("none")) {
+            holder.mComment.setText(user.getMemo());
+        } else {
+            holder.mComment.setText("");
+        }
+
+        holder.mComment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCallback.onCommentClick(user.getPost_id());
+            }
+        });
+
+        Picasso.with(mContext)
+                .load(user.getProfile_img())
+                .placeholder(R.drawable.ic_userpicture)
+                .transform(new RoundedTransformation())
+                .into(holder.mCircleImage);
+
+        holder.mUserName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCallback.onUserClick(user.getPost_user_id(), user.getUsername());
+            }
+        });
+
+        holder.mCircleImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCallback.onUserClick(user.getPost_user_id(), user.getUsername());
+            }
+        });
+
+        holder.mMenuRipple.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new BottomSheet.Builder(mContext, R.style.BottomSheet_StyleDialog).sheet(R.menu.popup_normal).listener(new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which) {
+                            case R.id.violation:
+                                Util.setViolateDialog(mContext, user.getPost_id());
+                                break;
+                            case R.id.close:
+                                dialog.dismiss();
+                        }
+                    }
+                }).show();
+            }
+        });
+        Picasso.with(mContext)
+                .load(user.getThumbnail())
+                .placeholder(R.color.videobackground)
+                .into(holder.mVideoThumbnail);
+        holder.mVideoThumbnail.setVisibility(View.VISIBLE);
+
+        holder.mVideoFrame.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCallback.onVideoFrameClick();
+            }
+        });
+
+        holder.mRestname.setText(user.getRestname());
+        //viewHolder.locality.setText(user.getLocality());
+
+        if (!user.getCategory().equals(mContext.getString(R.string.nothing_tag))) {
+            holder.mCategory.setText(user.getCategory());
+        } else {
+            holder.mCategory.setText("　　　　");
+        }
+        if (!user.getTag().equals(mContext.getString(R.string.nothing_tag))) {
+            holder.mMood.setText(user.getTag());
+        } else {
+            holder.mMood.setText("　　　　");
+        }
+        if (!user.getValue().equals("0")) {
+            holder.mValue.setText(user.getValue() + "円");
+        } else {
+            holder.mValue.setText("　　　　");
+        }
+
+        final int currentgoodnum = user.getGochi_num();
+        final int currentcommentnum = user.getComment_num();
+
+        holder.mLikesNumber.setText(String.valueOf(currentgoodnum));
+        holder.mCommentsNumber.setText(String.valueOf(currentcommentnum));
+
+        if (user.getGochi_flag() == 0) {
+            holder.mLikesRipple.setClickable(true);
+            holder.mLikesImage.setImageResource(R.drawable.ic_icon_beef);
+
+            holder.mLikesRipple.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    user.setGochi_flag(1);
+                    user.setGochi_num(currentgoodnum + 1);
+
+                    holder.mLikesNumber.setText(String.valueOf((currentgoodnum + 1)));
+                    holder.mLikesImage.setImageResource(R.drawable.ic_icon_beef_orange);
+                    holder.mLikesRipple.setClickable(false);
+
+                    Util.postGochiAsync(mContext, user);
+                }
+            });
+        } else {
+            holder.mLikesImage.setImageResource(R.drawable.ic_icon_beef_orange);
+            holder.mLikesRipple.setClickable(false);
+        }
+
+        holder.mCommentsRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
+            @Override
+            public void onComplete(RippleView rippleView) {
+                mCallback.onCommentClick(user.getPost_id());
+            }
+        });
+
+        holder.mShareRipple.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Application_Gocci.getShareTransfer() != null) {
+                    new BottomSheet.Builder(mContext, R.style.BottomSheet_StyleDialog).sheet(R.menu.menu_share).listener(new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            switch (which) {
+                                case R.id.facebook_share:
+                                    Toast.makeText(mContext, mContext.getString(R.string.preparing_share), Toast.LENGTH_LONG).show();
+                                    mCallback.onFacebookShare(user.getShare());
+                                    break;
+                                case R.id.twitter_share:
+                                    mCallback.onTwitterShare(holder.mVideoThumbnail, user.getRestname());
+                                    break;
+                                case R.id.other_share:
+                                    Toast.makeText(mContext, mContext.getString(R.string.preparing_share), Toast.LENGTH_LONG).show();
+                                    mCallback.onInstaShare(user.getShare(), user.getRestname());
+                                    break;
+                                case R.id.close:
+                                    dialog.dismiss();
+                            }
+                        }
+                    }).show();
+                } else {
+                    Toast.makeText(mContext, mContext.getString(R.string.preparing_share_error), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        mCallback.onHashHolder(holder, user.getPost_id());
+    }
+
+    @Override
+    public int getItemCount() {
+        return mPostData.size() + 1;
+    }
+
+    public class TenpoHeaderViewHolder extends RecyclerView.ViewHolder implements OnMapReadyCallback {
+        @Bind(R.id.category)
+        TextView mTenpoCategory;
+        @Bind(R.id.check_ripple)
+        RippleView mCheckRipple;
+        @Bind(R.id.check_image)
+        ImageView mCheckImage;
+        @Bind(R.id.check_text)
+        TextView mCheckText;
+        @Bind(R.id.call_ripple)
+        RippleView mCallRipple;
+        @Bind(R.id.go_here_ripple)
+        RippleView mGoHereRipple;
+        @Bind(R.id.etc_ripple)
+        RippleView mEtcRipple;
+        @Bind(R.id.map)
+        MapView mMap;
+        private GoogleMap mGoogleMap;
+
+        public TenpoHeaderViewHolder(View view) {
+            super(view);
+            ButterKnife.bind(this, view);
+
+            if (mMap != null) {
+                mMap.onCreate(null);
+                mMap.onResume();
+                mMapView = mMap;
+                mMap.getMapAsync(this);
+            }
+        }
+
+        @Override
+        public void onMapReady(GoogleMap googleMap) {
+            MapsInitializer.initialize(mContext);
+            mGoogleMap = googleMap;
+
+            LatLng lng = new LatLng(mRestData.getLat(), mRestData.getLon());
+            mGoogleMap.getUiSettings().setCompassEnabled(false);
+            mGoogleMap.addMarker(new MarkerOptions().position(lng).title(mRestData.getRestname()));
+            CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .target(lng)
+                    .zoom(15)
+                    .tilt(50)
+                    .build();
+            mGoogleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        }
+    }
+
+    public interface RestPageCallback {
+        void onCallClick(Uri tel);
+
+        void onGoHereClick(Uri uri);
+
+        void onHomePageClick(Uri uri);
+
+        void onUserClick(int user_id, String user_name);
+
+        void onCommentClick(String post_id);
+
+        void onVideoFrameClick();
+
+        void onFacebookShare(String share);
+
+        void onTwitterShare(SquareImageView view, String rest_name);
+
+        void onInstaShare(String share, String rest_name);
+
+        void onHashHolder(Const.ExoViewHolder holder, String post_id);
+    }
+}

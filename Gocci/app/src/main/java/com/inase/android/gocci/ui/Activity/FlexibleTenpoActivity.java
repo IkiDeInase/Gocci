@@ -1,8 +1,6 @@
 package com.inase.android.gocci.ui.activity;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Point;
@@ -22,21 +20,16 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
-import com.andexert.library.RippleView;
-import com.cocosw.bottomsheet.BottomSheet;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -50,29 +43,27 @@ import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.google.android.exoplayer.audio.AudioCapabilities;
 import com.google.android.exoplayer.audio.AudioCapabilitiesReceiver;
 import com.google.android.exoplayer.drm.UnsupportedDrmException;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.MapsInitializer;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.inase.android.gocci.application.Application_Gocci;
-import com.inase.android.gocci.Base.RoundedTransformation;
-import com.inase.android.gocci.event.BusHolder;
-import com.inase.android.gocci.event.NotificationNumberEvent;
+import com.inase.android.gocci.Base.SquareImageView;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.VideoPlayer.HlsRendererBuilder;
 import com.inase.android.gocci.VideoPlayer.VideoPlayer;
-import com.inase.android.gocci.ui.view.CustomKenBurnsView;
-import com.inase.android.gocci.ui.view.DrawerProfHeader;
 import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;
 import com.inase.android.gocci.common.Util;
 import com.inase.android.gocci.data.HeaderData;
 import com.inase.android.gocci.data.PostData;
-import com.loopj.android.http.TextHttpResponseHandler;
+import com.inase.android.gocci.datasource.api.ApiUtil;
+import com.inase.android.gocci.datasource.repository.UserAndRestDataRepository;
+import com.inase.android.gocci.datasource.repository.UserAndRestDataRepositoryImpl;
+import com.inase.android.gocci.domain.executor.UIThread;
+import com.inase.android.gocci.domain.usecase.RestPageUseCaseImpl;
+import com.inase.android.gocci.domain.usecase.UserAndRestUseCase;
+import com.inase.android.gocci.event.BusHolder;
+import com.inase.android.gocci.event.NotificationNumberEvent;
+import com.inase.android.gocci.presenter.ShowRestPagePresenter;
+import com.inase.android.gocci.ui.adapter.RestPageAdapter;
+import com.inase.android.gocci.ui.view.CustomKenBurnsView;
+import com.inase.android.gocci.ui.view.DrawerProfHeader;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
@@ -85,11 +76,6 @@ import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
-import cz.msebera.android.httpclient.Header;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -98,7 +84,9 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.fabric.sdk.android.Fabric;
 
-public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCapabilitiesReceiver.Listener, ObservableScrollViewCallbacks, AppBarLayout.OnOffsetChangedListener {
+public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCapabilitiesReceiver.Listener,
+        ObservableScrollViewCallbacks, AppBarLayout.OnOffsetChangedListener,
+        ShowRestPagePresenter.ShowRestView, RestPageAdapter.RestPageCallback {
 
     @Bind(R.id.background_image)
     CustomKenBurnsView mBackgroundImage;
@@ -119,19 +107,15 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
     @Bind(R.id.coordinator_layout)
     CoordinatorLayout mCoordinatorLayout;
 
-    private String mTenpoUrl;
-
-    private MapView mapView;
-
     private int mWant_flag;
     private int mTotal_cheer_num;
     private TextView cheer_number;
 
     private ArrayList<PostData> mTenpousers = new ArrayList<PostData>();
-    private TenpoAdapter mTenpoAdapter;
+    private RestPageAdapter mRestPageAdapter;
     private LinearLayoutManager mLayoutManager;
 
-    private HeaderData headerTenpoData;
+    private HeaderData mHeaderRestData;
 
     private int mRest_id;
 
@@ -152,8 +136,6 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
     private int visibleThreshold = 5;
     int firstVisibleItem, visibleItemCount, totalItemCount;
 
-    private String addUrl;
-
     private Drawer result;
 
     private final FlexibleTenpoActivity self = this;
@@ -161,11 +143,11 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
     private VideoPlayer player;
     private boolean playerNeedsPrepare;
 
-    private long playerPosition;
-
     private AudioCapabilitiesReceiver audioCapabilitiesReceiver;
 
     private static MobileAnalyticsManager analytics;
+
+    private ShowRestPagePresenter mPresenter;
 
     private ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
         @Override
@@ -173,7 +155,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
             if (isSee) {
                 changeMovie();
             }
-            if (mPlayingPostId != null || !isExist) {
+            if (mPlayingPostId != null && !isExist) {
                 mTenpoRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         }
@@ -253,6 +235,11 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
 
         Fabric.with(this, new TweetComposer());
 
+        UserAndRestDataRepository userAndRestDataRepositoryImpl = UserAndRestDataRepositoryImpl.getRepository();
+        UserAndRestUseCase userAndRestUseCaseImpl = RestPageUseCaseImpl.getUseCase(userAndRestDataRepositoryImpl, UIThread.getInstance());
+        mPresenter = new ShowRestPagePresenter(userAndRestUseCaseImpl);
+        mPresenter.setRestView(this);
+
         mPlayBlockFlag = false;
 
         // 初期化処理
@@ -265,8 +252,6 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
         Intent intent = getIntent();
         mRest_id = intent.getIntExtra("rest_id", 0);
 
-        mTenpoUrl = Const.getRestpageAPI(mRest_id);
-
         //toolbar.inflateMenu(R.menu.toolbar_menu);
         //toolbar.setLogo(R.drawable.ic_gocci_moji_white45);
         setSupportActionBar(mToolBar);
@@ -277,9 +262,10 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
         mTenpoRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
         mTenpoRecyclerView.setScrollViewCallbacks(this);
 
-        mTenpoAdapter = new TenpoAdapter(FlexibleTenpoActivity.this);
+        mRestPageAdapter = new RestPageAdapter(this, mHeaderRestData, mTenpousers);
+        mRestPageAdapter.setRestPageCallback(this);
 
-        getSignupAsync(FlexibleTenpoActivity.this);
+        mPresenter.getRestData(ApiUtil.RESTPAGE_FIRST, Const.getRestpageAPI(mRest_id));
 
         result = new DrawerBuilder()
                 .withActivity(this)
@@ -407,7 +393,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
             public void onRefresh() {
                 mSwipeContainer.setRefreshing(true);
                 if (Util.getConnectedState(FlexibleTenpoActivity.this) != Util.NetworkStatus.OFF) {
-                    getRefreshAsync(FlexibleTenpoActivity.this);
+                    mPresenter.getRestData(ApiUtil.RESTPAGE_REFRESH, Const.getRestpageAPI(mRest_id));
                 } else {
                     Toast.makeText(FlexibleTenpoActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
                     mSwipeContainer.setRefreshing(false);
@@ -418,8 +404,8 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
 
     @Override
     public final void onDestroy() {
-        if (mapView != null) {
-            mapView.onDestroy();
+        if (mRestPageAdapter.getMapView() != null) {
+            mRestPageAdapter.getMapView().onDestroy();
         }
         super.onDestroy();
         audioCapabilitiesReceiver.unregister();
@@ -430,15 +416,15 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
     @Override
     public final void onLowMemory() {
         super.onLowMemory();
-        if (mapView != null) {
-            mapView.onLowMemory();
+        if (mRestPageAdapter.getMapView() != null) {
+            mRestPageAdapter.getMapView().onLowMemory();
         }
     }
 
     @Override
     public final void onPause() {
-        if (mapView != null) {
-            mapView.onPause();
+        if (mRestPageAdapter.getMapView() != null) {
+            mRestPageAdapter.getMapView().onPause();
         }
         super.onPause();
         if (analytics != null) {
@@ -453,7 +439,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
         releasePlayer();
 
         mAppBar.removeOnOffsetChangedListener(this);
-
+        mPresenter.pause();
     }
 
     @Override
@@ -463,12 +449,12 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
             analytics.getSessionClient().resumeSession();
         }
         BusHolder.get().register(self);
-        if (mapView != null) {
-            mapView.onResume();
+        if (mRestPageAdapter.getMapView() != null) {
+            mRestPageAdapter.getMapView().onResume();
         }
 
         if (player == null) {
-            if (mPlayingPostId != null || !isExist) {
+            if (mPlayingPostId != null && !isExist) {
                 releasePlayer();
                 if (Util.isMovieAutoPlay(this)) {
                     preparePlayer(getPlayingViewHolder(), getVideoPath());
@@ -478,6 +464,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
             player.setBackgrounded(false);
         }
         mAppBar.addOnOffsetChangedListener(this);
+        mPresenter.resume();
     }
 
     @Override
@@ -492,7 +479,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
         if (player == null) {
             return;
         }
-        if (mPlayingPostId != null || !isExist) {
+        if (mPlayingPostId != null && !isExist) {
             releasePlayer();
             if (Util.isMovieAutoPlay(this)) {
                 preparePlayer(getPlayingViewHolder(), getVideoPath());
@@ -531,105 +518,14 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
     public final void onSaveInstanceState(Bundle outState) {
         outState = result.saveInstanceState(outState);
         super.onSaveInstanceState(outState);
-        if (mapView != null) {
-            mapView.onSaveInstanceState(outState);
+        if (mRestPageAdapter.getMapView() != null) {
+            mRestPageAdapter.getMapView().onSaveInstanceState(outState);
         }
-    }
-
-    private void getSignupAsync(final Context context) {
-        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(context, mTenpoUrl, new TextHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                try {
-                    JSONObject jsonObject = new JSONObject(responseString);
-                    JSONObject headerObject = jsonObject.getJSONObject("restaurants");
-                    JSONArray postsObject = jsonObject.getJSONArray("posts");
-
-                    headerTenpoData = HeaderData.createTenpoHeaderData(headerObject);
-
-                    for (int i = 0; i < postsObject.length(); i++) {
-                        JSONObject post = postsObject.getJSONObject(i);
-                        mTenpousers.add(PostData.createPostData(post));
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                if (!mTenpousers.isEmpty()) {
-                    Picasso.with(context).load(mTenpousers.get(0).getThumbnail()).into(new Target() {
-                        @Override
-                        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                            mBackgroundImage.setImageBitmap(bitmap);
-                        }
-
-                        @Override
-                        public void onBitmapFailed(Drawable errorDrawable) {
-
-                        }
-
-                        @Override
-                        public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                        }
-                    });
-                } else {
-                    mBackgroundImage.setImageResource(R.drawable.ic_background_login);
-                }
-
-                mTenpoRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
-                mTenpoRecyclerView.setAdapter(mTenpoAdapter);
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                Toast.makeText(FlexibleTenpoActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void getRefreshAsync(final Context context) {
-        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(context, mTenpoUrl, new TextHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                mTenpousers.clear();
-                try {
-                    JSONObject jsonObject = new JSONObject(responseString);
-                    JSONObject headerObject = jsonObject.getJSONObject("restaurants");
-                    JSONArray postsObject = jsonObject.getJSONArray("posts");
-
-                    headerTenpoData = HeaderData.createTenpoHeaderData(headerObject);
-
-                    for (int i = 0; i < postsObject.length(); i++) {
-                        JSONObject post = postsObject.getJSONObject(i);
-                        mTenpousers.add(PostData.createPostData(post));
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                mPlayingPostId = null;
-                mViewHolderHash.clear();
-                mTenpoRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
-                mTenpoAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                Toast.makeText(FlexibleTenpoActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onFinish() {
-                mSwipeContainer.setRefreshing(false);
-            }
-        });
     }
 
     private String getVideoPath() {
         final int position = mTenpoRecyclerView.getChildAdapterPosition(mTenpoRecyclerView.findChildViewUnder(mDisplaySize.x / 2, mDisplaySize.y / 2));
-        final PostData userData = mTenpoAdapter.getItem(position - 1);
+        final PostData userData = mRestPageAdapter.getItem(position - 1);
         if (!userData.getPost_id().equals(mPlayingPostId)) {
             return null;
         }
@@ -708,14 +604,14 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
     private void changeMovie() {
         // TODO:実装
         final int position = mTenpoRecyclerView.getChildAdapterPosition(mTenpoRecyclerView.findChildViewUnder(mDisplaySize.x / 2, mDisplaySize.y / 2));
-        if (mTenpoAdapter.isEmpty()) {
+        if (mRestPageAdapter.isEmpty()) {
             return;
         }
         if (position - 1 < 0) {
             return;
         }
 
-        final PostData userData = mTenpoAdapter.getItem(position - 1);
+        final PostData userData = mRestPageAdapter.getItem(position - 1);
         if (!userData.getPost_id().equals(mPlayingPostId)) {
 
             // 前回の動画再生停止処理
@@ -777,363 +673,150 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
         mSwipeContainer.setEnabled(i == 0);
     }
 
-    public class TenpoHeaderViewHolder extends RecyclerView.ViewHolder implements OnMapReadyCallback {
-        @Bind(R.id.category)
-        TextView mTenpoCategory;
-        @Bind(R.id.check_ripple)
-        RippleView mCheckRipple;
-        @Bind(R.id.check_image)
-        ImageView mCheckImage;
-        @Bind(R.id.check_text)
-        TextView mCheckText;
-        @Bind(R.id.call_ripple)
-        RippleView mCallRipple;
-        @Bind(R.id.go_here_ripple)
-        RippleView mGoHereRipple;
-        @Bind(R.id.etc_ripple)
-        RippleView mEtcRipple;
-        @Bind(R.id.map)
-        MapView mMap;
-        private GoogleMap mGoogleMap;
+    @Override
+    public void onCallClick(Uri tel) {
+        Intent intent = new Intent(Intent.ACTION_DIAL, tel);
+        startActivity(intent);
+        overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+    }
 
-        public TenpoHeaderViewHolder(View view) {
-            super(view);
-            ButterKnife.bind(this, view);
+    @Override
+    public void onGoHereClick(Uri uri) {
+        Intent mapIntent = new Intent(Intent.ACTION_VIEW, uri);
+        mapIntent.setPackage("com.google.android.apps.maps");
+        startActivity(mapIntent);
+        overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+    }
 
-            if (mMap != null) {
-                mMap.onCreate(null);
-                mMap.onResume();
-                mapView = mMap;
-                mMap.getMapAsync(this);
+    @Override
+    public void onHomePageClick(Uri uri) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+        startActivity(intent);
+        overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+    }
+
+    @Override
+    public void onUserClick(int user_id, String user_name) {
+        FlexibleUserProfActivity.startUserProfActivity(user_id, user_name, this);
+    }
+
+    @Override
+    public void onCommentClick(String post_id) {
+        CommentActivity.startCommentActivity(Integer.parseInt(post_id), this);
+
+    }
+
+    @Override
+    public void onVideoFrameClick() {
+        if (player != null) {
+            if (player.getPlayerControl().isPlaying()) {
+                player.getPlayerControl().pause();
+            } else {
+                player.getPlayerControl().start();
             }
-        }
-
-        @Override
-        public void onMapReady(GoogleMap googleMap) {
-            MapsInitializer.initialize(getApplicationContext());
-            mGoogleMap = googleMap;
-
-            LatLng lng = new LatLng(headerTenpoData.getLat(), headerTenpoData.getLon());
-            mGoogleMap.getUiSettings().setCompassEnabled(false);
-            mGoogleMap.addMarker(new MarkerOptions().position(lng).title(headerTenpoData.getRestname()));
-            CameraPosition cameraPosition = new CameraPosition.Builder()
-                    .target(lng)
-                    .zoom(15)
-                    .tilt(50)
-                    .build();
-            mGoogleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        } else {
+            if (!Util.isMovieAutoPlay(this)) {
+                releasePlayer();
+                preparePlayer(getPlayingViewHolder(), getVideoPath());
+            }
         }
     }
 
-    public class TenpoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-        public static final int TYPE_TENPO_HEADER = 0;
-        public static final int TYPE_POST = 1;
+    @Override
+    public void onFacebookShare(String share) {
+        Util.facebookVideoShare(this, shareDialog, share);
 
-        private Context context;
+    }
 
-        public TenpoAdapter(Context context) {
-            this.context = context;
+    @Override
+    public void onTwitterShare(SquareImageView view, String rest_name) {
+        Util.twitterShare(this, view, rest_name);
+
+    }
+
+    @Override
+    public void onInstaShare(String share, String rest_name) {
+        Util.instaVideoShare(this, rest_name, share);
+
+    }
+
+    @Override
+    public void onHashHolder(Const.ExoViewHolder holder, String post_id) {
+        mViewHolderHash.put(holder, post_id);
+    }
+
+    @Override
+    public void showLoading() {
+        mSwipeContainer.setRefreshing(true);
+    }
+
+    @Override
+    public void hideLoading() {
+        mSwipeContainer.setRefreshing(false);
+    }
+
+    @Override
+    public void showNoResultCase(int api, HeaderData restData) {
+        mHeaderRestData = restData;
+        if (api == ApiUtil.RESTPAGE_FIRST) {
+            mBackgroundImage.setImageResource(R.drawable.ic_background_login);
+            mRestPageAdapter.setHeaderData(mHeaderRestData);
+            mTenpoRecyclerView.setAdapter(mRestPageAdapter);
+        } else if (api == ApiUtil.USERPAGE_REFRESH) {
+            mTenpousers.clear();
+            mRestPageAdapter.setData(mHeaderRestData, mTenpousers);
         }
+    }
 
-        public PostData getItem(int position) {
-            return mTenpousers.get(position);
-        }
+    @Override
+    public void hideNoResultCase() {
 
-        public boolean isEmpty() {
-            return mTenpousers.isEmpty();
-        }
+    }
 
-        @Override
-        public int getItemViewType(int position) {
-            if (position == 0) {
-                return TYPE_TENPO_HEADER;
-            } else {
-                return TYPE_POST;
-            }
-        }
+    @Override
+    public void showError() {
+        Toast.makeText(this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
+    }
 
-        @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            if (TYPE_TENPO_HEADER == viewType) {
-                final View view = LayoutInflater.from(context).inflate(R.layout.cell_tenpo_header, parent, false);
-                return new TenpoHeaderViewHolder(view);
-            } else {
-                final View view = LayoutInflater.from(context).inflate(R.layout.cell_exo_timeline, parent, false);
-                return new Const.ExoViewHolder(view);
-            }
-        }
+    @Override
+    public void hideError() {
 
-        @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            int viewType = getItemViewType(position);
-            if (TYPE_TENPO_HEADER == viewType) {
-                bindHeader((TenpoHeaderViewHolder) holder);
-            } else {
-                PostData users = mTenpousers.get(position - 1);
-                bindPost((Const.ExoViewHolder) holder, position - 1, users);
-            }
-        }
+    }
 
-        private void bindHeader(final TenpoHeaderViewHolder holder) {
-            if (headerTenpoData.getWant_flag() == 0) {
-                holder.mCheckImage.setImageResource(R.drawable.ic_like_white);
-                holder.mCheckText.setText(getString(R.string.add_want));
-            } else {
-                holder.mCheckImage.setImageResource(R.drawable.ic_favorite_orange);
-                holder.mCheckText.setText(getString(R.string.remove_want));
-            }
+    @Override
+    public void showResult(int api, HeaderData restData, ArrayList<PostData> mPostData) {
+        mHeaderRestData = restData;
+        mTenpousers.clear();
+        mTenpousers.addAll(mPostData);
 
-            holder.mCheckRipple.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (holder.mCheckText.getText().toString().equals(getString(R.string.add_want))) {
-                        holder.mCheckImage.setImageResource(R.drawable.ic_favorite_orange);
-                        holder.mCheckText.setText(getString(R.string.remove_want));
-
-                        Util.wantAsync(context, headerTenpoData);
-                    } else {
-                        holder.mCheckImage.setImageResource(R.drawable.ic_like_white);
-                        holder.mCheckText.setText(getString(R.string.add_want));
-
-                        Util.unwantAsync(context, headerTenpoData);
-                    }
-                }
-            });
-            holder.mCallRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
-                @Override
-                public void onComplete(RippleView rippleView) {
-                    Intent intent = new Intent(
-                            Intent.ACTION_DIAL,
-                            Uri.parse("tel:" + headerTenpoData.getTell()));
-                    startActivity(intent);
-                    overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-                }
-            });
-
-            holder.mGoHereRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
-                @Override
-                public void onComplete(RippleView rippleView) {
-                    Uri gmmIntentUri = Uri.parse("google.navigation:q=" + headerTenpoData.getLat() + "," + headerTenpoData.getLon() + "&mode=w");
-                    Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-                    mapIntent.setPackage("com.google.android.apps.maps");
-                    startActivity(mapIntent);
-                    overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-                }
-            });
-
-            holder.mEtcRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
-                @Override
-                public void onComplete(RippleView rippleView) {
-                    if (!headerTenpoData.getHomepage().equals("none")) {
-                        new MaterialDialog.Builder(FlexibleTenpoActivity.this)
-                                .items(R.array.list_tenpo_menu)
-                                .itemsCallback(new MaterialDialog.ListCallback() {
-                                    @Override
-                                    public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
-                                        if (charSequence.toString().equals(getString(R.string.seeHomepage))) {
-                                            Uri uri = Uri.parse(headerTenpoData.getHomepage());
-                                            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                                            startActivity(intent);
-                                            overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-                                        }
-                                    }
-                                })
-                                .show();
-                    } else {
-                        Toast.makeText(FlexibleTenpoActivity.this, getString(R.string.nothing_etc), Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
-
-            if (holder.mGoogleMap == null) {
-                holder.mGoogleMap = holder.mMap.getMap();
-            }
-            if (holder.mGoogleMap != null) {
-                //move map to the 'location'
-                LatLng lng = new LatLng(headerTenpoData.getLat(), headerTenpoData.getLon());
-                holder.mGoogleMap.getUiSettings().setCompassEnabled(false);
-                holder.mGoogleMap.addMarker(new MarkerOptions().position(lng).title(headerTenpoData.getRestname()));
-                CameraPosition cameraPosition = new CameraPosition.Builder()
-                        .target(lng)
-                        .zoom(15)
-                        .tilt(50)
-                        .build();
-                holder.mGoogleMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-            }
-
-            holder.mTenpoCategory.setText(headerTenpoData.getRest_category());
-        }
-
-        private void bindPost(final Const.ExoViewHolder holder, final int position, final PostData user) {
-            holder.mUserName.setText(user.getUsername());
-
-            holder.mTimeText.setText(user.getPost_date());
-
-            if (!user.getMemo().equals("none")) {
-                holder.mComment.setText(user.getMemo());
-            } else {
-                holder.mComment.setText("");
-            }
-
-            holder.mComment.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    CommentActivity.startCommentActivity(Integer.parseInt(user.getPost_id()), FlexibleTenpoActivity.this);
-                }
-            });
-
-            Picasso.with(FlexibleTenpoActivity.this)
-                    .load(user.getProfile_img())
-                    .placeholder(R.drawable.ic_userpicture)
-                    .transform(new RoundedTransformation())
-                    .into(holder.mCircleImage);
-
-            holder.mUserName.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    FlexibleUserProfActivity.startUserProfActivity(user.getPost_user_id(), user.getUsername(), FlexibleTenpoActivity.this);
-                }
-            });
-
-            holder.mCircleImage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    FlexibleUserProfActivity.startUserProfActivity(user.getPost_user_id(), user.getUsername(), FlexibleTenpoActivity.this);
-                }
-            });
-
-            holder.mMenuRipple.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    new BottomSheet.Builder(FlexibleTenpoActivity.this, R.style.BottomSheet_StyleDialog).sheet(R.menu.popup_normal).listener(new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            switch (which) {
-                                case R.id.violation:
-                                    Util.setViolateDialog(FlexibleTenpoActivity.this, user.getPost_id());
-                                    break;
-                                case R.id.close:
-                                    dialog.dismiss();
-                            }
-                        }
-                    }).show();
-                }
-            });
-            Picasso.with(context)
-                    .load(user.getThumbnail())
-                    .placeholder(R.color.videobackground)
-                    .into(holder.mVideoThumbnail);
-            holder.mVideoThumbnail.setVisibility(View.VISIBLE);
-
-            holder.mVideoFrame.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (player != null) {
-                        if (player.getPlayerControl().isPlaying()) {
-                            player.getPlayerControl().pause();
-                        } else {
-                            player.getPlayerControl().start();
-                        }
-                    } else {
-                        if (!Util.isMovieAutoPlay(context)) {
-                            releasePlayer();
-                            preparePlayer(holder, user.getMovie());
-                        }
-                    }
-                }
-            });
-
-
-            holder.mRestname.setText(user.getRestname());
-            //viewHolder.locality.setText(user.getLocality());
-
-            if (!user.getCategory().equals(getString(R.string.nothing_tag))) {
-                holder.mCategory.setText(user.getCategory());
-            } else {
-                holder.mCategory.setText("　　　　");
-            }
-            if (!user.getTag().equals(getString(R.string.nothing_tag))) {
-                holder.mMood.setText(user.getTag());
-            } else {
-                holder.mMood.setText("　　　　");
-            }
-            if (!user.getValue().equals("0")) {
-                holder.mValue.setText(user.getValue() + "円");
-            } else {
-                holder.mValue.setText("　　　　");
-            }
-
-            final int currentgoodnum = user.getGochi_num();
-            final int currentcommentnum = user.getComment_num();
-
-            holder.mLikesNumber.setText(String.valueOf(currentgoodnum));
-            holder.mCommentsNumber.setText(String.valueOf(currentcommentnum));
-
-            if (user.getGochi_flag() == 0) {
-                holder.mLikesRipple.setClickable(true);
-                holder.mLikesImage.setImageResource(R.drawable.ic_icon_beef);
-
-                holder.mLikesRipple.setOnClickListener(new View.OnClickListener() {
+        switch (api) {
+            case ApiUtil.RESTPAGE_FIRST:
+                Picasso.with(this).load(mTenpousers.get(0).getThumbnail()).into(new Target() {
                     @Override
-                    public void onClick(View v) {
-                        user.setGochi_flag(1);
-                        user.setGochi_num(currentgoodnum + 1);
+                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                        mBackgroundImage.setImageBitmap(bitmap);
+                    }
 
-                        holder.mLikesNumber.setText(String.valueOf((currentgoodnum + 1)));
-                        holder.mLikesImage.setImageResource(R.drawable.ic_icon_beef_orange);
-                        holder.mLikesRipple.setClickable(false);
+                    @Override
+                    public void onBitmapFailed(Drawable errorDrawable) {
 
-                        Util.postGochiAsync(context, user);
+                    }
+
+                    @Override
+                    public void onPrepareLoad(Drawable placeHolderDrawable) {
+
                     }
                 });
-            } else {
-                holder.mLikesImage.setImageResource(R.drawable.ic_icon_beef_orange);
-                holder.mLikesRipple.setClickable(false);
-            }
-
-            holder.mCommentsRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
-                @Override
-                public void onComplete(RippleView rippleView) {
-                    CommentActivity.startCommentActivity(Integer.parseInt(user.getPost_id()), FlexibleTenpoActivity.this);
-                }
-            });
-
-            holder.mShareRipple.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (Application_Gocci.getShareTransfer() != null) {
-                        new BottomSheet.Builder(context, R.style.BottomSheet_StyleDialog).sheet(R.menu.menu_share).listener(new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                switch (which) {
-                                    case R.id.facebook_share:
-                                        Toast.makeText(FlexibleTenpoActivity.this, getString(R.string.preparing_share), Toast.LENGTH_LONG).show();
-                                        Util.facebookVideoShare(context, shareDialog, user.getShare());
-                                        break;
-                                    case R.id.twitter_share:
-                                        Util.twitterShare(context, holder.mVideoThumbnail, user.getRestname());
-                                        break;
-                                    case R.id.other_share:
-                                        Toast.makeText(FlexibleTenpoActivity.this, getString(R.string.preparing_share), Toast.LENGTH_LONG).show();
-                                        Util.instaVideoShare(context, user.getRestname(), user.getShare());
-                                        break;
-                                    case R.id.close:
-                                        dialog.dismiss();
-                                }
-                            }
-                        }).show();
-                    } else {
-                        Toast.makeText(FlexibleTenpoActivity.this, getString(R.string.preparing_share_error), Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
-
-            mViewHolderHash.put(holder, user.getPost_id());
-        }
-
-        @Override
-        public int getItemCount() {
-            return mTenpousers.size() + 1;
+                mRestPageAdapter.setHeaderData(mHeaderRestData);
+                mTenpoRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
+                mTenpoRecyclerView.setAdapter(mRestPageAdapter);
+                break;
+            case ApiUtil.RESTPAGE_REFRESH:
+                mPlayingPostId = null;
+                mViewHolderHash.clear();
+                mTenpoRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
+                mRestPageAdapter.setData(mHeaderRestData, mTenpousers);
+                break;
         }
     }
 }
