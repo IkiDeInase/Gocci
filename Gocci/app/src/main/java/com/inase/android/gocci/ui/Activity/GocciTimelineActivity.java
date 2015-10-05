@@ -174,8 +174,8 @@ public class GocciTimelineActivity extends AppCompatActivity {
                 .addDrawerItems(
                         new PrimaryDrawerItem().withName(getString(R.string.timeline)).withIcon(GoogleMaterial.Icon.gmd_home).withIdentifier(1).withSelectable(false),
                         new PrimaryDrawerItem().withName(getString(R.string.mypage)).withIcon(GoogleMaterial.Icon.gmd_person).withIdentifier(2).withSelectable(false),
-                        new PrimaryDrawerItem().withName("気分から見つける").withIcon(GoogleMaterial.Icon.gmd_gesture).withIdentifier(6).withSelectable(false),
-                        new PrimaryDrawerItem().withName("場所から見つける").withIcon(GoogleMaterial.Icon.gmd_place).withIdentifier(7).withSelectable(false),
+                        new PrimaryDrawerItem().withName("気分タイムライン").withIcon(GoogleMaterial.Icon.gmd_gesture).withIdentifier(6).withSelectable(false),
+                        new PrimaryDrawerItem().withName("位置タイムライン").withIcon(GoogleMaterial.Icon.gmd_place).withIdentifier(7).withSelectable(false),
                         new DividerDrawerItem(),
                         new PrimaryDrawerItem().withName(getString(R.string.send_advice)).withIcon(GoogleMaterial.Icon.gmd_send).withSelectable(false).withIdentifier(3),
                         new PrimaryDrawerItem().withName(SavedData.getSettingMute(this) == 0 ? getString(R.string.setting_support_mute) : getString(R.string.setting_support_unmute)).withIcon(GoogleMaterial.Icon.gmd_volume_mute).withSelectable(false).withIdentifier(5),

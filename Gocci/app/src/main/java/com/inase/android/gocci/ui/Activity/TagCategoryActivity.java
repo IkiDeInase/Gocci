@@ -220,7 +220,7 @@ public class TagCategoryActivity extends AppCompatActivity {
                 .create());
 
         viewpager.setAdapter(adapter);
-        viewpager.setOffscreenPageLimit(5);
+        viewpager.setOffscreenPageLimit(8);
 
         smartTab.setViewPager(viewpager);
         smartTab.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {

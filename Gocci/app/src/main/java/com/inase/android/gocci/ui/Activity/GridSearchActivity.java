@@ -460,6 +460,7 @@ public class GridSearchActivity extends AppCompatActivity implements AppBarLayou
                 mLongitude = location.getLongitude();
                 category_id = 0;
                 categorySpinner.setText("");
+                place.setText("現在地");
                 Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
                 Const.asyncHttpClient.get(context, Const.getCustomGridSearchAPI(mLongitude, mLatitude, 0, category_id), new JsonHttpResponseHandler() {
 
