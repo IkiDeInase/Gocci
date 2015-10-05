@@ -16,6 +16,15 @@ import android.widget.Toast;
 
 import com.github.jorgecastilloprz.FABProgressCircle;
 import com.github.jorgecastilloprz.listeners.FABProgressListener;
+import com.inase.android.gocci.datasource.api.ApiUtil;
+import com.inase.android.gocci.datasource.repository.LoginRepository;
+import com.inase.android.gocci.datasource.repository.LoginRepositoryImpl;
+import com.inase.android.gocci.domain.executor.UIThread;
+import com.inase.android.gocci.domain.model.User;
+import com.inase.android.gocci.domain.usecase.UserLoginUseCase;
+import com.inase.android.gocci.domain.usecase.UserLoginUseCaseImpl;
+import com.inase.android.gocci.event.BusHolder;
+import com.inase.android.gocci.presenter.ShowUserLoginPresenter;
 import com.inase.android.gocci.ui.activity.TutorialGuideActivity;
 import com.inase.android.gocci.ui.activity.WebViewActivity;
 import com.inase.android.gocci.application.Application_Gocci;
@@ -35,7 +44,9 @@ import butterknife.OnClick;
 /**
  * Created by kinagafuji on 15/08/05.
  */
-public class CreateUserNameFragment extends Fragment implements FABProgressListener {
+public class CreateUserNameFragment extends Fragment implements FABProgressListener, ShowUserLoginPresenter.ShowUserLogin {
+
+    private ShowUserLoginPresenter mPresenter;
 
     @Bind(R.id.username_textInput)
     TextInputLayout mUsernameTextInput;
@@ -49,9 +60,9 @@ public class CreateUserNameFragment extends Fragment implements FABProgressListe
     @OnClick(R.id.fab)
     public void fab() {
         if (mUsernameTextInput.getEditText().getText().length() != 0) {
-            mFabProgressCircle.show();
-            mFab.setClickable(false);
-            setLogin(getActivity());
+            mUsernameTextInput.setError("");
+            mPresenter.loginUser(ApiUtil.LOGIN_SIGNUP,
+                    Const.getAuthSignupAPI(mUsernameTextInput.getEditText().getText().toString(), Build.VERSION.RELEASE, Build.MODEL, SavedData.getRegId(getActivity())));
         } else {
             Toast.makeText(getActivity(), getString(R.string.please_input_username), Toast.LENGTH_SHORT).show();
         }
@@ -70,6 +81,15 @@ public class CreateUserNameFragment extends Fragment implements FABProgressListe
     public static CreateUserNameFragment newInstance() {
         CreateUserNameFragment pane = new CreateUserNameFragment();
         return pane;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        LoginRepository loginRepositoryImpl = LoginRepositoryImpl.getRepository();
+        UserLoginUseCase userLoginUseCaseImpl = UserLoginUseCaseImpl.getUseCase(loginRepositoryImpl, UIThread.getInstance());
+        mPresenter = new ShowUserLoginPresenter(userLoginUseCaseImpl);
+        mPresenter.setShowUserLoginView(this);
     }
 
     @Override
@@ -117,57 +137,59 @@ public class CreateUserNameFragment extends Fragment implements FABProgressListe
         }).setStartDelay(200);
     }
 
-    private void setLogin(final Context context) {
-        mUsernameTextInput.setError("");
-        String username = mUsernameTextInput.getEditText().getText().toString();
-        String url = Const.getAuthSignupAPI(username, Build.VERSION.RELEASE, Build.MODEL, SavedData.getRegId(context));
-        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(context, url, new JsonHttpResponseHandler() {
+    @Override
+    public void onResume() {
+        super.onResume();
+        mPresenter.resume();
+    }
 
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                try {
-                    if (response.has("message")) {
-                        int code = response.getInt("code");
-                        String user_id = response.getString("user_id");
-                        String username = response.getString("username");
-                        String profile_img = response.getString("profile_img");
-                        String identity_id = response.getString("identity_id");
-                        int badge_num = response.getInt("badge_num");
-                        String message = response.getString("message");
-                        String token = response.getString("token");
-
-                        if (code == 200) {
-                            SavedData.setWelcome(context, username, profile_img, user_id, identity_id, badge_num);
-                            Application_Gocci.GuestInit(context, identity_id, token, user_id);
-                            SavedData.setFlag(context, 0);
-                            mFabProgressCircle.beginFinalAnimation();
-                        } else {
-                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-                        }
-                    } else {
-                        mUsernameTextInput.setError(getString(R.string.multiple_username));
-                        mFabProgressCircle.hide();
-                        mFab.setClickable(true);
-                        //setLoginDialog(context);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject response) {
-                Toast.makeText(context, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-                mFab.setClickable(true);
-                mFabProgressCircle.hide();
-            }
-        });
+    @Override
+    public void onPause() {
+        super.onPause();
+        mPresenter.pause();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         ButterKnife.unbind(this);
+    }
+
+    @Override
+    public void showLoading() {
+        mFabProgressCircle.show();
+        mFab.setClickable(false);
+    }
+
+    @Override
+    public void hideLoading() {
+        mFab.setClickable(true);
+        mFabProgressCircle.hide();
+    }
+
+    @Override
+    public void showResult(int api, User user) {
+        if (api == ApiUtil.LOGIN_SIGNUP) {
+            if (user.getCode() == 200) {
+                SavedData.setWelcome(getActivity(), user.getUserName(), user.getProfileImg(), String.valueOf(user.getUserId()), user.getIdentityId(), user.getBadgeNum());
+                Application_Gocci.GuestInit(getActivity(), user.getIdentityId(), user.getToken(), String.valueOf(user.getUserId()));
+                SavedData.setFlag(getActivity(), 0);
+                mFabProgressCircle.beginFinalAnimation();
+            } else {
+                Toast.makeText(getActivity(), user.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    @Override
+    public void showNoResult(int api) {
+        if (api == ApiUtil.LOGIN_SIGNUP) {
+            mUsernameTextInput.setError(getString(R.string.multiple_username));
+        }
+    }
+
+    @Override
+    public void showError() {
+        Toast.makeText(getActivity(), getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
     }
 }

@@ -16,6 +16,7 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.Profile;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.inase.android.gocci.ui.activity.GocciTimelineActivity;
@@ -83,6 +84,9 @@ public class SocialAuthenticationFragment extends Fragment {
                         @Override
                         public void onPositive(MaterialDialog dialog) {
                             super.onPositive(dialog);
+                            if (AccessToken.getCurrentAccessToken() != null) {
+                                LoginManager.getInstance().logOut();
+                            }
                             mFacebookLoginButton.performClick();
                         }
                     })
