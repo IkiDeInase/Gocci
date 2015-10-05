@@ -1,7 +1,6 @@
 package com.inase.android.gocci.ui.activity;
 
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,30 +12,26 @@ import android.widget.Toast;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
 import com.facebook.AccessToken;
-import com.inase.android.gocci.application.Application_Gocci;
 import com.inase.android.gocci.BuildConfig;
-import com.inase.android.gocci.event.BusHolder;
-import com.inase.android.gocci.event.CreateProviderFinishEvent;
 import com.inase.android.gocci.R;
+import com.inase.android.gocci.application.Application_Gocci;
 import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;
 import com.inase.android.gocci.common.Util;
+import com.inase.android.gocci.datasource.api.ApiUtil;
 import com.inase.android.gocci.datasource.repository.LoginRepository;
 import com.inase.android.gocci.datasource.repository.LoginRepositoryImpl;
 import com.inase.android.gocci.domain.executor.UIThread;
 import com.inase.android.gocci.domain.model.User;
 import com.inase.android.gocci.domain.usecase.UserLoginUseCase;
 import com.inase.android.gocci.domain.usecase.UserLoginUseCaseImpl;
+import com.inase.android.gocci.event.BusHolder;
+import com.inase.android.gocci.event.CreateProviderFinishEvent;
 import com.inase.android.gocci.presenter.ShowUserLoginPresenter;
-import com.loopj.android.http.JsonHttpResponseHandler;
 import com.squareup.otto.Subscribe;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthToken;
 import com.twitter.sdk.android.core.TwitterSession;
-
-import cz.msebera.android.httpclient.Header;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 
 public class SplashActivity extends AppCompatActivity implements ShowUserLoginPresenter.ShowUserLogin {
@@ -75,11 +70,7 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
         setContentView(R.layout.activity_splash);
 
         LoginRepository loginRepositoryImpl = LoginRepositoryImpl.getRepository();
-
-        //Domain Layer: UseCase
         UserLoginUseCase userLoginUseCaseImpl = UserLoginUseCaseImpl.getUseCase(loginRepositoryImpl, UIThread.getInstance());
-
-        //Initialize Presenter
         mPresenter = new ShowUserLoginPresenter(userLoginUseCaseImpl);
         mPresenter.setShowUserLoginView(this);
 
@@ -99,8 +90,7 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
             String mIdentityId = SavedData.getIdentityId(this);
             if (!mIdentityId.equals("no identityId")) {
                 //２回目
-                //welcomeAsync(SplashActivity.this, mIdentityId);
-                mPresenter.loginUser(Const.getAuthLoginAPI(mIdentityId));
+                mPresenter.loginUser(ApiUtil.LOGIN_WELCOME, Const.getAuthLoginAPI(mIdentityId));
             } else {
                 loginFrag = SavedData.getLoginJudge(SplashActivity.this);
                 if (loginFrag.equals(TAG_NO_JUDGE)) {
@@ -113,102 +103,10 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
                     String url = Const.getAuthConversionAPI(SavedData.getServerName(SplashActivity.this), SavedData.getServerPicture(SplashActivity.this),
                             Build.VERSION.RELEASE, Build.MODEL, SavedData.getRegId(SplashActivity.this));
                     isConversion = true;
-                    getConversionRegister(this, url);
+                    mPresenter.loginUser(ApiUtil.LOGIN_CONVERSION, url);
                 }
             }
         }
-    }
-
-    private void welcomeAsync(final Context context, final String identity_id) {
-        // DEV 0 facebook 1 twitter 2
-        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(context, Const.getAuthLoginAPI(identity_id), new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                try {
-                    if (response.has("message")) {
-                        int code = response.getInt("code");
-                        String user_id = response.getString("user_id");
-                        String username = response.getString("username");
-                        String profile_img = response.getString("profile_img");
-                        String identity_id = response.getString("identity_id");
-                        int badge_num = response.getInt("badge_num");
-                        String message = response.getString("message");
-                        String token = response.getString("token");
-
-                        if (code == 200) {
-                            Application_Gocci.GuestInit(context, identity_id, token, user_id);
-                            SavedData.setWelcome(context, username, profile_img, user_id, identity_id, badge_num);
-                            //ノーマル
-                            SavedData.setFlag(SplashActivity.this, 0);
-
-                            Intent intent = new Intent(SplashActivity.this, GocciTimelineActivity.class);
-                            if (!SplashActivity.this.isFinishing()) {
-                                SplashActivity.this.startActivity(intent);
-                                overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-                                SplashActivity.this.finish();
-                            }
-                        } else {
-                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-                        }
-                    } else {
-                        Toast.makeText(context, getString(R.string.login_failure), Toast.LENGTH_SHORT).show();
-                        handler = new Handler();
-                        runnable = new loginRunnable();
-                        handler.postDelayed(runnable, 1000);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Toast.makeText(context, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void getConversionRegister(final Context context, String url) {
-        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(context, url, new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                try {
-                    int code = response.getInt("code");
-                    String user_id = response.getString("user_id");
-                    String username = response.getString("username");
-                    String profile_img = response.getString("profile_img");
-                    String identity_id = response.getString("identity_id");
-                    int badge_num = response.getInt("badge_num");
-                    String message = response.getString("message");
-                    String token = response.getString("token");
-
-                    if (code == 200) {
-                        SavedData.setWelcome(context, username, profile_img, user_id, identity_id, badge_num);
-
-                        Application_Gocci.GuestInit(context, identity_id, token, user_id);
-                    } else {
-                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                Toast.makeText(context, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Toast.makeText(context, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-                handler = new Handler();
-                runnable = new loginRunnable();
-                handler.postDelayed(runnable, 1000);
-            }
-        });
     }
 
     @Override
@@ -274,6 +172,7 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
         super.onStop();
         if (handler != null) {
             handler.removeCallbacks(runnable);
+            handler = null;
         }
     }
 
@@ -288,32 +187,54 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
     }
 
     @Override
-    public void showResult(User user) {
-        if (user.getCode() == 200) {
-            Application_Gocci.GuestInit(this, user.getIdentityId(), user.getToken(), String.valueOf(user.getUserId()));
-            SavedData.setWelcome(this, user.getUserName(), user.getProfileImg(), String.valueOf(user.getUserId()), user.getIdentityId(), user.getBadgeNum());
-            //ノーマル
-            SavedData.setFlag(SplashActivity.this, 0);
+    public void showResult(int api, User user) {
+        switch (api) {
+            case ApiUtil.LOGIN_WELCOME:
+                if (user.getCode() == 200) {
+                    Application_Gocci.GuestInit(this, user.getIdentityId(), user.getToken(), String.valueOf(user.getUserId()));
+                    SavedData.setWelcome(this, user.getUserName(), user.getProfileImg(), String.valueOf(user.getUserId()), user.getIdentityId(), user.getBadgeNum());
+                    //ノーマル
+                    SavedData.setFlag(SplashActivity.this, 0);
 
-            Intent intent = new Intent(SplashActivity.this, GocciTimelineActivity.class);
-            if (!SplashActivity.this.isFinishing()) {
-                SplashActivity.this.startActivity(intent);
-                overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-                SplashActivity.this.finish();
-            }
-        } else {
-            Toast.makeText(this, user.getMessage(), Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(SplashActivity.this, GocciTimelineActivity.class);
+                    if (!SplashActivity.this.isFinishing()) {
+                        SplashActivity.this.startActivity(intent);
+                        overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+                        SplashActivity.this.finish();
+                    }
+                } else {
+                    Toast.makeText(this, user.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case ApiUtil.LOGIN_CONVERSION:
+                if (user.getCode() == 200) {
+                    SavedData.setWelcome(this, user.getUserName(), user.getProfileImg(), String.valueOf(user.getUserId()), user.getIdentityId(), user.getBadgeNum());
+
+                    Application_Gocci.GuestInit(this, user.getIdentityId(), user.getToken(), String.valueOf(user.getUserId()));
+                } else {
+                    Toast.makeText(this, user.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+                break;
         }
     }
 
     @Override
-    public void showNoResult() {
-
+    public void showNoResult(int api) {
+        switch (api) {
+            case ApiUtil.LOGIN_WELCOME:
+                break;
+            case ApiUtil.LOGIN_CONVERSION:
+                break;
+        }
+        Toast.makeText(this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
+        handler = new Handler();
+        runnable = new loginRunnable();
+        handler.postDelayed(runnable, 1000);
     }
 
     @Override
     public void showError() {
-
+        Toast.makeText(this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
     }
 
     private class loginRunnable implements Runnable {
