@@ -1,7 +1,6 @@
 package com.inase.android.gocci.ui.activity;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -24,14 +23,21 @@ import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
-import com.inase.android.gocci.application.Application_Gocci;
 import com.inase.android.gocci.Base.GocciTwitterLoginButton;
-import com.inase.android.gocci.event.BusHolder;
-import com.inase.android.gocci.event.CreateProviderFinishEvent;
 import com.inase.android.gocci.R;
+import com.inase.android.gocci.application.Application_Gocci;
 import com.inase.android.gocci.common.Const;
 import com.inase.android.gocci.common.SavedData;
-import com.loopj.android.http.JsonHttpResponseHandler;
+import com.inase.android.gocci.datasource.api.ApiUtil;
+import com.inase.android.gocci.datasource.repository.LoginRepository;
+import com.inase.android.gocci.datasource.repository.LoginRepositoryImpl;
+import com.inase.android.gocci.domain.executor.UIThread;
+import com.inase.android.gocci.domain.model.User;
+import com.inase.android.gocci.domain.usecase.UserLoginUseCase;
+import com.inase.android.gocci.domain.usecase.UserLoginUseCaseImpl;
+import com.inase.android.gocci.event.BusHolder;
+import com.inase.android.gocci.event.CreateProviderFinishEvent;
+import com.inase.android.gocci.presenter.ShowUserLoginPresenter;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.squareup.otto.Subscribe;
 import com.twitter.sdk.android.Twitter;
@@ -41,14 +47,10 @@ import com.twitter.sdk.android.core.TwitterAuthToken;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 
-import cz.msebera.android.httpclient.Header;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class LoginSessionActivity extends AppCompatActivity {
+public class LoginSessionActivity extends AppCompatActivity implements ShowUserLoginPresenter.ShowUserLogin {
 
     @Bind(R.id.tool_bar)
     Toolbar mToolBar;
@@ -78,6 +80,8 @@ public class LoginSessionActivity extends AppCompatActivity {
     private String providerName;
 
     private static MobileAnalyticsManager analytics;
+
+    private ShowUserLoginPresenter mPresenter;
 
     public void onFacebookButtonClicked() {
         if (AccessToken.getCurrentAccessToken() != null) {
@@ -111,6 +115,11 @@ public class LoginSessionActivity extends AppCompatActivity {
 
         callbackManager = CallbackManager.Factory.create();
 
+        LoginRepository loginRepositoryImpl = LoginRepositoryImpl.getRepository();
+        UserLoginUseCase userLoginUseCaseImpl = UserLoginUseCaseImpl.getUseCase(loginRepositoryImpl, UIThread.getInstance());
+        mPresenter = new ShowUserLoginPresenter(userLoginUseCaseImpl);
+        mPresenter.setShowUserLoginView(this);
+
         setContentView(R.layout.activity_login_session);
         ButterKnife.bind(this);
 
@@ -139,8 +148,6 @@ public class LoginSessionActivity extends AppCompatActivity {
         mFacebookLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                mProgressWheel.setVisibility(View.VISIBLE);
-
                 Profile profile = Profile.getCurrentProfile();
                 if (profile != null) {
                     profile_img = "https://graph.facebook.com/" + profile.getId() + "/picture";
@@ -168,8 +175,6 @@ public class LoginSessionActivity extends AppCompatActivity {
         mTwitterLoginButton.setCallback(new Callback<TwitterSession>() {
             @Override
             public void success(Result<TwitterSession> result) {
-                mProgressWheel.setVisibility(View.VISIBLE);
-
                 TwitterSession session =
                         Twitter.getSessionManager().getActiveSession();
                 TwitterAuthToken authToken = session.getAuthToken();
@@ -199,7 +204,8 @@ public class LoginSessionActivity extends AppCompatActivity {
                     mSigninUsernameEdit.setError(getString(R.string.cheat_input));
                     mSigninPassEdit.setError(getString(R.string.cheat_input));
                 } else {
-                    passwordAsync(LoginSessionActivity.this, mSigninUsernameEdit.getEditText().getText().toString(), mSigninPassEdit.getEditText().getText().toString());
+                    mPresenter.loginUser(ApiUtil.LOGIN_NAME_PASS, Const.getAuthUsernamePasswordAPI(mSigninUsernameEdit.getEditText().getText().toString(),
+                            mSigninPassEdit.getEditText().getText().toString(), Build.VERSION.RELEASE, Build.MODEL, SavedData.getRegId(LoginSessionActivity.this)));
                 }
             }
         });
@@ -212,6 +218,8 @@ public class LoginSessionActivity extends AppCompatActivity {
             analytics.getSessionClient().resumeSession();
         }
         BusHolder.get().register(self);
+
+        mPresenter.resume();
     }
 
     @Override
@@ -222,177 +230,13 @@ public class LoginSessionActivity extends AppCompatActivity {
             analytics.getEventClient().submitEvents();
         }
         BusHolder.get().unregister(self);
+
+        mPresenter.pause();
     }
 
     @Subscribe
     public void subscribe(final CreateProviderFinishEvent event) {
-        //DEV
-        welcomeAsync(this, event.identityId);
-    }
-
-    private void welcomeAsync(final Context context, final String identity_id) {
-        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(context, Const.getAuthSNSLoginAPI(identity_id, Build.VERSION.RELEASE, Build.MODEL, SavedData.getRegId(context)), new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                try {
-                    if (response.has("message")) {
-                        int code = response.getInt("code");
-                        String user_id = response.getString("user_id");
-                        String username = response.getString("username");
-                        String profile_img = response.getString("profile_img");
-                        String identity_id = response.getString("identity_id");
-                        int badge_num = response.getInt("badge_num");
-                        String message = response.getString("message");
-                        String token = response.getString("token");
-
-                        if (code == 200) {
-                            SavedData.setWelcome(context, username, profile_img, user_id, identity_id, badge_num);
-
-                            Intent intent = new Intent(context, GocciTimelineActivity.class);
-                            overridePendingTransition(0, 0);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            finish();
-
-                            overridePendingTransition(0, 0);
-                            startActivity(intent);
-                        } else {
-                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-                        }
-                    } else {
-                        //Toast.makeText(context, "まだアカウントを作成していません", Toast.LENGTH_SHORT).show();
-                        //新しいAPiを叩く
-                        snsConversionAsync(context, providerName, token, profile_img, Build.VERSION.RELEASE, Build.MODEL, SavedData.getRegId(context));
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Toast.makeText(LoginSessionActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-                mProgressWheel.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onFinish() {
-                //progress.setVisibility(View.INVISIBLE);
-            }
-        });
-    }
-
-    private void passwordAsync(final Context context, String username, String password) {
-        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(context, Const.getAuthUsernamePasswordAPI(username, password, Build.VERSION.RELEASE, Build.MODEL, SavedData.getRegId(context)), new JsonHttpResponseHandler() {
-            @Override
-            public void onStart() {
-                mProgressWheel.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                try {
-                    if (response.has("message")) {
-                        int code = response.getInt("code");
-                        String user_id = response.getString("user_id");
-                        String username = response.getString("username");
-                        String profile_img = response.getString("profile_img");
-                        String identity_id = response.getString("identity_id");
-                        int badge_num = response.getInt("badge_num");
-                        String message = response.getString("message");
-                        String token = response.getString("token");
-
-                        if (code == 200) {
-                            Application_Gocci.GuestInit(context, identity_id, token, user_id);
-                            SavedData.setWelcome(context, username, profile_img, user_id, identity_id, badge_num);
-                            //ノーマル
-                            SavedData.setFlag(LoginSessionActivity.this, 0);
-
-                            Intent intent = new Intent(context, GocciTimelineActivity.class);
-                            overridePendingTransition(0, 0);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            finish();
-
-                            overridePendingTransition(0, 0);
-                            startActivity(intent);
-                        } else {
-                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-                        }
-                    } else {
-                        Toast.makeText(context, getString(R.string.login_error_pass), Toast.LENGTH_SHORT).show();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Toast.makeText(LoginSessionActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onFinish() {
-                mProgressWheel.setVisibility(View.GONE);
-            }
-        });
-    }
-
-    private void snsConversionAsync(final Context context, String providerName, String token, String profile_img, String os, String model, String register_id) {
-        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(context, Const.getAuthSNSConversionAPI(providerName, token, profile_img, os, model, register_id), new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                try {
-                    if (response.has("message")) {
-                        int code = response.getInt("code");
-                        String user_id = response.getString("user_id");
-                        String username = response.getString("username");
-                        String profile_img = response.getString("profile_img");
-                        String identity_id = response.getString("identity_id");
-                        int badge_num = response.getInt("badge_num");
-                        String message = response.getString("message");
-                        String token = response.getString("token");
-
-                        if (code == 200) {
-                            SavedData.setWelcome(context, username, profile_img, user_id, identity_id, badge_num);
-
-                            Intent intent = new Intent(context, GocciTimelineActivity.class);
-                            overridePendingTransition(0, 0);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            finish();
-
-                            overridePendingTransition(0, 0);
-                            startActivity(intent);
-                        } else {
-                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-                        }
-                    } else {
-                        Toast.makeText(context, getString(R.string.error_account_no_exist), Toast.LENGTH_SHORT).show();
-
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Toast.makeText(LoginSessionActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onFinish() {
-                mProgressWheel.setVisibility(View.GONE);
-            }
-        });
+        mPresenter.loginUser(ApiUtil.LOGIN_SNS_WELCOME, Const.getAuthSNSLoginAPI(event.identityId, Build.VERSION.RELEASE, Build.MODEL, SavedData.getRegId(this)));
     }
 
     @Override
@@ -417,5 +261,65 @@ public class LoginSessionActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
         mTwitterLoginButton.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void showLoading() {
+        mProgressWheel.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideLoading() {
+        mProgressWheel.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void showResult(int api, User user) {
+        switch (api) {
+            case ApiUtil.LOGIN_SNS_WELCOME:
+                break;
+            case ApiUtil.LOGIN_NAME_PASS:
+            case ApiUtil.LOGIN_SNS_CONVERSION:
+                if (user.getCode() == 200) {
+                    Application_Gocci.GuestInit(this, user.getIdentityId(), user.getToken(), String.valueOf(user.getUserId()));
+                }
+                break;
+        }
+        if (user.getCode() == 200) {
+            SavedData.setWelcome(this, user.getUserName(), user.getProfileImg(), String.valueOf(user.getUserId()), user.getIdentityId(), user.getBadgeNum());
+
+            Intent intent = new Intent(this, GocciTimelineActivity.class);
+            overridePendingTransition(0, 0);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            finish();
+
+            overridePendingTransition(0, 0);
+            startActivity(intent);
+        } else {
+            Toast.makeText(this, user.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void showNoResult(int api) {
+        switch (api) {
+            case ApiUtil.LOGIN_SNS_WELCOME:
+                mPresenter.loginUser(ApiUtil.LOGIN_SNS_CONVERSION,
+                        Const.getAuthSNSConversionAPI(providerName, token, profile_img, Build.VERSION.RELEASE, Build.MODEL, SavedData.getRegId(this)));
+                break;
+            case ApiUtil.LOGIN_NAME_PASS:
+                Toast.makeText(this, getString(R.string.login_error_pass), Toast.LENGTH_SHORT).show();
+                break;
+            case ApiUtil.LOGIN_SNS_CONVERSION:
+                Toast.makeText(this, getString(R.string.error_account_no_exist), Toast.LENGTH_SHORT).show();
+                break;
+        }
+    }
+
+    @Override
+    public void showError() {
+        Toast.makeText(this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
     }
 }
