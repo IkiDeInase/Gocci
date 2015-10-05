@@ -16,4 +16,11 @@ public class ApiUtil {
 
     public static final int RESTPAGE_FIRST = 6;
     public static final int RESTPAGE_REFRESH =7;
+
+    public static final int LOGIN_WELCOME = 20;
+    public static final int LOGIN_CONVERSION = 21;
+    public static final int LOGIN_SNS_WELCOME = 22;
+    public static final int LOGIN_SNS_CONVERSION = 23;
+    public static final int LOGIN_NAME_PASS = 24;
+    public static final int LOGIN_SIGNUP = 25;
 }

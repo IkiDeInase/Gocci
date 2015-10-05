@@ -5,7 +5,8 @@
 
     <string name="map_key">AIzaSyBHYT0dtZUDaiId_WXPtjdQr-t3BlzHXGg</string>
     <!--<string name="map_key">AIzaSyCdJXmgncMEUoEmNflVqHkSIJwA7Mmtuc0</string>-->
-    <string name="facebook_app_id">673123156062598</string>
+    <string name="facebook_app_id">148392115499214</string>
+    <!--<string name="facebook_app_id">673123156062598</string>-->
 
     <string name="lat">latitude</string>
     <string name="lon">longitude</string>

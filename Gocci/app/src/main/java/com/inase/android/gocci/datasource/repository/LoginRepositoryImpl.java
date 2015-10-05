@@ -25,15 +25,15 @@ public class LoginRepositoryImpl implements LoginRepository {
     }
 
     @Override
-    public void userLogin(String url, final LoginRepositoryCallback cb) {
+    public void userLogin(final int api, String url, final LoginRepositoryCallback cb) {
         Application_Gocci.getJsonHttpClient(url, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 if (response.has("message")) {
                     User user = User.createUser(response);
-                    cb.onUserLogined(user);
+                    cb.onUserLogined(api, user);
                 } else {
-                    cb.onUserNotLogined();
+                    cb.onUserNotLogined(api);
                 }
             }
 

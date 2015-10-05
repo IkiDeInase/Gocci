@@ -19,9 +19,9 @@ public class ShowUserLoginPresenter extends Presenter implements UserLoginUseCas
         mShowUserLogin = view;
     }
 
-    public void loginUser(String url) {
+    public void loginUser(int api, String url) {
         mShowUserLogin.showLoading();
-        mUserLoginUseCase.execute(url, this);
+        mUserLoginUseCase.execute(api, url, this);
     }
 
     @Override
@@ -45,15 +45,15 @@ public class ShowUserLoginPresenter extends Presenter implements UserLoginUseCas
     }
 
     @Override
-    public void onUserLogin(User user) {
+    public void onUserLogin(int api, User user) {
         mShowUserLogin.hideLoading();
-        mShowUserLogin.showResult(user);
+        mShowUserLogin.showResult(api, user);
     }
 
     @Override
-    public void onUserNotLogin() {
+    public void onUserNotLogin(int api) {
         mShowUserLogin.hideLoading();
-        mShowUserLogin.showNoResult();
+        mShowUserLogin.showNoResult(api);
     }
 
     @Override
@@ -67,9 +67,9 @@ public class ShowUserLoginPresenter extends Presenter implements UserLoginUseCas
 
         void hideLoading();
 
-        void showResult(User user);
+        void showResult(int api, User user);
 
-        void showNoResult();
+        void showNoResult(int api);
 
         void showError();
     }

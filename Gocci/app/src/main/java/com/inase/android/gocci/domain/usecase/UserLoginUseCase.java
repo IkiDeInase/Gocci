@@ -8,14 +8,14 @@ import com.inase.android.gocci.domain.model.User;
 public interface UserLoginUseCase {
 
     interface UserLoginUseCaseCallback {
-        void onUserLogin(User user);
+        void onUserLogin(int api, User user);
 
-        void onUserNotLogin();
+        void onUserNotLogin(int api);
 
         void onError();
     }
 
-    void execute(String url, UserLoginUseCaseCallback callback);
+    void execute(int api, String url, UserLoginUseCaseCallback callback);
 
     void setCallback(UserLoginUseCaseCallback callback);
 

@@ -7,7 +7,7 @@ import com.inase.android.gocci.domain.model.User;
 /**
  * Created by kinagafuji on 15/09/25.
  */
-public class UserLoginUseCaseImpl extends UseCase<String> implements UserLoginUseCase, LoginRepository.LoginRepositoryCallback {
+public class UserLoginUseCaseImpl extends UseCase2<Integer, String> implements UserLoginUseCase, LoginRepository.LoginRepositoryCallback {
 
     private static UserLoginUseCaseImpl sUseCase;
     private final LoginRepository mLoginRepository;
@@ -27,24 +27,24 @@ public class UserLoginUseCaseImpl extends UseCase<String> implements UserLoginUs
     }
 
     @Override
-    public void onUserLogined(final User user) {
+    public void onUserLogined(final int api, final User user) {
         mPostExecutionThread.post(new Runnable() {
             @Override
             public void run() {
                 if (mCallback != null) {
-                    mCallback.onUserLogin(user);
+                    mCallback.onUserLogin(api, user);
                 }
             }
         });
     }
 
     @Override
-    public void onUserNotLogined() {
+    public void onUserNotLogined(final int api) {
         mPostExecutionThread.post(new Runnable() {
             @Override
             public void run() {
                 if (mCallback != null) {
-                    mCallback.onUserNotLogin();
+                    mCallback.onUserNotLogin(api);
                 }
             }
         });
@@ -63,14 +63,9 @@ public class UserLoginUseCaseImpl extends UseCase<String> implements UserLoginUs
     }
 
     @Override
-    protected void call(String params) {
-        mLoginRepository.userLogin(params, this);
-    }
-
-    @Override
-    public void execute(String url, UserLoginUseCaseCallback callback) {
+    public void execute(int api, String url, UserLoginUseCaseCallback callback) {
         mCallback = callback;
-        this.start(url);
+        this.start(api, url);
     }
 
     @Override
@@ -81,5 +76,10 @@ public class UserLoginUseCaseImpl extends UseCase<String> implements UserLoginUs
     @Override
     public void removeCallback() {
         mCallback = null;
+    }
+
+    @Override
+    protected void call(Integer param1, String param2) {
+        mLoginRepository.userLogin(param1, param2, this);
     }
 }

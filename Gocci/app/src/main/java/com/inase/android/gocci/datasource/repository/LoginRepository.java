@@ -6,12 +6,12 @@ import com.inase.android.gocci.domain.model.User;
  * Created by kinagafuji on 15/09/25.
  */
 public interface LoginRepository {
-    void userLogin(String url, LoginRepositoryCallback cb);
+    void userLogin(int api, String url, LoginRepositoryCallback cb);
 
     interface LoginRepositoryCallback {
-        void onUserLogined(User user);
+        void onUserLogined(int api, User user);
 
-        void onUserNotLogined();
+        void onUserNotLogined(int api);
 
         void onError();
     }
