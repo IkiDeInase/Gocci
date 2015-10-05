@@ -374,7 +374,7 @@ public class GridSearchActivity extends AppCompatActivity implements AppBarLayou
                     mLongitude = bundle.getDouble("lon");
 
                     place.setText(address);
-                    getSearchMapAsync(this, Const.getCustomGridSearchAPI(mLatitude, mLongitude, 0, category_id));
+                    getSearchMapAsync(this, Const.getCustomGridSearchAPI(mLongitude, mLatitude, 0, category_id));
                 } else if (resultCode == RESULT_CANCELED) {
 
                 }

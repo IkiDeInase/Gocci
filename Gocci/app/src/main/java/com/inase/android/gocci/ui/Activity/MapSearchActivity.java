@@ -68,7 +68,7 @@ public class MapSearchActivity extends AppCompatActivity {
         niftyDialogBuilder = NiftyDialogBuilder.getInstance(this);
         niftyDialogBuilder
                 .withTitle("注意事項")
-                .withMessage("見つけたい場所を長押しして右上のチェックマークを押そう！")
+                .withMessage("見つけたい場所をクリックして右上のチェックマークを押そう！")
                 .withDuration(500)                                          //def
                 .withEffect(Effectstype.SlideBottom)
                 .show();
@@ -106,9 +106,9 @@ public class MapSearchActivity extends AppCompatActivity {
 
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(35.681382, 139.766084), 4));
 
-            mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+            mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                 @Override
-                public void onMapLongClick(LatLng latLng) {
+                public void onMapClick(LatLng latLng) {
                     pin.setVisible(true);
                     pin.setCheckable(true);
                     mLat = latLng.latitude;
