@@ -1,6 +1,6 @@
 package com.inase.android.gocci.datasource.repository;
 
-import com.inase.android.gocci.domain.model.pojo.User;
+import com.inase.android.gocci.domain.model.User;
 
 /**
  * Created by kinagafuji on 15/09/25.

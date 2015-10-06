@@ -42,7 +42,7 @@ import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.utils.SavedData;
 import com.inase.android.gocci.utils.Util;
-import com.inase.android.gocci.domain.model.pojo.PostData;
+import com.inase.android.gocci.domain.model.PostData;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.FilterTimelineEvent;
 import com.inase.android.gocci.event.NotificationNumberEvent;

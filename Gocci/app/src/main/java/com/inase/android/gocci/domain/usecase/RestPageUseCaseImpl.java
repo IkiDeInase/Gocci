@@ -1,7 +1,7 @@
 package com.inase.android.gocci.domain.usecase;
 
-import com.inase.android.gocci.domain.model.pojo.HeaderData;
-import com.inase.android.gocci.domain.model.pojo.PostData;
+import com.inase.android.gocci.domain.model.HeaderData;
+import com.inase.android.gocci.domain.model.PostData;
 import com.inase.android.gocci.datasource.repository.UserAndRestDataRepository;
 import com.inase.android.gocci.domain.executor.PostExecutionThread;
 

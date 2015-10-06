@@ -33,7 +33,7 @@ import com.inase.android.gocci.ui.view.DrawerProfHeader;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.utils.SavedData;
 import com.inase.android.gocci.utils.Util;
-import com.inase.android.gocci.domain.model.pojo.HeaderData;
+import com.inase.android.gocci.domain.model.HeaderData;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;

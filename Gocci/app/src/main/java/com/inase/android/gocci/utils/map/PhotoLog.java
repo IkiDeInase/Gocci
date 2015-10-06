@@ -4,7 +4,7 @@ import android.graphics.drawable.Drawable;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.clustering.ClusterItem;
-import com.inase.android.gocci.domain.model.pojo.PostData;
+import com.inase.android.gocci.domain.model.PostData;
 
 /**
  * Created by kinagafuji on 15/06/30.

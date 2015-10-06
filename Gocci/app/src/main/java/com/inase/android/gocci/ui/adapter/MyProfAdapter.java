@@ -14,8 +14,8 @@ import com.inase.android.gocci.ui.view.RoundedTransformation;
 import com.inase.android.gocci.ui.view.SquareImageView;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.utils.Util;
-import com.inase.android.gocci.domain.model.pojo.HeaderData;
-import com.inase.android.gocci.domain.model.pojo.PostData;
+import com.inase.android.gocci.domain.model.HeaderData;
+import com.inase.android.gocci.domain.model.PostData;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;

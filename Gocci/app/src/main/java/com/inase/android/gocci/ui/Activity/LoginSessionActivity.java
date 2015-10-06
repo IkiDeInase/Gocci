@@ -32,7 +32,7 @@ import com.inase.android.gocci.consts.ApiConst;
 import com.inase.android.gocci.datasource.repository.LoginRepository;
 import com.inase.android.gocci.datasource.repository.LoginRepositoryImpl;
 import com.inase.android.gocci.domain.executor.UIThread;
-import com.inase.android.gocci.domain.model.pojo.User;
+import com.inase.android.gocci.domain.model.User;
 import com.inase.android.gocci.domain.usecase.UserLoginUseCase;
 import com.inase.android.gocci.domain.usecase.UserLoginUseCaseImpl;
 import com.inase.android.gocci.event.BusHolder;

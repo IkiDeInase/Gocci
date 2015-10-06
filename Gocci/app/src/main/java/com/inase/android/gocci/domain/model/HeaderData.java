@@ -1,4 +1,4 @@
-package com.inase.android.gocci.domain.model.pojo;
+package com.inase.android.gocci.domain.model;
 
 import org.json.JSONArray;
 import org.json.JSONException;

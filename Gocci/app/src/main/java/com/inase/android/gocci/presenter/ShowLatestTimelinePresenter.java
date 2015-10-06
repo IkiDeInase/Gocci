@@ -1,6 +1,6 @@
 package com.inase.android.gocci.presenter;
 
-import com.inase.android.gocci.domain.model.pojo.PostData;
+import com.inase.android.gocci.domain.model.PostData;
 import com.inase.android.gocci.domain.usecase.LatestTimelineUseCase;
 
 import java.util.ArrayList;

@@ -43,7 +43,7 @@ import com.inase.android.gocci.utils.video.VideoPlayer;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.utils.SavedData;
 import com.inase.android.gocci.utils.Util;
-import com.inase.android.gocci.domain.model.pojo.PostData;
+import com.inase.android.gocci.domain.model.PostData;
 import com.inase.android.gocci.consts.ApiConst;
 import com.inase.android.gocci.datasource.repository.PostDataRepository;
 import com.inase.android.gocci.datasource.repository.PostDataRepositoryImpl;
