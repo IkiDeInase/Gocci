@@ -1,8 +1,8 @@
 package com.inase.android.gocci.datasource.repository;
 
-import com.inase.android.gocci.application.Application_Gocci;
-import com.inase.android.gocci.data.PostData;
-import com.inase.android.gocci.datasource.api.ApiUtil;
+import com.inase.android.gocci.Application_Gocci;
+import com.inase.android.gocci.domain.model.pojo.PostData;
+import com.inase.android.gocci.consts.ApiConst;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
@@ -43,7 +43,7 @@ public class PostDataRepositoryImpl implements PostDataRepository {
                         }
                         cb.onPostDataLoaded(api, mPostData);
                     } else {
-                        if (api == ApiUtil.TIMELINE_ADD) {
+                        if (api == ApiConst.TIMELINE_ADD) {
                             cb.onPostDataLoaded(api, mPostData);
                         } else {
                             cb.onPostDataEmpty();

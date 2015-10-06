@@ -4,8 +4,8 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.inase.android.gocci.R;
-import com.inase.android.gocci.application.Application_Gocci;
-import com.inase.android.gocci.common.Const;
+import com.inase.android.gocci.Application_Gocci;
+import com.inase.android.gocci.consts.Const;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONException;

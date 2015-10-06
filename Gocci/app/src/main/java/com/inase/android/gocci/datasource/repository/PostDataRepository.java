@@ -1,6 +1,6 @@
 package com.inase.android.gocci.datasource.repository;
 
-import com.inase.android.gocci.data.PostData;
+import com.inase.android.gocci.domain.model.pojo.PostData;
 
 import java.util.ArrayList;
 

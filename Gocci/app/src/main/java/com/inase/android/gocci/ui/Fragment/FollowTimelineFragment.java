@@ -31,20 +31,20 @@ import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.google.android.exoplayer.audio.AudioCapabilities;
 import com.google.android.exoplayer.audio.AudioCapabilitiesReceiver;
 import com.google.android.exoplayer.drm.UnsupportedDrmException;
-import com.inase.android.gocci.Base.SquareImageView;
+import com.inase.android.gocci.ui.view.SquareImageView;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.FilterTimelineEvent;
 import com.inase.android.gocci.event.NotificationNumberEvent;
 import com.inase.android.gocci.event.PageChangeVideoStopEvent;
 import com.inase.android.gocci.event.TimelineMuteChangeEvent;
 import com.inase.android.gocci.R;
-import com.inase.android.gocci.VideoPlayer.HlsRendererBuilder;
-import com.inase.android.gocci.VideoPlayer.VideoPlayer;
-import com.inase.android.gocci.common.Const;
-import com.inase.android.gocci.common.SavedData;
-import com.inase.android.gocci.common.Util;
-import com.inase.android.gocci.data.PostData;
-import com.inase.android.gocci.datasource.api.ApiUtil;
+import com.inase.android.gocci.utils.video.HlsRendererBuilder;
+import com.inase.android.gocci.utils.video.VideoPlayer;
+import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.utils.SavedData;
+import com.inase.android.gocci.utils.Util;
+import com.inase.android.gocci.domain.model.pojo.PostData;
+import com.inase.android.gocci.consts.ApiConst;
 import com.inase.android.gocci.datasource.repository.PostDataRepository;
 import com.inase.android.gocci.datasource.repository.PostDataRepositoryImpl;
 import com.inase.android.gocci.domain.executor.UIThread;
@@ -151,7 +151,7 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
                     <= (firstVisibleItem + visibleThreshold)) {
 
                 if (!isEndScrioll) {
-                    mPresenter.getFollowTimelinePostData(ApiUtil.TIMELINE_ADD,
+                    mPresenter.getFollowTimelinePostData(ApiConst.TIMELINE_ADD,
                             Const.getCustomTimelineAPI(GocciTimelineActivity.mShowPosition, GocciTimelineActivity.mLatestSort_id, GocciTimelineActivity.mFollowSort_id,
                                     GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLongitude() : 0.0,
                                     GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLatitude() : 0.0, mNextCount));
@@ -220,7 +220,7 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
         mTimelineAdapter.setTimelineCallback(this);
 
         if (Util.getConnectedState(getActivity()) != Util.NetworkStatus.OFF) {
-            mPresenter.getFollowTimelinePostData(ApiUtil.TIMELINE_FIRST, Const.getFollowlineApi());
+            mPresenter.getFollowTimelinePostData(ApiConst.TIMELINE_FIRST, Const.getFollowlineApi());
         } else {
             Toast.makeText(getActivity(), getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
         }
@@ -335,7 +335,7 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
     public void subscribe(FilterTimelineEvent event) {
         if (event.currentPage == 1) {
             mTimelineRecyclerView.scrollVerticallyToPosition(0);
-            mPresenter.getFollowTimelinePostData(ApiUtil.TIMELINE_FILTER, event.filterUrl);
+            mPresenter.getFollowTimelinePostData(ApiConst.TIMELINE_FILTER, event.filterUrl);
         }
     }
 
@@ -442,7 +442,7 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
             @Override
             public void onLocationUpdated(Location location) {
                 GocciTimelineActivity.nowLocation = location;
-                mPresenter.getFollowTimelinePostData(ApiUtil.TIMELINE_REFRESH,
+                mPresenter.getFollowTimelinePostData(ApiConst.TIMELINE_REFRESH,
                         Const.getCustomTimelineAPI(GocciTimelineActivity.mShowPosition, GocciTimelineActivity.mLatestSort_id, GocciTimelineActivity.mFollowSort_id,
                                 GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLongitude() : 0.0,
                                 GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLatitude() : 0.0, 0));
@@ -554,12 +554,12 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
     @Override
     public void showResult(int api, ArrayList<PostData> mPostData) {
         switch (api) {
-            case ApiUtil.TIMELINE_FIRST:
+            case ApiConst.TIMELINE_FIRST:
                 mTimelineusers.addAll(mPostData);
                 mTimelineRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
                 mTimelineRecyclerView.setAdapter(mTimelineAdapter);
                 break;
-            case ApiUtil.TIMELINE_REFRESH:
+            case ApiConst.TIMELINE_REFRESH:
                 mTimelineusers.clear();
                 mTimelineusers.addAll(mPostData);
                 isEndScrioll = false;
@@ -569,7 +569,7 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
                 mTimelineRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
                 mTimelineAdapter.notifyDataSetChanged();
                 break;
-            case ApiUtil.TIMELINE_ADD:
+            case ApiConst.TIMELINE_ADD:
                 if (mPostData.size() != 0) {
                     mPlayingPostId = null;
                     mTimelineRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
@@ -579,7 +579,7 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
                     isEndScrioll = true;
                 }
                 break;
-            case ApiUtil.TIMELINE_FILTER:
+            case ApiConst.TIMELINE_FILTER:
                 mTimelineusers.clear();
                 mTimelineusers.addAll(mPostData);
                 isEndScrioll = false;

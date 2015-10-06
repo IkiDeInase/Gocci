@@ -22,7 +22,7 @@ import android.widget.Toast;
 
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
-import com.inase.android.gocci.datasource.api.ApiUtil;
+import com.inase.android.gocci.consts.ApiConst;
 import com.inase.android.gocci.datasource.repository.UserAndRestDataRepository;
 import com.inase.android.gocci.datasource.repository.UserAndRestDataRepositoryImpl;
 import com.inase.android.gocci.domain.executor.UIThread;
@@ -34,11 +34,11 @@ import com.inase.android.gocci.R;
 import com.inase.android.gocci.presenter.ShowUserProfPresenter;
 import com.inase.android.gocci.ui.adapter.UserProfAdapter;
 import com.inase.android.gocci.ui.view.DrawerProfHeader;
-import com.inase.android.gocci.common.Const;
-import com.inase.android.gocci.common.SavedData;
-import com.inase.android.gocci.common.Util;
-import com.inase.android.gocci.data.HeaderData;
-import com.inase.android.gocci.data.PostData;
+import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.utils.SavedData;
+import com.inase.android.gocci.utils.Util;
+import com.inase.android.gocci.domain.model.pojo.HeaderData;
+import com.inase.android.gocci.domain.model.pojo.PostData;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
@@ -156,7 +156,7 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
         mUserProfAdapter = new UserProfAdapter(this, headerUserData, mUserProfusers);
         mUserProfAdapter.setUserProfCallback(this);
 
-        mPresenter.getProfData(ApiUtil.USERPAGE_FIRST, Const.getUserpageAPI(mUser_id));
+        mPresenter.getProfData(ApiConst.USERPAGE_FIRST, Const.getUserpageAPI(mUser_id));
 
         result = new DrawerBuilder()
                 .withActivity(this)
@@ -227,7 +227,7 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
             public void onRefresh() {
                 mSwipeContainer.setRefreshing(true);
                 if (Util.getConnectedState(FlexibleUserProfActivity.this) != Util.NetworkStatus.OFF) {
-                    mPresenter.getProfData(ApiUtil.USERPAGE_REFRESH, Const.getUserpageAPI(mUser_id));
+                    mPresenter.getProfData(ApiConst.USERPAGE_REFRESH, Const.getUserpageAPI(mUser_id));
                 } else {
                     Toast.makeText(FlexibleUserProfActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
                     mSwipeContainer.setRefreshing(false);
@@ -310,10 +310,10 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
     @Override
     public void showNoResultCase(int api, HeaderData mUserData) {
         headerUserData = mUserData;
-        if (api == ApiUtil.USERPAGE_FIRST) {
+        if (api == ApiConst.USERPAGE_FIRST) {
             mUserProfAdapter.setHeaderData(headerUserData);
             mUserProfRecyclerView.setAdapter(mUserProfAdapter);
-        } else if (api == ApiUtil.USERPAGE_REFRESH) {
+        } else if (api == ApiConst.USERPAGE_REFRESH) {
             mUserProfusers.clear();
             mUserProfAdapter.setData(headerUserData, mUserProfusers);
         }
@@ -343,11 +343,11 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
         mUserProfusers.clear();
         mUserProfusers.addAll(mPostData);
         switch (api) {
-            case ApiUtil.USERPAGE_FIRST:
+            case ApiConst.USERPAGE_FIRST:
                 mUserProfAdapter.setHeaderData(headerUserData);
                 mUserProfRecyclerView.setAdapter(mUserProfAdapter);
                 break;
-            case ApiUtil.USERPAGE_REFRESH:
+            case ApiConst.USERPAGE_REFRESH:
                 mUserProfAdapter.setData(headerUserData, mUserProfusers);
                 break;
         }

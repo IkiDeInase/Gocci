@@ -43,16 +43,16 @@ import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.google.android.exoplayer.audio.AudioCapabilities;
 import com.google.android.exoplayer.audio.AudioCapabilitiesReceiver;
 import com.google.android.exoplayer.drm.UnsupportedDrmException;
-import com.inase.android.gocci.Base.SquareImageView;
+import com.inase.android.gocci.ui.view.SquareImageView;
 import com.inase.android.gocci.R;
-import com.inase.android.gocci.VideoPlayer.HlsRendererBuilder;
-import com.inase.android.gocci.VideoPlayer.VideoPlayer;
-import com.inase.android.gocci.common.Const;
-import com.inase.android.gocci.common.SavedData;
-import com.inase.android.gocci.common.Util;
-import com.inase.android.gocci.data.HeaderData;
-import com.inase.android.gocci.data.PostData;
-import com.inase.android.gocci.datasource.api.ApiUtil;
+import com.inase.android.gocci.utils.video.HlsRendererBuilder;
+import com.inase.android.gocci.utils.video.VideoPlayer;
+import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.utils.SavedData;
+import com.inase.android.gocci.utils.Util;
+import com.inase.android.gocci.domain.model.pojo.HeaderData;
+import com.inase.android.gocci.domain.model.pojo.PostData;
+import com.inase.android.gocci.consts.ApiConst;
 import com.inase.android.gocci.datasource.repository.UserAndRestDataRepository;
 import com.inase.android.gocci.datasource.repository.UserAndRestDataRepositoryImpl;
 import com.inase.android.gocci.domain.executor.UIThread;
@@ -265,7 +265,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
         mRestPageAdapter = new RestPageAdapter(this, mHeaderRestData, mTenpousers);
         mRestPageAdapter.setRestPageCallback(this);
 
-        mPresenter.getRestData(ApiUtil.RESTPAGE_FIRST, Const.getRestpageAPI(mRest_id));
+        mPresenter.getRestData(ApiConst.RESTPAGE_FIRST, Const.getRestpageAPI(mRest_id));
 
         result = new DrawerBuilder()
                 .withActivity(this)
@@ -393,7 +393,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
             public void onRefresh() {
                 mSwipeContainer.setRefreshing(true);
                 if (Util.getConnectedState(FlexibleTenpoActivity.this) != Util.NetworkStatus.OFF) {
-                    mPresenter.getRestData(ApiUtil.RESTPAGE_REFRESH, Const.getRestpageAPI(mRest_id));
+                    mPresenter.getRestData(ApiConst.RESTPAGE_REFRESH, Const.getRestpageAPI(mRest_id));
                 } else {
                     Toast.makeText(FlexibleTenpoActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
                     mSwipeContainer.setRefreshing(false);
@@ -760,11 +760,11 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
     @Override
     public void showNoResultCase(int api, HeaderData restData) {
         mHeaderRestData = restData;
-        if (api == ApiUtil.RESTPAGE_FIRST) {
+        if (api == ApiConst.RESTPAGE_FIRST) {
             mBackgroundImage.setImageResource(R.drawable.ic_background_login);
             mRestPageAdapter.setHeaderData(mHeaderRestData);
             mTenpoRecyclerView.setAdapter(mRestPageAdapter);
-        } else if (api == ApiUtil.USERPAGE_REFRESH) {
+        } else if (api == ApiConst.USERPAGE_REFRESH) {
             mTenpousers.clear();
             mRestPageAdapter.setData(mHeaderRestData, mTenpousers);
         }
@@ -792,7 +792,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
         mTenpousers.addAll(mPostData);
 
         switch (api) {
-            case ApiUtil.RESTPAGE_FIRST:
+            case ApiConst.RESTPAGE_FIRST:
                 Picasso.with(this).load(mTenpousers.get(0).getThumbnail()).into(new Target() {
                     @Override
                     public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -813,7 +813,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
                 mTenpoRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
                 mTenpoRecyclerView.setAdapter(mRestPageAdapter);
                 break;
-            case ApiUtil.RESTPAGE_REFRESH:
+            case ApiConst.RESTPAGE_REFRESH:
                 mPlayingPostId = null;
                 mViewHolderHash.clear();
                 mTenpoRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);

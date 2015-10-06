@@ -25,8 +25,8 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.inase.android.gocci.ui.fragment.CreateUserNameFragment;
 import com.inase.android.gocci.ui.fragment.SocialAuthenticationFragment;
 import com.inase.android.gocci.R;
-import com.inase.android.gocci.common.Const;
-import com.inase.android.gocci.data.RegistrationIntentService;
+import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.service.RegistrationIntentService;
 import com.nineoldandroids.view.ViewHelper;
 
 import butterknife.Bind;

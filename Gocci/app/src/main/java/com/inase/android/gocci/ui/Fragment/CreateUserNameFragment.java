@@ -2,7 +2,6 @@ package com.inase.android.gocci.ui.fragment;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -16,26 +15,20 @@ import android.widget.Toast;
 
 import com.github.jorgecastilloprz.FABProgressCircle;
 import com.github.jorgecastilloprz.listeners.FABProgressListener;
-import com.inase.android.gocci.datasource.api.ApiUtil;
+import com.inase.android.gocci.consts.ApiConst;
 import com.inase.android.gocci.datasource.repository.LoginRepository;
 import com.inase.android.gocci.datasource.repository.LoginRepositoryImpl;
 import com.inase.android.gocci.domain.executor.UIThread;
-import com.inase.android.gocci.domain.model.User;
+import com.inase.android.gocci.domain.model.pojo.User;
 import com.inase.android.gocci.domain.usecase.UserLoginUseCase;
 import com.inase.android.gocci.domain.usecase.UserLoginUseCaseImpl;
-import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.presenter.ShowUserLoginPresenter;
 import com.inase.android.gocci.ui.activity.TutorialGuideActivity;
 import com.inase.android.gocci.ui.activity.WebViewActivity;
-import com.inase.android.gocci.application.Application_Gocci;
+import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
-import com.inase.android.gocci.common.Const;
-import com.inase.android.gocci.common.SavedData;
-import com.loopj.android.http.JsonHttpResponseHandler;
-
-import cz.msebera.android.httpclient.Header;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.utils.SavedData;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -61,7 +54,7 @@ public class CreateUserNameFragment extends Fragment implements FABProgressListe
     public void fab() {
         if (mUsernameTextInput.getEditText().getText().length() != 0) {
             mUsernameTextInput.setError("");
-            mPresenter.loginUser(ApiUtil.LOGIN_SIGNUP,
+            mPresenter.loginUser(ApiConst.LOGIN_SIGNUP,
                     Const.getAuthSignupAPI(mUsernameTextInput.getEditText().getText().toString(), Build.VERSION.RELEASE, Build.MODEL, SavedData.getRegId(getActivity())));
         } else {
             Toast.makeText(getActivity(), getString(R.string.please_input_username), Toast.LENGTH_SHORT).show();
@@ -169,7 +162,7 @@ public class CreateUserNameFragment extends Fragment implements FABProgressListe
 
     @Override
     public void showResult(int api, User user) {
-        if (api == ApiUtil.LOGIN_SIGNUP) {
+        if (api == ApiConst.LOGIN_SIGNUP) {
             if (user.getCode() == 200) {
                 SavedData.setWelcome(getActivity(), user.getUserName(), user.getProfileImg(), String.valueOf(user.getUserId()), user.getIdentityId(), user.getBadgeNum());
                 Application_Gocci.GuestInit(getActivity(), user.getIdentityId(), user.getToken(), String.valueOf(user.getUserId()));
@@ -183,7 +176,7 @@ public class CreateUserNameFragment extends Fragment implements FABProgressListe
 
     @Override
     public void showNoResult(int api) {
-        if (api == ApiUtil.LOGIN_SIGNUP) {
+        if (api == ApiConst.LOGIN_SIGNUP) {
             mUsernameTextInput.setError(getString(R.string.multiple_username));
         }
     }

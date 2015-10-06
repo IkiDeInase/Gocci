@@ -1,8 +1,8 @@
 package com.inase.android.gocci.datasource.repository;
 
-import com.inase.android.gocci.application.Application_Gocci;
-import com.inase.android.gocci.data.HeaderData;
-import com.inase.android.gocci.data.PostData;
+import com.inase.android.gocci.Application_Gocci;
+import com.inase.android.gocci.domain.model.pojo.HeaderData;
+import com.inase.android.gocci.domain.model.pojo.PostData;
 import com.loopj.android.http.TextHttpResponseHandler;
 
 import org.json.JSONArray;

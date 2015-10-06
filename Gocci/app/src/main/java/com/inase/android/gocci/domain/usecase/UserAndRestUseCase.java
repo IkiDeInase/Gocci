@@ -1,7 +1,7 @@
 package com.inase.android.gocci.domain.usecase;
 
-import com.inase.android.gocci.data.HeaderData;
-import com.inase.android.gocci.data.PostData;
+import com.inase.android.gocci.domain.model.pojo.HeaderData;
+import com.inase.android.gocci.domain.model.pojo.PostData;
 
 import java.util.ArrayList;
 

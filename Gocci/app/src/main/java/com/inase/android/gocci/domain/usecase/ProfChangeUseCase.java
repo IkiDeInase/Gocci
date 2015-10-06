@@ -1,9 +1,6 @@
 package com.inase.android.gocci.domain.usecase;
 
-import com.inase.android.gocci.data.PostData;
-
 import java.io.File;
-import java.util.ArrayList;
 
 /**
  * Created by kinagafuji on 15/10/01.

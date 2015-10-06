@@ -14,15 +14,15 @@ import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManag
 import com.facebook.AccessToken;
 import com.inase.android.gocci.BuildConfig;
 import com.inase.android.gocci.R;
-import com.inase.android.gocci.application.Application_Gocci;
-import com.inase.android.gocci.common.Const;
-import com.inase.android.gocci.common.SavedData;
-import com.inase.android.gocci.common.Util;
-import com.inase.android.gocci.datasource.api.ApiUtil;
+import com.inase.android.gocci.Application_Gocci;
+import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.utils.SavedData;
+import com.inase.android.gocci.utils.Util;
+import com.inase.android.gocci.consts.ApiConst;
 import com.inase.android.gocci.datasource.repository.LoginRepository;
 import com.inase.android.gocci.datasource.repository.LoginRepositoryImpl;
 import com.inase.android.gocci.domain.executor.UIThread;
-import com.inase.android.gocci.domain.model.User;
+import com.inase.android.gocci.domain.model.pojo.User;
 import com.inase.android.gocci.domain.usecase.UserLoginUseCase;
 import com.inase.android.gocci.domain.usecase.UserLoginUseCaseImpl;
 import com.inase.android.gocci.event.BusHolder;
@@ -90,7 +90,7 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
             String mIdentityId = SavedData.getIdentityId(this);
             if (!mIdentityId.equals("no identityId")) {
                 //２回目
-                mPresenter.loginUser(ApiUtil.LOGIN_WELCOME, Const.getAuthLoginAPI(mIdentityId));
+                mPresenter.loginUser(ApiConst.LOGIN_WELCOME, Const.getAuthLoginAPI(mIdentityId));
             } else {
                 loginFrag = SavedData.getLoginJudge(SplashActivity.this);
                 if (loginFrag.equals(TAG_NO_JUDGE)) {
@@ -103,7 +103,7 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
                     String url = Const.getAuthConversionAPI(SavedData.getServerName(SplashActivity.this), SavedData.getServerPicture(SplashActivity.this),
                             Build.VERSION.RELEASE, Build.MODEL, SavedData.getRegId(SplashActivity.this));
                     isConversion = true;
-                    mPresenter.loginUser(ApiUtil.LOGIN_CONVERSION, url);
+                    mPresenter.loginUser(ApiConst.LOGIN_CONVERSION, url);
                 }
             }
         }
@@ -189,7 +189,7 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
     @Override
     public void showResult(int api, User user) {
         switch (api) {
-            case ApiUtil.LOGIN_WELCOME:
+            case ApiConst.LOGIN_WELCOME:
                 if (user.getCode() == 200) {
                     Application_Gocci.GuestInit(this, user.getIdentityId(), user.getToken(), String.valueOf(user.getUserId()));
                     SavedData.setWelcome(this, user.getUserName(), user.getProfileImg(), String.valueOf(user.getUserId()), user.getIdentityId(), user.getBadgeNum());
@@ -206,7 +206,7 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
                     Toast.makeText(this, user.getMessage(), Toast.LENGTH_SHORT).show();
                 }
                 break;
-            case ApiUtil.LOGIN_CONVERSION:
+            case ApiConst.LOGIN_CONVERSION:
                 if (user.getCode() == 200) {
                     SavedData.setWelcome(this, user.getUserName(), user.getProfileImg(), String.valueOf(user.getUserId()), user.getIdentityId(), user.getBadgeNum());
 
@@ -221,9 +221,9 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
     @Override
     public void showNoResult(int api) {
         switch (api) {
-            case ApiUtil.LOGIN_WELCOME:
+            case ApiConst.LOGIN_WELCOME:
                 break;
-            case ApiUtil.LOGIN_CONVERSION:
+            case ApiConst.LOGIN_CONVERSION:
                 break;
         }
         Toast.makeText(this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();

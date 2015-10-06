@@ -6,7 +6,7 @@
     android:layout_margin="1dp"
     android:background="@color/materialwhite">
 
-    <com.inase.android.gocci.VideoPlayer.SquareExoVideoView
+    <com.inase.android.gocci.ui.view.SquareExoVideoView
         android:id="@+id/square_video_exo"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -14,7 +14,7 @@
         android:layout_marginLeft="0.00001dp"
         android:layout_marginRight="0.00001dp" />
 
-    <com.inase.android.gocci.Base.SquareImageView
+    <com.inase.android.gocci.ui.view.SquareImageView
         android:id="@+id/video_thumbnail"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

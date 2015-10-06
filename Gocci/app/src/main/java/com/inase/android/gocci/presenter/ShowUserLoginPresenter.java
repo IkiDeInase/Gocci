@@ -1,6 +1,6 @@
 package com.inase.android.gocci.presenter;
 
-import com.inase.android.gocci.domain.model.User;
+import com.inase.android.gocci.domain.model.pojo.User;
 import com.inase.android.gocci.domain.usecase.UserLoginUseCase;
 
 /**

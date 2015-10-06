@@ -19,9 +19,9 @@ import android.widget.ArrayAdapter;
 
 import com.andexert.library.RippleView;
 import com.inase.android.gocci.R;
-import com.inase.android.gocci.common.Const;
-import com.inase.android.gocci.common.SavedData;
-import com.inase.android.gocci.common.Util;
+import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.utils.SavedData;
+import com.inase.android.gocci.utils.Util;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.FilterTimelineEvent;
 import com.inase.android.gocci.event.PageChangeVideoStopEvent;

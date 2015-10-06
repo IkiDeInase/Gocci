@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.inase.android.gocci.Base.SquareVideoView
+    <com.inase.android.gocci.ui.view.SquareVideoView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/preview_video" />

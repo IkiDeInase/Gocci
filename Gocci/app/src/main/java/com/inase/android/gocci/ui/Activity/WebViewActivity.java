@@ -14,7 +14,7 @@ import android.webkit.WebViewClient;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
 import com.inase.android.gocci.R;
-import com.inase.android.gocci.common.Const;
+import com.inase.android.gocci.consts.Const;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;

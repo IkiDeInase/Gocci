@@ -33,15 +33,15 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
-import com.inase.android.gocci.Base.RoundedTransformation;
-import com.inase.android.gocci.Base.ToukouPopup;
+import com.inase.android.gocci.ui.view.RoundedTransformation;
+import com.inase.android.gocci.ui.view.ToukouPopup;
 import com.inase.android.gocci.R;
-import com.inase.android.gocci.common.Const;
-import com.inase.android.gocci.common.SavedData;
-import com.inase.android.gocci.common.Util;
-import com.inase.android.gocci.data.HeaderData;
-import com.inase.android.gocci.data.PostData;
-import com.inase.android.gocci.datasource.api.ApiUtil;
+import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.utils.SavedData;
+import com.inase.android.gocci.utils.Util;
+import com.inase.android.gocci.domain.model.pojo.HeaderData;
+import com.inase.android.gocci.domain.model.pojo.PostData;
+import com.inase.android.gocci.consts.ApiConst;
 import com.inase.android.gocci.datasource.repository.MyPageActionRepository;
 import com.inase.android.gocci.datasource.repository.MyPageActionRepositoryImpl;
 import com.inase.android.gocci.datasource.repository.UserAndRestDataRepository;
@@ -181,7 +181,7 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
         mMyProfAdapter = new MyProfAdapter(this, mHeaderUserData, mProfusers);
         mMyProfAdapter.setMyProfCallback(this);
 
-        mPresenter.getProfData(ApiUtil.USERPAGE_FIRST, Const.getUserpageAPI(Integer.parseInt(SavedData.getServerUserId(this))));
+        mPresenter.getProfData(ApiConst.USERPAGE_FIRST, Const.getUserpageAPI(Integer.parseInt(SavedData.getServerUserId(this))));
 
         mSwipeContainer.setColorSchemeResources(R.color.gocci_1, R.color.gocci_2, R.color.gocci_3, R.color.gocci_4);
         mSwipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -189,7 +189,7 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
             public void onRefresh() {
                 mSwipeContainer.setRefreshing(true);
                 if (Util.getConnectedState(GocciMyprofActivity.this) != Util.NetworkStatus.OFF) {
-                    mPresenter.getProfData(ApiUtil.USERPAGE_REFRESH, Const.getUserpageAPI(Integer.parseInt(SavedData.getServerUserId(GocciMyprofActivity.this))));
+                    mPresenter.getProfData(ApiConst.USERPAGE_REFRESH, Const.getUserpageAPI(Integer.parseInt(SavedData.getServerUserId(GocciMyprofActivity.this))));
                 } else {
                     Toast.makeText(GocciMyprofActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
                     mSwipeContainer.setRefreshing(false);
@@ -274,7 +274,7 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
     public void subscribe(NotificationNumberEvent event) {
         Snackbar.make(mCoordinatorLayout, event.mMessage, Snackbar.LENGTH_SHORT).show();
         if (event.mMessage.equals(getString(R.string.videoposting_complete))) {
-            mPresenter.getProfData(ApiUtil.USERPAGE_REFRESH, Const.getUserpageAPI(Integer.parseInt(SavedData.getServerUserId(this))));
+            mPresenter.getProfData(ApiConst.USERPAGE_REFRESH, Const.getUserpageAPI(Integer.parseInt(SavedData.getServerUserId(this))));
         } else {
             mNotificationNumber.setVisibility(View.VISIBLE);
             mNotificationNumber.setText(String.valueOf(event.mNotificationNumber));
@@ -587,10 +587,10 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
     @Override
     public void showNoResultCase(int api, HeaderData userData) {
         mHeaderUserData = userData;
-        if (api == ApiUtil.USERPAGE_FIRST) {
+        if (api == ApiConst.USERPAGE_FIRST) {
             mMyProfAdapter.setHeaderData(mHeaderUserData);
             mProfRecyclerView.setAdapter(mMyProfAdapter);
-        } else if (api == ApiUtil.USERPAGE_REFRESH) {
+        } else if (api == ApiConst.USERPAGE_REFRESH) {
             mProfusers.clear();
             mMyProfAdapter.setData(mHeaderUserData, mProfusers);
         }
@@ -620,11 +620,11 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
         mProfusers.clear();
         mProfusers.addAll(postData);
         switch (api) {
-            case ApiUtil.USERPAGE_FIRST:
+            case ApiConst.USERPAGE_FIRST:
                 mMyProfAdapter.setHeaderData(mHeaderUserData);
                 mProfRecyclerView.setAdapter(mMyProfAdapter);
                 break;
-            case ApiUtil.USERPAGE_REFRESH:
+            case ApiConst.USERPAGE_REFRESH:
                 mMyProfAdapter.setData(mHeaderUserData, mProfusers);
                 break;
         }

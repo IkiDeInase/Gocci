@@ -41,7 +41,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="8dp" />
 
-    <com.inase.android.gocci.Base.BlockEditTextDefaultFocusFrameLayout
+    <com.inase.android.gocci.ui.view.BlockEditTextDefaultFocusFrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/username_frame"
@@ -77,7 +77,7 @@
             android:layout_gravity="center"
             android:singleLine="true"
             android:textStyle="bold" />
-    </com.inase.android.gocci.Base.BlockEditTextDefaultFocusFrameLayout>
+    </com.inase.android.gocci.ui.view.BlockEditTextDefaultFocusFrameLayout>
 
     <com.github.jorgecastilloprz.FABProgressCircle
         android:id="@+id/fab_progress_circle"

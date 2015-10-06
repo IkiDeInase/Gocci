@@ -1,9 +1,7 @@
 package com.inase.android.gocci.presenter;
 
-import com.inase.android.gocci.data.HeaderData;
-import com.inase.android.gocci.data.PostData;
-import com.inase.android.gocci.domain.usecase.PostDeleteUseCase;
-import com.inase.android.gocci.domain.usecase.ProfChangeUseCase;
+import com.inase.android.gocci.domain.model.pojo.HeaderData;
+import com.inase.android.gocci.domain.model.pojo.PostData;
 import com.inase.android.gocci.domain.usecase.UserAndRestUseCase;
 
 import java.util.ArrayList;

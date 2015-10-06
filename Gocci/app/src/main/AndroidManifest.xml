@@ -28,7 +28,7 @@
         android:required="true" />
 
     <application
-        android:name=".application.Application_Gocci"
+        android:name=".Application_Gocci"
         android:allowBackup="true"
         android:icon="@drawable/ic_gocci_icon_circle"
         android:label="@string/app_name"
@@ -55,21 +55,21 @@
         </receiver>
 
         <service
-            android:name=".data.MyGcmListenerService"
+            android:name=".service.MyGcmListenerService"
             android:exported="false" >
             <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
             </intent-filter>
         </service>
         <service
-            android:name=".data.MyInstanceIDListenerService"
+            android:name=".service.MyInstanceIDListenerService"
             android:exported="false" >
             <intent-filter>
                 <action android:name="com.google.android.gms.iid.InstanceID" />
             </intent-filter>
         </service>
         <service
-            android:name=".data.RegistrationIntentService"
+            android:name=".service.RegistrationIntentService"
             android:exported="false" />
         <service
             android:name="com.amazonaws.mobileconnectors.s3.transferutility.TransferService"
