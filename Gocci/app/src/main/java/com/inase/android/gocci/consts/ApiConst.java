@@ -15,7 +15,7 @@ public class ApiConst {
     public static final int USERPAGE_REFRESH = 5;
 
     public static final int RESTPAGE_FIRST = 6;
-    public static final int RESTPAGE_REFRESH =7;
+    public static final int RESTPAGE_REFRESH = 7;
 
     public static final int LOGIN_WELCOME = 20;
     public static final int LOGIN_CONVERSION = 21;

@@ -11,10 +11,10 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
-import com.inase.android.gocci.ui.activity.SplashActivity;
+import com.inase.android.gocci.R;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.NotificationNumberEvent;
-import com.inase.android.gocci.R;
+import com.inase.android.gocci.ui.activity.SplashActivity;
 import com.inase.android.gocci.utils.SavedData;
 
 import java.util.Arrays;

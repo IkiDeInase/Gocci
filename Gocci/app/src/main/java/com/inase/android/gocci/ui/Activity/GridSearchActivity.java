@@ -33,17 +33,17 @@ import com.google.android.exoplayer.AspectRatioFrameLayout;
 import com.google.android.exoplayer.audio.AudioCapabilities;
 import com.google.android.exoplayer.audio.AudioCapabilitiesReceiver;
 import com.google.android.exoplayer.drm.UnsupportedDrmException;
-import com.inase.android.gocci.ui.view.SquareImageView;
 import com.inase.android.gocci.R;
-import com.inase.android.gocci.utils.video.HlsRendererBuilder;
-import com.inase.android.gocci.ui.view.SquareExoVideoView;
-import com.inase.android.gocci.utils.video.VideoPlayer;
 import com.inase.android.gocci.consts.Const;
-import com.inase.android.gocci.utils.SavedData;
-import com.inase.android.gocci.utils.Util;
 import com.inase.android.gocci.domain.model.PostData;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.ui.view.DrawerProfHeader;
+import com.inase.android.gocci.ui.view.SquareExoVideoView;
+import com.inase.android.gocci.ui.view.SquareImageView;
+import com.inase.android.gocci.utils.SavedData;
+import com.inase.android.gocci.utils.Util;
+import com.inase.android.gocci.utils.video.HlsRendererBuilder;
+import com.inase.android.gocci.utils.video.VideoPlayer;
 import com.konifar.fab_transformation.FabTransformation;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
@@ -705,17 +705,17 @@ public class GridSearchActivity extends AppCompatActivity implements AppBarLayou
                 return;
             }
         }
-            mPlayingPostId = postData.getPost_id();
-            final SearchGridViewHolder currentViewHolder = getPlayingViewHolder();
-            if (mPlayBlockFlag) {
-                return;
-            }
+        mPlayingPostId = postData.getPost_id();
+        final SearchGridViewHolder currentViewHolder = getPlayingViewHolder();
+        if (mPlayBlockFlag) {
+            return;
+        }
 
-            final String path = postData.getMovie();
-            releasePlayer();
-            if (Util.isMovieAutoPlay(GridSearchActivity.this)) {
-                preparePlayer(currentViewHolder, path);
-            }
+        final String path = postData.getMovie();
+        releasePlayer();
+        if (Util.isMovieAutoPlay(GridSearchActivity.this)) {
+            preparePlayer(currentViewHolder, path);
+        }
     }
 
     private SearchGridViewHolder getPlayingViewHolder() {
@@ -796,15 +796,15 @@ public class GridSearchActivity extends AppCompatActivity implements AppBarLayou
             holder.mAspectFrame.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                        if (player != null && mPlayingPostId.equals(user.getPost_id())) {
-                            if (player.getPlayerControl().isPlaying()) {
-                                player.getPlayerControl().pause();
-                            } else {
-                                player.getPlayerControl().start();
-                            }
+                    if (player != null && mPlayingPostId.equals(user.getPost_id())) {
+                        if (player.getPlayerControl().isPlaying()) {
+                            player.getPlayerControl().pause();
                         } else {
-                            changeMovie(user);
+                            player.getPlayerControl().start();
                         }
+                    } else {
+                        changeMovie(user);
+                    }
                 }
             });
 
@@ -828,7 +828,7 @@ public class GridSearchActivity extends AppCompatActivity implements AppBarLayou
         private String getDist(int distance) {
             String dist = null;
             if (distance > 1000) {
-                dist = distance/1000 + "km";
+                dist = distance / 1000 + "km";
             } else {
                 dist = distance + "m";
             }

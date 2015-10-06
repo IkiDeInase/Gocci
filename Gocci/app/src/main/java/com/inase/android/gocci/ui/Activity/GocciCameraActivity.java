@@ -11,10 +11,10 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
-import com.inase.android.gocci.ui.fragment.down18CameraFragment;
-import com.inase.android.gocci.ui.fragment.up18CameraFragment;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.ui.fragment.down18CameraFragment;
+import com.inase.android.gocci.ui.fragment.up18CameraFragment;
 
 import java.util.ArrayList;
 

@@ -31,13 +31,13 @@ import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.inase.android.gocci.Application_Gocci;
-import com.inase.android.gocci.ui.view.GocciTwitterLoginButton;
 import com.inase.android.gocci.BuildConfig;
+import com.inase.android.gocci.R;
+import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.NotificationNumberEvent;
-import com.inase.android.gocci.R;
 import com.inase.android.gocci.ui.view.DrawerProfHeader;
-import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.ui.view.GocciTwitterLoginButton;
 import com.inase.android.gocci.utils.SavedData;
 import com.inase.android.gocci.utils.Util;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -55,7 +55,6 @@ import com.twitter.sdk.android.core.TwitterAuthToken;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 
-import cz.msebera.android.httpclient.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -64,6 +63,7 @@ import java.util.Locale;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cz.msebera.android.httpclient.Header;
 
 public class SettingActivity extends AppCompatActivity {
 

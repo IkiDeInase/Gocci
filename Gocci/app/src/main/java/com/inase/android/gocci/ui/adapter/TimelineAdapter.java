@@ -11,12 +11,12 @@ import android.widget.Toast;
 import com.andexert.library.RippleView;
 import com.cocosw.bottomsheet.BottomSheet;
 import com.inase.android.gocci.Application_Gocci;
-import com.inase.android.gocci.ui.view.RoundedTransformation;
-import com.inase.android.gocci.ui.view.SquareImageView;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
-import com.inase.android.gocci.utils.Util;
 import com.inase.android.gocci.domain.model.PostData;
+import com.inase.android.gocci.ui.view.RoundedTransformation;
+import com.inase.android.gocci.ui.view.SquareImageView;
+import com.inase.android.gocci.utils.Util;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;

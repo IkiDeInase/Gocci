@@ -1,7 +1,5 @@
 package com.inase.android.gocci.domain.usecase;
 
-import java.io.File;
-
 /**
  * Created by kinagafuji on 15/10/01.
  */

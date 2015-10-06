@@ -1,18 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/coordinator_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" android:fitsSystemWindows="true"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     tools:context="com.inase.android.gocci.ui.activity.GridSearchActivity">
 
-    <android.support.design.widget.AppBarLayout android:layout_height="wrap_content"
-        android:layout_width="match_parent" android:id="@+id/app_bar">
+    <android.support.design.widget.AppBarLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:id="@+id/app_bar">
 
-        <android.support.v7.widget.Toolbar android:id="@+id/tool_bar"
-            android:layout_width="match_parent" android:layout_height="?attr/actionBarSize"
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/tool_bar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
             android:background="@color/gocci_header"
             app:layout_scrollFlags="scroll|enterAlways"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
@@ -32,8 +36,8 @@
                 android:textSize="16sp"
                 android:textColor="@color/gocci_header"
                 android:textStyle="bold"
-                android:layout_centerInParent="true"/>
-            </RelativeLayout>
+                android:layout_centerInParent="true" />
+        </RelativeLayout>
 
         <View
             android:layout_width="match_parent"

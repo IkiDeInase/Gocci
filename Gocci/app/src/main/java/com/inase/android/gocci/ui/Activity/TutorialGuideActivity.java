@@ -22,11 +22,11 @@ import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManag
 import com.andexert.library.RippleView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.inase.android.gocci.ui.fragment.CreateUserNameFragment;
-import com.inase.android.gocci.ui.fragment.SocialAuthenticationFragment;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.service.RegistrationIntentService;
+import com.inase.android.gocci.ui.fragment.CreateUserNameFragment;
+import com.inase.android.gocci.ui.fragment.SocialAuthenticationFragment;
 import com.nineoldandroids.view.ViewHelper;
 
 import butterknife.Bind;

@@ -26,14 +26,14 @@ import android.widget.Toast;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
 import com.andexert.library.RippleView;
-import com.inase.android.gocci.ui.view.RoundedTransformation;
-import com.inase.android.gocci.event.NotificationNumberEvent;
 import com.inase.android.gocci.R;
-import com.inase.android.gocci.ui.view.DrawerProfHeader;
 import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.domain.model.HeaderData;
+import com.inase.android.gocci.event.NotificationNumberEvent;
+import com.inase.android.gocci.ui.view.DrawerProfHeader;
+import com.inase.android.gocci.ui.view.RoundedTransformation;
 import com.inase.android.gocci.utils.SavedData;
 import com.inase.android.gocci.utils.Util;
-import com.inase.android.gocci.domain.model.HeaderData;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
@@ -45,7 +45,6 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 
-import cz.msebera.android.httpclient.Header;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -54,6 +53,7 @@ import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import cz.msebera.android.httpclient.Header;
 
 public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOffsetChangedListener {
 

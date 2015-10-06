@@ -3,8 +3,8 @@ package com.inase.android.gocci.datasource.repository;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
-import com.inase.android.gocci.R;
 import com.inase.android.gocci.Application_Gocci;
+import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.loopj.android.http.JsonHttpResponseHandler;
 

@@ -8,9 +8,9 @@ import android.widget.TextView;
 import com.amazonaws.regions.Regions;
 import com.andexert.library.RippleView;
 import com.google.android.exoplayer.AspectRatioFrameLayout;
-import com.inase.android.gocci.ui.view.SquareImageView;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.ui.view.SquareExoVideoView;
+import com.inase.android.gocci.ui.view.SquareImageView;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.SyncHttpClient;
 
@@ -178,7 +178,7 @@ public class Const {
                     //フォローの近い順の更新
                     url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline/?category_id=" + category_id + "&order_id=" + order_id + "&lon=" + lon + "&lat=" + lat + "&call=" + call;
                 }
-            break;
+                break;
             case 2:
                 if (call == 0) {
                     //フォローの人気順

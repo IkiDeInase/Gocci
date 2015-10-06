@@ -5,8 +5,8 @@ import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import com.inase.android.gocci.utils.camera.CameraManager;
 import com.inase.android.gocci.ui.fragment.down18CameraFragment;
+import com.inase.android.gocci.utils.camera.CameraManager;
 
 /**
  * class extends SurfaceView, main purpose is to refresh the preview

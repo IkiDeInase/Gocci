@@ -10,6 +10,7 @@ import java.util.ArrayList;
  */
 public interface UserAndRestDataRepository {
     void getUserDataList(int api, String url, UserAndRestDataRepositoryCallback cb);
+
     void getRestDataList(int api, String url, UserAndRestDataRepositoryCallback cb);
 
     interface UserAndRestDataRepositoryCallback {

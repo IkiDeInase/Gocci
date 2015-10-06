@@ -15,7 +15,10 @@ import android.widget.Toast;
 
 import com.github.jorgecastilloprz.FABProgressCircle;
 import com.github.jorgecastilloprz.listeners.FABProgressListener;
+import com.inase.android.gocci.Application_Gocci;
+import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.ApiConst;
+import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.repository.LoginRepository;
 import com.inase.android.gocci.datasource.repository.LoginRepositoryImpl;
 import com.inase.android.gocci.domain.executor.UIThread;
@@ -25,9 +28,6 @@ import com.inase.android.gocci.domain.usecase.UserLoginUseCaseImpl;
 import com.inase.android.gocci.presenter.ShowUserLoginPresenter;
 import com.inase.android.gocci.ui.activity.TutorialGuideActivity;
 import com.inase.android.gocci.ui.activity.WebViewActivity;
-import com.inase.android.gocci.Application_Gocci;
-import com.inase.android.gocci.R;
-import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.utils.SavedData;
 
 import butterknife.Bind;

@@ -46,20 +46,19 @@ import com.facebook.rebound.SpringSystem;
 import com.facebook.share.model.ShareVideo;
 import com.facebook.share.model.ShareVideoContent;
 import com.facebook.share.widget.ShareDialog;
-import com.inase.android.gocci.consts.Const;
-import com.inase.android.gocci.ui.activity.FlexibleUserProfActivity;
 import com.inase.android.gocci.Application_Gocci;
-import com.inase.android.gocci.ui.view.Performer;
 import com.inase.android.gocci.R;
+import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.domain.model.HeaderData;
 import com.inase.android.gocci.domain.model.PostData;
+import com.inase.android.gocci.ui.activity.FlexibleUserProfActivity;
+import com.inase.android.gocci.ui.view.Performer;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.nineoldandroids.animation.ObjectAnimator;
 import com.nineoldandroids.animation.PropertyValuesHolder;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
-import cz.msebera.android.httpclient.Header;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -69,6 +68,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
 import java.util.Locale;
+
+import cz.msebera.android.httpclient.Header;
 
 /**
  * 便利メソッド群クラス

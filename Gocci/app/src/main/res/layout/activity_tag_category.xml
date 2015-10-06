@@ -1,50 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:id="@+id/coordinator_layout"
     tools:context="com.inase.android.gocci.ui.activity.TagCategoryActivity">
 
-    <android.support.design.widget.AppBarLayout android:layout_height="wrap_content"
+    <android.support.design.widget.AppBarLayout
+        android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:id="@+id/app_bar"
-        >
+        android:id="@+id/app_bar">
 
-        <android.support.v7.widget.Toolbar android:id="@+id/tool_bar"
-            android:layout_width="match_parent" android:layout_height="?attr/actionBarSize"
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/tool_bar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
             android:background="@color/gocci_header"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:layout_scrollFlags="scroll|enterAlways" />
 
-    <com.ogaclejapan.smarttablayout.SmartTabLayout
-        android:id="@+id/smart_tab"
-        android:layout_below="@id/tool_bar"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:background="@color/view_background"
-        android:clipToPadding="false"
-        android:paddingLeft="32dp"
-        android:paddingRight="32dp"
-        app:stl_defaultTabTextAllCaps="true"
-        app:stl_defaultTabTextColor="@color/gocci_header"
-        app:stl_defaultTabTextHorizontalPadding="20dp"
-        app:stl_defaultTabTextMinWidth="0dp"
-        app:stl_defaultTabTextSize="16sp"
-        app:stl_dividerColor="@color/transparent"
-        app:stl_dividerThickness="0dp"
-        app:stl_indicatorAlwaysInCenter="true"
-        app:stl_indicatorCornerRadius="0dp"
-        app:stl_indicatorInFront="true"
-        app:stl_indicatorInterpolation="smart"
-        app:stl_indicatorThickness="3dp"
-        app:stl_underlineColor="@color/transparent"
-        app:stl_underlineThickness="0dp"
-        app:stl_indicatorColors="@array/custom_tab_colors"
-        />
+        <com.ogaclejapan.smarttablayout.SmartTabLayout
+            android:id="@+id/smart_tab"
+            android:layout_below="@id/tool_bar"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@color/view_background"
+            android:clipToPadding="false"
+            android:paddingLeft="32dp"
+            android:paddingRight="32dp"
+            app:stl_defaultTabTextAllCaps="true"
+            app:stl_defaultTabTextColor="@color/gocci_header"
+            app:stl_defaultTabTextHorizontalPadding="20dp"
+            app:stl_defaultTabTextMinWidth="0dp"
+            app:stl_defaultTabTextSize="16sp"
+            app:stl_dividerColor="@color/transparent"
+            app:stl_dividerThickness="0dp"
+            app:stl_indicatorAlwaysInCenter="true"
+            app:stl_indicatorCornerRadius="0dp"
+            app:stl_indicatorInFront="true"
+            app:stl_indicatorInterpolation="smart"
+            app:stl_indicatorThickness="3dp"
+            app:stl_underlineColor="@color/transparent"
+            app:stl_underlineThickness="0dp"
+            app:stl_indicatorColors="@array/custom_tab_colors" />
 
         <View
             android:layout_width="match_parent"
