@@ -114,6 +114,7 @@ public class SocialAuthenticationFragment extends Fragment {
         mFacebookLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
+                Toast.makeText(getActivity(), getString(R.string.preparing_authorize), Toast.LENGTH_SHORT).show();
                 Profile profile = Profile.getCurrentProfile();
                 String profile_img = "https://graph.facebook.com/" + profile.getId() + "/picture";
                 Application_Gocci.addLogins(getActivity(), Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), profile_img);
@@ -140,6 +141,7 @@ public class SocialAuthenticationFragment extends Fragment {
         mTwitterLoginButton.setCallback(new Callback<TwitterSession>() {
             @Override
             public void success(Result<TwitterSession> result) {
+                Toast.makeText(getActivity(), getString(R.string.preparing_authorize), Toast.LENGTH_SHORT).show();
                 TwitterAuthToken authToken = result.data.getAuthToken();
 
                 String username = result.data.getUserName();

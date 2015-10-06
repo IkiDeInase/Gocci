@@ -156,8 +156,7 @@ public class CreateUserNameFragment extends Fragment implements FABProgressListe
 
     @Override
     public void hideLoading() {
-        mFab.setClickable(true);
-        mFabProgressCircle.hide();
+
     }
 
     @Override
@@ -177,12 +176,16 @@ public class CreateUserNameFragment extends Fragment implements FABProgressListe
     @Override
     public void showNoResult(int api) {
         if (api == ApiConst.LOGIN_SIGNUP) {
+            mFab.setClickable(true);
+            mFabProgressCircle.hide();
             mUsernameTextInput.setError(getString(R.string.multiple_username));
         }
     }
 
     @Override
     public void showError() {
+        mFab.setClickable(true);
+        mFabProgressCircle.hide();
         Toast.makeText(getActivity(), getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
     }
 }
