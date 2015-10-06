@@ -29,14 +29,12 @@ public class ShowFollowTimelinePresenter extends Presenter implements FollowTime
     public void onFollowTimelineLoaded(int api, ArrayList<PostData> mPostData) {
         mShowFollowTimelineView.hideLoading();
         mShowFollowTimelineView.hideNoResultCase();
-        mShowFollowTimelineView.hideError();
         mShowFollowTimelineView.showResult(api, mPostData);
     }
 
     @Override
     public void onFollowTimelineEmpty() {
         mShowFollowTimelineView.hideLoading();
-        mShowFollowTimelineView.hideError();
         mShowFollowTimelineView.showNoResultCase();
     }
 
@@ -77,8 +75,6 @@ public class ShowFollowTimelinePresenter extends Presenter implements FollowTime
         void hideNoResultCase();
 
         void showError();
-
-        void hideError();
 
         void showResult(int api, ArrayList<PostData> mPostData);
 

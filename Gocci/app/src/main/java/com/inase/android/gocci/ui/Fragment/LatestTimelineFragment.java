@@ -541,14 +541,7 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
 
     @Override
     public void showError() {
-        mEmptyImage.setVisibility(View.VISIBLE);
-        mEmptyText.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void hideError() {
-        mEmptyImage.setVisibility(View.INVISIBLE);
-        mEmptyText.setVisibility(View.INVISIBLE);
+        Toast.makeText(getActivity(), getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
     }
 
     @Override

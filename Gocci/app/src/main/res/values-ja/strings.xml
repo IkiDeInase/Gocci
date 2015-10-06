@@ -314,4 +314,6 @@
     <string name="drm_error_unknown">An unknown DRM error occurred</string>
 
     <string name="preparing_authorize">連携しています</string>
+
+    <string name="commented">コメントしました</string>
 </resources>

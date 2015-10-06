@@ -30,14 +30,12 @@ public class ShowLatestTimelinePresenter extends Presenter implements LatestTime
     public void onLatestTimelineLoaded(int api, ArrayList<PostData> mPostData) {
         mShowLatestTimelineView.hideLoading();
         mShowLatestTimelineView.hideNoResultCase();
-        mShowLatestTimelineView.hideError();
         mShowLatestTimelineView.showResult(api, mPostData);
     }
 
     @Override
     public void onLatestTimelineEmpty() {
         mShowLatestTimelineView.hideLoading();
-        mShowLatestTimelineView.hideError();
         mShowLatestTimelineView.showNoResultCase();
     }
 
@@ -78,8 +76,6 @@ public class ShowLatestTimelinePresenter extends Presenter implements LatestTime
         void hideNoResultCase();
 
         void showError();
-
-        void hideError();
 
         void showResult(int api, ArrayList<PostData> mPostData);
 

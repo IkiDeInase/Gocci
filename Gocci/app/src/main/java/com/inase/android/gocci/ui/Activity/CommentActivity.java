@@ -2,16 +2,12 @@ package com.inase.android.gocci.ui.activity;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,22 +15,14 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
-import com.andexert.library.RippleView;
-import com.cocosw.bottomsheet.BottomSheet;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -47,16 +35,26 @@ import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.google.android.exoplayer.audio.AudioCapabilities;
 import com.google.android.exoplayer.audio.AudioCapabilitiesReceiver;
 import com.google.android.exoplayer.drm.UnsupportedDrmException;
-import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
+import com.inase.android.gocci.consts.ApiConst;
 import com.inase.android.gocci.consts.Const;
-import com.inase.android.gocci.domain.model.CommentUserData;
+import com.inase.android.gocci.datasource.repository.CommentActionRepository;
+import com.inase.android.gocci.datasource.repository.CommentActionRepositoryImpl;
+import com.inase.android.gocci.datasource.repository.CommentDataRepository;
+import com.inase.android.gocci.datasource.repository.CommentDataRepositoryImpl;
+import com.inase.android.gocci.domain.executor.UIThread;
 import com.inase.android.gocci.domain.model.HeaderData;
 import com.inase.android.gocci.domain.model.PostData;
+import com.inase.android.gocci.domain.usecase.CommentPageUseCase;
+import com.inase.android.gocci.domain.usecase.CommentPageUseCaseImpl;
+import com.inase.android.gocci.domain.usecase.CommentPostUseCase;
+import com.inase.android.gocci.domain.usecase.CommentPostUseCaseImpl;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.NotificationNumberEvent;
+import com.inase.android.gocci.presenter.ShowCommentPagePresenter;
+import com.inase.android.gocci.ui.adapter.CommentAdapter;
 import com.inase.android.gocci.ui.view.DrawerProfHeader;
-import com.inase.android.gocci.ui.view.RoundedTransformation;
+import com.inase.android.gocci.ui.view.SquareImageView;
 import com.inase.android.gocci.utils.SavedData;
 import com.inase.android.gocci.utils.Util;
 import com.inase.android.gocci.utils.video.HlsRendererBuilder;
@@ -71,7 +69,6 @@ import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.squareup.otto.Subscribe;
-import com.squareup.picasso.Picasso;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
 import org.json.JSONArray;
@@ -89,7 +86,8 @@ import butterknife.OnClick;
 import cz.msebera.android.httpclient.Header;
 import io.fabric.sdk.android.Fabric;
 
-public class CommentActivity extends AppCompatActivity implements AudioCapabilitiesReceiver.Listener, ObservableScrollViewCallbacks, AppBarLayout.OnOffsetChangedListener {
+public class CommentActivity extends AppCompatActivity implements AudioCapabilitiesReceiver.Listener, ObservableScrollViewCallbacks,
+        ShowCommentPagePresenter.ShowCommentView, CommentAdapter.CommentCallback {
 
     @Bind(R.id.tool_bar)
     Toolbar mToolBar;
@@ -97,10 +95,6 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
     ObservableRecyclerView mCommentRecyclerView;
     @Bind(R.id.swipe_container)
     SwipeRefreshLayout mSwipeContainer;
-    @Bind(R.id.app_bar)
-    AppBarLayout mAppBar;
-    @Bind(R.id.coordinator_layout)
-    CoordinatorLayout mCoordinatorLayout;
     @Bind(R.id.comment_button)
     FloatingActionButton mCommentButton;
 
@@ -114,8 +108,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
                 .input(null, null, false, new MaterialDialog.InputCallback() {
                     @Override
                     public void onInput(MaterialDialog dialog, CharSequence input) {
-                        // Do something
-                        postCommentAsync(CommentActivity.this, Const.getPostCommentAPI(mPost_id, input.toString()));
+                        mPresenter.postComment(Const.getPostCommentAPI(mPost_id, input.toString()), Const.getCommentAPI(mPost_id));
                     }
                 })
                 .widgetColorRes(R.color.gocci_header)
@@ -123,7 +116,6 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
                 .positiveColorRes(R.color.gocci_header)
                 .show();
     }
-
 
     private LinearLayoutManager mLayoutManager;
     private ArrayList<HeaderData> mCommentusers = new ArrayList<>();
@@ -139,9 +131,8 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
     private CallbackManager callbackManager;
     private ShareDialog shareDialog;
 
-    private PostData headerUser;
+    private PostData headerPost;
     private String mPost_id;
-    private String mCommentUrl;
     private String title;
 
     private Drawer result;
@@ -159,6 +150,8 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
     private boolean loading = true;
     private int visibleThreshold = 5;
     int firstVisibleItem, visibleItemCount, totalItemCount;
+
+    private ShowCommentPagePresenter mPresenter;
 
     private ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
         @Override
@@ -224,6 +217,13 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
         } catch (InitializationException ex) {
             Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
         }
+
+        CommentDataRepository commentDataRepositoryImpl = CommentDataRepositoryImpl.getRepository();
+        CommentActionRepository commentActionRepositoryImpl = CommentActionRepositoryImpl.getRepository();
+        CommentPageUseCase commentPageUseCaseImpl = CommentPageUseCaseImpl.getUseCase(commentDataRepositoryImpl, UIThread.getInstance());
+        CommentPostUseCase commentPostUseCaseImpl = CommentPostUseCaseImpl.getUseCase(commentActionRepositoryImpl, UIThread.getInstance());
+        mPresenter = new ShowCommentPagePresenter(commentPageUseCaseImpl, commentPostUseCaseImpl);
+        mPresenter.setCommentView(this);
 
         setContentView(R.layout.activity_comment);
         ButterKnife.bind(this);
@@ -347,10 +347,10 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
         mCommentRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
         mCommentRecyclerView.setScrollViewCallbacks(this);
 
-        mCommentAdapter = new CommentAdapter(CommentActivity.this);
+        mCommentAdapter = new CommentAdapter(this, mPost_id, headerPost, mCommentusers);
+        mCommentAdapter.setCommentCallback(this);
 
-        mCommentUrl = Const.getCommentAPI(mPost_id);
-        getSignupAsync(this);
+        mPresenter.getCommentData(ApiConst.COMMENT_FIRST, Const.getCommentAPI(mPost_id));
 
         mSwipeContainer.setColorSchemeResources(R.color.gocci_1, R.color.gocci_2, R.color.gocci_3, R.color.gocci_4);
         mSwipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -358,7 +358,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
             public void onRefresh() {
                 mSwipeContainer.setRefreshing(true);
                 if (Util.getConnectedState(CommentActivity.this) != Util.NetworkStatus.OFF) {
-                    getRefreshAsync(CommentActivity.this);
+                    mPresenter.getCommentData(ApiConst.COMMENT_REFRESH, Const.getCommentAPI(mPost_id));
                 } else {
                     Toast.makeText(CommentActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
                     mSwipeContainer.setRefreshing(false);
@@ -429,14 +429,13 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
         if (player == null) {
             if (mPlayingPostId != null) {
                 if (Util.isMovieAutoPlay(this)) {
-                    preparePlayer(getPlayingViewHolder(), headerUser.getMovie());
+                    preparePlayer(getPlayingViewHolder(), headerPost.getMovie());
                 }
             }
         } else {
             player.setBackgrounded(false);
         }
-
-        mAppBar.addOnOffsetChangedListener(this);
+        mPresenter.resume();
     }
 
     @Override
@@ -456,7 +455,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
         if (getPlayingViewHolder() != null) {
             getPlayingViewHolder().mVideoThumbnail.setVisibility(View.VISIBLE);
         }
-        mAppBar.removeOnOffsetChangedListener(this);
+        mPresenter.pause();
     }
 
     @Override
@@ -468,7 +467,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
 
     @Subscribe
     public void subscribe(NotificationNumberEvent event) {
-        Snackbar.make(mCoordinatorLayout, event.mMessage, Snackbar.LENGTH_SHORT).show();
+        //Snackbar.make(mCoordinatorLayout, event.mMessage, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
@@ -496,165 +495,10 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
         if (mPlayingPostId != null) {
             releasePlayer();
             if (Util.isMovieAutoPlay(this)) {
-                preparePlayer(getPlayingViewHolder(), headerUser.getMovie());
+                preparePlayer(getPlayingViewHolder(), headerPost.getMovie());
             }
         }
         player.setBackgrounded(false);
-    }
-
-    private void getSignupAsync(final Context context) {
-        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(context, mCommentUrl, new TextHttpResponseHandler() {
-            @Override
-            public void onStart() {
-                mSwipeContainer.setRefreshing(true);
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                Toast.makeText(context, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                try {
-                    JSONObject json = new JSONObject(responseString);
-                    JSONArray array = new JSONArray(json.getString("comments"));
-                    JSONObject obj = new JSONObject(json.getString("post"));
-
-                    headerUser = PostData.createPostData(obj);
-
-                    for (int i = 0; i < array.length(); i++) {
-                        JSONObject jsonObject = array.getJSONObject(i);
-                        String comment = jsonObject.getString("comment");
-                        if (!comment.equals("none")) {
-                            mCommentusers.add(HeaderData.createCommentHeaderData(jsonObject));
-                        }
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                Collections.reverse(mCommentusers);
-
-                mCommentRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
-                mCommentRecyclerView.setAdapter(mCommentAdapter);
-                //changeMovie();
-            }
-
-            @Override
-            public void onFinish() {
-                mSwipeContainer.setRefreshing(false);
-            }
-        });
-    }
-
-    private void getRefreshAsync(final Context context) {
-        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(context, mCommentUrl, new TextHttpResponseHandler() {
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                Toast.makeText(context, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                mCommentusers.clear();
-                try {
-                    JSONObject json = new JSONObject(responseString);
-                    JSONArray array = new JSONArray(json.getString("comments"));
-                    JSONObject obj = new JSONObject(json.getString("post"));
-
-                    headerUser = PostData.createPostData(obj);
-
-                    for (int i = 0; i < array.length(); i++) {
-                        JSONObject jsonObject = array.getJSONObject(i);
-                        String comment = jsonObject.getString("comment");
-                        if (!comment.equals("none")) {
-                            mCommentusers.add(HeaderData.createCommentHeaderData(jsonObject));
-                        }
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                Collections.reverse(mCommentusers);
-
-                mPlayingPostId = null;
-                mViewHolderHash.clear();
-                mCommentRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
-                mCommentAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onFinish() {
-//                mTimelineDialog.dismiss();
-                mSwipeContainer.setRefreshing(false);
-            }
-        });
-    }
-
-    private void postCommentAsync(final Context context, String url) {
-        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(context, url, new AsyncHttpResponseHandler() {
-
-            @Override
-            public void onStart() {
-                mSwipeContainer.setRefreshing(true);
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-                Const.asyncHttpClient.get(context, mCommentUrl, new TextHttpResponseHandler() {
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                        Toast.makeText(context, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                        mCommentusers.clear();
-                        try {
-                            JSONObject json = new JSONObject(responseString);
-                            JSONArray array = new JSONArray(json.getString("comments"));
-                            JSONObject obj = new JSONObject(json.getString("post"));
-
-                            headerUser = PostData.createPostData(obj);
-
-                            for (int i = 0; i < array.length(); i++) {
-                                JSONObject jsonObject = array.getJSONObject(i);
-                                String comment = jsonObject.getString("comment");
-                                if (!comment.equals("none")) {
-                                    mCommentusers.add(HeaderData.createCommentHeaderData(jsonObject));
-                                }
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                        Collections.reverse(mCommentusers);
-
-                        mPlayingPostId = null;
-                        mViewHolderHash.clear();
-                        mCommentRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
-                        mCommentAdapter.notifyDataSetChanged();
-                        //changeMovie();
-                    }
-                });
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                Toast.makeText(context, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onFinish() {
-//                mTimelineDialog.dismiss();
-                mSwipeContainer.setRefreshing(false);
-            }
-        });
     }
 
     @Override
@@ -744,7 +588,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
 
     private void changeMovie() {
         // TODO:実装
-        if (!headerUser.getPost_id().equals(mPlayingPostId)) {
+        if (!headerPost.getPost_id().equals(mPlayingPostId)) {
 
             // 前回の動画再生停止処理
             final Const.ExoViewHolder oldViewHolder = getPlayingViewHolder();
@@ -752,14 +596,14 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
                 oldViewHolder.mVideoThumbnail.setVisibility(View.VISIBLE);
             }
 
-            mPlayingPostId = headerUser.getPost_id();
+            mPlayingPostId = headerPost.getPost_id();
             final Const.ExoViewHolder currentViewHolder = getPlayingViewHolder();
             if (mPlayBlockFlag) {
                 Log.d("DEBUG", "startMovie play block status");
                 return;
             }
 
-            final String path = headerUser.getMovie();
+            final String path = headerPost.getMovie();
             releasePlayer();
             if (Util.isMovieAutoPlay(this)) {
                 preparePlayer(currentViewHolder, path);
@@ -800,316 +644,120 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
     }
 
     @Override
-    public void onOffsetChanged(AppBarLayout appBarLayout, int i) {
-        mSwipeContainer.setEnabled(i == 0);
+    public void onUserClick(int user_id, String user_name) {
+        FlexibleUserProfActivity.startUserProfActivity(user_id, user_name, this);
     }
 
-    static class CommentViewHolder extends RecyclerView.ViewHolder {
-        @Bind(R.id.comment_user_image)
-        ImageView mCommentUserImage;
-        @Bind(R.id.user_name)
-        TextView mUserName;
-        @Bind(R.id.date_time)
-        TextView mDateTime;
-        @Bind(R.id.user_comment)
-        TextView mUserComment;
-        @Bind(R.id.re_user)
-        LinearLayout mReUser;
-        @Bind(R.id.reply_button)
-        ImageButton mReplyButton;
+    @Override
+    public void onRestClick(int rest_id, String rest_name) {
+        FlexibleTenpoActivity.startTenpoActivity(rest_id, rest_name, this);
+    }
 
-        public CommentViewHolder(View view) {
-            super(view);
-            ButterKnife.bind(this, view);
+    @Override
+    public void onCommentPostClick(String postUrl) {
+        mPresenter.postComment(postUrl, Const.getCommentAPI(mPost_id));
+    }
+
+    @Override
+    public void onVideoFrameClick() {
+        if (player != null) {
+            if (player.getPlayerControl().isPlaying()) {
+                player.getPlayerControl().pause();
+            } else {
+                player.getPlayerControl().start();
+            }
+        } else {
+            if (!Util.isMovieAutoPlay(this)) {
+                releasePlayer();
+                preparePlayer(getPlayingViewHolder(), headerPost.getMovie());
+            }
         }
     }
 
-    public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-        public static final int TYPE_COMMENT_HEADER = 0;
-        public static final int TYPE_COMMENT = 1;
+    @Override
+    public void onFacebookShare(String share) {
+        Util.facebookVideoShare(this, shareDialog, share);
+    }
 
-        private Context context;
+    @Override
+    public void onTwitterShare(SquareImageView view, String rest_name) {
+        Util.twitterShare(this, view, rest_name);
+    }
 
-        public CommentAdapter(Context context) {
-            this.context = context;
+    @Override
+    public void onInstaShare(String share, String rest_name) {
+        Util.instaVideoShare(this, rest_name, share);
+    }
+
+    @Override
+    public void onHashHolder(Const.ExoViewHolder holder, String post_id) {
+        mViewHolderHash.put(holder, post_id);
+        changeMovie();
+    }
+
+    @Override
+    public void showLoading() {
+        mSwipeContainer.setRefreshing(true);
+    }
+
+    @Override
+    public void hideLoading() {
+        mSwipeContainer.setRefreshing(false);
+    }
+
+    @Override
+    public void showNoResultCase(int api, PostData postData) {
+        switch (api) {
+            case ApiConst.COMMENT_FIRST:
+
+                break;
+            case ApiConst.COMMENT_REFRESH:
+
+                break;
         }
+    }
 
-        @Override
-        public int getItemViewType(int position) {
-            if (position == 0) {
-                return TYPE_COMMENT_HEADER;
-            } else {
-                return TYPE_COMMENT;
-            }
+    @Override
+    public void hideNoResultCase() {
+
+    }
+
+    @Override
+    public void showError() {
+        Toast.makeText(this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showResult(int api, PostData postData, ArrayList<HeaderData> comentData) {
+        switch (api) {
+            case ApiConst.COMMENT_FIRST:
+                mCommentRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
+                mCommentRecyclerView.setAdapter(mCommentAdapter);
+                break;
+            case ApiConst.COMMENT_REFRESH:
+                mPlayingPostId = null;
+                mViewHolderHash.clear();
+                mCommentRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
+                mCommentAdapter.notifyDataSetChanged();
+                break;
         }
+    }
 
-        @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            if (TYPE_COMMENT_HEADER == viewType) {
-                final View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cell_comment_header, parent, false);
-                return new Const.ExoViewHolder(view);
-            } else {
-                final View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cell_comment_activity, parent, false);
-                return new CommentViewHolder(view);
-            }
-        }
+    @Override
+    public void postCommented(PostData postData, ArrayList<HeaderData> comentData) {
+        mPlayingPostId = null;
+        mViewHolderHash.clear();
+        mCommentRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
+        mCommentAdapter.notifyDataSetChanged();
+    }
 
-        @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            int viewType = getItemViewType(position);
-            if (TYPE_COMMENT_HEADER == viewType) {
-                bindHeader((Const.ExoViewHolder) holder, headerUser);
-            } else {
-                HeaderData users = mCommentusers.get(position - 1);
-                bindComment((CommentViewHolder) holder, users);
-            }
-        }
+    @Override
+    public void postCommentEmpty(PostData postData) {
 
-        private void bindHeader(final Const.ExoViewHolder holder, final PostData user) {
-            holder.mUserName.setText(user.getUsername());
-            holder.mTimeText.setText(user.getPost_date());
+    }
 
-            if (!user.getMemo().equals("none")) {
-                holder.mComment.setText(user.getMemo());
-            } else {
-                holder.mComment.setText("");
-            }
-
-            Picasso.with(context)
-                    .load(user.getProfile_img())
-                    .placeholder(R.drawable.ic_userpicture)
-                    .transform(new RoundedTransformation())
-                    .into(holder.mCircleImage);
-
-            holder.mUserName.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    FlexibleUserProfActivity.startUserProfActivity(user.getPost_user_id(), user.getUsername(), CommentActivity.this);
-                }
-            });
-
-            holder.mCircleImage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    FlexibleUserProfActivity.startUserProfActivity(user.getPost_user_id(), user.getUsername(), CommentActivity.this);
-                }
-            });
-
-            holder.mMenuRipple.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    new BottomSheet.Builder(context, R.style.BottomSheet_StyleDialog).sheet(R.menu.popup_normal).listener(new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            switch (which) {
-                                case R.id.violation:
-                                    Util.setViolateDialog(context, user.getPost_id());
-                                    break;
-                                case R.id.close:
-                                    dialog.dismiss();
-                            }
-                        }
-                    }).show();
-                }
-            });
-            Picasso.with(context)
-                    .load(user.getThumbnail())
-                    .placeholder(R.color.videobackground)
-                    .into(holder.mVideoThumbnail);
-            holder.mVideoThumbnail.setVisibility(View.VISIBLE);
-
-            holder.mVideoFrame.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (player != null) {
-                        if (player.getPlayerControl().isPlaying()) {
-                            player.getPlayerControl().pause();
-                        } else {
-                            player.getPlayerControl().start();
-                        }
-                    } else {
-                        if (!Util.isMovieAutoPlay(context)) {
-                            releasePlayer();
-                            preparePlayer(holder, user.getMovie());
-                        }
-                    }
-                }
-            });
-
-            holder.mRestname.setText(user.getRestname());
-            //viewHolder.locality.setText(user.getLocality());
-
-            if (!user.getCategory().equals(getString(R.string.nothing_tag))) {
-                holder.mCategory.setText(user.getCategory());
-            } else {
-                holder.mCategory.setText("　　　　");
-            }
-            if (!user.getTag().equals(getString(R.string.nothing_tag))) {
-                holder.mMood.setText(user.getTag());
-            } else {
-                holder.mMood.setText("　　　　");
-            }
-            if (!user.getValue().equals("0")) {
-                holder.mValue.setText(user.getValue() + "円");
-            } else {
-                holder.mValue.setText("　　　　");
-            }
-
-            //リップルエフェクトを見せてからIntentを飛ばす
-            holder.mTenpoRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
-                @Override
-                public void onComplete(RippleView rippleView) {
-                    FlexibleTenpoActivity.startTenpoActivity(user.getPost_rest_id(), user.getRestname(), CommentActivity.this);
-                }
-            });
-
-            final int currentgoodnum = user.getGochi_num();
-            final int currentcommentnum = user.getComment_num();
-
-            holder.mLikesNumber.setText(String.valueOf(currentgoodnum));
-            holder.mCommentsNumber.setText(String.valueOf(currentcommentnum));
-
-            if (user.getGochi_flag() == 0) {
-                holder.mLikesRipple.setClickable(true);
-                holder.mLikesImage.setImageResource(R.drawable.ic_icon_beef);
-
-                holder.mLikesRipple.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        user.setGochi_flag(1);
-                        user.setGochi_num(currentgoodnum + 1);
-
-                        holder.mLikesNumber.setText(String.valueOf((currentgoodnum + 1)));
-                        holder.mLikesImage.setImageResource(R.drawable.ic_icon_beef_orange);
-                        holder.mLikesRipple.setClickable(false);
-
-                        Util.postGochiAsync(CommentActivity.this, user);
-                    }
-                });
-            } else {
-                holder.mLikesImage.setImageResource(R.drawable.ic_icon_beef_orange);
-                holder.mLikesRipple.setClickable(false);
-            }
-
-            holder.mCommentsRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
-                @Override
-                public void onComplete(RippleView rippleView) {
-                    mCommentButton.performClick();
-                }
-            });
-
-            holder.mShareRipple.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (Application_Gocci.getShareTransfer() != null) {
-                        new BottomSheet.Builder(context, R.style.BottomSheet_StyleDialog).sheet(R.menu.menu_share).listener(new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                switch (which) {
-                                    case R.id.facebook_share:
-                                        Toast.makeText(context, getString(R.string.preparing_share), Toast.LENGTH_LONG).show();
-                                        Util.facebookVideoShare(context, shareDialog, user.getShare());
-                                        break;
-                                    case R.id.twitter_share:
-                                        Util.twitterShare(context, holder.mVideoThumbnail, user.getRestname());
-                                        break;
-                                    case R.id.other_share:
-                                        Toast.makeText(context, getString(R.string.preparing_share), Toast.LENGTH_LONG).show();
-                                        Util.instaVideoShare(context, user.getRestname(), user.getShare());
-                                        break;
-                                    case R.id.close:
-                                        dialog.dismiss();
-                                }
-                            }
-                        }).show();
-                    } else {
-                        Toast.makeText(context, getString(R.string.preparing_share_error), Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
-
-            mViewHolderHash.put(holder, user.getPost_id());
-            changeMovie();
-        }
-
-        private void bindComment(final CommentViewHolder holder, final HeaderData users) {
-            Picasso.with(context)
-                    .load(users.getProfile_img())
-                    .placeholder(R.drawable.ic_userpicture)
-                    .transform(new RoundedTransformation())
-                    .into(holder.mCommentUserImage);
-            holder.mUserName.setText(users.getUsername());
-            holder.mDateTime.setText(users.getComment_date());
-            holder.mUserComment.setText(users.getComment());
-
-            holder.mUserName.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    FlexibleUserProfActivity.startUserProfActivity(users.getComment_user_id(), users.getUsername(), CommentActivity.this);
-                }
-            });
-
-            holder.mCommentUserImage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    FlexibleUserProfActivity.startUserProfActivity(users.getComment_user_id(), users.getUsername(), CommentActivity.this);
-                }
-            });
-
-            holder.mReplyButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //Toast.makeText(context, Arrays.asList(users.getComment_user_data()).toString(), Toast.LENGTH_SHORT).show();
-                    final StringBuilder user_name = new StringBuilder();
-                    final StringBuilder user_id = new StringBuilder();
-                    user_name.append("@" + users.getUsername() + " ");
-                    user_id.append(users.getComment_user_id());
-                    for (CommentUserData data : users.getComment_user_data()) {
-                        user_name.append("@" + data.getUserName() + " ");
-                        user_id.append("," + data.getUser_id());
-                    }
-                    new MaterialDialog.Builder(CommentActivity.this)
-                            .title(getString(R.string.comment))
-                            .titleColorRes(R.color.namegrey)
-                            .inputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_IME_MULTI_LINE)
-                            .inputMaxLength(140)
-                            .input(null, user_name.toString(), false, new MaterialDialog.InputCallback() {
-                                @Override
-                                public void onInput(MaterialDialog dialog, CharSequence input) {
-                                    // Do something
-                                    String comment = input.toString().replace(user_name.toString(), "");
-                                    postCommentAsync(CommentActivity.this, Const.getPostCommentWithNoticeAPI(mPost_id, comment, user_id.toString()));
-                                }
-                            })
-                            .widgetColorRes(R.color.gocci_header)
-                            .positiveText(getString(R.string.post_comment))
-                            .positiveColorRes(R.color.gocci_header)
-                            .show();
-                }
-            });
-
-            if (!users.getComment_user_data().isEmpty()) {
-                for (final CommentUserData data : users.getComment_user_data()) {
-                    TextView userText = new TextView(context);
-                    userText.setText(" @" + data.getUserName());
-                    userText.setSingleLine();
-                    userText.setTextSize(12);
-                    userText.setTextColor(getResources().getColor(R.color.gocci_header));
-                    userText.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            FlexibleUserProfActivity.startUserProfActivity(data.getUser_id(), data.getUserName(), CommentActivity.this);
-                        }
-                    });
-                    holder.mReUser.addView(userText, LinearLayout.LayoutParams.WRAP_CONTENT);
-                }
-            }
-        }
-
-        @Override
-        public int getItemCount() {
-            return mCommentusers.size() + 1;
-        }
+    @Override
+    public void postCommentFailed() {
 
     }
 }

@@ -610,11 +610,6 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
     }
 
     @Override
-    public void hideError() {
-
-    }
-
-    @Override
     public void showResult(int api, HeaderData userData, ArrayList<PostData> postData) {
         mHeaderUserData = userData;
         mProfusers.clear();

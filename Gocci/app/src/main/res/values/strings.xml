@@ -314,4 +314,6 @@
     <string name="drm_error_unknown">An unknown DRM error occurred</string>
 
     <string name="preparing_authorize">preparing authorize....</string>
+
+    <string name="commented">commented</string>
 </resources>
