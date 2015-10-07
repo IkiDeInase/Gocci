@@ -178,9 +178,6 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
         mProfRecyclerView.setHasFixedSize(true);
         mProfRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
 
-        mMyProfAdapter = new MyProfAdapter(this, mHeaderUserData, mProfusers);
-        mMyProfAdapter.setMyProfCallback(this);
-
         mPresenter.getProfData(ApiConst.USERPAGE_FIRST, Const.getUserpageAPI(Integer.parseInt(SavedData.getServerUserId(this))));
 
         mSwipeContainer.setColorSchemeResources(R.color.gocci_1, R.color.gocci_2, R.color.gocci_3, R.color.gocci_4);
@@ -588,11 +585,12 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
     public void showNoResultCase(int api, HeaderData userData) {
         mHeaderUserData = userData;
         if (api == ApiConst.USERPAGE_FIRST) {
-            mMyProfAdapter.setHeaderData(mHeaderUserData);
+            mMyProfAdapter = new MyProfAdapter(this, mHeaderUserData, mProfusers);
+            mMyProfAdapter.setMyProfCallback(this);
             mProfRecyclerView.setAdapter(mMyProfAdapter);
         } else if (api == ApiConst.USERPAGE_REFRESH) {
             mProfusers.clear();
-            mMyProfAdapter.setData(mHeaderUserData, mProfusers);
+            mMyProfAdapter.notifyDataSetChanged();
         }
         mEmptyImage.setVisibility(View.VISIBLE);
         mEmptyText.setVisibility(View.VISIBLE);
@@ -616,11 +614,12 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
         mProfusers.addAll(postData);
         switch (api) {
             case ApiConst.USERPAGE_FIRST:
-                mMyProfAdapter.setHeaderData(mHeaderUserData);
+                mMyProfAdapter = new MyProfAdapter(this, mHeaderUserData, mProfusers);
+                mMyProfAdapter.setMyProfCallback(this);
                 mProfRecyclerView.setAdapter(mMyProfAdapter);
                 break;
             case ApiConst.USERPAGE_REFRESH:
-                mMyProfAdapter.setData(mHeaderUserData, mProfusers);
+                mMyProfAdapter.notifyDataSetChanged();
                 break;
         }
     }

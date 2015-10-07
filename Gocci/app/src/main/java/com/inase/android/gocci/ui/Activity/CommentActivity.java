@@ -59,8 +59,6 @@ import com.inase.android.gocci.utils.SavedData;
 import com.inase.android.gocci.utils.Util;
 import com.inase.android.gocci.utils.video.HlsRendererBuilder;
 import com.inase.android.gocci.utils.video.VideoPlayer;
-import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.TextHttpResponseHandler;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
@@ -71,19 +69,13 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.squareup.otto.Subscribe;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import cz.msebera.android.httpclient.Header;
 import io.fabric.sdk.android.Fabric;
 
 public class CommentActivity extends AppCompatActivity implements AudioCapabilitiesReceiver.Listener, ObservableScrollViewCallbacks,
@@ -346,9 +338,6 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
         mCommentRecyclerView.setHasFixedSize(true);
         mCommentRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
         mCommentRecyclerView.setScrollViewCallbacks(this);
-
-        mCommentAdapter = new CommentAdapter(this, mPost_id, headerPost, mCommentusers);
-        mCommentAdapter.setCommentCallback(this);
 
         mPresenter.getCommentData(ApiConst.COMMENT_FIRST, Const.getCommentAPI(mPost_id));
 
@@ -707,12 +696,17 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
 
     @Override
     public void showNoResultCase(int api, PostData postData) {
+        headerPost = postData;
         switch (api) {
             case ApiConst.COMMENT_FIRST:
-
+                mCommentAdapter = new CommentAdapter(this, mPost_id, headerPost, mCommentusers);
+                mCommentAdapter.setCommentCallback(this);
+                mCommentRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
+                mCommentRecyclerView.setAdapter(mCommentAdapter);
                 break;
             case ApiConst.COMMENT_REFRESH:
-
+                mCommentusers.clear();
+                mCommentAdapter.notifyDataSetChanged();
                 break;
         }
     }
@@ -728,9 +722,14 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
     }
 
     @Override
-    public void showResult(int api, PostData postData, ArrayList<HeaderData> comentData) {
+    public void showResult(int api, PostData postData, ArrayList<HeaderData> commentData) {
+        headerPost = postData;
+        mCommentusers.clear();
+        mCommentusers.addAll(commentData);
         switch (api) {
             case ApiConst.COMMENT_FIRST:
+                mCommentAdapter = new CommentAdapter(this, mPost_id, headerPost, mCommentusers);
+                mCommentAdapter.setCommentCallback(this);
                 mCommentRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
                 mCommentRecyclerView.setAdapter(mCommentAdapter);
                 break;
@@ -744,7 +743,10 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
     }
 
     @Override
-    public void postCommented(PostData postData, ArrayList<HeaderData> comentData) {
+    public void postCommented(PostData postData, ArrayList<HeaderData> commentData) {
+        headerPost = postData;
+        mCommentusers.clear();
+        mCommentusers.addAll(commentData);
         mPlayingPostId = null;
         mViewHolderHash.clear();
         mCommentRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
@@ -753,11 +755,13 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
 
     @Override
     public void postCommentEmpty(PostData postData) {
-
+        headerPost = postData;
+        mCommentusers.clear();
+        mCommentAdapter.notifyDataSetChanged();
     }
 
     @Override
     public void postCommentFailed() {
-
+        Toast.makeText(this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
     }
 }

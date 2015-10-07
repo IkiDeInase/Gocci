@@ -30,14 +30,12 @@ public class ShowRestPagePresenter extends Presenter implements UserAndRestUseCa
     public void onDataLoaded(int api, HeaderData mUserdata, ArrayList<PostData> mPostData) {
         mShowRestView.hideLoading();
         mShowRestView.hideNoResultCase();
-        mShowRestView.hideError();
         mShowRestView.showResult(api, mUserdata, mPostData);
     }
 
     @Override
     public void onDataEmpty(int api, HeaderData mUserData) {
         mShowRestView.hideLoading();
-        mShowRestView.hideError();
         mShowRestView.showNoResultCase(api, mUserData);
     }
 
@@ -78,8 +76,6 @@ public class ShowRestPagePresenter extends Presenter implements UserAndRestUseCa
         void hideNoResultCase();
 
         void showError();
-
-        void hideError();
 
         void showResult(int api, HeaderData mRestData, ArrayList<PostData> mPostData);
     }

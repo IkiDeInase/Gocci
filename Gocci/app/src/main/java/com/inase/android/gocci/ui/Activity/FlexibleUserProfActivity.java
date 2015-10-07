@@ -153,9 +153,6 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
         mUserProfRecyclerView.setHasFixedSize(true);
         mUserProfRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
 
-        mUserProfAdapter = new UserProfAdapter(this, headerUserData, mUserProfusers);
-        mUserProfAdapter.setUserProfCallback(this);
-
         mPresenter.getProfData(ApiConst.USERPAGE_FIRST, Const.getUserpageAPI(mUser_id));
 
         result = new DrawerBuilder()
@@ -311,11 +308,12 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
     public void showNoResultCase(int api, HeaderData mUserData) {
         headerUserData = mUserData;
         if (api == ApiConst.USERPAGE_FIRST) {
-            mUserProfAdapter.setHeaderData(headerUserData);
+            mUserProfAdapter = new UserProfAdapter(this, headerUserData, mUserProfusers);
+            mUserProfAdapter.setUserProfCallback(this);
             mUserProfRecyclerView.setAdapter(mUserProfAdapter);
         } else if (api == ApiConst.USERPAGE_REFRESH) {
             mUserProfusers.clear();
-            mUserProfAdapter.setData(headerUserData, mUserProfusers);
+            mUserProfAdapter.notifyDataSetChanged();
         }
         mEmptyImage.setVisibility(View.VISIBLE);
         mEmptyText.setVisibility(View.VISIBLE);
@@ -344,11 +342,12 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
         mUserProfusers.addAll(mPostData);
         switch (api) {
             case ApiConst.USERPAGE_FIRST:
-                mUserProfAdapter.setHeaderData(headerUserData);
+                mUserProfAdapter = new UserProfAdapter(this, headerUserData, mUserProfusers);
+                mUserProfAdapter.setUserProfCallback(this);
                 mUserProfRecyclerView.setAdapter(mUserProfAdapter);
                 break;
             case ApiConst.USERPAGE_REFRESH:
-                mUserProfAdapter.setData(headerUserData, mUserProfusers);
+                mUserProfAdapter.notifyDataSetChanged();
                 break;
         }
     }

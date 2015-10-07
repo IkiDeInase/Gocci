@@ -262,9 +262,6 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
         mTenpoRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
         mTenpoRecyclerView.setScrollViewCallbacks(this);
 
-        mRestPageAdapter = new RestPageAdapter(this, mHeaderRestData, mTenpousers);
-        mRestPageAdapter.setRestPageCallback(this);
-
         mPresenter.getRestData(ApiConst.RESTPAGE_FIRST, Const.getRestpageAPI(mRest_id));
 
         result = new DrawerBuilder()
@@ -727,19 +724,16 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
     @Override
     public void onFacebookShare(String share) {
         Util.facebookVideoShare(this, shareDialog, share);
-
     }
 
     @Override
     public void onTwitterShare(SquareImageView view, String rest_name) {
         Util.twitterShare(this, view, rest_name);
-
     }
 
     @Override
     public void onInstaShare(String share, String rest_name) {
         Util.instaVideoShare(this, rest_name, share);
-
     }
 
     @Override
@@ -762,11 +756,13 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
         mHeaderRestData = restData;
         if (api == ApiConst.RESTPAGE_FIRST) {
             mBackgroundImage.setImageResource(R.drawable.ic_background_login);
-            mRestPageAdapter.setHeaderData(mHeaderRestData);
+            mRestPageAdapter = new RestPageAdapter(this, mHeaderRestData, mTenpousers);
+            mRestPageAdapter.setRestPageCallback(this);
+            mTenpoRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
             mTenpoRecyclerView.setAdapter(mRestPageAdapter);
         } else if (api == ApiConst.USERPAGE_REFRESH) {
             mTenpousers.clear();
-            mRestPageAdapter.setData(mHeaderRestData, mTenpousers);
+            mRestPageAdapter.notifyDataSetChanged();
         }
     }
 
@@ -781,16 +777,10 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
     }
 
     @Override
-    public void hideError() {
-
-    }
-
-    @Override
     public void showResult(int api, HeaderData restData, ArrayList<PostData> mPostData) {
         mHeaderRestData = restData;
         mTenpousers.clear();
         mTenpousers.addAll(mPostData);
-
         switch (api) {
             case ApiConst.RESTPAGE_FIRST:
                 Picasso.with(this).load(mTenpousers.get(0).getThumbnail()).into(new Target() {
@@ -809,7 +799,8 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
 
                     }
                 });
-                mRestPageAdapter.setHeaderData(mHeaderRestData);
+                mRestPageAdapter = new RestPageAdapter(this, mHeaderRestData, mTenpousers);
+                mRestPageAdapter.setRestPageCallback(this);
                 mTenpoRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
                 mTenpoRecyclerView.setAdapter(mRestPageAdapter);
                 break;
@@ -817,7 +808,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
                 mPlayingPostId = null;
                 mViewHolderHash.clear();
                 mTenpoRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
-                mRestPageAdapter.setData(mHeaderRestData, mTenpousers);
+                mRestPageAdapter.notifyDataSetChanged();
                 break;
         }
     }

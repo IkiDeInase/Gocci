@@ -108,9 +108,9 @@ public class ShowCommentPagePresenter extends Presenter implements CommentPageUs
 
         void showError();
 
-        void showResult(int api, PostData postData, ArrayList<HeaderData> comentData);
+        void showResult(int api, PostData postData, ArrayList<HeaderData> commentData);
 
-        void postCommented(PostData postData, ArrayList<HeaderData> comentData);
+        void postCommented(PostData postData, ArrayList<HeaderData> commentData);
 
         void postCommentEmpty(PostData postData);
 
