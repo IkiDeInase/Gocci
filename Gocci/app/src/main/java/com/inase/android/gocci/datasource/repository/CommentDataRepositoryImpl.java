@@ -51,7 +51,7 @@ public class CommentDataRepositoryImpl implements CommentDataRepository {
                     if (array.length() != 0) {
                         for (int i = 0; i < array.length(); i++) {
                             JSONObject comment = array.getJSONObject(i);
-                            String judge = jsonObject.getString("comment");
+                            String judge = comment.getString("comment");
                             if (!judge.equals("none")) {
                                 mCommentData.add(HeaderData.createCommentHeaderData(comment));
                             }
@@ -63,6 +63,7 @@ public class CommentDataRepositoryImpl implements CommentDataRepository {
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    cb.onError();
                 }
             }
         });

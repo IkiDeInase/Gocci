@@ -372,7 +372,6 @@ public class Const {
     public static final int INTENT_TO_LIST = 9;
     public static final int INTENT_TO_SETTING = 10;
 
-    public static final int INTENT_TO_TAGCATEGORY = 11;
     public static final int INTENT_TO_GRIDSEARCH = 12;
 
     public static final int CATEGORY_FOLLOW = 1;

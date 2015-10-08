@@ -11,7 +11,7 @@
     <string name="lat">経度</string>
     <string name="lon">緯度</string>
 
-    <string name="tab_latest">全体</string>
+    <string name="tab_latest">新着</string>
     <string name="tab_follow">フォロー</string>
 
     <string name="timeline">タイムライン</string>

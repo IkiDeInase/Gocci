@@ -7,17 +7,25 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -79,7 +87,7 @@ import butterknife.OnClick;
 import io.fabric.sdk.android.Fabric;
 
 public class CommentActivity extends AppCompatActivity implements AudioCapabilitiesReceiver.Listener, ObservableScrollViewCallbacks,
-        ShowCommentPagePresenter.ShowCommentView, CommentAdapter.CommentCallback {
+        ShowCommentPagePresenter.ShowCommentView, CommentAdapter.CommentCallback, AppBarLayout.OnOffsetChangedListener {
 
     @Bind(R.id.tool_bar)
     Toolbar mToolBar;
@@ -87,6 +95,10 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
     ObservableRecyclerView mCommentRecyclerView;
     @Bind(R.id.swipe_container)
     SwipeRefreshLayout mSwipeContainer;
+    @Bind(R.id.app_bar)
+    AppBarLayout mAppBar;
+    @Bind(R.id.coordinator_layout)
+    CoordinatorLayout mCoordinatorLayout;
     @Bind(R.id.comment_button)
     FloatingActionButton mCommentButton;
 
@@ -424,6 +436,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
         } else {
             player.setBackgrounded(false);
         }
+        mAppBar.addOnOffsetChangedListener(this);
         mPresenter.resume();
     }
 
@@ -444,6 +457,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
         if (getPlayingViewHolder() != null) {
             getPlayingViewHolder().mVideoThumbnail.setVisibility(View.VISIBLE);
         }
+        mAppBar.removeOnOffsetChangedListener(this);
         mPresenter.pause();
     }
 
@@ -456,7 +470,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
 
     @Subscribe
     public void subscribe(NotificationNumberEvent event) {
-        //Snackbar.make(mCoordinatorLayout, event.mMessage, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(mCoordinatorLayout, event.mMessage, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
@@ -494,6 +508,18 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_comment, menu);
+        // お知らせ未読件数バッジ表示
+        final MenuItem reply = menu.findItem(R.id.comment_reply);
+        final MenuItem reply_all = menu.findItem(R.id.comment_reply_all);
+        final MenuItem action = menu.findItem(R.id.comment_action);
+        final MenuItem delete = menu.findItem(R.id.comment_delete);
+
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -763,5 +789,10 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
     @Override
     public void postCommentFailed() {
         Toast.makeText(this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onOffsetChanged(AppBarLayout appBarLayout, int i) {
+        mSwipeContainer.setEnabled(i == 0);
     }
 }

@@ -137,9 +137,6 @@ public class GocciTimelineActivity extends AppCompatActivity {
                 case Const.INTENT_TO_SETTING:
                     SettingActivity.startSettingActivity(activity);
                     break;
-                case Const.INTENT_TO_TAGCATEGORY:
-                    TagCategoryActivity.startTagCategoryActivity(activity);
-                    break;
                 case Const.INTENT_TO_GRIDSEARCH:
                     GridSearchActivity.startGridSearchActivity(activity);
                     break;
@@ -174,7 +171,6 @@ public class GocciTimelineActivity extends AppCompatActivity {
                 .addDrawerItems(
                         new PrimaryDrawerItem().withName(getString(R.string.timeline)).withIcon(GoogleMaterial.Icon.gmd_home).withIdentifier(1).withSelectable(false),
                         new PrimaryDrawerItem().withName(getString(R.string.mypage)).withIcon(GoogleMaterial.Icon.gmd_person).withIdentifier(2).withSelectable(false),
-                        new PrimaryDrawerItem().withName("気分タイムライン").withIcon(GoogleMaterial.Icon.gmd_gesture).withIdentifier(6).withSelectable(false),
                         new PrimaryDrawerItem().withName("位置タイムライン").withIcon(GoogleMaterial.Icon.gmd_place).withIdentifier(7).withSelectable(false),
                         new DividerDrawerItem(),
                         new PrimaryDrawerItem().withName(getString(R.string.send_advice)).withIcon(GoogleMaterial.Icon.gmd_send).withSelectable(false).withIdentifier(3),
@@ -210,10 +206,6 @@ public class GocciTimelineActivity extends AppCompatActivity {
                                         result.updateName(5, new StringHolder(getString(R.string.setting_support_mute)));
                                         break;
                                 }
-                            } else if (drawerItem.getIdentifier() == 6) {
-                                Message msg =
-                                        sHandler.obtainMessage(Const.INTENT_TO_TAGCATEGORY, 0, 0, GocciTimelineActivity.this);
-                                sHandler.sendMessageDelayed(msg, 500);
                             } else if (drawerItem.getIdentifier() == 7) {
                                 Message msg =
                                         sHandler.obtainMessage(Const.INTENT_TO_GRIDSEARCH, 0, 0, GocciTimelineActivity.this);

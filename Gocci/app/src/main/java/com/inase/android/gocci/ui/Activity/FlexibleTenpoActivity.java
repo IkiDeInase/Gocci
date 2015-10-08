@@ -401,7 +401,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
 
     @Override
     public final void onDestroy() {
-        if (mRestPageAdapter.getMapView() != null) {
+        if (mRestPageAdapter != null && mRestPageAdapter.getMapView() != null) {
             mRestPageAdapter.getMapView().onDestroy();
         }
         super.onDestroy();
@@ -413,14 +413,14 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
     @Override
     public final void onLowMemory() {
         super.onLowMemory();
-        if (mRestPageAdapter.getMapView() != null) {
+        if (mRestPageAdapter != null && mRestPageAdapter.getMapView() != null) {
             mRestPageAdapter.getMapView().onLowMemory();
         }
     }
 
     @Override
     public final void onPause() {
-        if (mRestPageAdapter.getMapView() != null) {
+        if (mRestPageAdapter != null && mRestPageAdapter.getMapView() != null) {
             mRestPageAdapter.getMapView().onPause();
         }
         super.onPause();
@@ -448,7 +448,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
             analytics.getSessionClient().resumeSession();
         }
         BusHolder.get().register(self);
-        if (mRestPageAdapter.getMapView() != null) {
+        if (mRestPageAdapter != null && mRestPageAdapter.getMapView() != null) {
             mRestPageAdapter.getMapView().onResume();
         }
 
@@ -517,7 +517,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
     public final void onSaveInstanceState(Bundle outState) {
         outState = result.saveInstanceState(outState);
         super.onSaveInstanceState(outState);
-        if (mRestPageAdapter.getMapView() != null) {
+        if (mRestPageAdapter != null && mRestPageAdapter.getMapView() != null) {
             mRestPageAdapter.getMapView().onSaveInstanceState(outState);
         }
     }

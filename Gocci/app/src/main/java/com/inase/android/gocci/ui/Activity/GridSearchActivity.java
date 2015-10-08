@@ -29,6 +29,8 @@ import android.widget.Toast;
 
 import com.andexert.library.RippleView;
 import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
+import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
+import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.google.android.exoplayer.AspectRatioFrameLayout;
 import com.google.android.exoplayer.audio.AudioCapabilities;
 import com.google.android.exoplayer.audio.AudioCapabilitiesReceiver;
@@ -71,7 +73,8 @@ import cz.msebera.android.httpclient.Header;
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
 
-public class GridSearchActivity extends AppCompatActivity implements AppBarLayout.OnOffsetChangedListener, AudioCapabilitiesReceiver.Listener {
+public class GridSearchActivity extends AppCompatActivity implements AppBarLayout.OnOffsetChangedListener,
+        AudioCapabilitiesReceiver.Listener, ObservableScrollViewCallbacks {
 
     @Bind(R.id.tool_bar)
     Toolbar toolBar;
@@ -193,6 +196,7 @@ public class GridSearchActivity extends AppCompatActivity implements AppBarLayou
         list.setLayoutManager(mLayoutManager);
         list.setHasFixedSize(true);
         list.setOverScrollMode(View.OVER_SCROLL_NEVER);
+        list.setScrollViewCallbacks(this);
 
         mMyProfAdapter = new MyProfileAdapter(this);
 
@@ -734,6 +738,25 @@ public class GridSearchActivity extends AppCompatActivity implements AppBarLayou
     @Override
     public void onOffsetChanged(AppBarLayout appBarLayout, int i) {
         swipeContainer.setEnabled(i == 0);
+    }
+
+    @Override
+    public void onScrollChanged(int scrollY, boolean firstScroll, boolean dragging) {
+
+    }
+
+    @Override
+    public void onDownMotionEvent() {
+
+    }
+
+    @Override
+    public void onUpOrCancelMotionEvent(ScrollState scrollState) {
+        if (scrollState == ScrollState.UP) {
+            fab.hide();
+        } else if (scrollState == ScrollState.DOWN) {
+            fab.show();
+        }
     }
 
     static class SearchGridViewHolder extends RecyclerView.ViewHolder {
