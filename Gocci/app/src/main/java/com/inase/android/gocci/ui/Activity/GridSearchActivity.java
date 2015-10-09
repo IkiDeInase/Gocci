@@ -3,6 +3,7 @@ package com.inase.android.gocci.ui.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Point;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,6 +17,7 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -63,6 +65,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -136,14 +139,13 @@ public class GridSearchActivity extends AppCompatActivity implements AppBarLayou
 
     private StaggeredGridLayoutManager mLayoutManager;
     private ArrayList<PostData> mProfusers = new ArrayList<>();
+    private ArrayList<String> mPost_ids = new ArrayList<>();
     private MyProfileAdapter mMyProfAdapter;
 
-    private int previousTotal = 0;
-    private int visibleThreshold = 5;
     private int mNextCount = 1;
     private boolean isEndScrioll = false;
     private boolean loading = true;
-    private int pastVisibleItems, firstVisivleItems, visibleItemCount, totalItemCount;
+    private int pastVisibleItems, visibleItemCount, totalItemCount;
 
     private int category_id = 0;
 
@@ -197,6 +199,56 @@ public class GridSearchActivity extends AppCompatActivity implements AppBarLayou
         list.setHasFixedSize(true);
         list.setOverScrollMode(View.OVER_SCROLL_NEVER);
         list.setScrollViewCallbacks(this);
+        list.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                switch (newState) {
+                    // スクロールしていない
+                    case RecyclerView.SCROLL_STATE_IDLE:
+                        if (mPlayingPostId != null) {
+                            int position = mPost_ids.indexOf(mPlayingPostId);
+                            int[] array = mLayoutManager.findFirstVisibleItemPositions(null);
+                            int[] array2 = mLayoutManager.findLastVisibleItemPositions(null);
+
+                            if (array[1] >= position || position >= array2[0]) {
+                                final SearchGridViewHolder oldViewHolder = getPlayingViewHolder();
+                                if (oldViewHolder != null) {
+                                    oldViewHolder.mSquareImage.setVisibility(View.VISIBLE);
+                                }
+                                mPlayingPostId = null;
+                                releasePlayer();
+                            }
+                        }
+                        break;
+                    // スクロール中
+                    case RecyclerView.SCROLL_STATE_DRAGGING:
+                        break;
+                    // はじいたとき
+                    case RecyclerView.SCROLL_STATE_SETTLING:
+                        break;
+                }
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+
+                visibleItemCount = mLayoutManager.getChildCount();
+                totalItemCount = mLayoutManager.getItemCount();
+                int[] firstVisibleItems = null;
+                firstVisibleItems = mLayoutManager.findFirstVisibleItemPositions(firstVisibleItems);
+                if (firstVisibleItems != null && firstVisibleItems.length > 0) {
+                    pastVisibleItems = firstVisibleItems[0];
+                }
+
+                if (loading) {
+                    if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
+                        loading = false;
+                        getAddJsonAsync(GridSearchActivity.this, mNextCount);
+                    }
+                }
+            }
+        });
 
         mMyProfAdapter = new MyProfileAdapter(this);
 
@@ -304,15 +356,7 @@ public class GridSearchActivity extends AppCompatActivity implements AppBarLayou
         super.onResume();
         BusHolder.get().register(this);
 
-        if (player == null) {
-            if (mPlayingPostId != null) {
-                if (Util.isMovieAutoPlay(this)) {
-
-                }
-            }
-        } else {
-            player.setBackgrounded(false);
-        }
+        releasePlayer();
 
         appBar.addOnOffsetChangedListener(this);
     }
@@ -377,8 +421,6 @@ public class GridSearchActivity extends AppCompatActivity implements AppBarLayou
 
                     place.setText(address);
                     getSearchMapAsync(this, Const.getCustomGridSearchAPI(mLongitude, mLatitude, 0, category_id));
-                } else if (resultCode == RESULT_CANCELED) {
-
                 }
                 break;
 
@@ -394,9 +436,6 @@ public class GridSearchActivity extends AppCompatActivity implements AppBarLayou
         }
         if (mPlayingPostId != null) {
             releasePlayer();
-            if (Util.isMovieAutoPlay(this)) {
-
-            }
         }
         player.setBackgrounded(false);
     }
@@ -429,6 +468,7 @@ public class GridSearchActivity extends AppCompatActivity implements AppBarLayou
                             for (int i = 0; i < response.length(); i++) {
                                 JSONObject post = response.getJSONObject(i);
                                 mProfusers.add(PostData.createDistPostData(post));
+                                mPost_ids.add(post.getString("post_id"));
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -474,16 +514,21 @@ public class GridSearchActivity extends AppCompatActivity implements AppBarLayou
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                         mProfusers.clear();
+                        mPost_ids.clear();
                         try {
                             for (int i = 0; i < response.length(); i++) {
                                 JSONObject post = response.getJSONObject(i);
                                 mProfusers.add(PostData.createDistPostData(post));
+                                mPost_ids.add(post.getString("post_id"));
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                         mPlayingPostId = null;
                         mViewHolderHash.clear();
+                        isEndScrioll = false;
+                        mNextCount = 1;
+                        releasePlayer();
                         mMyProfAdapter.notifyDataSetChanged();
 
                         if (mProfusers.isEmpty()) {
@@ -520,12 +565,15 @@ public class GridSearchActivity extends AppCompatActivity implements AppBarLayou
                         for (int i = 0; i < response.length(); i++) {
                             JSONObject jsonObject = response.getJSONObject(i);
                             mProfusers.add(PostData.createDistPostData(jsonObject));
+                            mPost_ids.add(jsonObject.getString("post_id"));
                         }
 
                         mPlayingPostId = null;
+                        releasePlayer();
                         mMyProfAdapter.notifyDataSetChanged();
 
                         mNextCount++;
+                        loading = true;
                     } else {
                         isEndScrioll = true;
                     }
@@ -560,16 +608,21 @@ public class GridSearchActivity extends AppCompatActivity implements AppBarLayou
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 mProfusers.clear();
+                mPost_ids.clear();
                 try {
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject post = response.getJSONObject(i);
                         mProfusers.add(PostData.createDistPostData(post));
+                        mPost_ids.add(post.getString("post_id"));
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
                 mPlayingPostId = null;
+                isEndScrioll = false;
+                mNextCount = 1;
                 mViewHolderHash.clear();
+                releasePlayer();
                 mMyProfAdapter.notifyDataSetChanged();
 
                 if (mProfusers.isEmpty()) {
@@ -607,18 +660,32 @@ public class GridSearchActivity extends AppCompatActivity implements AppBarLayou
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 mProfusers.clear();
-                isEndScrioll = false;
+                mPost_ids.clear();
                 try {
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject jsonObject = response.getJSONObject(i);
                         mProfusers.add(PostData.createDistPostData(jsonObject));
+                        mPost_ids.add(jsonObject.getString("post_id"));
                     }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
+                mPlayingPostId = null;
+                isEndScrioll = false;
+                mNextCount = 1;
+                mViewHolderHash.clear();
+                releasePlayer();
                 mMyProfAdapter.notifyDataSetChanged();
+
+                if (mProfusers.isEmpty()) {
+                    emptyImage.setVisibility(View.VISIBLE);
+                    emptyText.setVisibility(View.VISIBLE);
+                } else {
+                    emptyImage.setVisibility(View.GONE);
+                    emptyText.setVisibility(View.GONE);
+                }
             }
 
             @Override
@@ -690,7 +757,6 @@ public class GridSearchActivity extends AppCompatActivity implements AppBarLayou
 
     private void releasePlayer() {
         if (player != null) {
-            //playerPosition = player.getCurrentPosition();
             player.release();
             player = null;
         }
@@ -717,9 +783,7 @@ public class GridSearchActivity extends AppCompatActivity implements AppBarLayou
 
         final String path = postData.getMovie();
         releasePlayer();
-        if (Util.isMovieAutoPlay(GridSearchActivity.this)) {
-            preparePlayer(currentViewHolder, path);
-        }
+        preparePlayer(currentViewHolder, path);
     }
 
     private SearchGridViewHolder getPlayingViewHolder() {
@@ -841,6 +905,18 @@ public class GridSearchActivity extends AppCompatActivity implements AppBarLayou
 
             if (lastAnimatedItem < position) lastAnimatedItem = position;
             mViewHolderHash.put(holder, user.getPost_id());
+        }
+
+        @Override
+        public void onViewRecycled(SearchGridViewHolder holder) {
+            if (holder.mSquareImage.getVisibility() == View.GONE) {
+                holder.mSquareImage.setVisibility(View.VISIBLE);
+                mPlayingPostId = null;
+                if (player != null) {
+                    player.blockingClearSurface();
+                }
+                releasePlayer();
+            }
         }
 
         @Override

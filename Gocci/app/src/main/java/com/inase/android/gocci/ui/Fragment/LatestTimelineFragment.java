@@ -162,6 +162,13 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
                 loading = true;
             }
         }
+
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy){
+            if (dy > 120 || dy < -100) {
+                releasePlayer();
+            }
+        }
     };
 
     @Override
