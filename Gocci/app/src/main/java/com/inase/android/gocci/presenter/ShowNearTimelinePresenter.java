@@ -1,40 +1,40 @@
 package com.inase.android.gocci.presenter;
 
 import com.inase.android.gocci.domain.model.PostData;
-import com.inase.android.gocci.domain.usecase.LatestTimelineUseCase;
+import com.inase.android.gocci.domain.usecase.NearTimelineUseCase;
 
 import java.util.ArrayList;
 
 /**
- * Created by kinagafuji on 15/09/25.
+ * Created by kinagafuji on 15/10/11.
  */
-public class ShowLatestTimelinePresenter extends Presenter implements LatestTimelineUseCase.LatestTimelineUseCaseCallback {
+public class ShowNearTimelinePresenter extends Presenter implements NearTimelineUseCase.NearTimelineUseCaseCallback {
 
-    private LatestTimelineUseCase mLatestTimelineUseCase;
-    private ShowLatestTimelineView mShowLatestTimelineView;
+    private NearTimelineUseCase mNearTimelineUseCase;
+    private ShowNearTimelineView mShowLatestTimelineView;
 
-    public ShowLatestTimelinePresenter(LatestTimelineUseCase latestTimelineUseCase) {
-        mLatestTimelineUseCase = latestTimelineUseCase;
+    public ShowNearTimelinePresenter(NearTimelineUseCase nearTimelineUseCase) {
+        mNearTimelineUseCase = nearTimelineUseCase;
     }
 
-    public void setLatestTimelineView(ShowLatestTimelineView view) {
+    public void setNearTimelineView(ShowNearTimelineView view) {
         mShowLatestTimelineView = view;
     }
 
-    public void getLatestTimelinePostData(int api, String url) {
+    public void getNearTimelinePostData(int api, String url) {
         mShowLatestTimelineView.showLoading();
-        mLatestTimelineUseCase.execute(api, url, this);
+        mNearTimelineUseCase.execute(api, url, this);
     }
 
     @Override
-    public void onLatestTimelineLoaded(int api, ArrayList<PostData> mPostData, ArrayList<String> post_ids) {
+    public void onNearTimelineLoaded(int api, ArrayList<PostData> mPostData, ArrayList<String> post_ids) {
         mShowLatestTimelineView.hideLoading();
         mShowLatestTimelineView.hideNoResultCase();
         mShowLatestTimelineView.showResult(api, mPostData, post_ids);
     }
 
     @Override
-    public void onLatestTimelineEmpty(int api) {
+    public void onNearTimelineEmpty(int api) {
         mShowLatestTimelineView.hideLoading();
         mShowLatestTimelineView.showNoResultCase(api);
     }
@@ -53,12 +53,12 @@ public class ShowLatestTimelinePresenter extends Presenter implements LatestTime
 
     @Override
     public void resume() {
-        mLatestTimelineUseCase.setCallback(this);
+        mNearTimelineUseCase.setCallback(this);
     }
 
     @Override
     public void pause() {
-        mLatestTimelineUseCase.removeCallback();
+        mNearTimelineUseCase.removeCallback();
     }
 
     @Override
@@ -66,7 +66,7 @@ public class ShowLatestTimelinePresenter extends Presenter implements LatestTime
 
     }
 
-    public interface ShowLatestTimelineView {
+    public interface ShowNearTimelineView {
         void showLoading();
 
         void hideLoading();

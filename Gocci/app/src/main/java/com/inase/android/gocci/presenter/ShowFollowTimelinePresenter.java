@@ -26,16 +26,16 @@ public class ShowFollowTimelinePresenter extends Presenter implements FollowTime
     }
 
     @Override
-    public void onFollowTimelineLoaded(int api, ArrayList<PostData> mPostData) {
+    public void onFollowTimelineLoaded(int api, ArrayList<PostData> mPostData, ArrayList<String> post_ids) {
         mShowFollowTimelineView.hideLoading();
         mShowFollowTimelineView.hideNoResultCase();
-        mShowFollowTimelineView.showResult(api, mPostData);
+        mShowFollowTimelineView.showResult(api, mPostData, post_ids);
     }
 
     @Override
-    public void onFollowTimelineEmpty() {
+    public void onFollowTimelineEmpty(int api) {
         mShowFollowTimelineView.hideLoading();
-        mShowFollowTimelineView.showNoResultCase();
+        mShowFollowTimelineView.showNoResultCase(api);
     }
 
     @Override
@@ -70,13 +70,13 @@ public class ShowFollowTimelinePresenter extends Presenter implements FollowTime
 
         void hideLoading();
 
-        void showNoResultCase();
+        void showNoResultCase(int api);
 
         void hideNoResultCase();
 
         void showError();
 
-        void showResult(int api, ArrayList<PostData> mPostData);
+        void showResult(int api, ArrayList<PostData> mPostData, ArrayList<String> post_ids);
 
         void successGochi(int position);
     }

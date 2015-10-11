@@ -49,24 +49,24 @@ public class FollowTimelineUseCaseImpl extends UseCase2<Integer, String> impleme
     }
 
     @Override
-    public void onPostDataLoaded(final int api, final ArrayList<PostData> postData) {
+    public void onPostDataLoaded(final int api, final ArrayList<PostData> postData, final ArrayList<String> post_ids) {
         mPostExecutionThread.post(new Runnable() {
             @Override
             public void run() {
                 if (mCallback != null) {
-                    mCallback.onFollowTimelineLoaded(api, postData);
+                    mCallback.onFollowTimelineLoaded(api, postData, post_ids);
                 }
             }
         });
     }
 
     @Override
-    public void onPostDataEmpty() {
+    public void onPostDataEmpty(final int api) {
         mPostExecutionThread.post(new Runnable() {
             @Override
             public void run() {
                 if (mCallback != null) {
-                    mCallback.onFollowTimelineEmpty();
+                    mCallback.onFollowTimelineEmpty(api);
                 }
             }
         });

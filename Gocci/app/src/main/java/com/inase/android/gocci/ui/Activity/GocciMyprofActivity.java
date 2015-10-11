@@ -590,7 +590,7 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
             mProfRecyclerView.setAdapter(mMyProfAdapter);
         } else if (api == ApiConst.USERPAGE_REFRESH) {
             mProfusers.clear();
-            mMyProfAdapter.notifyDataSetChanged();
+            mMyProfAdapter.setData(mHeaderUserData, mProfusers);
         }
         mEmptyImage.setVisibility(View.VISIBLE);
         mEmptyText.setVisibility(View.VISIBLE);
@@ -619,7 +619,7 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
                 mProfRecyclerView.setAdapter(mMyProfAdapter);
                 break;
             case ApiConst.USERPAGE_REFRESH:
-                mMyProfAdapter.notifyDataSetChanged();
+                mMyProfAdapter.setData(mHeaderUserData, mProfusers);
                 break;
         }
     }
@@ -656,7 +656,7 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
     @Override
     public void postDeleted(int position) {
         mProfusers.remove(position);
-        mMyProfAdapter.notifyDataSetChanged();
+        mMyProfAdapter.setData(mHeaderUserData, mProfusers);
 
         if (mProfusers.isEmpty()) {
             mEmptyImage.setVisibility(View.VISIBLE);

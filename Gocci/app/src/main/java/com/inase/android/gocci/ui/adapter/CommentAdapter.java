@@ -52,6 +52,12 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         mCallback = callback;
     }
 
+    public void setData(PostData postData, ArrayList<HeaderData> commentData) {
+        mPostData = postData;
+        mCommentData = commentData;
+        this.notifyDataSetChanged();
+    }
+
     public CommentAdapter(Context context, String post_id, PostData postData, ArrayList<HeaderData> commentData) {
         this.mContext = context;
         this.mPost_id = post_id;

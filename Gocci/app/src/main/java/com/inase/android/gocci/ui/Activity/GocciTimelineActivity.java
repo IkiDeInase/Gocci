@@ -21,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
@@ -37,6 +38,7 @@ import com.inase.android.gocci.event.PageChangeVideoStopEvent;
 import com.inase.android.gocci.event.TimelineMuteChangeEvent;
 import com.inase.android.gocci.ui.fragment.FollowTimelineFragment;
 import com.inase.android.gocci.ui.fragment.LatestTimelineFragment;
+import com.inase.android.gocci.ui.fragment.NearTimelineFragment;
 import com.inase.android.gocci.ui.view.DrawerProfHeader;
 import com.inase.android.gocci.ui.view.NotificationListView;
 import com.inase.android.gocci.ui.view.ToukouPopup;
@@ -81,6 +83,8 @@ public class GocciTimelineActivity extends AppCompatActivity {
     MaterialBetterSpinner mValueSpinner;
     @Bind(R.id.sort_spinner)
     MaterialBetterSpinner mSortSpinner;
+    @Bind(R.id.sort_cross)
+    ImageView mSortCross;
     @Bind(R.id.filter_ripple)
     RippleView mFilterRipple;
     @Bind(R.id.sheet)
@@ -111,11 +115,24 @@ public class GocciTimelineActivity extends AppCompatActivity {
     private TextView mNotificationNumber;
 
     public static int mShowPosition = 0;
+
+    public static int mNearSort_id = 1;
+    public static int mNearCategory_id = 0;
+    public static int mNearValue_id = 0;
+
     public static int mLatestSort_id = 0;
+    public static int mLatestCategory_id = 0;
+    public static int mLatestValue_id = 0;
+
     public static int mFollowSort_id = 0;
+    public static int mFollowCategory_id = 0;
+    public static int mFollowValue_id = 0;
+
     public static Location nowLocation;
 
     private String[] SORT;
+    private String[] CATEGORY;
+    private String[] VALUE;
 
     private Drawer result;
 
@@ -136,9 +153,6 @@ public class GocciTimelineActivity extends AppCompatActivity {
                     break;
                 case Const.INTENT_TO_SETTING:
                     SettingActivity.startSettingActivity(activity);
-                    break;
-                case Const.INTENT_TO_GRIDSEARCH:
-                    GridSearchActivity.startGridSearchActivity(activity);
                     break;
             }
         }
@@ -171,7 +185,6 @@ public class GocciTimelineActivity extends AppCompatActivity {
                 .addDrawerItems(
                         new PrimaryDrawerItem().withName(getString(R.string.timeline)).withIcon(GoogleMaterial.Icon.gmd_home).withIdentifier(1).withSelectable(false),
                         new PrimaryDrawerItem().withName(getString(R.string.mypage)).withIcon(GoogleMaterial.Icon.gmd_person).withIdentifier(2).withSelectable(false),
-                        new PrimaryDrawerItem().withName("位置タイムライン").withIcon(GoogleMaterial.Icon.gmd_place).withIdentifier(7).withSelectable(false),
                         new DividerDrawerItem(),
                         new PrimaryDrawerItem().withName(getString(R.string.send_advice)).withIcon(GoogleMaterial.Icon.gmd_send).withSelectable(false).withIdentifier(3),
                         new PrimaryDrawerItem().withName(SavedData.getSettingMute(this) == 0 ? getString(R.string.setting_support_mute) : getString(R.string.setting_support_unmute)).withIcon(GoogleMaterial.Icon.gmd_volume_mute).withSelectable(false).withIdentifier(5),
@@ -206,10 +219,6 @@ public class GocciTimelineActivity extends AppCompatActivity {
                                         result.updateName(5, new StringHolder(getString(R.string.setting_support_mute)));
                                         break;
                                 }
-                            } else if (drawerItem.getIdentifier() == 7) {
-                                Message msg =
-                                        sHandler.obtainMessage(Const.INTENT_TO_GRIDSEARCH, 0, 0, GocciTimelineActivity.this);
-                                sHandler.sendMessageDelayed(msg, 500);
                             }
                         }
                         return false;
@@ -222,10 +231,12 @@ public class GocciTimelineActivity extends AppCompatActivity {
 
         final FragmentPagerItemAdapter adapter = new FragmentPagerItemAdapter(
                 getSupportFragmentManager(), FragmentPagerItems.with(this)
-                .add(R.string.tab_latest, LatestTimelineFragment.class)
+                .add(R.string.tab_near, NearTimelineFragment.class)
                 .add(R.string.tab_follow, FollowTimelineFragment.class)
+                .add(R.string.tab_latest, LatestTimelineFragment.class)
                 .create());
 
+        mViewpager.setOffscreenPageLimit(2);
         mViewpager.setAdapter(adapter);
 
         mSmartTab.setViewPager(mViewpager);
@@ -238,7 +249,29 @@ public class GocciTimelineActivity extends AppCompatActivity {
             public void onPageSelected(int position) {
                 BusHolder.get().post(new PageChangeVideoStopEvent(position));
                 mShowPosition = position;
-                mSortSpinner.setText(mShowPosition == 0 ? SORT[mLatestSort_id] : SORT[mFollowSort_id]);
+                switch (mShowPosition) {
+                    case 0:
+                        mSortSpinner.setVisibility(View.GONE);
+                        mSortCross.setVisibility(View.GONE);
+                        mSortSpinner.setText(SORT[mNearSort_id]);
+                        if (mNearCategory_id != 0) mCategorySpinner.setText(CATEGORY[mNearCategory_id]);
+                        if (mNearValue_id != 0) mValueSpinner.setText(VALUE[mNearValue_id]);
+                        break;
+                    case 1:
+                        mSortSpinner.setVisibility(View.VISIBLE);
+                        mSortCross.setVisibility(View.VISIBLE);
+                        mSortSpinner.setText(SORT[mFollowSort_id]);
+                        if (mFollowCategory_id != 0) mCategorySpinner.setText(CATEGORY[mFollowCategory_id]);
+                        if (mFollowValue_id != 0) mValueSpinner.setText(VALUE[mFollowValue_id]);
+                        break;
+                    case 2:
+                        mSortSpinner.setVisibility(View.VISIBLE);
+                        mSortCross.setVisibility(View.VISIBLE);
+                        mSortSpinner.setText(SORT[mLatestSort_id]);
+                        if (mLatestCategory_id != 0) mCategorySpinner.setText(CATEGORY[mLatestCategory_id]);
+                        if (mLatestValue_id != 0) mValueSpinner.setText(VALUE[mLatestValue_id]);
+                        break;
+                }
             }
 
             @Override
@@ -248,8 +281,8 @@ public class GocciTimelineActivity extends AppCompatActivity {
             }
         });
 
-        String[] CATEGORY = getResources().getStringArray(R.array.list_category);
-        String[] VALUE = getResources().getStringArray(R.array.list_value);
+        CATEGORY = getResources().getStringArray(R.array.list_category);
+        VALUE = getResources().getStringArray(R.array.list_value);
         SORT = getResources().getStringArray(R.array.list_sort);
 
         ArrayAdapter<String> categoryAdapter = new ArrayAdapter<>(this,
@@ -257,7 +290,17 @@ public class GocciTimelineActivity extends AppCompatActivity {
         mCategorySpinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //category_id = position + 1;
+                switch (mShowPosition) {
+                    case 0:
+                        mNearCategory_id = position + 2;
+                        break;
+                    case 1:
+                        mFollowCategory_id = position + 2;
+                        break;
+                    case 2:
+                        mLatestCategory_id = position + 2;
+                        break;
+                }
             }
         });
         ArrayAdapter<String> valueAdapter = new ArrayAdapter<>(this,
@@ -265,7 +308,17 @@ public class GocciTimelineActivity extends AppCompatActivity {
         mValueSpinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //value_id = position + 1;
+                switch (mShowPosition) {
+                    case 0:
+                        mNearValue_id = position + 1;
+                        break;
+                    case 1:
+                        mFollowValue_id = position + 1;
+                        break;
+                    case 2:
+                        mLatestValue_id = position + 1;
+                        break;
+                }
             }
         });
         ArrayAdapter<String> sortAdapter = new ArrayAdapter<>(this,
@@ -273,10 +326,13 @@ public class GocciTimelineActivity extends AppCompatActivity {
         mSortSpinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (mShowPosition == 0) {
-                    mLatestSort_id = position;
-                } else {
-                    mFollowSort_id = position;
+                switch (mShowPosition) {
+                    case 1:
+                        mFollowSort_id = position;
+                        break;
+                    case 2:
+                        mLatestSort_id = position;
+                        break;
                 }
             }
         });
@@ -289,10 +345,30 @@ public class GocciTimelineActivity extends AppCompatActivity {
             public void onComplete(RippleView rippleView) {
                 FabTransformation.with(mFab).setOverlay(mOverlay).transformFrom(mSheet);
                 //Otto currentpageと絞り込みurl
-                BusHolder.get().post(new FilterTimelineEvent(mShowPosition, Const.getCustomTimelineAPI(mShowPosition, mLatestSort_id, mFollowSort_id,
-                        nowLocation.getLongitude(), nowLocation.getLatitude(), 0)));
+                switch (mShowPosition) {
+                    case 0:
+                        BusHolder.get().post(new FilterTimelineEvent(mShowPosition, Const.getCustomTimelineAPI(mShowPosition,
+                                mNearSort_id, mNearCategory_id, mNearValue_id,
+                                nowLocation != null ? nowLocation.getLongitude() : 0.0,
+                                nowLocation != null ? nowLocation.getLatitude() : 0.0, 0)));
+                        break;
+                    case 1:
+                        BusHolder.get().post(new FilterTimelineEvent(mShowPosition, Const.getCustomTimelineAPI(mShowPosition,
+                                mFollowSort_id, mFollowCategory_id, mFollowValue_id,
+                                nowLocation != null ? nowLocation.getLongitude() : 0.0,
+                                nowLocation != null ? nowLocation.getLatitude() : 0.0, 0)));
+                        break;
+                    case 2:
+                        BusHolder.get().post(new FilterTimelineEvent(mShowPosition, Const.getCustomTimelineAPI(mShowPosition,
+                                mLatestSort_id, mLatestCategory_id, mLatestValue_id,
+                                nowLocation != null ? nowLocation.getLongitude() : 0.0,
+                                nowLocation != null ? nowLocation.getLatitude() : 0.0, 0)));
+                        break;
+                }
             }
         });
+
+        mSortSpinner.setVisibility(View.GONE);
     }
 
     @Override

@@ -732,7 +732,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
                 break;
             case ApiConst.COMMENT_REFRESH:
                 mCommentusers.clear();
-                mCommentAdapter.notifyDataSetChanged();
+                mCommentAdapter.setData(headerPost, mCommentusers);
                 break;
         }
     }
@@ -763,7 +763,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
                 mPlayingPostId = null;
                 mViewHolderHash.clear();
                 mCommentRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
-                mCommentAdapter.notifyDataSetChanged();
+                mCommentAdapter.setData(headerPost, mCommentusers);
                 break;
         }
     }
@@ -776,14 +776,14 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
         mPlayingPostId = null;
         mViewHolderHash.clear();
         mCommentRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
-        mCommentAdapter.notifyDataSetChanged();
+        mCommentAdapter.setData(headerPost, mCommentusers);
     }
 
     @Override
     public void postCommentEmpty(PostData postData) {
         headerPost = postData;
         mCommentusers.clear();
-        mCommentAdapter.notifyDataSetChanged();
+        mCommentAdapter.setData(headerPost, mCommentusers);
     }
 
     @Override

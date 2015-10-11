@@ -762,7 +762,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
             mTenpoRecyclerView.setAdapter(mRestPageAdapter);
         } else if (api == ApiConst.USERPAGE_REFRESH) {
             mTenpousers.clear();
-            mRestPageAdapter.notifyDataSetChanged();
+            mRestPageAdapter.setData(mHeaderRestData, mTenpousers);
         }
     }
 
@@ -808,7 +808,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
                 mPlayingPostId = null;
                 mViewHolderHash.clear();
                 mTenpoRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
-                mRestPageAdapter.notifyDataSetChanged();
+                mRestPageAdapter.setData(mHeaderRestData, mTenpousers);
                 break;
         }
     }

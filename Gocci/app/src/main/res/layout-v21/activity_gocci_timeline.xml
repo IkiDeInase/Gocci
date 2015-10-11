@@ -31,7 +31,7 @@
             android:paddingRight="32dp"
             app:stl_defaultTabTextAllCaps="true"
             app:stl_defaultTabTextColor="@color/gocci_header"
-            app:stl_defaultTabTextHorizontalPadding="20dp"
+            app:stl_defaultTabTextHorizontalPadding="0dp"
             app:stl_defaultTabTextMinWidth="0dp"
             app:stl_defaultTabTextSize="16sp"
             app:stl_distributeEvenly="true"

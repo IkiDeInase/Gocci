@@ -158,10 +158,6 @@
             android:name=".ui.activity.AlreadyExistCameraPreview"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.activity.GridSearchActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/CustomTheme" />
-        <activity
             android:name=".ui.activity.MapSearchActivity"
             android:screenOrientation="portrait" />
     </application>

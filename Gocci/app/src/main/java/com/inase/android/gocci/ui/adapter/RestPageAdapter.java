@@ -62,15 +62,11 @@ public class RestPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         mCallback = callback;
     }
 
-//    public void setData(HeaderData headerData, ArrayList<PostData> postData) {
-//        mRestData = headerData;
-//        mPostData = postData;
-//        this.notifyDataSetChanged();
-//    }
-//
-//    public void setHeaderData(HeaderData headerData) {
-//        mRestData = headerData;
-//    }
+    public void setData(HeaderData headerData, ArrayList<PostData> postData) {
+        mRestData = headerData;
+        mPostData = postData;
+        this.notifyDataSetChanged();
+    }
 
     public MapView getMapView() {
         return mMapView;

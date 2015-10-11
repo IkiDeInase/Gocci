@@ -7,28 +7,28 @@ import com.inase.android.gocci.domain.model.PostData;
 import java.util.ArrayList;
 
 /**
- * Created by kinagafuji on 15/09/25.
+ * Created by kinagafuji on 15/10/11.
  */
-public class LatestTimelineUseCaseImpl extends UseCase2<Integer, String> implements LatestTimelineUseCase, PostDataRepository.PostDataRepositoryCallback {
-    private static LatestTimelineUseCaseImpl sUseCase;
+public class NearTimelineUseCaseImpl extends UseCase2<Integer, String> implements NearTimelineUseCase, PostDataRepository.PostDataRepositoryCallback {
+    private static NearTimelineUseCaseImpl sUseCase;
     private final PostDataRepository mPostDataRepository;
     private PostExecutionThread mPostExecutionThread;
-    private LatestTimelineUseCaseCallback mCallback;
+    private NearTimelineUseCaseCallback mCallback;
 
-    public static LatestTimelineUseCaseImpl getUseCase(PostDataRepository postDataRepository, PostExecutionThread postExecutionThread) {
+    public static NearTimelineUseCaseImpl getUseCase(PostDataRepository postDataRepository, PostExecutionThread postExecutionThread) {
         if (sUseCase == null) {
-            sUseCase = new LatestTimelineUseCaseImpl(postDataRepository, postExecutionThread);
+            sUseCase = new NearTimelineUseCaseImpl(postDataRepository, postExecutionThread);
         }
         return sUseCase;
     }
 
-    public LatestTimelineUseCaseImpl(PostDataRepository postDataRepository, PostExecutionThread postExecutionThread) {
+    public NearTimelineUseCaseImpl(PostDataRepository postDataRepository, PostExecutionThread postExecutionThread) {
         mPostDataRepository = postDataRepository;
         mPostExecutionThread = postExecutionThread;
     }
 
     @Override
-    public void execute(int api, String url, LatestTimelineUseCaseCallback callback) {
+    public void execute(int api, String url, NearTimelineUseCaseCallback callback) {
         mCallback = callback;
         this.start(api, url);
     }
@@ -39,7 +39,7 @@ public class LatestTimelineUseCaseImpl extends UseCase2<Integer, String> impleme
     }
 
     @Override
-    public void setCallback(LatestTimelineUseCaseCallback callback) {
+    public void setCallback(NearTimelineUseCaseCallback callback) {
         mCallback = callback;
     }
 
@@ -54,7 +54,7 @@ public class LatestTimelineUseCaseImpl extends UseCase2<Integer, String> impleme
             @Override
             public void run() {
                 if (mCallback != null) {
-                    mCallback.onLatestTimelineLoaded(api, postData, post_ids);
+                    mCallback.onNearTimelineLoaded(api, postData, post_ids);
                 }
             }
         });
@@ -66,7 +66,7 @@ public class LatestTimelineUseCaseImpl extends UseCase2<Integer, String> impleme
             @Override
             public void run() {
                 if (mCallback != null) {
-                    mCallback.onLatestTimelineEmpty(api);
+                    mCallback.onNearTimelineEmpty(api);
                 }
             }
         });

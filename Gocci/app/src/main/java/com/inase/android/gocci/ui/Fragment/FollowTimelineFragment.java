@@ -2,20 +2,17 @@ package com.inase.android.gocci.ui.fragment;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Point;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.AttributeSet;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,11 +44,8 @@ import com.inase.android.gocci.event.PageChangeVideoStopEvent;
 import com.inase.android.gocci.event.TimelineMuteChangeEvent;
 import com.inase.android.gocci.presenter.ShowFollowTimelinePresenter;
 import com.inase.android.gocci.ui.activity.CommentActivity;
-import com.inase.android.gocci.ui.activity.FlexibleTenpoActivity;
-import com.inase.android.gocci.ui.activity.FlexibleUserProfActivity;
 import com.inase.android.gocci.ui.activity.GocciTimelineActivity;
 import com.inase.android.gocci.ui.adapter.TimelineAdapter;
-import com.inase.android.gocci.ui.view.SquareImageView;
 import com.inase.android.gocci.utils.SavedData;
 import com.inase.android.gocci.utils.Util;
 import com.inase.android.gocci.utils.video.HlsRendererBuilder;
@@ -85,24 +79,20 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
     private AppBarLayout appBarLayout;
     private FloatingActionButton fab;
 
-    private LinearLayoutManager mLayoutManager;
+    private StaggeredGridLayoutManager mLayoutManager;
     private ArrayList<PostData> mTimelineusers = new ArrayList<>();
+    private ArrayList<String> mPost_ids = new ArrayList<>();
     private TimelineAdapter mTimelineAdapter;
 
-    private Point mDisplaySize;
     private String mPlayingPostId;
     private boolean mPlayBlockFlag;
-    private ConcurrentHashMap<Const.ExoViewHolder, String> mViewHolderHash;  // Value: PosterId
+    private ConcurrentHashMap<Const.TwoCellViewHolder, String> mViewHolderHash;  // Value: PosterId
 
     private CallbackManager callbackManager;
     private ShareDialog shareDialog;
 
-    private AttributeSet mVideoAttr;
-    private int previousTotal = 0;
     private boolean loading = true;
-    private int visibleThreshold = 5;
-    int firstVisibleItem, visibleItemCount, totalItemCount;
-
+    private int pastVisibleItems, visibleItemCount, totalItemCount;
     private int mNextCount = 1;
     private boolean isEndScrioll = false;
 
@@ -113,51 +103,54 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
 
     private ShowFollowTimelinePresenter mPresenter;
 
-    private ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
-        @Override
-        public void onGlobalLayout() {
-            changeMovie();
-            if (mPlayingPostId != null) {
-                mTimelineRecyclerView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-            }
-        }
-    };
-
     private RecyclerView.OnScrollListener scrollListener = new RecyclerView.OnScrollListener() {
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
             super.onScrollStateChanged(recyclerView, newState);
             switch (newState) {
                 case RecyclerView.SCROLL_STATE_IDLE:
-                    changeMovie();
+                    if (mPlayingPostId != null) {
+                        int position = mPost_ids.indexOf(mPlayingPostId);
+                        int[] array = mLayoutManager.findFirstVisibleItemPositions(null);
+                        int[] array2 = mLayoutManager.findLastVisibleItemPositions(null);
+
+                        if (array[1] >= position || position >= array2[0]) {
+                            Const.TwoCellViewHolder oldViewHolder = getPlayingViewHolder();
+                            if (oldViewHolder != null) {
+                                oldViewHolder.mSquareImage.setVisibility(View.VISIBLE);
+                            }
+                            mPlayingPostId = null;
+                            releasePlayer();
+                        }
+                    }
                     break;
                 case RecyclerView.SCROLL_STATE_DRAGGING:
                     break;
                 case RecyclerView.SCROLL_STATE_SETTLING:
                     break;
             }
+        }
 
-            visibleItemCount = mTimelineRecyclerView.getChildCount();
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            visibleItemCount = mLayoutManager.getChildCount();
             totalItemCount = mLayoutManager.getItemCount();
-            firstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
+            int[] firstVisibleItems = null;
+            firstVisibleItems = mLayoutManager.findFirstVisibleItemPositions(firstVisibleItems);
+            if (firstVisibleItems != null && firstVisibleItems.length > 0) {
+                pastVisibleItems = firstVisibleItems[0];
+            }
 
             if (loading) {
-                if (totalItemCount > previousTotal) {
+                if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
                     loading = false;
-                    previousTotal = totalItemCount;
+                    if (!isEndScrioll) {
+                        mPresenter.getFollowTimelinePostData(ApiConst.TIMELINE_ADD, Const.getCustomTimelineAPI(1,
+                                GocciTimelineActivity.mFollowSort_id, GocciTimelineActivity.mFollowCategory_id, GocciTimelineActivity.mFollowValue_id,
+                                GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLongitude() : 0.0,
+                                GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLatitude() : 0.0, mNextCount));
+                    }
                 }
-            }
-            if (!loading && (totalItemCount - visibleItemCount)
-                    <= (firstVisibleItem + visibleThreshold)) {
-
-                if (!isEndScrioll) {
-                    mPresenter.getFollowTimelinePostData(ApiConst.TIMELINE_ADD,
-                            Const.getCustomTimelineAPI(GocciTimelineActivity.mShowPosition, GocciTimelineActivity.mLatestSort_id, GocciTimelineActivity.mFollowSort_id,
-                                    GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLongitude() : 0.0,
-                                    GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLatitude() : 0.0, mNextCount));
-                }
-
-                loading = true;
             }
         }
     };
@@ -165,10 +158,6 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        mDisplaySize = new Point();
-        getActivity().getWindowManager().getDefaultDisplay().getSize(mDisplaySize);
-
         callbackManager = CallbackManager.Factory.create();
         shareDialog = new ShareDialog(this);
         shareDialog.registerCallback(callbackManager, new FacebookCallback<Sharer.Result>() {
@@ -200,13 +189,13 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
         mPlayBlockFlag = true;
-        View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_timeline_latest_trend, container, false);
+        View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_timeline, container, false);
         ButterKnife.bind(this, view);
 
         mPlayingPostId = null;
         mViewHolderHash = new ConcurrentHashMap<>();
 
-        mLayoutManager = new LinearLayoutManager(getActivity());
+        mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mTimelineRecyclerView.setLayoutManager(mLayoutManager);
         mTimelineRecyclerView.setHasFixedSize(true);
         mTimelineRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
@@ -215,9 +204,6 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
 
         fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
         appBarLayout = (AppBarLayout) getActivity().findViewById(R.id.app_bar);
-
-        mTimelineAdapter = new TimelineAdapter(getActivity(), mTimelineusers);
-        mTimelineAdapter.setTimelineCallback(this);
 
         if (Util.getConnectedState(getActivity()) != Util.NetworkStatus.OFF) {
             mPresenter.getFollowTimelinePostData(ApiConst.TIMELINE_FIRST, Const.getFollowlineApi());
@@ -253,16 +239,7 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
         super.onResume();
         BusHolder.get().register(this);
         appBarLayout.addOnOffsetChangedListener(this);
-        if (player == null) {
-            if (mPlayingPostId != null && GocciTimelineActivity.mShowPosition == 1) {
-                releasePlayer();
-                if (Util.isMovieAutoPlay(getActivity())) {
-                    preparePlayer(getPlayingViewHolder(), getVideoPath());
-                }
-            }
-        } else {
-            player.setBackgrounded(false);
-        }
+        releasePlayer();
         mPresenter.resume();
     }
 
@@ -275,7 +252,7 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
         }
         releasePlayer();
         if (getPlayingViewHolder() != null) {
-            getPlayingViewHolder().mVideoThumbnail.setVisibility(View.VISIBLE);
+            getPlayingViewHolder().mSquareImage.setVisibility(View.VISIBLE);
         }
         appBarLayout.removeOnOffsetChangedListener(this);
         mPresenter.pause();
@@ -299,26 +276,15 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
         switch (event.position) {
             case 1:
                 mPlayBlockFlag = false;
-                if (player != null) {
-                    if (!Util.isMovieAutoPlay(getActivity())) {
-                        releasePlayer();
-                    } else {
-                        player.getPlayerControl().start();
-                    }
-                } else {
-                    if (!mTimelineusers.isEmpty()) {
-                        if (Util.isMovieAutoPlay(getActivity())) {
-                            preparePlayer(getPlayingViewHolder(), getVideoPath());
-                        }
-                    }
-                }
+                releasePlayer();
                 break;
             case 0:
+            case 2:
                 mPlayBlockFlag = true;
-                if (player != null) {
-                    if (player.getPlayerControl().isPlaying()) {
-                        player.getPlayerControl().pause();
-                    }
+                releasePlayer();
+                if (getPlayingViewHolder() != null) {
+                    getPlayingViewHolder().mSquareImage.setVisibility(View.VISIBLE);
+                    mPlayingPostId = null;
                 }
                 break;
         }
@@ -353,23 +319,11 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
         }
         if (mPlayingPostId != null && GocciTimelineActivity.mShowPosition == 1) {
             releasePlayer();
-            if (Util.isMovieAutoPlay(getActivity())) {
-                preparePlayer(getPlayingViewHolder(), getVideoPath());
-            }
         }
         player.setBackgrounded(false);
     }
 
-    private String getVideoPath() {
-        final int position = mTimelineRecyclerView.getChildAdapterPosition(mTimelineRecyclerView.findChildViewUnder(mDisplaySize.x / 2, mDisplaySize.y / 2));
-        final PostData userData = mTimelineAdapter.getItem(position);
-        if (!userData.getPost_id().equals(mPlayingPostId)) {
-            return null;
-        }
-        return userData.getMovie();
-    }
-
-    private void preparePlayer(final Const.ExoViewHolder viewHolder, String path) {
+    private void preparePlayer(final Const.TwoCellViewHolder viewHolder, String path) {
         if (player == null) {
             player = new VideoPlayer(new HlsRendererBuilder(getActivity(), com.google.android.exoplayer.util.Util.getUserAgent(getActivity(), "Gocci"), path));
             player.addListener(new VideoPlayer.Listener() {
@@ -407,8 +361,8 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
 
                 @Override
                 public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees, float pixelWidthAspectRatio) {
-                    viewHolder.mVideoThumbnail.setVisibility(View.GONE);
-                    viewHolder.mVideoFrame.setAspectRatio(
+                    viewHolder.mSquareImage.setVisibility(View.GONE);
+                    viewHolder.mAspectFrame.setAspectRatio(
                             height == 0 ? 1 : (width * pixelWidthAspectRatio) / height);
                 }
             });
@@ -419,7 +373,7 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
             player.prepare();
             playerNeedsPrepare = false;
         }
-        player.setSurface(viewHolder.mSquareVideoExo.getHolder().getSurface());
+        player.setSurface(viewHolder.mSquareExoVideo.getHolder().getSurface());
         player.setPlayWhenReady(true);
 
         if (SavedData.getSettingMute(getActivity()) == -1) {
@@ -436,54 +390,49 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
         }
     }
 
-
     private void getRefreshAsync(final Context context) {
         SmartLocation.with(context).location().oneFix().start(new OnLocationUpdatedListener() {
             @Override
             public void onLocationUpdated(Location location) {
                 GocciTimelineActivity.nowLocation = location;
-                mPresenter.getFollowTimelinePostData(ApiConst.TIMELINE_REFRESH,
-                        Const.getCustomTimelineAPI(GocciTimelineActivity.mShowPosition, GocciTimelineActivity.mLatestSort_id, GocciTimelineActivity.mFollowSort_id,
-                                GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLongitude() : 0.0,
-                                GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLatitude() : 0.0, 0));
+                GocciTimelineActivity.mFollowSort_id = 0;
+                GocciTimelineActivity.mFollowValue_id = 0;
+                GocciTimelineActivity.mFollowCategory_id = 0;
+                mPresenter.getFollowTimelinePostData(ApiConst.TIMELINE_REFRESH, Const.getCustomTimelineAPI(1,
+                        GocciTimelineActivity.mFollowSort_id, GocciTimelineActivity.mFollowCategory_id, GocciTimelineActivity.mFollowValue_id,
+                        GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLongitude() : 0.0,
+                        GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLatitude() : 0.0, 0));
             }
         });
     }
 
-    private void changeMovie() {
-        final int position = mTimelineRecyclerView.getChildAdapterPosition(mTimelineRecyclerView.findChildViewUnder(mDisplaySize.x / 2, mDisplaySize.y / 2));
-        if (mTimelineAdapter.isEmpty()) {
-            return;
-        }
-        if (position < 0) {
-            return;
-        }
-
-        final PostData userData = mTimelineAdapter.getItem(position);
-        if (!userData.getPost_id().equals(mPlayingPostId)) {
-            final Const.ExoViewHolder oldViewHolder = getPlayingViewHolder();
+    private void changeMovie(PostData postData) {
+        if (mPlayingPostId != null) {
+            // 前回の動画再生停止処理
+            final Const.TwoCellViewHolder oldViewHolder = getPlayingViewHolder();
             if (oldViewHolder != null) {
-                oldViewHolder.mVideoThumbnail.setVisibility(View.VISIBLE);
+                oldViewHolder.mSquareImage.setVisibility(View.VISIBLE);
             }
 
-            mPlayingPostId = userData.getPost_id();
-            final Const.ExoViewHolder currentViewHolder = getPlayingViewHolder();
-            if (mPlayBlockFlag) {
+            if (mPlayingPostId.equals(postData.getPost_id())) {
                 return;
             }
-
-            final String path = userData.getMovie();
-            releasePlayer();
-            if (Util.isMovieAutoPlay(getActivity())) {
-                preparePlayer(currentViewHolder, path);
-            }
         }
+        mPlayingPostId = postData.getPost_id();
+        final Const.TwoCellViewHolder currentViewHolder = getPlayingViewHolder();
+        if (mPlayBlockFlag) {
+            return;
+        }
+
+        final String path = postData.getMovie();
+        releasePlayer();
+        preparePlayer(currentViewHolder, path);
     }
 
-    private Const.ExoViewHolder getPlayingViewHolder() {
-        Const.ExoViewHolder viewHolder = null;
+    private Const.TwoCellViewHolder getPlayingViewHolder() {
+        Const.TwoCellViewHolder viewHolder = null;
         if (mPlayingPostId != null) {
-            for (Map.Entry<Const.ExoViewHolder, String> entry : mViewHolderHash.entrySet()) {
+            for (Map.Entry<Const.TwoCellViewHolder, String> entry : mViewHolderHash.entrySet()) {
                 if (entry.getValue().equals(mPlayingPostId)) {
                     viewHolder = entry.getKey();
                     break;
@@ -528,7 +477,28 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
     }
 
     @Override
-    public void showNoResultCase() {
+    public void showNoResultCase(int api) {
+        switch (api) {
+            case ApiConst.TIMELINE_FIRST:
+                mTimelineAdapter = new TimelineAdapter(getActivity(), mTimelineusers);
+                mTimelineAdapter.setTimelineCallback(this);
+                mTimelineRecyclerView.setAdapter(mTimelineAdapter);
+                break;
+            case ApiConst.TIMELINE_REFRESH:
+                mTimelineusers.clear();
+                isEndScrioll = false;
+                mNextCount = 1;
+                mPlayingPostId = null;
+                mTimelineAdapter.setData(mTimelineusers);
+                break;
+            case ApiConst.TIMELINE_FILTER:
+                mTimelineusers.clear();
+                isEndScrioll = false;
+                mNextCount = 1;
+                mPlayingPostId = null;
+                mTimelineAdapter.setData(mTimelineusers);
+                break;
+        }
         mEmptyImage.setVisibility(View.VISIBLE);
         mEmptyText.setVisibility(View.VISIBLE);
     }
@@ -545,28 +515,32 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
     }
 
     @Override
-    public void showResult(int api, ArrayList<PostData> mPostData) {
+    public void showResult(int api, ArrayList<PostData> mPostData, ArrayList<String> post_ids) {
         switch (api) {
             case ApiConst.TIMELINE_FIRST:
                 mTimelineusers.addAll(mPostData);
-                mTimelineRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
+                mPost_ids.addAll(post_ids);
+                mTimelineAdapter = new TimelineAdapter(getActivity(), mTimelineusers);
+                mTimelineAdapter.setTimelineCallback(this);
                 mTimelineRecyclerView.setAdapter(mTimelineAdapter);
                 break;
             case ApiConst.TIMELINE_REFRESH:
                 mTimelineusers.clear();
                 mTimelineusers.addAll(mPostData);
+                mPost_ids.clear();
+                mPost_ids.addAll(post_ids);
                 isEndScrioll = false;
                 mNextCount = 1;
                 mPlayingPostId = null;
                 mViewHolderHash.clear();
-                mTimelineRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
-                mTimelineAdapter.notifyDataSetChanged();
+                mTimelineAdapter.setData(mTimelineusers);
                 break;
             case ApiConst.TIMELINE_ADD:
                 if (mPostData.size() != 0) {
                     mPlayingPostId = null;
-                    mTimelineRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
-                    mTimelineAdapter.notifyDataSetChanged();
+                    mTimelineusers.addAll(mPostData);
+                    mPost_ids.addAll(post_ids);
+                    mTimelineAdapter.setData(mTimelineusers);
                     mNextCount++;
                 } else {
                     isEndScrioll = true;
@@ -575,12 +549,13 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
             case ApiConst.TIMELINE_FILTER:
                 mTimelineusers.clear();
                 mTimelineusers.addAll(mPostData);
+                mPost_ids.clear();
+                mPost_ids.addAll(post_ids);
                 isEndScrioll = false;
                 mNextCount = 1;
                 mPlayingPostId = null;
                 mViewHolderHash.clear();
-                mTimelineRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
-                mTimelineAdapter.notifyDataSetChanged();
+                mTimelineAdapter.setData(mTimelineusers);
                 break;
         }
     }
@@ -591,53 +566,25 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
     }
 
     @Override
-    public void onUserClick(int user_id, String user_name) {
-        FlexibleUserProfActivity.startUserProfActivity(user_id, user_name, getActivity());
-    }
-
-    @Override
-    public void onRestClick(int rest_id, String rest_name) {
-        FlexibleTenpoActivity.startTenpoActivity(rest_id, rest_name, getActivity());
-    }
-
-    @Override
-    public void onCommentClick(String post_id) {
+    public void onVideoFrameLongClick(String post_id) {
         CommentActivity.startCommentActivity(Integer.parseInt(post_id), getActivity());
     }
 
     @Override
-    public void onVideoFrameClick() {
-        if (player != null) {
+    public void onVideoFrameClick(PostData data) {
+        if (player != null && mPlayingPostId.equals(data.getPost_id())) {
             if (player.getPlayerControl().isPlaying()) {
                 player.getPlayerControl().pause();
             } else {
                 player.getPlayerControl().start();
             }
         } else {
-            if (!Util.isMovieAutoPlay(getActivity())) {
-                releasePlayer();
-                preparePlayer(getPlayingViewHolder(), getVideoPath());
-            }
+            changeMovie(data);
         }
     }
 
     @Override
-    public void onFacebookShare(String share) {
-        Util.facebookVideoShare(getActivity(), shareDialog, share);
-    }
-
-    @Override
-    public void onTwitterShare(SquareImageView view, String rest_name) {
-        Util.twitterShare(getActivity(), view, rest_name);
-    }
-
-    @Override
-    public void onInstaShare(String share, String rest_name) {
-        Util.instaVideoShare(getActivity(), rest_name, share);
-    }
-
-    @Override
-    public void onHashHolder(Const.ExoViewHolder holder, String post_id) {
+    public void onHashHolder(Const.TwoCellViewHolder holder, String post_id) {
         mViewHolderHash.put(holder, post_id);
     }
 }

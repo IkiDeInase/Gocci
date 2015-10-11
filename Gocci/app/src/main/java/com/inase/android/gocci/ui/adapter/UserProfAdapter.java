@@ -53,15 +53,11 @@ public class UserProfAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         mCallback = callback;
     }
 
-//    public void setData(HeaderData headerData, ArrayList<PostData> postData) {
-//        mUserData = headerData;
-//        mPostData = postData;
-//        this.notifyDataSetChanged();
-//    }
-//
-//    public void setHeaderData(HeaderData headerData) {
-//        mUserData = headerData;
-//    }
+    public void setData(HeaderData headerData, ArrayList<PostData> postData) {
+        mUserData = headerData;
+        mPostData = postData;
+        this.notifyDataSetChanged();
+    }
 
     @Override
     public int getItemViewType(int position) {

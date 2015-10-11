@@ -11,9 +11,9 @@ public interface PostDataRepository {
     void getPostDataList(int api, String url, PostDataRepositoryCallback cb);
 
     interface PostDataRepositoryCallback {
-        void onPostDataLoaded(int api, ArrayList<PostData> postData);
+        void onPostDataLoaded(int api, ArrayList<PostData> postData, ArrayList<String> post_ids);
 
-        void onPostDataEmpty();
+        void onPostDataEmpty(int api);
 
         void onError();
     }

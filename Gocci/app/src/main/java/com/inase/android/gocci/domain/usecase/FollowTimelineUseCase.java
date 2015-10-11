@@ -10,9 +10,9 @@ import java.util.ArrayList;
 public interface FollowTimelineUseCase {
 
     interface FollowTimelineUseCaseCallback {
-        void onFollowTimelineLoaded(int api, ArrayList<PostData> mPostData);
+        void onFollowTimelineLoaded(int api, ArrayList<PostData> mPostData, ArrayList<String> post_ids);
 
-        void onFollowTimelineEmpty();
+        void onFollowTimelineEmpty(int api);
 
         void onError();
     }

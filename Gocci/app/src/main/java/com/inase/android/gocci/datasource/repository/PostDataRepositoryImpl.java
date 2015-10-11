@@ -32,6 +32,7 @@ public class PostDataRepositoryImpl implements PostDataRepository {
     @Override
     public void getPostDataList(final int api, String url, final PostDataRepositoryCallback cb) {
         final ArrayList<PostData> mPostData = new ArrayList<>();
+        final ArrayList<String> mPost_Ids = new ArrayList<>();
         Application_Gocci.getJsonHttpClient(url, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
@@ -39,14 +40,16 @@ public class PostDataRepositoryImpl implements PostDataRepository {
                     if (response.length() != 0) {
                         for (int i = 0; i < response.length(); i++) {
                             JSONObject jsonObject = response.getJSONObject(i);
-                            mPostData.add(PostData.createPostData(jsonObject));
+                            //mPostData.add(PostData.createPostData(jsonObject));
+                            mPostData.add(PostData.createDistPostData(jsonObject));
+                            mPost_Ids.add(jsonObject.getString("post_id"));
                         }
-                        cb.onPostDataLoaded(api, mPostData);
+                        cb.onPostDataLoaded(api, mPostData, mPost_Ids);
                     } else {
                         if (api == ApiConst.TIMELINE_ADD) {
-                            cb.onPostDataLoaded(api, mPostData);
+                            cb.onPostDataLoaded(api, mPostData, mPost_Ids);
                         } else {
-                            cb.onPostDataEmpty();
+                            cb.onPostDataEmpty(api);
                         }
                     }
                 } catch (JSONException e) {

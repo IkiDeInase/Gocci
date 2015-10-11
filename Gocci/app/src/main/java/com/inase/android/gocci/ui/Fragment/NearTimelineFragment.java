@@ -35,14 +35,14 @@ import com.inase.android.gocci.datasource.repository.PostDataRepository;
 import com.inase.android.gocci.datasource.repository.PostDataRepositoryImpl;
 import com.inase.android.gocci.domain.executor.UIThread;
 import com.inase.android.gocci.domain.model.PostData;
-import com.inase.android.gocci.domain.usecase.LatestTimelineUseCase;
-import com.inase.android.gocci.domain.usecase.LatestTimelineUseCaseImpl;
+import com.inase.android.gocci.domain.usecase.NearTimelineUseCase;
+import com.inase.android.gocci.domain.usecase.NearTimelineUseCaseImpl;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.FilterTimelineEvent;
 import com.inase.android.gocci.event.NotificationNumberEvent;
 import com.inase.android.gocci.event.PageChangeVideoStopEvent;
 import com.inase.android.gocci.event.TimelineMuteChangeEvent;
-import com.inase.android.gocci.presenter.ShowLatestTimelinePresenter;
+import com.inase.android.gocci.presenter.ShowNearTimelinePresenter;
 import com.inase.android.gocci.ui.activity.CommentActivity;
 import com.inase.android.gocci.ui.activity.GocciTimelineActivity;
 import com.inase.android.gocci.ui.adapter.TimelineAdapter;
@@ -61,11 +61,8 @@ import butterknife.ButterKnife;
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
 
-/**
- * Created by kinagafuji on 15/06/08.
- */
-public class LatestTimelineFragment extends Fragment implements AudioCapabilitiesReceiver.Listener, AppBarLayout.OnOffsetChangedListener,
-        ObservableScrollViewCallbacks, ShowLatestTimelinePresenter.ShowLatestTimelineView, TimelineAdapter.TimelineCallback {
+public class NearTimelineFragment extends Fragment implements AppBarLayout.OnOffsetChangedListener, AudioCapabilitiesReceiver.Listener,
+        ObservableScrollViewCallbacks, ShowNearTimelinePresenter.ShowNearTimelineView, TimelineAdapter.TimelineCallback {
 
     @Bind(R.id.list)
     ObservableRecyclerView mTimelineRecyclerView;
@@ -88,6 +85,11 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
     private boolean mPlayBlockFlag;
     private ConcurrentHashMap<Const.TwoCellViewHolder, String> mViewHolderHash;  // Value: PosterId
 
+    private VideoPlayer player;
+    private boolean playerNeedsPrepare;
+
+    private AudioCapabilitiesReceiver audioCapabilitiesReceiver;
+
     private CallbackManager callbackManager;
     private ShareDialog shareDialog;
 
@@ -96,19 +98,13 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
     private int mNextCount = 1;
     private boolean isEndScrioll = false;
 
-    private VideoPlayer player;
-    private boolean playerNeedsPrepare;
-
-    private AudioCapabilitiesReceiver audioCapabilitiesReceiver;
-
-    private ShowLatestTimelinePresenter mPresenter;
+    private ShowNearTimelinePresenter mPresenter;
 
     private RecyclerView.OnScrollListener scrollListener = new RecyclerView.OnScrollListener() {
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
             super.onScrollStateChanged(recyclerView, newState);
             switch (newState) {
-                // スクロールしていない
                 case RecyclerView.SCROLL_STATE_IDLE:
                     if (mPlayingPostId != null) {
                         int position = mPost_ids.indexOf(mPlayingPostId);
@@ -125,17 +121,15 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
                         }
                     }
                     break;
-                // スクロール中
                 case RecyclerView.SCROLL_STATE_DRAGGING:
                     break;
-                // はじいたとき
                 case RecyclerView.SCROLL_STATE_SETTLING:
                     break;
             }
         }
 
         @Override
-        public void onScrolled(RecyclerView recyclerView, int dx, int dy){
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
             visibleItemCount = mLayoutManager.getChildCount();
             totalItemCount = mLayoutManager.getItemCount();
             int[] firstVisibleItems = null;
@@ -148,8 +142,8 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
                 if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
                     loading = false;
                     if (!isEndScrioll) {
-                        mPresenter.getLatestTimelinePostData(ApiConst.TIMELINE_ADD, Const.getCustomTimelineAPI(2,
-                                GocciTimelineActivity.mLatestSort_id, GocciTimelineActivity.mLatestCategory_id, GocciTimelineActivity.mLatestValue_id,
+                        mPresenter.getNearTimelinePostData(ApiConst.TIMELINE_ADD, Const.getCustomTimelineAPI(0,
+                                GocciTimelineActivity.mNearSort_id, GocciTimelineActivity.mNearCategory_id, GocciTimelineActivity.mNearValue_id,
                                 GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLongitude() : 0.0,
                                 GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLatitude() : 0.0, mNextCount));
                     }
@@ -184,32 +178,32 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
         audioCapabilitiesReceiver.register();
 
         PostDataRepository postDataRepositoryImpl = PostDataRepositoryImpl.getRepository();
-        LatestTimelineUseCase latestTimelineUseCaseImpl = LatestTimelineUseCaseImpl.getUseCase(postDataRepositoryImpl, UIThread.getInstance());
-        mPresenter = new ShowLatestTimelinePresenter(latestTimelineUseCaseImpl);
-        mPresenter.setLatestTimelineView(this);
+        NearTimelineUseCase nearTimelineUseCaseImpl = NearTimelineUseCaseImpl.getUseCase(postDataRepositoryImpl, UIThread.getInstance());
+        mPresenter = new ShowNearTimelinePresenter(nearTimelineUseCaseImpl);
+        mPresenter.setNearTimelineView(this);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
-        mPlayBlockFlag = true;
+        mPlayBlockFlag = false;
         View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_timeline, container, false);
         ButterKnife.bind(this, view);
 
         mPlayingPostId = null;
         mViewHolderHash = new ConcurrentHashMap<>();
 
-        fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
-        appBarLayout = (AppBarLayout) getActivity().findViewById(R.id.app_bar);
-
         mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mTimelineRecyclerView.setLayoutManager(mLayoutManager);
         mTimelineRecyclerView.setHasFixedSize(true);
         mTimelineRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
-        mTimelineRecyclerView.addOnScrollListener(scrollListener);
         mTimelineRecyclerView.setScrollViewCallbacks(this);
+        mTimelineRecyclerView.addOnScrollListener(scrollListener);
+
+        fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
+        appBarLayout = (AppBarLayout) getActivity().findViewById(R.id.app_bar);
 
         if (Util.getConnectedState(getActivity()) != Util.NetworkStatus.OFF) {
-            mPresenter.getLatestTimelinePostData(ApiConst.TIMELINE_FIRST, Const.getLatestAPI());
+            getSignupAsync(getActivity());
         } else {
             Toast.makeText(getActivity(), getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
         }
@@ -241,8 +235,8 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
     public void onResume() {
         super.onResume();
         BusHolder.get().register(this);
-        appBarLayout.addOnOffsetChangedListener(this);
         releasePlayer();
+        appBarLayout.addOnOffsetChangedListener(this);
         mPresenter.resume();
     }
 
@@ -257,8 +251,8 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
         if (getPlayingViewHolder() != null) {
             getPlayingViewHolder().mSquareImage.setVisibility(View.VISIBLE);
         }
-        appBarLayout.removeOnOffsetChangedListener(this);
         mPresenter.pause();
+        appBarLayout.removeOnOffsetChangedListener(this);
     }
 
     @Override
@@ -277,12 +271,12 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
     @Subscribe
     public void subscribe(PageChangeVideoStopEvent event) {
         switch (event.position) {
-            case 2:
+            case 0:
                 mPlayBlockFlag = false;
                 releasePlayer();
                 break;
-            case 0:
             case 1:
+            case 2:
                 mPlayBlockFlag = true;
                 releasePlayer();
                 if (getPlayingViewHolder() != null) {
@@ -302,9 +296,9 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
 
     @Subscribe
     public void subscribe(FilterTimelineEvent event) {
-        if (event.currentPage == 2) {
+        if (event.currentPage == 0) {
             mTimelineRecyclerView.scrollVerticallyToPosition(0);
-            mPresenter.getLatestTimelinePostData(ApiConst.TIMELINE_FILTER, event.filterUrl);
+            mPresenter.getNearTimelinePostData(ApiConst.TIMELINE_FILTER, event.filterUrl);
         }
     }
 
@@ -320,10 +314,38 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
         if (player == null) {
             return;
         }
-        if (mPlayingPostId != null && GocciTimelineActivity.mShowPosition == 2) {
+        if (mPlayingPostId != null && GocciTimelineActivity.mShowPosition == 0) {
             releasePlayer();
         }
         player.setBackgrounded(false);
+    }
+
+    private void getSignupAsync(final Context context) {
+        SmartLocation.with(context).location().oneFix().start(new OnLocationUpdatedListener() {
+            @Override
+            public void onLocationUpdated(Location location) {
+                GocciTimelineActivity.nowLocation = location;
+                mPresenter.getNearTimelinePostData(ApiConst.TIMELINE_FIRST, Const.getCustomTimelineAPI(0,
+                        GocciTimelineActivity.mNearSort_id, GocciTimelineActivity.mNearCategory_id, GocciTimelineActivity.mNearValue_id,
+                        GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLongitude() : 0.0,
+                        GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLatitude() : 0.0, 0));
+            }
+        });
+    }
+
+    private void getRefreshAsync(final Context context) {
+        SmartLocation.with(context).location().oneFix().start(new OnLocationUpdatedListener() {
+            @Override
+            public void onLocationUpdated(Location location) {
+                GocciTimelineActivity.nowLocation = location;
+                GocciTimelineActivity.mNearCategory_id = 0;
+                GocciTimelineActivity.mNearValue_id = 0;
+                mPresenter.getNearTimelinePostData(ApiConst.TIMELINE_REFRESH, Const.getCustomTimelineAPI(0,
+                        GocciTimelineActivity.mNearSort_id, GocciTimelineActivity.mNearCategory_id, GocciTimelineActivity.mNearValue_id,
+                        GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLongitude() : 0.0,
+                        GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLatitude() : 0.0, 0));
+            }
+        });
     }
 
     private void preparePlayer(final Const.TwoCellViewHolder viewHolder, String path) {
@@ -369,6 +391,7 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
                             height == 0 ? 1 : (width * pixelWidthAspectRatio) / height);
                 }
             });
+            //player.seekTo(playerPosition);
             playerNeedsPrepare = true;
         }
         if (playerNeedsPrepare) {
@@ -429,34 +452,19 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
         return viewHolder;
     }
 
-    private void getRefreshAsync(final Context context) {
-        SmartLocation.with(context).location().oneFix().start(new OnLocationUpdatedListener() {
-            @Override
-            public void onLocationUpdated(Location location) {
-                GocciTimelineActivity.nowLocation = location;
-                GocciTimelineActivity.mLatestSort_id = 0;
-                GocciTimelineActivity.mLatestCategory_id = 0;
-                GocciTimelineActivity.mLatestValue_id = 0;
-                mPresenter.getLatestTimelinePostData(ApiConst.TIMELINE_REFRESH, Const.getCustomTimelineAPI(2,
-                        GocciTimelineActivity.mLatestSort_id, GocciTimelineActivity.mLatestCategory_id, GocciTimelineActivity.mLatestValue_id,
-                        GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLongitude() : 0.0,
-                        GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLatitude() : 0.0, 0));
-            }
-        });
-    }
-
     @Override
     public void onOffsetChanged(AppBarLayout appBarLayout, int i) {
         mSwipeContainer.setEnabled(i == 0);
     }
 
     @Override
-    public void onScrollChanged(int i, boolean b, boolean b1) {
+    public void onScrollChanged(int scrollY, boolean firstScroll, boolean dragging) {
 
     }
 
     @Override
     public void onDownMotionEvent() {
+
     }
 
     @Override

@@ -92,122 +92,31 @@ public class Const {
                 "&pass=" + password + "&os=android_" + os + "&model=" + model + "&register_id=" + register_id;
     }
 
-    public static String getCustomTimelineAPI(int position, int latest_id, int follow_id, double lon, double lat, int call) {
-        String url = null;
-        if (position == 0) {
-            switch (latest_id) {
-                case 0:
-                    if (call == 0) {
-                        //全体の最新順
-                        url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline";
-                    } else {
-                        //全体の最新順の更新
-                        url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline/?call=" + call;
-                    }
-                    break;
-                case 1:
-                    if (call == 0) {
-                        //全体の近い順
-                        url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline/?order_id=" + latest_id + "&lon=" + lon + "&lat=" + lat;
-                    } else {
-                        //全体の近い順の更新
-                        url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline/?order_id=" + latest_id + "&lon=" + lon + "&lat=" + lat + "&call=" + call;
-                    }
-                    break;
-                case 2:
-                    if (call == 0) {
-                        //全体の人気順
-                        url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline/?order_id=" + latest_id;
-                    } else {
-                        //全体の人気順の更新
-                        url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline/?order_id=" + latest_id + "&call=" + call;
-                    }
-                    break;
-            }
-        } else {
-            switch (follow_id) {
-                case 0:
-                    if (call == 0) {
-                        //フォローの最新順
-                        url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/followline";
-                    } else {
-                        //フォローの最新順の更新
-                        url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/followline/?call=" + call;
-                        ;
-                    }
-                    break;
-                case 1:
-                    if (call == 0) {
-                        //フォローの近い順
-                        url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/followline/?order_id=" + follow_id + "&lon=" + lon + "&lat=" + lat;
-                    } else {
-                        //フォローの近い順の更新
-                        url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/followline/?order_id=" + follow_id + "&lon=" + lon + "&lat=" + lat + "&call=" + call;
-                    }
-                    break;
-                case 2:
-                    if (call == 0) {
-                        //フォローの人気順
-                        url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/followline/?order_id=" + follow_id;
-                    } else {
-                        //フォローの人気順の更新
-                        url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/followline/?order_id=" + follow_id + "&call=" + call;
-                    }
-                    break;
-            }
-        }
-
-        return url;
-    }
-
-    public static String getCustomTagCategoryAPI(int category_id, int order_id, double lon, double lat, int call) {
-        String url = null;
-        switch (order_id) {
-            case 0:
-                if (call == 0) {
-                    url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline/?category_id=" + category_id;
-                } else {
-                    url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline/?category_id=" + category_id + "&call=" + call;
-                }
+    public static String getCustomTimelineAPI(int position, int sort_id, int category_id, int value_id, double lon, double lat, int call) {
+        StringBuilder url = null;
+        switch (position) {
+            case 0: //近い店
+                url = new StringBuilder(URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline/?order_id=1&lon=" + lon + "&lat=" + lat);
+                if (category_id != 0) url.append("&category_id=").append(category_id);
+                if (value_id != 0) url.append("&value_id=").append(value_id);
+                if (call != 0) url.append("&call=").append(call);
                 break;
-            case 1:
-                if (call == 0) {
-                    //フォローの近い順
-                    url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline/?category_id=" + category_id + "&order_id=" + order_id + "&lon=" + lon + "&lat=" + lat;
-                } else {
-                    //フォローの近い順の更新
-                    url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline/?category_id=" + category_id + "&order_id=" + order_id + "&lon=" + lon + "&lat=" + lat + "&call=" + call;
-                }
+            case 1: //フォロー
+                url = new StringBuilder(URL_PREFIX + VERSION_NUMBER + "/mobile/get/followline/?call=" + call);
+                if (sort_id != 0) url.append("&order_id=").append(sort_id);
+                if (sort_id == 1) url.append("&lon=").append(lon).append("&lat=").append(lat);
+                if (category_id != 0) url.append("&category_id=").append(category_id);
+                if (value_id != 0) url.append("&value_id=").append(value_id);
                 break;
-            case 2:
-                if (call == 0) {
-                    //フォローの人気順
-                    url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline/?category_id=" + category_id + "&order_id=" + order_id;
-                } else {
-                    //フォローの人気順の更新
-                    url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline/?category_id=" + category_id + "&order_id=" + order_id + "&call=" + call;
-                }
+            case 2: //新着
+                url = new StringBuilder(URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline/?call=" + call);
+                if (sort_id != 0) url.append("&order_id=").append(sort_id);
+                if (sort_id == 1) url.append("&lon=").append(lon).append("&lat=").append(lat);
+                if (category_id != 0) url.append("&category_id=").append(category_id);
+                if (value_id != 0) url.append("&value_id=").append(value_id);
                 break;
         }
-        return url;
-    }
-
-    public static String getCustomGridSearchAPI(double lon, double lat, int call, int category_id) {
-        String url = null;
-        if (call == 0) {
-            if (category_id == 0) {
-                url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline/?order_id=1&lon=" + lon + "&lat=" + lat;
-            } else {
-                url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline/?order_id=1&lon=" + lon + "&lat=" + lat + "&category_id=" + category_id;
-            }
-        } else {
-            if (category_id == 0) {
-                url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline/?order_id=1&lon=" + lon + "&lat=" + lat + "&call=" + call;
-            } else {
-                url = URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline/?order_id=1&lon=" + lon + "&lat=" + lat + "&call=" + call + "&category_id=" + category_id;
-            }
-        }
-        return url;
+        return new String(url);
     }
 
     public static String getLatestAPI() {
@@ -425,6 +334,24 @@ public class Const {
         public AspectRatioFrameLayout mVideoFrame;
 
         public ExoViewHolder(View view) {
+            super(view);
+            ButterKnife.bind(this, view);
+        }
+    }
+
+    public static final class TwoCellViewHolder extends RecyclerView.ViewHolder {
+        @Bind(R.id.video_thumbnail)
+        public SquareImageView mSquareImage;
+        @Bind(R.id.square_video_exo)
+        public SquareExoVideoView mSquareExoVideo;
+        @Bind(R.id.video_frame)
+        public AspectRatioFrameLayout mAspectFrame;
+        @Bind(R.id.restname)
+        public TextView mRestname;
+        @Bind(R.id.distance)
+        public TextView mDistance;
+
+        public TwoCellViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
         }

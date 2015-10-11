@@ -10,9 +10,9 @@ import java.util.ArrayList;
 public interface LatestTimelineUseCase {
 
     interface LatestTimelineUseCaseCallback {
-        void onLatestTimelineLoaded(int api, ArrayList<PostData> mPostData);
+        void onLatestTimelineLoaded(int api, ArrayList<PostData> mPostData, ArrayList<String> post_ids);
 
-        void onLatestTimelineEmpty();
+        void onLatestTimelineEmpty(int api);
 
         void onError();
     }

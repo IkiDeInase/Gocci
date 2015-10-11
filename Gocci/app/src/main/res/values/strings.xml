@@ -13,6 +13,7 @@
 
     <string name="tab_latest">Latest</string>
     <string name="tab_follow">Follow</string>
+    <string name="tab_near">Near</string>
 
     <string name="timeline">Timeline</string>
     <string name="mypage">Mypage</string>
