@@ -47,7 +47,8 @@ public class TimelineAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
     }
 
     public void setData(ArrayList<PostData> postData) {
-        mData = postData;
+        mData.clear();
+        mData.addAll(postData);
         this.notifyDataSetChanged();
     }
 

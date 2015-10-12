@@ -54,7 +54,8 @@ public class MyProfAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     public void setData(HeaderData headerData, ArrayList<PostData> postData) {
         mUserData = headerData;
-        mPostData = postData;
+        mPostData.clear();
+        mPostData.addAll(postData);
         this.notifyDataSetChanged();
     }
 
