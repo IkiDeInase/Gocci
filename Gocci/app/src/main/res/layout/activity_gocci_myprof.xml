@@ -48,25 +48,25 @@
             wheel:matProg_progressIndeterminate="true" />
 
         <TextView
+            android:id="@+id/empty_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
             android:layout_alignParentBottom="true"
-            android:text="@string/userpage_empty_text"
-            android:id="@+id/empty_text"
+            android:layout_centerHorizontal="true"
             android:paddingBottom="96dp"
-            android:textSize="@dimen/accent_text"
+            android:text="@string/userpage_empty_text"
             android:textColor="@color/namegrey"
+            android:textSize="@dimen/accent_text"
             android:visibility="gone" />
 
         <ImageView
+            android:id="@+id/empty_image"
             android:layout_width="150dp"
             android:layout_height="150dp"
-            android:id="@+id/empty_image"
             android:layout_above="@+id/empty_text"
             android:layout_centerHorizontal="true"
-            android:src="@drawable/ic_gocci_hair"
             android:layout_marginBottom="24dp"
+            android:src="@drawable/ic_gocci_hair"
             android:visibility="gone" />
 
     </RelativeLayout>
