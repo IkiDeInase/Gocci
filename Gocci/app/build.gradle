@@ -27,8 +27,8 @@ android {
         applicationId 'com.inase.android.gocci'
         minSdkVersion 16
         targetSdkVersion 23
-        versionCode 32
-        versionName '2.2.2'
+        versionCode 33
+        versionName '2.2.3'
         multiDexEnabled true
         resConfigs "en", "ja"
     }
@@ -60,7 +60,7 @@ dependencies {
     compile('com.twitter.sdk.android:twitter:1.8.0@aar') { transitive = true }
     compile('com.crashlytics.sdk.android:crashlytics:2.5.2@aar') { transitive = true }
     compile('com.twitter.sdk.android:tweet-composer:0.9.0@aar') { transitive = true; }
-    compile('com.mikepenz:materialdrawer:4.3.1@aar') { transitive = true }
+    compile('com.mikepenz:materialdrawer:4.3.4@aar') { transitive = true }
     compile('com.weiwangcn.betterspinner:library-material:1.1.0') {
         exclude group: 'com.android.support', module: 'appcompat-v7'
     }
@@ -81,14 +81,12 @@ dependencies {
     compile 'com.cocosw:bottomsheet:1.+@aar'
     compile 'com.ogaclejapan.smarttablayout:library:1.4.2@aar'
     compile 'com.ogaclejapan.smarttablayout:utils-v4:1.4.2@aar'
-    compile('com.afollestad.material-dialogs:core:0.8.1.0@aar') {
-        transitive = true
-    }
+    compile('com.afollestad.material-dialogs:core:0.8.2.0@aar') { transitive = true }
     compile 'com.google.maps.android:android-maps-utils:0.4'
-    compile 'com.amazonaws:aws-android-sdk-core:2.2.6'
-    compile 'com.amazonaws:aws-android-sdk-cognito:2.2.6'
-    compile 'com.amazonaws:aws-android-sdk-s3:2.2.6'
-    compile 'com.amazonaws:aws-android-sdk-mobileanalytics:2.2.6'
+    compile 'com.amazonaws:aws-android-sdk-core:2.2.7'
+    compile 'com.amazonaws:aws-android-sdk-cognito:2.2.7'
+    compile 'com.amazonaws:aws-android-sdk-s3:2.2.7'
+    compile 'com.amazonaws:aws-android-sdk-mobileanalytics:2.2.7'
     compile 'com.soundcloud.android:android-crop:1.0.1@aar'
     compile 'com.google.android.exoplayer:exoplayer:r1.5.0'
     compile 'com.github.jorgecastilloprz:fabprogresscircle:1.01@aar'
