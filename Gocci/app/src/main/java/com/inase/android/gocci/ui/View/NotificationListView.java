@@ -20,7 +20,6 @@ import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.domain.model.HeaderData;
 import com.inase.android.gocci.ui.activity.CommentActivity;
 import com.inase.android.gocci.ui.activity.FlexibleUserProfActivity;
-import com.inase.android.gocci.utils.SavedData;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.squareup.picasso.Picasso;

@@ -51,7 +51,6 @@ import com.inase.android.gocci.ui.activity.CameraPreviewActivity;
 import com.inase.android.gocci.ui.activity.GocciCameraActivity;
 import com.inase.android.gocci.ui.view.CameraGLView;
 import com.inase.android.gocci.ui.view.CircleProgressBar;
-import com.inase.android.gocci.utils.SavedData;
 import com.inase.android.gocci.utils.camera.TLMediaAudioEncoder;
 import com.inase.android.gocci.utils.camera.TLMediaEncoder;
 import com.inase.android.gocci.utils.camera.TLMediaMovieBuilder;

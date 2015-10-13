@@ -1,24 +1,15 @@
 package com.inase.android.gocci.ui.adapter;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
-import com.andexert.library.RippleView;
-import com.cocosw.bottomsheet.BottomSheet;
-import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
-import com.inase.android.gocci.domain.model.HeaderData;
 import com.inase.android.gocci.domain.model.PostData;
-import com.inase.android.gocci.ui.activity.CommentActivity;
-import com.inase.android.gocci.ui.view.RoundedTransformation;
-import com.inase.android.gocci.ui.view.SquareImageView;
 import com.inase.android.gocci.utils.Util;
 import com.squareup.picasso.Picasso;
 

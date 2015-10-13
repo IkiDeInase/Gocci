@@ -254,21 +254,24 @@ public class GocciTimelineActivity extends AppCompatActivity {
                         mSortSpinner.setVisibility(View.GONE);
                         mSortCross.setVisibility(View.GONE);
                         mSortSpinner.setText(SORT[mNearSort_id]);
-                        if (mNearCategory_id != 0) mCategorySpinner.setText(CATEGORY[mNearCategory_id]);
+                        if (mNearCategory_id != 0)
+                            mCategorySpinner.setText(CATEGORY[mNearCategory_id]);
                         if (mNearValue_id != 0) mValueSpinner.setText(VALUE[mNearValue_id]);
                         break;
                     case 1:
                         mSortSpinner.setVisibility(View.VISIBLE);
                         mSortCross.setVisibility(View.VISIBLE);
                         mSortSpinner.setText(SORT[mFollowSort_id]);
-                        if (mFollowCategory_id != 0) mCategorySpinner.setText(CATEGORY[mFollowCategory_id]);
+                        if (mFollowCategory_id != 0)
+                            mCategorySpinner.setText(CATEGORY[mFollowCategory_id]);
                         if (mFollowValue_id != 0) mValueSpinner.setText(VALUE[mFollowValue_id]);
                         break;
                     case 2:
                         mSortSpinner.setVisibility(View.VISIBLE);
                         mSortCross.setVisibility(View.VISIBLE);
                         mSortSpinner.setText(SORT[mLatestSort_id]);
-                        if (mLatestCategory_id != 0) mCategorySpinner.setText(CATEGORY[mLatestCategory_id]);
+                        if (mLatestCategory_id != 0)
+                            mCategorySpinner.setText(CATEGORY[mLatestCategory_id]);
                         if (mLatestValue_id != 0) mValueSpinner.setText(VALUE[mLatestValue_id]);
                         break;
                 }

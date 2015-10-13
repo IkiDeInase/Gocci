@@ -11,8 +11,6 @@ import com.google.android.exoplayer.AspectRatioFrameLayout;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.ui.view.SquareExoVideoView;
 import com.inase.android.gocci.ui.view.SquareImageView;
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.SyncHttpClient;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;

@@ -136,7 +136,7 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
         }
 
         @Override
-        public void onScrolled(RecyclerView recyclerView, int dx, int dy){
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
             visibleItemCount = mLayoutManager.getChildCount();
             totalItemCount = mLayoutManager.getItemCount();
             int[] firstVisibleItems = null;
