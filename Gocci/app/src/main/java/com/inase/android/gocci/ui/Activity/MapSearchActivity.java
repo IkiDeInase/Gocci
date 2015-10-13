@@ -11,8 +11,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.gitonway.lee.niftymodaldialogeffects.lib.Effectstype;
-import com.gitonway.lee.niftymodaldialogeffects.lib.NiftyDialogBuilder;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -47,8 +45,6 @@ public class MapSearchActivity extends AppCompatActivity {
 
     private MenuItem pin;
 
-    private NiftyDialogBuilder niftyDialogBuilder;
-
     public static void startMapSearchActivity(int requestCode, Activity startingActivity) {
         Intent intent = new Intent(startingActivity, MapSearchActivity.class);
         startingActivity.startActivityForResult(intent, requestCode);
@@ -60,14 +56,6 @@ public class MapSearchActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map_search);
         ButterKnife.bind(this);
-
-        niftyDialogBuilder = NiftyDialogBuilder.getInstance(this);
-        niftyDialogBuilder
-                .withTitle("注意事項")
-                .withMessage("見つけたい場所をクリックして右上のチェックマークを押そう！")
-                .withDuration(500)                                          //def
-                .withEffect(Effectstype.SlideBottom)
-                .show();
 
         //googleserviceが使えるか判断して処理を分ける
         int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(MapSearchActivity.this);
