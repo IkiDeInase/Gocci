@@ -52,10 +52,8 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         mCallback = callback;
     }
 
-    public void setData(PostData postData, ArrayList<HeaderData> commentData) {
+    public void setData(PostData postData) {
         mPostData = postData;
-        mCommentData.clear();
-        mCommentData.addAll(commentData);
         this.notifyDataSetChanged();
     }
 

@@ -101,7 +101,7 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
     private Drawer result;
 
     private StaggeredGridLayoutManager mLayoutManager;
-    public static ArrayList<PostData> mProfusers = new ArrayList<>();
+    private ArrayList<PostData> mProfusers = new ArrayList<>();
     private HeaderData mHeaderUserData;
     private MyProfAdapter mMyProfAdapter;
 
@@ -590,7 +590,7 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
             mProfRecyclerView.setAdapter(mMyProfAdapter);
         } else if (api == ApiConst.USERPAGE_REFRESH) {
             mProfusers.clear();
-            mMyProfAdapter.setData(mHeaderUserData, mProfusers);
+            mMyProfAdapter.setData(mHeaderUserData);
         }
         mEmptyImage.setVisibility(View.VISIBLE);
         mEmptyText.setVisibility(View.VISIBLE);
@@ -619,7 +619,7 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
                 mProfRecyclerView.setAdapter(mMyProfAdapter);
                 break;
             case ApiConst.USERPAGE_REFRESH:
-                mMyProfAdapter.setData(mHeaderUserData, mProfusers);
+                mMyProfAdapter.setData(mHeaderUserData);
                 break;
         }
     }
@@ -656,7 +656,7 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
     @Override
     public void postDeleted(int position) {
         mProfusers.remove(position);
-        mMyProfAdapter.setData(mHeaderUserData, mProfusers);
+        mMyProfAdapter.setData(mHeaderUserData);
 
         if (mProfusers.isEmpty()) {
             mEmptyImage.setVisibility(View.VISIBLE);

@@ -25,6 +25,7 @@ import com.inase.android.gocci.event.CreateProviderFinishEvent;
 import com.inase.android.gocci.event.SNSMatchFinishEvent;
 import com.inase.android.gocci.utils.SavedData;
 import com.inase.android.gocci.utils.aws.CustomProvider;
+import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.SyncHttpClient;
 import com.loopj.android.http.TextHttpResponseHandler;
@@ -53,6 +54,7 @@ public class Application_Gocci extends Application {
     private static TransferUtility transferUtility = null;
 
     private static final SyncHttpClient sSsyncHttpClient = new SyncHttpClient();
+    private static final AsyncHttpClient sAsyncHttpClient = new AsyncHttpClient();
 
     //経度緯度情報
     private double mLatitude;
@@ -138,10 +140,7 @@ public class Application_Gocci extends Application {
                 }
                 logins.put(providerName, token);
                 credentialsProvider.setLogins(logins);
-
-                s3 = new AmazonS3Client(credentialsProvider);
-                s3.setRegion(Region.getRegion(Regions.AP_NORTHEAST_1));
-                transferUtility = new TransferUtility(s3, context);
+                credentialsProvider.refresh();
 
                 return credentialsProvider.getIdentityId();
             }
@@ -149,6 +148,15 @@ public class Application_Gocci extends Application {
             @Override
             protected void onPostExecute(String result) {
                 BusHolder.get().post(new CreateProviderFinishEvent(result));
+                new AsyncTask<Void, Void, Void>() {
+                    @Override
+                    protected Void doInBackground(Void... params) {
+                        s3 = new AmazonS3Client(credentialsProvider);
+                        s3.setRegion(Region.getRegion(Regions.AP_NORTHEAST_1));
+                        transferUtility = new TransferUtility(s3, context);
+                        return null;
+                    }
+                }.execute();
             }
         }.execute();
     }
@@ -168,16 +176,21 @@ public class Application_Gocci extends Application {
                 credentialsProvider.setLogins(logins);
                 credentialsProvider.refresh();
 
-                s3 = new AmazonS3Client(credentialsProvider);
-                s3.setRegion(Region.getRegion(Regions.AP_NORTHEAST_1));
-                transferUtility = new TransferUtility(s3, context);
-
                 return "identityId";
             }
 
             @Override
             protected void onPostExecute(String result) {
                 BusHolder.get().post(new CreateProviderFinishEvent(result));
+                new AsyncTask<Void, Void, Void>() {
+                    @Override
+                    protected Void doInBackground(Void... params) {
+                        s3 = new AmazonS3Client(credentialsProvider);
+                        s3.setRegion(Region.getRegion(Regions.AP_NORTHEAST_1));
+                        transferUtility = new TransferUtility(s3, context);
+                        return null;
+                    }
+                }.execute();
             }
         }.execute();
     }
@@ -273,6 +286,7 @@ public class Application_Gocci extends Application {
         tracker.enableAutoActivityTracking(true);
 
         sSsyncHttpClient.setCookieStore(SavedData.getCookieStore(this));
+        sAsyncHttpClient.setCookieStore(SavedData.getCookieStore(this));
     }
 
     @Override

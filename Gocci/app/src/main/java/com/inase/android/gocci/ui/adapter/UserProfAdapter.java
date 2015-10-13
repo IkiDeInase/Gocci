@@ -53,10 +53,8 @@ public class UserProfAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         mCallback = callback;
     }
 
-    public void setData(HeaderData headerData, ArrayList<PostData> postData) {
+    public void setData(HeaderData headerData) {
         mUserData = headerData;
-        mPostData.clear();
-        mPostData.addAll(postData);
         this.notifyDataSetChanged();
     }
 

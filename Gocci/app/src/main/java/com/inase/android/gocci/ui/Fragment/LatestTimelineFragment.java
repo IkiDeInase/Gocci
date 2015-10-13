@@ -491,14 +491,14 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
                 isEndScrioll = false;
                 mNextCount = 1;
                 mPlayingPostId = null;
-                mTimelineAdapter.setData(mTimelineusers);
+                mTimelineAdapter.setData();
                 break;
             case ApiConst.TIMELINE_FILTER:
                 mTimelineusers.clear();
                 isEndScrioll = false;
                 mNextCount = 1;
                 mPlayingPostId = null;
-                mTimelineAdapter.setData(mTimelineusers);
+                mTimelineAdapter.setData();
                 break;
         }
         mEmptyImage.setVisibility(View.VISIBLE);
@@ -535,14 +535,14 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
                 mNextCount = 1;
                 mPlayingPostId = null;
                 mViewHolderHash.clear();
-                mTimelineAdapter.setData(mTimelineusers);
+                mTimelineAdapter.setData();
                 break;
             case ApiConst.TIMELINE_ADD:
                 if (mPostData.size() != 0) {
                     mPlayingPostId = null;
                     mTimelineusers.addAll(mPostData);
                     mPost_ids.addAll(post_ids);
-                    mTimelineAdapter.setData(mTimelineusers);
+                    mTimelineAdapter.setData();
                     mNextCount++;
                 } else {
                     isEndScrioll = true;
@@ -557,7 +557,7 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
                 mNextCount = 1;
                 mPlayingPostId = null;
                 mViewHolderHash.clear();
-                mTimelineAdapter.setData(mTimelineusers);
+                mTimelineAdapter.setData();
                 break;
         }
     }

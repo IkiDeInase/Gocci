@@ -313,7 +313,7 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
             mUserProfRecyclerView.setAdapter(mUserProfAdapter);
         } else if (api == ApiConst.USERPAGE_REFRESH) {
             mUserProfusers.clear();
-            mUserProfAdapter.setData(headerUserData, mUserProfusers);
+            mUserProfAdapter.setData(headerUserData);
         }
         mEmptyImage.setVisibility(View.VISIBLE);
         mEmptyText.setVisibility(View.VISIBLE);
@@ -347,7 +347,7 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
                 mUserProfRecyclerView.setAdapter(mUserProfAdapter);
                 break;
             case ApiConst.USERPAGE_REFRESH:
-                mUserProfAdapter.setData(headerUserData, mUserProfusers);
+                mUserProfAdapter.setData(headerUserData);
                 break;
         }
     }
