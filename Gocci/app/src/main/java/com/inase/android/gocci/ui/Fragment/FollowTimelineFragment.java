@@ -30,7 +30,6 @@ import com.google.android.exoplayer.audio.AudioCapabilitiesReceiver;
 import com.google.android.exoplayer.drm.UnsupportedDrmException;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
-import com.inase.android.gocci.consts.ApiConst;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.repository.PostDataRepository;
 import com.inase.android.gocci.datasource.repository.PostDataRepositoryImpl;
@@ -147,7 +146,7 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
                 if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
                     loading = false;
                     if (!isEndScrioll) {
-                        mPresenter.getFollowTimelinePostData(ApiConst.TIMELINE_ADD, Const.getCustomTimelineAPI(1,
+                        mPresenter.getFollowTimelinePostData(Const.TIMELINE_ADD, Const.getCustomTimelineAPI(1,
                                 GocciTimelineActivity.mFollowSort_id, GocciTimelineActivity.mFollowCategory_id, GocciTimelineActivity.mFollowValue_id,
                                 GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLongitude() : 0.0,
                                 GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLatitude() : 0.0, mNextCount));
@@ -208,7 +207,7 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
         appBarLayout = (AppBarLayout) getActivity().findViewById(R.id.app_bar);
 
         if (Util.getConnectedState(getActivity()) != Util.NetworkStatus.OFF) {
-            mPresenter.getFollowTimelinePostData(ApiConst.TIMELINE_FIRST, Const.getFollowlineApi());
+            mPresenter.getFollowTimelinePostData(Const.TIMELINE_FIRST, Const.getFollowlineApi());
         } else {
             Toast.makeText(getActivity(), getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
         }
@@ -305,7 +304,7 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
     public void subscribe(FilterTimelineEvent event) {
         if (event.currentPage == 1) {
             mTimelineRecyclerView.scrollVerticallyToPosition(0);
-            mPresenter.getFollowTimelinePostData(ApiConst.TIMELINE_FILTER, event.filterUrl);
+            mPresenter.getFollowTimelinePostData(Const.TIMELINE_FILTER, event.filterUrl);
         }
     }
 
@@ -402,7 +401,7 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
                 GocciTimelineActivity.mFollowSort_id = 0;
                 GocciTimelineActivity.mFollowValue_id = 0;
                 GocciTimelineActivity.mFollowCategory_id = 0;
-                mPresenter.getFollowTimelinePostData(ApiConst.TIMELINE_REFRESH, Const.getCustomTimelineAPI(1,
+                mPresenter.getFollowTimelinePostData(Const.TIMELINE_REFRESH, Const.getCustomTimelineAPI(1,
                         GocciTimelineActivity.mFollowSort_id, GocciTimelineActivity.mFollowCategory_id, GocciTimelineActivity.mFollowValue_id,
                         GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLongitude() : 0.0,
                         GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLatitude() : 0.0, 0));
@@ -483,19 +482,19 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
     @Override
     public void showNoResultCase(int api) {
         switch (api) {
-            case ApiConst.TIMELINE_FIRST:
+            case Const.TIMELINE_FIRST:
                 mTimelineAdapter = new TimelineAdapter(getActivity(), mTimelineusers);
                 mTimelineAdapter.setTimelineCallback(this);
                 mTimelineRecyclerView.setAdapter(mTimelineAdapter);
                 break;
-            case ApiConst.TIMELINE_REFRESH:
+            case Const.TIMELINE_REFRESH:
                 mTimelineusers.clear();
                 isEndScrioll = false;
                 mNextCount = 1;
                 mPlayingPostId = null;
                 mTimelineAdapter.setData();
                 break;
-            case ApiConst.TIMELINE_FILTER:
+            case Const.TIMELINE_FILTER:
                 mTimelineusers.clear();
                 isEndScrioll = false;
                 mNextCount = 1;
@@ -521,14 +520,14 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
     @Override
     public void showResult(int api, ArrayList<PostData> mPostData, ArrayList<String> post_ids) {
         switch (api) {
-            case ApiConst.TIMELINE_FIRST:
+            case Const.TIMELINE_FIRST:
                 mTimelineusers.addAll(mPostData);
                 mPost_ids.addAll(post_ids);
                 mTimelineAdapter = new TimelineAdapter(getActivity(), mTimelineusers);
                 mTimelineAdapter.setTimelineCallback(this);
                 mTimelineRecyclerView.setAdapter(mTimelineAdapter);
                 break;
-            case ApiConst.TIMELINE_REFRESH:
+            case Const.TIMELINE_REFRESH:
                 mTimelineusers.clear();
                 mTimelineusers.addAll(mPostData);
                 mPost_ids.clear();
@@ -539,7 +538,7 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
                 mViewHolderHash.clear();
                 mTimelineAdapter.setData();
                 break;
-            case ApiConst.TIMELINE_ADD:
+            case Const.TIMELINE_ADD:
                 if (mPostData.size() != 0) {
                     mPlayingPostId = null;
                     mTimelineusers.addAll(mPostData);
@@ -550,7 +549,7 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
                     isEndScrioll = true;
                 }
                 break;
-            case ApiConst.TIMELINE_FILTER:
+            case Const.TIMELINE_FILTER:
                 mTimelineusers.clear();
                 mTimelineusers.addAll(mPostData);
                 mPost_ids.clear();

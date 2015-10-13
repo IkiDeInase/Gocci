@@ -30,7 +30,6 @@ import com.google.android.exoplayer.audio.AudioCapabilitiesReceiver;
 import com.google.android.exoplayer.drm.UnsupportedDrmException;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
-import com.inase.android.gocci.consts.ApiConst;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.repository.PostDataRepository;
 import com.inase.android.gocci.datasource.repository.PostDataRepositoryImpl;
@@ -150,7 +149,7 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
                 if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
                     loading = false;
                     if (!isEndScrioll) {
-                        mPresenter.getLatestTimelinePostData(ApiConst.TIMELINE_ADD, Const.getCustomTimelineAPI(2,
+                        mPresenter.getLatestTimelinePostData(Const.TIMELINE_ADD, Const.getCustomTimelineAPI(2,
                                 GocciTimelineActivity.mLatestSort_id, GocciTimelineActivity.mLatestCategory_id, GocciTimelineActivity.mLatestValue_id,
                                 GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLongitude() : 0.0,
                                 GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLatitude() : 0.0, mNextCount));
@@ -211,7 +210,7 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
         mTimelineRecyclerView.setScrollViewCallbacks(this);
 
         if (Util.getConnectedState(getActivity()) != Util.NetworkStatus.OFF) {
-            mPresenter.getLatestTimelinePostData(ApiConst.TIMELINE_FIRST, Const.getLatestAPI());
+            mPresenter.getLatestTimelinePostData(Const.TIMELINE_FIRST, Const.getLatestAPI());
         } else {
             Toast.makeText(getActivity(), getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
         }
@@ -308,7 +307,7 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
     public void subscribe(FilterTimelineEvent event) {
         if (event.currentPage == 2) {
             mTimelineRecyclerView.scrollVerticallyToPosition(0);
-            mPresenter.getLatestTimelinePostData(ApiConst.TIMELINE_FILTER, event.filterUrl);
+            mPresenter.getLatestTimelinePostData(Const.TIMELINE_FILTER, event.filterUrl);
         }
     }
 
@@ -441,7 +440,7 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
                 GocciTimelineActivity.mLatestSort_id = 0;
                 GocciTimelineActivity.mLatestCategory_id = 0;
                 GocciTimelineActivity.mLatestValue_id = 0;
-                mPresenter.getLatestTimelinePostData(ApiConst.TIMELINE_REFRESH, Const.getCustomTimelineAPI(2,
+                mPresenter.getLatestTimelinePostData(Const.TIMELINE_REFRESH, Const.getCustomTimelineAPI(2,
                         GocciTimelineActivity.mLatestSort_id, GocciTimelineActivity.mLatestCategory_id, GocciTimelineActivity.mLatestValue_id,
                         GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLongitude() : 0.0,
                         GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLatitude() : 0.0, 0));
@@ -485,19 +484,19 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
     @Override
     public void showNoResultCase(int api) {
         switch (api) {
-            case ApiConst.TIMELINE_FIRST:
+            case Const.TIMELINE_FIRST:
                 mTimelineAdapter = new TimelineAdapter(getActivity(), mTimelineusers);
                 mTimelineAdapter.setTimelineCallback(this);
                 mTimelineRecyclerView.setAdapter(mTimelineAdapter);
                 break;
-            case ApiConst.TIMELINE_REFRESH:
+            case Const.TIMELINE_REFRESH:
                 mTimelineusers.clear();
                 isEndScrioll = false;
                 mNextCount = 1;
                 mPlayingPostId = null;
                 mTimelineAdapter.setData();
                 break;
-            case ApiConst.TIMELINE_FILTER:
+            case Const.TIMELINE_FILTER:
                 mTimelineusers.clear();
                 isEndScrioll = false;
                 mNextCount = 1;
@@ -523,14 +522,14 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
     @Override
     public void showResult(int api, ArrayList<PostData> mPostData, ArrayList<String> post_ids) {
         switch (api) {
-            case ApiConst.TIMELINE_FIRST:
+            case Const.TIMELINE_FIRST:
                 mTimelineusers.addAll(mPostData);
                 mPost_ids.addAll(post_ids);
                 mTimelineAdapter = new TimelineAdapter(getActivity(), mTimelineusers);
                 mTimelineAdapter.setTimelineCallback(this);
                 mTimelineRecyclerView.setAdapter(mTimelineAdapter);
                 break;
-            case ApiConst.TIMELINE_REFRESH:
+            case Const.TIMELINE_REFRESH:
                 mTimelineusers.clear();
                 mTimelineusers.addAll(mPostData);
                 mPost_ids.clear();
@@ -541,7 +540,7 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
                 mViewHolderHash.clear();
                 mTimelineAdapter.setData();
                 break;
-            case ApiConst.TIMELINE_ADD:
+            case Const.TIMELINE_ADD:
                 if (mPostData.size() != 0) {
                     mPlayingPostId = null;
                     mTimelineusers.addAll(mPostData);
@@ -552,7 +551,7 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
                     isEndScrioll = true;
                 }
                 break;
-            case ApiConst.TIMELINE_FILTER:
+            case Const.TIMELINE_FILTER:
                 mTimelineusers.clear();
                 mTimelineusers.addAll(mPostData);
                 mPost_ids.clear();

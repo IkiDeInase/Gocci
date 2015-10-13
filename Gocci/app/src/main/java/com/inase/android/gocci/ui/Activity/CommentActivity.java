@@ -13,7 +13,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -21,11 +20,8 @@ import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.view.WindowManager;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -44,7 +40,6 @@ import com.google.android.exoplayer.audio.AudioCapabilities;
 import com.google.android.exoplayer.audio.AudioCapabilitiesReceiver;
 import com.google.android.exoplayer.drm.UnsupportedDrmException;
 import com.inase.android.gocci.R;
-import com.inase.android.gocci.consts.ApiConst;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.repository.CommentActionRepository;
 import com.inase.android.gocci.datasource.repository.CommentActionRepositoryImpl;
@@ -351,7 +346,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
         mCommentRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
         mCommentRecyclerView.setScrollViewCallbacks(this);
 
-        mPresenter.getCommentData(ApiConst.COMMENT_FIRST, Const.getCommentAPI(mPost_id));
+        mPresenter.getCommentData(Const.COMMENT_FIRST, Const.getCommentAPI(mPost_id));
 
         mSwipeContainer.setColorSchemeResources(R.color.gocci_1, R.color.gocci_2, R.color.gocci_3, R.color.gocci_4);
         mSwipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -359,7 +354,7 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
             public void onRefresh() {
                 mSwipeContainer.setRefreshing(true);
                 if (Util.getConnectedState(CommentActivity.this) != Util.NetworkStatus.OFF) {
-                    mPresenter.getCommentData(ApiConst.COMMENT_REFRESH, Const.getCommentAPI(mPost_id));
+                    mPresenter.getCommentData(Const.COMMENT_REFRESH, Const.getCommentAPI(mPost_id));
                 } else {
                     Toast.makeText(CommentActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
                     mSwipeContainer.setRefreshing(false);
@@ -724,13 +719,13 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
     public void showNoResultCase(int api, PostData postData) {
         headerPost = postData;
         switch (api) {
-            case ApiConst.COMMENT_FIRST:
+            case Const.COMMENT_FIRST:
                 mCommentAdapter = new CommentAdapter(this, mPost_id, headerPost, mCommentusers);
                 mCommentAdapter.setCommentCallback(this);
                 mCommentRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
                 mCommentRecyclerView.setAdapter(mCommentAdapter);
                 break;
-            case ApiConst.COMMENT_REFRESH:
+            case Const.COMMENT_REFRESH:
                 mCommentusers.clear();
                 mCommentAdapter.setData(headerPost);
                 break;
@@ -753,13 +748,13 @@ public class CommentActivity extends AppCompatActivity implements AudioCapabilit
         mCommentusers.clear();
         mCommentusers.addAll(commentData);
         switch (api) {
-            case ApiConst.COMMENT_FIRST:
+            case Const.COMMENT_FIRST:
                 mCommentAdapter = new CommentAdapter(this, mPost_id, headerPost, mCommentusers);
                 mCommentAdapter.setCommentCallback(this);
                 mCommentRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
                 mCommentRecyclerView.setAdapter(mCommentAdapter);
                 break;
-            case ApiConst.COMMENT_REFRESH:
+            case Const.COMMENT_REFRESH:
                 mPlayingPostId = null;
                 mViewHolderHash.clear();
                 mCommentRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);

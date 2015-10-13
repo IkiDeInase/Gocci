@@ -34,7 +34,6 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
 import com.inase.android.gocci.R;
-import com.inase.android.gocci.consts.ApiConst;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.repository.MyPageActionRepository;
 import com.inase.android.gocci.datasource.repository.MyPageActionRepositoryImpl;
@@ -178,7 +177,7 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
         mProfRecyclerView.setHasFixedSize(true);
         mProfRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
 
-        mPresenter.getProfData(ApiConst.USERPAGE_FIRST, Const.getUserpageAPI(Integer.parseInt(SavedData.getServerUserId(this))));
+        mPresenter.getProfData(Const.USERPAGE_FIRST, Const.getUserpageAPI(Integer.parseInt(SavedData.getServerUserId(this))));
 
         mSwipeContainer.setColorSchemeResources(R.color.gocci_1, R.color.gocci_2, R.color.gocci_3, R.color.gocci_4);
         mSwipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -186,7 +185,7 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
             public void onRefresh() {
                 mSwipeContainer.setRefreshing(true);
                 if (Util.getConnectedState(GocciMyprofActivity.this) != Util.NetworkStatus.OFF) {
-                    mPresenter.getProfData(ApiConst.USERPAGE_REFRESH, Const.getUserpageAPI(Integer.parseInt(SavedData.getServerUserId(GocciMyprofActivity.this))));
+                    mPresenter.getProfData(Const.USERPAGE_REFRESH, Const.getUserpageAPI(Integer.parseInt(SavedData.getServerUserId(GocciMyprofActivity.this))));
                 } else {
                     Toast.makeText(GocciMyprofActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
                     mSwipeContainer.setRefreshing(false);
@@ -271,7 +270,7 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
     public void subscribe(NotificationNumberEvent event) {
         Snackbar.make(mCoordinatorLayout, event.mMessage, Snackbar.LENGTH_SHORT).show();
         if (event.mMessage.equals(getString(R.string.videoposting_complete))) {
-            mPresenter.getProfData(ApiConst.USERPAGE_REFRESH, Const.getUserpageAPI(Integer.parseInt(SavedData.getServerUserId(this))));
+            mPresenter.getProfData(Const.USERPAGE_REFRESH, Const.getUserpageAPI(Integer.parseInt(SavedData.getServerUserId(this))));
         } else {
             mNotificationNumber.setVisibility(View.VISIBLE);
             mNotificationNumber.setText(String.valueOf(event.mNotificationNumber));
@@ -584,11 +583,11 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
     @Override
     public void showNoResultCase(int api, HeaderData userData) {
         mHeaderUserData = userData;
-        if (api == ApiConst.USERPAGE_FIRST) {
+        if (api == Const.USERPAGE_FIRST) {
             mMyProfAdapter = new MyProfAdapter(this, mHeaderUserData, mProfusers);
             mMyProfAdapter.setMyProfCallback(this);
             mProfRecyclerView.setAdapter(mMyProfAdapter);
-        } else if (api == ApiConst.USERPAGE_REFRESH) {
+        } else if (api == Const.USERPAGE_REFRESH) {
             mProfusers.clear();
             mMyProfAdapter.setData(mHeaderUserData);
         }
@@ -613,12 +612,12 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
         mProfusers.clear();
         mProfusers.addAll(postData);
         switch (api) {
-            case ApiConst.USERPAGE_FIRST:
+            case Const.USERPAGE_FIRST:
                 mMyProfAdapter = new MyProfAdapter(this, mHeaderUserData, mProfusers);
                 mMyProfAdapter.setMyProfCallback(this);
                 mProfRecyclerView.setAdapter(mMyProfAdapter);
                 break;
-            case ApiConst.USERPAGE_REFRESH:
+            case Const.USERPAGE_REFRESH:
                 mMyProfAdapter.setData(mHeaderUserData);
                 break;
         }

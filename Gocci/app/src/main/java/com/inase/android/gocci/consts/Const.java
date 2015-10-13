@@ -274,6 +274,27 @@ public class Const {
     public static final int CATEGORY_WANT = 4;
     public static final int CATEGORY_REST_CHEER = 5;
 
+    public static final int TIMELINE_FIRST = 0;
+    public static final int TIMELINE_REFRESH = 1;
+    public static final int TIMELINE_ADD = 2;
+    public static final int TIMELINE_FILTER = 3;
+
+    public static final int USERPAGE_FIRST = 4;
+    public static final int USERPAGE_REFRESH = 5;
+
+    public static final int RESTPAGE_FIRST = 6;
+    public static final int RESTPAGE_REFRESH = 7;
+
+    public static final int COMMENT_FIRST = 8;
+    public static final int COMMENT_REFRESH = 9;
+
+    public static final int LOGIN_WELCOME = 20;
+    public static final int LOGIN_CONVERSION = 21;
+    public static final int LOGIN_SNS_WELCOME = 22;
+    public static final int LOGIN_SNS_CONVERSION = 23;
+    public static final int LOGIN_NAME_PASS = 24;
+    public static final int LOGIN_SIGNUP = 25;
+
     public static final class ExoViewHolder extends RecyclerView.ViewHolder {
 
         @Bind(R.id.circle_image)

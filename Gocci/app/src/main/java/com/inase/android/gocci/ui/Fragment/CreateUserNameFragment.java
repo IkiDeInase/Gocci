@@ -17,7 +17,6 @@ import com.github.jorgecastilloprz.FABProgressCircle;
 import com.github.jorgecastilloprz.listeners.FABProgressListener;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
-import com.inase.android.gocci.consts.ApiConst;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.repository.LoginRepository;
 import com.inase.android.gocci.datasource.repository.LoginRepositoryImpl;
@@ -54,7 +53,7 @@ public class CreateUserNameFragment extends Fragment implements FABProgressListe
     public void fab() {
         if (mUsernameTextInput.getEditText().getText().length() != 0) {
             mUsernameTextInput.setError("");
-            mPresenter.loginUser(ApiConst.LOGIN_SIGNUP,
+            mPresenter.loginUser(Const.LOGIN_SIGNUP,
                     Const.getAuthSignupAPI(mUsernameTextInput.getEditText().getText().toString(), Build.VERSION.RELEASE, Build.MODEL, SavedData.getRegId(getActivity())));
         } else {
             Toast.makeText(getActivity(), getString(R.string.please_input_username), Toast.LENGTH_SHORT).show();
@@ -161,7 +160,7 @@ public class CreateUserNameFragment extends Fragment implements FABProgressListe
 
     @Override
     public void showResult(int api, User user) {
-        if (api == ApiConst.LOGIN_SIGNUP) {
+        if (api == Const.LOGIN_SIGNUP) {
             if (user.getCode() == 200) {
                 SavedData.setWelcome(getActivity(), user.getUserName(), user.getProfileImg(), String.valueOf(user.getUserId()), user.getIdentityId(), user.getBadgeNum());
                 Application_Gocci.GuestInit(getActivity(), user.getIdentityId(), user.getToken(), String.valueOf(user.getUserId()));
@@ -175,7 +174,7 @@ public class CreateUserNameFragment extends Fragment implements FABProgressListe
 
     @Override
     public void showNoResult(int api) {
-        if (api == ApiConst.LOGIN_SIGNUP) {
+        if (api == Const.LOGIN_SIGNUP) {
             mFab.setClickable(true);
             mFabProgressCircle.hide();
             mUsernameTextInput.setError(getString(R.string.multiple_username));

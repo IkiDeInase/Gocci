@@ -30,7 +30,6 @@ import com.google.android.exoplayer.audio.AudioCapabilitiesReceiver;
 import com.google.android.exoplayer.drm.UnsupportedDrmException;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
-import com.inase.android.gocci.consts.ApiConst;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.repository.PostDataRepository;
 import com.inase.android.gocci.datasource.repository.PostDataRepositoryImpl;
@@ -144,7 +143,7 @@ public class NearTimelineFragment extends Fragment implements AppBarLayout.OnOff
                 if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
                     loading = false;
                     if (!isEndScrioll) {
-                        mPresenter.getNearTimelinePostData(ApiConst.TIMELINE_ADD, Const.getCustomTimelineAPI(0,
+                        mPresenter.getNearTimelinePostData(Const.TIMELINE_ADD, Const.getCustomTimelineAPI(0,
                                 GocciTimelineActivity.mNearSort_id, GocciTimelineActivity.mNearCategory_id, GocciTimelineActivity.mNearValue_id,
                                 GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLongitude() : 0.0,
                                 GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLatitude() : 0.0, mNextCount));
@@ -302,7 +301,7 @@ public class NearTimelineFragment extends Fragment implements AppBarLayout.OnOff
     public void subscribe(FilterTimelineEvent event) {
         if (event.currentPage == 0) {
             mTimelineRecyclerView.scrollVerticallyToPosition(0);
-            mPresenter.getNearTimelinePostData(ApiConst.TIMELINE_FILTER, event.filterUrl);
+            mPresenter.getNearTimelinePostData(Const.TIMELINE_FILTER, event.filterUrl);
         }
     }
 
@@ -329,7 +328,7 @@ public class NearTimelineFragment extends Fragment implements AppBarLayout.OnOff
             @Override
             public void onLocationUpdated(Location location) {
                 GocciTimelineActivity.nowLocation = location;
-                mPresenter.getNearTimelinePostData(ApiConst.TIMELINE_FIRST, Const.getCustomTimelineAPI(0,
+                mPresenter.getNearTimelinePostData(Const.TIMELINE_FIRST, Const.getCustomTimelineAPI(0,
                         GocciTimelineActivity.mNearSort_id, GocciTimelineActivity.mNearCategory_id, GocciTimelineActivity.mNearValue_id,
                         GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLongitude() : 0.0,
                         GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLatitude() : 0.0, 0));
@@ -344,7 +343,7 @@ public class NearTimelineFragment extends Fragment implements AppBarLayout.OnOff
                 GocciTimelineActivity.nowLocation = location;
                 GocciTimelineActivity.mNearCategory_id = 0;
                 GocciTimelineActivity.mNearValue_id = 0;
-                mPresenter.getNearTimelinePostData(ApiConst.TIMELINE_REFRESH, Const.getCustomTimelineAPI(0,
+                mPresenter.getNearTimelinePostData(Const.TIMELINE_REFRESH, Const.getCustomTimelineAPI(0,
                         GocciTimelineActivity.mNearSort_id, GocciTimelineActivity.mNearCategory_id, GocciTimelineActivity.mNearValue_id,
                         GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLongitude() : 0.0,
                         GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLatitude() : 0.0, 0));
@@ -493,19 +492,19 @@ public class NearTimelineFragment extends Fragment implements AppBarLayout.OnOff
     @Override
     public void showNoResultCase(int api) {
         switch (api) {
-            case ApiConst.TIMELINE_FIRST:
+            case Const.TIMELINE_FIRST:
                 mTimelineAdapter = new TimelineAdapter(getActivity(), mTimelineusers);
                 mTimelineAdapter.setTimelineCallback(this);
                 mTimelineRecyclerView.setAdapter(mTimelineAdapter);
                 break;
-            case ApiConst.TIMELINE_REFRESH:
+            case Const.TIMELINE_REFRESH:
                 mTimelineusers.clear();
                 isEndScrioll = false;
                 mNextCount = 1;
                 mPlayingPostId = null;
                 mTimelineAdapter.setData();
                 break;
-            case ApiConst.TIMELINE_FILTER:
+            case Const.TIMELINE_FILTER:
                 mTimelineusers.clear();
                 isEndScrioll = false;
                 mNextCount = 1;
@@ -531,14 +530,14 @@ public class NearTimelineFragment extends Fragment implements AppBarLayout.OnOff
     @Override
     public void showResult(int api, ArrayList<PostData> mPostData, ArrayList<String> post_ids) {
         switch (api) {
-            case ApiConst.TIMELINE_FIRST:
+            case Const.TIMELINE_FIRST:
                 mTimelineusers.addAll(mPostData);
                 mPost_ids.addAll(post_ids);
                 mTimelineAdapter = new TimelineAdapter(getActivity(), mTimelineusers);
                 mTimelineAdapter.setTimelineCallback(this);
                 mTimelineRecyclerView.setAdapter(mTimelineAdapter);
                 break;
-            case ApiConst.TIMELINE_REFRESH:
+            case Const.TIMELINE_REFRESH:
                 mTimelineusers.clear();
                 mTimelineusers.addAll(mPostData);
                 mPost_ids.clear();
@@ -549,7 +548,7 @@ public class NearTimelineFragment extends Fragment implements AppBarLayout.OnOff
                 mViewHolderHash.clear();
                 mTimelineAdapter.setData();
                 break;
-            case ApiConst.TIMELINE_ADD:
+            case Const.TIMELINE_ADD:
                 if (mPostData.size() != 0) {
                     mPlayingPostId = null;
                     mTimelineusers.addAll(mPostData);
@@ -560,7 +559,7 @@ public class NearTimelineFragment extends Fragment implements AppBarLayout.OnOff
                     isEndScrioll = true;
                 }
                 break;
-            case ApiConst.TIMELINE_FILTER:
+            case Const.TIMELINE_FILTER:
                 mTimelineusers.clear();
                 mTimelineusers.addAll(mPostData);
                 mPost_ids.clear();

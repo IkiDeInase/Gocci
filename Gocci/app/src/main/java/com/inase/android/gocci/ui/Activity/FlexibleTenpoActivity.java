@@ -44,7 +44,6 @@ import com.google.android.exoplayer.audio.AudioCapabilities;
 import com.google.android.exoplayer.audio.AudioCapabilitiesReceiver;
 import com.google.android.exoplayer.drm.UnsupportedDrmException;
 import com.inase.android.gocci.R;
-import com.inase.android.gocci.consts.ApiConst;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.repository.UserAndRestDataRepository;
 import com.inase.android.gocci.datasource.repository.UserAndRestDataRepositoryImpl;
@@ -262,7 +261,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
         mTenpoRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
         mTenpoRecyclerView.setScrollViewCallbacks(this);
 
-        mPresenter.getRestData(ApiConst.RESTPAGE_FIRST, Const.getRestpageAPI(mRest_id));
+        mPresenter.getRestData(Const.RESTPAGE_FIRST, Const.getRestpageAPI(mRest_id));
 
         result = new DrawerBuilder()
                 .withActivity(this)
@@ -390,7 +389,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
             public void onRefresh() {
                 mSwipeContainer.setRefreshing(true);
                 if (Util.getConnectedState(FlexibleTenpoActivity.this) != Util.NetworkStatus.OFF) {
-                    mPresenter.getRestData(ApiConst.RESTPAGE_REFRESH, Const.getRestpageAPI(mRest_id));
+                    mPresenter.getRestData(Const.RESTPAGE_REFRESH, Const.getRestpageAPI(mRest_id));
                 } else {
                     Toast.makeText(FlexibleTenpoActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
                     mSwipeContainer.setRefreshing(false);
@@ -754,13 +753,13 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
     @Override
     public void showNoResultCase(int api, HeaderData restData) {
         mHeaderRestData = restData;
-        if (api == ApiConst.RESTPAGE_FIRST) {
+        if (api == Const.RESTPAGE_FIRST) {
             mBackgroundImage.setImageResource(R.drawable.ic_background_login);
             mRestPageAdapter = new RestPageAdapter(this, mHeaderRestData, mTenpousers);
             mRestPageAdapter.setRestPageCallback(this);
             mTenpoRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
             mTenpoRecyclerView.setAdapter(mRestPageAdapter);
-        } else if (api == ApiConst.USERPAGE_REFRESH) {
+        } else if (api == Const.USERPAGE_REFRESH) {
             mTenpousers.clear();
             mRestPageAdapter.setData(mHeaderRestData);
         }
@@ -782,7 +781,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
         mTenpousers.clear();
         mTenpousers.addAll(mPostData);
         switch (api) {
-            case ApiConst.RESTPAGE_FIRST:
+            case Const.RESTPAGE_FIRST:
                 Picasso.with(this).load(mTenpousers.get(0).getThumbnail()).into(new Target() {
                     @Override
                     public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
@@ -804,7 +803,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
                 mTenpoRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
                 mTenpoRecyclerView.setAdapter(mRestPageAdapter);
                 break;
-            case ApiConst.RESTPAGE_REFRESH:
+            case Const.RESTPAGE_REFRESH:
                 mPlayingPostId = null;
                 mViewHolderHash.clear();
                 mTenpoRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);

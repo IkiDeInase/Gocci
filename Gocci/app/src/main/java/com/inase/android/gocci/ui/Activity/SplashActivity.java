@@ -15,7 +15,6 @@ import com.facebook.AccessToken;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.BuildConfig;
 import com.inase.android.gocci.R;
-import com.inase.android.gocci.consts.ApiConst;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.repository.LoginRepository;
 import com.inase.android.gocci.datasource.repository.LoginRepositoryImpl;
@@ -90,7 +89,7 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
             String mIdentityId = SavedData.getIdentityId(this);
             if (!mIdentityId.equals("no identityId")) {
                 //２回目
-                mPresenter.loginUser(ApiConst.LOGIN_WELCOME, Const.getAuthLoginAPI(mIdentityId));
+                mPresenter.loginUser(Const.LOGIN_WELCOME, Const.getAuthLoginAPI(mIdentityId));
             } else {
                 loginFrag = SavedData.getLoginJudge(SplashActivity.this);
                 if (loginFrag.equals(TAG_NO_JUDGE)) {
@@ -103,7 +102,7 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
                     String url = Const.getAuthConversionAPI(SavedData.getServerName(SplashActivity.this), SavedData.getServerPicture(SplashActivity.this),
                             Build.VERSION.RELEASE, Build.MODEL, SavedData.getRegId(SplashActivity.this));
                     isConversion = true;
-                    mPresenter.loginUser(ApiConst.LOGIN_CONVERSION, url);
+                    mPresenter.loginUser(Const.LOGIN_CONVERSION, url);
                 }
             }
         }
@@ -189,7 +188,7 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
     @Override
     public void showResult(int api, User user) {
         switch (api) {
-            case ApiConst.LOGIN_WELCOME:
+            case Const.LOGIN_WELCOME:
                 if (user.getCode() == 200) {
                     Application_Gocci.GuestInit(this, user.getIdentityId(), user.getToken(), String.valueOf(user.getUserId()));
                     SavedData.setWelcome(this, user.getUserName(), user.getProfileImg(), String.valueOf(user.getUserId()), user.getIdentityId(), user.getBadgeNum());
@@ -206,7 +205,7 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
                     Toast.makeText(this, user.getMessage(), Toast.LENGTH_SHORT).show();
                 }
                 break;
-            case ApiConst.LOGIN_CONVERSION:
+            case Const.LOGIN_CONVERSION:
                 if (user.getCode() == 200) {
                     SavedData.setWelcome(this, user.getUserName(), user.getProfileImg(), String.valueOf(user.getUserId()), user.getIdentityId(), user.getBadgeNum());
 
@@ -221,9 +220,9 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
     @Override
     public void showNoResult(int api) {
         switch (api) {
-            case ApiConst.LOGIN_WELCOME:
+            case Const.LOGIN_WELCOME:
                 break;
-            case ApiConst.LOGIN_CONVERSION:
+            case Const.LOGIN_CONVERSION:
                 break;
         }
         Toast.makeText(this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();

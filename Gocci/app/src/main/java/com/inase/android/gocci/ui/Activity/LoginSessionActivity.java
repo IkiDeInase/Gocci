@@ -25,7 +25,6 @@ import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
-import com.inase.android.gocci.consts.ApiConst;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.repository.LoginRepository;
 import com.inase.android.gocci.datasource.repository.LoginRepositoryImpl;
@@ -204,7 +203,7 @@ public class LoginSessionActivity extends AppCompatActivity implements ShowUserL
                     mSigninUsernameEdit.setError(getString(R.string.cheat_input));
                     mSigninPassEdit.setError(getString(R.string.cheat_input));
                 } else {
-                    mPresenter.loginUser(ApiConst.LOGIN_NAME_PASS, Const.getAuthUsernamePasswordAPI(mSigninUsernameEdit.getEditText().getText().toString(),
+                    mPresenter.loginUser(Const.LOGIN_NAME_PASS, Const.getAuthUsernamePasswordAPI(mSigninUsernameEdit.getEditText().getText().toString(),
                             mSigninPassEdit.getEditText().getText().toString(), Build.VERSION.RELEASE, Build.MODEL, SavedData.getRegId(LoginSessionActivity.this)));
                 }
             }
@@ -236,7 +235,7 @@ public class LoginSessionActivity extends AppCompatActivity implements ShowUserL
 
     @Subscribe
     public void subscribe(final CreateProviderFinishEvent event) {
-        mPresenter.loginUser(ApiConst.LOGIN_SNS_WELCOME, Const.getAuthSNSLoginAPI(event.identityId, Build.VERSION.RELEASE, Build.MODEL, SavedData.getRegId(this)));
+        mPresenter.loginUser(Const.LOGIN_SNS_WELCOME, Const.getAuthSNSLoginAPI(event.identityId, Build.VERSION.RELEASE, Build.MODEL, SavedData.getRegId(this)));
     }
 
     @Override
@@ -276,10 +275,10 @@ public class LoginSessionActivity extends AppCompatActivity implements ShowUserL
     @Override
     public void showResult(int api, User user) {
         switch (api) {
-            case ApiConst.LOGIN_SNS_WELCOME:
+            case Const.LOGIN_SNS_WELCOME:
                 break;
-            case ApiConst.LOGIN_NAME_PASS:
-            case ApiConst.LOGIN_SNS_CONVERSION:
+            case Const.LOGIN_NAME_PASS:
+            case Const.LOGIN_SNS_CONVERSION:
                 if (user.getCode() == 200) {
                     Application_Gocci.GuestInit(this, user.getIdentityId(), user.getToken(), String.valueOf(user.getUserId()));
                 }
@@ -305,14 +304,14 @@ public class LoginSessionActivity extends AppCompatActivity implements ShowUserL
     @Override
     public void showNoResult(int api) {
         switch (api) {
-            case ApiConst.LOGIN_SNS_WELCOME:
-                mPresenter.loginUser(ApiConst.LOGIN_SNS_CONVERSION,
+            case Const.LOGIN_SNS_WELCOME:
+                mPresenter.loginUser(Const.LOGIN_SNS_CONVERSION,
                         Const.getAuthSNSConversionAPI(providerName, token, profile_img, Build.VERSION.RELEASE, Build.MODEL, SavedData.getRegId(this)));
                 break;
-            case ApiConst.LOGIN_NAME_PASS:
+            case Const.LOGIN_NAME_PASS:
                 Toast.makeText(this, getString(R.string.login_error_pass), Toast.LENGTH_SHORT).show();
                 break;
-            case ApiConst.LOGIN_SNS_CONVERSION:
+            case Const.LOGIN_SNS_CONVERSION:
                 Toast.makeText(this, getString(R.string.error_account_no_exist), Toast.LENGTH_SHORT).show();
                 break;
         }

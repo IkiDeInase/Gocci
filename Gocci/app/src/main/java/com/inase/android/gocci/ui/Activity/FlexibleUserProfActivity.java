@@ -23,7 +23,6 @@ import android.widget.Toast;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
 import com.inase.android.gocci.R;
-import com.inase.android.gocci.consts.ApiConst;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.repository.UserAndRestDataRepository;
 import com.inase.android.gocci.datasource.repository.UserAndRestDataRepositoryImpl;
@@ -153,7 +152,7 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
         mUserProfRecyclerView.setHasFixedSize(true);
         mUserProfRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
 
-        mPresenter.getProfData(ApiConst.USERPAGE_FIRST, Const.getUserpageAPI(mUser_id));
+        mPresenter.getProfData(Const.USERPAGE_FIRST, Const.getUserpageAPI(mUser_id));
 
         result = new DrawerBuilder()
                 .withActivity(this)
@@ -224,7 +223,7 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
             public void onRefresh() {
                 mSwipeContainer.setRefreshing(true);
                 if (Util.getConnectedState(FlexibleUserProfActivity.this) != Util.NetworkStatus.OFF) {
-                    mPresenter.getProfData(ApiConst.USERPAGE_REFRESH, Const.getUserpageAPI(mUser_id));
+                    mPresenter.getProfData(Const.USERPAGE_REFRESH, Const.getUserpageAPI(mUser_id));
                 } else {
                     Toast.makeText(FlexibleUserProfActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
                     mSwipeContainer.setRefreshing(false);
@@ -307,11 +306,11 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
     @Override
     public void showNoResultCase(int api, HeaderData mUserData) {
         headerUserData = mUserData;
-        if (api == ApiConst.USERPAGE_FIRST) {
+        if (api == Const.USERPAGE_FIRST) {
             mUserProfAdapter = new UserProfAdapter(this, headerUserData, mUserProfusers);
             mUserProfAdapter.setUserProfCallback(this);
             mUserProfRecyclerView.setAdapter(mUserProfAdapter);
-        } else if (api == ApiConst.USERPAGE_REFRESH) {
+        } else if (api == Const.USERPAGE_REFRESH) {
             mUserProfusers.clear();
             mUserProfAdapter.setData(headerUserData);
         }
@@ -341,12 +340,12 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
         mUserProfusers.clear();
         mUserProfusers.addAll(mPostData);
         switch (api) {
-            case ApiConst.USERPAGE_FIRST:
+            case Const.USERPAGE_FIRST:
                 mUserProfAdapter = new UserProfAdapter(this, headerUserData, mUserProfusers);
                 mUserProfAdapter.setUserProfCallback(this);
                 mUserProfRecyclerView.setAdapter(mUserProfAdapter);
                 break;
-            case ApiConst.USERPAGE_REFRESH:
+            case Const.USERPAGE_REFRESH:
                 mUserProfAdapter.setData(headerUserData);
                 break;
         }
