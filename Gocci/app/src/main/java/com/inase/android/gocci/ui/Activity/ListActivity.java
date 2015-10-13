@@ -26,6 +26,7 @@ import android.widget.Toast;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
 import com.andexert.library.RippleView;
+import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.domain.model.HeaderData;
@@ -319,19 +320,19 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
     private void getJSON(String url, int category, Context context) {
         switch (category) {
             case Const.CATEGORY_FOLLOW:
-                getFollowJSON(url, context);
+                getFollowJSON(url);
                 break;
             case Const.CATEGORY_FOLLOWER:
-                getFollowerJSON(url, context);
+                getFollowerJSON(url);
                 break;
             case Const.CATEGORY_USER_CHEER:
-                getUserCheerJSON(url, context);
+                getUserCheerJSON(url);
                 break;
             case Const.CATEGORY_WANT:
-                getWantJSON(url, context);
+                getWantJSON(url);
                 break;
             case Const.CATEGORY_REST_CHEER:
-                getRestCheerJSON(url, context);
+                getRestCheerJSON(url);
                 break;
         }
     }
@@ -339,26 +340,25 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
     private void getRefreshJSON(String url, int category, Context context) {
         switch (category) {
             case Const.CATEGORY_FOLLOW:
-                getRefreshFollowJSON(url, context);
+                getRefreshFollowJSON(url);
                 break;
             case Const.CATEGORY_FOLLOWER:
-                getRefreshFollowerJSON(url, context);
+                getRefreshFollowerJSON(url);
                 break;
             case Const.CATEGORY_USER_CHEER:
-                getRefreshUserCheerJSON(url, context);
+                getRefreshUserCheerJSON(url);
                 break;
             case Const.CATEGORY_WANT:
-                getRefreshWantJSON(url, context);
+                getRefreshWantJSON(url);
                 break;
             case Const.CATEGORY_REST_CHEER:
-                getRefreshRestCheerJSON(url, context);
+                getRefreshRestCheerJSON(url);
                 break;
         }
     }
 
-    private void getFollowJSON(String url, Context context) {
-        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(this, url, new JsonHttpResponseHandler() {
+    private void getFollowJSON(String url) {
+        Application_Gocci.getJsonAsyncHttpClient(url, new JsonHttpResponseHandler() {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
@@ -402,9 +402,8 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
     }
 
-    private void getFollowerJSON(String url, Context context) {
-        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(this, url, new JsonHttpResponseHandler() {
+    private void getFollowerJSON(String url) {
+        Application_Gocci.getJsonAsyncHttpClient(url, new JsonHttpResponseHandler() {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
@@ -448,9 +447,8 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
     }
 
-    private void getUserCheerJSON(String url, Context context) {
-        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(this, url, new JsonHttpResponseHandler() {
+    private void getUserCheerJSON(String url) {
+        Application_Gocci.getJsonAsyncHttpClient(url, new JsonHttpResponseHandler() {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
@@ -492,9 +490,8 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
     }
 
-    private void getWantJSON(String url, Context context) {
-        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(this, url, new JsonHttpResponseHandler() {
+    private void getWantJSON(String url) {
+        Application_Gocci.getJsonAsyncHttpClient(url, new JsonHttpResponseHandler() {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
@@ -536,9 +533,8 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
     }
 
-    private void getRestCheerJSON(String url, Context context) {
-        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(this, url, new JsonHttpResponseHandler() {
+    private void getRestCheerJSON(String url) {
+        Application_Gocci.getJsonAsyncHttpClient(url, new JsonHttpResponseHandler() {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
@@ -582,9 +578,8 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
     }
 
-    private void getRefreshFollowJSON(String url, Context context) {
-        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(this, url, new JsonHttpResponseHandler() {
+    private void getRefreshFollowJSON(String url) {
+        Application_Gocci.getJsonAsyncHttpClient(url, new JsonHttpResponseHandler() {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
@@ -634,9 +629,8 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
     }
 
-    private void getRefreshFollowerJSON(String url, Context context) {
-        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(this, url, new JsonHttpResponseHandler() {
+    private void getRefreshFollowerJSON(String url) {
+        Application_Gocci.getJsonAsyncHttpClient(url, new JsonHttpResponseHandler() {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
@@ -685,9 +679,8 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
     }
 
-    private void getRefreshUserCheerJSON(String url, Context context) {
-        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(this, url, new JsonHttpResponseHandler() {
+    private void getRefreshUserCheerJSON(String url) {
+        Application_Gocci.getJsonAsyncHttpClient(url, new JsonHttpResponseHandler() {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
@@ -735,9 +728,8 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
     }
 
-    private void getRefreshWantJSON(String url, Context context) {
-        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(this, url, new JsonHttpResponseHandler() {
+    private void getRefreshWantJSON(String url) {
+        Application_Gocci.getJsonAsyncHttpClient(url, new JsonHttpResponseHandler() {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
@@ -785,9 +777,8 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
     }
 
-    private void getRefreshRestCheerJSON(String url, Context context) {
-        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(this, url, new JsonHttpResponseHandler() {
+    private void getRefreshRestCheerJSON(String url) {
+        Application_Gocci.getJsonAsyncHttpClient(url, new JsonHttpResponseHandler() {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {

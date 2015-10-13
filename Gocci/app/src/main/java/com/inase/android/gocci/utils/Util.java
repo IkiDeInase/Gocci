@@ -289,8 +289,7 @@ public class Util {
     }
 
     public static void postRefreshRegId(Context context, String regId) {
-        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(context, Const.getPostRefreshRegId(regId, SavedData.getServerUserId(context), Build.VERSION.RELEASE), new AsyncHttpResponseHandler() {
+        Application_Gocci.getAsyncHttpClient(Const.getPostRefreshRegId(regId, SavedData.getServerUserId(context), Build.VERSION.RELEASE), new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
 
@@ -334,8 +333,7 @@ public class Util {
     }
 
     private static void postAdviceAsync(final Context context, final String message) {
-        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(context, Const.getPostFeedbackAPI(message), new JsonHttpResponseHandler() {
+        Application_Gocci.getJsonAsyncHttpClient(Const.getPostFeedbackAPI(message), new JsonHttpResponseHandler() {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -384,8 +382,7 @@ public class Util {
     }
 
     private static void violateSignupAsync(final Context context, final String post_id) {
-        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(context, Const.getPostViolateAPI(post_id), new JsonHttpResponseHandler() {
+        Application_Gocci.getJsonAsyncHttpClient(Const.getPostViolateAPI(post_id), new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 try {
@@ -411,8 +408,7 @@ public class Util {
     }
 
     public static void postGochiAsync(final Context context, final PostData headerData) {
-        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(context, Const.getPostGochiAPI(headerData.getPost_id()), new JsonHttpResponseHandler() {
+        Application_Gocci.getJsonAsyncHttpClient(Const.getPostGochiAPI(headerData.getPost_id()), new JsonHttpResponseHandler() {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -441,8 +437,7 @@ public class Util {
     }
 
     public static void followAsync(final Context context, final HeaderData headerData) {
-        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(context, Const.getPostFollowAPI(headerData.getUser_id()), new JsonHttpResponseHandler() {
+        Application_Gocci.getJsonAsyncHttpClient(Const.getPostFollowAPI(headerData.getUser_id()), new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 try {
@@ -467,8 +462,7 @@ public class Util {
     }
 
     public static void unfollowAsync(final Context context, final HeaderData headerData) {
-        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(context, Const.getPostUnFollowAPI(headerData.getUser_id()), new JsonHttpResponseHandler() {
+        Application_Gocci.getJsonAsyncHttpClient(Const.getPostUnFollowAPI(headerData.getUser_id()), new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 try {
@@ -493,8 +487,7 @@ public class Util {
     }
 
     public static void wantAsync(final Context context, final HeaderData headerData) {
-        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(context, Const.getPostWantAPI(headerData.getRest_id()), new JsonHttpResponseHandler() {
+        Application_Gocci.getJsonAsyncHttpClient(Const.getPostWantAPI(headerData.getRest_id()), new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 try {
@@ -519,8 +512,7 @@ public class Util {
     }
 
     public static void unwantAsync(final Context context, final HeaderData headerData) {
-        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(context, Const.getPostUnWantAPI(headerData.getRest_id()), new JsonHttpResponseHandler() {
+        Application_Gocci.getJsonAsyncHttpClient(Const.getPostUnWantAPI(headerData.getRest_id()), new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 try {
@@ -545,8 +537,7 @@ public class Util {
     }
 
     public static void passwordAsync(final Context context, final String password) {
-        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(context, Const.getPostPasswordAPI(password), new JsonHttpResponseHandler() {
+        Application_Gocci.getJsonAsyncHttpClient(Const.getPostPasswordAPI(password), new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 try {
@@ -648,8 +639,7 @@ public class Util {
     }
 
     public static void searchUserPost(final Activity activiy, final Context context, final String username) {
-        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(context, Const.getPostSearchUser(username), new JsonHttpResponseHandler() {
+        Application_Gocci.getJsonAsyncHttpClient(Const.getPostSearchUser(username), new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 try {
@@ -672,281 +662,5 @@ public class Util {
                 Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
         });
-    }
-
-    private static final long DEFAULT_DURATION = 200L;
-    private static final String ROTATION = "rotation";
-    private static final Interpolator FAST_OUT_SLOW_IN_INTERPOLATOR = new FastOutSlowInInterpolator();
-
-    public static void rotateToSelect(final FloatingActionButton fab) {
-        rotate(fab, 45f);
-    }
-
-    public static void rotateToUnSelect(final FloatingActionButton fab) {
-        rotate(fab, 0f);
-    }
-
-    private static void rotate(final FloatingActionButton fab, float value) {
-        PropertyValuesHolder holder = PropertyValuesHolder.ofFloat(ROTATION, value);
-        ObjectAnimator animator = ObjectAnimator.ofPropertyValuesHolder(fab, holder).setDuration(150L);
-        animator.setInterpolator(FAST_OUT_SLOW_IN_INTERPOLATOR);
-        animator.start();
-    }
-
-    public static void animateIn(final FloatingActionButton fab) {
-        animateIn(fab, DEFAULT_DURATION, null);
-    }
-
-    public static void animateInFast(final FloatingActionButton fab, final AnimateCallback callback) {
-        animateIn(fab, 100L, callback);
-    }
-
-    public static void animateIn(final FloatingActionButton fab, long duration, final AnimateCallback callback) {
-        fab.setVisibility(View.VISIBLE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            ViewCompat.animate(fab)
-                    .scaleX(1.0F)
-                    .scaleY(1.0F)
-                    .alpha(1.0F)
-                    .setDuration(duration)
-                    .setInterpolator(FAST_OUT_SLOW_IN_INTERPOLATOR)
-                    .withLayer()
-                    .setListener(new ViewPropertyAnimatorListener() {
-                        public void onAnimationStart(View view) {
-                            if (callback != null) callback.onAnimationStart();
-                        }
-
-                        public void onAnimationCancel(View view) {
-                        }
-
-                        public void onAnimationEnd(View view) {
-                            view.setVisibility(View.VISIBLE);
-                            if (callback != null) callback.onAnimationEnd();
-                        }
-                    }).start();
-        } else {
-            Animation anim = AnimationUtils.loadAnimation(fab.getContext(), R.anim.fab_in);
-            anim.setDuration(duration);
-            anim.setInterpolator(FAST_OUT_SLOW_IN_INTERPOLATOR);
-            anim.setAnimationListener(new AnimationListenerAdapter() {
-                public void onAnimationStart(Animation animation) {
-                    if (callback != null) callback.onAnimationStart();
-                }
-
-                public void onAnimationEnd(Animation animation) {
-                    fab.setVisibility(View.VISIBLE);
-                    if (callback != null) callback.onAnimationEnd();
-                }
-            });
-            fab.startAnimation(anim);
-        }
-    }
-
-    public static void animateOut(final FloatingActionButton fab) {
-        animateOut(fab, DEFAULT_DURATION, null);
-    }
-
-    public static void animateOutFast(final FloatingActionButton fab, final AnimateCallback callback) {
-        animateOut(fab, 30L, callback);
-    }
-
-    public static void animateOut(final FloatingActionButton fab, final AnimateCallback callback) {
-        animateOut(fab, DEFAULT_DURATION, callback);
-    }
-
-    public static void animateOut(final FloatingActionButton fab, long duration, final AnimateCallback callback) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            ViewCompat.animate(fab)
-                    .scaleX(0.0F)
-                    .scaleY(0.0F).alpha(0.0F)
-                    .setInterpolator(FAST_OUT_SLOW_IN_INTERPOLATOR)
-                    .setDuration(duration)
-                    .withLayer()
-                    .setListener(new ViewPropertyAnimatorListener() {
-                        public void onAnimationStart(View view) {
-                            if (callback != null) callback.onAnimationStart();
-                        }
-
-                        public void onAnimationCancel(View view) {
-                        }
-
-                        public void onAnimationEnd(View view) {
-                            view.setVisibility(View.INVISIBLE);
-                            if (callback != null) callback.onAnimationEnd();
-                        }
-                    }).start();
-        } else {
-            Animation anim = AnimationUtils.loadAnimation(fab.getContext(), R.anim.fab_out);
-            anim.setInterpolator(FAST_OUT_SLOW_IN_INTERPOLATOR);
-            anim.setDuration(duration);
-            anim.setAnimationListener(new AnimationListenerAdapter() {
-                public void onAnimationStart(Animation animation) {
-                    if (callback != null) callback.onAnimationStart();
-                }
-
-                public void onAnimationEnd(Animation animation) {
-                    fab.setVisibility(View.INVISIBLE);
-                    if (callback != null) callback.onAnimationEnd();
-                }
-            });
-            fab.startAnimation(anim);
-        }
-    }
-
-    public static void moveIn(final FloatingActionButton fab, View view, ViewPropertyAnimatorListener listener) {
-        int marginRight;
-        int marginBottom;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            marginRight = 16;
-            marginBottom = 16;
-        } else {
-            marginRight = 8;
-            marginBottom = 0;
-        }
-        ViewCompat.animate(fab)
-                .translationX(-(view.getWidth() / 2) + (fab.getWidth() / 2) + dpToPx(view.getContext(), marginRight))
-                .translationY(-(view.getHeight() / 2) + (fab.getHeight() / 2) + dpToPx(view.getContext(), marginBottom))
-                .setInterpolator(new AccelerateInterpolator())
-                .setDuration(150L)
-                .withLayer()
-                .setListener(listener)
-                .start();
-    }
-
-    public static void moveOut(final FloatingActionButton fab, ViewPropertyAnimatorListener listener) {
-        ViewCompat.animate(fab)
-                .translationX(0)
-                .translationY(0)
-                .setInterpolator(new AccelerateDecelerateInterpolator())
-                .setDuration(150L)
-                .withLayer()
-                .setListener(listener)
-                .start();
-    }
-
-    public static float dpToPx(Context context, float value) {
-        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, value,
-                context.getResources().getDisplayMetrics());
-    }
-
-    public interface AnimateCallback {
-        public void onAnimationStart();
-
-        public void onAnimationEnd();
-    }
-
-    public interface RevealCallback {
-        public void onRevealStart();
-
-        public void onRevealEnd();
-    }
-
-    static class AnimationListenerAdapter implements Animation.AnimationListener {
-        AnimationListenerAdapter() {
-        }
-
-        public void onAnimationStart(Animation animation) {
-        }
-
-        public void onAnimationEnd(Animation animation) {
-        }
-
-        public void onAnimationRepeat(Animation animation) {
-        }
-    }
-
-    private static class Destroyer implements SpringListener {
-
-        public int mMin, mMax;
-
-        protected ViewGroup mViewGroup;
-        protected View mViewToRemove;
-
-        private Destroyer(ViewGroup viewGroup, View viewToRemove, int min,
-                          int max) {
-            mViewGroup = viewGroup;
-            mViewToRemove = viewToRemove;
-
-            mMin = min;
-            mMax = max;
-        }
-
-        public boolean shouldClean(Spring spring) {
-            // these are arbitrary values to keep the view from disappearing before it is
-            // fully off the screen
-            return spring.getCurrentValue() < mMin || spring.getCurrentValue() > mMax;
-        }
-
-        public void clean(Spring spring) {
-            if (mViewGroup != null && mViewToRemove != null) {
-                mViewGroup.removeView(mViewToRemove);
-            }
-            if (spring != null) {
-                spring.destroy();
-            }
-        }
-
-        @Override
-        public void onSpringUpdate(Spring spring) {
-            if (shouldClean(spring)) {
-                clean(spring);
-            }
-        }
-
-        @Override
-        public void onSpringAtRest(Spring spring) {
-
-        }
-
-        @Override
-        public void onSpringActivate(Spring spring) {
-
-        }
-
-        @Override
-        public void onSpringEndStateChange(Spring spring) {
-
-        }
-    }
-
-    public static void createCircle(Context context, ViewGroup rootView,
-                                    SpringSystem springSystem,
-                                    SpringConfig coasting,
-                                    SpringConfig gravity,
-                                    int diameter,
-                                    Drawable backgroundDrawable) {
-
-        final Spring xSpring = springSystem.createSpring().setSpringConfig(coasting);
-        final Spring ySpring = springSystem.createSpring().setSpringConfig(gravity);
-
-        // create view
-        View view = new View(context);
-
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(diameter, diameter);
-        params.addRule(RelativeLayout.CENTER_IN_PARENT);
-        view.setLayoutParams(params);
-        view.setBackgroundDrawable(backgroundDrawable);
-
-        rootView.addView(view);
-
-        // generate random direction and magnitude
-        double magnitude = Math.random() * 1000 + 1500;
-        double angle = Math.random() * Math.PI / 2 + Math.PI / 4;
-
-        xSpring.setVelocity(magnitude * Math.cos(angle));
-        ySpring.setVelocity(-magnitude * Math.sin(angle));
-
-        int maxX = rootView.getMeasuredWidth() / 2 + diameter;
-        xSpring.addListener(new Destroyer(rootView, view, -maxX, maxX));
-
-        int maxY = rootView.getMeasuredHeight() / 2 + diameter;
-        ySpring.addListener(new Destroyer(rootView, view, -maxY, maxY));
-
-        xSpring.addListener(new Performer(view, View.TRANSLATION_X));
-        ySpring.addListener(new Performer(view, View.TRANSLATION_Y));
-
-        // set a different end value to cause the animation to play
-        xSpring.setEndValue(2);
-        ySpring.setEndValue(9001);
     }
 }

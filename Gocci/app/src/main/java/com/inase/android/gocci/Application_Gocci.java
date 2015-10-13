@@ -29,6 +29,7 @@ import com.inase.android.gocci.event.SNSMatchFinishEvent;
 import com.inase.android.gocci.utils.SavedData;
 import com.inase.android.gocci.utils.aws.CustomProvider;
 import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.SyncHttpClient;
 import com.loopj.android.http.TextHttpResponseHandler;
@@ -84,6 +85,10 @@ public class Application_Gocci extends Application {
     }
 
     public static void getTextAsyncHttpClient(String url, TextHttpResponseHandler responseHandler) {
+        sAsyncHttpClient.get(url, responseHandler);
+    }
+
+    public static void getAsyncHttpClient(String url, AsyncHttpResponseHandler responseHandler) {
         sAsyncHttpClient.get(url, responseHandler);
     }
 

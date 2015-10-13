@@ -46,11 +46,6 @@ public class Const {
 //    public static final String GET_MOVIE_BUCKET_NAME = "gocci.movies.provider.jp";
 //    public static final String POST_PHOTO_BUCKET_NAME = "gocci.imgs.provider.jp";
 
-    public static String getAuthWelcomeAPI(String identity_id, int flag) {
-        return URL_PREFIX + VERSION_NUMBER + "/mobile/auth/welcome/?identity_id=" + identity_id +
-                "&sns_flag=" + flag;
-    }
-
     public static String getAuthLoginAPI(String identity_id) {
         return URL_PREFIX + VERSION_NUMBER + "/mobile/auth/login/?identity_id=" + identity_id;
     }
@@ -123,16 +118,8 @@ public class Const {
         return URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline";
     }
 
-    public static String getLatestNextApi(int call) {
-        return URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline/?call=" + call;
-    }
-
     public static String getFollowlineApi() {
         return URL_PREFIX + VERSION_NUMBER + "/mobile/get/followline";
-    }
-
-    public static String getFollowlineNextApi(int call) {
-        return URL_PREFIX + VERSION_NUMBER + "/mobile/get/followline/?call=" + call;
     }
 
     public static String getCommentAPI(String post_id) {
@@ -281,16 +268,11 @@ public class Const {
     public static final int INTENT_TO_LIST = 9;
     public static final int INTENT_TO_SETTING = 10;
 
-    public static final int INTENT_TO_GRIDSEARCH = 12;
-
     public static final int CATEGORY_FOLLOW = 1;
     public static final int CATEGORY_FOLLOWER = 2;
     public static final int CATEGORY_USER_CHEER = 3;
     public static final int CATEGORY_WANT = 4;
     public static final int CATEGORY_REST_CHEER = 5;
-
-    public static final AsyncHttpClient asyncHttpClient = new AsyncHttpClient();
-    public static final SyncHttpClient syncHttpClient = new SyncHttpClient();
 
     public static final class ExoViewHolder extends RecyclerView.ViewHolder {
 

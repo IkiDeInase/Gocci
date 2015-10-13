@@ -14,6 +14,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.domain.model.HeaderData;
@@ -94,8 +95,7 @@ public class NotificationListView extends RelativeLayout {
     }
 
     private void getNotificationJson(final Context context) {
-        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(context, Const.getNoticeAPI(), new JsonHttpResponseHandler() {
+        Application_Gocci.getJsonAsyncHttpClient(Const.getNoticeAPI(), new JsonHttpResponseHandler() {
 
             @Override
             public void onStart() {

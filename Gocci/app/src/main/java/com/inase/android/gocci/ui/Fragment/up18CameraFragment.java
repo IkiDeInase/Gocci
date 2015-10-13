@@ -346,8 +346,7 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
     }
 
     private void getTenpoJson(final Context context, String url) {
-        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(context, url, new JsonHttpResponseHandler() {
+        Application_Gocci.getJsonAsyncHttpClient(url, new JsonHttpResponseHandler() {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray timeline) {
@@ -865,8 +864,7 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
                         super.onPositive(dialog);
                         mRest_name = dialog.getInputEditText().getText().toString();
 
-                        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(getActivity()));
-                        Const.asyncHttpClient.get(getActivity(), Const.getPostRestAddAPI(mRest_name, latitude, longitude), new JsonHttpResponseHandler() {
+                        Application_Gocci.getJsonAsyncHttpClient(Const.getPostRestAddAPI(mRest_name, latitude, longitude), new JsonHttpResponseHandler() {
                             @Override
                             public void onStart() {
                                 cameraProgress.setVisibility(View.VISIBLE);
