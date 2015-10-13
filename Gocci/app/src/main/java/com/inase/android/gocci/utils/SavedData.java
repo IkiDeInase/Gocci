@@ -48,6 +48,8 @@ public class SavedData {
     private static final String KEY_LON = "lon";
     private static final String KEY_LAT = "lat";
 
+    private static final String KEY_ID = "id";
+
     public static void setWelcome(Context context, String username, String picture, String user_id, String identityId, int badge_num) {
         SharedPreferences prefs = context.getSharedPreferences("pref", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
@@ -67,6 +69,17 @@ public class SavedData {
         editor.apply();
     }
 
+    public static int getPostingId(Context context) {
+        SharedPreferences pref = context.getSharedPreferences("pref", Context.MODE_PRIVATE);
+        return pref.getInt(KEY_ID, 0);
+    }
+
+    public static void setPostingId(Context context, int id) {
+        SharedPreferences pref = context.getSharedPreferences("pref", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putInt(KEY_ID, id);
+        editor.apply();
+    }
 
     public static String getServerName(Context context) {
         SharedPreferences pref = context.getSharedPreferences("pref", Context.MODE_PRIVATE);

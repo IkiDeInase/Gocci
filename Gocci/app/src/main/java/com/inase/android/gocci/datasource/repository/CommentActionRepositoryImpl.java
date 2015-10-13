@@ -34,7 +34,7 @@ public class CommentActionRepositoryImpl implements CommentActionRepository {
 
     @Override
     public void postComment(String postUrl, final String getUrl, final CommentActionRepositoryCallback cb) {
-        Application_Gocci.getJsonHttpClient(postUrl, new JsonHttpResponseHandler() {
+        Application_Gocci.getJsonSyncHttpClient(postUrl, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 try {
@@ -59,7 +59,7 @@ public class CommentActionRepositoryImpl implements CommentActionRepository {
 
     private void getCommentJson(String getUrl, final CommentActionRepositoryCallback cb) {
         final ArrayList<HeaderData> mCommentData = new ArrayList<>();
-        Application_Gocci.getTextHttpClient(getUrl, new TextHttpResponseHandler() {
+        Application_Gocci.getTextSyncHttpClient(getUrl, new TextHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 cb.onError();

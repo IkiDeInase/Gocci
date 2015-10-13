@@ -9,6 +9,9 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
+import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferUtility;
 import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
@@ -29,6 +32,8 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.SyncHttpClient;
 import com.loopj.android.http.TextHttpResponseHandler;
+import com.squareup.leakcanary.LeakCanary;
+import com.squareup.leakcanary.RefWatcher;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
@@ -36,6 +41,7 @@ import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,12 +71,20 @@ public class Application_Gocci extends Application {
         mLongitude = longitude;
     }
 
-    public static void getJsonHttpClient(String url, JsonHttpResponseHandler responseHandler) {
+    public static void getJsonSyncHttpClient(String url, JsonHttpResponseHandler responseHandler) {
         sSsyncHttpClient.get(url, responseHandler);
     }
 
-    public static void getTextHttpClient(String url, TextHttpResponseHandler responseHandler) {
+    public static void getTextSyncHttpClient(String url, TextHttpResponseHandler responseHandler) {
         sSsyncHttpClient.get(url, responseHandler);
+    }
+
+    public static void getJsonAsyncHttpClient(String url, JsonHttpResponseHandler responseHandler) {
+        sAsyncHttpClient.get(url, responseHandler);
+    }
+
+    public static void getTextAsyncHttpClient(String url, TextHttpResponseHandler responseHandler) {
+        sAsyncHttpClient.get(url, responseHandler);
     }
 
     public static CognitoCachingCredentialsProvider getLoginProvider() {
@@ -128,6 +142,13 @@ public class Application_Gocci extends Application {
         return tracker;
     }
 
+    public static RefWatcher getRefWatcher(Context context) {
+        Application_Gocci application = (Application_Gocci) context.getApplicationContext();
+        return application.refWatcher;
+    }
+
+    private RefWatcher refWatcher;
+
     public static void SNSInit(final Context context, final String providerName, final String token) {
         new AsyncTask<Void, Void, String>() {
             @Override
@@ -155,6 +176,31 @@ public class Application_Gocci extends Application {
                         s3.setRegion(Region.getRegion(Regions.AP_NORTHEAST_1));
                         transferUtility = new TransferUtility(s3, context);
                         return null;
+                    }
+
+                    @Override
+                    protected void onPostExecute(Void result) {
+                        if (SavedData.getPostingId(context) != 0) {
+                            TransferObserver observer = transferUtility.resume(SavedData.getPostingId(context));
+                            observer.setTransferListener(new TransferListener() {
+                                @Override
+                                public void onStateChanged(int id, TransferState state) {
+                                    if (state == TransferState.COMPLETED) {
+                                        SavedData.setPostingId(context, 0);
+                                    }
+                                }
+
+                                @Override
+                                public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+
+                                }
+
+                                @Override
+                                public void onError(int id, Exception ex) {
+
+                                }
+                            });
+                        }
                     }
                 }.execute();
             }
@@ -190,34 +236,38 @@ public class Application_Gocci extends Application {
                         transferUtility = new TransferUtility(s3, context);
                         return null;
                     }
+
+                    @Override
+                    protected void onPostExecute(Void result) {
+                        if (SavedData.getPostingId(context) != 0) {
+                            TransferObserver observer = transferUtility.resume(SavedData.getPostingId(context));
+                            observer.setTransferListener(new TransferListener() {
+                                @Override
+                                public void onStateChanged(int id, TransferState state) {
+                                    if (state == TransferState.COMPLETED) {
+                                        SavedData.setPostingId(context, 0);
+                                    }
+                                }
+
+                                @Override
+                                public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+
+                                }
+
+                                @Override
+                                public void onError(int id, Exception ex) {
+
+                                }
+                            });
+                        }
+                    }
                 }.execute();
             }
         }.execute();
     }
 
     public static void addLogins(final Context context, String providerName, String token, String profile_img) {
-        /*
-        new AsyncTask<Void, Void, String>() {
-            @Override
-            protected String doInBackground(Void... params) {
-                Map<String, String> logins = credentialsProvider.getLogins();
-                if (logins == null) {
-                    logins = new HashMap<String, String>();
-                }
-                logins.put(providerName, token);
-                credentialsProvider.setLogins(logins);
-                credentialsProvider.refresh();
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(String result) {
-                BusHolder.get().post(new CreateProviderFinishEvent(result));
-            }
-        }.execute();
-        */
-        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(context, Const.getAuthSNSMatchAPI(providerName, token, profile_img), new JsonHttpResponseHandler() {
+        getJsonAsyncHttpClient(Const.getAuthSNSMatchAPI(providerName, token, profile_img), new JsonHttpResponseHandler() {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
@@ -250,6 +300,30 @@ public class Application_Gocci extends Application {
         });
     }
 
+    public static void postingVideoToS3(final Context context, String mAwsPostName, File mVideoFile) {
+        final TransferObserver transferObserver = getTransfer(context).upload(Const.POST_MOVIE_BUCKET_NAME, mAwsPostName + ".mp4", mVideoFile);
+        transferObserver.setTransferListener(new TransferListener() {
+            @Override
+            public void onStateChanged(int id, TransferState state) {
+                if (state == TransferState.IN_PROGRESS) {
+                    SavedData.setPostingId(context, id);
+                } else if (state == TransferState.COMPLETED) {
+                    SavedData.setPostingId(context, 0);
+                }
+            }
+
+            @Override
+            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+
+            }
+
+            @Override
+            public void onError(int id, Exception ex) {
+                Toast.makeText(context, context.getString(R.string.bad_internet_connection), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
@@ -276,6 +350,8 @@ public class Application_Gocci extends Application {
                 new Crashlytics(), new TweetComposer());
 
         FacebookSdk.sdkInitialize(this);
+
+        refWatcher = LeakCanary.install(this);
 
         analytics = GoogleAnalytics.getInstance(this);
         analytics.setLocalDispatchPeriod(1800);

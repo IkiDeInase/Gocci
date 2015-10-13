@@ -161,8 +161,6 @@ public class CameraPreviewActivity extends AppCompatActivity {
     private CallbackManager callbackManager;
     private ShareDialog shareDialog;
 
-    private boolean isError;
-
     private static MobileAnalyticsManager analytics;
 
     private ArrayAdapter<String> restAdapter;
@@ -182,8 +180,6 @@ public class CameraPreviewActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_camera_preview);
         ButterKnife.bind(this);
-
-        isError = false;
 
         Intent intent = getIntent();
         mRest_id = intent.getIntExtra("rest_id", 1);
@@ -322,8 +318,8 @@ public class CameraPreviewActivity extends AppCompatActivity {
                         if (mCheckCheer.isChecked()) {
                             mCheer_flag = 1;
                         }
-                        postMovieBackground(CameraPreviewActivity.this);
                         postMovieAsync(CameraPreviewActivity.this);
+                        Application_Gocci.postingVideoToS3(CameraPreviewActivity.this, mAwsPostName, mVideoFile);
                     } else {
                         Toast.makeText(CameraPreviewActivity.this, getString(R.string.please_input_restname), Toast.LENGTH_SHORT).show();
                     }
@@ -387,8 +383,7 @@ public class CameraPreviewActivity extends AppCompatActivity {
     }
 
     private void getTenpoJson(final Context context) {
-        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.get(context, Const.getNearAPI(mLatitude, mLongitude), new JsonHttpResponseHandler() {
+        Application_Gocci.getJsonAsyncHttpClient(Const.getNearAPI(mLatitude, mLongitude), new JsonHttpResponseHandler() {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray timeline) {
@@ -437,8 +432,7 @@ public class CameraPreviewActivity extends AppCompatActivity {
                         super.onPositive(dialog);
                         mRestname = dialog.getInputEditText().getText().toString();
 
-                        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(CameraPreviewActivity.this));
-                        Const.asyncHttpClient.get(CameraPreviewActivity.this, Const.getPostRestAddAPI(mRestname, mLatitude, mLongitude), new JsonHttpResponseHandler() {
+                        Application_Gocci.getJsonAsyncHttpClient(Const.getPostRestAddAPI(mRestname, mLatitude, mLongitude), new JsonHttpResponseHandler() {
                             @Override
                             public void onStart() {
                                 mProgressWheel.setVisibility(View.VISIBLE);
@@ -483,34 +477,8 @@ public class CameraPreviewActivity extends AppCompatActivity {
                 .show();
     }
 
-    private void postMovieBackground(Context context) {
-        TransferObserver transferObserver = Application_Gocci.getTransfer(context).upload(Const.POST_MOVIE_BUCKET_NAME, mAwsPostName + ".mp4", mVideoFile);
-        transferObserver.setTransferListener(new TransferListener() {
-            @Override
-            public void onStateChanged(int id, TransferState state) {
-                if (state == TransferState.COMPLETED) {
-                    isError = false;
-                }
-            }
-
-            @Override
-            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
-
-            }
-
-            @Override
-            public void onError(int id, Exception ex) {
-                isError = true;
-                Toast.makeText(CameraPreviewActivity.this, getString(R.string.bad_internet_connection), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
     private void postMovieAsync(final Context context) {
-        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(context));
-        Const.asyncHttpClient.setConnectTimeout(10 * 1000);
-        Const.asyncHttpClient.setResponseTimeout(60 * 1000);
-        Const.asyncHttpClient.get(context, Const.getPostMovieAPI(mRest_id, mAwsPostName, mCategory_id, mTag_id, mValue, mMemo, mCheer_flag), new JsonHttpResponseHandler() {
+        Application_Gocci.getJsonAsyncHttpClient(Const.getPostMovieAPI(mRest_id, mAwsPostName, mCategory_id, mTag_id, mValue, mMemo, mCheer_flag), new JsonHttpResponseHandler() {
             @Override
             public void onStart() {
                 mProgressWheel.setVisibility(View.VISIBLE);

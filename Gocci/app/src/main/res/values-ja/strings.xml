@@ -190,7 +190,7 @@
 
     <string name="camera_title">Gocciカメラ</string>
     <string name="camera_message">このカメラはボタンをタップしている間だけ録画されます。縦向きで投稿するようにしてください！</string>
-    <string name="camera_alert">このカメラでは、縦向きで投稿するようにしてください！</string>
+    <string name="camera_alert">縦向きのまま投稿するようにしましょう</string>
 
     <string name="camera_location_title">位置情報取得について</string>
     <string name="camera_location_message">位置情報を使いたいのですが、GPSが無効になっています。" + "設定を変更しましょう</string>

@@ -28,6 +28,7 @@ import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.google.android.exoplayer.audio.AudioCapabilities;
 import com.google.android.exoplayer.audio.AudioCapabilitiesReceiver;
 import com.google.android.exoplayer.drm.UnsupportedDrmException;
+import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.ApiConst;
 import com.inase.android.gocci.consts.Const;
@@ -50,6 +51,7 @@ import com.inase.android.gocci.utils.SavedData;
 import com.inase.android.gocci.utils.Util;
 import com.inase.android.gocci.utils.video.HlsRendererBuilder;
 import com.inase.android.gocci.utils.video.VideoPlayer;
+import com.squareup.leakcanary.RefWatcher;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
@@ -272,6 +274,8 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
         super.onDestroy();
         audioCapabilitiesReceiver.unregister();
         releasePlayer();
+        RefWatcher refWatcher = Application_Gocci.getRefWatcher(getActivity());
+        refWatcher.watch(this);
     }
 
     @Subscribe

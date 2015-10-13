@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
+import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -45,6 +46,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.ui.activity.CameraPreviewActivity;
@@ -59,6 +61,7 @@ import com.inase.android.gocci.utils.camera.TLMediaVideoEncoder;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.rengwuxian.materialedittext.MaterialEditText;
+import com.squareup.leakcanary.RefWatcher;
 import com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner;
 
 import org.json.JSONArray;
@@ -84,8 +87,6 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
     private SensorManager mSensorManager;
     private boolean mIsMagSensor;
     private boolean mIsAccSensor;
-
-    private NiftyDialogBuilder dialogBuilder;
 
     private static final int MATRIX_SIZE = 16;
     /* 回転行列 */
@@ -171,6 +172,8 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
 
     private LocationManager mLocationManager;
 
+    private Snackbar bar;
+
     public up18CameraFragment() {
         // need default constructor
     }
@@ -194,14 +197,6 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_camera_up18, container, false);
-
-        dialogBuilder = NiftyDialogBuilder.getInstance(getActivity());
-        dialogBuilder
-                .withTitle(getString(R.string.camera_title))
-                .withMessage(getString(R.string.camera_message))
-                .withDuration(500)                                          //def
-                .withEffect(Effectstype.SlideBottom)
-                .show();
 
         mCameraView = (CameraGLView) rootView.findViewById(R.id.camera_view);
         //mCameraView.setVideoSize(1280, 720);
@@ -244,6 +239,8 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
         toukouButton.setOnTouchListener(mOnTouchListener);
 
         sbv = (SlideBottomPanel) rootView.findViewById(R.id.sbv);
+
+        bar = Snackbar.make(sbv, getString(R.string.camera_alert), Snackbar.LENGTH_INDEFINITE);
 
         restname_spinner = (MaterialBetterSpinner) rootView.findViewById(R.id.restname_spinner);
         category_spinner = (MaterialBetterSpinner) rootView.findViewById(R.id.category_spinner);
@@ -425,7 +422,6 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
         super.onResume();
         if (DEBUG) Log.v(TAG, "onResume:");
         mCameraView.onResume();
-        dialogBuilder = NiftyDialogBuilder.getInstance(getActivity());
 
         List<Sensor> sensors = mSensorManager.getSensorList(Sensor.TYPE_ALL);
 
@@ -489,10 +485,6 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
         mCameraView.onPause();
         super.onPause();
 
-        if (dialogBuilder.isShowing()) {
-            dialogBuilder.dismiss();
-        }
-
         if (isLocationUpdating) {
             stopLocationUpdates();
         }
@@ -520,6 +512,8 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
         if (DEBUG) Log.v(TAG, "onDestroy:");
         handler.removeCallbacks(progressRunnable);
         mCameraView.onFinish();
+        RefWatcher refWatcher = Application_Gocci.getRefWatcher(getActivity());
+        refWatcher.watch(this);
     }
 
     /*
@@ -795,30 +789,18 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
             int degree = radianToDegree(orientationValues[2]);
 
             if (degree <= -60) {
-                if (!dialogBuilder.isShowing()) {
-                    dialogBuilder
-                            .withTitle(getString(R.string.camera_title))
-                            .withMessage(getString(R.string.camera_alert))
-                            .withDuration(500)                                          //def
-                            .withEffect(Effectstype.SlideBottom)
-                            .isCancelableOnTouchOutside(false)
-                            .show();
+                if (!bar.isShown()) {
+                    bar.show();
                 }
             }
             if (-60 < degree && degree <= 60) {
-                if (dialogBuilder.isShowing()) {
-                    dialogBuilder.dismiss();
+                if (bar.isShown()) {
+                    bar.dismiss();
                 }
             }
             if (60 < degree) {
-                if (!dialogBuilder.isShowing()) {
-                    dialogBuilder
-                            .withTitle(getString(R.string.camera_title))
-                            .withMessage(getString(R.string.camera_alert))
-                            .withDuration(500)                                          //def
-                            .withEffect(Effectstype.SlideBottom)
-                            .isCancelableOnTouchOutside(false)
-                            .show();
+                if (!bar.isShown()) {
+                    bar.show();
                 }
             }
         }

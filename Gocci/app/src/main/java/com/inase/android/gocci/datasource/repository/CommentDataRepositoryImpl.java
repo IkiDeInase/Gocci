@@ -33,7 +33,7 @@ public class CommentDataRepositoryImpl implements CommentDataRepository {
     @Override
     public void getCommentDataList(final int api, String url, final CommentDataRepositoryCallback cb) {
         final ArrayList<HeaderData> mCommentData = new ArrayList<>();
-        Application_Gocci.getTextHttpClient(url, new TextHttpResponseHandler() {
+        Application_Gocci.getTextSyncHttpClient(url, new TextHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 cb.onError();

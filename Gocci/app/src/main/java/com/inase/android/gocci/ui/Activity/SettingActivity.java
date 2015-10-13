@@ -554,8 +554,7 @@ public class SettingActivity extends AppCompatActivity {
     }
 
     private void snsUnLinkAsync(final String providerName, String token) {
-        Const.asyncHttpClient.setCookieStore(SavedData.getCookieStore(this));
-        Const.asyncHttpClient.get(this, Const.getAuthSNSUnLinkAPI(providerName, token), new JsonHttpResponseHandler() {
+        Application_Gocci.getJsonAsyncHttpClient(Const.getAuthSNSUnLinkAPI(providerName, token), new JsonHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 Toast.makeText(SettingActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();

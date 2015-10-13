@@ -18,6 +18,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.provider.Settings;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -51,6 +52,7 @@ import com.googlecode.mp4parser.authoring.Track;
 import com.googlecode.mp4parser.authoring.builder.DefaultMp4Builder;
 import com.googlecode.mp4parser.authoring.container.mp4.MovieCreator;
 import com.googlecode.mp4parser.authoring.tracks.AppendTrack;
+import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.ui.activity.CameraPreviewActivity;
@@ -63,6 +65,7 @@ import com.inase.android.gocci.utils.camera.RecorderManager;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.rengwuxian.materialedittext.MaterialEditText;
+import com.squareup.leakcanary.RefWatcher;
 import com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner;
 
 import org.json.JSONArray;
@@ -134,8 +137,6 @@ public class down18CameraFragment extends Fragment implements SensorEventListene
     private boolean mIsMagSensor;
     private boolean mIsAccSensor;
 
-    private NiftyDialogBuilder dialogBuilder;
-
     private static final int MATRIX_SIZE = 16;
     /* 回転行列 */
     float[] inR = new float[MATRIX_SIZE];
@@ -168,6 +169,8 @@ public class down18CameraFragment extends Fragment implements SensorEventListene
 
     private LocationManager mLocationManager;
 
+    private Snackbar bar;
+
     public down18CameraFragment() {
 
     }
@@ -190,14 +193,6 @@ public class down18CameraFragment extends Fragment implements SensorEventListene
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_camera_down18, container, false);
-
-        dialogBuilder = NiftyDialogBuilder.getInstance(getActivity());
-        dialogBuilder
-                .withTitle(getString(R.string.camera_title))
-                .withMessage(getString(R.string.camera_message))
-                .withDuration(500)                                          //def
-                .withEffect(Effectstype.SlideBottom)
-                .show();
 
         cameraProgress = (ProgressWheel) rootView.findViewById(R.id.progress_wheel);
         MySurfaceView videoSurface = (MySurfaceView) rootView.findViewById(R.id.camera_view);
@@ -247,6 +242,8 @@ public class down18CameraFragment extends Fragment implements SensorEventListene
         });
 
         sbv = (SlideBottomPanel) rootView.findViewById(R.id.sbv);
+
+        bar = Snackbar.make(sbv, getString(R.string.camera_alert), Snackbar.LENGTH_INDEFINITE);
 
         restname_spinner = (MaterialBetterSpinner) rootView.findViewById(R.id.restname_spinner);
         category_spinner = (MaterialBetterSpinner) rootView.findViewById(R.id.category_spinner);
@@ -343,8 +340,6 @@ public class down18CameraFragment extends Fragment implements SensorEventListene
     public void onResume() {
         super.onResume();
 
-        dialogBuilder = NiftyDialogBuilder.getInstance(getActivity());
-
         List<Sensor> sensors = mSensorManager.getSensorList(Sensor.TYPE_ALL);
 
         // センサマネージャへリスナーを登録(implements SensorEventListenerにより、thisで登録する)
@@ -404,10 +399,6 @@ public class down18CameraFragment extends Fragment implements SensorEventListene
     public void onPause() {
         super.onPause();
 
-        if (dialogBuilder.isShowing()) {
-            dialogBuilder.dismiss();
-        }
-
         if (isLocationUpdating) {
             stopLocationUpdates();
         }
@@ -453,30 +444,18 @@ public class down18CameraFragment extends Fragment implements SensorEventListene
             int degree = radianToDegree(orientationValues[2]);
 
             if (degree <= -60) {
-                if (!dialogBuilder.isShowing()) {
-                    dialogBuilder
-                            .withTitle(getString(R.string.camera_title))
-                            .withMessage(getString(R.string.camera_alert))
-                            .withDuration(500)                                          //def
-                            .withEffect(Effectstype.SlideBottom)
-                            .isCancelableOnTouchOutside(false)
-                            .show();
+                if (!bar.isShown()) {
+                    bar.show();
                 }
             }
             if (-60 < degree && degree <= 60) {
-                if (dialogBuilder.isShowing()) {
-                    dialogBuilder.dismiss();
+                if (bar.isShown()) {
+                    bar.dismiss();
                 }
             }
             if (60 < degree) {
-                if (!dialogBuilder.isShowing()) {
-                    dialogBuilder
-                            .withTitle(getString(R.string.camera_title))
-                            .withMessage(getString(R.string.camera_alert))
-                            .withDuration(500)                                          //def
-                            .withEffect(Effectstype.SlideBottom)
-                            .isCancelableOnTouchOutside(false)
-                            .show();
+                if (!bar.isShown()) {
+                    bar.show();
                 }
             }
         }
@@ -689,6 +668,8 @@ public class down18CameraFragment extends Fragment implements SensorEventListene
         super.onDestroy();
         recorderManager.reset();
         handler.removeCallbacks(progressRunnable);
+        RefWatcher refWatcher = Application_Gocci.getRefWatcher(getActivity());
+        refWatcher.watch(this);
     }
 
     private void createTenpo() {

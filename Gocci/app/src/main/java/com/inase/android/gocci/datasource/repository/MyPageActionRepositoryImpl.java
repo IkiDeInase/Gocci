@@ -59,7 +59,7 @@ public class MyPageActionRepositoryImpl implements MyPageActionRepository {
     }
 
     private void postChangeProf(String url, final MyPageActionRepositoryCallback cb) {
-        Application_Gocci.getJsonHttpClient(url, new JsonHttpResponseHandler() {
+        Application_Gocci.getJsonSyncHttpClient(url, new JsonHttpResponseHandler() {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
@@ -87,7 +87,7 @@ public class MyPageActionRepositoryImpl implements MyPageActionRepository {
 
     @Override
     public void deletePost(String post_id, final int position, final MyPageActionRepositoryCallback cb) {
-        Application_Gocci.getJsonHttpClient(Const.getPostDeleteAPI(post_id), new JsonHttpResponseHandler() {
+        Application_Gocci.getJsonSyncHttpClient(Const.getPostDeleteAPI(post_id), new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 try {

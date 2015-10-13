@@ -26,7 +26,7 @@ public class LoginRepositoryImpl implements LoginRepository {
 
     @Override
     public void userLogin(final int api, String url, final LoginRepositoryCallback cb) {
-        Application_Gocci.getJsonHttpClient(url, new JsonHttpResponseHandler() {
+        Application_Gocci.getJsonSyncHttpClient(url, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 if (response.has("message")) {

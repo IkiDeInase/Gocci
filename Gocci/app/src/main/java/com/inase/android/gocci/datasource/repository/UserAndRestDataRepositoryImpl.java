@@ -32,7 +32,7 @@ public class UserAndRestDataRepositoryImpl implements UserAndRestDataRepository 
     @Override
     public void getUserDataList(final int api, String url, final UserAndRestDataRepository.UserAndRestDataRepositoryCallback cb) {
         final ArrayList<PostData> mPostData = new ArrayList<>();
-        Application_Gocci.getTextHttpClient(url, new TextHttpResponseHandler() {
+        Application_Gocci.getTextSyncHttpClient(url, new TextHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 cb.onError();
@@ -66,7 +66,7 @@ public class UserAndRestDataRepositoryImpl implements UserAndRestDataRepository 
     @Override
     public void getRestDataList(final int api, String url, final UserAndRestDataRepositoryCallback cb) {
         final ArrayList<PostData> mPostData = new ArrayList<>();
-        Application_Gocci.getTextHttpClient(url, new TextHttpResponseHandler() {
+        Application_Gocci.getTextSyncHttpClient(url, new TextHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 cb.onError();
