@@ -33,8 +33,6 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.SyncHttpClient;
 import com.loopj.android.http.TextHttpResponseHandler;
-import com.squareup.leakcanary.LeakCanary;
-import com.squareup.leakcanary.RefWatcher;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
@@ -146,13 +144,6 @@ public class Application_Gocci extends Application {
         }
         return tracker;
     }
-
-    public static RefWatcher getRefWatcher(Context context) {
-        Application_Gocci application = (Application_Gocci) context.getApplicationContext();
-        return application.refWatcher;
-    }
-
-    private RefWatcher refWatcher;
 
     public static void SNSInit(final Context context, final String providerName, final String token) {
         new AsyncTask<Void, Void, String>() {
@@ -355,8 +346,6 @@ public class Application_Gocci extends Application {
                 new Crashlytics(), new TweetComposer());
 
         FacebookSdk.sdkInitialize(this);
-
-        refWatcher = LeakCanary.install(this);
 
         analytics = GoogleAnalytics.getInstance(this);
         analytics.setLocalDispatchPeriod(1800);

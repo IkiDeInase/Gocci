@@ -50,7 +50,6 @@ import com.inase.android.gocci.utils.SavedData;
 import com.inase.android.gocci.utils.Util;
 import com.inase.android.gocci.utils.video.HlsRendererBuilder;
 import com.inase.android.gocci.utils.video.VideoPlayer;
-import com.squareup.leakcanary.RefWatcher;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
@@ -267,8 +266,6 @@ public class NearTimelineFragment extends Fragment implements AppBarLayout.OnOff
         super.onDestroy();
         audioCapabilitiesReceiver.unregister();
         releasePlayer();
-        RefWatcher refWatcher = Application_Gocci.getRefWatcher(getActivity());
-        refWatcher.watch(this);
     }
 
     @Subscribe

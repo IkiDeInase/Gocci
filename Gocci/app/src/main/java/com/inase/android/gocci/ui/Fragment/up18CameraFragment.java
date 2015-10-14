@@ -58,7 +58,6 @@ import com.inase.android.gocci.utils.camera.TLMediaVideoEncoder;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.rengwuxian.materialedittext.MaterialEditText;
-import com.squareup.leakcanary.RefWatcher;
 import com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner;
 
 import org.json.JSONArray;
@@ -508,8 +507,6 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
         if (DEBUG) Log.v(TAG, "onDestroy:");
         handler.removeCallbacks(progressRunnable);
         mCameraView.onFinish();
-        RefWatcher refWatcher = Application_Gocci.getRefWatcher(getActivity());
-        refWatcher.watch(this);
     }
 
     /*
