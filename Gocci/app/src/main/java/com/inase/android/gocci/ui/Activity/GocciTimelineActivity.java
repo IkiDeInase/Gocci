@@ -100,7 +100,8 @@ public class GocciTimelineActivity extends AppCompatActivity {
         SmartLocation.with(GocciTimelineActivity.this).location().oneFix().start(new OnLocationUpdatedListener() {
             @Override
             public void onLocationUpdated(Location location) {
-                nowLocation = location;
+                mLongitude = location.getLongitude();
+                mLatitude = location.getLatitude();
             }
         });
     }
@@ -128,7 +129,10 @@ public class GocciTimelineActivity extends AppCompatActivity {
     public static int mFollowCategory_id = 0;
     public static int mFollowValue_id = 0;
 
-    public static Location nowLocation;
+    public static double mLongitude = 0.0;
+    public static double mLatitude = 0.0;
+
+    private String mTitle = "現在地";
 
     private String[] SORT;
     private String[] CATEGORY;
@@ -137,6 +141,8 @@ public class GocciTimelineActivity extends AppCompatActivity {
     private Drawer result;
 
     private static MobileAnalyticsManager analytics;
+
+    private FragmentPagerItemAdapter adapter;
 
     private static Handler sHandler = new Handler() {
         @Override
@@ -174,9 +180,19 @@ public class GocciTimelineActivity extends AppCompatActivity {
         setContentView(R.layout.activity_gocci_timeline);
         ButterKnife.bind(this);
 
-        mToolBar.setLogo(R.drawable.ic_gocci_moji_white45);
+        mToolBar.setTitle(mTitle);
+        mToolBar.setSubtitle("エリアを変更する");
+        mToolBar.setTitleTextAppearance(GocciTimelineActivity.this, R.style.Toolbar_TitleText);
+        mToolBar.setSubtitleTextAppearance(GocciTimelineActivity.this, R.style.Toolbar_SubTitleText);
+        mToolBar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mShowPosition == 0) {
+                    MapSearchActivity.startMapSearchActivity(123, GocciTimelineActivity.this);
+                }
+            }
+        });
         setSupportActionBar(mToolBar);
-        getSupportActionBar().setTitle("");
 
         result = new DrawerBuilder()
                 .withActivity(this)
@@ -229,7 +245,7 @@ public class GocciTimelineActivity extends AppCompatActivity {
 
         result.setSelection(1);
 
-        final FragmentPagerItemAdapter adapter = new FragmentPagerItemAdapter(
+        adapter = new FragmentPagerItemAdapter(
                 getSupportFragmentManager(), FragmentPagerItems.with(this)
                 .add(R.string.tab_near, NearTimelineFragment.class)
                 .add(R.string.tab_follow, FollowTimelineFragment.class)
@@ -257,6 +273,11 @@ public class GocciTimelineActivity extends AppCompatActivity {
                         if (mNearCategory_id != 0)
                             mCategorySpinner.setText(CATEGORY[mNearCategory_id]);
                         if (mNearValue_id != 0) mValueSpinner.setText(VALUE[mNearValue_id]);
+
+                        mToolBar.setTitle(mTitle);
+                        mToolBar.setSubtitle("エリアを変更する");
+                        mToolBar.setSubtitleTextAppearance(GocciTimelineActivity.this, R.style.Toolbar_SubTitleText);
+                        mToolBar.setLogo(null);
                         break;
                     case 1:
                         mSortSpinner.setVisibility(View.VISIBLE);
@@ -265,6 +286,10 @@ public class GocciTimelineActivity extends AppCompatActivity {
                         if (mFollowCategory_id != 0)
                             mCategorySpinner.setText(CATEGORY[mFollowCategory_id]);
                         if (mFollowValue_id != 0) mValueSpinner.setText(VALUE[mFollowValue_id]);
+
+                        mToolBar.setTitle("");
+                        mToolBar.setSubtitle("");
+                        mToolBar.setLogo(R.drawable.ic_gocci_moji_white45);
                         break;
                     case 2:
                         mSortSpinner.setVisibility(View.VISIBLE);
@@ -273,6 +298,10 @@ public class GocciTimelineActivity extends AppCompatActivity {
                         if (mLatestCategory_id != 0)
                             mCategorySpinner.setText(CATEGORY[mLatestCategory_id]);
                         if (mLatestValue_id != 0) mValueSpinner.setText(VALUE[mLatestValue_id]);
+
+                        mToolBar.setTitle("");
+                        mToolBar.setSubtitle("");
+                        mToolBar.setLogo(R.drawable.ic_gocci_moji_white45);
                         break;
                 }
             }
@@ -352,20 +381,17 @@ public class GocciTimelineActivity extends AppCompatActivity {
                     case 0:
                         BusHolder.get().post(new FilterTimelineEvent(mShowPosition, Const.getCustomTimelineAPI(mShowPosition,
                                 mNearSort_id, mNearCategory_id, mNearValue_id,
-                                nowLocation != null ? nowLocation.getLongitude() : 0.0,
-                                nowLocation != null ? nowLocation.getLatitude() : 0.0, 0)));
+                                mLongitude, mLatitude, 0)));
                         break;
                     case 1:
                         BusHolder.get().post(new FilterTimelineEvent(mShowPosition, Const.getCustomTimelineAPI(mShowPosition,
                                 mFollowSort_id, mFollowCategory_id, mFollowValue_id,
-                                nowLocation != null ? nowLocation.getLongitude() : 0.0,
-                                nowLocation != null ? nowLocation.getLatitude() : 0.0, 0)));
+                                mLongitude, mLatitude, 0)));
                         break;
                     case 2:
                         BusHolder.get().post(new FilterTimelineEvent(mShowPosition, Const.getCustomTimelineAPI(mShowPosition,
                                 mLatestSort_id, mLatestCategory_id, mLatestValue_id,
-                                nowLocation != null ? nowLocation.getLongitude() : 0.0,
-                                nowLocation != null ? nowLocation.getLatitude() : 0.0, 0)));
+                                mLongitude, mLatitude, 0)));
                         break;
                 }
             }
@@ -399,6 +425,24 @@ public class GocciTimelineActivity extends AppCompatActivity {
         outState = result.saveInstanceState(outState);
         super.onSaveInstanceState(outState);
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case 123:
+                if (resultCode == RESULT_OK) {
+                    Bundle bundle = data.getExtras();
+                    mTitle = bundle.getString("place");
+                    mToolBar.setTitle(mTitle);
+                    adapter.getPage(0).onActivityResult(requestCode, resultCode, data);
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
 
     @Subscribe
     public void subscribe(NotificationNumberEvent event) {
@@ -506,5 +550,10 @@ public class GocciTimelineActivity extends AppCompatActivity {
             super.onBackPressed();
             overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
         }
+    }
+
+    public void setNowLocationTitle() {
+        mTitle = "現在地";
+        mToolBar.setTitle(mTitle);
     }
 }

@@ -1,5 +1,6 @@
 package com.inase.android.gocci.ui.fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
@@ -28,7 +29,6 @@ import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.google.android.exoplayer.audio.AudioCapabilities;
 import com.google.android.exoplayer.audio.AudioCapabilitiesReceiver;
 import com.google.android.exoplayer.drm.UnsupportedDrmException;
-import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.repository.PostDataRepository;
@@ -144,8 +144,7 @@ public class NearTimelineFragment extends Fragment implements AppBarLayout.OnOff
                     if (!isEndScrioll) {
                         mPresenter.getNearTimelinePostData(Const.TIMELINE_ADD, Const.getCustomTimelineAPI(0,
                                 GocciTimelineActivity.mNearSort_id, GocciTimelineActivity.mNearCategory_id, GocciTimelineActivity.mNearValue_id,
-                                GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLongitude() : 0.0,
-                                GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLatitude() : 0.0, mNextCount));
+                                GocciTimelineActivity.mLongitude, GocciTimelineActivity.mLatitude, mNextCount));
                     }
                 }
             }
@@ -229,6 +228,22 @@ public class NearTimelineFragment extends Fragment implements AppBarLayout.OnOff
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case 123:
+                if (resultCode == Activity.RESULT_OK) {
+                    Bundle bundle = data.getExtras();
+                    GocciTimelineActivity.mLongitude = bundle.getDouble("lon");
+                    GocciTimelineActivity.mLatitude = bundle.getDouble("lat");
+                    GocciTimelineActivity.mNearCategory_id = 0;
+                    GocciTimelineActivity.mNearValue_id = 0;
+                    mPresenter.getNearTimelinePostData(Const.TIMELINE_REFRESH, Const.getCustomTimelineAPI(0,
+                            GocciTimelineActivity.mNearSort_id, GocciTimelineActivity.mNearCategory_id, GocciTimelineActivity.mNearValue_id,
+                            GocciTimelineActivity.mLongitude, GocciTimelineActivity.mLatitude, 0));
+                }
+                break;
+            default:
+                break;
+        }
     }
 
     @Override
@@ -324,11 +339,11 @@ public class NearTimelineFragment extends Fragment implements AppBarLayout.OnOff
         SmartLocation.with(context).location().oneFix().start(new OnLocationUpdatedListener() {
             @Override
             public void onLocationUpdated(Location location) {
-                GocciTimelineActivity.nowLocation = location;
+                GocciTimelineActivity.mLongitude = location.getLongitude();
+                GocciTimelineActivity.mLatitude = location.getLatitude();
                 mPresenter.getNearTimelinePostData(Const.TIMELINE_FIRST, Const.getCustomTimelineAPI(0,
                         GocciTimelineActivity.mNearSort_id, GocciTimelineActivity.mNearCategory_id, GocciTimelineActivity.mNearValue_id,
-                        GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLongitude() : 0.0,
-                        GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLatitude() : 0.0, 0));
+                        GocciTimelineActivity.mLongitude, GocciTimelineActivity.mLatitude, 0));
             }
         });
     }
@@ -337,13 +352,15 @@ public class NearTimelineFragment extends Fragment implements AppBarLayout.OnOff
         SmartLocation.with(context).location().oneFix().start(new OnLocationUpdatedListener() {
             @Override
             public void onLocationUpdated(Location location) {
-                GocciTimelineActivity.nowLocation = location;
+                GocciTimelineActivity.mLongitude = location.getLongitude();
+                GocciTimelineActivity.mLatitude = location.getLatitude();
                 GocciTimelineActivity.mNearCategory_id = 0;
                 GocciTimelineActivity.mNearValue_id = 0;
                 mPresenter.getNearTimelinePostData(Const.TIMELINE_REFRESH, Const.getCustomTimelineAPI(0,
                         GocciTimelineActivity.mNearSort_id, GocciTimelineActivity.mNearCategory_id, GocciTimelineActivity.mNearValue_id,
-                        GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLongitude() : 0.0,
-                        GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLatitude() : 0.0, 0));
+                        GocciTimelineActivity.mLongitude, GocciTimelineActivity.mLatitude, 0));
+                GocciTimelineActivity activity = (GocciTimelineActivity) getActivity();
+                activity.setNowLocationTitle();
             }
         });
     }

@@ -28,7 +28,6 @@ import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.google.android.exoplayer.audio.AudioCapabilities;
 import com.google.android.exoplayer.audio.AudioCapabilitiesReceiver;
 import com.google.android.exoplayer.drm.UnsupportedDrmException;
-import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.repository.PostDataRepository;
@@ -150,8 +149,7 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
                     if (!isEndScrioll) {
                         mPresenter.getLatestTimelinePostData(Const.TIMELINE_ADD, Const.getCustomTimelineAPI(2,
                                 GocciTimelineActivity.mLatestSort_id, GocciTimelineActivity.mLatestCategory_id, GocciTimelineActivity.mLatestValue_id,
-                                GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLongitude() : 0.0,
-                                GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLatitude() : 0.0, mNextCount));
+                                GocciTimelineActivity.mLongitude, GocciTimelineActivity.mLatitude, mNextCount));
                     }
                 }
             }
@@ -433,14 +431,14 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
         SmartLocation.with(context).location().oneFix().start(new OnLocationUpdatedListener() {
             @Override
             public void onLocationUpdated(Location location) {
-                GocciTimelineActivity.nowLocation = location;
+                GocciTimelineActivity.mLongitude = location.getLongitude();
+                GocciTimelineActivity.mLatitude = location.getLatitude();
                 GocciTimelineActivity.mLatestSort_id = 0;
                 GocciTimelineActivity.mLatestCategory_id = 0;
                 GocciTimelineActivity.mLatestValue_id = 0;
                 mPresenter.getLatestTimelinePostData(Const.TIMELINE_REFRESH, Const.getCustomTimelineAPI(2,
                         GocciTimelineActivity.mLatestSort_id, GocciTimelineActivity.mLatestCategory_id, GocciTimelineActivity.mLatestValue_id,
-                        GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLongitude() : 0.0,
-                        GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLatitude() : 0.0, 0));
+                        GocciTimelineActivity.mLongitude, GocciTimelineActivity.mLatitude, 0));
             }
         });
     }

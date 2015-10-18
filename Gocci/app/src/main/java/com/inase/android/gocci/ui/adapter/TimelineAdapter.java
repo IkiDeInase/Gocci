@@ -71,6 +71,8 @@ public class TimelineAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
                 .centerCrop()
                 .into(holder.mSquareImage);
 
+        holder.mOverlay.setMinimumHeight(mCellSize / 3);
+
         holder.mSquareImage.setVisibility(View.VISIBLE);
 
         holder.mRestname.setText(user.getRestname());

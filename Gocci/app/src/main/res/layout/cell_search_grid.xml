@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.exoplayer.AspectRatioFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/video_frame"
-    android:layout_width="100dp"
-    android:layout_height="100dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:layout_margin="1dp"
     android:background="@color/materialwhite">
 
@@ -20,42 +20,79 @@
         android:layout_height="match_parent"
         android:layout_gravity="center_horizontal" />
 
+    <ImageView
+        android:id="@+id/overlay_footer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:alpha="0.2"
+        android:layout_gravity="bottom"
+        android:background="@color/solid_black" />
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom">
 
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:alpha="0.2"
-            android:background="@color/solid_black" />
-
         <TextView
             android:id="@+id/restname"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
+            android:layout_above="@+id/footer"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
-            android:layout_marginTop="8dp"
-            android:gravity="right"
-            android:singleLine="true"
-            android:textColor="@color/white" />
-
-        <TextView
-            android:id="@+id/distance"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_below="@+id/restname"
-            android:layout_marginBottom="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginTop="4dp"
             android:gravity="right"
             android:singleLine="true"
             android:textColor="@color/white"
-            android:textStyle="bold" />
+            android:textSize="12sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:id="@+id/footer"
+            android:gravity="right"
+            android:orientation="horizontal"
+            android:layout_alignParentRight="false">
+
+            <TextView
+                android:id="@+id/distance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:singleLine="true"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:text="100m"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_gravity="center_vertical" />
+
+            <com.andexert.library.RippleView
+                android:id="@+id/gochi_action"
+                rv_centered="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ic_icon_beef"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="4dp">
+
+            </com.andexert.library.RippleView>
+
+            <com.andexert.library.RippleView
+                android:id="@+id/other_action"
+                rv_centered="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ic_more_vert_white_24dp"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="4dp">
+
+            </com.andexert.library.RippleView>
+
+        </LinearLayout>
     </RelativeLayout>
 </com.google.android.exoplayer.AspectRatioFrameLayout>

@@ -28,7 +28,6 @@ import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.google.android.exoplayer.audio.AudioCapabilities;
 import com.google.android.exoplayer.audio.AudioCapabilitiesReceiver;
 import com.google.android.exoplayer.drm.UnsupportedDrmException;
-import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.repository.PostDataRepository;
@@ -147,8 +146,7 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
                     if (!isEndScrioll) {
                         mPresenter.getFollowTimelinePostData(Const.TIMELINE_ADD, Const.getCustomTimelineAPI(1,
                                 GocciTimelineActivity.mFollowSort_id, GocciTimelineActivity.mFollowCategory_id, GocciTimelineActivity.mFollowValue_id,
-                                GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLongitude() : 0.0,
-                                GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLatitude() : 0.0, mNextCount));
+                                GocciTimelineActivity.mLongitude, GocciTimelineActivity.mLatitude, mNextCount));
                     }
                 }
             }
@@ -394,14 +392,14 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
         SmartLocation.with(context).location().oneFix().start(new OnLocationUpdatedListener() {
             @Override
             public void onLocationUpdated(Location location) {
-                GocciTimelineActivity.nowLocation = location;
+                GocciTimelineActivity.mLongitude = location.getLongitude();
+                GocciTimelineActivity.mLatitude = location.getLatitude();
                 GocciTimelineActivity.mFollowSort_id = 0;
                 GocciTimelineActivity.mFollowValue_id = 0;
                 GocciTimelineActivity.mFollowCategory_id = 0;
                 mPresenter.getFollowTimelinePostData(Const.TIMELINE_REFRESH, Const.getCustomTimelineAPI(1,
                         GocciTimelineActivity.mFollowSort_id, GocciTimelineActivity.mFollowCategory_id, GocciTimelineActivity.mFollowValue_id,
-                        GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLongitude() : 0.0,
-                        GocciTimelineActivity.nowLocation != null ? GocciTimelineActivity.nowLocation.getLatitude() : 0.0, 0));
+                        GocciTimelineActivity.mLongitude, GocciTimelineActivity.mLatitude, 0));
             }
         });
     }
