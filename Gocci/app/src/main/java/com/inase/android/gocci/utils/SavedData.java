@@ -242,7 +242,7 @@ public class SavedData {
         editor.apply();
     }
 
-    public static void setPostVideoPreview(Context context, String restname, int rest_id, String video_url, String aws_post_name, int category_id, int tag_id,
+    public static void setPostVideoPreview(Context context, String restname, int rest_id, String video_url, String aws_post_name, int category_id,
                                            String memo, String value, boolean isNewRestname, double lon, double lat) {
         SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
@@ -251,7 +251,6 @@ public class SavedData {
         editor.putString(KEY_VIDEO_URL, video_url);
         editor.putString(KEY_AWS_POST_NAME, aws_post_name);
         editor.putInt(KEY_CATEGORY_ID, category_id);
-        editor.putInt(KEY_TAG_ID, tag_id);
         editor.putString(KEY_MEMO, memo);
         editor.putString(KEY_VALUE, value);
         editor.putBoolean(KEY_ISNEWRESTNAME, isNewRestname);

@@ -204,10 +204,10 @@ public class Const {
         return URL_PREFIX + VERSION_NUMBER + "/mobile/post/password/?pass=" + password;
     }
 
-    public static String getPostMovieAPI(int rest_id, String movie, int category_id, int tag_id, String value, String memo, int cheer_flag) {
+    public static String getPostMovieAPI(int rest_id, String movie, int category_id, String value, String memo, int cheer_flag) {
         return URL_PREFIX + VERSION_NUMBER + "/mobile/post/post/?rest_id=" + rest_id +
-                "&movie_name=" + movie + "&category_id=" + category_id + "&tag_id=" + tag_id +
-                "&value=" + value + "&memo=" + memo + "&cheer_flag=" + cheer_flag;
+                "&movie_name=" + movie + "&category_id=" + category_id + "&value=" + value +
+                "&memo=" + memo + "&cheer_flag=" + cheer_flag;
     }
 
     public static String getPostRestAddAPI(String restname, double lat, double lon) {
@@ -347,10 +347,16 @@ public class Const {
         public SquareExoVideoView mSquareExoVideo;
         @Bind(R.id.video_frame)
         public AspectRatioFrameLayout mAspectFrame;
+        @Bind(R.id.overlay_footer)
+        public ImageView mOverlay;
         @Bind(R.id.restname)
         public TextView mRestname;
         @Bind(R.id.distance)
         public TextView mDistance;
+        @Bind(R.id.gochi_action)
+        public RippleView mGochiAction;
+        @Bind(R.id.other_action)
+        public RippleView mOtherAction;
 
         public TwoCellViewHolder(View view) {
             super(view);
