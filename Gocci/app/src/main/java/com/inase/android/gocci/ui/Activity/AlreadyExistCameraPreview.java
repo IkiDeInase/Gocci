@@ -8,16 +8,15 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
-import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
@@ -61,14 +60,10 @@ public class AlreadyExistCameraPreview extends AppCompatActivity {
 
     @Bind(R.id.preview_video)
     SquareVideoView mPreviewVideo;
-    @Bind(R.id.tool_bar)
-    Toolbar mToolBar;
     @Bind(R.id.restname_spinner)
     MaterialBetterSpinner mRestnameSpinner;
     @Bind(R.id.category_spinner)
     MaterialBetterSpinner mCategorySpinner;
-    @Bind(R.id.mood_spinner)
-    MaterialBetterSpinner mMoodSpinner;
     @Bind(R.id.edit_value)
     MaterialEditText mEditValue;
     @Bind(R.id.edit_comment)
@@ -79,10 +74,10 @@ public class AlreadyExistCameraPreview extends AppCompatActivity {
     RippleView mToukouButtonRipple;
     @Bind(R.id.progress_wheel)
     ProgressWheel mProgressWheel;
-    @Bind(R.id.add_rest_view)
-    RelativeLayout mAddRestView;
+    @Bind(R.id.add_rest_text)
+    TextView mAddRestText;
 
-    @OnClick(R.id.rest_add_button)
+    @OnClick(R.id.add_rest_text)
     public void restAdd() {
         createTenpo();
     }
@@ -143,7 +138,6 @@ public class AlreadyExistCameraPreview extends AppCompatActivity {
 
     private int mRest_id;
     private int mCategory_id;
-    private int mTag_id;
     private int mCheer_flag = 0;
     private String mRestname;
     private String mVideoUrl;
@@ -154,15 +148,13 @@ public class AlreadyExistCameraPreview extends AppCompatActivity {
     private double mLatitude;
     private double mLongitude;
 
-    private ArrayList<String> restnameList = new ArrayList<>();
+    private String[] restnameList = new String[30];
     private ArrayList<Integer> rest_idList = new ArrayList<>();
 
     private File mVideoFile;
 
     private CallbackManager callbackManager;
     private ShareDialog shareDialog;
-
-    private boolean isError;
 
     private static MobileAnalyticsManager analytics;
 
@@ -184,14 +176,11 @@ public class AlreadyExistCameraPreview extends AppCompatActivity {
         setContentView(R.layout.activity_already_exist_camera_preview);
         ButterKnife.bind(this);
 
-        isError = false;
-
         mRest_id = SavedData.getRest_id(this);
         mRestname = SavedData.getRestname(this);
         mVideoUrl = SavedData.getVideoUrl(this);
         mAwsPostName = SavedData.getAwsPostname(this);
         mCategory_id = SavedData.getCategory_id(this);
-        mTag_id = SavedData.getTag_id(this);
         mMemo = SavedData.getMemo(this);
         mValue = SavedData.getValue(this);
         mIsnewRestname = SavedData.getIsNewRestname(this);
@@ -222,13 +211,7 @@ public class AlreadyExistCameraPreview extends AppCompatActivity {
 
         Fabric.with(this, new TweetComposer());
 
-        //toolbar.inflateMenu(R.menu.toolbar_menu);
-        //toolbar.setLogo(R.drawable.ic_gocci_moji_white45);
-        mToolBar.setTitle("");
-        setSupportActionBar(mToolBar);
-
         String[] CATEGORY = getResources().getStringArray(R.array.list_category);
-        String[] MOOD = getResources().getStringArray(R.array.list_mood);
 
         ArrayAdapter<String> categoryAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_dropdown_item_1line, CATEGORY);
@@ -241,17 +224,6 @@ public class AlreadyExistCameraPreview extends AppCompatActivity {
             }
         });
 
-        ArrayAdapter<String> moodAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_dropdown_item_1line, MOOD);
-        mMoodSpinner.setAdapter(moodAdapter);
-        mMoodSpinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mTag_id = position + 2;
-                SavedData.setTag_id(AlreadyExistCameraPreview.this, mTag_id);
-            }
-        });
-
         restAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_dropdown_item_1line, restnameList);
         mRestnameSpinner.setAdapter(restAdapter);
@@ -259,7 +231,7 @@ public class AlreadyExistCameraPreview extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 mRest_id = rest_idList.get(position);
-                mRestname = restnameList.get(position);
+                mRestname = restnameList[position];
                 SavedData.setRest_id(AlreadyExistCameraPreview.this, mRest_id);
                 SavedData.setRestname(AlreadyExistCameraPreview.this, mRestname);
             }
@@ -286,7 +258,6 @@ public class AlreadyExistCameraPreview extends AppCompatActivity {
 
         mRestnameSpinner.setText(mRestname);
         mCategorySpinner.setText(mCategory_id == 1 ? "" : CATEGORY[mCategory_id - 2]);
-        mMoodSpinner.setText(mTag_id == 1 ? "" : MOOD[mTag_id - 2]);
         mEditValue.setText(mValue);
         mEditComment.setText(mMemo);
 
@@ -331,7 +302,7 @@ public class AlreadyExistCameraPreview extends AppCompatActivity {
         });
 
         if (mIsnewRestname || !mRestname.equals("")) {
-            mAddRestView.setVisibility(View.GONE);
+            mAddRestText.setVisibility(View.GONE);
         }
     }
 
@@ -361,7 +332,7 @@ public class AlreadyExistCameraPreview extends AppCompatActivity {
     @Override
     public final void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        SavedData.setPostVideoPreview(this, mRestname, mRest_id, mVideoUrl, mAwsPostName, mCategory_id, mTag_id, mMemo, mValue, mIsnewRestname,
+        SavedData.setPostVideoPreview(this, mRestname, mRest_id, mVideoUrl, mAwsPostName, mCategory_id, mMemo, mValue, mIsnewRestname,
                 mLongitude, mLatitude);
     }
 
@@ -378,7 +349,7 @@ public class AlreadyExistCameraPreview extends AppCompatActivity {
                         final String rest_name = jsonObject.getString("restname");
                         int rest_id = jsonObject.getInt("rest_id");
 
-                        restnameList.add(rest_name);
+                        restnameList[i] = rest_name;
                         rest_idList.add(rest_id);
                     }
                     restAdapter.addAll(restnameList);
@@ -397,27 +368,16 @@ public class AlreadyExistCameraPreview extends AppCompatActivity {
     private void createTenpo() {
         new MaterialDialog.Builder(AlreadyExistCameraPreview.this)
                 .content(getString(R.string.add_restname))
-                .input(getString(R.string.restname), null, new MaterialDialog.InputCallback() {
+                .contentColorRes(R.color.nameblack)
+                .inputType(InputType.TYPE_CLASS_TEXT)
+                .widgetColorRes(R.color.nameblack)
+                .positiveText("送信")
+                .positiveColorRes(R.color.gocci_header)
+                .input("", "", false, new MaterialDialog.InputCallback() {
                     @Override
                     public void onInput(MaterialDialog materialDialog, CharSequence charSequence) {
-                        materialDialog.getActionButton(DialogAction.POSITIVE).setEnabled(charSequence.length() > 0);
-                    }
-                })
-                .widgetColorRes(R.color.gocci_header)
-                .alwaysCallInputCallback()
-                .positiveText(getString(R.string.add_restname_post))
-                .positiveColorRes(R.color.gocci_header)
-                .callback(new MaterialDialog.ButtonCallback() {
-                    @Override
-                    public void onPositive(MaterialDialog dialog) {
-                        super.onPositive(dialog);
-                        mRestname = dialog.getInputEditText().getText().toString();
-
+                        mRestname = charSequence.toString();
                         Application_Gocci.getJsonAsyncHttpClient(Const.getPostRestAddAPI(mRestname, mLatitude, mLongitude), new JsonHttpResponseHandler() {
-                            @Override
-                            public void onStart() {
-                                mProgressWheel.setVisibility(View.VISIBLE);
-                            }
 
                             @Override
                             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
@@ -436,30 +396,23 @@ public class AlreadyExistCameraPreview extends AppCompatActivity {
                                         mRestnameSpinner.setText(mRestname);
                                         mRest_id = response.getInt("rest_id");
                                         mRestnameSpinner.setClickable(false);
+                                        SavedData.setIsNewRestname(AlreadyExistCameraPreview.this, mIsnewRestname);
                                         SavedData.setRestname(AlreadyExistCameraPreview.this, mRestname);
                                         SavedData.setRest_id(AlreadyExistCameraPreview.this, mRest_id);
-                                        SavedData.setIsNewRestname(AlreadyExistCameraPreview.this, mIsnewRestname);
                                     } else {
                                         Toast.makeText(AlreadyExistCameraPreview.this, message, Toast.LENGTH_SHORT).show();
                                     }
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
-
-                            }
-
-                            @Override
-                            public void onFinish() {
-                                mProgressWheel.setVisibility(View.INVISIBLE);
                             }
                         });
                     }
-                })
-                .show();
+                }).show();
     }
 
     private void postMovieAsync(final Context context) {
-        Application_Gocci.getJsonAsyncHttpClient(Const.getPostMovieAPI(mRest_id, mAwsPostName, mCategory_id, mTag_id, mValue, mMemo, mCheer_flag), new JsonHttpResponseHandler() {
+        Application_Gocci.getJsonAsyncHttpClient(Const.getPostMovieAPI(mRest_id, mAwsPostName, mCategory_id, mValue, mMemo, mCheer_flag), new JsonHttpResponseHandler() {
 
             @Override
             public void onStart() {

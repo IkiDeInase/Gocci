@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
@@ -20,7 +21,7 @@ import java.util.ArrayList;
 
 public class GocciCameraActivity extends AppCompatActivity {
 
-    public static ArrayList<String> restname = new ArrayList<>();
+    public static String[] restname = new String[30];
     public static ArrayList<Integer> rest_id = new ArrayList<>();
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
 
@@ -103,16 +104,10 @@ public class GocciCameraActivity extends AppCompatActivity {
                 .positiveColorRes(R.color.gocci_header)
                 .negativeText(getString(R.string.check_videoposting_no))
                 .negativeColorRes(R.color.gocci_header)
-                .callback(new MaterialDialog.ButtonCallback() {
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
-                    public void onPositive(MaterialDialog dialog) {
-                        super.onPositive(dialog);
+                    public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
                         GocciCameraActivity.this.finish();
-                    }
-
-                    @Override
-                    public void onNegative(MaterialDialog dialog) {
-                        super.onNegative(dialog);
                     }
                 }).show();
     }

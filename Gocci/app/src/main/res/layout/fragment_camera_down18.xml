@@ -1,54 +1,116 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:wheel="http://schemas.android.com/apk/res-auto"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root_layout"
+    android:fitsSystemWindows="true"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="#424242">
+    android:layout_height="match_parent">
 
-    <me.next.slidebottompanel.SlideBottomPanel
-        android:id="@+id/sbv"
+    <com.inase.android.gocci.ui.view.MySurfaceView
+        android:id="@+id/camera_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:sbp_title_height_no_display="48dp"
-        app:sbp_panel_height="440dp"
-        app:sbp_background_layout="@layout/cell_camera_down18">
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <RelativeLayout
+        android:id="@+id/bottom_mask"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/camera_view"
+        android:layout_gravity="bottom"
+        android:background="@color/white">
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/cancel_fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_close_grey600_24dp"
+            fab:fab_size="mini"
+            fab:fab_colorNormal="@color/white"
+            fab:fab_colorPressed="@color/white"
+            fab:fab_colorRipple="@color/white"
+            android:layout_toLeftOf="@+id/camera_button"
+            android:layout_marginRight="48dp" />
 
         <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="440dp"
-            android:background="#424242"
-            android:orientation="vertical">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/camera_button"
+            android:layout_centerInParent="true">
 
-            <ScrollView
+            <com.inase.android.gocci.ui.view.CircleProgressBar
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#424242">
+                android:id="@+id/circle_progress"
+                android:layout_gravity="center" />
 
-                <include
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    layout="@layout/view_camera_select" />
-            </ScrollView>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingLeft="@dimen/activity_horizontal_margin"
-                android:paddingRight="@dimen/activity_horizontal_margin"
-                android:background="@color/transparent">
-
-                <ImageView
-                    android:id="@+id/iv_1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_create_white"
-                    android:layout_centerInParent="true" />
-
-            </RelativeLayout>
-
+            <ImageButton
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:id="@+id/toukou_button"
+                android:layout_gravity="center"
+                android:background="@drawable/ic_new_camera2x" />
         </FrameLayout>
 
-    </me.next.slidebottompanel.SlideBottomPanel>
-</LinearLayout>
+    </RelativeLayout>
+
+    <com.github.clans.fab.FloatingActionMenu
+        android:id="@+id/menu_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_margin="8dp"
+        fab:menu_labels_style="@style/MenuLabelsStyle"
+        fab:menu_showShadow="false"
+        fab:menu_backgroundColor="#cc252525"
+        fab:menu_colorNormal="@color/transparent"
+        fab:menu_colorPressed="@color/transparent"
+        fab:menu_colorRipple="@color/transparent"
+        fab:menu_fab_size="mini"
+        fab:menu_openDirection="down"
+        fab:menu_icon="@drawable/ic_create_white_24dp"
+        fab:menu_animationDelayPerItem="0">
+
+        <com.github.clans.fab.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_comment_grey600_24dp"
+            style="@style/MenuButtonsStyle"
+            fab:fab_label="" />
+
+        <com.github.clans.fab.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_attach_money_grey600_24dp"
+            style="@style/MenuButtonsStyle"
+            fab:fab_label="" />
+
+        <com.github.clans.fab.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_restaurant_menu_grey600_24dp"
+            style="@style/MenuButtonsStyle"
+            fab:fab_label="" />
+
+        <com.github.clans.fab.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_store_grey600_24dp"
+            style="@style/MenuButtonsStyle"
+            fab:fab_label="" />
+
+    </com.github.clans.fab.FloatingActionMenu>
+
+    <com.pnikosis.materialishprogress.ProgressWheel
+        android:id="@+id/progress_wheel"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        wheel:matProg_barColor="@color/gocci_header"
+        wheel:matProg_progressIndeterminate="true" />
+</RelativeLayout>

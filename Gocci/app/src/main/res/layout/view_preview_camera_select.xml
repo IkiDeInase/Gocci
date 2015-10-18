@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:fillViewport="true"
+    android:overScrollMode="never"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -23,31 +25,18 @@
             app:met_floatingLabel="normal"
             app:met_floatingLabelTextSize="10sp" />
 
-        <RelativeLayout
-            android:id="@+id/add_rest_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
             <TextView
-                android:id="@+id/info_text"
-                android:layout_width="wrap_content"
+                android:id="@+id/add_rest_text"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="false"
-                android:layout_centerVertical="true"
-                android:layout_toLeftOf="@+id/rest_add_button"
-                android:text="@string/add_restname_text"
-                android:textColor="@color/nameblack"
-                android:textSize="@dimen/small_text" />
-
-            <ImageButton
-                android:id="@+id/rest_add_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
+                android:gravity="right"
+                android:layout_marginTop="8dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:background="@drawable/ic_info_outline_grey600_36dp" />
-        </RelativeLayout>
+                android:layout_marginBottom="8dp"
+                android:text="店舗が無い場合はこちら"
+                android:textColor="@color/nameblack"
+                android:textSize="@dimen/small_text" />
 
         <com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner
             android:id="@+id/category_spinner"
@@ -56,18 +45,6 @@
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:hint="@string/category"
-            android:textColor="@color/timecolor"
-            android:textSize="@dimen/small_text"
-            app:met_floatingLabel="normal"
-            app:met_floatingLabelTextSize="10sp" />
-
-        <com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner
-            android:id="@+id/mood_spinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:hint="@string/atmosphere"
             android:textColor="@color/timecolor"
             android:textSize="@dimen/small_text"
             app:met_floatingLabel="normal"
@@ -168,7 +145,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:id="@+id/button_twitter"
-                android:background="@drawable/ic_navigate_next_black_36dp"
+                android:background="@drawable/ic_navigate_next_grey600_24dp"
                 android:layout_marginRight="8dp" />
         </RelativeLayout>
 
@@ -203,7 +180,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:id="@+id/button_facebook"
-                android:background="@drawable/ic_navigate_next_black_36dp"
+                android:background="@drawable/ic_navigate_next_grey600_24dp"
                 android:layout_marginRight="8dp" />
         </RelativeLayout>
 
@@ -238,7 +215,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:id="@+id/button_instagram"
-                android:background="@drawable/ic_navigate_next_black_36dp"
+                android:background="@drawable/ic_navigate_next_grey600_24dp"
                 android:layout_marginRight="8dp" />
         </RelativeLayout>
 

@@ -1,15 +1,15 @@
 package com.inase.android.gocci.ui.fragment;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.ActivityInfo;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.media.MediaScannerConnection;
@@ -17,21 +17,22 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
-import android.support.design.widget.Snackbar;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
+import android.view.animation.OvershootInterpolator;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.GravityEnum;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.github.clans.fab.FloatingActionButton;
+import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -57,8 +58,6 @@ import com.inase.android.gocci.utils.camera.TLMediaMovieBuilder;
 import com.inase.android.gocci.utils.camera.TLMediaVideoEncoder;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.pnikosis.materialishprogress.ProgressWheel;
-import com.rengwuxian.materialedittext.MaterialEditText;
-import com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -66,45 +65,30 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
-import me.next.slidebottompanel.SlideBottomPanel;
 
-public class up18CameraFragment extends Fragment implements SensorEventListener, LocationListener,
-        GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener,
-        ResultCallback<LocationSettingsResult> {
-    private static final boolean DEBUG = true;    // TODO set false on releasing
+public class up18CameraFragment extends Fragment implements LocationListener, GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener, ResultCallback<LocationSettingsResult> {
+    private static final boolean DEBUG = true;
     private static final String TAG = "GocciCamera";
 
-    private SensorManager mSensorManager;
-    private boolean mIsMagSensor;
-    private boolean mIsAccSensor;
-
-    private static final int MATRIX_SIZE = 16;
-    /* 回転行列 */
-    float[] inR = new float[MATRIX_SIZE];
-    float[] outR = new float[MATRIX_SIZE];
-    float[] I = new float[MATRIX_SIZE];
-
-    /* センサーの値 */
-    float[] orientationValues = new float[3];
-    float[] magneticValues = new float[3];
-    float[] accelerometerValues = new float[3];
-
-    /**
-     * for camera preview display
-     */
     private CameraGLView mCameraView;
 
+    private ProgressWheel cameraProgress;
+
+    private CircleProgressBar progress;
     private ImageButton toukouButton;
-    private Button cancelButton;
-    /**
-     * button for start/stop recording
-     */
+    private FloatingActionMenu mMenu;
+    private FloatingActionButton mCommentAction;
+    private FloatingActionButton mValueAction;
+    private FloatingActionButton mCategoryAction;
+    private FloatingActionButton mRestaurantAction;
+
+    private FloatingActionButton mCloseButton;
+
     private TLMediaVideoEncoder mVideoEncoder;
     private TLMediaAudioEncoder mAudioEncoder;
     private TLMediaMovieBuilder mMuxer;
@@ -113,12 +97,9 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
 
     private Runnable progressRunnable = null;
     private Handler handler = null;
-    private ProgressWheel cameraProgress;
-    private CircleProgressBar progress;
 
     private int mRest_id = 1;
     private int mCategory_id = 1;
-    private int mTag_id = 1;
     private String mRest_name;
     private String mFinalVideoUrl;
     private String mAwsPostName;
@@ -136,17 +117,6 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
     private boolean isStart = false;
     private boolean isFinish = false;
 
-    private MaterialBetterSpinner restname_spinner;
-    private MaterialBetterSpinner category_spinner;
-    private MaterialBetterSpinner mood_spinner;
-    private MaterialEditText edit_value;
-    private MaterialEditText edit_comment;
-    private ImageButton restaddButton;
-
-    private ArrayAdapter<String> restAdapter;
-
-    private SlideBottomPanel sbv;
-
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
 
     public static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
@@ -161,27 +131,19 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
     private boolean isLocationUpdating = false;
 
     protected GoogleApiClient mGoogleApiClient;
-
     protected LocationRequest mLocationRequest;
-
     protected LocationSettingsRequest mLocationSettingsRequest;
-
     private LocationManager mLocationManager;
 
-    private Snackbar bar;
-
     public up18CameraFragment() {
-        // need default constructor
+
     }
 
     @Override
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
-        mSensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
         mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-
         if (checkPlayServices()) {
-            // Building the GoogleApi client
             buildGoogleApiClient();
             createLocationRequest();
             buildLocationSettingsRequest();
@@ -195,17 +157,110 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
         final View rootView = inflater.inflate(R.layout.fragment_camera_up18, container, false);
 
         mCameraView = (CameraGLView) rootView.findViewById(R.id.camera_view);
-        //mCameraView.setVideoSize(1280, 720);
         mCameraView.setVideoSize(640, 480);
-        //mCameraView.setOnTouchListener(mOnTouchListener);
         cameraProgress = (ProgressWheel) rootView.findViewById(R.id.progress_wheel);
-        //progress = (CircleProgressBar) rootView.findViewById(R.id.circleProgress);
-        //mRecordButton.setOnTouchListener(mOnTouchListener);
-        //progress = (CircleProgressBar) rootView.findViewById(R.id.circleProgress);
-        //recordButton = (ImageButton) rootView.findViewById(R.id.toukouButton);
-        //recordButton.setOnTouchListener(mOnTouchListener);
-        cancelButton = (Button) rootView.findViewById(R.id.cancel);
-        cancelButton.setOnClickListener(new View.OnClickListener() {
+
+        toukouButton = (ImageButton) rootView.findViewById(R.id.toukou_button);
+        progress = (CircleProgressBar) rootView.findViewById(R.id.circle_progress);
+
+        mCloseButton = (FloatingActionButton) rootView.findViewById(R.id.cancel_fab);
+
+        mMenu = (FloatingActionMenu) rootView.findViewById(R.id.menu_fab);
+        mCommentAction = (FloatingActionButton) rootView.findViewById(R.id.comment_action);
+        mValueAction = (FloatingActionButton) rootView.findViewById(R.id.value_action);
+        mCategoryAction = (FloatingActionButton) rootView.findViewById(R.id.category_action);
+        mRestaurantAction = (FloatingActionButton) rootView.findViewById(R.id.restaurant_action);
+
+        mCommentAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new MaterialDialog.Builder(getActivity())
+                        .content(getString(R.string.comment))
+                        .contentColorRes(R.color.nameblack)
+                        .contentGravity(GravityEnum.CENTER)
+                        .inputType(InputType.TYPE_CLASS_TEXT)
+                        .widgetColorRes(R.color.nameblack)
+                        .positiveText("完了")
+                        .positiveColorRes(R.color.gocci_header)
+                        .input("", "", false, new MaterialDialog.InputCallback() {
+                            @Override
+                            public void onInput(MaterialDialog materialDialog, CharSequence charSequence) {
+                                mMemo = charSequence.toString();
+                                mCommentAction.setLabelText(charSequence.toString());
+                            }
+                        }).show();
+            }
+        });
+        mValueAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new MaterialDialog.Builder(getActivity())
+                        .content(getString(R.string.value))
+                        .contentGravity(GravityEnum.CENTER)
+                        .contentColorRes(R.color.nameblack)
+                        .inputType(InputType.TYPE_CLASS_NUMBER)
+                        .widgetColorRes(R.color.nameblack)
+                        .positiveText("完了")
+                        .positiveColorRes(R.color.gocci_header)
+                        .input("", "", false, new MaterialDialog.InputCallback() {
+                            @Override
+                            public void onInput(MaterialDialog materialDialog, CharSequence charSequence) {
+                                mValue = charSequence.toString();
+                                mValueAction.setLabelText(charSequence.toString() + "円");
+                            }
+                        }).show();
+            }
+        });
+        mCategoryAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new MaterialDialog.Builder(getActivity())
+                        .content(getString(R.string.category))
+                        .contentGravity(GravityEnum.CENTER)
+                        .contentColorRes(R.color.nameblack)
+                        .items(R.array.list_category)
+                        .itemsColorRes(R.color.nameblack)
+                        .itemsCallback(new MaterialDialog.ListCallback() {
+                            @Override
+                            public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
+                                materialDialog.dismiss();
+                                mCategory_id = i + 2;
+                                mCategoryAction.setLabelText(charSequence.toString());
+                            }
+                        }).show();
+            }
+        });
+        mRestaurantAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new MaterialDialog.Builder(getActivity())
+                        .content("店舗")
+                        .contentGravity(GravityEnum.CENTER)
+                        .contentColorRes(R.color.nameblack)
+                        .positiveText("店舗が無い場合はこちら")
+                        .positiveColorRes(R.color.nameblack)
+                        .onPositive(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                                materialDialog.dismiss();
+                                createTenpo();
+                            }
+                        })
+                        .items(GocciCameraActivity.restname)
+                        .itemsColorRes(R.color.nameblack)
+                        .itemsCallback(new MaterialDialog.ListCallback() {
+                            @Override
+                            public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
+                                materialDialog.dismiss();
+                                mRest_name = charSequence.toString();
+                                mRest_id = GocciCameraActivity.rest_id.get(i);
+                                mRestaurantAction.setLabelText(charSequence.toString());
+                            }
+                        }).show();
+            }
+        });
+
+        mCloseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 new MaterialDialog.Builder(getActivity())
@@ -214,92 +269,19 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
                         .positiveColorRes(R.color.gocci_header)
                         .negativeText(getString(R.string.check_videoposting_no))
                         .negativeColorRes(R.color.gocci_header)
-                        .callback(new MaterialDialog.ButtonCallback() {
+                        .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
-                            public void onPositive(MaterialDialog dialog) {
-                                super.onPositive(dialog);
+                            public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
                                 getActivity().finish();
-                            }
-
-                            @Override
-                            public void onNegative(MaterialDialog dialog) {
-                                super.onNegative(dialog);
                             }
                         }).show();
             }
         });
 
-        toukouButton = (ImageButton) rootView.findViewById(R.id.toukou_button);
-        progress = (CircleProgressBar) rootView.findViewById(R.id.circle_progress);
+        mMenu.setClosedOnTouchOutside(true);
 
         toukouButton.setOnTouchListener(mOnTouchListener);
 
-        sbv = (SlideBottomPanel) rootView.findViewById(R.id.sbv);
-
-        bar = Snackbar.make(sbv, getString(R.string.camera_alert), Snackbar.LENGTH_INDEFINITE);
-
-        restname_spinner = (MaterialBetterSpinner) rootView.findViewById(R.id.restname_spinner);
-        category_spinner = (MaterialBetterSpinner) rootView.findViewById(R.id.category_spinner);
-        mood_spinner = (MaterialBetterSpinner) rootView.findViewById(R.id.mood_spinner);
-        edit_value = (MaterialEditText) rootView.findViewById(R.id.edit_value);
-        edit_comment = (MaterialEditText) rootView.findViewById(R.id.edit_comment);
-
-        restaddButton = (ImageButton) rootView.findViewById(R.id.rest_add_button);
-
-        final String[] CATEGORY = getResources().getStringArray(R.array.list_category);
-        final String[] MOOD = getResources().getStringArray(R.array.list_mood);
-
-        ArrayAdapter<String> categoryAdapter = new ArrayAdapter<String>(getActivity(),
-                android.R.layout.simple_dropdown_item_1line, CATEGORY);
-        category_spinner.setAdapter(categoryAdapter);
-        category_spinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mCategory_id = position + 2;
-            }
-        });
-
-        ArrayAdapter<String> moodAdapter = new ArrayAdapter<>(getActivity(),
-                android.R.layout.simple_dropdown_item_1line, MOOD);
-        mood_spinner.setAdapter(moodAdapter);
-        mood_spinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mTag_id = position + 2;
-            }
-        });
-
-        restAdapter = new ArrayAdapter<String>(getActivity(),
-                android.R.layout.simple_dropdown_item_1line);
-        restname_spinner.setAdapter(restAdapter);
-        restname_spinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mRest_id = GocciCameraActivity.rest_id.get(position);
-            }
-        });
-
-        restaddButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                createTenpo();
-            }
-        });
-        /*
-        ViewPager viewPager = (ViewPager) rootView.findViewById(R.id.viewpager);
-        viewPager.setOffscreenPageLimit(2);
-        SmartTabLayout viewPagerTab = (SmartTabLayout) rootView.findViewById(R.id.viewpagertab);
-
-        adapter = new ViewPagerItemAdapter(ViewPagerItems.with(getActivity())
-                .add(R.string.lat, R.layout.view_camera_1)
-                .add(R.string.lon, R.layout.view_camera_2)
-                .create());
-
-        viewPager.setAdapter(adapter);
-        viewPagerTab.setViewPager(viewPager);
-        viewPagerTab.setOnPageChangeListener(this);
-
-*/
         handler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
@@ -331,7 +313,40 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
 
         progressRunnable = new ProgressRunnable();
         handler.post(progressRunnable);
+
+        createCustomAnimation();
         return rootView;
+    }
+
+    private void createCustomAnimation() {
+
+        AnimatorSet set = new AnimatorSet();
+
+        ObjectAnimator scaleOutX = ObjectAnimator.ofFloat(mMenu.getMenuIconView(), "scaleX", 1.0f, 0.2f);
+        ObjectAnimator scaleOutY = ObjectAnimator.ofFloat(mMenu.getMenuIconView(), "scaleY", 1.0f, 0.2f);
+
+        ObjectAnimator scaleInX = ObjectAnimator.ofFloat(mMenu.getMenuIconView(), "scaleX", 0.2f, 1.0f);
+        ObjectAnimator scaleInY = ObjectAnimator.ofFloat(mMenu.getMenuIconView(), "scaleY", 0.2f, 1.0f);
+
+        scaleOutX.setDuration(50);
+        scaleOutY.setDuration(50);
+
+        scaleInX.setDuration(150);
+        scaleInY.setDuration(150);
+
+        scaleInX.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                mMenu.getMenuIconView().setImageResource(mMenu.isOpened()
+                        ? R.drawable.ic_clear_white_24dp : R.drawable.ic_create_white_24dp);
+            }
+        });
+
+        set.play(scaleOutX).with(scaleOutY);
+        set.play(scaleInX).with(scaleInY).after(scaleOutX);
+        set.setInterpolator(new OvershootInterpolator(2));
+
+        mMenu.setIconToggleAnimatorSet(set);
     }
 
     private void getLocation(final Context context, Location location) {
@@ -347,8 +362,6 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray timeline) {
                 // Pull out the first event on the public timeline
-                GocciCameraActivity.restname.clear();
-                GocciCameraActivity.rest_id.clear();
                 try {
                     for (int i = 0; i < timeline.length(); i++) {
                         JSONObject jsonObject = timeline.getJSONObject(i);
@@ -356,10 +369,9 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
                         final String rest_name = jsonObject.getString("restname");
                         int rest_id = jsonObject.getInt("rest_id");
 
-                        GocciCameraActivity.restname.add(rest_name);
+                        GocciCameraActivity.restname[i] = rest_name;
                         GocciCameraActivity.rest_id.add(rest_id);
                     }
-                    restAdapter.addAll(GocciCameraActivity.restname);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -374,22 +386,12 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
     }
 
     public void startPlay() {
-        //recorderManager.reset();
-
-        //ここで記入済みの値を持って行こう
-        if (edit_value.getText().length() != 0) {
-            mValue = edit_value.getText().toString();
-        }
-        if (edit_comment.getText().length() != 0) {
-            mMemo = edit_comment.getText().toString();
-        }
-
         Intent intent = new Intent(getActivity(), CameraPreviewActivity.class);
+        intent.putExtra("restname", mRest_name);
         intent.putExtra("rest_id", mRest_id);
         intent.putExtra("video_url", mFinalVideoUrl);
         intent.putExtra("aws", mAwsPostName);
         intent.putExtra("category_id", mCategory_id);
-        intent.putExtra("tag_id", mTag_id);
         intent.putExtra("memo", mMemo);
         intent.putExtra("value", mValue);
         intent.putExtra("isNewRestname", mIsnewRestname);
@@ -418,22 +420,6 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
         if (DEBUG) Log.v(TAG, "onResume:");
         mCameraView.onResume();
 
-        List<Sensor> sensors = mSensorManager.getSensorList(Sensor.TYPE_ALL);
-
-        // センサマネージャへリスナーを登録(implements SensorEventListenerにより、thisで登録する)
-        for (Sensor sensor : sensors) {
-
-            if (sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
-                mSensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_UI);
-                mIsMagSensor = true;
-            }
-
-            if (sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-                mSensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_UI);
-                mIsAccSensor = true;
-            }
-        }
-
         checkPlayServices();
 
         if (mGoogleApiClient != null) {
@@ -451,25 +437,22 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
                         .positiveColorRes(R.color.gocci_header)
                         .negativeText(getString(R.string.camera_location_no))
                         .negativeColorRes(R.color.material_drawer_primary_light)
-                        .callback(new MaterialDialog.ButtonCallback() {
+                        .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
-                            public void onPositive(MaterialDialog dialog) {
-                                super.onPositive(dialog);
+                            public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
                                 Intent settingIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                                 startActivity(settingIntent);
                             }
-
+                        })
+                        .onNegative(new MaterialDialog.SingleButtonCallback() {
                             @Override
-                            public void onNegative(MaterialDialog dialog) {
-                                super.onNegative(dialog);
+                            public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
                                 Toast.makeText(getActivity(), getString(R.string.camera_location_cancel), Toast.LENGTH_LONG).show();
                             }
                         }).show();
-
             } else {
                 firstLocation();
             }
-
         }
     }
 
@@ -482,12 +465,6 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
 
         if (isLocationUpdating) {
             stopLocationUpdates();
-        }
-
-        if (mIsMagSensor || mIsAccSensor) {
-            mSensorManager.unregisterListener(this);
-            mIsMagSensor = false;
-            mIsAccSensor = false;
         }
     }
 
@@ -509,33 +486,10 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
         mCameraView.onFinish();
     }
 
-    /*
-     *
-     */
     public final void fixedScreenOrientation(final boolean fixed) {
         getActivity().setRequestedOrientation(
                 fixed ? ActivityInfo.SCREEN_ORIENTATION_LOCKED : ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
     }
-
-    /**
-     * method when touch record button
-     */
-    /*
-    private final OnClickListener mOnClickListener = new OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            switch (view.getId()) {
-                case R.id.record_button:
-                    if (!mIsRecording) {
-                        startRecording();
-                    } else {
-                        stopRecording();
-                    }
-                    break;
-            }
-        }
-    };
-    */
 
     private final View.OnTouchListener mOnTouchListener = new View.OnTouchListener() {
         @Override
@@ -559,12 +513,6 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
         }
     };
 
-    /**
-     * start recording
-     * This is a sample project and call this on UI thread to avoid being complicated
-     * but basically this should be called on private thread because preparing
-     * of encoder may be heavy work on some devices
-     */
     private void startRecording() {
         if (mIsRecording) return;
         if (isMax) return;
@@ -613,9 +561,6 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
         fixedScreenOrientation(mIsRecording);
     }
 
-    /**
-     * request stop recording
-     */
     private void stopRecording() {
         if (!mIsRecording) return;
         isMax = false;
@@ -643,9 +588,6 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
         }
     }
 
-    /**
-     * resume recording
-     */
     private void resumeRecording() {
         if (!mIsRecording) return;
         if (isMax) return;
@@ -667,9 +609,6 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
         }
     }
 
-    /**
-     * pause recording
-     */
     private void pauseRecording() {
         if (!mIsRecording) return;
         if (!isMax) {
@@ -697,9 +636,6 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
             }
     }
 
-    /**
-     * callback methods from encoder
-     */
     private final TLMediaEncoder.MediaEncoderListener mMediaEncoderListener
             = new TLMediaEncoder.MediaEncoderListener() {
 
@@ -728,9 +664,6 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
         }
     };
 
-    /**
-     * callback methods from TLMediaMovieBuilder
-     */
     private TLMediaMovieBuilder.TLMediaMovieBuilderCallback mTLMediaMovieBuilderCallback
             = new TLMediaMovieBuilder.TLMediaMovieBuilderCallback() {
 
@@ -757,56 +690,6 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
             if (DEBUG) Log.v(TAG, "onError:" + e.getMessage());
         }
     };
-
-    @Override
-    public void onSensorChanged(SensorEvent event) {
-        if (event.accuracy == SensorManager.SENSOR_STATUS_UNRELIABLE) return;
-
-        switch (event.sensor.getType()) {
-            case Sensor.TYPE_MAGNETIC_FIELD:
-                magneticValues = event.values.clone();
-                break;
-            case Sensor.TYPE_ACCELEROMETER:
-                accelerometerValues = event.values.clone();
-                break;
-        }
-
-        if (magneticValues != null && accelerometerValues != null) {
-
-            SensorManager.getRotationMatrix(inR, I, accelerometerValues, magneticValues);
-
-            //Activityの表示が縦固定の場合。横向きになる場合、修正が必要です
-            SensorManager.remapCoordinateSystem(inR, SensorManager.AXIS_X, SensorManager.AXIS_Z, outR);
-            SensorManager.getOrientation(outR, orientationValues);
-
-            int degree = radianToDegree(orientationValues[2]);
-
-            if (degree <= -60) {
-                if (!bar.isShown()) {
-                    bar.show();
-                }
-            }
-            if (-60 < degree && degree <= 60) {
-                if (bar.isShown()) {
-                    bar.dismiss();
-                }
-            }
-            if (60 < degree) {
-                if (!bar.isShown()) {
-                    bar.show();
-                }
-            }
-        }
-    }
-
-    int radianToDegree(float rad) {
-        return (int) Math.floor(Math.toDegrees(rad));
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
-    }
 
     private class ProgressRunnable implements Runnable {
 
@@ -842,27 +725,16 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
     private void createTenpo() {
         new MaterialDialog.Builder(getActivity())
                 .content(getString(R.string.add_restname))
-                .input(getString(R.string.restname), null, new MaterialDialog.InputCallback() {
+                .contentColorRes(R.color.nameblack)
+                .inputType(InputType.TYPE_CLASS_TEXT)
+                .widgetColorRes(R.color.nameblack)
+                .positiveText("送信")
+                .positiveColorRes(R.color.gocci_header)
+                .input("", "", false, new MaterialDialog.InputCallback() {
                     @Override
                     public void onInput(MaterialDialog materialDialog, CharSequence charSequence) {
-                        materialDialog.getActionButton(DialogAction.POSITIVE).setEnabled(charSequence.length() > 0);
-                    }
-                })
-                .widgetColorRes(R.color.gocci_header)
-                .alwaysCallInputCallback()
-                .positiveText(getString(R.string.add_restname_post))
-                .positiveColorRes(R.color.gocci_header)
-                .callback(new MaterialDialog.ButtonCallback() {
-                    @Override
-                    public void onPositive(MaterialDialog dialog) {
-                        super.onPositive(dialog);
-                        mRest_name = dialog.getInputEditText().getText().toString();
-
+                        mRest_name = charSequence.toString();
                         Application_Gocci.getJsonAsyncHttpClient(Const.getPostRestAddAPI(mRest_name, latitude, longitude), new JsonHttpResponseHandler() {
-                            @Override
-                            public void onStart() {
-                                cameraProgress.setVisibility(View.VISIBLE);
-                            }
 
                             @Override
                             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
@@ -871,34 +743,24 @@ public class up18CameraFragment extends Fragment implements SensorEventListener,
 
                             @Override
                             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-
                                 try {
                                     String message = response.getString("message");
 
                                     if (message.equals(getString(R.string.add_restname_complete_message))) {
                                         Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
-                                        //店名をセット
                                         mIsnewRestname = true;
-                                        restname_spinner.setText(mRest_name);
                                         mRest_id = response.getInt("rest_id");
-                                        restname_spinner.setClickable(false);
+                                        mCommentAction.setLabelText(mRest_name);
                                     } else {
                                         Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
                                     }
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
-
-                            }
-
-                            @Override
-                            public void onFinish() {
-                                cameraProgress.setVisibility(View.INVISIBLE);
                             }
                         });
                     }
-                })
-                .show();
+                }).show();
     }
 
     private boolean checkPlayServices() {
