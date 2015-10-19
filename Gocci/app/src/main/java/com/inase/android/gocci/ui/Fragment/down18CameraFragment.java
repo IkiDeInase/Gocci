@@ -32,6 +32,10 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.GravityEnum;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.coremedia.iso.boxes.Container;
+import com.facebook.rebound.BaseSpringSystem;
+import com.facebook.rebound.SimpleSpringListener;
+import com.facebook.rebound.Spring;
+import com.facebook.rebound.SpringSystem;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.gms.common.ConnectionResult;
@@ -56,7 +60,6 @@ import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.ui.activity.CameraPreviewActivity;
 import com.inase.android.gocci.ui.activity.GocciCameraActivity;
-import com.inase.android.gocci.ui.view.CircleProgressBar;
 import com.inase.android.gocci.ui.view.MySurfaceView;
 import com.inase.android.gocci.utils.camera.CameraManager;
 import com.inase.android.gocci.utils.camera.RecorderManager;
@@ -80,6 +83,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
+import at.grabner.circleprogress.CircleProgressView;
 import cz.msebera.android.httpclient.Header;
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
@@ -97,13 +101,13 @@ public class down18CameraFragment extends Fragment implements LocationListener, 
     private Handler handler = null;
     private ProgressWheel cameraProgress;
 
-    private CircleProgressBar progress;
+    private CircleProgressView progress;
 
     private int mRest_id = 1;
     private int mCategory_id = 1;
-    private String mRest_name;
-    private String mFinalVideoUrl;
-    private String mAwsPostName;
+    private String mRest_name = "";
+    private String mFinalVideoUrl = "";
+    private String mAwsPostName = "";
     private String mValue = "";
     private String mMemo = "";
     private boolean mIsnewRestname = false;
@@ -140,8 +144,28 @@ public class down18CameraFragment extends Fragment implements LocationListener, 
 
     private LocationManager mLocationManager;
 
+    private final BaseSpringSystem mSpringSystem = SpringSystem.create();
+    private final ExampleSpringListener mSpringListener = new ExampleSpringListener();
+    private Spring mScaleSpring;
+
     public down18CameraFragment() {
 
+    }
+
+    private class ExampleSpringListener extends SimpleSpringListener {
+        @Override
+        public void onSpringUpdate(Spring spring) {
+            // On each update of the spring value, we adjust the scale of the image view to match the
+            // springs new value. We use the SpringUtil linear interpolation function mapValueFromRangeToRange
+            // to translate the spring's 0 to 1 scale to a 100% to 50% scale range and apply that to the View
+            // with setScaleX/Y. Note that rendering is an implementation detail of the application and not
+            // Rebound itself. If you need Gingerbread compatibility consider using NineOldAndroids to update
+            // your view properties in a backwards compatible manner.
+            float value = (float) spring.getCurrentValue();
+            float scale = 1f - (value * 0.3f);
+            progress.setScaleX(scale);
+            progress.setScaleY(scale);
+        }
     }
 
     @Override
@@ -167,7 +191,12 @@ public class down18CameraFragment extends Fragment implements LocationListener, 
         recorderManager = new RecorderManager(getCameraManager(), videoSurface, getActivity());
 
         toukouButton = (ImageButton) rootView.findViewById(R.id.toukou_button);
-        progress = (CircleProgressBar) rootView.findViewById(R.id.circle_progress);
+        progress = (CircleProgressView) rootView.findViewById(R.id.circle_progress);
+        progress.setValue(0);
+
+        mScaleSpring = mSpringSystem.createSpring();
+
+        mScaleSpring.setEndValue(1);
 
         mCloseButton = (FloatingActionButton) rootView.findViewById(R.id.cancel_fab);
         mMenu = (FloatingActionMenu) rootView.findViewById(R.id.menu_fab);
@@ -290,30 +319,38 @@ public class down18CameraFragment extends Fragment implements LocationListener, 
 
             @Override
             public boolean onTouch(View arg0, MotionEvent motionEvent) {
-                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                    try {
-                        // sign.setPressed(true);
-                        new Handler().post(new Runnable() {
-                            @Override
-                            public void run() {
-                                cameraManager.getCamera().autoFocus(null);
-                            }
-                        });
-                        recorderManager.startRecord(true);
+                    switch (motionEvent.getAction()) {
+                        case MotionEvent.ACTION_DOWN:
+                            mScaleSpring.setEndValue(0);
+                            try {
+                                // sign.setPressed(true);
+                                new Handler().post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        cameraManager.getCamera().autoFocus(null);
+                                    }
+                                });
+                                recorderManager.startRecord(true);
 
-                    } finally {
-                        muteAll(true);
+                            } finally {
+                                muteAll(true);
+                            }
+                            break;
+                        case MotionEvent.ACTION_MOVE:
+                            break;
+                        case MotionEvent.ACTION_CANCEL:
+                        case MotionEvent.ACTION_UP:
+                            mScaleSpring.setEndValue(1);
+                            try {
+                                // sign.setPressed(false);
+                                recorderManager.stopRecord();
+                            } finally {
+                                muteAll(false);
+                                //
+                            }
+                            break;
                     }
-                } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                    try {
-                        // sign.setPressed(false);
-                        recorderManager.stopRecord();
-                    } finally {
-                        muteAll(false);
-                        //
-                    }
-                }
-                return true;
+                    return true;
             }
         });
 
@@ -328,6 +365,7 @@ public class down18CameraFragment extends Fragment implements LocationListener, 
                 } else {
                     cameraProgress.setVisibility(View.VISIBLE);
 
+                    progress.setValue(100);
                     // System.out.println("UnClickable");
                     // finishButton.setClickable(false);
                     onFinishPressed();
@@ -337,9 +375,9 @@ public class down18CameraFragment extends Fragment implements LocationListener, 
                 int circle = (int) (msg.arg1 * 1.0 / 70);
 
                 if (circle > 50) {
-                    progress.setProgress(circle + 1);
+                    progress.setValue(circle + 1);
                 } else {
-                    progress.setProgress(circle);
+                    progress.setValue(circle);
                 }
                 super.handleMessage(msg);
                 // //
@@ -396,6 +434,7 @@ public class down18CameraFragment extends Fragment implements LocationListener, 
     public void onResume() {
         super.onResume();
 
+        mScaleSpring.addListener(mSpringListener);
         checkPlayServices();
 
         if (mGoogleApiClient != null) {
@@ -436,6 +475,7 @@ public class down18CameraFragment extends Fragment implements LocationListener, 
     public void onPause() {
         super.onPause();
 
+        mScaleSpring.removeListener(mSpringListener);
         if (isLocationUpdating) {
             stopLocationUpdates();
         }

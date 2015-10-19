@@ -31,6 +31,10 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.GravityEnum;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.facebook.rebound.BaseSpringSystem;
+import com.facebook.rebound.SimpleSpringListener;
+import com.facebook.rebound.Spring;
+import com.facebook.rebound.SpringSystem;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.gms.common.ConnectionResult;
@@ -51,7 +55,6 @@ import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.ui.activity.CameraPreviewActivity;
 import com.inase.android.gocci.ui.activity.GocciCameraActivity;
 import com.inase.android.gocci.ui.view.CameraGLView;
-import com.inase.android.gocci.ui.view.CircleProgressBar;
 import com.inase.android.gocci.utils.camera.TLMediaAudioEncoder;
 import com.inase.android.gocci.utils.camera.TLMediaEncoder;
 import com.inase.android.gocci.utils.camera.TLMediaMovieBuilder;
@@ -66,6 +69,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.Date;
 
+import at.grabner.circleprogress.CircleProgressView;
 import cz.msebera.android.httpclient.Header;
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
@@ -79,7 +83,7 @@ public class up18CameraFragment extends Fragment implements LocationListener, Go
 
     private ProgressWheel cameraProgress;
 
-    private CircleProgressBar progress;
+    private CircleProgressView progress;
     private ImageButton toukouButton;
     private FloatingActionMenu mMenu;
     private FloatingActionButton mCommentAction;
@@ -100,9 +104,9 @@ public class up18CameraFragment extends Fragment implements LocationListener, Go
 
     private int mRest_id = 1;
     private int mCategory_id = 1;
-    private String mRest_name;
-    private String mFinalVideoUrl;
-    private String mAwsPostName;
+    private String mRest_name = "";
+    private String mFinalVideoUrl = "";
+    private String mAwsPostName = "";
     private String mValue = "";
     private String mMemo = "";
     private boolean mIsnewRestname = false;
@@ -135,8 +139,28 @@ public class up18CameraFragment extends Fragment implements LocationListener, Go
     protected LocationSettingsRequest mLocationSettingsRequest;
     private LocationManager mLocationManager;
 
+    private final BaseSpringSystem mSpringSystem = SpringSystem.create();
+    private final ExampleSpringListener mSpringListener = new ExampleSpringListener();
+    private Spring mScaleSpring;
+
     public up18CameraFragment() {
 
+    }
+
+    private class ExampleSpringListener extends SimpleSpringListener {
+        @Override
+        public void onSpringUpdate(Spring spring) {
+            // On each update of the spring value, we adjust the scale of the image view to match the
+            // springs new value. We use the SpringUtil linear interpolation function mapValueFromRangeToRange
+            // to translate the spring's 0 to 1 scale to a 100% to 50% scale range and apply that to the View
+            // with setScaleX/Y. Note that rendering is an implementation detail of the application and not
+            // Rebound itself. If you need Gingerbread compatibility consider using NineOldAndroids to update
+            // your view properties in a backwards compatible manner.
+            float value = (float) spring.getCurrentValue();
+            float scale = 1f - (value * 0.3f);
+            progress.setScaleX(scale);
+            progress.setScaleY(scale);
+        }
     }
 
     @Override
@@ -161,7 +185,12 @@ public class up18CameraFragment extends Fragment implements LocationListener, Go
         cameraProgress = (ProgressWheel) rootView.findViewById(R.id.progress_wheel);
 
         toukouButton = (ImageButton) rootView.findViewById(R.id.toukou_button);
-        progress = (CircleProgressBar) rootView.findViewById(R.id.circle_progress);
+        progress = (CircleProgressView) rootView.findViewById(R.id.circle_progress);
+        progress.setValue(0);
+
+        mScaleSpring = mSpringSystem.createSpring();
+
+        mScaleSpring.setEndValue(1);
 
         mCloseButton = (FloatingActionButton) rootView.findViewById(R.id.cancel_fab);
 
@@ -292,7 +321,7 @@ public class up18CameraFragment extends Fragment implements LocationListener, Go
                     cameraProgress.setVisibility(View.VISIBLE);
                     //onFinishPressed();
                     if (!isFinish) {
-                        progress.setProgress(100);
+                        progress.setValue(100);
                         pauseRecording();
                         stopRecording();
                         isFinish = true;
@@ -302,9 +331,9 @@ public class up18CameraFragment extends Fragment implements LocationListener, Go
                 int circle = (int) (msg.arg1 * 1.0 / 70);
 
                 if (circle > 50) {
-                    progress.setProgress(circle + 1);
+                    progress.setValue(circle + 1);
                 } else {
-                    progress.setProgress(circle);
+                    progress.setValue(circle);
                 }
                 //progress.invalidate();
                 super.handleMessage(msg);
@@ -420,6 +449,7 @@ public class up18CameraFragment extends Fragment implements LocationListener, Go
         if (DEBUG) Log.v(TAG, "onResume:");
         mCameraView.onResume();
 
+        mScaleSpring.addListener(mSpringListener);
         checkPlayServices();
 
         if (mGoogleApiClient != null) {
@@ -463,6 +493,7 @@ public class up18CameraFragment extends Fragment implements LocationListener, Go
         mCameraView.onPause();
         super.onPause();
 
+        mScaleSpring.removeListener(mSpringListener);
         if (isLocationUpdating) {
             stopLocationUpdates();
         }
@@ -497,12 +528,14 @@ public class up18CameraFragment extends Fragment implements LocationListener, Go
             if (mIsRecording) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
+                        mScaleSpring.setEndValue(0);
                         resumeRecording();
                         break;
                     case MotionEvent.ACTION_MOVE:
                         break;
                     case MotionEvent.ACTION_CANCEL:
                     case MotionEvent.ACTION_UP:
+                        mScaleSpring.setEndValue(1);
                         pauseRecording();
                         break;
                 }

@@ -4,6 +4,7 @@
     xmlns:wheel="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:CircleProgressView="http://schemas.android.com/apk/res-auto"
     android:background="@color/white">
 
     <com.inase.android.gocci.ui.view.CameraGLView
@@ -12,8 +13,12 @@
         android:layout_height="wrap_content" />
 
     <RelativeLayout
+        android:id="@+id/bottom_mask"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
+        android:background="@color/white"
         android:layout_below="@+id/camera_view">
 
         <FrameLayout
@@ -22,11 +27,19 @@
             android:id="@+id/camera_button"
             android:layout_centerInParent="true">
 
-            <com.inase.android.gocci.ui.view.CircleProgressBar
+            <at.grabner.circleprogress.CircleProgressView
                 android:id="@+id/circle_progress"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center" />
+                android:layout_width="125dp"
+                android:layout_height="125dp"
+                android:layout_gravity="center"
+                CircleProgressView:cpv_barColor="@color/gocci_header"
+                CircleProgressView:cpv_barWidth="62dp"
+                CircleProgressView:cpv_contourSize="0dp"
+                CircleProgressView:cpv_autoTextSize="false"
+                CircleProgressView:cpv_maxValue="100"
+                CircleProgressView:cpv_rimColor="#afafaf"
+                CircleProgressView:cpv_rimWidth="62dp"
+                CircleProgressView:cpv_seekMode="false" />
 
             <ImageButton
                 android:id="@+id/toukou_button"
@@ -48,7 +61,7 @@
             fab:fab_colorPressed="@color/white"
             fab:fab_colorRipple="@color/white"
             fab:fab_size="mini"
-            android:layout_marginRight="48dp"
+            android:layout_marginRight="32dp"
             android:layout_toLeftOf="@+id/camera_button" />
 
     </RelativeLayout>
