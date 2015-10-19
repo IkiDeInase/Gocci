@@ -317,4 +317,8 @@
     <string name="preparing_authorize">preparing authorize....</string>
 
     <string name="commented">commented</string>
+
+    <string name="move_userpage">move_to_userpage</string>
+    <string name="move_restpage">move_to_restpage</string>
+    <string name="move_comment">move_to_comment</string>
 </resources>

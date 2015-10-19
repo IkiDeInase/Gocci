@@ -43,6 +43,8 @@ import com.inase.android.gocci.event.PageChangeVideoStopEvent;
 import com.inase.android.gocci.event.TimelineMuteChangeEvent;
 import com.inase.android.gocci.presenter.ShowLatestTimelinePresenter;
 import com.inase.android.gocci.ui.activity.CommentActivity;
+import com.inase.android.gocci.ui.activity.FlexibleTenpoActivity;
+import com.inase.android.gocci.ui.activity.FlexibleUserProfActivity;
 import com.inase.android.gocci.ui.activity.GocciTimelineActivity;
 import com.inase.android.gocci.ui.adapter.TimelineAdapter;
 import com.inase.android.gocci.utils.SavedData;
@@ -566,8 +568,18 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
     }
 
     @Override
-    public void onVideoFrameLongClick(String post_id) {
-        CommentActivity.startCommentActivity(Integer.parseInt(post_id), getActivity());
+    public void onUserClick(int user_id, String user_name) {
+        FlexibleUserProfActivity.startUserProfActivity(user_id, user_name, getActivity());
+    }
+
+    @Override
+    public void onRestClick(int rest_id, String rest_name) {
+        FlexibleTenpoActivity.startTenpoActivity(rest_id, rest_name, getActivity());
+    }
+
+    @Override
+    public void onCommentClick(int post_id) {
+        CommentActivity.startCommentActivity(post_id, getActivity());
     }
 
     @Override

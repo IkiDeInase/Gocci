@@ -782,22 +782,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
         mTenpousers.addAll(mPostData);
         switch (api) {
             case Const.RESTPAGE_FIRST:
-                Picasso.with(this).load(mTenpousers.get(0).getThumbnail()).into(new Target() {
-                    @Override
-                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                        mBackgroundImage.setImageBitmap(bitmap);
-                    }
-
-                    @Override
-                    public void onBitmapFailed(Drawable errorDrawable) {
-
-                    }
-
-                    @Override
-                    public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-                    }
-                });
+                Picasso.with(this).load(mTenpousers.get(0).getThumbnail()).into(mBackgroundImage);
                 mRestPageAdapter = new RestPageAdapter(this, mHeaderRestData, mTenpousers);
                 mRestPageAdapter.setRestPageCallback(this);
                 mTenpoRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);

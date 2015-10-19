@@ -317,4 +317,8 @@
     <string name="preparing_authorize">連携しています</string>
 
     <string name="commented">コメントしました</string>
+
+    <string name="move_userpage">ユーザーのページへ行く</string>
+    <string name="move_restpage">店舗のページへ行く</string>
+    <string name="move_comment">コメントする</string>
 </resources>

@@ -1,12 +1,14 @@
 package com.inase.android.gocci.ui.adapter;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.cocosw.bottomsheet.BottomSheet;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.domain.model.PostData;
@@ -78,18 +80,37 @@ public class TimelineAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
         holder.mRestname.setText(user.getRestname());
         holder.mDistance.setText(getDist(user.getDistance()));
 
+        holder.mOtherAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new BottomSheet.Builder(mContext, R.style.BottomSheet_StyleDialog).sheet(R.menu.menu_cell).listener(new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which) {
+                            case R.id.move_to_userpage:
+                                mCallback.onUserClick(user.getPost_user_id(), user.getUsername());
+                                break;
+                            case R.id.move_to_restpage:
+                                mCallback.onRestClick(user.getPost_rest_id(), user.getRestname());
+                                break;
+                            case R.id.move_to_comment:
+                                mCallback.onCommentClick(Integer.parseInt(user.getPost_id()));
+                                break;
+                            case R.id.violation:
+                                Util.setViolateDialog(mContext, user.getPost_id());
+                                break;
+                            case R.id.close:
+                                dialog.dismiss();
+                        }
+                    }
+                }).show();
+            }
+        });
+
         holder.mAspectFrame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mCallback.onVideoFrameClick(user);
-            }
-        });
-
-        holder.mAspectFrame.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                mCallback.onVideoFrameLongClick(user.getPost_id());
-                return false;
             }
         });
 
@@ -113,9 +134,13 @@ public class TimelineAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
 
     public interface TimelineCallback {
 
-        void onVideoFrameClick(PostData data);
+        void onUserClick(int user_id, String user_name);
 
-        void onVideoFrameLongClick(String post_id);
+        void onRestClick(int rest_id, String rest_name);
+
+        void onCommentClick(int post_id);
+
+        void onVideoFrameClick(PostData data);
 
         void onHashHolder(Const.TwoCellViewHolder holder, String post_id);
     }

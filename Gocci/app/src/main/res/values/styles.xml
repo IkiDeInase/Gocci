@@ -36,7 +36,7 @@
     <style name="BottomSheet.StyleDialog" parent="BottomSheet.Dialog">
         <item name="android:backgroundDimAmount">0.5</item>
         <item name="android:windowAnimationStyle">@style/BottomSheet.Animation</item>
-        <item name="android:textColorPrimary">@color/namegrey</item>
+        <item name="android:textColorPrimary">@color/nameblack</item>
         <item name="android:textColorSecondary">@color/nameblack</item>
         <item name="android:textColorHint">@color/nameblack</item>
         <item name="bs_dialogBackground">@color/view_background</item>
