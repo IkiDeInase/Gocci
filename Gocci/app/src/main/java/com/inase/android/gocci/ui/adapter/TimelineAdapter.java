@@ -94,7 +94,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
                                 mCallback.onRestClick(user.getPost_rest_id(), user.getRestname());
                                 break;
                             case R.id.move_to_comment:
-                                mCallback.onCommentClick(Integer.parseInt(user.getPost_id()));
+                                mCallback.onCommentClick(Integer.parseInt(user.getPost_id()), user.getPost_user_id(), user.getUsername());
                                 break;
                             case R.id.violation:
                                 Util.setViolateDialog(mContext, user.getPost_id());
@@ -138,7 +138,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
 
         void onRestClick(int rest_id, String rest_name);
 
-        void onCommentClick(int post_id);
+        void onCommentClick(int post_id, int user_id, String username);
 
         void onVideoFrameClick(PostData data);
 

@@ -368,7 +368,7 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
 
     @Override
     public void onImageClick(int post_id) {
-        CommentActivity.startCommentActivity(post_id, FlexibleUserProfActivity.this);
+        //CommentActivity.startCommentActivity(post_id, FlexibleUserProfActivity.this);
     }
 
     @Override

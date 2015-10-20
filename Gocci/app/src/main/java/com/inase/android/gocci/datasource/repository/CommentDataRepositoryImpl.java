@@ -56,7 +56,6 @@ public class CommentDataRepositoryImpl implements CommentDataRepository {
                                 mCommentData.add(HeaderData.createCommentHeaderData(comment));
                             }
                         }
-                        Collections.reverse(mCommentData);
                         cb.onCommentDataLoaded(api, mPostData, mCommentData);
                     } else {
                         cb.onCommentDataEmpty(api, mPostData);

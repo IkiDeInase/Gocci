@@ -99,6 +99,8 @@
     <color name="gocci_3">#f8694c</color>
     <color name="gocci_4">#f75533</color>
 
+    <color name="view_line">#c5c6c9</color>
+
     <integer-array name="custom_tab_colors">
         <item>@color/value</item>
         <item>@color/custom_selected</item>

@@ -700,8 +700,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
 
     @Override
     public void onCommentClick(String post_id) {
-        CommentActivity.startCommentActivity(Integer.parseInt(post_id), this);
-
+        //CommentActivity.startCommentActivity(Integer.parseInt(post_id), this);
     }
 
     @Override

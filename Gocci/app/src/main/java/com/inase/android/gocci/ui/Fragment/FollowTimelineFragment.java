@@ -576,8 +576,8 @@ public class FollowTimelineFragment extends Fragment implements AudioCapabilitie
     }
 
     @Override
-    public void onCommentClick(int post_id) {
-        CommentActivity.startCommentActivity(post_id, getActivity());
+    public void onCommentClick(int post_id, int user_id, String username) {
+        CommentActivity.startCommentActivity(post_id, user_id, username, getActivity());
     }
 
     @Override

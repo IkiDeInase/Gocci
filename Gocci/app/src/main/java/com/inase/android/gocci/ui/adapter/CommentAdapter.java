@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -63,6 +64,8 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     private void bindComment(final CommentViewHolder holder, final HeaderData users) {
+        holder.mReUser.removeAllViews();
+
         Picasso.with(mContext)
                 .load(users.getProfile_img())
                 .placeholder(R.drawable.ic_userpicture)
@@ -70,7 +73,6 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 .into(holder.mCommentUserImage);
         holder.mUserName.setText(users.getUsername());
         holder.mDateTime.setText(users.getComment_date());
-        holder.mUserComment.setText(users.getComment());
 
         holder.mUserName.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,37 +88,37 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             }
         });
 
-        holder.mReplyButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Toast.makeText(context, Arrays.asList(users.getComment_user_data()).toString(), Toast.LENGTH_SHORT).show();
-                final StringBuilder user_name = new StringBuilder();
-                final StringBuilder user_id = new StringBuilder();
-                user_name.append("@" + users.getUsername() + " ");
-                user_id.append(users.getComment_user_id());
-                for (CommentUserData data : users.getComment_user_data()) {
-                    user_name.append("@" + data.getUserName() + " ");
-                    user_id.append("," + data.getUser_id());
-                }
-                new MaterialDialog.Builder(mContext)
-                        .title(mContext.getString(R.string.comment))
-                        .titleColorRes(R.color.namegrey)
-                        .inputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_IME_MULTI_LINE)
-                        .inputMaxLength(140)
-                        .input(null, user_name.toString(), false, new MaterialDialog.InputCallback() {
-                            @Override
-                            public void onInput(MaterialDialog dialog, CharSequence input) {
-                                // Do something
-                                String comment = input.toString().replace(user_name.toString(), "");
-                                mCallback.onCommentPostClick(Const.getPostCommentWithNoticeAPI(mPost_id, comment, user_id.toString()));
-                            }
-                        })
-                        .widgetColorRes(R.color.gocci_header)
-                        .positiveText(mContext.getString(R.string.post_comment))
-                        .positiveColorRes(R.color.gocci_header)
-                        .show();
-            }
-        });
+//        holder.mReplyButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                //Toast.makeText(context, Arrays.asList(users.getComment_user_data()).toString(), Toast.LENGTH_SHORT).show();
+//                final StringBuilder user_name = new StringBuilder();
+//                final StringBuilder user_id = new StringBuilder();
+//                user_name.append("@" + users.getUsername() + " ");
+//                user_id.append(users.getComment_user_id());
+//                for (CommentUserData data : users.getComment_user_data()) {
+//                    user_name.append("@" + data.getUserName() + " ");
+//                    user_id.append("," + data.getUser_id());
+//                }
+//                new MaterialDialog.Builder(mContext)
+//                        .title(mContext.getString(R.string.comment))
+//                        .titleColorRes(R.color.namegrey)
+//                        .inputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_IME_MULTI_LINE)
+//                        .inputMaxLength(140)
+//                        .input(null, user_name.toString(), false, new MaterialDialog.InputCallback() {
+//                            @Override
+//                            public void onInput(MaterialDialog dialog, CharSequence input) {
+//                                // Do something
+//                                String comment = input.toString().replace(user_name.toString(), "");
+//                                mCallback.onCommentPostClick(Const.getPostCommentWithNoticeAPI(mPost_id, comment, user_id.toString()));
+//                            }
+//                        })
+//                        .widgetColorRes(R.color.gocci_header)
+//                        .positiveText(mContext.getString(R.string.post_comment))
+//                        .positiveColorRes(R.color.gocci_header)
+//                        .show();
+//            }
+//        });
 
         if (!users.getComment_user_data().isEmpty()) {
             for (final CommentUserData data : users.getComment_user_data()) {
@@ -134,6 +136,36 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 holder.mReUser.addView(userText, LinearLayout.LayoutParams.WRAP_CONTENT);
             }
         }
+
+        TextView comment = new TextView(mContext);
+        comment.setText(users.getComment());
+        comment.setTextColor(mContext.getResources().getColor(R.color.nameblack));
+        comment.setTextSize(12);
+        comment.setPadding(8, 0, 0, 0);
+        holder.mReUser.addView(comment, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+        holder.mCommentCell.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final StringBuilder user_name = new StringBuilder();
+                final StringBuilder user_id = new StringBuilder();
+                user_name.append("@" + users.getUsername() + " ");
+                user_id.append(users.getComment_user_id());
+                for (CommentUserData data : users.getComment_user_data()) {
+                    user_name.append("@" + data.getUserName() + " ");
+                    user_id.append("," + data.getUser_id());
+                }
+                mCallback.onCommentClick(user_name.toString(), user_id.toString());
+            }
+        });
+
+        holder.mCommentCell.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                mCallback.onCommentLongClick(String.valueOf(users.getComment_user_id()));
+                return false;
+            }
+        });
     }
 
     @Override
@@ -142,18 +174,16 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     static class CommentViewHolder extends RecyclerView.ViewHolder {
+        @Bind(R.id.comment_cell)
+        RelativeLayout mCommentCell;
         @Bind(R.id.comment_user_image)
         ImageView mCommentUserImage;
         @Bind(R.id.user_name)
         TextView mUserName;
         @Bind(R.id.date_time)
         TextView mDateTime;
-        @Bind(R.id.user_comment)
-        TextView mUserComment;
-        @Bind(R.id.re_user)
+        @Bind(R.id.horizon_bar)
         LinearLayout mReUser;
-        @Bind(R.id.reply_button)
-        ImageButton mReplyButton;
 
         public CommentViewHolder(View view) {
             super(view);
@@ -164,7 +194,9 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public interface CommentCallback {
         void onUserClick(int user_id, String user_name);
 
-        void onCommentPostClick(String postUrl);
+        void onCommentClick(String username, String user_id);
+
+        void onCommentLongClick(String user_id);
 
     }
 }

@@ -15,8 +15,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
 import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
@@ -39,6 +44,7 @@ import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.NotificationNumberEvent;
 import com.inase.android.gocci.presenter.ShowCommentPagePresenter;
 import com.inase.android.gocci.ui.adapter.CommentAdapter;
+import com.inase.android.gocci.utils.SavedData;
 import com.inase.android.gocci.utils.Util;
 import com.squareup.otto.Subscribe;
 
@@ -46,6 +52,7 @@ import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class CommentActivity extends AppCompatActivity implements ObservableScrollViewCallbacks,
         ShowCommentPagePresenter.ShowCommentView, CommentAdapter.CommentCallback {
@@ -56,6 +63,20 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
     ObservableRecyclerView mCommentRecyclerView;
     @Bind(R.id.swipe_container)
     SwipeRefreshLayout mSwipeContainer;
+    @Bind(R.id.comment_edit)
+    EditText mCommentEdit;
+
+    @OnClick(R.id.send_button)
+    public void onSend(ImageButton button) {
+        String comment = mCommentEdit.getText().toString().replace(mNoticeUser_name + "\n", "");
+        if (!comment.isEmpty()) {
+            button.setFocusable(true);
+            button.setFocusableInTouchMode(true);
+            button.requestFocus();
+            mCommentEdit.setText("");
+            mPresenter.postComment(Const.getPostCommentWithNoticeAPI(mPost_id, comment, mNoticeUser_id), Const.getCommentAPI(mPost_id));
+        }
+    }
 
     //mPresenter.postComment(Const.getPostCommentAPI(mPost_id, input.toString()), Const.getCommentAPI(mPost_id));
 
@@ -67,6 +88,9 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
 
     private String mPost_id;
     private String title;
+
+    private String mNoticeUser_name;
+    private String mNoticeUser_id;
 
     private static MobileAnalyticsManager analytics;
 
@@ -101,18 +125,22 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
         }
     };
 
-    public static void startCommentActivity(int post_id, Activity startingActivity) {
+    public static void startCommentActivity(int post_id, int user_id, String username, Activity startingActivity) {
         Intent intent = new Intent(startingActivity, CommentActivity.class);
         intent.putExtra("title", startingActivity.getLocalClassName());
         intent.putExtra("post_id", post_id);
+        intent.putExtra("user_id", user_id);
+        intent.putExtra("username", username);
         startingActivity.startActivity(intent);
         startingActivity.overridePendingTransition(R.anim.activity_in, R.anim.activity_out);
     }
 
-    public static void startCommentActivityOnContext(int post_id, Context context) {
+    public static void startCommentActivityOnContext(int post_id, int user_id, String username, Context context) {
         Intent intent = new Intent(context, CommentActivity.class);
         intent.putExtra("title", context.getString(R.string.comment));
         intent.putExtra("post_id", post_id);
+        intent.putExtra("user_id", user_id);
+        intent.putExtra("username", username);
         context.startActivity(intent);
     }
 
@@ -142,6 +170,11 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
         Intent intent = getIntent();
         title = intent.getStringExtra("title");
         mPost_id = String.valueOf(intent.getIntExtra("post_id", 0));
+        mNoticeUser_id = String.valueOf(intent.getIntExtra("user_id", 0));
+        mNoticeUser_name = "@" + intent.getStringExtra("username") + " ";
+
+        mCommentEdit.setText(mNoticeUser_name + "\n");
+        mCommentEdit.setSelection(mCommentEdit.getText().length());
 
         setSupportActionBar(mToolBar);
         if (title.equals("Activity.GocciMyprofActivity")) {
@@ -170,6 +203,16 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
                 } else {
                     Toast.makeText(CommentActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
                     mSwipeContainer.setRefreshing(false);
+                }
+            }
+        });
+
+        mCommentEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus == false) {
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
                 }
             }
         });
@@ -297,8 +340,47 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
     }
 
     @Override
-    public void onCommentPostClick(String postUrl) {
-        mPresenter.postComment(postUrl, Const.getCommentAPI(mPost_id));
+    public void onCommentClick(String username, String user_id) {
+        mNoticeUser_id = user_id;
+        mNoticeUser_name = username;
+        mCommentEdit.setText(username + "\n");
+        mCommentEdit.setSelection(mCommentEdit.getText().length());
+        mCommentEdit.requestFocus();
+    }
+
+    @Override
+    public void onCommentLongClick(String user_id) {
+        if (user_id.equals(SavedData.getServerUserId(this))) {
+            //自分の投稿　削除
+            new MaterialDialog.Builder(this)
+                    .content("このコメントを削除しますか？")
+                    .contentColorRes(R.color.nameblack)
+                    .positiveText("削除する")
+                    .positiveColorRes(R.color.gocci_header)
+                    .negativeText("いいえ")
+                    .negativeColorRes(R.color.gocci_header)
+                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                        @Override
+                        public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+
+                        }
+                    }).show();
+        } else {
+            //他人の　不適切
+            new MaterialDialog.Builder(this)
+                    .content("このコメントを不適切なコメントとして報告しますか？")
+                    .contentColorRes(R.color.nameblack)
+                    .positiveText("報告する")
+                    .positiveColorRes(R.color.gocci_header)
+                    .negativeText("いいえ")
+                    .negativeColorRes(R.color.gocci_header)
+                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                        @Override
+                        public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+
+                        }
+                    }).show();
+        }
     }
 
     @Override
@@ -318,6 +400,7 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
                 mCommentAdapter = new CommentAdapter(this, mPost_id, mCommentusers);
                 mCommentAdapter.setCommentCallback(this);
                 mCommentRecyclerView.setAdapter(mCommentAdapter);
+                mCommentRecyclerView.scrollVerticallyToPosition(mCommentusers.size() - 1);
                 break;
             case Const.COMMENT_REFRESH:
                 mCommentusers.clear();
@@ -345,6 +428,7 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
                 mCommentAdapter = new CommentAdapter(this, mPost_id, mCommentusers);
                 mCommentAdapter.setCommentCallback(this);
                 mCommentRecyclerView.setAdapter(mCommentAdapter);
+                mCommentRecyclerView.scrollVerticallyToPosition(mCommentusers.size() - 1);
                 break;
             case Const.COMMENT_REFRESH:
                 mCommentAdapter.setData();
@@ -357,6 +441,7 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
         mCommentusers.clear();
         mCommentusers.addAll(commentData);
         mCommentAdapter.setData();
+        mCommentRecyclerView.scrollVerticallyToPosition(mCommentusers.size() - 1);
     }
 
     @Override

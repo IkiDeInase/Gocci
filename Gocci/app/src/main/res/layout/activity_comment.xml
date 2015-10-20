@@ -29,30 +29,51 @@
             android:layout_height="match_parent" />
     </android.support.v4.widget.SwipeRefreshLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:orientation="horizontal"
         android:id="@+id/messageView"
-        android:background="@color/backgroung_grey"
+        android:background="@color/view_background"
         android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingLeft="8dp">
+        android:layout_height="wrap_content">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:id="@+id/header_view"
+            android:layout_alignParentTop="true"
+            android:background="#c5c6c9" />
 
         <EditText
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1.5"
+            android:id="@+id/comment_edit"
+            android:layout_below="@+id/header_view"
+            android:layout_toLeftOf="@+id/send_button"
             android:background="#00000000"
-            android:hint="@string/comment"/>
+            android:hint="@string/comment"
+            android:layout_gravity="center_vertical"
+            android:layout_centerVertical="true"
+            android:padding="12dp"
+            android:textSize="14sp"
+            android:textColor="@color/nameblack"
+            android:inputType="textMultiLine"
+            android:maxLength="140" >
+            <requestFocus/>
+            </EditText>
 
-        <Button
-            android:layout_width="0dp"
+        <ImageButton
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0.3"
-            android:text="@string/messenger_send_button_text"
-            android:textColor="@color/white"
-            android:background="@color/gocci_header"/>
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:id="@+id/send_button"
+            android:src="@drawable/ic_send_white"
+            android:background="@color/gocci_header"
+            android:padding="12dp"
+            android:layout_alignTop="@+id/comment_edit"
+            android:layout_alignBottom="@+id/comment_edit" />
 
-    </LinearLayout>
+    </RelativeLayout>
 
 </RelativeLayout>

@@ -150,7 +150,7 @@ public class ProfMapActivity extends AppCompatActivity implements ClusterManager
         }
 
         if (isSame) {
-            CommentActivity.startCommentActivity(Integer.parseInt(cluster.getItems().iterator().next().userdata.getPost_id()), ProfMapActivity.this);
+            //CommentActivity.startCommentActivity(Integer.parseInt(cluster.getItems().iterator().next().userdata.getPost_id()), ProfMapActivity.this);
         } else {
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(cluster.getPosition(), mMap.getCameraPosition().zoom + 3));
         }
@@ -171,7 +171,7 @@ public class ProfMapActivity extends AppCompatActivity implements ClusterManager
     @Override
     public void onClusterItemInfoWindowClick(PhotoLog item) {
         // Does nothing, but you could go into the user's profile page, for example.
-        CommentActivity.startCommentActivity(Integer.parseInt(item.userdata.getPost_id()), ProfMapActivity.this);
+        //CommentActivity.startCommentActivity(Integer.parseInt(item.userdata.getPost_id()), ProfMapActivity.this);
     }
 
     @Override

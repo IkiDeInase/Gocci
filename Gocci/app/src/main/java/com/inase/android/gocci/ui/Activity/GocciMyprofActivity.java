@@ -557,7 +557,7 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
 
     @Override
     public void onImageClick(int post_id) {
-        CommentActivity.startCommentActivity(post_id, GocciMyprofActivity.this);
+        //CommentActivity.startCommentActivity(post_id, GocciMyprofActivity.this);
     }
 
     @Override
