@@ -45,10 +45,10 @@ public class ShowMyProfPresenter extends Presenter implements UserAndRestUseCase
     }
 
     @Override
-    public void onDataLoaded(int api, HeaderData mUserdata, ArrayList<PostData> mPostData) {
+    public void onDataLoaded(int api, HeaderData mUserdata, ArrayList<PostData> mPostData, ArrayList<String> post_ids) {
         mShowProfView.hideLoading();
         mShowProfView.hideNoResultCase();
-        mShowProfView.showResult(api, mUserdata, mPostData);
+        mShowProfView.showResult(api, mUserdata, mPostData, post_ids);
     }
 
     @Override
@@ -121,7 +121,7 @@ public class ShowMyProfPresenter extends Presenter implements UserAndRestUseCase
 
         void showError();
 
-        void showResult(int api, HeaderData mUserData, ArrayList<PostData> mPostData);
+        void showResult(int api, HeaderData mUserData, ArrayList<PostData> mPostData, ArrayList<String> post_ids);
 
         void profChanged(String userName, String profile_img);
 

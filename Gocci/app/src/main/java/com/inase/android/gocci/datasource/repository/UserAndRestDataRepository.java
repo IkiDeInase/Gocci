@@ -14,7 +14,7 @@ public interface UserAndRestDataRepository {
     void getRestDataList(int api, String url, UserAndRestDataRepositoryCallback cb);
 
     interface UserAndRestDataRepositoryCallback {
-        void onUserAndRestDataLoaded(int api, HeaderData userData, ArrayList<PostData> postData);
+        void onUserAndRestDataLoaded(int api, HeaderData userData, ArrayList<PostData> postData, ArrayList<String> post_ids);
 
         void onUserAndRestDataEmpty(int api, HeaderData userData);
 

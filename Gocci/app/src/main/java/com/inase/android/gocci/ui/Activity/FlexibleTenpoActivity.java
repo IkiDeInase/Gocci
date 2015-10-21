@@ -775,7 +775,7 @@ public class FlexibleTenpoActivity extends AppCompatActivity implements AudioCap
     }
 
     @Override
-    public void showResult(int api, HeaderData restData, ArrayList<PostData> mPostData) {
+    public void showResult(int api, HeaderData restData, ArrayList<PostData> mPostData, ArrayList<String> post_ids) {
         mHeaderRestData = restData;
         mTenpousers.clear();
         mTenpousers.addAll(mPostData);

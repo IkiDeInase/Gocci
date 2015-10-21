@@ -27,10 +27,10 @@ public class ShowRestPagePresenter extends Presenter implements UserAndRestUseCa
     }
 
     @Override
-    public void onDataLoaded(int api, HeaderData mUserdata, ArrayList<PostData> mPostData) {
+    public void onDataLoaded(int api, HeaderData mUserdata, ArrayList<PostData> mPostData, ArrayList<String> post_ids) {
         mShowRestView.hideLoading();
         mShowRestView.hideNoResultCase();
-        mShowRestView.showResult(api, mUserdata, mPostData);
+        mShowRestView.showResult(api, mUserdata, mPostData, post_ids);
     }
 
     @Override
@@ -77,6 +77,6 @@ public class ShowRestPagePresenter extends Presenter implements UserAndRestUseCa
 
         void showError();
 
-        void showResult(int api, HeaderData mRestData, ArrayList<PostData> mPostData);
+        void showResult(int api, HeaderData mRestData, ArrayList<PostData> mPostData, ArrayList<String> post_ids);
     }
 }

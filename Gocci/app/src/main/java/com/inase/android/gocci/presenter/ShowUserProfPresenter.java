@@ -48,11 +48,11 @@ public class ShowUserProfPresenter extends Presenter implements UserAndRestUseCa
     }
 
     @Override
-    public void onDataLoaded(int api, HeaderData mUserdata, ArrayList<PostData> mPostData) {
+    public void onDataLoaded(int api, HeaderData mUserdata, ArrayList<PostData> mPostData, ArrayList<String> post_ids) {
         mShowUserProfView.hideLoading();
         mShowUserProfView.hideNoResultCase();
         mShowUserProfView.hideError();
-        mShowUserProfView.showResult(api, mUserdata, mPostData);
+        mShowUserProfView.showResult(api, mUserdata, mPostData, post_ids);
     }
 
     @Override
@@ -82,6 +82,6 @@ public class ShowUserProfPresenter extends Presenter implements UserAndRestUseCa
 
         void hideError();
 
-        void showResult(int api, HeaderData mUserData, ArrayList<PostData> mPostData);
+        void showResult(int api, HeaderData mUserData, ArrayList<PostData> mPostData, ArrayList<String> post_ids);
     }
 }

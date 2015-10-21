@@ -50,12 +50,12 @@ public class RestPageUseCaseImpl extends UseCase2<Integer, String> implements Us
     }
 
     @Override
-    public void onUserAndRestDataLoaded(final int api, final HeaderData userData, final ArrayList<PostData> postData) {
+    public void onUserAndRestDataLoaded(final int api, final HeaderData userData, final ArrayList<PostData> postData, final ArrayList<String> post_ids) {
         mPostExecutionThread.post(new Runnable() {
             @Override
             public void run() {
                 if (mCallback != null) {
-                    mCallback.onDataLoaded(api, userData, postData);
+                    mCallback.onDataLoaded(api, userData, postData, post_ids);
                 }
             }
         });

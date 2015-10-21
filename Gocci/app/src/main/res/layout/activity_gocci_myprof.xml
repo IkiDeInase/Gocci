@@ -1,73 +1,353 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:ripple="http://schemas.android.com/apk/res-auto"
     xmlns:wheel="http://schemas.android.com/apk/res-auto"
     android:id="@+id/coordinator_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/app_bar"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/tool_bar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/gocci_header"
-            app:layout_scrollFlags="scroll|enterAlways"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
-
-        </android.support.v7.widget.Toolbar>
-
-    </android.support.design.widget.AppBarLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <android.support.v4.widget.SwipeRefreshLayout
-            android:id="@+id/swipe_container"
+            android:id="@+id/stream_swipe"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:visibility="invisible">
 
             <android.support.v7.widget.RecyclerView
-                android:id="@+id/list"
+                android:id="@+id/stream_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
         </android.support.v4.widget.SwipeRefreshLayout>
 
-        <com.pnikosis.materialishprogress.ProgressWheel
-            android:id="@+id/progress_wheel"
-            android:layout_width="@dimen/progress_size"
-            android:layout_height="@dimen/progress_size"
-            android:layout_centerInParent="true"
-            android:visibility="gone"
-            wheel:matProg_barColor="@color/gocci_header"
-            wheel:matProg_progressIndeterminate="true" />
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/grid_swipe"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            >
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/grid_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                />
+        </android.support.v4.widget.SwipeRefreshLayout>
+
+    </FrameLayout>
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <android.support.design.widget.CollapsingToolbarLayout
+            android:id="@+id/collapsing_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:contentScrim="@color/gocci_header"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/materialwhite"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                android:paddingTop="48dp"
+                app:layout_collapseMode="parallax">
+
+                <ImageView
+                    android:id="@+id/myprof_background"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/materialwhite"
+                    android:src="@color/materialwhite" />
+
+                <TextView
+                    android:id="@+id/myprof_username"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@+id/myprof_picture"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="8dp"
+                    android:layout_toRightOf="@+id/myprof_picture"
+                    android:singleLine="true"
+                    android:textColor="@color/namegrey"
+                    android:textSize="@dimen/large_text"
+                    android:textStyle="bold" />
+
+                <com.andexert.library.RippleView
+                    android:id="@+id/edit_profile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/myprof_username"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="8dp"
+                    android:layout_toRightOf="@+id/myprof_picture"
+                    android:background="@drawable/button_follow">
+
+                    <TextView
+                        android:id="@+id/edit_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="8dp"
+                        android:paddingLeft="12dp"
+                        android:paddingRight="12dp"
+                        android:paddingTop="8dp"
+                        android:text="@string/edit_profile"
+                        android:textColor="#ffffff"
+                        android:textSize="@dimen/small_text" />
+                </com.andexert.library.RippleView>
+
+
+                <ImageView
+                    android:id="@+id/myprof_picture"
+                    android:layout_width="75dp"
+                    android:layout_height="75dp"
+                    android:layout_gravity="left"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginLeft="24dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginTop="16dp" />
+
+                <LinearLayout
+                    android:id="@+id/num_bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="false"
+                    android:layout_below="@+id/myprof_picture"
+                    android:orientation="horizontal">
+
+                    <com.andexert.library.RippleView
+                        android:id="@+id/follow_ripple"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        ripple:rv_centered="true"
+                        ripple:rv_color="@android:color/black">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/follow_num"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginBottom="16dp"
+                            android:singleLine="false"
+                            android:text="@string/follow_list"
+                            android:textColor="@color/namegrey"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:id="@+id/follow_num"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerHorizontal="true"
+                            android:padding="8dp"
+                            android:textColor="@color/namegrey"
+                            android:textSize="24sp"
+                            android:textStyle="bold" />
+                    </com.andexert.library.RippleView>
+
+                    <com.andexert.library.RippleView
+                        android:id="@+id/follower_ripple"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        ripple:rv_centered="true"
+                        ripple:rv_color="@android:color/black">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/follower_num"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginBottom="16dp"
+                            android:text="@string/follower_list"
+                            android:textColor="@color/namegrey"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:id="@+id/follower_num"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerHorizontal="true"
+                            android:padding="8dp"
+                            android:textColor="@color/namegrey"
+                            android:textSize="24sp"
+                            android:textStyle="bold" />
+                    </com.andexert.library.RippleView>
+
+                    <com.andexert.library.RippleView
+                        android:id="@+id/usercheer_ripple"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        ripple:rv_centered="true"
+                        ripple:rv_color="@android:color/black">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/usercheer_num"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginBottom="16dp"
+                            android:text="@string/cheer_list"
+                            android:textColor="@color/namegrey"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:id="@+id/usercheer_num"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerHorizontal="true"
+                            android:padding="8dp"
+                            android:textColor="@color/namegrey"
+                            android:textSize="24sp"
+                            android:textStyle="bold" />
+                    </com.andexert.library.RippleView>
+
+                    <com.andexert.library.RippleView
+                        android:id="@+id/want_ripple"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        ripple:rv_centered="true"
+                        ripple:rv_color="@android:color/black">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/want_num"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginBottom="16dp"
+                            android:text="@string/want_list"
+                            android:textColor="@color/namegrey"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:id="@+id/want_num"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerHorizontal="true"
+                            android:padding="8dp"
+                            android:textColor="@color/namegrey"
+                            android:textSize="24sp"
+                            android:textStyle="bold" />
+                    </com.andexert.library.RippleView>
+                </LinearLayout>
+
+            </RelativeLayout>
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/tool_bar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@color/gocci_header"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                app:layout_collapseMode="pin"
+                app:layout_scrollFlags="scroll|enterAlways"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+            </android.support.v7.widget.Toolbar>
+
+        </android.support.design.widget.CollapsingToolbarLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_above="@+id/tab_bar"
+            android:background="#c5c6c9" />
+
+        <LinearLayout
+            android:id="@+id/tab_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/num_bar"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/stream"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:src="@drawable/ic_view_stream_grey600_24dp" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="#c5c6c9" />
+
+            <ImageView
+                android:id="@+id/grid"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:src="@drawable/ic_apps_grey600_24dp" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="#c5c6c9" />
+
+            <ImageView
+                android:id="@+id/location"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="8dp"
+                android:src="@drawable/ic_place_grey600_24dp" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@+id/tab_bar"
+            android:background="#c5c6c9" />
+
+    </android.support.design.widget.AppBarLayout>
+
+    <com.pnikosis.materialishprogress.ProgressWheel
+        android:id="@+id/progress_wheel"
+        android:layout_width="@dimen/progress_size"
+        android:layout_height="@dimen/progress_size"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        wheel:matProg_barColor="@color/gocci_header"
+        wheel:matProg_progressIndeterminate="true" />
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|bottom">
 
         <TextView
             android:id="@+id/empty_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
+            android:layout_below="@+id/empty_image"
             android:layout_centerHorizontal="true"
-            android:paddingBottom="96dp"
             android:text="@string/userpage_empty_text"
             android:textColor="@color/namegrey"
             android:textSize="@dimen/accent_text"
-            android:visibility="gone" />
+            android:visibility="gone"
+            android:layout_margin="24dp" />
 
         <ImageView
             android:id="@+id/empty_image"
             android:layout_width="150dp"
             android:layout_height="150dp"
-            android:layout_above="@+id/empty_text"
             android:layout_centerHorizontal="true"
-            android:layout_marginBottom="24dp"
             android:src="@drawable/ic_gocci_hair"
             android:visibility="gone" />
 
     </RelativeLayout>
+
 </android.support.design.widget.CoordinatorLayout>

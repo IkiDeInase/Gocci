@@ -335,7 +335,7 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
     }
 
     @Override
-    public void showResult(int api, HeaderData mUserData, ArrayList<PostData> mPostData) {
+    public void showResult(int api, HeaderData mUserData, ArrayList<PostData> mPostData, ArrayList<String> post_ids) {
         headerUserData = mUserData;
         mUserProfusers.clear();
         mUserProfusers.addAll(mPostData);

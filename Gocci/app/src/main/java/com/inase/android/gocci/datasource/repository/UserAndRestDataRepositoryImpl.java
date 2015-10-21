@@ -32,6 +32,8 @@ public class UserAndRestDataRepositoryImpl implements UserAndRestDataRepository 
     @Override
     public void getUserDataList(final int api, String url, final UserAndRestDataRepository.UserAndRestDataRepositoryCallback cb) {
         final ArrayList<PostData> mPostData = new ArrayList<>();
+        final ArrayList<String> mPost_Ids = new ArrayList<>();
+
         Application_Gocci.getTextSyncHttpClient(url, new TextHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
@@ -51,8 +53,9 @@ public class UserAndRestDataRepositoryImpl implements UserAndRestDataRepository 
                         for (int i = 0; i < postsObject.length(); i++) {
                             JSONObject post = postsObject.getJSONObject(i);
                             mPostData.add(PostData.createPostData(post));
+                            mPost_Ids.add(post.getString("post_id"));
                         }
-                        cb.onUserAndRestDataLoaded(api, mUserData, mPostData);
+                        cb.onUserAndRestDataLoaded(api, mUserData, mPostData, mPost_Ids);
                     } else {
                         cb.onUserAndRestDataEmpty(api, mUserData);
                     }
@@ -66,6 +69,8 @@ public class UserAndRestDataRepositoryImpl implements UserAndRestDataRepository 
     @Override
     public void getRestDataList(final int api, String url, final UserAndRestDataRepositoryCallback cb) {
         final ArrayList<PostData> mPostData = new ArrayList<>();
+        final ArrayList<String> mPost_Ids = new ArrayList<>();
+
         Application_Gocci.getTextSyncHttpClient(url, new TextHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
@@ -85,8 +90,9 @@ public class UserAndRestDataRepositoryImpl implements UserAndRestDataRepository 
                         for (int i = 0; i < postsObject.length(); i++) {
                             JSONObject post = postsObject.getJSONObject(i);
                             mPostData.add(PostData.createPostData(post));
+                            mPost_Ids.add(post.getString("post_id"));
                         }
-                        cb.onUserAndRestDataLoaded(api, mRestData, mPostData);
+                        cb.onUserAndRestDataLoaded(api, mRestData, mPostData, mPost_Ids);
                     } else {
                         cb.onUserAndRestDataEmpty(api, mRestData);
                     }

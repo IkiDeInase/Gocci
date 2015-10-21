@@ -9,11 +9,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
@@ -33,6 +35,15 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
+import com.andexert.library.RippleView;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.share.Sharer;
+import com.facebook.share.widget.ShareDialog;
+import com.google.android.exoplayer.audio.AudioCapabilities;
+import com.google.android.exoplayer.audio.AudioCapabilitiesReceiver;
+import com.google.android.exoplayer.drm.UnsupportedDrmException;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.repository.MyPageActionRepository;
@@ -50,14 +61,17 @@ import com.inase.android.gocci.domain.usecase.ProfPageUseCaseImpl;
 import com.inase.android.gocci.domain.usecase.UserAndRestUseCase;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.NotificationNumberEvent;
+import com.inase.android.gocci.event.TimelineMuteChangeEvent;
 import com.inase.android.gocci.presenter.ShowMyProfPresenter;
-import com.inase.android.gocci.ui.adapter.MyProfAdapter;
+import com.inase.android.gocci.ui.adapter.GridMyProfAdapter;
 import com.inase.android.gocci.ui.view.DrawerProfHeader;
 import com.inase.android.gocci.ui.view.NotificationListView;
 import com.inase.android.gocci.ui.view.RoundedTransformation;
 import com.inase.android.gocci.ui.view.ToukouPopup;
 import com.inase.android.gocci.utils.SavedData;
 import com.inase.android.gocci.utils.Util;
+import com.inase.android.gocci.utils.video.HlsRendererBuilder;
+import com.inase.android.gocci.utils.video.VideoPlayer;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
@@ -72,37 +86,77 @@ import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
-public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayout.OnOffsetChangedListener,
-        ShowMyProfPresenter.ShowProfView, MyProfAdapter.MyProfCallback {
+public class GocciMyprofActivity extends AppCompatActivity implements ShowMyProfPresenter.ShowProfView, AppBarLayout.OnOffsetChangedListener,
+        AudioCapabilitiesReceiver.Listener, GridMyProfAdapter.MyProfCallback {
 
     private final GocciMyprofActivity self = this;
     @Bind(R.id.tool_bar)
     Toolbar mToolBar;
-    @Bind(R.id.app_bar)
-    AppBarLayout mAppBar;
-    @Bind(R.id.list)
-    RecyclerView mProfRecyclerView;
-    @Bind(R.id.swipe_container)
-    SwipeRefreshLayout mSwipeContainer;
     @Bind(R.id.progress_wheel)
     ProgressWheel mProgressWheel;
     @Bind(R.id.empty_text)
     TextView mEmptyText;
     @Bind(R.id.empty_image)
     ImageView mEmptyImage;
+    @Bind(R.id.app_bar)
+    AppBarLayout mAppBarLayout;
     @Bind(R.id.coordinator_layout)
     CoordinatorLayout mCoordinatorLayout;
+//    @Bind(R.id.stream_swipe)
+//    SwipeRefreshLayout mStreamSwipe;
+//    @Bind(R.id.stream_list)
+//    RecyclerView mStreamList;
+    @Bind(R.id.grid_swipe)
+    SwipeRefreshLayout mGridSwipe;
+    @Bind(R.id.grid_list)
+    RecyclerView mGridList;
+    @Bind(R.id.collapsing_toolbar)
+    CollapsingToolbarLayout mCollapse;
+    @Bind(R.id.myprof_username)
+    TextView mUsername;
+    @Bind(R.id.myprof_picture)
+    ImageView mMyPicture;
+    @Bind(R.id.follow_num)
+    TextView mFollowNum;
+    @Bind(R.id.follower_num)
+    TextView mFollowerNum;
+    @Bind(R.id.usercheer_num)
+    TextView mUsercheerNum;
+    @Bind(R.id.want_num)
+    TextView mWantNum;
+
+    @Bind(R.id.follow_ripple)
+    RippleView mFollowRipple;
+    @Bind(R.id.follower_ripple)
+    RippleView mFollowerRipple;
+    @Bind(R.id.usercheer_ripple)
+    RippleView mUsercheerRipple;
+    @Bind(R.id.want_ripple)
+    RippleView mWantRipple;
+    @Bind(R.id.edit_profile)
+    RippleView mEditProfile;
+
+    @OnClick(R.id.stream)
+    public void onStream() {
+
+    }
+    @OnClick(R.id.grid)
+    public void onGrid() {
+
+    }
+    @OnClick(R.id.location)
+    public void onLocation() {
+        ProfMapActivity.startProfMapActivity(mGridUsers, GocciMyprofActivity.this);
+    }
 
     private Drawer result;
-
-    private StaggeredGridLayoutManager mLayoutManager;
-    private ArrayList<PostData> mProfusers = new ArrayList<>();
-    private HeaderData mHeaderUserData;
-    private MyProfAdapter mMyProfAdapter;
 
     private TextView mNotificationNumber;
     private ImageView mEditBackground;
@@ -116,6 +170,83 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
     private static MobileAnalyticsManager analytics;
 
     private ShowMyProfPresenter mPresenter;
+
+    private LinearLayoutManager mLinearLayoutManager;
+    private ArrayList<PostData> mLinearUsers = new ArrayList<>();
+    private ArrayList<String> mLinearPost_ids = new ArrayList<>();
+
+    private StaggeredGridLayoutManager mGridLayoutManager;
+    private ArrayList<PostData> mGridUsers = new ArrayList<>();
+    private ArrayList<String> mGridPost_ids = new ArrayList<>();
+
+    private HeaderData mHeaderUserData;
+    private GridMyProfAdapter mGridMyProfAdapter;
+
+    private String mPlayingPostId;
+    private boolean mPlayBlockFlag;
+    private ConcurrentHashMap<Const.TwoCellViewHolder, String> mViewHolderHash;  // Value: PosterId
+
+    private VideoPlayer player;
+    private boolean playerNeedsPrepare;
+
+    private AudioCapabilitiesReceiver audioCapabilitiesReceiver;
+
+    private CallbackManager callbackManager;
+    private ShareDialog shareDialog;
+
+    private boolean loading = true;
+    private int pastVisibleItems, visibleItemCount, totalItemCount;
+    private int mNextCount = 1;
+    private boolean isEndScrioll = false;
+
+    private RecyclerView.OnScrollListener mGridScrollListener = new RecyclerView.OnScrollListener() {
+        @Override
+        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            super.onScrollStateChanged(recyclerView, newState);
+            switch (newState) {
+                case RecyclerView.SCROLL_STATE_IDLE:
+                    if (mPlayingPostId != null) {
+                        int position = mGridPost_ids.indexOf(mPlayingPostId);
+                        int[] array = mGridLayoutManager.findFirstVisibleItemPositions(null);
+                        int[] array2 = mGridLayoutManager.findLastVisibleItemPositions(null);
+
+                        if (array[0] >= position || position >= array2[1]) {
+                            Const.TwoCellViewHolder oldViewHolder = getPlayingViewHolder();
+                            if (oldViewHolder != null) {
+                                oldViewHolder.mSquareImage.setVisibility(View.VISIBLE);
+                            }
+                            mPlayingPostId = null;
+                            releasePlayer();
+                        }
+                    }
+                    break;
+                case RecyclerView.SCROLL_STATE_DRAGGING:
+                    break;
+                case RecyclerView.SCROLL_STATE_SETTLING:
+                    break;
+            }
+        }
+
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            visibleItemCount = mGridLayoutManager.getChildCount();
+            totalItemCount = mGridLayoutManager.getItemCount();
+            int[] firstVisibleItems = null;
+            firstVisibleItems = mGridLayoutManager.findFirstVisibleItemPositions(firstVisibleItems);
+            if (firstVisibleItems != null && firstVisibleItems.length > 0) {
+                pastVisibleItems = firstVisibleItems[0];
+            }
+
+            if (loading) {
+                if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
+                    loading = false;
+                    if (!isEndScrioll) {
+                        //追加
+                    }
+                }
+            }
+        }
+    };
 
     private static Handler sHandler = new Handler() {
         @Override
@@ -157,6 +288,28 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
             Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
         }
 
+        callbackManager = CallbackManager.Factory.create();
+        shareDialog = new ShareDialog(this);
+        shareDialog.registerCallback(callbackManager, new FacebookCallback<Sharer.Result>() {
+            @Override
+            public void onSuccess(Sharer.Result result) {
+                Toast.makeText(GocciMyprofActivity.this, getString(R.string.complete_share), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onCancel() {
+                Toast.makeText(GocciMyprofActivity.this, getString(R.string.cancel_share), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onError(FacebookException e) {
+                Toast.makeText(GocciMyprofActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        audioCapabilitiesReceiver = new AudioCapabilitiesReceiver(getApplicationContext(), this);
+        audioCapabilitiesReceiver.register();
+
         UserAndRestDataRepository userAndRestDataRepositoryImpl = UserAndRestDataRepositoryImpl.getRepository();
         MyPageActionRepository myPageActionRepositoryImpl = MyPageActionRepositoryImpl.getRepository();
         UserAndRestUseCase userAndRestUseCaseImpl = ProfPageUseCaseImpl.getUseCase(userAndRestDataRepositoryImpl, UIThread.getInstance());
@@ -165,31 +318,167 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
         mPresenter = new ShowMyProfPresenter(userAndRestUseCaseImpl, profChangeUseCaseImpl, postDeleteUseCaseImpl);
         mPresenter.setProfView(this);
 
+        mPlayBlockFlag = false;
+
         setContentView(R.layout.activity_gocci_myprof);
         ButterKnife.bind(this);
+
+        mPlayingPostId = null;
+        mViewHolderHash = new ConcurrentHashMap<>();
+
+        mGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+        mGridList.setLayoutManager(mGridLayoutManager);
+        mGridList.setHasFixedSize(true);
+        mGridList.setOverScrollMode(View.OVER_SCROLL_NEVER);
+        mGridList.addOnScrollListener(mGridScrollListener);
+
+        mPresenter.getProfData(Const.USERPAGE_FIRST, Const.getUserpageAPI(Integer.parseInt(SavedData.getServerUserId(this))));
+
+        mGridSwipe.setColorSchemeResources(R.color.gocci_1, R.color.gocci_2, R.color.gocci_3, R.color.gocci_4);
+        mGridSwipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mGridSwipe.setRefreshing(true);
+                if (Util.getConnectedState(GocciMyprofActivity.this) != Util.NetworkStatus.OFF) {
+                    mPresenter.getProfData(Const.USERPAGE_REFRESH, Const.getUserpageAPI(Integer.parseInt(SavedData.getServerUserId(GocciMyprofActivity.this))));
+                } else {
+                    Toast.makeText(GocciMyprofActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
+                    mGridSwipe.setRefreshing(false);
+                }
+            }
+        });
 
         mToolBar.setLogo(R.drawable.ic_gocci_moji_white45);
         setSupportActionBar(mToolBar);
         getSupportActionBar().setTitle("");
 
-        mLayoutManager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
-        mProfRecyclerView.setLayoutManager(mLayoutManager);
-        mProfRecyclerView.setHasFixedSize(true);
-        mProfRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
-
-        mPresenter.getProfData(Const.USERPAGE_FIRST, Const.getUserpageAPI(Integer.parseInt(SavedData.getServerUserId(this))));
-
-        mSwipeContainer.setColorSchemeResources(R.color.gocci_1, R.color.gocci_2, R.color.gocci_3, R.color.gocci_4);
-        mSwipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        mFollowRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
             @Override
-            public void onRefresh() {
-                mSwipeContainer.setRefreshing(true);
-                if (Util.getConnectedState(GocciMyprofActivity.this) != Util.NetworkStatus.OFF) {
-                    mPresenter.getProfData(Const.USERPAGE_REFRESH, Const.getUserpageAPI(Integer.parseInt(SavedData.getServerUserId(GocciMyprofActivity.this))));
-                } else {
-                    Toast.makeText(GocciMyprofActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
-                    mSwipeContainer.setRefreshing(false);
-                }
+            public void onComplete(RippleView rippleView) {
+                ListActivity.startListActivity(Integer.parseInt(SavedData.getServerUserId(GocciMyprofActivity.this)), 1, Const.CATEGORY_FOLLOW, GocciMyprofActivity.this);
+            }
+        });
+
+        mFollowerRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
+            @Override
+            public void onComplete(RippleView rippleView) {
+                ListActivity.startListActivity(Integer.parseInt(SavedData.getServerUserId(GocciMyprofActivity.this)), 1, Const.CATEGORY_FOLLOWER, GocciMyprofActivity.this);
+            }
+        });
+
+        mUsercheerRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
+            @Override
+            public void onComplete(RippleView rippleView) {
+                ListActivity.startListActivity(Integer.parseInt(SavedData.getServerUserId(GocciMyprofActivity.this)), 1, Const.CATEGORY_USER_CHEER, GocciMyprofActivity.this);
+            }
+        });
+
+        mWantRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
+            @Override
+            public void onComplete(RippleView rippleView) {
+                ListActivity.startListActivity(Integer.parseInt(SavedData.getServerUserId(GocciMyprofActivity.this)), 1, Const.CATEGORY_WANT, GocciMyprofActivity.this);
+            }
+        });
+
+        mEditProfile.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
+            @Override
+            public void onComplete(RippleView rippleView) {
+                final MaterialDialog dialog = new MaterialDialog.Builder(GocciMyprofActivity.this)
+                        .title(getString(R.string.change_profile_dialog_title))
+                        .customView(R.layout.view_header_myprof_edit, false)
+                        .positiveText(getString(R.string.change_profile_dialog_yeah))
+                        .positiveColorRes(R.color.gocci_header)
+                        .callback(new MaterialDialog.ButtonCallback() {
+                            @Override
+                            public void onPositive(MaterialDialog dialog) {
+                                super.onPositive(dialog);
+                                mProgressWheel.setVisibility(View.VISIBLE);
+
+                                String updateUrl = null;
+                                String post_date = null;
+                                File update_file = null;
+
+                                if (isName && isPicture) {
+                                    //どっちも変更した
+                                    post_date = SavedData.getServerUserId(GocciMyprofActivity.this) + "_" + Util.getDateTimeString();
+                                    update_file = Util.getLocalBitmapFile(mEditPicture, post_date);
+                                    updateUrl = Const.getPostUpdateProfileAPI(Const.FLAG_CHANGE_BOTH,
+                                            mEditUsername.getText().toString(),
+                                            post_date);
+                                    isName = false;
+                                    isPicture = false;
+                                } else if (isPicture) {
+                                    //写真だけ変更
+                                    post_date = SavedData.getServerUserId(GocciMyprofActivity.this) + "_" + Util.getDateTimeString();
+                                    update_file = Util.getLocalBitmapFile(mEditPicture, post_date);
+                                    updateUrl = Const.getPostUpdateProfileAPI(Const.FLAG_CHANGE_PICTURE,
+                                            null, post_date);
+                                    isPicture = false;
+                                } else if (isName) {
+                                    //名前だけ
+                                    updateUrl = Const.getPostUpdateProfileAPI(Const.FLAG_CHANGE_NAME,
+                                            mEditUsername.getText().toString(), null);
+                                    isName = false;
+                                }
+
+                                if (updateUrl != null) {
+                                    mPresenter.profChange(post_date, update_file, updateUrl);
+                                }
+                            }
+                        })
+                        .build();
+
+                mEditPicture = (ImageView) dialog.getCustomView().findViewById(R.id.myprof_picture);
+                mEditUsername = (TextView) dialog.getCustomView().findViewById(R.id.myprof_username);
+                mEditUsernameEdit = (EditText) dialog.getCustomView().findViewById(R.id.myprof_username_edit);
+
+                Picasso.with(GocciMyprofActivity.this)
+                        .load(SavedData.getServerPicture(GocciMyprofActivity.this))
+                        .fit()
+                        .placeholder(R.drawable.ic_userpicture)
+                        .transform(new RoundedTransformation())
+                        .into(mEditPicture);
+
+                mEditUsername.setText(SavedData.getServerName(GocciMyprofActivity.this));
+                mEditUsernameEdit.setHint(SavedData.getServerName(GocciMyprofActivity.this));
+
+                mEditPicture.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Crop.pickImage(GocciMyprofActivity.this);
+                    }
+                });
+                mEditUsername.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mEditUsername.setVisibility(View.GONE);
+                        mEditUsernameEdit.setVisibility(View.VISIBLE);
+                        dialog.getActionButton(DialogAction.POSITIVE).setEnabled(false);
+                        mEditUsernameEdit.setOnKeyListener(new View.OnKeyListener() {
+                            @Override
+                            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                                if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                                    if (mEditUsernameEdit.getText().toString().isEmpty()) {
+                                        Toast.makeText(GocciMyprofActivity.this, getString(R.string.cheat_input_username), Toast.LENGTH_SHORT).show();
+                                        return false;
+                                    } else {
+                                        final InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                                        inputMethodManager.hideSoftInputFromWindow(mEditUsernameEdit.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
+                                        mEditUsername.setText(mEditUsernameEdit.getText().toString());
+                                        mEditUsername.setVisibility(View.VISIBLE);
+                                        mEditUsernameEdit.setVisibility(View.GONE);
+                                        dialog.getActionButton(DialogAction.POSITIVE).setEnabled(true);
+                                        isName = true;
+                                        return true;
+                                    }
+
+                                }
+                                return false;
+                            }
+                        });
+                    }
+                });
+                dialog.show();
             }
         });
 
@@ -250,7 +539,8 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
             analytics.getSessionClient().resumeSession();
         }
         BusHolder.get().register(self);
-        mAppBar.addOnOffsetChangedListener(this);
+        releasePlayer();
+        mAppBarLayout.addOnOffsetChangedListener(this);
         mPresenter.resume();
     }
 
@@ -262,7 +552,14 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
             analytics.getEventClient().submitEvents();
         }
         BusHolder.get().unregister(self);
-        mAppBar.removeOnOffsetChangedListener(this);
+        if (player != null) {
+            player.blockingClearSurface();
+        }
+        releasePlayer();
+        if (getPlayingViewHolder() != null) {
+            getPlayingViewHolder().mSquareImage.setVisibility(View.VISIBLE);
+        }
+        mAppBarLayout.removeOnOffsetChangedListener(this);
         mPresenter.pause();
     }
 
@@ -389,6 +686,13 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
         }
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        audioCapabilitiesReceiver.unregister();
+        releasePlayer();
+    }
+
     private void beginCrop(Uri source) {
         Uri destination = Uri.fromFile(new File(getCacheDir(), "cropped"));
         Crop.of(source, destination).asSquare().start(this);
@@ -429,167 +733,173 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
                 }).show();
     }
 
+    //setDeleteDialog(post_id, position);
+    @Subscribe
+    public void subscribe(TimelineMuteChangeEvent event) {
+        if (player != null) {
+            player.setSelectedTrack(VideoPlayer.TYPE_AUDIO, event.mute);
+        }
+    }
+
+    @Override
+    public void onAudioCapabilitiesChanged(AudioCapabilities audioCapabilities) {
+        if (player == null) {
+            return;
+        }
+        if (mPlayingPostId != null && GocciTimelineActivity.mShowPosition == 0) {
+            releasePlayer();
+        }
+        player.setBackgrounded(false);
+    }
+
+    private void preparePlayer(final Const.TwoCellViewHolder viewHolder, String path) {
+        if (player == null) {
+            player = new VideoPlayer(new HlsRendererBuilder(this, com.google.android.exoplayer.util.Util.getUserAgent(this, "Gocci"), path));
+            player.addListener(new VideoPlayer.Listener() {
+                @Override
+                public void onStateChanged(boolean playWhenReady, int playbackState) {
+                    switch (playbackState) {
+                        case VideoPlayer.STATE_BUFFERING:
+                            break;
+                        case VideoPlayer.STATE_ENDED:
+                            player.seekTo(0);
+                            break;
+                        case VideoPlayer.STATE_IDLE:
+                            break;
+                        case VideoPlayer.STATE_PREPARING:
+                            break;
+                        case VideoPlayer.STATE_READY:
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    if (e instanceof UnsupportedDrmException) {
+                        // Special case DRM failures.
+                        UnsupportedDrmException unsupportedDrmException = (UnsupportedDrmException) e;
+                        int stringId = com.google.android.exoplayer.util.Util.SDK_INT < 18 ? R.string.drm_error_not_supported
+                                : unsupportedDrmException.reason == UnsupportedDrmException.REASON_UNSUPPORTED_SCHEME
+                                ? R.string.drm_error_unsupported_scheme : R.string.drm_error_unknown;
+                        Toast.makeText(getApplicationContext(), stringId, Toast.LENGTH_LONG).show();
+                    }
+                    playerNeedsPrepare = true;
+                }
+
+                @Override
+                public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees, float pixelWidthAspectRatio) {
+                    viewHolder.mSquareImage.setVisibility(View.GONE);
+                    viewHolder.mAspectFrame.setAspectRatio(
+                            height == 0 ? 1 : (width * pixelWidthAspectRatio) / height);
+                }
+            });
+            //player.seekTo(playerPosition);
+            playerNeedsPrepare = true;
+        }
+        if (playerNeedsPrepare) {
+            player.prepare();
+            playerNeedsPrepare = false;
+        }
+        player.setSurface(viewHolder.mSquareExoVideo.getHolder().getSurface());
+        player.setPlayWhenReady(true);
+
+        if (SavedData.getSettingMute(this) == -1) {
+            player.setSelectedTrack(VideoPlayer.TYPE_AUDIO, -1);
+        } else {
+            player.setSelectedTrack(VideoPlayer.TYPE_AUDIO, 0);
+        }
+    }
+
+    private void releasePlayer() {
+        if (player != null) {
+            player.release();
+            player = null;
+        }
+    }
+
+    private void changeMovie(PostData postData) {
+        // TODO:実装
+        if (mPlayingPostId != null) {
+            // 前回の動画再生停止処理
+            final Const.TwoCellViewHolder oldViewHolder = getPlayingViewHolder();
+            if (oldViewHolder != null) {
+                oldViewHolder.mSquareImage.setVisibility(View.VISIBLE);
+            }
+
+            if (mPlayingPostId.equals(postData.getPost_id())) {
+                return;
+            }
+        }
+        mPlayingPostId = postData.getPost_id();
+        final Const.TwoCellViewHolder currentViewHolder = getPlayingViewHolder();
+        if (mPlayBlockFlag) {
+            return;
+        }
+
+        final String path = postData.getMovie();
+        releasePlayer();
+        preparePlayer(currentViewHolder, path);
+    }
+
+    private Const.TwoCellViewHolder getPlayingViewHolder() {
+        Const.TwoCellViewHolder viewHolder = null;
+        if (mPlayingPostId != null) {
+            for (Map.Entry<Const.TwoCellViewHolder, String> entry : mViewHolderHash.entrySet()) {
+                if (entry.getValue().equals(mPlayingPostId)) {
+                    viewHolder = entry.getKey();
+                    break;
+                }
+            }
+        }
+        return viewHolder;
+    }
+
     @Override
     public void onOffsetChanged(AppBarLayout appBarLayout, int i) {
-        mSwipeContainer.setEnabled(i == 0);
-    }
-
-    @Override
-    public void onFollowListClick(int user_id) {
-        ListActivity.startListActivity(user_id, 1, Const.CATEGORY_FOLLOW, GocciMyprofActivity.this);
-    }
-
-    @Override
-    public void onFollowerListClick(int user_id) {
-        ListActivity.startListActivity(user_id, 1, Const.CATEGORY_FOLLOWER, GocciMyprofActivity.this);
-    }
-
-    @Override
-    public void onUserCheerClick(int user_id) {
-        ListActivity.startListActivity(user_id, 1, Const.CATEGORY_USER_CHEER, GocciMyprofActivity.this);
-    }
-
-    @Override
-    public void onWantClick(int user_id) {
-        ListActivity.startListActivity(user_id, 1, Const.CATEGORY_WANT, GocciMyprofActivity.this);
-    }
-
-    @Override
-    public void onEditProfileClick() {
-        final MaterialDialog dialog = new MaterialDialog.Builder(this)
-                .title(getString(R.string.change_profile_dialog_title))
-                .customView(R.layout.view_header_myprof_edit, false)
-                .positiveText(getString(R.string.change_profile_dialog_yeah))
-                .positiveColorRes(R.color.gocci_header)
-                .callback(new MaterialDialog.ButtonCallback() {
-                    @Override
-                    public void onPositive(MaterialDialog dialog) {
-                        super.onPositive(dialog);
-                        mProgressWheel.setVisibility(View.VISIBLE);
-
-                        String updateUrl = null;
-                        String post_date = null;
-                        File update_file = null;
-
-                        if (isName && isPicture) {
-                            //どっちも変更した
-                            post_date = SavedData.getServerUserId(GocciMyprofActivity.this) + "_" + Util.getDateTimeString();
-                            update_file = Util.getLocalBitmapFile(mEditPicture, post_date);
-                            updateUrl = Const.getPostUpdateProfileAPI(Const.FLAG_CHANGE_BOTH,
-                                    mEditUsername.getText().toString(),
-                                    post_date);
-                            isName = false;
-                            isPicture = false;
-                        } else if (isPicture) {
-                            //写真だけ変更
-                            post_date = SavedData.getServerUserId(GocciMyprofActivity.this) + "_" + Util.getDateTimeString();
-                            update_file = Util.getLocalBitmapFile(mEditPicture, post_date);
-                            updateUrl = Const.getPostUpdateProfileAPI(Const.FLAG_CHANGE_PICTURE,
-                                    null, post_date);
-                            isPicture = false;
-                        } else if (isName) {
-                            //名前だけ
-                            updateUrl = Const.getPostUpdateProfileAPI(Const.FLAG_CHANGE_NAME,
-                                    mEditUsername.getText().toString(), null);
-                            isName = false;
-                        }
-
-                        if (updateUrl != null) {
-                            mPresenter.profChange(post_date, update_file, updateUrl);
-                        }
-                    }
-                })
-                .build();
-
-        mEditPicture = (ImageView) dialog.getCustomView().findViewById(R.id.myprof_picture);
-        mEditUsername = (TextView) dialog.getCustomView().findViewById(R.id.myprof_username);
-        mEditUsernameEdit = (EditText) dialog.getCustomView().findViewById(R.id.myprof_username_edit);
-
-        Picasso.with(GocciMyprofActivity.this)
-                .load(SavedData.getServerPicture(GocciMyprofActivity.this))
-                .fit()
-                .placeholder(R.drawable.ic_userpicture)
-                .transform(new RoundedTransformation())
-                .into(mEditPicture);
-
-        mEditUsername.setText(SavedData.getServerName(GocciMyprofActivity.this));
-        mEditUsernameEdit.setHint(SavedData.getServerName(GocciMyprofActivity.this));
-
-        mEditPicture.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Crop.pickImage(GocciMyprofActivity.this);
-            }
-        });
-        mEditUsername.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mEditUsername.setVisibility(View.GONE);
-                mEditUsernameEdit.setVisibility(View.VISIBLE);
-                dialog.getActionButton(DialogAction.POSITIVE).setEnabled(false);
-                mEditUsernameEdit.setOnKeyListener(new View.OnKeyListener() {
-                    @Override
-                    public boolean onKey(View v, int keyCode, KeyEvent event) {
-                        if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                            if (mEditUsernameEdit.getText().toString().isEmpty()) {
-                                Toast.makeText(GocciMyprofActivity.this, getString(R.string.cheat_input_username), Toast.LENGTH_SHORT).show();
-                                return false;
-                            } else {
-                                final InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                                inputMethodManager.hideSoftInputFromWindow(mEditUsernameEdit.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
-                                mEditUsername.setText(mEditUsernameEdit.getText().toString());
-                                mEditUsername.setVisibility(View.VISIBLE);
-                                mEditUsernameEdit.setVisibility(View.GONE);
-                                dialog.getActionButton(DialogAction.POSITIVE).setEnabled(true);
-                                isName = true;
-                                return true;
-                            }
-
-                        }
-                        return false;
-                    }
-                });
-            }
-        });
-
-        dialog.show();
-    }
-
-    @Override
-    public void onImageClick(int post_id) {
-        //CommentActivity.startCommentActivity(post_id, GocciMyprofActivity.this);
-    }
-
-    @Override
-    public void onImageLongClick(String post_id, int position) {
-        setDeleteDialog(post_id, position);
-    }
-
-    @Override
-    public void onLocationClick(ArrayList<PostData> postData) {
-        ProfMapActivity.startProfMapActivity(postData, GocciMyprofActivity.this);
+        mGridSwipe.setEnabled(i == 0);
     }
 
     @Override
     public void showLoading() {
-        mSwipeContainer.setRefreshing(true);
+        mGridSwipe.setRefreshing(true);
     }
 
     @Override
     public void hideLoading() {
-        mSwipeContainer.setRefreshing(false);
+        mGridSwipe.setRefreshing(false);
     }
 
     @Override
     public void showNoResultCase(int api, HeaderData userData) {
         mHeaderUserData = userData;
-        if (api == Const.USERPAGE_FIRST) {
-            mMyProfAdapter = new MyProfAdapter(this, mHeaderUserData, mProfusers);
-            mMyProfAdapter.setMyProfCallback(this);
-            mProfRecyclerView.setAdapter(mMyProfAdapter);
-        } else if (api == Const.USERPAGE_REFRESH) {
-            mProfusers.clear();
-            mMyProfAdapter.setData(mHeaderUserData);
+
+        mUsername.setText(mHeaderUserData.getUsername());
+        Picasso.with(this)
+                .load(mHeaderUserData.getProfile_img())
+                .fit()
+                .placeholder(R.drawable.ic_userpicture)
+                .transform(new RoundedTransformation())
+                .into(mMyPicture);
+        mFollowNum.setText(String.valueOf(mHeaderUserData.getFollow_num()));
+        mFollowerNum.setText(String.valueOf(mHeaderUserData.getFollower_num()));
+        mUsercheerNum.setText(String.valueOf(mHeaderUserData.getCheer_num()));
+        mWantNum.setText(String.valueOf(mHeaderUserData.getWant_num()));
+
+        switch (api) {
+            case Const.USERPAGE_FIRST:
+                mGridMyProfAdapter = new GridMyProfAdapter(GocciMyprofActivity.this, mGridUsers);
+                mGridMyProfAdapter.setMyProfCallback(this);
+                mGridList.setAdapter(mGridMyProfAdapter);
+                break;
+            case Const.USERPAGE_REFRESH:
+                mGridUsers.clear();
+                isEndScrioll = false;
+                mNextCount = 1;
+                mPlayingPostId = null;
+                mGridMyProfAdapter.setData();
+                break;
         }
         mEmptyImage.setVisibility(View.VISIBLE);
         mEmptyText.setVisibility(View.VISIBLE);
@@ -607,18 +917,39 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
     }
 
     @Override
-    public void showResult(int api, HeaderData userData, ArrayList<PostData> postData) {
+    public void showResult(int api, HeaderData userData, ArrayList<PostData> postData, ArrayList<String> post_ids) {
         mHeaderUserData = userData;
-        mProfusers.clear();
-        mProfusers.addAll(postData);
+
+        mUsername.setText(mHeaderUserData.getUsername());
+        Picasso.with(this)
+                .load(mHeaderUserData.getProfile_img())
+                .fit()
+                .placeholder(R.drawable.ic_userpicture)
+                .transform(new RoundedTransformation())
+                .into(mMyPicture);
+        mFollowNum.setText(String.valueOf(mHeaderUserData.getFollow_num()));
+        mFollowerNum.setText(String.valueOf(mHeaderUserData.getFollower_num()));
+        mUsercheerNum.setText(String.valueOf(mHeaderUserData.getCheer_num()));
+        mWantNum.setText(String.valueOf(mHeaderUserData.getWant_num()));
+
         switch (api) {
             case Const.USERPAGE_FIRST:
-                mMyProfAdapter = new MyProfAdapter(this, mHeaderUserData, mProfusers);
-                mMyProfAdapter.setMyProfCallback(this);
-                mProfRecyclerView.setAdapter(mMyProfAdapter);
+                mGridUsers.addAll(postData);
+                mGridPost_ids.addAll(post_ids);
+                mGridMyProfAdapter = new GridMyProfAdapter(GocciMyprofActivity.this, mGridUsers);
+                mGridMyProfAdapter.setMyProfCallback(this);
+                mGridList.setAdapter(mGridMyProfAdapter);
                 break;
             case Const.USERPAGE_REFRESH:
-                mMyProfAdapter.setData(mHeaderUserData);
+                mGridUsers.clear();
+                mGridUsers.addAll(postData);
+                mGridPost_ids.clear();
+                mGridPost_ids.addAll(post_ids);
+                isEndScrioll = false;
+                mNextCount = 1;
+                mPlayingPostId = null;
+                mViewHolderHash.clear();
+                mGridMyProfAdapter.setData();
                 break;
         }
     }
@@ -654,10 +985,10 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
 
     @Override
     public void postDeleted(int position) {
-        mProfusers.remove(position);
-        mMyProfAdapter.setData(mHeaderUserData);
+        mGridUsers.remove(position);
+        mGridMyProfAdapter.setData();
 
-        if (mProfusers.isEmpty()) {
+        if (mGridUsers.isEmpty()) {
             mEmptyImage.setVisibility(View.VISIBLE);
             mEmptyText.setVisibility(View.VISIBLE);
         } else {
@@ -669,5 +1000,38 @@ public class GocciMyprofActivity extends AppCompatActivity implements AppBarLayo
     @Override
     public void postDeleteFailed() {
         Toast.makeText(this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onRestClick(int rest_id, String rest_name) {
+        FlexibleTenpoActivity.startTenpoActivity(rest_id, rest_name, this);
+    }
+
+    @Override
+    public void onCommentClick(int post_id, int user_id, String username) {
+        CommentActivity.startCommentActivity(post_id, user_id, username, this);
+    }
+
+    @Override
+    public void onVideoFrameClick(PostData data) {
+        if (player != null && mPlayingPostId.equals(data.getPost_id())) {
+            if (player.getPlayerControl().isPlaying()) {
+                player.getPlayerControl().pause();
+            } else {
+                player.getPlayerControl().start();
+            }
+        } else {
+            changeMovie(data);
+        }
+    }
+
+    @Override
+    public void onVideoFrameLongClick(String post_id, int position) {
+        setDeleteDialog(post_id, position);
+    }
+
+    @Override
+    public void onHashHolder(Const.TwoCellViewHolder holder, String post_id) {
+        mViewHolderHash.put(holder, post_id);
     }
 }

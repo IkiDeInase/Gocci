@@ -116,7 +116,7 @@ public class LatestTimelineFragment extends Fragment implements AudioCapabilitie
                         int[] array = mLayoutManager.findFirstVisibleItemPositions(null);
                         int[] array2 = mLayoutManager.findLastVisibleItemPositions(null);
 
-                        if (array[1] >= position || position >= array2[0]) {
+                        if (array[0] >= position || position >= array2[1]) {
                             Const.TwoCellViewHolder oldViewHolder = getPlayingViewHolder();
                             if (oldViewHolder != null) {
                                 oldViewHolder.mSquareImage.setVisibility(View.VISIBLE);

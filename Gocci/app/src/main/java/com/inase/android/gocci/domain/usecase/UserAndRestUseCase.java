@@ -11,7 +11,7 @@ import java.util.ArrayList;
 public interface UserAndRestUseCase {
 
     interface UserAndRestUseCaseCallback {
-        void onDataLoaded(int api, HeaderData userdata, ArrayList<PostData> postData);
+        void onDataLoaded(int api, HeaderData userdata, ArrayList<PostData> postData, ArrayList<String> post_ids);
 
         void onDataEmpty(int api, HeaderData mUserData);
 
