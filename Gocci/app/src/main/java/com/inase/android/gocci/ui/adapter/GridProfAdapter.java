@@ -20,22 +20,22 @@ import java.util.ArrayList;
 /**
  * Created by kinagafuji on 15/09/29.
  */
-public class GridMyProfAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolder> {
+public class GridProfAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolder> {
 
     private Context mContext;
     private int mCellSize;
 
     private ArrayList<PostData> mPostData = new ArrayList<>();
 
-    private MyProfCallback mCallback;
+    private GridProfCallback mCallback;
 
-    public GridMyProfAdapter(Context context, ArrayList<PostData> postData) {
+    public GridProfAdapter(Context context, ArrayList<PostData> postData) {
         this.mContext = context;
         this.mPostData = postData;
         this.mCellSize = Util.getScreenWidth(mContext) / 2;
     }
 
-    public void setMyProfCallback(MyProfCallback callback) {
+    public void setMyProfCallback(GridProfCallback callback) {
         mCallback = callback;
     }
 
@@ -86,10 +86,10 @@ public class GridMyProfAdapter extends RecyclerView.Adapter<Const.TwoCellViewHol
                     public void onClick(DialogInterface dialog, int which) {
                         switch (which) {
                             case R.id.move_to_restpage:
-                                mCallback.onRestClick(user.getPost_rest_id(), user.getRestname());
+                                mCallback.onGridRestClick(user.getPost_rest_id(), user.getRestname());
                                 break;
                             case R.id.move_to_comment:
-                                mCallback.onCommentClick(Integer.parseInt(user.getPost_id()), user.getPost_user_id(), user.getUsername());
+                                mCallback.onGridCommentClick(Integer.parseInt(user.getPost_id()), user.getPost_user_id(), user.getUsername());
                                 break;
                             case R.id.violation:
                                 Util.setViolateDialog(mContext, user.getPost_id());
@@ -105,19 +105,19 @@ public class GridMyProfAdapter extends RecyclerView.Adapter<Const.TwoCellViewHol
         holder.mAspectFrame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mCallback.onVideoFrameClick(user);
+                mCallback.onGridVideoFrameClick(user);
             }
         });
 
         holder.mAspectFrame.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                mCallback.onVideoFrameLongClick(user.getPost_id(), position);
+                mCallback.onGridVideoFrameLongClick(user.getPost_id(), position);
                 return false;
             }
         });
 
-        mCallback.onHashHolder(holder, user.getPost_id());
+        mCallback.onGridHashHolder(holder, user.getPost_id());
     }
 
     @Override
@@ -135,17 +135,17 @@ public class GridMyProfAdapter extends RecyclerView.Adapter<Const.TwoCellViewHol
         return dist;
     }
 
-    public interface MyProfCallback {
+    public interface GridProfCallback {
 
-        void onRestClick(int rest_id, String rest_name);
+        void onGridRestClick(int rest_id, String rest_name);
 
-        void onCommentClick(int post_id, int user_id, String username);
+        void onGridCommentClick(int post_id, int user_id, String username);
 
-        void onVideoFrameClick(PostData data);
+        void onGridVideoFrameClick(PostData data);
 
-        void onVideoFrameLongClick(String post_id, int position);
+        void onGridVideoFrameLongClick(String post_id, int position);
 
-        void onHashHolder(Const.TwoCellViewHolder holder, String post_id);
+        void onGridHashHolder(Const.TwoCellViewHolder holder, String post_id);
 
     }
 }

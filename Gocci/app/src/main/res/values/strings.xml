@@ -269,6 +269,7 @@
     <string name="close">Close</string>
 
     <string name="popup_violate">Violate</string>
+    <string name="popup_delete">delete</string>
 
     <string name="search_friend_hint">Please write Username</string>
     <string name="search_friend_yeah">Search</string>

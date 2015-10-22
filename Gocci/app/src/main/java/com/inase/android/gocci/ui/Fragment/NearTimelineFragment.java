@@ -215,6 +215,7 @@ public class NearTimelineFragment extends Fragment implements AppBarLayout.OnOff
             public void onRefresh() {
                 mSwipeContainer.setRefreshing(true);
                 if (Util.getConnectedState(getActivity()) != Util.NetworkStatus.OFF) {
+                    releasePlayer();
                     getRefreshAsync(getActivity());
                 } else {
                     Toast.makeText(getActivity(), getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();

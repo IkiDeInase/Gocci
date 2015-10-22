@@ -8,16 +8,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -36,14 +31,6 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
 import com.andexert.library.RippleView;
-import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
-import com.facebook.share.Sharer;
-import com.facebook.share.widget.ShareDialog;
-import com.google.android.exoplayer.audio.AudioCapabilities;
-import com.google.android.exoplayer.audio.AudioCapabilitiesReceiver;
-import com.google.android.exoplayer.drm.UnsupportedDrmException;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.repository.MyPageActionRepository;
@@ -60,18 +47,18 @@ import com.inase.android.gocci.domain.usecase.ProfChangeUseCaseImpl;
 import com.inase.android.gocci.domain.usecase.ProfPageUseCaseImpl;
 import com.inase.android.gocci.domain.usecase.UserAndRestUseCase;
 import com.inase.android.gocci.event.BusHolder;
+import com.inase.android.gocci.event.ProfJsonEvent;
 import com.inase.android.gocci.event.NotificationNumberEvent;
-import com.inase.android.gocci.event.TimelineMuteChangeEvent;
+import com.inase.android.gocci.event.PageChangeVideoStopEvent;
 import com.inase.android.gocci.presenter.ShowMyProfPresenter;
-import com.inase.android.gocci.ui.adapter.GridMyProfAdapter;
+import com.inase.android.gocci.ui.fragment.GridMyProfFragment;
+import com.inase.android.gocci.ui.fragment.StreamMyProfFragment;
 import com.inase.android.gocci.ui.view.DrawerProfHeader;
 import com.inase.android.gocci.ui.view.NotificationListView;
 import com.inase.android.gocci.ui.view.RoundedTransformation;
 import com.inase.android.gocci.ui.view.ToukouPopup;
 import com.inase.android.gocci.utils.SavedData;
 import com.inase.android.gocci.utils.Util;
-import com.inase.android.gocci.utils.video.HlsRendererBuilder;
-import com.inase.android.gocci.utils.video.VideoPlayer;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
@@ -79,6 +66,8 @@ import com.mikepenz.materialdrawer.holder.StringHolder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
+import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.soundcloud.android.crop.Crop;
 import com.squareup.otto.Subscribe;
@@ -86,15 +75,12 @@ import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class GocciMyprofActivity extends AppCompatActivity implements ShowMyProfPresenter.ShowProfView, AppBarLayout.OnOffsetChangedListener,
-        AudioCapabilitiesReceiver.Listener, GridMyProfAdapter.MyProfCallback {
+public class GocciMyprofActivity extends AppCompatActivity implements ShowMyProfPresenter.ShowProfView {
 
     private final GocciMyprofActivity self = this;
     @Bind(R.id.tool_bar)
@@ -105,20 +91,10 @@ public class GocciMyprofActivity extends AppCompatActivity implements ShowMyProf
     TextView mEmptyText;
     @Bind(R.id.empty_image)
     ImageView mEmptyImage;
-    @Bind(R.id.app_bar)
-    AppBarLayout mAppBarLayout;
+    @Bind(R.id.viewpager)
+    ViewPager mViewpager;
     @Bind(R.id.coordinator_layout)
     CoordinatorLayout mCoordinatorLayout;
-//    @Bind(R.id.stream_swipe)
-//    SwipeRefreshLayout mStreamSwipe;
-//    @Bind(R.id.stream_list)
-//    RecyclerView mStreamList;
-    @Bind(R.id.grid_swipe)
-    SwipeRefreshLayout mGridSwipe;
-    @Bind(R.id.grid_list)
-    RecyclerView mGridList;
-    @Bind(R.id.collapsing_toolbar)
-    CollapsingToolbarLayout mCollapse;
     @Bind(R.id.myprof_username)
     TextView mUsername;
     @Bind(R.id.myprof_picture)
@@ -145,15 +121,23 @@ public class GocciMyprofActivity extends AppCompatActivity implements ShowMyProf
 
     @OnClick(R.id.stream)
     public void onStream() {
-
+        if (mShowPosition == 1) {
+            mShowPosition = 0;
+            mViewpager.setCurrentItem(mShowPosition);
+        }
     }
+
     @OnClick(R.id.grid)
     public void onGrid() {
-
+        if (mShowPosition == 0) {
+            mShowPosition = 1;
+            mViewpager.setCurrentItem(mShowPosition);
+        }
     }
+
     @OnClick(R.id.location)
     public void onLocation() {
-        ProfMapActivity.startProfMapActivity(mGridUsers, GocciMyprofActivity.this);
+        ProfMapActivity.startProfMapActivity(mUsers, GocciMyprofActivity.this);
     }
 
     private Drawer result;
@@ -171,82 +155,13 @@ public class GocciMyprofActivity extends AppCompatActivity implements ShowMyProf
 
     private ShowMyProfPresenter mPresenter;
 
-    private LinearLayoutManager mLinearLayoutManager;
-    private ArrayList<PostData> mLinearUsers = new ArrayList<>();
-    private ArrayList<String> mLinearPost_ids = new ArrayList<>();
-
-    private StaggeredGridLayoutManager mGridLayoutManager;
-    private ArrayList<PostData> mGridUsers = new ArrayList<>();
-    private ArrayList<String> mGridPost_ids = new ArrayList<>();
-
     private HeaderData mHeaderUserData;
-    private GridMyProfAdapter mGridMyProfAdapter;
+    private ArrayList<PostData> mUsers = new ArrayList<>();
+    private ArrayList<String> mPost_ids = new ArrayList<>();
 
-    private String mPlayingPostId;
-    private boolean mPlayBlockFlag;
-    private ConcurrentHashMap<Const.TwoCellViewHolder, String> mViewHolderHash;  // Value: PosterId
+    public static int mShowPosition = 0;
 
-    private VideoPlayer player;
-    private boolean playerNeedsPrepare;
-
-    private AudioCapabilitiesReceiver audioCapabilitiesReceiver;
-
-    private CallbackManager callbackManager;
-    private ShareDialog shareDialog;
-
-    private boolean loading = true;
-    private int pastVisibleItems, visibleItemCount, totalItemCount;
-    private int mNextCount = 1;
-    private boolean isEndScrioll = false;
-
-    private RecyclerView.OnScrollListener mGridScrollListener = new RecyclerView.OnScrollListener() {
-        @Override
-        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-            super.onScrollStateChanged(recyclerView, newState);
-            switch (newState) {
-                case RecyclerView.SCROLL_STATE_IDLE:
-                    if (mPlayingPostId != null) {
-                        int position = mGridPost_ids.indexOf(mPlayingPostId);
-                        int[] array = mGridLayoutManager.findFirstVisibleItemPositions(null);
-                        int[] array2 = mGridLayoutManager.findLastVisibleItemPositions(null);
-
-                        if (array[0] >= position || position >= array2[1]) {
-                            Const.TwoCellViewHolder oldViewHolder = getPlayingViewHolder();
-                            if (oldViewHolder != null) {
-                                oldViewHolder.mSquareImage.setVisibility(View.VISIBLE);
-                            }
-                            mPlayingPostId = null;
-                            releasePlayer();
-                        }
-                    }
-                    break;
-                case RecyclerView.SCROLL_STATE_DRAGGING:
-                    break;
-                case RecyclerView.SCROLL_STATE_SETTLING:
-                    break;
-            }
-        }
-
-        @Override
-        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-            visibleItemCount = mGridLayoutManager.getChildCount();
-            totalItemCount = mGridLayoutManager.getItemCount();
-            int[] firstVisibleItems = null;
-            firstVisibleItems = mGridLayoutManager.findFirstVisibleItemPositions(firstVisibleItems);
-            if (firstVisibleItems != null && firstVisibleItems.length > 0) {
-                pastVisibleItems = firstVisibleItems[0];
-            }
-
-            if (loading) {
-                if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
-                    loading = false;
-                    if (!isEndScrioll) {
-                        //追加
-                    }
-                }
-            }
-        }
-    };
+    private FragmentPagerItemAdapter adapter;
 
     private static Handler sHandler = new Handler() {
         @Override
@@ -288,28 +203,6 @@ public class GocciMyprofActivity extends AppCompatActivity implements ShowMyProf
             Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
         }
 
-        callbackManager = CallbackManager.Factory.create();
-        shareDialog = new ShareDialog(this);
-        shareDialog.registerCallback(callbackManager, new FacebookCallback<Sharer.Result>() {
-            @Override
-            public void onSuccess(Sharer.Result result) {
-                Toast.makeText(GocciMyprofActivity.this, getString(R.string.complete_share), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onCancel() {
-                Toast.makeText(GocciMyprofActivity.this, getString(R.string.cancel_share), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onError(FacebookException e) {
-                Toast.makeText(GocciMyprofActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        audioCapabilitiesReceiver = new AudioCapabilitiesReceiver(getApplicationContext(), this);
-        audioCapabilitiesReceiver.register();
-
         UserAndRestDataRepository userAndRestDataRepositoryImpl = UserAndRestDataRepositoryImpl.getRepository();
         MyPageActionRepository myPageActionRepositoryImpl = MyPageActionRepositoryImpl.getRepository();
         UserAndRestUseCase userAndRestUseCaseImpl = ProfPageUseCaseImpl.getUseCase(userAndRestDataRepositoryImpl, UIThread.getInstance());
@@ -318,35 +211,35 @@ public class GocciMyprofActivity extends AppCompatActivity implements ShowMyProf
         mPresenter = new ShowMyProfPresenter(userAndRestUseCaseImpl, profChangeUseCaseImpl, postDeleteUseCaseImpl);
         mPresenter.setProfView(this);
 
-        mPlayBlockFlag = false;
-
         setContentView(R.layout.activity_gocci_myprof);
         ButterKnife.bind(this);
 
-        mPlayingPostId = null;
-        mViewHolderHash = new ConcurrentHashMap<>();
+        adapter = new FragmentPagerItemAdapter(
+                getSupportFragmentManager(), FragmentPagerItems.with(this)
+                .add(R.string.tab_near, StreamMyProfFragment.class)
+                .add(R.string.tab_follow, GridMyProfFragment.class)
+                .create());
 
-        mGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-        mGridList.setLayoutManager(mGridLayoutManager);
-        mGridList.setHasFixedSize(true);
-        mGridList.setOverScrollMode(View.OVER_SCROLL_NEVER);
-        mGridList.addOnScrollListener(mGridScrollListener);
-
-        mPresenter.getProfData(Const.USERPAGE_FIRST, Const.getUserpageAPI(Integer.parseInt(SavedData.getServerUserId(this))));
-
-        mGridSwipe.setColorSchemeResources(R.color.gocci_1, R.color.gocci_2, R.color.gocci_3, R.color.gocci_4);
-        mGridSwipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        mViewpager.setAdapter(adapter);
+        mViewpager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
-            public void onRefresh() {
-                mGridSwipe.setRefreshing(true);
-                if (Util.getConnectedState(GocciMyprofActivity.this) != Util.NetworkStatus.OFF) {
-                    mPresenter.getProfData(Const.USERPAGE_REFRESH, Const.getUserpageAPI(Integer.parseInt(SavedData.getServerUserId(GocciMyprofActivity.this))));
-                } else {
-                    Toast.makeText(GocciMyprofActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
-                    mGridSwipe.setRefreshing(false);
-                }
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                BusHolder.get().post(new PageChangeVideoStopEvent(position));
+                mShowPosition = position;
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
             }
         });
+
+        mPresenter.getProfData(Const.USERPAGE_FIRST, Const.getUserpageAPI(Integer.parseInt(SavedData.getServerUserId(this))));
 
         mToolBar.setLogo(R.drawable.ic_gocci_moji_white45);
         setSupportActionBar(mToolBar);
@@ -539,8 +432,6 @@ public class GocciMyprofActivity extends AppCompatActivity implements ShowMyProf
             analytics.getSessionClient().resumeSession();
         }
         BusHolder.get().register(self);
-        releasePlayer();
-        mAppBarLayout.addOnOffsetChangedListener(this);
         mPresenter.resume();
     }
 
@@ -552,14 +443,6 @@ public class GocciMyprofActivity extends AppCompatActivity implements ShowMyProf
             analytics.getEventClient().submitEvents();
         }
         BusHolder.get().unregister(self);
-        if (player != null) {
-            player.blockingClearSurface();
-        }
-        releasePlayer();
-        if (getPlayingViewHolder() != null) {
-            getPlayingViewHolder().mSquareImage.setVisibility(View.VISIBLE);
-        }
-        mAppBarLayout.removeOnOffsetChangedListener(this);
         mPresenter.pause();
     }
 
@@ -686,13 +569,6 @@ public class GocciMyprofActivity extends AppCompatActivity implements ShowMyProf
         }
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        audioCapabilitiesReceiver.unregister();
-        releasePlayer();
-    }
-
     private void beginCrop(Uri source) {
         Uri destination = Uri.fromFile(new File(getCacheDir(), "cropped"));
         Crop.of(source, destination).asSquare().start(this);
@@ -712,7 +588,11 @@ public class GocciMyprofActivity extends AppCompatActivity implements ShowMyProf
         }
     }
 
-    private void setDeleteDialog(final String post_id, final int position) {
+    public void refreshJson() {
+        mPresenter.getProfData(Const.USERPAGE_REFRESH, Const.getUserpageAPI(Integer.parseInt(SavedData.getServerUserId(GocciMyprofActivity.this))));
+    }
+
+    public void setDeleteDialog(final String post_id, final int position) {
         new MaterialDialog.Builder(this)
                 .content(getString(R.string.check_delete_post))
                 .positiveText(getString(R.string.check_delete_yeah))
@@ -734,141 +614,15 @@ public class GocciMyprofActivity extends AppCompatActivity implements ShowMyProf
     }
 
     //setDeleteDialog(post_id, position);
-    @Subscribe
-    public void subscribe(TimelineMuteChangeEvent event) {
-        if (player != null) {
-            player.setSelectedTrack(VideoPlayer.TYPE_AUDIO, event.mute);
-        }
-    }
-
-    @Override
-    public void onAudioCapabilitiesChanged(AudioCapabilities audioCapabilities) {
-        if (player == null) {
-            return;
-        }
-        if (mPlayingPostId != null && GocciTimelineActivity.mShowPosition == 0) {
-            releasePlayer();
-        }
-        player.setBackgrounded(false);
-    }
-
-    private void preparePlayer(final Const.TwoCellViewHolder viewHolder, String path) {
-        if (player == null) {
-            player = new VideoPlayer(new HlsRendererBuilder(this, com.google.android.exoplayer.util.Util.getUserAgent(this, "Gocci"), path));
-            player.addListener(new VideoPlayer.Listener() {
-                @Override
-                public void onStateChanged(boolean playWhenReady, int playbackState) {
-                    switch (playbackState) {
-                        case VideoPlayer.STATE_BUFFERING:
-                            break;
-                        case VideoPlayer.STATE_ENDED:
-                            player.seekTo(0);
-                            break;
-                        case VideoPlayer.STATE_IDLE:
-                            break;
-                        case VideoPlayer.STATE_PREPARING:
-                            break;
-                        case VideoPlayer.STATE_READY:
-                            break;
-                        default:
-                            break;
-                    }
-                }
-
-                @Override
-                public void onError(Exception e) {
-                    if (e instanceof UnsupportedDrmException) {
-                        // Special case DRM failures.
-                        UnsupportedDrmException unsupportedDrmException = (UnsupportedDrmException) e;
-                        int stringId = com.google.android.exoplayer.util.Util.SDK_INT < 18 ? R.string.drm_error_not_supported
-                                : unsupportedDrmException.reason == UnsupportedDrmException.REASON_UNSUPPORTED_SCHEME
-                                ? R.string.drm_error_unsupported_scheme : R.string.drm_error_unknown;
-                        Toast.makeText(getApplicationContext(), stringId, Toast.LENGTH_LONG).show();
-                    }
-                    playerNeedsPrepare = true;
-                }
-
-                @Override
-                public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees, float pixelWidthAspectRatio) {
-                    viewHolder.mSquareImage.setVisibility(View.GONE);
-                    viewHolder.mAspectFrame.setAspectRatio(
-                            height == 0 ? 1 : (width * pixelWidthAspectRatio) / height);
-                }
-            });
-            //player.seekTo(playerPosition);
-            playerNeedsPrepare = true;
-        }
-        if (playerNeedsPrepare) {
-            player.prepare();
-            playerNeedsPrepare = false;
-        }
-        player.setSurface(viewHolder.mSquareExoVideo.getHolder().getSurface());
-        player.setPlayWhenReady(true);
-
-        if (SavedData.getSettingMute(this) == -1) {
-            player.setSelectedTrack(VideoPlayer.TYPE_AUDIO, -1);
-        } else {
-            player.setSelectedTrack(VideoPlayer.TYPE_AUDIO, 0);
-        }
-    }
-
-    private void releasePlayer() {
-        if (player != null) {
-            player.release();
-            player = null;
-        }
-    }
-
-    private void changeMovie(PostData postData) {
-        // TODO:実装
-        if (mPlayingPostId != null) {
-            // 前回の動画再生停止処理
-            final Const.TwoCellViewHolder oldViewHolder = getPlayingViewHolder();
-            if (oldViewHolder != null) {
-                oldViewHolder.mSquareImage.setVisibility(View.VISIBLE);
-            }
-
-            if (mPlayingPostId.equals(postData.getPost_id())) {
-                return;
-            }
-        }
-        mPlayingPostId = postData.getPost_id();
-        final Const.TwoCellViewHolder currentViewHolder = getPlayingViewHolder();
-        if (mPlayBlockFlag) {
-            return;
-        }
-
-        final String path = postData.getMovie();
-        releasePlayer();
-        preparePlayer(currentViewHolder, path);
-    }
-
-    private Const.TwoCellViewHolder getPlayingViewHolder() {
-        Const.TwoCellViewHolder viewHolder = null;
-        if (mPlayingPostId != null) {
-            for (Map.Entry<Const.TwoCellViewHolder, String> entry : mViewHolderHash.entrySet()) {
-                if (entry.getValue().equals(mPlayingPostId)) {
-                    viewHolder = entry.getKey();
-                    break;
-                }
-            }
-        }
-        return viewHolder;
-    }
-
-    @Override
-    public void onOffsetChanged(AppBarLayout appBarLayout, int i) {
-        mGridSwipe.setEnabled(i == 0);
-    }
 
     @Override
     public void showLoading() {
-        mGridSwipe.setRefreshing(true);
+
     }
 
     @Override
     public void hideLoading() {
-        mGridSwipe.setRefreshing(false);
+
     }
 
     @Override
@@ -887,20 +641,8 @@ public class GocciMyprofActivity extends AppCompatActivity implements ShowMyProf
         mUsercheerNum.setText(String.valueOf(mHeaderUserData.getCheer_num()));
         mWantNum.setText(String.valueOf(mHeaderUserData.getWant_num()));
 
-        switch (api) {
-            case Const.USERPAGE_FIRST:
-                mGridMyProfAdapter = new GridMyProfAdapter(GocciMyprofActivity.this, mGridUsers);
-                mGridMyProfAdapter.setMyProfCallback(this);
-                mGridList.setAdapter(mGridMyProfAdapter);
-                break;
-            case Const.USERPAGE_REFRESH:
-                mGridUsers.clear();
-                isEndScrioll = false;
-                mNextCount = 1;
-                mPlayingPostId = null;
-                mGridMyProfAdapter.setData();
-                break;
-        }
+        BusHolder.get().post(new ProfJsonEvent(api, mUsers, mPost_ids));
+
         mEmptyImage.setVisibility(View.VISIBLE);
         mEmptyText.setVisibility(View.VISIBLE);
     }
@@ -932,26 +674,12 @@ public class GocciMyprofActivity extends AppCompatActivity implements ShowMyProf
         mUsercheerNum.setText(String.valueOf(mHeaderUserData.getCheer_num()));
         mWantNum.setText(String.valueOf(mHeaderUserData.getWant_num()));
 
-        switch (api) {
-            case Const.USERPAGE_FIRST:
-                mGridUsers.addAll(postData);
-                mGridPost_ids.addAll(post_ids);
-                mGridMyProfAdapter = new GridMyProfAdapter(GocciMyprofActivity.this, mGridUsers);
-                mGridMyProfAdapter.setMyProfCallback(this);
-                mGridList.setAdapter(mGridMyProfAdapter);
-                break;
-            case Const.USERPAGE_REFRESH:
-                mGridUsers.clear();
-                mGridUsers.addAll(postData);
-                mGridPost_ids.clear();
-                mGridPost_ids.addAll(post_ids);
-                isEndScrioll = false;
-                mNextCount = 1;
-                mPlayingPostId = null;
-                mViewHolderHash.clear();
-                mGridMyProfAdapter.setData();
-                break;
-        }
+        mUsers.clear();
+        mUsers.addAll(postData);
+        mPost_ids.clear();
+        mPost_ids.addAll(post_ids);
+        BusHolder.get().post(new ProfJsonEvent(api, mUsers, mPost_ids));
+
     }
 
     @Override
@@ -985,10 +713,12 @@ public class GocciMyprofActivity extends AppCompatActivity implements ShowMyProf
 
     @Override
     public void postDeleted(int position) {
-        mGridUsers.remove(position);
-        mGridMyProfAdapter.setData();
+        mUsers.remove(position);
+        mPost_ids.remove(position);
 
-        if (mGridUsers.isEmpty()) {
+        BusHolder.get().post(new ProfJsonEvent(Const.USERPAGE_REFRESH, mUsers, mPost_ids));
+
+        if (mUsers.isEmpty()) {
             mEmptyImage.setVisibility(View.VISIBLE);
             mEmptyText.setVisibility(View.VISIBLE);
         } else {
@@ -1000,38 +730,5 @@ public class GocciMyprofActivity extends AppCompatActivity implements ShowMyProf
     @Override
     public void postDeleteFailed() {
         Toast.makeText(this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onRestClick(int rest_id, String rest_name) {
-        FlexibleTenpoActivity.startTenpoActivity(rest_id, rest_name, this);
-    }
-
-    @Override
-    public void onCommentClick(int post_id, int user_id, String username) {
-        CommentActivity.startCommentActivity(post_id, user_id, username, this);
-    }
-
-    @Override
-    public void onVideoFrameClick(PostData data) {
-        if (player != null && mPlayingPostId.equals(data.getPost_id())) {
-            if (player.getPlayerControl().isPlaying()) {
-                player.getPlayerControl().pause();
-            } else {
-                player.getPlayerControl().start();
-            }
-        } else {
-            changeMovie(data);
-        }
-    }
-
-    @Override
-    public void onVideoFrameLongClick(String post_id, int position) {
-        setDeleteDialog(post_id, position);
-    }
-
-    @Override
-    public void onHashHolder(Const.TwoCellViewHolder holder, String post_id) {
-        mViewHolderHash.put(holder, post_id);
     }
 }

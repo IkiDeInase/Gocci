@@ -5,13 +5,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
-import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
@@ -22,6 +19,7 @@ import android.widget.Toast;
 
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
+import com.andexert.library.RippleView;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.repository.UserAndRestDataRepository;
@@ -33,9 +31,13 @@ import com.inase.android.gocci.domain.usecase.ProfPageUseCaseImpl;
 import com.inase.android.gocci.domain.usecase.UserAndRestUseCase;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.NotificationNumberEvent;
+import com.inase.android.gocci.event.PageChangeVideoStopEvent;
+import com.inase.android.gocci.event.ProfJsonEvent;
 import com.inase.android.gocci.presenter.ShowUserProfPresenter;
-import com.inase.android.gocci.ui.adapter.UserProfAdapter;
+import com.inase.android.gocci.ui.fragment.GridUserProfFragment;
+import com.inase.android.gocci.ui.fragment.StreamUserProfFragment;
 import com.inase.android.gocci.ui.view.DrawerProfHeader;
+import com.inase.android.gocci.ui.view.RoundedTransformation;
 import com.inase.android.gocci.utils.SavedData;
 import com.inase.android.gocci.utils.Util;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
@@ -45,36 +47,76 @@ import com.mikepenz.materialdrawer.holder.StringHolder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
+import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
+import com.pnikosis.materialishprogress.ProgressWheel;
 import com.squareup.otto.Subscribe;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
-public class FlexibleUserProfActivity extends AppCompatActivity implements AppBarLayout.OnOffsetChangedListener,
-        ShowUserProfPresenter.ShowUserProfView, UserProfAdapter.UserProfCallback {
+public class FlexibleUserProfActivity extends AppCompatActivity implements ShowUserProfPresenter.ShowUserProfView {
 
     @Bind(R.id.tool_bar)
     Toolbar mToolBar;
-    @Bind(R.id.app_bar)
-    AppBarLayout mAppBar;
-    @Bind(R.id.list)
-    RecyclerView mUserProfRecyclerView;
-    @Bind(R.id.swipe_container)
-    SwipeRefreshLayout mSwipeContainer;
     @Bind(R.id.empty_text)
     TextView mEmptyText;
     @Bind(R.id.empty_image)
     ImageView mEmptyImage;
+    @Bind(R.id.viewpager)
+    ViewPager mViewpager;
     @Bind(R.id.coordinator_layout)
     CoordinatorLayout mCoordinatorLayout;
+    @Bind(R.id.userprof_picture)
+    ImageView mUserPicture;
+    @Bind(R.id.follow_num)
+    TextView mFollowNum;
+    @Bind(R.id.follower_num)
+    TextView mFollowerNum;
+    @Bind(R.id.usercheer_num)
+    TextView mUsercheerNum;
+    @Bind(R.id.follow_text)
+    TextView mFollowText;
 
-    private UserProfAdapter mUserProfAdapter;
-    private ArrayList<PostData> mUserProfusers = new ArrayList<PostData>();
-    private StaggeredGridLayoutManager mLayoutManager;
+    @Bind(R.id.follow_ripple)
+    RippleView mFollowRipple;
+    @Bind(R.id.follower_ripple)
+    RippleView mFollowerRipple;
+    @Bind(R.id.usercheer_ripple)
+    RippleView mUsercheerRipple;
+    @Bind(R.id.userprof_follow)
+    RippleView mUserProfFollow;
+
+    @OnClick(R.id.stream)
+    public void onStream() {
+        if (mShowPosition == 1) {
+            mShowPosition = 0;
+            mViewpager.setCurrentItem(mShowPosition);
+        }
+    }
+
+    @OnClick(R.id.grid)
+    public void onGrid() {
+        if (mShowPosition == 0) {
+            mShowPosition = 1;
+            mViewpager.setCurrentItem(mShowPosition);
+        }
+    }
+
+    @OnClick(R.id.location)
+    public void onLocation() {
+        ProfMapActivity.startProfMapActivity(mUsers, FlexibleUserProfActivity.this);
+    }
 
     private HeaderData headerUserData;
+    private ArrayList<PostData> mUsers = new ArrayList<>();
+    private ArrayList<String> mPost_ids = new ArrayList<>();
+
+    public static int mShowPosition = 0;
 
     private int mUser_id;
 
@@ -85,6 +127,8 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
     private static MobileAnalyticsManager analytics;
 
     private ShowUserProfPresenter mPresenter;
+
+    private FragmentPagerItemAdapter adapter;
 
     private static Handler sHandler = new Handler() {
         @Override
@@ -147,12 +191,53 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
         mToolBar.setTitle(userintent.getStringExtra("user_name"));
         setSupportActionBar(mToolBar);
 
-        mLayoutManager = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
-        mUserProfRecyclerView.setLayoutManager(mLayoutManager);
-        mUserProfRecyclerView.setHasFixedSize(true);
-        mUserProfRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
+        adapter = new FragmentPagerItemAdapter(
+                getSupportFragmentManager(), FragmentPagerItems.with(this)
+                .add(R.string.tab_near, StreamUserProfFragment.class)
+                .add(R.string.tab_follow, GridUserProfFragment.class)
+                .create());
+
+        mViewpager.setAdapter(adapter);
+        mViewpager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                BusHolder.get().post(new PageChangeVideoStopEvent(position));
+                mShowPosition = position;
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
 
         mPresenter.getProfData(Const.USERPAGE_FIRST, Const.getUserpageAPI(mUser_id));
+
+        mFollowRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
+            @Override
+            public void onComplete(RippleView rippleView) {
+                ListActivity.startListActivity(mUser_id, 0, Const.CATEGORY_FOLLOW, FlexibleUserProfActivity.this);
+            }
+        });
+
+        mFollowerRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
+            @Override
+            public void onComplete(RippleView rippleView) {
+                ListActivity.startListActivity(mUser_id, 0, Const.CATEGORY_FOLLOWER, FlexibleUserProfActivity.this);
+            }
+        });
+
+        mUsercheerRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
+            @Override
+            public void onComplete(RippleView rippleView) {
+                ListActivity.startListActivity(mUser_id, 0, Const.CATEGORY_USER_CHEER, FlexibleUserProfActivity.this);
+            }
+        });
 
         result = new DrawerBuilder()
                 .withActivity(this)
@@ -216,20 +301,6 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
 
         result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        mSwipeContainer.setColorSchemeResources(R.color.gocci_1, R.color.gocci_2, R.color.gocci_3, R.color.gocci_4);
-        mSwipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                mSwipeContainer.setRefreshing(true);
-                if (Util.getConnectedState(FlexibleUserProfActivity.this) != Util.NetworkStatus.OFF) {
-                    mPresenter.getProfData(Const.USERPAGE_REFRESH, Const.getUserpageAPI(mUser_id));
-                } else {
-                    Toast.makeText(FlexibleUserProfActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
-                    mSwipeContainer.setRefreshing(false);
-                }
-            }
-        });
     }
 
     @Override
@@ -240,7 +311,6 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
             analytics.getEventClient().submitEvents();
         }
         BusHolder.get().unregister(self);
-        mAppBar.removeOnOffsetChangedListener(this);
         mPresenter.pause();
     }
 
@@ -251,7 +321,6 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
             analytics.getSessionClient().resumeSession();
         }
         BusHolder.get().register(self);
-        mAppBar.addOnOffsetChangedListener(this);
         mPresenter.resume();
     }
 
@@ -289,31 +358,59 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
     }
 
     @Override
-    public void onOffsetChanged(AppBarLayout appBarLayout, int i) {
-        mSwipeContainer.setEnabled(i == 0);
-    }
-
-    @Override
     public void showLoading() {
-        mSwipeContainer.setRefreshing(true);
+
     }
 
     @Override
     public void hideLoading() {
-        mSwipeContainer.setRefreshing(false);
+
     }
 
     @Override
     public void showNoResultCase(int api, HeaderData mUserData) {
         headerUserData = mUserData;
-        if (api == Const.USERPAGE_FIRST) {
-            mUserProfAdapter = new UserProfAdapter(this, headerUserData, mUserProfusers);
-            mUserProfAdapter.setUserProfCallback(this);
-            mUserProfRecyclerView.setAdapter(mUserProfAdapter);
-        } else if (api == Const.USERPAGE_REFRESH) {
-            mUserProfusers.clear();
-            mUserProfAdapter.setData(headerUserData);
+
+        Picasso.with(this)
+                .load(headerUserData.getProfile_img())
+                .fit()
+                .placeholder(R.drawable.ic_userpicture)
+                .transform(new RoundedTransformation())
+                .into(mUserPicture);
+        mFollowNum.setText(String.valueOf(headerUserData.getFollow_num()));
+        mFollowerNum.setText(String.valueOf(headerUserData.getFollower_num()));
+        mUsercheerNum.setText(String.valueOf(headerUserData.getCheer_num()));
+
+        if (headerUserData.getFollow_flag() == 0) {
+            mFollowText.setText(getString(R.string.do_follow));
+        } else {
+            mFollowText.setText(getString(R.string.do_unfollow));
         }
+
+        if (mUserData.getUsername().equals(SavedData.getServerName(this))) {
+            mFollowText.setText(getString(R.string.do_yours));
+        }
+
+        mUserProfFollow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (mFollowText.getText().toString()) {
+                    case "フォローする":
+                        Util.followAsync(FlexibleUserProfActivity.this, headerUserData);
+                        mFollowText.setText(getString(R.string.do_unfollow));
+                        break;
+                    case "フォロー解除する":
+                        Util.unfollowAsync(FlexibleUserProfActivity.this, headerUserData);
+                        mFollowText.setText(getString(R.string.do_follow));
+                        break;
+                    case "これはあなたです":
+                        break;
+                }
+            }
+        });
+
+        BusHolder.get().post(new ProfJsonEvent(api, mUsers, mPost_ids));
+
         mEmptyImage.setVisibility(View.VISIBLE);
         mEmptyText.setVisibility(View.VISIBLE);
     }
@@ -330,49 +427,56 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements AppBa
     }
 
     @Override
-    public void hideError() {
-
-    }
-
-    @Override
     public void showResult(int api, HeaderData mUserData, ArrayList<PostData> mPostData, ArrayList<String> post_ids) {
         headerUserData = mUserData;
-        mUserProfusers.clear();
-        mUserProfusers.addAll(mPostData);
-        switch (api) {
-            case Const.USERPAGE_FIRST:
-                mUserProfAdapter = new UserProfAdapter(this, headerUserData, mUserProfusers);
-                mUserProfAdapter.setUserProfCallback(this);
-                mUserProfRecyclerView.setAdapter(mUserProfAdapter);
-                break;
-            case Const.USERPAGE_REFRESH:
-                mUserProfAdapter.setData(headerUserData);
-                break;
+
+        Picasso.with(this)
+                .load(headerUserData.getProfile_img())
+                .fit()
+                .placeholder(R.drawable.ic_userpicture)
+                .transform(new RoundedTransformation())
+                .into(mUserPicture);
+        mFollowNum.setText(String.valueOf(headerUserData.getFollow_num()));
+        mFollowerNum.setText(String.valueOf(headerUserData.getFollower_num()));
+        mUsercheerNum.setText(String.valueOf(headerUserData.getCheer_num()));
+
+        if (headerUserData.getFollow_flag() == 0) {
+            mFollowText.setText(getString(R.string.do_follow));
+        } else {
+            mFollowText.setText(getString(R.string.do_unfollow));
         }
+
+        if (mUserData.getUsername().equals(SavedData.getServerName(this))) {
+            mFollowText.setText(getString(R.string.do_yours));
+        }
+
+        mUserProfFollow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch (mFollowText.getText().toString()) {
+                    case "フォローする":
+                        Util.followAsync(FlexibleUserProfActivity.this, headerUserData);
+                        mFollowText.setText(getString(R.string.do_unfollow));
+                        break;
+                    case "フォロー解除する":
+                        Util.unfollowAsync(FlexibleUserProfActivity.this, headerUserData);
+                        mFollowText.setText(getString(R.string.do_follow));
+                        break;
+                    case "これはあなたです":
+                        break;
+                }
+            }
+        });
+
+        mUsers.clear();
+        mUsers.addAll(mPostData);
+        mPost_ids.clear();
+        mPost_ids.addAll(post_ids);
+        BusHolder.get().post(new ProfJsonEvent(api, mUsers, mPost_ids));
+
     }
 
-    @Override
-    public void onFollowListClick(int user_id) {
-        ListActivity.startListActivity(user_id, 0, Const.CATEGORY_FOLLOW, FlexibleUserProfActivity.this);
-    }
-
-    @Override
-    public void onFollowerListClick(int user_id) {
-        ListActivity.startListActivity(user_id, 0, Const.CATEGORY_FOLLOWER, FlexibleUserProfActivity.this);
-    }
-
-    @Override
-    public void onUserCheerClick(int user_id) {
-        ListActivity.startListActivity(user_id, 0, Const.CATEGORY_USER_CHEER, FlexibleUserProfActivity.this);
-    }
-
-    @Override
-    public void onImageClick(int post_id) {
-        //CommentActivity.startCommentActivity(post_id, FlexibleUserProfActivity.this);
-    }
-
-    @Override
-    public void onLocationClick(ArrayList<PostData> postData) {
-        ProfMapActivity.startProfMapActivity(postData, FlexibleUserProfActivity.this);
+    public void refreshJson() {
+        mPresenter.getProfData(Const.USERPAGE_REFRESH, Const.getUserpageAPI(mUser_id));
     }
 }

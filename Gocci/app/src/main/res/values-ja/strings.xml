@@ -269,6 +269,7 @@
     <string name="close">閉じる</string>
 
     <string name="popup_violate">この投稿を違反報告する</string>
+    <string name="popup_delete">この投稿を削除する</string>
 
     <string name="search_friend_hint">ユーザー名を入力してください</string>
     <string name="search_friend_yeah">探す</string>
