@@ -31,6 +31,7 @@ import com.inase.android.gocci.event.PageChangeVideoStopEvent;
 import com.inase.android.gocci.event.ProfJsonEvent;
 import com.inase.android.gocci.event.TimelineMuteChangeEvent;
 import com.inase.android.gocci.ui.activity.FlexibleTenpoActivity;
+import com.inase.android.gocci.ui.activity.FlexibleUserProfActivity;
 import com.inase.android.gocci.ui.activity.GocciMyprofActivity;
 import com.inase.android.gocci.ui.adapter.StreamMyProfAdapter;
 import com.inase.android.gocci.ui.adapter.StreamUserProfAdapter;
@@ -174,7 +175,7 @@ public class StreamUserProfFragment extends Fragment implements AppBarLayout.OnO
                 mSwipeContainer.setRefreshing(true);
                 if (Util.getConnectedState(getActivity()) != Util.NetworkStatus.OFF) {
                     releasePlayer();
-                    GocciMyprofActivity activity = (GocciMyprofActivity) getActivity();
+                    FlexibleUserProfActivity activity = (FlexibleUserProfActivity) getActivity();
                     activity.refreshJson();
                 } else {
                     Toast.makeText(getActivity(), getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();

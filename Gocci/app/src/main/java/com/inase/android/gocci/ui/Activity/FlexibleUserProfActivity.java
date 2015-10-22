@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewPager;
@@ -63,12 +65,18 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements ShowU
 
     @Bind(R.id.tool_bar)
     Toolbar mToolBar;
+    @Bind(R.id.username_tool_bar)
+    Toolbar mUserToolBar;
     @Bind(R.id.empty_text)
     TextView mEmptyText;
     @Bind(R.id.empty_image)
     ImageView mEmptyImage;
     @Bind(R.id.viewpager)
     ViewPager mViewpager;
+    @Bind(R.id.app_bar)
+    AppBarLayout mAppbar;
+    @Bind(R.id.collapsing_toolbar)
+    CollapsingToolbarLayout mCollapse;
     @Bind(R.id.coordinator_layout)
     CoordinatorLayout mCoordinatorLayout;
     @Bind(R.id.userprof_picture)
@@ -187,9 +195,9 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements ShowU
         mUser_id = userintent.getIntExtra("user_id", 0);
 
         //toolbar.inflateMenu(R.menu.toolbar_menu);
-        //toolbar.setLogo(R.drawable.ic_gocci_moji_white45);
-        mToolBar.setTitle(userintent.getStringExtra("user_name"));
+        mToolBar.setTitle("");
         setSupportActionBar(mToolBar);
+        mUserToolBar.setTitle(userintent.getStringExtra("user_name"));
 
         adapter = new FragmentPagerItemAdapter(
                 getSupportFragmentManager(), FragmentPagerItems.with(this)
