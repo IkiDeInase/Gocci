@@ -94,8 +94,8 @@ public class RestPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             final View view = LayoutInflater.from(mContext).inflate(R.layout.cell_tenpo_header, parent, false);
             return new TenpoHeaderViewHolder(view);
         } else {
-            final View view = LayoutInflater.from(mContext).inflate(R.layout.cell_exo_timeline, parent, false);
-            return new Const.ExoViewHolder(view);
+            final View view = LayoutInflater.from(mContext).inflate(R.layout.cell_stream_list, parent, false);
+            return new Const.StreamViewHolder(view);
         }
     }
 
@@ -106,7 +106,7 @@ public class RestPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             bindHeader((TenpoHeaderViewHolder) holder);
         } else {
             PostData users = mPostData.get(position - 1);
-            bindPost((Const.ExoViewHolder) holder, users);
+            bindPost((Const.StreamViewHolder) holder, users);
         }
     }
 
@@ -189,8 +189,8 @@ public class RestPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         holder.mTenpoCategory.setText(mRestData.getRest_category());
     }
 
-    private void bindPost(final Const.ExoViewHolder holder, final PostData user) {
-        holder.mUserName.setText(user.getUsername());
+    private void bindPost(final Const.StreamViewHolder holder, final PostData user) {
+        holder.mName.setText(user.getUsername());
 
         holder.mTimeText.setText(user.getPost_date());
 
@@ -203,7 +203,7 @@ public class RestPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         holder.mComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mCallback.onCommentClick(user.getPost_id());
+                //mCallback.onCommentClick(user.getPost_id());
             }
         });
 
@@ -213,7 +213,7 @@ public class RestPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 .transform(new RoundedTransformation())
                 .into(holder.mCircleImage);
 
-        holder.mUserName.setOnClickListener(new View.OnClickListener() {
+        holder.mName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mCallback.onUserClick(user.getPost_user_id(), user.getUsername());
@@ -256,9 +256,6 @@ public class RestPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 mCallback.onVideoFrameClick();
             }
         });
-
-        holder.mRestname.setText(user.getRestname());
-        //viewHolder.locality.setText(user.getLocality());
 
         if (!user.getCategory().equals(mContext.getString(R.string.nothing_tag))) {
             holder.mCategory.setText(user.getCategory());
@@ -307,7 +304,7 @@ public class RestPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         holder.mCommentsRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
             @Override
             public void onComplete(RippleView rippleView) {
-                mCallback.onCommentClick(user.getPost_id());
+                //mCallback.onCommentClick(user.getPost_id());
             }
         });
 
@@ -416,6 +413,6 @@ public class RestPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         void onInstaShare(String share, String rest_name);
 
-        void onHashHolder(Const.ExoViewHolder holder, String post_id);
+        void onHashHolder(Const.StreamViewHolder holder, String post_id);
     }
 }

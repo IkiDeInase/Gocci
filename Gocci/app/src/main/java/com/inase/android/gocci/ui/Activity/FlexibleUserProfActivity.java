@@ -73,10 +73,6 @@ public class FlexibleUserProfActivity extends AppCompatActivity implements ShowU
     ImageView mEmptyImage;
     @Bind(R.id.viewpager)
     ViewPager mViewpager;
-    @Bind(R.id.app_bar)
-    AppBarLayout mAppbar;
-    @Bind(R.id.collapsing_toolbar)
-    CollapsingToolbarLayout mCollapse;
     @Bind(R.id.coordinator_layout)
     CoordinatorLayout mCoordinatorLayout;
     @Bind(R.id.userprof_picture)
