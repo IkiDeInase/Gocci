@@ -46,14 +46,12 @@
             android:layout_height="1dp"
             android:id="@+id/header_view"
             android:background="#c5c6c9"
-            android:layout_toLeftOf="@+id/send_button"
-            android:layout_alignParentTop="true" />
+            android:layout_toLeftOf="@+id/send_button" />
 
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/comment_edit"
-            android:layout_below="@+id/header_view"
             android:layout_toLeftOf="@+id/send_button"
             android:background="#00000000"
             android:hint="@string/comment"
