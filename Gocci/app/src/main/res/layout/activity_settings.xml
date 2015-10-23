@@ -507,7 +507,7 @@
                 android:layout_marginTop="16dp"
                 android:visibility="gone" />
 
-            <com.inase.android.gocci.ui.view.TwitterLoginButton
+            <com.inase.android.gocci.ui.view.GocciTwitterLoginButton
                 android:id="@+id/twitter_login_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

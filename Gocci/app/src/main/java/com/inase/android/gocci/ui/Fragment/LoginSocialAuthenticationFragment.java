@@ -26,7 +26,7 @@ import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.SNSMatchFinishEvent;
 import com.inase.android.gocci.ui.activity.TimelineActivity;
-import com.inase.android.gocci.ui.view.TwitterLoginButton;
+import com.inase.android.gocci.ui.view.GocciTwitterLoginButton;
 import com.squareup.otto.Subscribe;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
@@ -46,7 +46,7 @@ public class LoginSocialAuthenticationFragment extends Fragment {
     @Bind(R.id.login_button)
     LoginButton mFacebookLoginButton;
     @Bind(R.id.twitter_login_button)
-    TwitterLoginButton mTwitterLoginButton;
+    GocciTwitterLoginButton mTwitterLoginButton;
     @Bind(R.id.skip_Ripple)
     RippleView mSkipRipple;
 

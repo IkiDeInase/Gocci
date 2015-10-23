@@ -4,19 +4,20 @@ import android.content.Context;
 import android.util.AttributeSet;
 
 import com.inase.android.gocci.R;
+import com.twitter.sdk.android.core.identity.TwitterLoginButton;
 
-public class TwitterLoginButton extends TwitterLoginButton {
-    public TwitterLoginButton(Context context) {
+public class GocciTwitterLoginButton extends TwitterLoginButton {
+    public GocciTwitterLoginButton(Context context) {
         super(context);
         init();
     }
 
-    public TwitterLoginButton(Context context, AttributeSet attrs) {
+    public GocciTwitterLoginButton(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    public TwitterLoginButton(Context context, AttributeSet attrs, int defStyle) {
+    public GocciTwitterLoginButton(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init();
     }

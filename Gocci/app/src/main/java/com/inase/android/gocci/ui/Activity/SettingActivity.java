@@ -38,7 +38,7 @@ import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.NotificationNumberEvent;
 import com.inase.android.gocci.ui.view.DrawerProfHeader;
-import com.inase.android.gocci.ui.view.TwitterLoginButton;
+import com.inase.android.gocci.ui.view.GocciTwitterLoginButton;
 import com.inase.android.gocci.utils.SavedData;
 import com.inase.android.gocci.utils.Util;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -86,7 +86,7 @@ public class SettingActivity extends AppCompatActivity {
     @Bind(R.id.login_button)
     LoginButton mFacebookLoginButton;
     @Bind(R.id.twitter_login_button)
-    TwitterLoginButton mTwitterLoginButton;
+    GocciTwitterLoginButton mTwitterLoginButton;
     @Bind(R.id.coordinator_layout)
     CoordinatorLayout mCoordinatorLayout;
 

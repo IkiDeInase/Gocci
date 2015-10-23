@@ -35,7 +35,7 @@ import com.inase.android.gocci.domain.usecase.UserLoginUseCaseImpl;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.CreateProviderFinishEvent;
 import com.inase.android.gocci.presenter.ShowUserLoginPresenter;
-import com.inase.android.gocci.ui.view.TwitterLoginButton;
+import com.inase.android.gocci.ui.view.GocciTwitterLoginButton;
 import com.inase.android.gocci.utils.SavedData;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.squareup.otto.Subscribe;
@@ -62,7 +62,7 @@ public class LoginSessionActivity extends AppCompatActivity implements ShowUserL
     @Bind(R.id.login_button)
     LoginButton mFacebookLoginButton;
     @Bind(R.id.twitter_login_button)
-    TwitterLoginButton mTwitterLoginButton;
+    GocciTwitterLoginButton mTwitterLoginButton;
     @Bind(R.id.twitter_ripple)
     RippleView mTwitterRipple;
     @Bind(R.id.facebook_ripple)
