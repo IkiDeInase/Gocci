@@ -1,20 +1,20 @@
 package com.inase.android.gocci.presenter;
 
 import com.inase.android.gocci.domain.model.PostData;
-import com.inase.android.gocci.domain.usecase.LatestTimelineUseCase;
+import com.inase.android.gocci.domain.usecase.TimelineLatestUseCase;
 
 import java.util.ArrayList;
 
 /**
  * Created by kinagafuji on 15/09/25.
  */
-public class ShowLatestTimelinePresenter extends Presenter implements LatestTimelineUseCase.LatestTimelineUseCaseCallback {
+public class ShowLatestTimelinePresenter extends Presenter implements TimelineLatestUseCase.LatestTimelineUseCaseCallback {
 
-    private LatestTimelineUseCase mLatestTimelineUseCase;
+    private TimelineLatestUseCase mTimelineLatestUseCase;
     private ShowLatestTimelineView mShowLatestTimelineView;
 
-    public ShowLatestTimelinePresenter(LatestTimelineUseCase latestTimelineUseCase) {
-        mLatestTimelineUseCase = latestTimelineUseCase;
+    public ShowLatestTimelinePresenter(TimelineLatestUseCase timelineLatestUseCase) {
+        mTimelineLatestUseCase = timelineLatestUseCase;
     }
 
     public void setLatestTimelineView(ShowLatestTimelineView view) {
@@ -23,7 +23,7 @@ public class ShowLatestTimelinePresenter extends Presenter implements LatestTime
 
     public void getLatestTimelinePostData(int api, String url) {
         mShowLatestTimelineView.showLoading();
-        mLatestTimelineUseCase.execute(api, url, this);
+        mTimelineLatestUseCase.execute(api, url, this);
     }
 
     @Override
@@ -53,12 +53,12 @@ public class ShowLatestTimelinePresenter extends Presenter implements LatestTime
 
     @Override
     public void resume() {
-        mLatestTimelineUseCase.setCallback(this);
+        mTimelineLatestUseCase.setCallback(this);
     }
 
     @Override
     public void pause() {
-        mLatestTimelineUseCase.removeCallback();
+        mTimelineLatestUseCase.removeCallback();
     }
 
     @Override

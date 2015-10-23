@@ -206,7 +206,6 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
         mCommentRecyclerView.setScrollViewCallbacks(this);
 
         mPresenter.getCommentData(Const.COMMENT_FIRST, Const.getCommentAPI(mPost_id));
-
         //mPresenter.getCommentData(Const.COMMENT_REFRESH, Const.getCommentAPI(mPost_id));
 
         mCommentRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -311,7 +310,7 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
 
     @Override
     public void onUserClick(int user_id, String user_name) {
-        FlexibleUserProfActivity.startUserProfActivity(user_id, user_name, this);
+        UserProfActivity.startUserProfActivity(user_id, user_name, this);
     }
 
     @Override

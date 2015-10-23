@@ -35,7 +35,7 @@ import com.inase.android.gocci.domain.usecase.UserLoginUseCaseImpl;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.CreateProviderFinishEvent;
 import com.inase.android.gocci.presenter.ShowUserLoginPresenter;
-import com.inase.android.gocci.ui.view.GocciTwitterLoginButton;
+import com.inase.android.gocci.ui.view.TwitterLoginButton;
 import com.inase.android.gocci.utils.SavedData;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.squareup.otto.Subscribe;
@@ -62,7 +62,7 @@ public class LoginSessionActivity extends AppCompatActivity implements ShowUserL
     @Bind(R.id.login_button)
     LoginButton mFacebookLoginButton;
     @Bind(R.id.twitter_login_button)
-    GocciTwitterLoginButton mTwitterLoginButton;
+    TwitterLoginButton mTwitterLoginButton;
     @Bind(R.id.twitter_ripple)
     RippleView mTwitterRipple;
     @Bind(R.id.facebook_ripple)
@@ -287,7 +287,7 @@ public class LoginSessionActivity extends AppCompatActivity implements ShowUserL
         if (user.getCode() == 200) {
             SavedData.setWelcome(this, user.getUserName(), user.getProfileImg(), String.valueOf(user.getUserId()), user.getIdentityId(), user.getBadgeNum());
 
-            Intent intent = new Intent(this, GocciTimelineActivity.class);
+            Intent intent = new Intent(this, TimelineActivity.class);
             overridePendingTransition(0, 0);
             intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);

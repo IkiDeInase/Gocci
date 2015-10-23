@@ -1,20 +1,20 @@
 package com.inase.android.gocci.presenter;
 
 import com.inase.android.gocci.domain.model.PostData;
-import com.inase.android.gocci.domain.usecase.NearTimelineUseCase;
+import com.inase.android.gocci.domain.usecase.TimelineNearUseCase;
 
 import java.util.ArrayList;
 
 /**
  * Created by kinagafuji on 15/10/11.
  */
-public class ShowNearTimelinePresenter extends Presenter implements NearTimelineUseCase.NearTimelineUseCaseCallback {
+public class ShowNearTimelinePresenter extends Presenter implements TimelineNearUseCase.NearTimelineUseCaseCallback {
 
-    private NearTimelineUseCase mNearTimelineUseCase;
+    private TimelineNearUseCase mTimelineNearUseCase;
     private ShowNearTimelineView mShowLatestTimelineView;
 
-    public ShowNearTimelinePresenter(NearTimelineUseCase nearTimelineUseCase) {
-        mNearTimelineUseCase = nearTimelineUseCase;
+    public ShowNearTimelinePresenter(TimelineNearUseCase timelineNearUseCase) {
+        mTimelineNearUseCase = timelineNearUseCase;
     }
 
     public void setNearTimelineView(ShowNearTimelineView view) {
@@ -23,7 +23,7 @@ public class ShowNearTimelinePresenter extends Presenter implements NearTimeline
 
     public void getNearTimelinePostData(int api, String url) {
         mShowLatestTimelineView.showLoading();
-        mNearTimelineUseCase.execute(api, url, this);
+        mTimelineNearUseCase.execute(api, url, this);
     }
 
     @Override
@@ -53,12 +53,12 @@ public class ShowNearTimelinePresenter extends Presenter implements NearTimeline
 
     @Override
     public void resume() {
-        mNearTimelineUseCase.setCallback(this);
+        mTimelineNearUseCase.setCallback(this);
     }
 
     @Override
     public void pause() {
-        mNearTimelineUseCase.removeCallback();
+        mTimelineNearUseCase.removeCallback();
     }
 
     @Override

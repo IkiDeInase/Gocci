@@ -1,19 +1,19 @@
 package com.inase.android.gocci.presenter;
 
 import com.inase.android.gocci.domain.model.PostData;
-import com.inase.android.gocci.domain.usecase.FollowTimelineUseCase;
+import com.inase.android.gocci.domain.usecase.TimelineFollowUseCase;
 
 import java.util.ArrayList;
 
 /**
  * Created by kinagafuji on 15/09/29.
  */
-public class ShowFollowTimelinePresenter extends Presenter implements FollowTimelineUseCase.FollowTimelineUseCaseCallback {
-    private FollowTimelineUseCase mFollowTimelineUseCase;
+public class ShowFollowTimelinePresenter extends Presenter implements TimelineFollowUseCase.FollowTimelineUseCaseCallback {
+    private TimelineFollowUseCase mTimelineFollowUseCase;
     private ShowFollowTimelineView mShowFollowTimelineView;
 
-    public ShowFollowTimelinePresenter(FollowTimelineUseCase followTimelineUseCase) {
-        mFollowTimelineUseCase = followTimelineUseCase;
+    public ShowFollowTimelinePresenter(TimelineFollowUseCase timelineFollowUseCase) {
+        mTimelineFollowUseCase = timelineFollowUseCase;
     }
 
     public void setFollowTimelineView(ShowFollowTimelineView view) {
@@ -22,7 +22,7 @@ public class ShowFollowTimelinePresenter extends Presenter implements FollowTime
 
     public void getFollowTimelinePostData(int api, String url) {
         mShowFollowTimelineView.showLoading();
-        mFollowTimelineUseCase.execute(api, url, this);
+        mTimelineFollowUseCase.execute(api, url, this);
     }
 
     @Override
@@ -52,12 +52,12 @@ public class ShowFollowTimelinePresenter extends Presenter implements FollowTime
 
     @Override
     public void resume() {
-        mFollowTimelineUseCase.setCallback(this);
+        mTimelineFollowUseCase.setCallback(this);
     }
 
     @Override
     public void pause() {
-        mFollowTimelineUseCase.removeCallback();
+        mTimelineFollowUseCase.removeCallback();
     }
 
     @Override

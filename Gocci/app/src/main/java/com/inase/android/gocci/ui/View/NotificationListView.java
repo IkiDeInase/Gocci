@@ -19,7 +19,7 @@ import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.domain.model.HeaderData;
 import com.inase.android.gocci.ui.activity.CommentActivity;
-import com.inase.android.gocci.ui.activity.FlexibleUserProfActivity;
+import com.inase.android.gocci.ui.activity.UserProfActivity;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.squareup.picasso.Picasso;
@@ -68,7 +68,7 @@ public class NotificationListView extends RelativeLayout {
                         CommentActivity.startCommentActivityOnContext(user.getNotice_post_id(), false, getContext());
                         break;
                     case "follow":
-                        Intent intent = new Intent(getContext(), FlexibleUserProfActivity.class);
+                        Intent intent = new Intent(getContext(), UserProfActivity.class);
                         intent.putExtra("user_id", user.getNotice_user_id());
                         intent.putExtra("user_name", user.getUsername());
                         getContext().startActivity(intent);
@@ -188,7 +188,7 @@ public class NotificationListView extends RelativeLayout {
             mNotificationHolder.mNoticeUsername.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(getContext(), FlexibleUserProfActivity.class);
+                    Intent intent = new Intent(getContext(), UserProfActivity.class);
                     intent.putExtra("user_id", user.getNotice_user_id());
                     intent.putExtra("user_name", user.getUsername());
                     getContext().startActivity(intent);
@@ -198,7 +198,7 @@ public class NotificationListView extends RelativeLayout {
             mNotificationHolder.mCircleImage.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(getContext(), FlexibleUserProfActivity.class);
+                    Intent intent = new Intent(getContext(), UserProfActivity.class);
                     intent.putExtra("user_id", user.getNotice_user_id());
                     intent.putExtra("user_name", user.getUsername());
                     getContext().startActivity(intent);

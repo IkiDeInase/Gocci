@@ -17,7 +17,6 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
@@ -47,6 +46,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -56,7 +56,7 @@ import io.fabric.sdk.android.Fabric;
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
 
-public class CameraPreviewActivity extends AppCompatActivity {
+public class CameraPreviewAlreadyExistActivity extends AppCompatActivity {
 
     @Bind(R.id.preview_video)
     SquareVideoView mPreviewVideo;
@@ -64,8 +64,6 @@ public class CameraPreviewActivity extends AppCompatActivity {
     MaterialBetterSpinner mRestnameSpinner;
     @Bind(R.id.category_spinner)
     MaterialBetterSpinner mCategorySpinner;
-    @Bind(R.id.add_rest_text)
-    TextView mAddRestText;
     @Bind(R.id.edit_value)
     MaterialEditText mEditValue;
     @Bind(R.id.edit_comment)
@@ -76,6 +74,8 @@ public class CameraPreviewActivity extends AppCompatActivity {
     RippleView mToukouButtonRipple;
     @Bind(R.id.progress_wheel)
     ProgressWheel mProgressWheel;
+    @Bind(R.id.add_rest_text)
+    TextView mAddRestText;
 
     @OnClick(R.id.add_rest_text)
     public void restAdd() {
@@ -87,9 +87,9 @@ public class CameraPreviewActivity extends AppCompatActivity {
         Uri bmpUri = Util.getUri(mVideoUrl);
         if (bmpUri != null) {
             if (mRestname.equals("")) {
-                Toast.makeText(CameraPreviewActivity.this, getString(R.string.please_input_restname), Toast.LENGTH_SHORT).show();
+                Toast.makeText(CameraPreviewAlreadyExistActivity.this, getString(R.string.please_input_restname), Toast.LENGTH_SHORT).show();
             } else {
-                TweetComposer.Builder builder = new TweetComposer.Builder(CameraPreviewActivity.this)
+                TweetComposer.Builder builder = new TweetComposer.Builder(CameraPreviewAlreadyExistActivity.this)
                         .text("#" + mRestname.replaceAll("\\s+", "") + " #Gocci")
                         .image(bmpUri);
 
@@ -97,7 +97,7 @@ public class CameraPreviewActivity extends AppCompatActivity {
             }
         } else {
             // ...sharing failed, handle error
-            Toast.makeText(CameraPreviewActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+            Toast.makeText(CameraPreviewAlreadyExistActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -114,7 +114,7 @@ public class CameraPreviewActivity extends AppCompatActivity {
             shareDialog.show(content);
         } else {
             // ...sharing failed, handle error
-            Toast.makeText(CameraPreviewActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+            Toast.makeText(CameraPreviewAlreadyExistActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -132,7 +132,7 @@ public class CameraPreviewActivity extends AppCompatActivity {
             // Broadcast the Intent.
             startActivity(Intent.createChooser(share, "Share to"));
         } else {
-            Toast.makeText(CameraPreviewActivity.this, getString(R.string.please_input_restname), Toast.LENGTH_SHORT).show();
+            Toast.makeText(CameraPreviewAlreadyExistActivity.this, getString(R.string.please_input_restname), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -147,6 +147,9 @@ public class CameraPreviewActivity extends AppCompatActivity {
     private boolean mIsnewRestname;
     private double mLatitude;
     private double mLongitude;
+
+    private String[] restnameList = new String[30];
+    private ArrayList<Integer> rest_idList = new ArrayList<>();
 
     private File mVideoFile;
 
@@ -170,36 +173,19 @@ public class CameraPreviewActivity extends AppCompatActivity {
             Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
         }
 
-        setContentView(R.layout.activity_camera_preview);
+        setContentView(R.layout.activity_camera_preview_already_exist);
         ButterKnife.bind(this);
 
-        Intent intent = getIntent();
-        mRestname = intent.getStringExtra("restname");
-        mRest_id = intent.getIntExtra("rest_id", 1);
-        mVideoUrl = intent.getStringExtra("video_url");
-        mAwsPostName = intent.getStringExtra("aws") + "_" + SavedData.getServerUserId(this);
-        mCategory_id = intent.getIntExtra("category_id", 1);
-        mMemo = intent.getStringExtra("memo");
-        mValue = intent.getStringExtra("value");
-        mIsnewRestname = intent.getBooleanExtra("isNewRestname", false);
-        mLatitude = intent.getDoubleExtra("lat", 0.0);
-        mLongitude = intent.getDoubleExtra("lon", 0.0);
-
-        SavedData.setPostVideoPreview(this, mRestname, mRest_id, mVideoUrl, mAwsPostName, mCategory_id, mMemo, mValue, mIsnewRestname, mLongitude, mLatitude);
-
-        if (mLatitude == 0.0 && mLongitude == 0.0) {
-            //もう一度位置取る？
-            SmartLocation.with(this).location().oneFix().start(new OnLocationUpdatedListener() {
-                @Override
-                public void onLocationUpdated(Location location) {
-                    mLatitude = location.getLatitude();
-                    mLongitude = location.getLongitude();
-                    getTenpoJson();
-                    SavedData.setLat(CameraPreviewActivity.this, mLatitude);
-                    SavedData.setLon(CameraPreviewActivity.this, mLongitude);
-                }
-            });
-        }
+        mRest_id = SavedData.getRest_id(this);
+        mRestname = SavedData.getRestname(this);
+        mVideoUrl = SavedData.getVideoUrl(this);
+        mAwsPostName = SavedData.getAwsPostname(this);
+        mCategory_id = SavedData.getCategory_id(this);
+        mMemo = SavedData.getMemo(this);
+        mValue = SavedData.getValue(this);
+        mIsnewRestname = SavedData.getIsNewRestname(this);
+        mLatitude = SavedData.getLat(this);
+        mLongitude = SavedData.getLon(this);
 
         mVideoFile = new File(mVideoUrl);
 
@@ -209,25 +195,21 @@ public class CameraPreviewActivity extends AppCompatActivity {
         shareDialog.registerCallback(callbackManager, new FacebookCallback<Sharer.Result>() {
             @Override
             public void onSuccess(Sharer.Result result) {
-                Toast.makeText(CameraPreviewActivity.this, getString(R.string.complete_share), Toast.LENGTH_SHORT).show();
+                Toast.makeText(CameraPreviewAlreadyExistActivity.this, getString(R.string.complete_share), Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onCancel() {
-                Toast.makeText(CameraPreviewActivity.this, getString(R.string.cancel_share), Toast.LENGTH_SHORT).show();
+                Toast.makeText(CameraPreviewAlreadyExistActivity.this, getString(R.string.cancel_share), Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onError(FacebookException e) {
-                Toast.makeText(CameraPreviewActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+                Toast.makeText(CameraPreviewAlreadyExistActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
             }
         });
 
         Fabric.with(this, new TweetComposer());
-
-        if (mIsnewRestname || !mRestname.equals("")) {
-            mAddRestText.setVisibility(View.GONE);
-        }
 
         String[] CATEGORY = getResources().getStringArray(R.array.list_category);
 
@@ -238,22 +220,41 @@ public class CameraPreviewActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 mCategory_id = position + 2;
-                SavedData.setCategory_id(CameraPreviewActivity.this, mCategory_id);
+                SavedData.setCategory_id(CameraPreviewAlreadyExistActivity.this, mCategory_id);
             }
         });
 
         restAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_dropdown_item_1line, CameraActivity.restname);
+                android.R.layout.simple_dropdown_item_1line, restnameList);
         mRestnameSpinner.setAdapter(restAdapter);
         mRestnameSpinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mRest_id = CameraActivity.rest_id.get(position);
-                mRestname = CameraActivity.restname[position];
-                SavedData.setRest_id(CameraPreviewActivity.this, mRest_id);
-                SavedData.setRestname(CameraPreviewActivity.this, mRestname);
+                mRest_id = rest_idList.get(position);
+                mRestname = restnameList[position];
+                SavedData.setRest_id(CameraPreviewAlreadyExistActivity.this, mRest_id);
+                SavedData.setRestname(CameraPreviewAlreadyExistActivity.this, mRestname);
             }
         });
+
+        if (!mRestname.equals("")) {
+            mRestnameSpinner.setClickable(false);
+        } else {
+            if (mLatitude == 0.0 && mLongitude == 0.0) {
+                SmartLocation.with(this).location().oneFix().start(new OnLocationUpdatedListener() {
+                    @Override
+                    public void onLocationUpdated(Location location) {
+                        mLatitude = location.getLatitude();
+                        mLongitude = location.getLongitude();
+                        getTenpoJson(CameraPreviewAlreadyExistActivity.this);
+                        SavedData.setLat(CameraPreviewAlreadyExistActivity.this, mLatitude);
+                        SavedData.setLon(CameraPreviewAlreadyExistActivity.this, mLongitude);
+                    }
+                });
+            } else {
+                getTenpoJson(this);
+            }
+        }
 
         mRestnameSpinner.setText(mRestname);
         mCategorySpinner.setText(mCategory_id == 1 ? "" : CATEGORY[mCategory_id - 2]);
@@ -272,33 +273,37 @@ public class CameraPreviewActivity extends AppCompatActivity {
         mToukouButtonRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
             @Override
             public void onComplete(RippleView rippleView) {
-                if (Util.getConnectedState(CameraPreviewActivity.this) != Util.NetworkStatus.OFF) {
+                if (Util.getConnectedState(CameraPreviewAlreadyExistActivity.this) != Util.NetworkStatus.OFF) {
                     if (mRest_id != 1) {
                         if (mEditValue.getText().length() != 0) {
                             mValue = mEditValue.getText().toString();
                         } else {
                             mValue = "0";
                         }
-                        SavedData.setValue(CameraPreviewActivity.this, mValue);
+                        SavedData.setValue(CameraPreviewAlreadyExistActivity.this, mValue);
                         if (mEditComment.getText().length() != 0) {
                             mMemo = mEditComment.getText().toString();
                         } else {
                             mMemo = "none";
                         }
-                        SavedData.setMemo(CameraPreviewActivity.this, mMemo);
+                        SavedData.setMemo(CameraPreviewAlreadyExistActivity.this, mMemo);
                         if (mCheckCheer.isChecked()) {
                             mCheer_flag = 1;
                         }
-                        postMovieAsync(CameraPreviewActivity.this);
-                        Application_Gocci.postingVideoToS3(CameraPreviewActivity.this, mAwsPostName, mVideoFile);
+                        postMovieAsync(CameraPreviewAlreadyExistActivity.this);
+                        Application_Gocci.postingVideoToS3(CameraPreviewAlreadyExistActivity.this, mAwsPostName, mVideoFile);
                     } else {
-                        Toast.makeText(CameraPreviewActivity.this, getString(R.string.please_input_restname), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(CameraPreviewAlreadyExistActivity.this, getString(R.string.please_input_restname), Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    Toast.makeText(CameraPreviewActivity.this, getString(R.string.bad_internet_connection), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CameraPreviewAlreadyExistActivity.this, getString(R.string.bad_internet_connection), Toast.LENGTH_SHORT).show();
                 }
             }
         });
+
+        if (mIsnewRestname || !mRestname.equals("")) {
+            mAddRestText.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -319,22 +324,6 @@ public class CameraPreviewActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onBackPressed() {
-        new MaterialDialog.Builder(this)
-                .content(getString(R.string.check_videoposting_cancel))
-                .positiveText(getString(R.string.check_videoposting_yeah))
-                .positiveColorRes(R.color.gocci_header)
-                .negativeText(getString(R.string.check_videoposting_no))
-                .negativeColorRes(R.color.gocci_header)
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
-                        CameraPreviewActivity.this.finish();
-                    }
-                }).show();
-    }
-
-    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
@@ -347,12 +336,12 @@ public class CameraPreviewActivity extends AppCompatActivity {
                 mLongitude, mLatitude);
     }
 
-    private void getTenpoJson() {
+    private void getTenpoJson(final Context context) {
         Application_Gocci.getJsonAsyncHttpClient(Const.getNearAPI(mLatitude, mLongitude), new JsonHttpResponseHandler() {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray timeline) {
-                CameraActivity.rest_id.clear();
+                // Pull out the first event on the public timeline
                 try {
                     for (int i = 0; i < timeline.length(); i++) {
                         JSONObject jsonObject = timeline.getJSONObject(i);
@@ -360,10 +349,10 @@ public class CameraPreviewActivity extends AppCompatActivity {
                         final String rest_name = jsonObject.getString("restname");
                         int rest_id = jsonObject.getInt("rest_id");
 
-                        CameraActivity.restname[i] = rest_name;
-                        CameraActivity.rest_id.add(rest_id);
+                        restnameList[i] = rest_name;
+                        rest_idList.add(rest_id);
                     }
-                    restAdapter.addAll(CameraActivity.restname);
+                    restAdapter.addAll(restnameList);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -371,13 +360,13 @@ public class CameraPreviewActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-
+                Toast.makeText(context, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void createTenpo() {
-        new MaterialDialog.Builder(CameraPreviewActivity.this)
+        new MaterialDialog.Builder(CameraPreviewAlreadyExistActivity.this)
                 .content(getString(R.string.add_restname))
                 .contentColorRes(R.color.nameblack)
                 .inputType(InputType.TYPE_CLASS_TEXT)
@@ -392,7 +381,7 @@ public class CameraPreviewActivity extends AppCompatActivity {
 
                             @Override
                             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                                Toast.makeText(CameraPreviewActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(CameraPreviewAlreadyExistActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
                             }
 
                             @Override
@@ -401,17 +390,17 @@ public class CameraPreviewActivity extends AppCompatActivity {
                                     String message = response.getString("message");
 
                                     if (message.equals(getString(R.string.add_restname_complete_message))) {
-                                        Toast.makeText(CameraPreviewActivity.this, message, Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(CameraPreviewAlreadyExistActivity.this, message, Toast.LENGTH_SHORT).show();
                                         //店名をセット
                                         mIsnewRestname = true;
                                         mRestnameSpinner.setText(mRestname);
                                         mRest_id = response.getInt("rest_id");
                                         mRestnameSpinner.setClickable(false);
-                                        SavedData.setIsNewRestname(CameraPreviewActivity.this, mIsnewRestname);
-                                        SavedData.setRestname(CameraPreviewActivity.this, mRestname);
-                                        SavedData.setRest_id(CameraPreviewActivity.this, mRest_id);
+                                        SavedData.setIsNewRestname(CameraPreviewAlreadyExistActivity.this, mIsnewRestname);
+                                        SavedData.setRestname(CameraPreviewAlreadyExistActivity.this, mRestname);
+                                        SavedData.setRest_id(CameraPreviewAlreadyExistActivity.this, mRest_id);
                                     } else {
-                                        Toast.makeText(CameraPreviewActivity.this, message, Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(CameraPreviewAlreadyExistActivity.this, message, Toast.LENGTH_SHORT).show();
                                     }
                                 } catch (JSONException e) {
                                     e.printStackTrace();
@@ -424,6 +413,7 @@ public class CameraPreviewActivity extends AppCompatActivity {
 
     private void postMovieAsync(final Context context) {
         Application_Gocci.getJsonAsyncHttpClient(Const.getPostMovieAPI(mRest_id, mAwsPostName, mCategory_id, mValue, mMemo, mCheer_flag), new JsonHttpResponseHandler() {
+
             @Override
             public void onStart() {
                 mProgressWheel.setVisibility(View.VISIBLE);

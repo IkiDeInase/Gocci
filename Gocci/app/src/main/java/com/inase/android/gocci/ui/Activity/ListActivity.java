@@ -108,11 +108,11 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                     = (ListActivity) msg.obj;
             switch (msg.what) {
                 case Const.INTENT_TO_TIMELINE:
-                    activity.startActivity(new Intent(activity, GocciTimelineActivity.class));
+                    activity.startActivity(new Intent(activity, TimelineActivity.class));
                     activity.overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
                     break;
                 case Const.INTENT_TO_MYPAGE:
-                    GocciMyprofActivity.startMyProfActivity(activity);
+                    MyprofActivity.startMyProfActivity(activity);
                     break;
                 case Const.INTENT_TO_ADVICE:
                     Util.setAdviceDialog(activity);
@@ -137,7 +137,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
             Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
         }
 
-        setContentView(R.layout.activity_follower_followee_cheer_list);
+        setContentView(R.layout.activity_list_follow_follower_cheer);
         ButterKnife.bind(this);
 
         Intent intent = getIntent();
@@ -154,7 +154,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
             public void onRefresh() {
                 mSwipeRefresh.setRefreshing(true);
                 if (Util.getConnectedState(ListActivity.this) != Util.NetworkStatus.OFF) {
-                    getRefreshJSON(mUrl, mCategory, ListActivity.this);
+                    getRefreshJSON(mUrl, mCategory);
                 } else {
                     Toast.makeText(ListActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
                     mSwipeRefresh.setRefreshing(false);
@@ -260,7 +260,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 break;
         }
 
-        getJSON(mUrl, mCategory, this);
+        getJSON(mUrl, mCategory);
     }
 
     @Override
@@ -317,7 +317,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
         super.onSaveInstanceState(outState);
     }
 
-    private void getJSON(String url, int category, Context context) {
+    private void getJSON(String url, int category) {
         switch (category) {
             case Const.CATEGORY_FOLLOW:
                 getFollowJSON(url);
@@ -337,7 +337,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
         }
     }
 
-    private void getRefreshJSON(String url, int category, Context context) {
+    private void getRefreshJSON(String url, int category) {
         switch (category) {
             case Const.CATEGORY_FOLLOW:
                 getRefreshFollowJSON(url);
@@ -528,7 +528,6 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
                 Toast.makeText(ListActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
-
         });
 
     }
@@ -573,9 +572,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
                 Toast.makeText(ListActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
-
         });
-
     }
 
     private void getRefreshFollowJSON(String url) {
@@ -928,14 +925,14 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
             viewHolder.mUserName.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    FlexibleUserProfActivity.startUserProfActivity(user.getUser_id(), user.getUsername(), ListActivity.this);
+                    UserProfActivity.startUserProfActivity(user.getUser_id(), user.getUsername(), ListActivity.this);
                 }
             });
 
             viewHolder.mFollowFollowerPicture.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    FlexibleUserProfActivity.startUserProfActivity(user.getUser_id(), user.getUsername(), ListActivity.this);
+                    UserProfActivity.startUserProfActivity(user.getUser_id(), user.getUsername(), ListActivity.this);
                 }
             });
 
@@ -1027,14 +1024,14 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
             viewHolder.mRestName.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    FlexibleTenpoActivity.startTenpoActivity(user.getRest_id(), user.getRestname(), ListActivity.this);
+                    TenpoActivity.startTenpoActivity(user.getRest_id(), user.getRestname(), ListActivity.this);
                 }
             });
 
             viewHolder.mCheerPicture.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    FlexibleTenpoActivity.startTenpoActivity(user.getRest_id(), user.getRestname(), ListActivity.this);
+                    TenpoActivity.startTenpoActivity(user.getRest_id(), user.getRestname(), ListActivity.this);
                 }
             });
         }
@@ -1077,14 +1074,14 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
             viewHolder.mRestName.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    FlexibleTenpoActivity.startTenpoActivity(user.getRest_id(), user.getRestname(), ListActivity.this);
+                    TenpoActivity.startTenpoActivity(user.getRest_id(), user.getRestname(), ListActivity.this);
                 }
             });
 
             viewHolder.mWantPicture.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    FlexibleTenpoActivity.startTenpoActivity(user.getRest_id(), user.getRestname(), ListActivity.this);
+                    TenpoActivity.startTenpoActivity(user.getRest_id(), user.getRestname(), ListActivity.this);
                 }
             });
 
@@ -1142,14 +1139,14 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
             viewHolder.mUserName.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    FlexibleUserProfActivity.startUserProfActivity(user.getUser_id(), user.getUsername(), ListActivity.this);
+                    UserProfActivity.startUserProfActivity(user.getUser_id(), user.getUsername(), ListActivity.this);
                 }
             });
 
             viewHolder.mTenpoCheerPicture.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    FlexibleUserProfActivity.startUserProfActivity(user.getUser_id(), user.getUsername(), ListActivity.this);
+                    UserProfActivity.startUserProfActivity(user.getUser_id(), user.getUsername(), ListActivity.this);
                 }
             });
 

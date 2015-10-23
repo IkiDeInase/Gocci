@@ -30,8 +30,8 @@ import com.inase.android.gocci.event.PageChangeVideoStopEvent;
 import com.inase.android.gocci.event.ProfJsonEvent;
 import com.inase.android.gocci.event.TimelineMuteChangeEvent;
 import com.inase.android.gocci.ui.activity.CommentActivity;
-import com.inase.android.gocci.ui.activity.FlexibleTenpoActivity;
-import com.inase.android.gocci.ui.activity.GocciMyprofActivity;
+import com.inase.android.gocci.ui.activity.MyprofActivity;
+import com.inase.android.gocci.ui.activity.TenpoActivity;
 import com.inase.android.gocci.ui.adapter.GridProfAdapter;
 import com.inase.android.gocci.utils.SavedData;
 import com.inase.android.gocci.utils.Util;
@@ -162,7 +162,7 @@ public class GridMyProfFragment extends Fragment implements AppBarLayout.OnOffse
                 mSwipeContainer.setRefreshing(true);
                 if (Util.getConnectedState(getActivity()) != Util.NetworkStatus.OFF) {
                     releasePlayer();
-                    GocciMyprofActivity activity = (GocciMyprofActivity) getActivity();
+                    MyprofActivity activity = (MyprofActivity) getActivity();
                     activity.refreshJson();
                 } else {
                     Toast.makeText(getActivity(), getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
@@ -263,7 +263,7 @@ public class GridMyProfFragment extends Fragment implements AppBarLayout.OnOffse
         if (player == null) {
             return;
         }
-        if (mPlayingPostId != null && GocciMyprofActivity.mShowPosition == 1) {
+        if (mPlayingPostId != null && MyprofActivity.mShowPosition == 1) {
             releasePlayer();
         }
         player.setBackgrounded(false);
@@ -380,7 +380,7 @@ public class GridMyProfFragment extends Fragment implements AppBarLayout.OnOffse
 
     @Override
     public void onGridRestClick(int rest_id, String rest_name) {
-        FlexibleTenpoActivity.startTenpoActivity(rest_id, rest_name, getActivity());
+        TenpoActivity.startTenpoActivity(rest_id, rest_name, getActivity());
     }
 
     @Override
@@ -403,7 +403,7 @@ public class GridMyProfFragment extends Fragment implements AppBarLayout.OnOffse
 
     @Override
     public void onGridVideoFrameLongClick(String post_id, int position) {
-        GocciMyprofActivity activity = (GocciMyprofActivity) getActivity();
+        MyprofActivity activity = (MyprofActivity) getActivity();
         activity.setDeleteDialog(post_id, position);
     }
 

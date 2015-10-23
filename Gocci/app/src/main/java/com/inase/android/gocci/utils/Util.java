@@ -22,6 +22,7 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
@@ -34,7 +35,7 @@ import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.domain.model.HeaderData;
 import com.inase.android.gocci.domain.model.PostData;
-import com.inase.android.gocci.ui.activity.FlexibleUserProfActivity;
+import com.inase.android.gocci.ui.activity.UserProfActivity;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
@@ -291,17 +292,7 @@ public class Util {
                 .input(null, null, new MaterialDialog.InputCallback() {
                     @Override
                     public void onInput(MaterialDialog materialDialog, CharSequence charSequence) {
-
-                    }
-                })
-                .widgetColorRes(R.color.gocci_header)
-                .positiveText(context.getString(R.string.advice_yeah))
-                .positiveColorRes(R.color.gocci_header)
-                .callback(new MaterialDialog.ButtonCallback() {
-                    @Override
-                    public void onPositive(MaterialDialog dialog) {
-                        super.onPositive(dialog);
-                        String message = dialog.getInputEditText().getText().toString();
+                        String message = charSequence.toString();
 
                         if (!message.isEmpty()) {
                             postAdviceAsync(context, message);
@@ -309,7 +300,11 @@ public class Util {
                             Toast.makeText(context, context.getString(R.string.advice_alert), Toast.LENGTH_SHORT).show();
                         }
                     }
-                }).show();
+                })
+                .widgetColorRes(R.color.gocci_header)
+                .positiveText(context.getString(R.string.advice_yeah))
+                .positiveColorRes(R.color.gocci_header)
+                .show();
     }
 
     private static void postAdviceAsync(final Context context, final String message) {
@@ -347,16 +342,10 @@ public class Util {
                 .positiveColorRes(R.color.gocci_header)
                 .negativeText(context.getString(R.string.violate_no))
                 .negativeColorRes(R.color.gocci_header)
-                .callback(new MaterialDialog.ButtonCallback() {
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
-                    public void onPositive(MaterialDialog dialog) {
-                        super.onPositive(dialog);
+                    public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
                         violateSignupAsync(context, post_id);
-                    }
-
-                    @Override
-                    public void onNegative(MaterialDialog dialog) {
-                        super.onNegative(dialog);
                     }
                 }).show();
     }
@@ -630,7 +619,7 @@ public class Util {
                     Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
 
                     if (code == 200) {
-                        FlexibleUserProfActivity.startUserProfActivity(user_id, username, activiy);
+                        UserProfActivity.startUserProfActivity(user_id, username, activiy);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

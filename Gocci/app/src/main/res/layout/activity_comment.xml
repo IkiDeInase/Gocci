@@ -45,8 +45,9 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:id="@+id/header_view"
-            android:layout_alignParentTop="true"
-            android:background="#c5c6c9" />
+            android:background="#c5c6c9"
+            android:layout_toLeftOf="@+id/send_button"
+            android:layout_alignParentTop="true" />
 
         <EditText
             android:layout_width="match_parent"

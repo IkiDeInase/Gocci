@@ -3,10 +3,10 @@
     <item
         android:id="@+id/violation"
         android:title="@string/popup_violate"
-        android:icon="@drawable/ic_icon_violation" />
+        android:icon="@drawable/ic_content_cut_grey600_24dp" />
     <divider />
     <item
         android:id="@+id/close"
         android:title="@string/close"
-        android:icon="@drawable/ic_icon_close" />
+        android:icon="@drawable/ic_close_grey600_24dp" />
 </menu>

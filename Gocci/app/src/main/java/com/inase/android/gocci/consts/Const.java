@@ -293,53 +293,6 @@ public class Const {
     public static final int LOGIN_NAME_PASS = 24;
     public static final int LOGIN_SIGNUP = 25;
 
-    public static final class ExoViewHolder extends RecyclerView.ViewHolder {
-
-        @Bind(R.id.circle_image)
-        public ImageView mCircleImage;
-        @Bind(R.id.user_name)
-        public TextView mUserName;
-        @Bind(R.id.time_text)
-        public TextView mTimeText;
-        @Bind(R.id.comment)
-        public TextView mComment;
-        @Bind(R.id.menu_ripple)
-        public RippleView mMenuRipple;
-        @Bind(R.id.video_thumbnail)
-        public SquareImageView mVideoThumbnail;
-        @Bind(R.id.square_video_exo)
-        public SquareExoVideoView mSquareVideoExo;
-        @Bind(R.id.rest_name)
-        public TextView mRestname;
-        @Bind(R.id.category)
-        public TextView mCategory;
-        @Bind(R.id.value)
-        public TextView mValue;
-        @Bind(R.id.mood)
-        public TextView mMood;
-        @Bind(R.id.tenpo_ripple)
-        public RippleView mTenpoRipple;
-        @Bind(R.id.likes_number)
-        public TextView mLikesNumber;
-        @Bind(R.id.likes_Image)
-        public ImageView mLikesImage;
-        @Bind(R.id.comments_number)
-        public TextView mCommentsNumber;
-        @Bind(R.id.likes_ripple)
-        public RippleView mLikesRipple;
-        @Bind(R.id.comments_ripple)
-        public RippleView mCommentsRipple;
-        @Bind(R.id.share_ripple)
-        public RippleView mShareRipple;
-        @Bind(R.id.video_frame)
-        public AspectRatioFrameLayout mVideoFrame;
-
-        public ExoViewHolder(View view) {
-            super(view);
-            ButterKnife.bind(this, view);
-        }
-    }
-
     public static final class TwoCellViewHolder extends RecyclerView.ViewHolder {
         @Bind(R.id.video_thumbnail)
         public SquareImageView mSquareImage;

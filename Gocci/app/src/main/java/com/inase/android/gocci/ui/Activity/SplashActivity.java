@@ -157,7 +157,7 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
             //ノーマル
             SavedData.setFlag(SplashActivity.this, 0);
 
-            Intent intent = new Intent(SplashActivity.this, GocciTimelineActivity.class);
+            Intent intent = new Intent(SplashActivity.this, TimelineActivity.class);
             if (!SplashActivity.this.isFinishing()) {
                 SplashActivity.this.startActivity(intent);
                 overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
@@ -195,7 +195,7 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
                     //ノーマル
                     SavedData.setFlag(SplashActivity.this, 0);
 
-                    Intent intent = new Intent(SplashActivity.this, GocciTimelineActivity.class);
+                    Intent intent = new Intent(SplashActivity.this, TimelineActivity.class);
                     if (!SplashActivity.this.isFinishing()) {
                         SplashActivity.this.startActivity(intent);
                         overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
@@ -239,7 +239,7 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
     private class loginRunnable implements Runnable {
         @Override
         public void run() {
-            Intent mainIntent = new Intent(SplashActivity.this, TutorialGuideActivity.class);
+            Intent mainIntent = new Intent(SplashActivity.this, TutorialActivity.class);
             if (!SplashActivity.this.isFinishing()) {
                 SplashActivity.this.startActivity(mainIntent);
                 overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);

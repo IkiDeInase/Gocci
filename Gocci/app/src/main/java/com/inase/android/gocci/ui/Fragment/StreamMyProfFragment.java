@@ -31,8 +31,8 @@ import com.inase.android.gocci.event.PageChangeVideoStopEvent;
 import com.inase.android.gocci.event.ProfJsonEvent;
 import com.inase.android.gocci.event.TimelineMuteChangeEvent;
 import com.inase.android.gocci.ui.activity.CommentActivity;
-import com.inase.android.gocci.ui.activity.FlexibleTenpoActivity;
-import com.inase.android.gocci.ui.activity.GocciMyprofActivity;
+import com.inase.android.gocci.ui.activity.MyprofActivity;
+import com.inase.android.gocci.ui.activity.TenpoActivity;
 import com.inase.android.gocci.ui.adapter.StreamMyProfAdapter;
 import com.inase.android.gocci.ui.view.SquareImageView;
 import com.inase.android.gocci.utils.SavedData;
@@ -111,7 +111,7 @@ public class StreamMyProfFragment extends Fragment implements AppBarLayout.OnOff
     private ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
         @Override
         public void onGlobalLayout() {
-            if (GocciMyprofActivity.mShowPosition == 0) {
+            if (MyprofActivity.mShowPosition == 0) {
                 streamChangeMovie();
 
                 if (mPlayingPostId != null && !isExist) {
@@ -174,7 +174,7 @@ public class StreamMyProfFragment extends Fragment implements AppBarLayout.OnOff
                 mSwipeContainer.setRefreshing(true);
                 if (Util.getConnectedState(getActivity()) != Util.NetworkStatus.OFF) {
                     releasePlayer();
-                    GocciMyprofActivity activity = (GocciMyprofActivity) getActivity();
+                    MyprofActivity activity = (MyprofActivity) getActivity();
                     activity.refreshJson();
                 } else {
                     Toast.makeText(getActivity(), getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
@@ -193,7 +193,7 @@ public class StreamMyProfFragment extends Fragment implements AppBarLayout.OnOff
         super.onResume();
         BusHolder.get().register(this);
         if (player == null) {
-            if (mPlayingPostId != null && GocciMyprofActivity.mShowPosition == 0) {
+            if (mPlayingPostId != null && MyprofActivity.mShowPosition == 0) {
                 releasePlayer();
                 if (Util.isMovieAutoPlay(getActivity())) {
                     streamPreparePlayer(getStreamPlayingViewHolder(), getVideoPath());
@@ -298,7 +298,7 @@ public class StreamMyProfFragment extends Fragment implements AppBarLayout.OnOff
         if (player == null) {
             return;
         }
-        if (mPlayingPostId != null && GocciMyprofActivity.mShowPosition == 0) {
+        if (mPlayingPostId != null && MyprofActivity.mShowPosition == 0) {
             releasePlayer();
             if (Util.isMovieAutoPlay(getActivity())) {
                 streamPreparePlayer(getStreamPlayingViewHolder(), getVideoPath());
@@ -437,7 +437,7 @@ public class StreamMyProfFragment extends Fragment implements AppBarLayout.OnOff
 
     @Override
     public void onStreamRestClick(int rest_id, String rest_name) {
-        FlexibleTenpoActivity.startTenpoActivity(rest_id, rest_name, getActivity());
+        TenpoActivity.startTenpoActivity(rest_id, rest_name, getActivity());
     }
 
     @Override

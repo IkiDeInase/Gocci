@@ -96,18 +96,18 @@
             android:value="@string/facebook_app_id" />
 
         <activity
-            android:name=".ui.activity.FlexibleTenpoActivity"
+            android:name=".ui.activity.TenpoActivity"
             android:screenOrientation="portrait"
             android:theme="@style/CustomTheme" />
         <activity
-            android:name=".ui.activity.FlexibleUserProfActivity"
+            android:name=".ui.activity.UserProfActivity"
             android:screenOrientation="portrait"
             android:theme="@style/CustomTheme" />
         <activity
-            android:name=".ui.activity.TutorialGuideActivity"
+            android:name=".ui.activity.TutorialActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.activity.ProfMapActivity"
+            android:name=".ui.activity.MapProfActivity"
             android:screenOrientation="portrait" />
 
         <meta-data
@@ -122,11 +122,11 @@
         <!--148392115499214-->
 
         <activity
-            android:name=".ui.activity.GocciTimelineActivity"
+            android:name=".ui.activity.TimelineActivity"
             android:screenOrientation="portrait"
             android:theme="@style/CustomTheme" />
         <activity
-            android:name=".ui.activity.GocciMyprofActivity"
+            android:name=".ui.activity.MyprofActivity"
             android:screenOrientation="portrait"
             android:theme="@style/CustomTheme" />
         <activity
@@ -137,7 +137,7 @@
             android:name=".ui.activity.CameraPreviewActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.activity.GocciCameraActivity"
+            android:name=".ui.activity.CameraActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.NoTitleBar"
             android:windowSoftInputMode="adjustResize" />
@@ -158,7 +158,7 @@
             android:name=".ui.activity.SettingActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.activity.AlreadyExistCameraPreview"
+            android:name=".ui.activity.CameraPreviewAlreadyExistActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activity.MapSearchActivity"

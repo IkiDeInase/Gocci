@@ -18,6 +18,7 @@ import android.webkit.CookieSyncManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
@@ -37,7 +38,7 @@ import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.NotificationNumberEvent;
 import com.inase.android.gocci.ui.view.DrawerProfHeader;
-import com.inase.android.gocci.ui.view.GocciTwitterLoginButton;
+import com.inase.android.gocci.ui.view.TwitterLoginButton;
 import com.inase.android.gocci.utils.SavedData;
 import com.inase.android.gocci.utils.Util;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -85,7 +86,7 @@ public class SettingActivity extends AppCompatActivity {
     @Bind(R.id.login_button)
     LoginButton mFacebookLoginButton;
     @Bind(R.id.twitter_login_button)
-    GocciTwitterLoginButton mTwitterLoginButton;
+    TwitterLoginButton mTwitterLoginButton;
     @Bind(R.id.coordinator_layout)
     CoordinatorLayout mCoordinatorLayout;
 
@@ -121,24 +122,18 @@ public class SettingActivity extends AppCompatActivity {
                 .input(null, null, new MaterialDialog.InputCallback() {
                     @Override
                     public void onInput(MaterialDialog materialDialog, CharSequence charSequence) {
-
-                    }
-                })
-                .widgetColorRes(R.color.gocci_header)
-                .positiveText(getString(R.string.password_yeah))
-                .positiveColorRes(R.color.gocci_header)
-                .callback(new MaterialDialog.ButtonCallback() {
-                    @Override
-                    public void onPositive(MaterialDialog dialog) {
-                        super.onPositive(dialog);
-                        String password = dialog.getInputEditText().getText().toString();
+                        String password = charSequence.toString();
                         if (!password.isEmpty()) {
                             Util.passwordAsync(SettingActivity.this, password);
                         } else {
                             Toast.makeText(SettingActivity.this, getString(R.string.cheat_input_password), Toast.LENGTH_SHORT).show();
                         }
                     }
-                }).show();
+                })
+                .widgetColorRes(R.color.gocci_header)
+                .positiveText(getString(R.string.password_yeah))
+                .positiveColorRes(R.color.gocci_header)
+                .show();
     }
 
     @OnClick(R.id.account_notification)
@@ -196,18 +191,15 @@ public class SettingActivity extends AppCompatActivity {
                     .positiveColorRes(R.color.gocci_header)
                     .negativeText(R.string.remove_auth_no)
                     .negativeColorRes(R.color.gocci_header)
-                    .callback(new MaterialDialog.ButtonCallback() {
+                    .onPositive(new MaterialDialog.SingleButtonCallback() {
                         @Override
-                        public void onPositive(MaterialDialog dialog) {
-                            super.onPositive(dialog);
-                            //SNSUnLinkとログアウト
+                        public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
                             TwitterSession session =
                                     Twitter.getSessionManager().getActiveSession();
                             TwitterAuthToken authToken = session.getAuthToken();
                             snsUnLinkAsync(Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret);
                         }
-                    })
-                    .show();
+                    }).show();
         } else {
             //ログイン
             mTwitterLoginButton.performClick();
@@ -224,14 +216,13 @@ public class SettingActivity extends AppCompatActivity {
                     .positiveColorRes(R.color.gocci_header)
                     .negativeText(R.string.remove_auth_no)
                     .negativeColorRes(R.color.gocci_header)
-                    .callback(new MaterialDialog.ButtonCallback() {
+                    .onPositive(new MaterialDialog.SingleButtonCallback() {
                         @Override
-                        public void onPositive(MaterialDialog dialog) {
-                            super.onPositive(dialog);
+                        public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
                             snsUnLinkAsync(Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken());
+
                         }
-                    })
-                    .show();
+                    }).show();
         } else {
             mFacebookLoginButton.performClick();
         }
@@ -319,11 +310,11 @@ public class SettingActivity extends AppCompatActivity {
                     = (SettingActivity) msg.obj;
             switch (msg.what) {
                 case Const.INTENT_TO_TIMELINE:
-                    activity.startActivity(new Intent(activity, GocciTimelineActivity.class));
+                    activity.startActivity(new Intent(activity, TimelineActivity.class));
                     activity.overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
                     break;
                 case Const.INTENT_TO_MYPAGE:
-                    GocciMyprofActivity.startMyProfActivity(activity);
+                    MyprofActivity.startMyProfActivity(activity);
                     break;
                 case Const.INTENT_TO_ADVICE:
                     Util.setAdviceDialog(activity);

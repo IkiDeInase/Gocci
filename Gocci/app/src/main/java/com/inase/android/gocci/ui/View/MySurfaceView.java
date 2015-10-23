@@ -5,7 +5,7 @@ import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import com.inase.android.gocci.ui.fragment.down18CameraFragment;
+import com.inase.android.gocci.ui.fragment.CameraDown18Fragment;
 import com.inase.android.gocci.utils.camera.CameraManager;
 
 /**
@@ -43,7 +43,7 @@ public class MySurfaceView extends SurfaceView implements
 
 
     public void initCameraManager(Context paramContext) {
-        cameraManager = down18CameraFragment.getCameraManager();
+        cameraManager = CameraDown18Fragment.getCameraManager();
         getHolder().addCallback(this);
 
     }
