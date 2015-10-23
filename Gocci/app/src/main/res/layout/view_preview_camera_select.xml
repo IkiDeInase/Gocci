@@ -25,18 +25,18 @@
             app:met_floatingLabel="normal"
             app:met_floatingLabelTextSize="10sp" />
 
-            <TextView
-                android:id="@+id/add_rest_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="right"
-                android:layout_marginTop="8dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:layout_marginBottom="8dp"
-                android:text="店舗が無い場合はこちら"
-                android:textColor="@color/nameblack"
-                android:textSize="@dimen/small_text" />
+        <TextView
+            android:id="@+id/add_rest_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:layout_marginTop="8dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="8dp"
+            android:text="店舗が無い場合はこちら"
+            android:textColor="@color/nameblack"
+            android:textSize="@dimen/small_text" />
 
         <com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner
             android:id="@+id/category_spinner"

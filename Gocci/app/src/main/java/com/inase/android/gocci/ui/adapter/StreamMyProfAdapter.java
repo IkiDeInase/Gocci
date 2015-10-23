@@ -14,7 +14,6 @@ import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.domain.model.PostData;
-import com.inase.android.gocci.ui.activity.GocciMyprofActivity;
 import com.inase.android.gocci.ui.view.SquareImageView;
 import com.inase.android.gocci.utils.Util;
 import com.squareup.picasso.Picasso;
@@ -163,7 +162,7 @@ public class StreamMyProfAdapter extends RecyclerView.Adapter<Const.StreamViewHo
         holder.mCommentsRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
             @Override
             public void onComplete(RippleView rippleView) {
-                //mCallback.onStreamCommentClick(user.getPost_id());
+                mCallback.onStreamCommentClick(Integer.parseInt(user.getPost_id()));
             }
         });
 

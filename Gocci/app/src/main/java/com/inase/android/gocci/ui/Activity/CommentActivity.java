@@ -4,15 +4,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -45,7 +43,6 @@ import com.inase.android.gocci.event.NotificationNumberEvent;
 import com.inase.android.gocci.presenter.ShowCommentPagePresenter;
 import com.inase.android.gocci.ui.adapter.CommentAdapter;
 import com.inase.android.gocci.utils.SavedData;
-import com.inase.android.gocci.utils.Util;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
@@ -59,26 +56,55 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
 
     @Bind(R.id.tool_bar)
     Toolbar mToolBar;
+    @Bind(R.id.overlay)
+    View mOverlay;
     @Bind(R.id.list)
     ObservableRecyclerView mCommentRecyclerView;
-    @Bind(R.id.swipe_container)
-    SwipeRefreshLayout mSwipeContainer;
     @Bind(R.id.comment_edit)
     EditText mCommentEdit;
+    @Bind(R.id.send_button)
+    ImageButton mSendButton;
+
+    @OnClick(R.id.comment_edit)
+    public void onEdit() {
+        if (mOverlay.getVisibility() != View.VISIBLE) {
+            mOverlay.setVisibility(View.VISIBLE);
+            isNotice = false;
+        }
+    }
 
     @OnClick(R.id.send_button)
     public void onSend(ImageButton button) {
-        String comment = mCommentEdit.getText().toString().replace(mNoticeUser_name + "\n", "");
+        String comment = null;
+        if (isNotice) {
+            comment = mCommentEdit.getText().toString().replace(mNoticeUser_name, "");
+        } else {
+            comment = mCommentEdit.getText().toString();
+        }
         if (!comment.isEmpty()) {
             button.setFocusable(true);
             button.setFocusableInTouchMode(true);
             button.requestFocus();
             mCommentEdit.setText("");
-            mPresenter.postComment(Const.getPostCommentWithNoticeAPI(mPost_id, comment, mNoticeUser_id), Const.getCommentAPI(mPost_id));
+            if (isNotice) {
+                mPresenter.postComment(Const.getPostCommentWithNoticeAPI(mPost_id, comment, mNoticeUser_id), Const.getCommentAPI(mPost_id));
+            } else {
+                mPresenter.postComment(Const.getPostCommentAPI(mPost_id, comment), Const.getCommentAPI(mPost_id));
+            }
+            if (mOverlay.getVisibility() == View.VISIBLE) {
+                mOverlay.setVisibility(View.GONE);
+            }
         }
     }
 
-    //mPresenter.postComment(Const.getPostCommentAPI(mPost_id, input.toString()), Const.getCommentAPI(mPost_id));
+    @OnClick(R.id.overlay)
+    public void onOutside() {
+        if (mOverlay.getVisibility() == View.VISIBLE) {
+            mOverlay.setVisibility(View.GONE);
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(mCommentEdit.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        }
+    }
 
     private LinearLayoutManager mLayoutManager;
     private ArrayList<HeaderData> mCommentusers = new ArrayList<>();
@@ -87,7 +113,9 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
     private CommentActivity self = this;
 
     private String mPost_id;
-    private String title;
+
+    private boolean isMyPage = false;
+    private boolean isNotice = false;
 
     private String mNoticeUser_name;
     private String mNoticeUser_id;
@@ -101,46 +129,18 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
 
     private ShowCommentPagePresenter mPresenter;
 
-    private static Handler sHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            CommentActivity activity
-                    = (CommentActivity) msg.obj;
-            switch (msg.what) {
-                case Const.INTENT_TO_TIMELINE:
-                    activity.startActivity(new Intent(activity, GocciTimelineActivity.class));
-                    activity.overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-                    break;
-                case Const.INTENT_TO_MYPAGE:
-                    GocciMyprofActivity.startMyProfActivity(activity);
-                    break;
-                case Const.INTENT_TO_ADVICE:
-                    Util.setAdviceDialog(activity);
-                    break;
-                case Const.INTENT_TO_SETTING:
-                    SettingActivity.startSettingActivity(activity);
-                    break;
-            }
-        }
-    };
-
-    public static void startCommentActivity(int post_id, int user_id, String username, Activity startingActivity) {
+    public static void startCommentActivity(int post_id, boolean isMyPage, Activity startingActivity) {
         Intent intent = new Intent(startingActivity, CommentActivity.class);
-        intent.putExtra("title", startingActivity.getLocalClassName());
         intent.putExtra("post_id", post_id);
-        intent.putExtra("user_id", user_id);
-        intent.putExtra("username", username);
+        intent.putExtra("judge", isMyPage);
         startingActivity.startActivity(intent);
         startingActivity.overridePendingTransition(R.anim.activity_in, R.anim.activity_out);
     }
 
-    public static void startCommentActivityOnContext(int post_id, int user_id, String username, Context context) {
+    public static void startCommentActivityOnContext(int post_id, boolean isMyPage, Context context) {
         Intent intent = new Intent(context, CommentActivity.class);
-        intent.putExtra("title", context.getString(R.string.comment));
         intent.putExtra("post_id", post_id);
-        intent.putExtra("user_id", user_id);
-        intent.putExtra("username", username);
+        intent.putExtra("judge", isMyPage);
         context.startActivity(intent);
     }
 
@@ -168,22 +168,36 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
         ButterKnife.bind(this);
 
         Intent intent = getIntent();
-        title = intent.getStringExtra("title");
+        isMyPage = intent.getBooleanExtra("judge", false);
         mPost_id = String.valueOf(intent.getIntExtra("post_id", 0));
-        mNoticeUser_id = String.valueOf(intent.getIntExtra("user_id", 0));
-        mNoticeUser_name = "@" + intent.getStringExtra("username") + " ";
-
-        mCommentEdit.setText(mNoticeUser_name + "\n");
-        mCommentEdit.setSelection(mCommentEdit.getText().length());
 
         setSupportActionBar(mToolBar);
-        if (title.equals("Activity.GocciMyprofActivity")) {
-            getSupportActionBar().setTitle(getString(R.string.mypage));
-        } else {
-            getSupportActionBar().setTitle(getString(R.string.comment));
-        }
+        getSupportActionBar().setTitle(getString(R.string.comment));
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        mCommentEdit.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (isNotice) {
+                    mSendButton.setAlpha(s.toString().length() <= mNoticeUser_name.length() ? 0.4f : 1.0f);
+                    mSendButton.setClickable(s.toString().length() > mNoticeUser_name.length());
+                } else {
+                    mSendButton.setAlpha(s.toString().length() == 0 ? 0.4f : 1.0f);
+                    mSendButton.setClickable(s.toString().length() != 0);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
 
         mLayoutManager = new LinearLayoutManager(this);
         mCommentRecyclerView.setLayoutManager(mLayoutManager);
@@ -193,29 +207,7 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
 
         mPresenter.getCommentData(Const.COMMENT_FIRST, Const.getCommentAPI(mPost_id));
 
-        mSwipeContainer.setColorSchemeResources(R.color.gocci_1, R.color.gocci_2, R.color.gocci_3, R.color.gocci_4);
-        mSwipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                mSwipeContainer.setRefreshing(true);
-                if (Util.getConnectedState(CommentActivity.this) != Util.NetworkStatus.OFF) {
-                    mPresenter.getCommentData(Const.COMMENT_REFRESH, Const.getCommentAPI(mPost_id));
-                } else {
-                    Toast.makeText(CommentActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
-                    mSwipeContainer.setRefreshing(false);
-                }
-            }
-        });
-
-        mCommentEdit.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus == false) {
-                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-                }
-            }
-        });
+        //mPresenter.getCommentData(Const.COMMENT_REFRESH, Const.getCommentAPI(mPost_id));
 
         mCommentRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -292,23 +284,6 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_comment, menu);
-        // お知らせ未読件数バッジ表示
-        final MenuItem reply = menu.findItem(R.id.comment_reply);
-        final MenuItem reply_all = menu.findItem(R.id.comment_reply_all);
-        final MenuItem action = menu.findItem(R.id.comment_action);
-        final MenuItem delete = menu.findItem(R.id.comment_delete);
-
-        reply.setVisible(false);
-        reply_all.setVisible(false);
-        action.setVisible(false);
-        delete.setVisible(false);
-
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
@@ -342,15 +317,19 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
     @Override
     public void onCommentClick(String username, String user_id) {
         mNoticeUser_id = user_id;
-        mNoticeUser_name = username;
-        mCommentEdit.setText(username + "\n");
+        mNoticeUser_name = username + "\n";
+        isNotice = true;
+        mCommentEdit.setText(mNoticeUser_name);
         mCommentEdit.setSelection(mCommentEdit.getText().length());
         mCommentEdit.requestFocus();
+        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.showSoftInput(mCommentEdit, 0);
+        mOverlay.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void onCommentLongClick(String user_id) {
-        if (user_id.equals(SavedData.getServerUserId(this))) {
+        if (user_id.equals(SavedData.getServerUserId(this)) || isMyPage) {
             //自分の投稿　削除
             new MaterialDialog.Builder(this)
                     .content("このコメントを削除しますか？")
@@ -385,12 +364,12 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
 
     @Override
     public void showLoading() {
-        mSwipeContainer.setRefreshing(true);
+
     }
 
     @Override
     public void hideLoading() {
-        mSwipeContainer.setRefreshing(false);
+
     }
 
     @Override

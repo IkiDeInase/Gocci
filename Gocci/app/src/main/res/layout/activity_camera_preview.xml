@@ -9,13 +9,13 @@
         android:layout_height="wrap_content"
         android:id="@+id/preview_video" />
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:src="@drawable/ic_gocci_white"
-            android:layout_marginTop="8dp" />
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/ic_gocci_white"
+        android:layout_marginTop="8dp" />
 
     <include
         android:layout_width="match_parent"

@@ -162,7 +162,7 @@ public class StreamUserProfAdapter extends RecyclerView.Adapter<Const.StreamView
         holder.mCommentsRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
             @Override
             public void onComplete(RippleView rippleView) {
-                //mCallback.onStreamCommentClick(user.getPost_id());
+                mCallback.onStreamCommentClick(Integer.parseInt(user.getPost_id()));
             }
         });
 

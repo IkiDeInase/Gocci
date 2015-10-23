@@ -30,10 +30,10 @@ import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.PageChangeVideoStopEvent;
 import com.inase.android.gocci.event.ProfJsonEvent;
 import com.inase.android.gocci.event.TimelineMuteChangeEvent;
+import com.inase.android.gocci.ui.activity.CommentActivity;
 import com.inase.android.gocci.ui.activity.FlexibleTenpoActivity;
 import com.inase.android.gocci.ui.activity.FlexibleUserProfActivity;
 import com.inase.android.gocci.ui.activity.GocciMyprofActivity;
-import com.inase.android.gocci.ui.adapter.StreamMyProfAdapter;
 import com.inase.android.gocci.ui.adapter.StreamUserProfAdapter;
 import com.inase.android.gocci.ui.view.SquareImageView;
 import com.inase.android.gocci.utils.SavedData;
@@ -443,7 +443,7 @@ public class StreamUserProfFragment extends Fragment implements AppBarLayout.OnO
 
     @Override
     public void onStreamCommentClick(int post_id) {
-
+        CommentActivity.startCommentActivity(post_id, false, getActivity());
     }
 
     @Override

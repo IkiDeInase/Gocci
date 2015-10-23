@@ -200,13 +200,6 @@ public class RestPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             holder.mComment.setText("");
         }
 
-        holder.mComment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //mCallback.onCommentClick(user.getPost_id());
-            }
-        });
-
         Picasso.with(mContext)
                 .load(user.getProfile_img())
                 .placeholder(R.drawable.ic_userpicture)
@@ -304,7 +297,7 @@ public class RestPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         holder.mCommentsRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
             @Override
             public void onComplete(RippleView rippleView) {
-                //mCallback.onCommentClick(user.getPost_id());
+                mCallback.onCommentClick(user.getPost_id());
             }
         });
 

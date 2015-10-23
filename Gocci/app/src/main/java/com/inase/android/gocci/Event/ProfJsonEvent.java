@@ -16,7 +16,7 @@ public class ProfJsonEvent {
     public ProfJsonEvent(int api, ArrayList<PostData> data, ArrayList<String> post_ids) {
         super();
         this.mApi = api;
-        this.mData= data;
+        this.mData = data;
         this.mPost_Ids = post_ids;
     }
 }

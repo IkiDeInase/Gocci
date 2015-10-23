@@ -319,38 +319,38 @@ public class down18CameraFragment extends Fragment implements LocationListener, 
 
             @Override
             public boolean onTouch(View arg0, MotionEvent motionEvent) {
-                    switch (motionEvent.getAction()) {
-                        case MotionEvent.ACTION_DOWN:
-                            mScaleSpring.setEndValue(0);
-                            try {
-                                // sign.setPressed(true);
-                                new Handler().post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        cameraManager.getCamera().autoFocus(null);
-                                    }
-                                });
-                                recorderManager.startRecord(true);
+                switch (motionEvent.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        mScaleSpring.setEndValue(0);
+                        try {
+                            // sign.setPressed(true);
+                            new Handler().post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    cameraManager.getCamera().autoFocus(null);
+                                }
+                            });
+                            recorderManager.startRecord(true);
 
-                            } finally {
-                                muteAll(true);
-                            }
-                            break;
-                        case MotionEvent.ACTION_MOVE:
-                            break;
-                        case MotionEvent.ACTION_CANCEL:
-                        case MotionEvent.ACTION_UP:
-                            mScaleSpring.setEndValue(1);
-                            try {
-                                // sign.setPressed(false);
-                                recorderManager.stopRecord();
-                            } finally {
-                                muteAll(false);
-                                //
-                            }
-                            break;
-                    }
-                    return true;
+                        } finally {
+                            muteAll(true);
+                        }
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        break;
+                    case MotionEvent.ACTION_CANCEL:
+                    case MotionEvent.ACTION_UP:
+                        mScaleSpring.setEndValue(1);
+                        try {
+                            // sign.setPressed(false);
+                            recorderManager.stopRecord();
+                        } finally {
+                            muteAll(false);
+                            //
+                        }
+                        break;
+                }
+                return true;
             }
         });
 

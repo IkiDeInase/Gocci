@@ -26,9 +26,10 @@ import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.domain.model.PostData;
 import com.inase.android.gocci.event.BusHolder;
-import com.inase.android.gocci.event.ProfJsonEvent;
 import com.inase.android.gocci.event.PageChangeVideoStopEvent;
+import com.inase.android.gocci.event.ProfJsonEvent;
 import com.inase.android.gocci.event.TimelineMuteChangeEvent;
+import com.inase.android.gocci.ui.activity.CommentActivity;
 import com.inase.android.gocci.ui.activity.FlexibleTenpoActivity;
 import com.inase.android.gocci.ui.activity.GocciMyprofActivity;
 import com.inase.android.gocci.ui.adapter.GridProfAdapter;
@@ -383,8 +384,8 @@ public class GridMyProfFragment extends Fragment implements AppBarLayout.OnOffse
     }
 
     @Override
-    public void onGridCommentClick(int post_id, int user_id, String username) {
-
+    public void onGridCommentClick(int post_id) {
+        CommentActivity.startCommentActivity(post_id, true, getActivity());
     }
 
     @Override

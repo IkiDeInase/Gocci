@@ -18,7 +18,7 @@
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
             app:contentScrim="@color/material_drawer_primary"
-            app:expandedTitleMargin="12dp"
+            app:expandedTitleMargin="16dp"
             app:expandedTitleTextAppearance="@style/HeaderTitleStyle"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 

@@ -140,7 +140,7 @@
             android:name=".ui.activity.GocciCameraActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.NoTitleBar"
-            android:windowSoftInputMode="adjustResize"/>
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ui.activity.CommentActivity"
             android:screenOrientation="portrait"

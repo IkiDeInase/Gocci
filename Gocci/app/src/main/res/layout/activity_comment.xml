@@ -5,29 +5,33 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/tool_bar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/gocci_header"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            android:layout_alignParentTop="true">
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/tool_bar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/gocci_header"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        android:layout_alignParentTop="true">
 
-        </android.support.v7.widget.Toolbar>
+    </android.support.v7.widget.Toolbar>
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/swipe_container"
+    <com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView
+        android:id="@+id/list"
         android:layout_above="@+id/messageView"
         android:layout_below="@+id/tool_bar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent" />
 
-        <com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView
-            android:id="@+id/list"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </android.support.v4.widget.SwipeRefreshLayout>
+    <View
+        android:id="@+id/overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/tool_bar"
+        android:layout_above="@+id/messageView"
+        android:background="@color/transparent"
+        android:clickable="true"
+        android:visibility="visible" />
 
     <RelativeLayout
         android:orientation="horizontal"
@@ -58,9 +62,10 @@
             android:textSize="14sp"
             android:textColor="@color/nameblack"
             android:inputType="textMultiLine"
-            android:maxLength="140" >
-            <requestFocus/>
-            </EditText>
+            android:maxLength="140">
+
+            <requestFocus />
+        </EditText>
 
         <ImageButton
             android:layout_width="wrap_content"
@@ -71,6 +76,8 @@
             android:src="@drawable/ic_send_white"
             android:background="@color/gocci_header"
             android:padding="12dp"
+            android:alpha="0.4"
+            android:clickable="false"
             android:layout_alignTop="@+id/comment_edit"
             android:layout_alignBottom="@+id/comment_edit" />
 

@@ -2,19 +2,15 @@ package com.inase.android.gocci.ui.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.inase.android.gocci.R;
-import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.domain.model.CommentUserData;
 import com.inase.android.gocci.domain.model.HeaderData;
 import com.inase.android.gocci.ui.view.RoundedTransformation;
@@ -53,7 +49,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        final View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cell_comment_activity, parent, false);
+        final View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.cell_comment, parent, false);
         return new CommentViewHolder(view);
     }
 

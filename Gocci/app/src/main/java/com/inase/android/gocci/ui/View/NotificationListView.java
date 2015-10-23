@@ -65,7 +65,7 @@ public class NotificationListView extends RelativeLayout {
 
                 switch (user.getNotice()) {
                     case "like":
-                        CommentActivity.startCommentActivityOnContext(user.getNotice_post_id(), user.getNotice_user_id(), user.getUsername(), getContext());
+                        CommentActivity.startCommentActivityOnContext(user.getNotice_post_id(), false, getContext());
                         break;
                     case "follow":
                         Intent intent = new Intent(getContext(), FlexibleUserProfActivity.class);
@@ -74,7 +74,7 @@ public class NotificationListView extends RelativeLayout {
                         getContext().startActivity(intent);
                         break;
                     case "comment":
-                        CommentActivity.startCommentActivityOnContext(user.getNotice_post_id(), user.getNotice_user_id(), user.getUsername(), getContext());
+                        CommentActivity.startCommentActivityOnContext(user.getNotice_post_id(), false, getContext());
 
                         break;
                 }

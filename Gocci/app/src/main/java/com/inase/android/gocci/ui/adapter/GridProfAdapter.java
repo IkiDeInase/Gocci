@@ -89,7 +89,7 @@ public class GridProfAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
                                 mCallback.onGridRestClick(user.getPost_rest_id(), user.getRestname());
                                 break;
                             case R.id.move_to_comment:
-                                mCallback.onGridCommentClick(Integer.parseInt(user.getPost_id()), user.getPost_user_id(), user.getUsername());
+                                mCallback.onGridCommentClick(Integer.parseInt(user.getPost_id()));
                                 break;
                             case R.id.violation:
                                 Util.setViolateDialog(mContext, user.getPost_id());
@@ -139,7 +139,7 @@ public class GridProfAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
 
         void onGridRestClick(int rest_id, String rest_name);
 
-        void onGridCommentClick(int post_id, int user_id, String username);
+        void onGridCommentClick(int post_id);
 
         void onGridVideoFrameClick(PostData data);
 
