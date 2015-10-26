@@ -84,7 +84,7 @@ public abstract class AbstractPathAnimator {
             config.heartWidth = heartWidth;
             config.heartHeight = heartHeight;
             config.animDuration = typedArray.getInteger(R.styleable.HeartLayout_anim_duration,
-                    2000);//持续期
+                    1200);//持续期
             return config;
         }
     }
