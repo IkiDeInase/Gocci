@@ -84,24 +84,41 @@ import java.util.List;
 import java.util.Locale;
 
 import at.grabner.circleprogress.CircleProgressView;
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import cz.msebera.android.httpclient.Header;
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
 
-/**
- * Created by kinagafuji on 15/06/26.
- */
 public class CameraDown18Fragment extends Fragment implements LocationListener, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, ResultCallback<LocationSettingsResult> {
+
+    @Bind(R.id.camera_view)
+    MySurfaceView mCameraView;
+    @Bind(R.id.cancel_fab)
+    FloatingActionButton mCancelFab;
+    @Bind(R.id.circle_progress)
+    CircleProgressView mCircleProgress;
+    @Bind(R.id.toukou_button)
+    ImageButton mToukouButton;
+    @Bind(R.id.comment_action)
+    FloatingActionButton mCommentAction;
+    @Bind(R.id.value_action)
+    FloatingActionButton mValueAction;
+    @Bind(R.id.category_action)
+    FloatingActionButton mCategoryAction;
+    @Bind(R.id.restaurant_action)
+    FloatingActionButton mRestaurantAction;
+    @Bind(R.id.menu_fab)
+    FloatingActionMenu mMenuFab;
+    @Bind(R.id.progress_wheel)
+    ProgressWheel mProgressWheel;
 
     private RecorderManager recorderManager = null;
     public static CameraManager cameraManager;
 
     private Runnable progressRunnable = null;
     private Handler handler = null;
-    private ProgressWheel cameraProgress;
-
-    private CircleProgressView progress;
 
     private int mRest_id = 1;
     private int mCategory_id = 1;
@@ -111,14 +128,6 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
     private String mValue = "";
     private String mMemo = "";
     private boolean mIsnewRestname = false;
-
-    private ImageButton toukouButton;
-    private FloatingActionButton mCloseButton;
-    private FloatingActionMenu mMenu;
-    private FloatingActionButton mCommentAction;
-    private FloatingActionButton mValueAction;
-    private FloatingActionButton mCategoryAction;
-    private FloatingActionButton mRestaurantAction;
 
     private double latitude;
     private double longitude;
@@ -152,6 +161,12 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
 
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.unbind(this);
+    }
+
     private class ExampleSpringListener extends SimpleSpringListener {
         @Override
         public void onSpringUpdate(Spring spring) {
@@ -163,8 +178,8 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
             // your view properties in a backwards compatible manner.
             float value = (float) spring.getCurrentValue();
             float scale = 1f - (value * 0.3f);
-            progress.setScaleX(scale);
-            progress.setScaleY(scale);
+            mCircleProgress.setScaleX(scale);
+            mCircleProgress.setScaleY(scale);
         }
     }
 
@@ -184,26 +199,15 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_camera_down18, container, false);
-
-        cameraProgress = (ProgressWheel) rootView.findViewById(R.id.progress_wheel);
-        MySurfaceView videoSurface = (MySurfaceView) rootView.findViewById(R.id.camera_view);
+        ButterKnife.bind(this, rootView);
         cameraManager = getCameraManager();
-        recorderManager = new RecorderManager(getCameraManager(), videoSurface, getActivity());
+        recorderManager = new RecorderManager(getCameraManager(), mCameraView, getActivity());
 
-        toukouButton = (ImageButton) rootView.findViewById(R.id.toukou_button);
-        progress = (CircleProgressView) rootView.findViewById(R.id.circle_progress);
-        progress.setValue(0);
+        mCircleProgress.setValue(0);
 
         mScaleSpring = mSpringSystem.createSpring();
 
         mScaleSpring.setEndValue(1);
-
-        mCloseButton = (FloatingActionButton) rootView.findViewById(R.id.cancel_fab);
-        mMenu = (FloatingActionMenu) rootView.findViewById(R.id.menu_fab);
-        mCommentAction = (FloatingActionButton) rootView.findViewById(R.id.comment_action);
-        mValueAction = (FloatingActionButton) rootView.findViewById(R.id.value_action);
-        mCategoryAction = (FloatingActionButton) rootView.findViewById(R.id.category_action);
-        mRestaurantAction = (FloatingActionButton) rootView.findViewById(R.id.restaurant_action);
 
         mCommentAction.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -294,7 +298,7 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
             }
         });
 
-        mCloseButton.setOnClickListener(new View.OnClickListener() {
+        mCancelFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 new MaterialDialog.Builder(getActivity())
@@ -313,9 +317,9 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
             }
         });
 
-        mMenu.setClosedOnTouchOutside(true);
+        mMenuFab.setClosedOnTouchOutside(true);
 
-        toukouButton.setOnTouchListener(new View.OnTouchListener() {
+        mToukouButton.setOnTouchListener(new View.OnTouchListener() {
 
             @Override
             public boolean onTouch(View arg0, MotionEvent motionEvent) {
@@ -363,9 +367,9 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
                     // finishButton
                     // .setBackgroundResource(R.drawable.btn_capture_arrow);
                 } else {
-                    cameraProgress.setVisibility(View.VISIBLE);
+                    mProgressWheel.setVisibility(View.VISIBLE);
 
-                    progress.setValue(100);
+                    mCircleProgress.setValue(100);
                     // System.out.println("UnClickable");
                     // finishButton.setClickable(false);
                     onFinishPressed();
@@ -375,9 +379,9 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
                 int circle = (int) (msg.arg1 * 1.0 / 70);
 
                 if (circle > 50) {
-                    progress.setValue(circle + 1);
+                    mCircleProgress.setValue(circle + 1);
                 } else {
-                    progress.setValue(circle);
+                    mCircleProgress.setValue(circle);
                 }
                 super.handleMessage(msg);
                 // //
@@ -395,11 +399,11 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
 
         AnimatorSet set = new AnimatorSet();
 
-        ObjectAnimator scaleOutX = ObjectAnimator.ofFloat(mMenu.getMenuIconView(), "scaleX", 1.0f, 0.2f);
-        ObjectAnimator scaleOutY = ObjectAnimator.ofFloat(mMenu.getMenuIconView(), "scaleY", 1.0f, 0.2f);
+        ObjectAnimator scaleOutX = ObjectAnimator.ofFloat(mMenuFab.getMenuIconView(), "scaleX", 1.0f, 0.2f);
+        ObjectAnimator scaleOutY = ObjectAnimator.ofFloat(mMenuFab.getMenuIconView(), "scaleY", 1.0f, 0.2f);
 
-        ObjectAnimator scaleInX = ObjectAnimator.ofFloat(mMenu.getMenuIconView(), "scaleX", 0.2f, 1.0f);
-        ObjectAnimator scaleInY = ObjectAnimator.ofFloat(mMenu.getMenuIconView(), "scaleY", 0.2f, 1.0f);
+        ObjectAnimator scaleInX = ObjectAnimator.ofFloat(mMenuFab.getMenuIconView(), "scaleX", 0.2f, 1.0f);
+        ObjectAnimator scaleInY = ObjectAnimator.ofFloat(mMenuFab.getMenuIconView(), "scaleY", 0.2f, 1.0f);
 
         scaleOutX.setDuration(50);
         scaleOutY.setDuration(50);
@@ -410,7 +414,7 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
         scaleInX.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
-                mMenu.getMenuIconView().setImageResource(mMenu.isOpened()
+                mMenuFab.getMenuIconView().setImageResource(mMenuFab.isOpened()
                         ? R.drawable.ic_clear_white_24dp : R.drawable.ic_create_white_24dp);
             }
         });
@@ -419,7 +423,7 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
         set.play(scaleInX).with(scaleInY).after(scaleOutX);
         set.setInterpolator(new OvershootInterpolator(2));
 
-        mMenu.setIconToggleAnimatorSet(set);
+        mMenuFab.setIconToggleAnimatorSet(set);
     }
 
     @Override
@@ -520,7 +524,7 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
             }
 
             @Override
-            public void onFailure(int statusCode, Header[] headers, java.lang.Throwable throwable, org.json.JSONObject errorResponse) {
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 Toast.makeText(context, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
 

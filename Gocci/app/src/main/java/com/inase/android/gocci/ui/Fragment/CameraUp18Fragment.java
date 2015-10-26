@@ -70,6 +70,8 @@ import java.io.IOException;
 import java.util.Date;
 
 import at.grabner.circleprogress.CircleProgressView;
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import cz.msebera.android.httpclient.Header;
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
@@ -78,20 +80,26 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
         GoogleApiClient.OnConnectionFailedListener, ResultCallback<LocationSettingsResult> {
     private static final boolean DEBUG = true;
     private static final String TAG = "GocciCamera";
-
-    private CameraGLView mCameraView;
-
-    private ProgressWheel cameraProgress;
-
-    private CircleProgressView progress;
-    private ImageButton toukouButton;
-    private FloatingActionMenu mMenu;
-    private FloatingActionButton mCommentAction;
-    private FloatingActionButton mValueAction;
-    private FloatingActionButton mCategoryAction;
-    private FloatingActionButton mRestaurantAction;
-
-    private FloatingActionButton mCloseButton;
+    @Bind(R.id.camera_view)
+    CameraGLView mCameraView;
+    @Bind(R.id.circle_progress)
+    CircleProgressView mCircleProgress;
+    @Bind(R.id.toukou_button)
+    ImageButton mToukouButton;
+    @Bind(R.id.cancel_fab)
+    FloatingActionButton mCancelFab;
+    @Bind(R.id.comment_action)
+    FloatingActionButton mCommentAction;
+    @Bind(R.id.value_action)
+    FloatingActionButton mValueAction;
+    @Bind(R.id.category_action)
+    FloatingActionButton mCategoryAction;
+    @Bind(R.id.restaurant_action)
+    FloatingActionButton mRestaurantAction;
+    @Bind(R.id.menu_fab)
+    FloatingActionMenu mMenuFab;
+    @Bind(R.id.progress_wheel)
+    ProgressWheel mProgressWheel;
 
     private TLMediaVideoEncoder mVideoEncoder;
     private TLMediaAudioEncoder mAudioEncoder;
@@ -147,6 +155,13 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
 
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mCameraView.onFinish();
+        ButterKnife.unbind(this);
+    }
+
     private class ExampleSpringListener extends SimpleSpringListener {
         @Override
         public void onSpringUpdate(Spring spring) {
@@ -158,8 +173,8 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
             // your view properties in a backwards compatible manner.
             float value = (float) spring.getCurrentValue();
             float scale = 1f - (value * 0.3f);
-            progress.setScaleX(scale);
-            progress.setScaleY(scale);
+            mCircleProgress.setScaleX(scale);
+            mCircleProgress.setScaleY(scale);
         }
     }
 
@@ -179,26 +194,15 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_camera_up18, container, false);
+        ButterKnife.bind(this, rootView);
 
-        mCameraView = (CameraGLView) rootView.findViewById(R.id.camera_view);
         mCameraView.setVideoSize(640, 480);
-        cameraProgress = (ProgressWheel) rootView.findViewById(R.id.progress_wheel);
 
-        toukouButton = (ImageButton) rootView.findViewById(R.id.toukou_button);
-        progress = (CircleProgressView) rootView.findViewById(R.id.circle_progress);
-        progress.setValue(0);
+        mCircleProgress.setValue(0);
 
         mScaleSpring = mSpringSystem.createSpring();
 
         mScaleSpring.setEndValue(1);
-
-        mCloseButton = (FloatingActionButton) rootView.findViewById(R.id.cancel_fab);
-
-        mMenu = (FloatingActionMenu) rootView.findViewById(R.id.menu_fab);
-        mCommentAction = (FloatingActionButton) rootView.findViewById(R.id.comment_action);
-        mValueAction = (FloatingActionButton) rootView.findViewById(R.id.value_action);
-        mCategoryAction = (FloatingActionButton) rootView.findViewById(R.id.category_action);
-        mRestaurantAction = (FloatingActionButton) rootView.findViewById(R.id.restaurant_action);
 
         mCommentAction.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -289,7 +293,7 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
             }
         });
 
-        mCloseButton.setOnClickListener(new View.OnClickListener() {
+        mCancelFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 new MaterialDialog.Builder(getActivity())
@@ -307,9 +311,9 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
             }
         });
 
-        mMenu.setClosedOnTouchOutside(true);
+        mMenuFab.setClosedOnTouchOutside(true);
 
-        toukouButton.setOnTouchListener(mOnTouchListener);
+        mToukouButton.setOnTouchListener(mOnTouchListener);
 
         handler = new Handler() {
             @Override
@@ -318,10 +322,10 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
                 if (msg.arg1 < 7000) {
 
                 } else {
-                    cameraProgress.setVisibility(View.VISIBLE);
+                    mProgressWheel.setVisibility(View.VISIBLE);
                     //onFinishPressed();
                     if (!isFinish) {
-                        progress.setValue(100);
+                        mCircleProgress.setValue(100);
                         pauseRecording();
                         stopRecording();
                         isFinish = true;
@@ -331,9 +335,9 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
                 int circle = (int) (msg.arg1 * 1.0 / 70);
 
                 if (circle > 50) {
-                    progress.setValue(circle + 1);
+                    mCircleProgress.setValue(circle + 1);
                 } else {
-                    progress.setValue(circle);
+                    mCircleProgress.setValue(circle);
                 }
                 //progress.invalidate();
                 super.handleMessage(msg);
@@ -351,11 +355,11 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
 
         AnimatorSet set = new AnimatorSet();
 
-        ObjectAnimator scaleOutX = ObjectAnimator.ofFloat(mMenu.getMenuIconView(), "scaleX", 1.0f, 0.2f);
-        ObjectAnimator scaleOutY = ObjectAnimator.ofFloat(mMenu.getMenuIconView(), "scaleY", 1.0f, 0.2f);
+        ObjectAnimator scaleOutX = ObjectAnimator.ofFloat(mMenuFab.getMenuIconView(), "scaleX", 1.0f, 0.2f);
+        ObjectAnimator scaleOutY = ObjectAnimator.ofFloat(mMenuFab.getMenuIconView(), "scaleY", 1.0f, 0.2f);
 
-        ObjectAnimator scaleInX = ObjectAnimator.ofFloat(mMenu.getMenuIconView(), "scaleX", 0.2f, 1.0f);
-        ObjectAnimator scaleInY = ObjectAnimator.ofFloat(mMenu.getMenuIconView(), "scaleY", 0.2f, 1.0f);
+        ObjectAnimator scaleInX = ObjectAnimator.ofFloat(mMenuFab.getMenuIconView(), "scaleX", 0.2f, 1.0f);
+        ObjectAnimator scaleInY = ObjectAnimator.ofFloat(mMenuFab.getMenuIconView(), "scaleY", 0.2f, 1.0f);
 
         scaleOutX.setDuration(50);
         scaleOutY.setDuration(50);
@@ -366,7 +370,7 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
         scaleInX.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationStart(Animator animation) {
-                mMenu.getMenuIconView().setImageResource(mMenu.isOpened()
+                mMenuFab.getMenuIconView().setImageResource(mMenuFab.isOpened()
                         ? R.drawable.ic_clear_white_24dp : R.drawable.ic_create_white_24dp);
             }
         });
@@ -375,7 +379,7 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
         set.play(scaleInX).with(scaleInY).after(scaleOutX);
         set.setInterpolator(new OvershootInterpolator(2));
 
-        mMenu.setIconToggleAnimatorSet(set);
+        mMenuFab.setIconToggleAnimatorSet(set);
     }
 
     private void getLocation(final Context context, Location location) {
@@ -408,7 +412,7 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
             }
 
             @Override
-            public void onFailure(int statusCode, Header[] headers, java.lang.Throwable throwable, org.json.JSONObject errorResponse) {
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 Toast.makeText(context, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
 
@@ -515,7 +519,6 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
         super.onDestroy();
         if (DEBUG) Log.v(TAG, "onDestroy:");
         handler.removeCallbacks(progressRunnable);
-        mCameraView.onFinish();
     }
 
     public final void fixedScreenOrientation(final boolean fixed) {

@@ -404,8 +404,7 @@ public class GridUserProfFragment extends Fragment implements AppBarLayout.OnOff
 
     @Override
     public void onGridVideoFrameLongClick(String post_id, int position) {
-        MyprofActivity activity = (MyprofActivity) getActivity();
-        activity.setDeleteDialog(post_id, position);
+
     }
 
     @Override

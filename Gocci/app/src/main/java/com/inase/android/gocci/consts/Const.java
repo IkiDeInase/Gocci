@@ -310,6 +310,10 @@ public class Const {
         public RippleView mGochiAction;
         @Bind(R.id.other_action)
         public RippleView mOtherAction;
+        @Bind(R.id.gochi_image)
+        public ImageView mGochiImage;
+        @Bind(R.id.other_image)
+        public ImageView mOtherImage;
 
         public TwoCellViewHolder(View view) {
             super(view);

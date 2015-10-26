@@ -30,6 +30,7 @@ import com.facebook.share.Sharer;
 import com.facebook.share.model.ShareVideo;
 import com.facebook.share.model.ShareVideoContent;
 import com.facebook.share.widget.ShareDialog;
+import com.google.android.exoplayer.MediaCodecVideoTrackRenderer;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
@@ -322,6 +323,7 @@ public class CameraPreviewActivity extends AppCompatActivity {
     public void onBackPressed() {
         new MaterialDialog.Builder(this)
                 .content(getString(R.string.check_videoposting_cancel))
+                .contentColorRes(R.color.nameblack)
                 .positiveText(getString(R.string.check_videoposting_yeah))
                 .positiveColorRes(R.color.gocci_header)
                 .negativeText(getString(R.string.check_videoposting_no))

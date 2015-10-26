@@ -100,6 +100,7 @@ public class CameraActivity extends AppCompatActivity {
     public void onBackPressed() {
         new MaterialDialog.Builder(this)
                 .content(getString(R.string.check_videoposting_cancel))
+                .contentColorRes(R.color.nameblack)
                 .positiveText(getString(R.string.check_videoposting_yeah))
                 .positiveColorRes(R.color.gocci_header)
                 .negativeText(getString(R.string.check_videoposting_no))

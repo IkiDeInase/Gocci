@@ -17,6 +17,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.telephony.TelephonyManager;
 import android.text.InputType;
+import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -160,6 +161,11 @@ public class Util {
         }
 
         return screenHeight;
+    }
+
+    public static int getScreenHeightInPx(Context context) {
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        return (int)(displayMetrics.heightPixels);
     }
 
     public static int getScreenWidth(Context c) {
