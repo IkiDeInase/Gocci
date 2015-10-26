@@ -104,6 +104,8 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
 
     private ShowFollowTimelinePresenter mPresenter;
 
+    private TimelineActivity activity;
+
     private RecyclerView.OnScrollListener scrollListener = new RecyclerView.OnScrollListener() {
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -194,6 +196,8 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
 
         mPlayingPostId = null;
         mViewHolderHash = new ConcurrentHashMap<>();
+
+        activity = (TimelineActivity)getActivity();
 
         mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mTimelineRecyclerView.setLayoutManager(mLayoutManager);
@@ -579,6 +583,15 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
     @Override
     public void onCommentClick(int post_id) {
         CommentActivity.startCommentActivity(post_id, false, getActivity());
+    }
+
+    @Override
+    public void onGochiClick() {
+        if (activity != null) {
+            activity.setGochiLayout();
+        } else {
+            activity = (TimelineActivity)getActivity();
+        }
     }
 
     @Override

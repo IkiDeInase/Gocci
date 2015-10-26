@@ -104,6 +104,8 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
 
     private ShowLatestTimelinePresenter mPresenter;
 
+    private TimelineActivity activity;
+
     private RecyclerView.OnScrollListener scrollListener = new RecyclerView.OnScrollListener() {
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -197,6 +199,8 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
 
         mPlayingPostId = null;
         mViewHolderHash = new ConcurrentHashMap<>();
+
+        activity = (TimelineActivity)getActivity();
 
         fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
         appBarLayout = (AppBarLayout) getActivity().findViewById(R.id.app_bar);
@@ -581,6 +585,15 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
     @Override
     public void onCommentClick(int post_id) {
         CommentActivity.startCommentActivity(post_id, false, getActivity());
+    }
+
+    @Override
+    public void onGochiClick() {
+        if (activity != null) {
+            activity.setGochiLayout();
+        } else {
+            activity = (TimelineActivity)getActivity();
+        }
     }
 
     @Override

@@ -102,6 +102,8 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
 
     private ShowNearTimelinePresenter mPresenter;
 
+    private TimelineActivity activity;
+
     private RecyclerView.OnScrollListener scrollListener = new RecyclerView.OnScrollListener() {
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -192,6 +194,8 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
 
         mPlayingPostId = null;
         mViewHolderHash = new ConcurrentHashMap<>();
+
+       activity = (TimelineActivity)getActivity();
 
         mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mTimelineRecyclerView.setLayoutManager(mLayoutManager);
@@ -608,6 +612,15 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
     @Override
     public void onCommentClick(int post_id) {
         CommentActivity.startCommentActivity(post_id, false, getActivity());
+    }
+
+    @Override
+    public void onGochiClick() {
+        if (activity != null) {
+            activity.setGochiLayout();
+        } else {
+            activity = (TimelineActivity)getActivity();
+        }
     }
 
     @Override

@@ -18,6 +18,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -41,6 +42,7 @@ import com.inase.android.gocci.ui.fragment.TimelineFollowFragment;
 import com.inase.android.gocci.ui.fragment.TimelineLatestFragment;
 import com.inase.android.gocci.ui.fragment.TimelineNearFragment;
 import com.inase.android.gocci.ui.view.DrawerProfHeader;
+import com.inase.android.gocci.ui.view.GochiLayout;
 import com.inase.android.gocci.ui.view.NotificationListView;
 import com.inase.android.gocci.ui.view.ToukouPopup;
 import com.inase.android.gocci.utils.SavedData;
@@ -92,6 +94,11 @@ public class TimelineActivity extends AppCompatActivity {
     CardView mSheet;
     @Bind(R.id.coordinator_layout)
     CoordinatorLayout mCoordinatorLayout;
+    @Bind(R.id.gochi_layout)
+    GochiLayout mGochi;
+
+    private float pointX;
+    private float pointY;
 
     @OnClick(R.id.fab)
     public void click() {
@@ -399,6 +406,16 @@ public class TimelineActivity extends AppCompatActivity {
         });
 
         mSortSpinner.setVisibility(View.GONE);
+
+        mGochi.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, final MotionEvent event) {
+                //final float y = Util.getScreenHeightInPx(TimelineActivity.this) - event.getRawY();
+                pointX = event.getX();
+                pointY = event.getY();
+                return false;
+            }
+        });
     }
 
     @Override
@@ -555,5 +572,15 @@ public class TimelineActivity extends AppCompatActivity {
     public void setNowLocationTitle() {
         mTitle = "現在地";
         mToolBar.setTitle(mTitle);
+    }
+
+    public void setGochiLayout() {
+        final float y = Util.getScreenHeightInPx(this) - pointY;
+        mGochi.post(new Runnable() {
+            @Override
+            public void run() {
+                mGochi.addGochi(R.drawable.ic_icon_beef_orange, pointX, y);
+            }
+        });
     }
 }

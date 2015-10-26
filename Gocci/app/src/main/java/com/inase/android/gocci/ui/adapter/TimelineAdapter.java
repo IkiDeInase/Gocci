@@ -12,10 +12,12 @@ import com.cocosw.bottomsheet.BottomSheet;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.domain.model.PostData;
+import com.inase.android.gocci.ui.activity.TimelineActivity;
 import com.inase.android.gocci.utils.Util;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * Created by kinagafuji on 15/09/29.
@@ -114,6 +116,29 @@ public class TimelineAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
             }
         });
 
+        if (user.getGochi_flag() == 0) {
+            holder.mGochiAction.setClickable(true);
+            holder.mGochiImage.setImageResource(R.drawable.ic_icon_beef);
+
+            holder.mGochiAction.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    user.setGochi_flag(1);
+                    holder.mGochiImage.setImageResource(R.drawable.ic_icon_beef_orange);
+                    mCallback.onGochiClick();
+                    //user.setGochi_num(currentgoodnum + 1);
+
+                    //holder.mLikesNumber.setText(String.valueOf((currentgoodnum + 1)));
+                    //holder.mG.setClickable(false);
+
+                    //Util.postGochiAsync(mContext, user);
+                }
+            });
+        } else {
+            holder.mGochiImage.setImageResource(R.drawable.ic_icon_beef_orange);
+            holder.mGochiAction.setClickable(false);
+        }
+
         mCallback.onHashHolder(holder, user.getPost_id());
     }
 
@@ -139,6 +164,8 @@ public class TimelineAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
         void onRestClick(int rest_id, String rest_name);
 
         void onCommentClick(int post_id);
+
+        void onGochiClick();
 
         void onVideoFrameClick(PostData data);
 
