@@ -286,7 +286,7 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
                             public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
                                 materialDialog.dismiss();
                                 mRest_name = charSequence.toString();
-                                mRest_id = CameraActivity.rest_id.get(i);
+                                mRest_id = CameraActivity.rest_idArray.get(i);
                                 mRestaurantAction.setLabelText(charSequence.toString());
                             }
                         }).show();
@@ -395,7 +395,8 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray timeline) {
                 // Pull out the first event on the public timeline
-                CameraActivity.rest_id.clear();
+                CameraActivity.rest_nameArray.clear();
+                CameraActivity.rest_idArray.clear();
                 try {
                     for (int i = 0; i < timeline.length(); i++) {
                         JSONObject jsonObject = timeline.getJSONObject(i);
@@ -404,7 +405,8 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
                         int rest_id = jsonObject.getInt("rest_id");
 
                         CameraActivity.restname[i] = rest_name;
-                        CameraActivity.rest_id.add(rest_id);
+                        CameraActivity.rest_nameArray.add(rest_name);
+                        CameraActivity.rest_idArray.add(rest_id);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

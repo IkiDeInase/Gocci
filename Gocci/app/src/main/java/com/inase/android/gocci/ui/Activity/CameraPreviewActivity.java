@@ -244,13 +244,13 @@ public class CameraPreviewActivity extends AppCompatActivity {
         });
 
         restAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_dropdown_item_1line, CameraActivity.restname);
+                android.R.layout.simple_dropdown_item_1line, CameraActivity.rest_nameArray);
         mRestnameSpinner.setAdapter(restAdapter);
         mRestnameSpinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mRest_id = CameraActivity.rest_id.get(position);
-                mRestname = CameraActivity.restname[position];
+                mRest_id = CameraActivity.rest_idArray.get(position);
+                mRestname = CameraActivity.rest_nameArray.get(position);
                 SavedData.setRest_id(CameraPreviewActivity.this, mRest_id);
                 SavedData.setRestname(CameraPreviewActivity.this, mRestname);
             }
@@ -354,7 +354,8 @@ public class CameraPreviewActivity extends AppCompatActivity {
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray timeline) {
-                CameraActivity.rest_id.clear();
+                CameraActivity.rest_nameArray.clear();
+                CameraActivity.rest_idArray.clear();
                 try {
                     for (int i = 0; i < timeline.length(); i++) {
                         JSONObject jsonObject = timeline.getJSONObject(i);
@@ -363,7 +364,8 @@ public class CameraPreviewActivity extends AppCompatActivity {
                         int rest_id = jsonObject.getInt("rest_id");
 
                         CameraActivity.restname[i] = rest_name;
-                        CameraActivity.rest_id.add(rest_id);
+                        CameraActivity.rest_nameArray.add(rest_name);
+                        CameraActivity.rest_idArray.add(rest_id);
                     }
                     restAdapter.addAll(CameraActivity.restname);
                 } catch (JSONException e) {

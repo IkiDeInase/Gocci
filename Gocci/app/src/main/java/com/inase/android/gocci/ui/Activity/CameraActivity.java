@@ -22,7 +22,8 @@ import java.util.ArrayList;
 public class CameraActivity extends AppCompatActivity {
 
     public static String[] restname = new String[30];
-    public static ArrayList<Integer> rest_id = new ArrayList<>();
+    public static ArrayList<String> rest_nameArray = new ArrayList<>();
+    public static ArrayList<Integer> rest_idArray = new ArrayList<>();
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
 
     public static boolean isLocationOnOff = false;

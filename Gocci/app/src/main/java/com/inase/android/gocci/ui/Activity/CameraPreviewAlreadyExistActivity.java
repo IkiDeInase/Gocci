@@ -148,7 +148,7 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity {
     private double mLatitude;
     private double mLongitude;
 
-    private String[] restnameList = new String[30];
+    private ArrayList<String> rest_nameList = new ArrayList<>();
     private ArrayList<Integer> rest_idList = new ArrayList<>();
 
     private File mVideoFile;
@@ -225,13 +225,13 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity {
         });
 
         restAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_dropdown_item_1line, restnameList);
+                android.R.layout.simple_dropdown_item_1line, rest_nameList);
         mRestnameSpinner.setAdapter(restAdapter);
         mRestnameSpinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 mRest_id = rest_idList.get(position);
-                mRestname = restnameList[position];
+                mRestname = rest_nameList.get(position);
                 SavedData.setRest_id(CameraPreviewAlreadyExistActivity.this, mRest_id);
                 SavedData.setRestname(CameraPreviewAlreadyExistActivity.this, mRestname);
             }
@@ -349,10 +349,10 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity {
                         final String rest_name = jsonObject.getString("restname");
                         int rest_id = jsonObject.getInt("rest_id");
 
-                        restnameList[i] = rest_name;
+                        rest_nameList.add(rest_name);
                         rest_idList.add(rest_id);
                     }
-                    restAdapter.addAll(restnameList);
+                    restAdapter.addAll(rest_nameList);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
