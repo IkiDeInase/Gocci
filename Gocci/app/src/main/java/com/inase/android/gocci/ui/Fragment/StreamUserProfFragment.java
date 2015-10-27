@@ -83,6 +83,8 @@ public class StreamUserProfFragment extends Fragment implements AppBarLayout.OnO
     int totalItemCount;
     private boolean isExist = false;
 
+    private UserProfActivity activity;
+
     private RecyclerView.OnScrollListener mStreamScrollListener = new RecyclerView.OnScrollListener() {
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -162,6 +164,8 @@ public class StreamUserProfFragment extends Fragment implements AppBarLayout.OnO
 
         mPlayingPostId = null;
         mStreamViewHolderHash = new ConcurrentHashMap<>();
+
+        activity = (UserProfActivity)getActivity();
 
         mLinearLayoutManager = new LinearLayoutManager(getActivity());
         mTimelineRecyclerView.setLayoutManager(mLinearLayoutManager);
@@ -459,6 +463,15 @@ public class StreamUserProfFragment extends Fragment implements AppBarLayout.OnO
                 releasePlayer();
                 streamPreparePlayer(getStreamPlayingViewHolder(), getVideoPath());
             }
+        }
+    }
+
+    @Override
+    public void onGochiClick() {
+        if (activity != null) {
+            activity.setGochiLayout();
+        } else {
+            activity = (UserProfActivity)getActivity();
         }
     }
 

@@ -133,6 +133,26 @@ public class GridProfAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
             }
         });
 
+        if (user.getGochi_flag() == 0) {
+            holder.mGochiImage.setImageResource(R.drawable.ic_icon_beef);
+
+            holder.mGochiAction.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    user.setGochi_flag(1);
+                    user.setGochi_num(user.getGochi_num() + 1);
+                    holder.mGochiImage.setImageResource(R.drawable.ic_icon_beef_orange);
+                    mCallback.onGochiClick();
+
+                    Util.postGochiAsync(mContext, user);
+                    //holder.mLikesNumber.setText(String.valueOf((currentgoodnum + 1)));
+                    //holder.mG.setClickable(false);
+                }
+            });
+        } else {
+            holder.mGochiImage.setImageResource(R.drawable.ic_icon_beef_orange);
+        }
+
         mCallback.onGridHashHolder(holder, user.getPost_id());
     }
 
@@ -158,6 +178,8 @@ public class GridProfAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
         void onGridCommentClick(int post_id);
 
         void onGridDeleteClick(String post_id, int position);
+
+        void onGochiClick();
 
         void onGridVideoFrameClick(PostData data);
 

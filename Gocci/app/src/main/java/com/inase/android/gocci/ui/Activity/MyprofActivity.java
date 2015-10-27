@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -54,6 +55,7 @@ import com.inase.android.gocci.presenter.ShowMyProfPresenter;
 import com.inase.android.gocci.ui.fragment.GridMyProfFragment;
 import com.inase.android.gocci.ui.fragment.StreamMyProfFragment;
 import com.inase.android.gocci.ui.view.DrawerProfHeader;
+import com.inase.android.gocci.ui.view.GochiLayout;
 import com.inase.android.gocci.ui.view.NotificationListView;
 import com.inase.android.gocci.ui.view.RoundedTransformation;
 import com.inase.android.gocci.ui.view.ToukouPopup;
@@ -118,6 +120,8 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
     RippleView mWantRipple;
     @Bind(R.id.edit_profile)
     RippleView mEditProfile;
+    @Bind(R.id.gochi_layout)
+    GochiLayout mGochi;
 
     @OnClick(R.id.stream)
     public void onStream() {
@@ -150,6 +154,9 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
 
     private boolean isPicture = false;
     private boolean isName = false;
+
+    private float pointX;
+    private float pointY;
 
     private static MobileAnalyticsManager analytics;
 
@@ -421,6 +428,16 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
                 .build();
 
         result.setSelection(2);
+
+        mGochi.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, final MotionEvent event) {
+                //final float y = Util.getScreenHeightInPx(TimelineActivity.this) - event.getRawY();
+                pointX = event.getX();
+                pointY = event.getY();
+                return false;
+            }
+        });
     }
 
     @Override
@@ -721,5 +738,15 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
     @Override
     public void postDeleteFailed() {
         Toast.makeText(this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
+    }
+
+    public void setGochiLayout() {
+        final float y = Util.getScreenHeightInPx(this) - pointY;
+        mGochi.post(new Runnable() {
+            @Override
+            public void run() {
+                mGochi.addGochi(R.drawable.ic_icon_beef_orange, pointX, y);
+            }
+        });
     }
 }

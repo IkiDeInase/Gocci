@@ -18,6 +18,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -55,6 +56,7 @@ import com.inase.android.gocci.presenter.ShowRestPagePresenter;
 import com.inase.android.gocci.ui.adapter.RestPageAdapter;
 import com.inase.android.gocci.ui.view.CustomKenBurnsView;
 import com.inase.android.gocci.ui.view.DrawerProfHeader;
+import com.inase.android.gocci.ui.view.GochiLayout;
 import com.inase.android.gocci.ui.view.SquareImageView;
 import com.inase.android.gocci.utils.SavedData;
 import com.inase.android.gocci.utils.Util;
@@ -101,6 +103,8 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
     TextView mCheerNumber;
     @Bind(R.id.coordinator_layout)
     CoordinatorLayout mCoordinatorLayout;
+    @Bind(R.id.gochi_layout)
+    GochiLayout mGochi;
 
     private int mWant_flag;
     private int mTotal_cheer_num;
@@ -121,6 +125,9 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
 
     private boolean isExist = false;
     private boolean isSee = false;
+
+    private float pointX;
+    private float pointY;
 
     private CallbackManager callbackManager;
     private ShareDialog shareDialog;
@@ -389,6 +396,16 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
                     Toast.makeText(TenpoActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
                     mSwipeContainer.setRefreshing(false);
                 }
+            }
+        });
+
+        mGochi.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, final MotionEvent event) {
+                //final float y = Util.getScreenHeightInPx(TimelineActivity.this) - event.getRawY();
+                pointX = event.getX();
+                pointY = event.getY();
+                return false;
             }
         });
     }
@@ -699,6 +716,11 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
     }
 
     @Override
+    public void onGochiClick() {
+        setGochiLayout();
+    }
+
+    @Override
     public void onVideoFrameClick() {
         if (player != null) {
             if (player.getPlayerControl().isPlaying()) {
@@ -789,5 +811,15 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
                 mRestPageAdapter.setData(mHeaderRestData);
                 break;
         }
+    }
+
+    private void setGochiLayout() {
+        final float y = Util.getScreenHeightInPx(this) - pointY;
+        mGochi.post(new Runnable() {
+            @Override
+            public void run() {
+                mGochi.addGochi(R.drawable.ic_icon_beef_orange, pointX, y);
+            }
+        });
     }
 }

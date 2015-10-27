@@ -266,32 +266,28 @@ public class RestPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             holder.mValue.setText("　　　　");
         }
 
-        final int currentgoodnum = user.getGochi_num();
-        final int currentcommentnum = user.getComment_num();
-
-        holder.mLikesNumber.setText(String.valueOf(currentgoodnum));
-        holder.mCommentsNumber.setText(String.valueOf(currentcommentnum));
+        holder.mLikesNumber.setText(String.valueOf(user.getGochi_num()));
+        holder.mCommentsNumber.setText(String.valueOf(user.getComment_num()));
 
         if (user.getGochi_flag() == 0) {
-            holder.mLikesRipple.setClickable(true);
             holder.mLikesImage.setImageResource(R.drawable.ic_icon_beef);
 
             holder.mLikesRipple.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     user.setGochi_flag(1);
-                    user.setGochi_num(currentgoodnum + 1);
+                    user.setGochi_num(user.getGochi_num() + 1);
 
-                    holder.mLikesNumber.setText(String.valueOf((currentgoodnum + 1)));
+                    holder.mLikesNumber.setText(String.valueOf((user.getGochi_num())));
                     holder.mLikesImage.setImageResource(R.drawable.ic_icon_beef_orange);
-                    holder.mLikesRipple.setClickable(false);
+
+                    mCallback.onGochiClick();
 
                     Util.postGochiAsync(mContext, user);
                 }
             });
         } else {
             holder.mLikesImage.setImageResource(R.drawable.ic_icon_beef_orange);
-            holder.mLikesRipple.setClickable(false);
         }
 
         holder.mCommentsRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
@@ -397,6 +393,8 @@ public class RestPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         void onUserClick(int user_id, String user_name);
 
         void onCommentClick(String post_id);
+
+        void onGochiClick();
 
         void onVideoFrameClick();
 

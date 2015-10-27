@@ -597,6 +597,11 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
     }
 
     @Override
+    public void onViewRecycled(Const.TwoCellViewHolder holder) {
+
+    }
+
+    @Override
     public void onVideoFrameClick(PostData data) {
         if (player != null && mPlayingPostId.equals(data.getPost_id())) {
             if (player.getPlayerControl().isPlaying()) {

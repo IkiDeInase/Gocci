@@ -32,6 +32,7 @@ import com.inase.android.gocci.event.TimelineMuteChangeEvent;
 import com.inase.android.gocci.ui.activity.CommentActivity;
 import com.inase.android.gocci.ui.activity.MyprofActivity;
 import com.inase.android.gocci.ui.activity.TenpoActivity;
+import com.inase.android.gocci.ui.activity.TimelineActivity;
 import com.inase.android.gocci.ui.activity.UserProfActivity;
 import com.inase.android.gocci.ui.adapter.GridProfAdapter;
 import com.inase.android.gocci.utils.SavedData;
@@ -80,6 +81,8 @@ public class GridUserProfFragment extends Fragment implements AppBarLayout.OnOff
 
     int totalItemCount;
     private boolean isExist = false;
+
+    private UserProfActivity activity;
 
     private RecyclerView.OnScrollListener mGridScrollListener = new RecyclerView.OnScrollListener() {
         @Override
@@ -150,6 +153,8 @@ public class GridUserProfFragment extends Fragment implements AppBarLayout.OnOff
 
         mPlayingPostId = null;
         mGridViewHolderHash = new ConcurrentHashMap<>();
+
+        activity = (UserProfActivity)getActivity();
 
         mGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mTimelineRecyclerView.setLayoutManager(mGridLayoutManager);
@@ -392,6 +397,15 @@ public class GridUserProfFragment extends Fragment implements AppBarLayout.OnOff
     @Override
     public void onGridDeleteClick(String post_id, int position) {
 
+    }
+
+    @Override
+    public void onGochiClick() {
+        if (activity != null) {
+            activity.setGochiLayout();
+        } else {
+            activity = (UserProfActivity)getActivity();
+        }
     }
 
     @Override

@@ -72,6 +72,14 @@
         android:clickable="true"
         android:visibility="gone" />
 
+    <com.inase.android.gocci.ui.view.GochiLayout
+        android:id="@+id/gochi_layout"
+        android:layout_below="@+id/app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </com.inase.android.gocci.ui.view.GochiLayout>
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"

@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -37,6 +38,7 @@ import com.inase.android.gocci.presenter.ShowUserProfPresenter;
 import com.inase.android.gocci.ui.fragment.GridUserProfFragment;
 import com.inase.android.gocci.ui.fragment.StreamUserProfFragment;
 import com.inase.android.gocci.ui.view.DrawerProfHeader;
+import com.inase.android.gocci.ui.view.GochiLayout;
 import com.inase.android.gocci.ui.view.RoundedTransformation;
 import com.inase.android.gocci.utils.SavedData;
 import com.inase.android.gocci.utils.Util;
@@ -82,6 +84,8 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
     TextView mUsercheerNum;
     @Bind(R.id.follow_text)
     TextView mFollowText;
+    @Bind(R.id.gochi_layout)
+    GochiLayout mGochi;
 
     @Bind(R.id.follow_ripple)
     RippleView mFollowRipple;
@@ -116,6 +120,9 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
     private HeaderData headerUserData;
     private ArrayList<PostData> mUsers = new ArrayList<>();
     private ArrayList<String> mPost_ids = new ArrayList<>();
+
+    private float pointX;
+    private float pointY;
 
     public static int mShowPosition = 0;
 
@@ -302,6 +309,16 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
 
         result.getActionBarDrawerToggle().setDrawerIndicatorEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        mGochi.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, final MotionEvent event) {
+                //final float y = Util.getScreenHeightInPx(TimelineActivity.this) - event.getRawY();
+                pointX = event.getX();
+                pointY = event.getY();
+                return false;
+            }
+        });
     }
 
     @Override
@@ -479,5 +496,15 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
 
     public void refreshJson() {
         mPresenter.getProfData(Const.USERPAGE_REFRESH, Const.getUserpageAPI(mUser_id));
+    }
+
+    public void setGochiLayout() {
+        final float y = Util.getScreenHeightInPx(this) - pointY;
+        mGochi.post(new Runnable() {
+            @Override
+            public void run() {
+                mGochi.addGochi(R.drawable.ic_icon_beef_orange, pointX, y);
+            }
+        });
     }
 }

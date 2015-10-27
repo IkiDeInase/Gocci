@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -115,26 +116,23 @@ public class TimelineAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
         });
 
         if (user.getGochi_flag() == 0) {
-            holder.mGochiAction.setClickable(true);
             holder.mGochiImage.setImageResource(R.drawable.ic_icon_beef);
 
             holder.mGochiAction.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     user.setGochi_flag(1);
+                    user.setGochi_num(user.getGochi_num() + 1);
                     holder.mGochiImage.setImageResource(R.drawable.ic_icon_beef_orange);
                     mCallback.onGochiClick();
-                    //user.setGochi_num(currentgoodnum + 1);
 
+                    Util.postGochiAsync(mContext, user);
                     //holder.mLikesNumber.setText(String.valueOf((currentgoodnum + 1)));
                     //holder.mG.setClickable(false);
-
-                    //Util.postGochiAsync(mContext, user);
                 }
             });
         } else {
             holder.mGochiImage.setImageResource(R.drawable.ic_icon_beef_orange);
-            holder.mGochiAction.setClickable(false);
         }
 
         mCallback.onHashHolder(holder, user.getPost_id());
@@ -143,6 +141,11 @@ public class TimelineAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
     @Override
     public int getItemCount() {
         return mData.size();
+    }
+
+    @Override
+    public void onViewRecycled(Const.TwoCellViewHolder holder) {
+        mCallback.onViewRecycled(holder);
     }
 
     private String getDist(int distance) {
@@ -164,6 +167,8 @@ public class TimelineAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
         void onCommentClick(int post_id);
 
         void onGochiClick();
+
+        void onViewRecycled(Const.TwoCellViewHolder holder);
 
         void onVideoFrameClick(PostData data);
 
