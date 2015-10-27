@@ -110,7 +110,7 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
 
     @OnClick(R.id.location)
     public void onLocation() {
-        MapProfActivity.startProfMapActivity(mUsers, UserProfActivity.this);
+        MapProfActivity.startProfMapActivity(TimelineActivity.mLongitude, TimelineActivity.mLatitude, mUsers, UserProfActivity.this);
     }
 
     private HeaderData headerUserData;

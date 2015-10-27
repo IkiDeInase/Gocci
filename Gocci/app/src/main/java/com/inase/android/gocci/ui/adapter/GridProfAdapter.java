@@ -25,12 +25,15 @@ public class GridProfAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
     private Context mContext;
     private int mCellSize;
 
+    private boolean mIsMyPage;
+
     private ArrayList<PostData> mPostData = new ArrayList<>();
 
     private GridProfCallback mCallback;
 
-    public GridProfAdapter(Context context, ArrayList<PostData> postData) {
+    public GridProfAdapter(Context context, boolean isMyPage, ArrayList<PostData> postData) {
         this.mContext = context;
+        this.mIsMyPage = isMyPage;
         this.mPostData = postData;
         this.mCellSize = Util.getScreenWidth(mContext) / 2;
     }
@@ -81,24 +84,45 @@ public class GridProfAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
         holder.mOtherAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new BottomSheet.Builder(mContext, R.style.BottomSheet_StyleDialog).sheet(R.menu.menu_cell).listener(new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        switch (which) {
-                            case R.id.move_to_restpage:
-                                mCallback.onGridRestClick(user.getPost_rest_id(), user.getRestname());
-                                break;
-                            case R.id.move_to_comment:
-                                mCallback.onGridCommentClick(Integer.parseInt(user.getPost_id()));
-                                break;
-                            case R.id.violation:
-                                Util.setViolateDialog(mContext, user.getPost_id());
-                                break;
-                            case R.id.close:
-                                dialog.dismiss();
+                if (mIsMyPage) {
+                    new BottomSheet.Builder(mContext, R.style.BottomSheet_StyleDialog).sheet(R.menu.menu_cell_mypage).listener(new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            switch (which) {
+                                case R.id.move_to_restpage:
+                                    mCallback.onGridRestClick(user.getPost_rest_id(), user.getRestname());
+                                    break;
+                                case R.id.move_to_comment:
+                                    mCallback.onGridCommentClick(Integer.parseInt(user.getPost_id()));
+                                    break;
+                                case R.id.delete:
+                                    mCallback.onGridDeleteClick(user.getPost_id(), position);
+                                    break;
+                                case R.id.close:
+                                    dialog.dismiss();
+                            }
                         }
-                    }
-                }).show();
+                    }).show();
+                } else {
+                    new BottomSheet.Builder(mContext, R.style.BottomSheet_StyleDialog).sheet(R.menu.menu_cell_userpage).listener(new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            switch (which) {
+                                case R.id.move_to_restpage:
+                                    mCallback.onGridRestClick(user.getPost_rest_id(), user.getRestname());
+                                    break;
+                                case R.id.move_to_comment:
+                                    mCallback.onGridCommentClick(Integer.parseInt(user.getPost_id()));
+                                    break;
+                                case R.id.violation:
+                                    Util.setViolateDialog(mContext, user.getPost_id());
+                                    break;
+                                case R.id.close:
+                                    dialog.dismiss();
+                            }
+                        }
+                    }).show();
+                }
             }
         });
 
@@ -106,14 +130,6 @@ public class GridProfAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
             @Override
             public void onClick(View v) {
                 mCallback.onGridVideoFrameClick(user);
-            }
-        });
-
-        holder.mAspectFrame.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                mCallback.onGridVideoFrameLongClick(user.getPost_id(), position);
-                return false;
             }
         });
 
@@ -141,9 +157,9 @@ public class GridProfAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
 
         void onGridCommentClick(int post_id);
 
-        void onGridVideoFrameClick(PostData data);
+        void onGridDeleteClick(String post_id, int position);
 
-        void onGridVideoFrameLongClick(String post_id, int position);
+        void onGridVideoFrameClick(PostData data);
 
         void onGridHashHolder(Const.TwoCellViewHolder holder, String post_id);
 

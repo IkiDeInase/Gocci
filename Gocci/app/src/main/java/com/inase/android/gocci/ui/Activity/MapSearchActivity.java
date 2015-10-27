@@ -45,8 +45,10 @@ public class MapSearchActivity extends AppCompatActivity {
 
     private MenuItem pin;
 
-    public static void startMapSearchActivity(int requestCode, Activity startingActivity) {
+    public static void startMapSearchActivity(int requestCode, double longitude, double latitude, Activity startingActivity) {
         Intent intent = new Intent(startingActivity, MapSearchActivity.class);
+        intent.putExtra("longitude", longitude);
+        intent.putExtra("latitude", latitude);
         startingActivity.startActivityForResult(intent, requestCode);
         startingActivity.overridePendingTransition(R.anim.activity_in, R.anim.activity_out);
     }
@@ -88,7 +90,7 @@ public class MapSearchActivity extends AppCompatActivity {
             mMap.setMyLocationEnabled(true);
             mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(35.681382, 139.766084), 4));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(getIntent().getDoubleExtra("latitude", 35.681382), getIntent().getDoubleExtra("longitude", 139.766084)), 16));
 
             mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                 @Override

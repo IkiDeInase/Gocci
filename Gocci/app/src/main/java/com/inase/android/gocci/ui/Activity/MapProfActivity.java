@@ -69,9 +69,11 @@ public class MapProfActivity extends AppCompatActivity implements ClusterManager
 
     private static ArrayList<PostData> mList = new ArrayList<>();
 
-    public static void startProfMapActivity(ArrayList<PostData> data, Activity startingActivity) {
+    public static void startProfMapActivity(double longitude, double latitude, ArrayList<PostData> data, Activity startingActivity) {
         mList = data;
         Intent intent = new Intent(startingActivity, MapProfActivity.class);
+        intent.putExtra("longitude", longitude);
+        intent.putExtra("latitude", latitude);
         startingActivity.startActivity(intent);
         startingActivity.overridePendingTransition(R.anim.activity_in, R.anim.activity_out);
     }
@@ -267,7 +269,7 @@ public class MapProfActivity extends AppCompatActivity implements ClusterManager
 
             mProgressWheel.setVisibility(View.GONE);
 
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(35.681382, 139.766084), 4));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(getIntent().getDoubleExtra("latitude", 35.681382), getIntent().getDoubleExtra("longitude", 139.766084)), 12));
         }
     };
 

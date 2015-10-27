@@ -246,7 +246,7 @@ public class GridUserProfFragment extends Fragment implements AppBarLayout.OnOff
         mSwipeContainer.setRefreshing(false);
         switch (event.mApi) {
             case Const.USERPAGE_FIRST:
-                mGridProfAdapter = new GridProfAdapter(getActivity(), mUsers);
+                mGridProfAdapter = new GridProfAdapter(getActivity(), false, mUsers);
                 mGridProfAdapter.setMyProfCallback(this);
                 mGridViewHolderHash.clear();
                 mTimelineRecyclerView.setAdapter(mGridProfAdapter);
@@ -390,6 +390,11 @@ public class GridUserProfFragment extends Fragment implements AppBarLayout.OnOff
     }
 
     @Override
+    public void onGridDeleteClick(String post_id, int position) {
+
+    }
+
+    @Override
     public void onGridVideoFrameClick(PostData data) {
         if (player != null && mPlayingPostId.equals(data.getPost_id())) {
             if (player.getPlayerControl().isPlaying()) {
@@ -400,11 +405,6 @@ public class GridUserProfFragment extends Fragment implements AppBarLayout.OnOff
         } else {
             gridChangeMovie(data);
         }
-    }
-
-    @Override
-    public void onGridVideoFrameLongClick(String post_id, int position) {
-
     }
 
     @Override

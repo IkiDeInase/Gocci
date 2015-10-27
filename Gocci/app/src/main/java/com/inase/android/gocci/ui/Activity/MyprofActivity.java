@@ -137,7 +137,7 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
 
     @OnClick(R.id.location)
     public void onLocation() {
-        MapProfActivity.startProfMapActivity(mUsers, MyprofActivity.this);
+        MapProfActivity.startProfMapActivity(TimelineActivity.mLongitude, TimelineActivity.mLatitude, mUsers, MyprofActivity.this);
     }
 
     private Drawer result;

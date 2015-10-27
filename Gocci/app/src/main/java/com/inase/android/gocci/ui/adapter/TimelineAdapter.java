@@ -12,12 +12,10 @@ import com.cocosw.bottomsheet.BottomSheet;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.domain.model.PostData;
-import com.inase.android.gocci.ui.activity.TimelineActivity;
 import com.inase.android.gocci.utils.Util;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 /**
  * Created by kinagafuji on 15/09/29.
@@ -85,7 +83,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
         holder.mOtherAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new BottomSheet.Builder(mContext, R.style.BottomSheet_StyleDialog).sheet(R.menu.menu_cell).listener(new DialogInterface.OnClickListener() {
+                new BottomSheet.Builder(mContext, R.style.BottomSheet_StyleDialog).sheet(R.menu.menu_cell_timeline).listener(new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         switch (which) {

@@ -137,8 +137,8 @@ public class TimelineActivity extends AppCompatActivity {
     public static int mFollowCategory_id = 0;
     public static int mFollowValue_id = 0;
 
-    public static double mLongitude = 0.0;
-    public static double mLatitude = 0.0;
+    public static double mLongitude = 139.745433;
+    public static double mLatitude = 35.658581;
 
     private String mTitle = "現在地";
 
@@ -196,7 +196,7 @@ public class TimelineActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (mShowPosition == 0) {
-                    MapSearchActivity.startMapSearchActivity(123, TimelineActivity.this);
+                    MapSearchActivity.startMapSearchActivity(123, mLongitude, mLatitude, TimelineActivity.this);
                 }
             }
         });
