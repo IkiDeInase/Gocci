@@ -140,15 +140,16 @@ public class StreamMyProfAdapter extends RecyclerView.Adapter<Const.StreamViewHo
             holder.mLikesRipple.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    user.setGochi_flag(1);
-                    user.setGochi_num(user.getGochi_num() + 1);
-
-                    holder.mLikesNumber.setText(String.valueOf((user.getGochi_num())));
-                    holder.mLikesImage.setImageResource(R.drawable.ic_icon_beef_orange);
-
                     mCallback.onGochiClick();
 
-                    Util.postGochiAsync(mContext, user);
+                    if (user.getGochi_flag() == 0) {
+                        user.setGochi_flag(1);
+                        user.setGochi_num(user.getGochi_num() + 1);
+                        holder.mLikesNumber.setText(String.valueOf((user.getGochi_num())));
+                        holder.mLikesImage.setImageResource(R.drawable.ic_icon_beef_orange);
+
+                        Util.postGochiAsync(mContext, user);
+                    }
                 }
             });
         } else {

@@ -121,12 +121,14 @@ public class TimelineAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
             holder.mGochiAction.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    user.setGochi_flag(1);
-                    user.setGochi_num(user.getGochi_num() + 1);
-                    holder.mGochiImage.setImageResource(R.drawable.ic_icon_beef_orange);
                     mCallback.onGochiClick();
 
-                    Util.postGochiAsync(mContext, user);
+                    if (user.getGochi_flag() == 0) {
+                        user.setGochi_flag(1);
+                        user.setGochi_num(user.getGochi_num() + 1);
+                        holder.mGochiImage.setImageResource(R.drawable.ic_icon_beef_orange);
+                        Util.postGochiAsync(mContext, user);
+                    }
                     //holder.mLikesNumber.setText(String.valueOf((currentgoodnum + 1)));
                     //holder.mG.setClickable(false);
                 }
@@ -134,7 +136,6 @@ public class TimelineAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
         } else {
             holder.mGochiImage.setImageResource(R.drawable.ic_icon_beef_orange);
         }
-
         mCallback.onHashHolder(holder, user.getPost_id());
     }
 

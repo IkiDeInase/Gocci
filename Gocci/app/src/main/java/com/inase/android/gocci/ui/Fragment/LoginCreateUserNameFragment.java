@@ -1,18 +1,27 @@
 package com.inase.android.gocci.ui.fragment;
 
+import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.jorgecastilloprz.FABProgressCircle;
 import com.github.jorgecastilloprz.listeners.FABProgressListener;
 import com.inase.android.gocci.Application_Gocci;
@@ -25,6 +34,8 @@ import com.inase.android.gocci.domain.model.User;
 import com.inase.android.gocci.domain.usecase.UserLoginUseCase;
 import com.inase.android.gocci.domain.usecase.UserLoginUseCaseImpl;
 import com.inase.android.gocci.presenter.ShowUserLoginPresenter;
+import com.inase.android.gocci.ui.activity.CameraActivity;
+import com.inase.android.gocci.ui.activity.CameraPreviewAlreadyExistActivity;
 import com.inase.android.gocci.ui.activity.TutorialActivity;
 import com.inase.android.gocci.ui.activity.WebViewActivity;
 import com.inase.android.gocci.utils.SavedData;
@@ -186,5 +197,44 @@ public class LoginCreateUserNameFragment extends Fragment implements FABProgress
         mFab.setClickable(true);
         mFabProgressCircle.hide();
         Toast.makeText(getActivity(), getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
+    }
+
+    private void enableLocationAndStorage() {
+        if (ContextCompat.checkSelfPermission(getActivity(),
+                Manifest.permission_group.LOCATION)
+                != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(getActivity(),
+                Manifest.permission_group.STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                    Manifest.permission_group.LOCATION)) {
+
+                Toast.makeText(getActivity(), "権限よこせや", Toast.LENGTH_SHORT).show();
+
+            } else {
+
+                ActivityCompat.requestPermissions(getActivity(),
+                        new String[]{Manifest.permission_group.LOCATION, Manifest.permission_group.STORAGE},
+                        45);
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 45: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                } else {
+                    Toast.makeText(getActivity(), "なんでくれないのよ.....", Toast.LENGTH_SHORT).show();
+                }
+                return;
+            }
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
     }
 }
