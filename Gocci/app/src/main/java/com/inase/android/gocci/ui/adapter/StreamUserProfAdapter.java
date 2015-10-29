@@ -154,6 +154,12 @@ public class StreamUserProfAdapter extends RecyclerView.Adapter<Const.StreamView
             });
         } else {
             holder.mLikesImage.setImageResource(R.drawable.ic_icon_beef_orange);
+            holder.mLikesRipple.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mCallback.onGochiClick();
+                }
+            });
         }
 
         holder.mCommentsRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {

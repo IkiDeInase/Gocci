@@ -154,6 +154,12 @@ public class GridProfAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
             });
         } else {
             holder.mGochiImage.setImageResource(R.drawable.ic_icon_beef_orange);
+            holder.mGochiAction.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mCallback.onGochiClick();
+                }
+            });
         }
 
         mCallback.onGridHashHolder(holder, user.getPost_id());

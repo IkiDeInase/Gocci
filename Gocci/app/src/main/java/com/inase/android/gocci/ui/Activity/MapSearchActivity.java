@@ -6,10 +6,14 @@ import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -32,6 +36,10 @@ public class MapSearchActivity extends AppCompatActivity {
 
     @Bind(R.id.tool_bar)
     Toolbar toolBar;
+    @Bind(R.id.map_layout)
+    RelativeLayout mapLayout;
+
+    Snackbar mSnack;
 
     private SupportMapFragment fm;
 
@@ -103,6 +111,10 @@ public class MapSearchActivity extends AppCompatActivity {
                     if (mMarker != null) {
                         mMarker.remove();
                     }
+                    if (mSnack.isShown()) {
+                        mSnack.dismiss();
+                        Toast.makeText(MapSearchActivity.this, "位置を特定しています", Toast.LENGTH_SHORT).show();
+                    }
                     mMarker = mMap.addMarker(new MarkerOptions().position(latLng));
                     Geocoder geo = new Geocoder(MapSearchActivity.this);
                     try {
@@ -115,6 +127,9 @@ public class MapSearchActivity extends AppCompatActivity {
                     }
                 }
             });
+
+            mSnack = Snackbar.make(mapLayout, "検索したい位置をタップしてピンを立てよう", Snackbar.LENGTH_INDEFINITE);
+            mSnack.show();
         }
     };
 

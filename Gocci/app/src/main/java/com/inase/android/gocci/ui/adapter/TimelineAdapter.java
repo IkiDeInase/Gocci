@@ -135,6 +135,12 @@ public class TimelineAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
             });
         } else {
             holder.mGochiImage.setImageResource(R.drawable.ic_icon_beef_orange);
+            holder.mGochiAction.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mCallback.onGochiClick();
+                }
+            });
         }
         mCallback.onHashHolder(holder, user.getPost_id());
     }
