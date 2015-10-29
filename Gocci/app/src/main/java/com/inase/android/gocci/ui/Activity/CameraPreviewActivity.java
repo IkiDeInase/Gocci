@@ -30,7 +30,6 @@ import com.facebook.share.Sharer;
 import com.facebook.share.model.ShareVideo;
 import com.facebook.share.model.ShareVideoContent;
 import com.facebook.share.widget.ShareDialog;
-import com.google.android.exoplayer.MediaCodecVideoTrackRenderer;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;

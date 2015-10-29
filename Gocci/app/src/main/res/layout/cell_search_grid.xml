@@ -82,7 +82,7 @@
                     android:paddingLeft="4dp"
                     android:paddingRight="4dp"
                     android:paddingBottom="8dp"
-                    android:paddingTop="4dp"/>
+                    android:paddingTop="4dp" />
 
             </com.andexert.library.RippleView>
 
@@ -100,7 +100,7 @@
                     android:paddingLeft="4dp"
                     android:paddingRight="8dp"
                     android:paddingBottom="8dp"
-                    android:paddingTop="4dp"/>
+                    android:paddingTop="4dp" />
 
             </com.andexert.library.RippleView>
 

@@ -200,7 +200,7 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
         mPlayingPostId = null;
         mViewHolderHash = new ConcurrentHashMap<>();
 
-        activity = (TimelineActivity)getActivity();
+        activity = (TimelineActivity) getActivity();
 
         fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
         appBarLayout = (AppBarLayout) getActivity().findViewById(R.id.app_bar);
@@ -592,7 +592,7 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
         if (activity != null) {
             activity.setGochiLayout();
         } else {
-            activity = (TimelineActivity)getActivity();
+            activity = (TimelineActivity) getActivity();
         }
     }
 

@@ -33,7 +33,6 @@ import com.inase.android.gocci.event.TimelineMuteChangeEvent;
 import com.inase.android.gocci.ui.activity.CommentActivity;
 import com.inase.android.gocci.ui.activity.MyprofActivity;
 import com.inase.android.gocci.ui.activity.TenpoActivity;
-import com.inase.android.gocci.ui.activity.UserProfActivity;
 import com.inase.android.gocci.ui.adapter.StreamMyProfAdapter;
 import com.inase.android.gocci.ui.view.SquareImageView;
 import com.inase.android.gocci.utils.SavedData;
@@ -165,7 +164,7 @@ public class StreamMyProfFragment extends Fragment implements AppBarLayout.OnOff
         mPlayingPostId = null;
         mStreamViewHolderHash = new ConcurrentHashMap<>();
 
-        activity = (MyprofActivity)getActivity();
+        activity = (MyprofActivity) getActivity();
 
         mLinearLayoutManager = new LinearLayoutManager(getActivity());
         mTimelineRecyclerView.setLayoutManager(mLinearLayoutManager);
@@ -471,7 +470,7 @@ public class StreamMyProfFragment extends Fragment implements AppBarLayout.OnOff
         if (activity != null) {
             activity.setGochiLayout();
         } else {
-            activity = (MyprofActivity)getActivity();
+            activity = (MyprofActivity) getActivity();
         }
     }
 

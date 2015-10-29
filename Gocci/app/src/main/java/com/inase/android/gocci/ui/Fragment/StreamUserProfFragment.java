@@ -1,6 +1,5 @@
 package com.inase.android.gocci.ui.fragment;
 
-import android.content.Intent;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
@@ -14,11 +13,6 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Toast;
 
-import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
-import com.facebook.share.Sharer;
-import com.facebook.share.widget.ShareDialog;
 import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
 import com.google.android.exoplayer.audio.AudioCapabilities;
 import com.google.android.exoplayer.audio.AudioCapabilitiesReceiver;
@@ -143,7 +137,7 @@ public class StreamUserProfFragment extends Fragment implements AppBarLayout.OnO
         mPlayingPostId = null;
         mStreamViewHolderHash = new ConcurrentHashMap<>();
 
-        activity = (UserProfActivity)getActivity();
+        activity = (UserProfActivity) getActivity();
 
         mLinearLayoutManager = new LinearLayoutManager(getActivity());
         mTimelineRecyclerView.setLayoutManager(mLinearLayoutManager);
@@ -443,7 +437,7 @@ public class StreamUserProfFragment extends Fragment implements AppBarLayout.OnO
         if (activity != null) {
             activity.setGochiLayout();
         } else {
-            activity = (UserProfActivity)getActivity();
+            activity = (UserProfActivity) getActivity();
         }
     }
 

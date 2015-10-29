@@ -61,7 +61,7 @@ public abstract class AbstractPathAnimator {
         public int heartHeight;
         public int animDuration;
 
-        public static Config fromTypeArray(TypedArray typedArray, float x, float y,int pointx,int heartWidth,int heartHeight) {
+        public static Config fromTypeArray(TypedArray typedArray, float x, float y, int pointx, int heartWidth, int heartHeight) {
             Config config = new Config();
             Resources res = typedArray.getResources();
             config.initX = (int) typedArray.getDimension(R.styleable.HeartLayout_initX,

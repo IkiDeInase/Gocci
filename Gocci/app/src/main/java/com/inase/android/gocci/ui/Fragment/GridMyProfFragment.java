@@ -32,7 +32,6 @@ import com.inase.android.gocci.event.TimelineMuteChangeEvent;
 import com.inase.android.gocci.ui.activity.CommentActivity;
 import com.inase.android.gocci.ui.activity.MyprofActivity;
 import com.inase.android.gocci.ui.activity.TenpoActivity;
-import com.inase.android.gocci.ui.activity.TimelineActivity;
 import com.inase.android.gocci.ui.adapter.GridProfAdapter;
 import com.inase.android.gocci.utils.SavedData;
 import com.inase.android.gocci.utils.Util;
@@ -153,7 +152,7 @@ public class GridMyProfFragment extends Fragment implements AppBarLayout.OnOffse
         mPlayingPostId = null;
         mGridViewHolderHash = new ConcurrentHashMap<>();
 
-        activity = (MyprofActivity)getActivity();
+        activity = (MyprofActivity) getActivity();
 
         mGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mTimelineRecyclerView.setLayoutManager(mGridLayoutManager);
@@ -404,7 +403,7 @@ public class GridMyProfFragment extends Fragment implements AppBarLayout.OnOffse
         if (activity != null) {
             activity.setGochiLayout();
         } else {
-            activity = (MyprofActivity)getActivity();
+            activity = (MyprofActivity) getActivity();
         }
     }
 

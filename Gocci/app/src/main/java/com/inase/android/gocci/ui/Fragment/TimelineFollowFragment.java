@@ -197,7 +197,7 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
         mPlayingPostId = null;
         mViewHolderHash = new ConcurrentHashMap<>();
 
-        activity = (TimelineActivity)getActivity();
+        activity = (TimelineActivity) getActivity();
 
         mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mTimelineRecyclerView.setLayoutManager(mLayoutManager);
@@ -590,7 +590,7 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
         if (activity != null) {
             activity.setGochiLayout();
         } else {
-            activity = (TimelineActivity)getActivity();
+            activity = (TimelineActivity) getActivity();
         }
     }
 
