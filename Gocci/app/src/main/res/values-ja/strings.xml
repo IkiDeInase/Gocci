@@ -300,7 +300,7 @@
 
     <string name="userpage_empty_text">まだ投稿がありません</string>
 
-    <string name="follow_timeline_empty_text">フォローユーザーの投稿がありません</string>
+    <string name="follow_timeline_empty_text">投稿を取得できませんでした</string>
 
     <string name="follow_empty_text">まだフォローユーザーがいません</string>
     <string name="follower_empty_text">まだフォロワーユーザーがいません</string>

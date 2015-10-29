@@ -159,6 +159,7 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
     public void onDestroyView() {
         super.onDestroyView();
         mCameraView.onFinish();
+        handler.removeCallbacks(progressRunnable);
         ButterKnife.unbind(this);
     }
 
@@ -514,13 +515,6 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
                 mGoogleApiClient.disconnect();
             }
         }
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (DEBUG) Log.v(TAG, "onDestroy:");
-        handler.removeCallbacks(progressRunnable);
     }
 
     public final void fixedScreenOrientation(final boolean fixed) {

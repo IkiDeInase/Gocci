@@ -95,7 +95,7 @@ public class GridUserProfFragment extends Fragment implements AppBarLayout.OnOff
                         int[] array = mGridLayoutManager.findFirstVisibleItemPositions(null);
                         int[] array2 = mGridLayoutManager.findLastVisibleItemPositions(null);
 
-                        if (array[0] >= position || position >= array2[1]) {
+                        if (array[1] >= position || position >= array2[0]) {
                             Const.TwoCellViewHolder oldViewHolder = getGridPlayingViewHolder();
                             if (oldViewHolder != null) {
                                 oldViewHolder.mSquareImage.setVisibility(View.VISIBLE);

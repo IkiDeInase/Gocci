@@ -164,6 +164,7 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        handler.removeCallbacks(progressRunnable);
         ButterKnife.unbind(this);
     }
 
@@ -659,7 +660,6 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
         muteAll(false);
         super.onDestroy();
         recorderManager.reset();
-        handler.removeCallbacks(progressRunnable);
     }
 
     private void createTenpo() {

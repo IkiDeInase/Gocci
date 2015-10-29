@@ -53,7 +53,8 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="0.2dp"
+        android:alpha="0.4"
         android:background="#c5c6c9"
         android:layout_marginTop="8dp"
         android:layout_below="@+id/horizon_bar"
