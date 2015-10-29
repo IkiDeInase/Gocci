@@ -117,6 +117,18 @@ public class TutorialActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 45: {
+                mPager.setCurrentItem(4, true);
+            }
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
         if (analytics != null) {

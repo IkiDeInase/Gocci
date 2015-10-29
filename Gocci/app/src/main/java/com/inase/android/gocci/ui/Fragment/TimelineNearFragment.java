@@ -1,17 +1,21 @@
 package com.inase.android.gocci.ui.fragment;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +23,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -116,7 +122,7 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
                         int[] array = mLayoutManager.findFirstVisibleItemPositions(null);
                         int[] array2 = mLayoutManager.findLastVisibleItemPositions(null);
 
-                        if (array[0] >= position || position >= array2[1]) {
+                        if (array[1] >= position || position >= array2[0]) {
                             Const.TwoCellViewHolder oldViewHolder = getPlayingViewHolder();
                             if (oldViewHolder != null) {
                                 oldViewHolder.mSquareImage.setVisibility(View.VISIBLE);
@@ -196,7 +202,7 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
         mPlayingPostId = null;
         mViewHolderHash = new ConcurrentHashMap<>();
 
-       activity = (TimelineActivity)getActivity();
+        activity = (TimelineActivity) getActivity();
 
         mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mTimelineRecyclerView.setLayoutManager(mLayoutManager);
@@ -344,33 +350,181 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
     }
 
     private void getSignupAsync(final Context context) {
-        SmartLocation.with(context).location().oneFix().start(new OnLocationUpdatedListener() {
-            @Override
-            public void onLocationUpdated(Location location) {
-                TimelineActivity.mLongitude = location.getLongitude();
-                TimelineActivity.mLatitude = location.getLatitude();
-                mPresenter.getNearTimelinePostData(Const.TIMELINE_FIRST, Const.getCustomTimelineAPI(0,
-                        TimelineActivity.mNearSort_id, TimelineActivity.mNearCategory_id, TimelineActivity.mNearValue_id,
-                        TimelineActivity.mLongitude, TimelineActivity.mLatitude, 0));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(getActivity(),
+                    Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+                if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    new MaterialDialog.Builder(getActivity())
+                            .title("権限許可のお願い")
+                            .titleColorRes(R.color.namegrey)
+                            .content("近い店を表示するには位置情報を取得する必要があります。位置情報を許可しますか？")
+                            .contentColorRes(R.color.nameblack)
+                            .positiveText("許可する")
+                            .positiveColorRes(R.color.gocci_header)
+                            .negativeText("いいえ")
+                            .negativeColorRes(R.color.gocci_header)
+                            .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                @Override
+                                public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 38);
+                                }
+                            })
+                            .onNegative(new MaterialDialog.SingleButtonCallback() {
+                                @Override
+                                public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                                    onNegativeActionCausedByM();
+                                }
+                            }).show();
+                } else {
+                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 38);
+                }
+            } else {
+                SmartLocation.with(context).location().oneFix().start(new OnLocationUpdatedListener() {
+                    @Override
+                    public void onLocationUpdated(Location location) {
+                        TimelineActivity.mLongitude = location.getLongitude();
+                        TimelineActivity.mLatitude = location.getLatitude();
+                        mPresenter.getNearTimelinePostData(Const.TIMELINE_FIRST, Const.getCustomTimelineAPI(0,
+                                TimelineActivity.mNearSort_id, TimelineActivity.mNearCategory_id, TimelineActivity.mNearValue_id,
+                                TimelineActivity.mLongitude, TimelineActivity.mLatitude, 0));
+                    }
+                });
             }
-        });
+        } else {
+            SmartLocation.with(context).location().oneFix().start(new OnLocationUpdatedListener() {
+                @Override
+                public void onLocationUpdated(Location location) {
+                    TimelineActivity.mLongitude = location.getLongitude();
+                    TimelineActivity.mLatitude = location.getLatitude();
+                    mPresenter.getNearTimelinePostData(Const.TIMELINE_FIRST, Const.getCustomTimelineAPI(0,
+                            TimelineActivity.mNearSort_id, TimelineActivity.mNearCategory_id, TimelineActivity.mNearValue_id,
+                            TimelineActivity.mLongitude, TimelineActivity.mLatitude, 0));
+                }
+            });
+        }
     }
 
     private void getRefreshAsync(final Context context) {
-        SmartLocation.with(context).location().oneFix().start(new OnLocationUpdatedListener() {
-            @Override
-            public void onLocationUpdated(Location location) {
-                TimelineActivity.mLongitude = location.getLongitude();
-                TimelineActivity.mLatitude = location.getLatitude();
-                TimelineActivity.mNearCategory_id = 0;
-                TimelineActivity.mNearValue_id = 0;
-                mPresenter.getNearTimelinePostData(Const.TIMELINE_REFRESH, Const.getCustomTimelineAPI(0,
-                        TimelineActivity.mNearSort_id, TimelineActivity.mNearCategory_id, TimelineActivity.mNearValue_id,
-                        TimelineActivity.mLongitude, TimelineActivity.mLatitude, 0));
-                TimelineActivity activity = (TimelineActivity) getActivity();
-                activity.setNowLocationTitle();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(getActivity(),
+                    Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+                if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    new MaterialDialog.Builder(getActivity())
+                            .content("近い店を表示するには位置情報を取得する必要があります。位置情報を許可しますか？")
+                            .contentColorRes(R.color.nameblack)
+                            .positiveText("許可する")
+                            .positiveColorRes(R.color.gocci_header)
+                            .negativeText("いいえ")
+                            .negativeColorRes(R.color.gocci_header)
+                            .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                @Override
+                                public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 39);
+                                }
+                            })
+                            .onNegative(new MaterialDialog.SingleButtonCallback() {
+                                @Override
+                                public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                                    mEmptyImage.setVisibility(View.VISIBLE);
+                                    mEmptyText.setVisibility(View.VISIBLE);
+                                    mSwipeContainer.setRefreshing(false);
+                                }
+                            }).show();
+                } else {
+                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 39);
+                }
+            } else {
+                SmartLocation.with(context).location().oneFix().start(new OnLocationUpdatedListener() {
+                    @Override
+                    public void onLocationUpdated(Location location) {
+                        TimelineActivity.mLongitude = location.getLongitude();
+                        TimelineActivity.mLatitude = location.getLatitude();
+                        TimelineActivity.mNearCategory_id = 0;
+                        TimelineActivity.mNearValue_id = 0;
+                        mPresenter.getNearTimelinePostData(Const.TIMELINE_REFRESH, Const.getCustomTimelineAPI(0,
+                                TimelineActivity.mNearSort_id, TimelineActivity.mNearCategory_id, TimelineActivity.mNearValue_id,
+                                TimelineActivity.mLongitude, TimelineActivity.mLatitude, 0));
+                        TimelineActivity activity = (TimelineActivity) getActivity();
+                        activity.setNowLocationTitle();
+                    }
+                });
             }
-        });
+        } else {
+            SmartLocation.with(context).location().oneFix().start(new OnLocationUpdatedListener() {
+                @Override
+                public void onLocationUpdated(Location location) {
+                    TimelineActivity.mLongitude = location.getLongitude();
+                    TimelineActivity.mLatitude = location.getLatitude();
+                    TimelineActivity.mNearCategory_id = 0;
+                    TimelineActivity.mNearValue_id = 0;
+                    mPresenter.getNearTimelinePostData(Const.TIMELINE_REFRESH, Const.getCustomTimelineAPI(0,
+                            TimelineActivity.mNearSort_id, TimelineActivity.mNearCategory_id, TimelineActivity.mNearValue_id,
+                            TimelineActivity.mLongitude, TimelineActivity.mLatitude, 0));
+                    TimelineActivity activity = (TimelineActivity) getActivity();
+                    activity.setNowLocationTitle();
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 38:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    SmartLocation.with(getActivity()).location().oneFix().start(new OnLocationUpdatedListener() {
+                        @Override
+                        public void onLocationUpdated(Location location) {
+                            TimelineActivity.mLongitude = location.getLongitude();
+                            TimelineActivity.mLatitude = location.getLatitude();
+                            mPresenter.getNearTimelinePostData(Const.TIMELINE_FIRST, Const.getCustomTimelineAPI(0,
+                                    TimelineActivity.mNearSort_id, TimelineActivity.mNearCategory_id, TimelineActivity.mNearValue_id,
+                                    TimelineActivity.mLongitude, TimelineActivity.mLatitude, 0));
+                        }
+                    });
+                } else {
+                    onNegativeActionCausedByM();
+                }
+                break;
+            case 39:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    SmartLocation.with(getActivity()).location().oneFix().start(new OnLocationUpdatedListener() {
+                        @Override
+                        public void onLocationUpdated(Location location) {
+                            TimelineActivity.mLongitude = location.getLongitude();
+                            TimelineActivity.mLatitude = location.getLatitude();
+                            TimelineActivity.mNearCategory_id = 0;
+                            TimelineActivity.mNearValue_id = 0;
+                            mPresenter.getNearTimelinePostData(Const.TIMELINE_REFRESH, Const.getCustomTimelineAPI(0,
+                                    TimelineActivity.mNearSort_id, TimelineActivity.mNearCategory_id, TimelineActivity.mNearValue_id,
+                                    TimelineActivity.mLongitude, TimelineActivity.mLatitude, 0));
+                            TimelineActivity activity = (TimelineActivity) getActivity();
+                            activity.setNowLocationTitle();
+                        }
+                    });
+                } else {
+                    mEmptyImage.setVisibility(View.VISIBLE);
+                    mEmptyText.setVisibility(View.VISIBLE);
+                    mSwipeContainer.setRefreshing(false);
+                }
+                break;
+        }
+        // other 'case' lines to check for other
+        // permissions this app might request
+    }
+
+    private void onNegativeActionCausedByM() {
+        mEmptyImage.setVisibility(View.VISIBLE);
+        mEmptyText.setVisibility(View.VISIBLE);
+        mSwipeContainer.setRefreshing(false);
+        mTimelineAdapter = new TimelineAdapter(getActivity(), mTimelineusers);
+        mTimelineAdapter.setTimelineCallback(this);
+        mTimelineRecyclerView.setAdapter(mTimelineAdapter);
     }
 
     private void preparePlayer(final Const.TwoCellViewHolder viewHolder, String path) {
@@ -620,7 +774,7 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
         if (activity != null) {
             activity.setGochiLayout();
         } else {
-            activity = (TimelineActivity)getActivity();
+            activity = (TimelineActivity) getActivity();
         }
     }
 

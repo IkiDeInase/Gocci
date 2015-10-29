@@ -77,9 +77,6 @@ public class StreamUserProfFragment extends Fragment implements AppBarLayout.OnO
 
     private AudioCapabilitiesReceiver audioCapabilitiesReceiver;
 
-    private CallbackManager callbackManager;
-    private ShareDialog shareDialog;
-
     int totalItemCount;
     private boolean isExist = false;
 
@@ -132,25 +129,6 @@ public class StreamUserProfFragment extends Fragment implements AppBarLayout.OnO
 
         mDisplaySize = new Point();
         getActivity().getWindowManager().getDefaultDisplay().getSize(mDisplaySize);
-
-        callbackManager = CallbackManager.Factory.create();
-        shareDialog = new ShareDialog(this);
-        shareDialog.registerCallback(callbackManager, new FacebookCallback<Sharer.Result>() {
-            @Override
-            public void onSuccess(Sharer.Result result) {
-                Toast.makeText(getActivity(), getString(R.string.complete_share), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onCancel() {
-                Toast.makeText(getActivity(), getString(R.string.cancel_share), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onError(FacebookException e) {
-                Toast.makeText(getActivity(), getString(R.string.error_share), Toast.LENGTH_SHORT).show();
-            }
-        });
 
         audioCapabilitiesReceiver = new AudioCapabilitiesReceiver(getActivity().getApplicationContext(), this);
         audioCapabilitiesReceiver.register();
@@ -222,12 +200,6 @@ public class StreamUserProfFragment extends Fragment implements AppBarLayout.OnO
             getStreamPlayingViewHolder().mVideoThumbnail.setVisibility(View.VISIBLE);
         }
         appBarLayout.removeOnOffsetChangedListener(this);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -477,17 +449,20 @@ public class StreamUserProfFragment extends Fragment implements AppBarLayout.OnO
 
     @Override
     public void onFacebookShare(String share) {
-        Util.facebookVideoShare(getActivity(), shareDialog, share);
+        UserProfActivity activity = (UserProfActivity) getActivity();
+        activity.shareVideoPost(25, null, share, null);
     }
 
     @Override
     public void onTwitterShare(SquareImageView view, String rest_name) {
-        Util.twitterShare(getActivity(), view, rest_name);
+        UserProfActivity activity = (UserProfActivity) getActivity();
+        activity.shareVideoPost(26, view, null, rest_name);
     }
 
     @Override
     public void onInstaShare(String share, String rest_name) {
-        Util.instaVideoShare(getActivity(), rest_name, share);
+        UserProfActivity activity = (UserProfActivity) getActivity();
+        activity.shareVideoPost(27, null, share, rest_name);
     }
 
     @Override

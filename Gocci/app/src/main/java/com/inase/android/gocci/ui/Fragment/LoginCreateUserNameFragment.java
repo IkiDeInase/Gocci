@@ -3,9 +3,6 @@ package com.inase.android.gocci.ui.fragment;
 import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,8 +17,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.jorgecastilloprz.FABProgressCircle;
 import com.github.jorgecastilloprz.listeners.FABProgressListener;
 import com.inase.android.gocci.Application_Gocci;
@@ -34,8 +29,6 @@ import com.inase.android.gocci.domain.model.User;
 import com.inase.android.gocci.domain.usecase.UserLoginUseCase;
 import com.inase.android.gocci.domain.usecase.UserLoginUseCaseImpl;
 import com.inase.android.gocci.presenter.ShowUserLoginPresenter;
-import com.inase.android.gocci.ui.activity.CameraActivity;
-import com.inase.android.gocci.ui.activity.CameraPreviewAlreadyExistActivity;
 import com.inase.android.gocci.ui.activity.TutorialActivity;
 import com.inase.android.gocci.ui.activity.WebViewActivity;
 import com.inase.android.gocci.utils.SavedData;
@@ -134,8 +127,7 @@ public class LoginCreateUserNameFragment extends Fragment implements FABProgress
         mCreatedUsername.animate().alphaBy(100).setDuration(500).setListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                TutorialActivity activity = (TutorialActivity) getActivity();
-                activity.mPager.setCurrentItem(4, true);
+                enableLocationAndStorage();
             }
         }).setStartDelay(200);
     }
@@ -200,41 +192,19 @@ public class LoginCreateUserNameFragment extends Fragment implements FABProgress
     }
 
     private void enableLocationAndStorage() {
-        if (ContextCompat.checkSelfPermission(getActivity(),
-                Manifest.permission_group.LOCATION)
-                != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(getActivity(),
-                Manifest.permission_group.STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
-                    Manifest.permission_group.LOCATION)) {
-
-                Toast.makeText(getActivity(), "権限よこせや", Toast.LENGTH_SHORT).show();
-
-            } else {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(getActivity(),
+                    Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
                 ActivityCompat.requestPermissions(getActivity(),
-                        new String[]{Manifest.permission_group.LOCATION, Manifest.permission_group.STORAGE},
-                        45);
+                        new String[]{Manifest.permission.GET_ACCOUNTS, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.READ_EXTERNAL_STORAGE}, 45);
+            } else {
+                TutorialActivity activity = (TutorialActivity) getActivity();
+                activity.mPager.setCurrentItem(4, true);
             }
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case 45: {
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                } else {
-                    Toast.makeText(getActivity(), "なんでくれないのよ.....", Toast.LENGTH_SHORT).show();
-                }
-                return;
-            }
-            // other 'case' lines to check for other
-            // permissions this app might request
+        } else {
+            TutorialActivity activity = (TutorialActivity) getActivity();
+            activity.mPager.setCurrentItem(4, true);
         }
     }
 }

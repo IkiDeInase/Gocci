@@ -1,16 +1,23 @@
 package com.inase.android.gocci.ui.activity;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -21,6 +28,11 @@ import android.widget.Toast;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
 import com.andexert.library.RippleView;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.share.Sharer;
+import com.facebook.share.widget.ShareDialog;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.repository.UserAndRestDataRepository;
@@ -40,6 +52,7 @@ import com.inase.android.gocci.ui.fragment.StreamUserProfFragment;
 import com.inase.android.gocci.ui.view.DrawerProfHeader;
 import com.inase.android.gocci.ui.view.GochiLayout;
 import com.inase.android.gocci.ui.view.RoundedTransformation;
+import com.inase.android.gocci.ui.view.SquareImageView;
 import com.inase.android.gocci.utils.SavedData;
 import com.inase.android.gocci.utils.Util;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
@@ -53,12 +66,14 @@ import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
+import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
 import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.fabric.sdk.android.Fabric;
 
 public class UserProfActivity extends AppCompatActivity implements ShowUserProfPresenter.ShowUserProfView {
 
@@ -74,6 +89,8 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
     ViewPager mViewpager;
     @Bind(R.id.coordinator_layout)
     CoordinatorLayout mCoordinatorLayout;
+    @Bind(R.id.collapsing_toolbar)
+    CollapsingToolbarLayout mCollapse;
     @Bind(R.id.userprof_picture)
     ImageView mUserPicture;
     @Bind(R.id.follow_num)
@@ -132,11 +149,18 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
 
     private Drawer result;
 
+    private CallbackManager callbackManager;
+    private ShareDialog shareDialog;
+
     private static MobileAnalyticsManager analytics;
 
     private ShowUserProfPresenter mPresenter;
 
     private FragmentPagerItemAdapter adapter;
+
+    private SquareImageView mShareImage;
+    private String mShareShare;
+    private String mShareRestname;
 
     private static Handler sHandler = new Handler() {
         @Override
@@ -188,6 +212,27 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
         mPresenter = new ShowUserProfPresenter(userAndRestUseCaseImpl);
         mPresenter.setProfView(this);
 
+        callbackManager = CallbackManager.Factory.create();
+        shareDialog = new ShareDialog(this);
+        shareDialog.registerCallback(callbackManager, new FacebookCallback<Sharer.Result>() {
+            @Override
+            public void onSuccess(Sharer.Result result) {
+                Toast.makeText(UserProfActivity.this, getString(R.string.complete_share), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onCancel() {
+                Toast.makeText(UserProfActivity.this, getString(R.string.cancel_share), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onError(FacebookException e) {
+                Toast.makeText(UserProfActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        Fabric.with(this, new TweetComposer());
+
         setContentView(R.layout.activity_userprof);
         ButterKnife.bind(this);
 
@@ -198,6 +243,8 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
         mToolBar.setTitle("");
         setSupportActionBar(mToolBar);
         mUserToolBar.setTitle(userintent.getStringExtra("user_name"));
+        mCollapse.setExpandedTitleTextAppearance(R.style.TitleText);
+        mCollapse.setTitle(userintent.getStringExtra("user_name"));
 
         adapter = new FragmentPagerItemAdapter(
                 getSupportFragmentManager(), FragmentPagerItems.with(this)
@@ -506,5 +553,73 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
                 mGochi.addGochi(R.drawable.ic_icon_beef_orange, pointX, y);
             }
         });
+    }
+
+    public void shareVideoPost(int requastCode, SquareImageView view, String share, String restname) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                mShareShare = share;
+                mShareRestname = restname;
+                mShareImage = view;
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, requastCode);
+            } else {
+                switch (requastCode) {
+                    case 25:
+                        Util.facebookVideoShare(this, shareDialog, mShareShare);
+                        break;
+                    case 26:
+                        Util.twitterShare(this, mShareImage, mShareRestname);
+                        break;
+                    case 27:
+                        Util.instaVideoShare(this, mShareRestname, mShareShare);
+                        break;
+                }
+            }
+        } else {
+            switch (requastCode) {
+                case 25:
+                    Util.facebookVideoShare(this, shareDialog, mShareShare);
+                    break;
+                case 26:
+                    Util.twitterShare(this, mShareImage, mShareRestname);
+                    break;
+                case 27:
+                    Util.instaVideoShare(this, mShareRestname, mShareShare);
+                    break;
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 25:
+                if (grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Util.facebookVideoShare(this, shareDialog, mShareShare);
+                } else {
+                    Toast.makeText(UserProfActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case 26:
+                if (grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Util.twitterShare(this, mShareImage, mShareRestname);
+                } else {
+                    Toast.makeText(UserProfActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case 27:
+                if (grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Util.instaVideoShare(this, mShareRestname, mShareShare);
+                } else {
+                    Toast.makeText(UserProfActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+                }
+                break;
+        }
+        // other 'case' lines to check for other
+        // permissions this app might request
     }
 }

@@ -253,6 +253,8 @@
         android:background="@color/gocci_header"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         android:layout_gravity="top"
+        app:layout_anchor="@id/coordinator_layout"
+        app:layout_anchorGravity="top"
         android:layout_marginLeft="48dp"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 

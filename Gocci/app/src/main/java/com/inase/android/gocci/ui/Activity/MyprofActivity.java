@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -36,6 +37,11 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
 import com.andexert.library.RippleView;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.share.Sharer;
+import com.facebook.share.widget.ShareDialog;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.repository.MyPageActionRepository;
@@ -62,6 +68,7 @@ import com.inase.android.gocci.ui.view.DrawerProfHeader;
 import com.inase.android.gocci.ui.view.GochiLayout;
 import com.inase.android.gocci.ui.view.NotificationListView;
 import com.inase.android.gocci.ui.view.RoundedTransformation;
+import com.inase.android.gocci.ui.view.SquareImageView;
 import com.inase.android.gocci.ui.view.ToukouPopup;
 import com.inase.android.gocci.utils.SavedData;
 import com.inase.android.gocci.utils.Util;
@@ -78,13 +85,16 @@ import com.pnikosis.materialishprogress.ProgressWheel;
 import com.soundcloud.android.crop.Crop;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
+import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.fabric.sdk.android.Fabric;
 
 public class MyprofActivity extends AppCompatActivity implements ShowMyProfPresenter.ShowProfView {
 
@@ -162,6 +172,9 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
     private float pointX;
     private float pointY;
 
+    private CallbackManager callbackManager;
+    private ShareDialog shareDialog;
+
     private static MobileAnalyticsManager analytics;
 
     private ShowMyProfPresenter mPresenter;
@@ -173,6 +186,10 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
     public static int mShowPosition = 0;
 
     private FragmentPagerItemAdapter adapter;
+
+    private SquareImageView mShareImage;
+    private String mShareShare;
+    private String mShareRestname;
 
     private static Handler sHandler = new Handler() {
         @Override
@@ -221,6 +238,27 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
         PostDeleteUseCase postDeleteUseCaseImpl = PostDeleteUseCaseImpl.getUseCase(myPageActionRepositoryImpl, UIThread.getInstance());
         mPresenter = new ShowMyProfPresenter(userAndRestUseCaseImpl, profChangeUseCaseImpl, postDeleteUseCaseImpl);
         mPresenter.setProfView(this);
+
+        callbackManager = CallbackManager.Factory.create();
+        shareDialog = new ShareDialog(this);
+        shareDialog.registerCallback(callbackManager, new FacebookCallback<Sharer.Result>() {
+            @Override
+            public void onSuccess(Sharer.Result result) {
+                Toast.makeText(MyprofActivity.this, getString(R.string.complete_share), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onCancel() {
+                Toast.makeText(MyprofActivity.this, getString(R.string.cancel_share), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onError(FacebookException e) {
+                Toast.makeText(MyprofActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        Fabric.with(this, new TweetComposer());
 
         setContentView(R.layout.activity_myprof);
         ButterKnife.bind(this);
@@ -530,7 +568,11 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
         cameraitem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                enableCamera();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    enableCamera();
+                } else {
+                    goCamera();
+                }
                 return false;
             }
         });
@@ -538,68 +580,162 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
     }
 
     private void enableCamera() {
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.CAMERA)) {
-
-                Toast.makeText(MyprofActivity.this, "権限よこせや", Toast.LENGTH_SHORT).show();
-
-            } else {
-
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.READ_CONTACTS},
-                        43);
-            }
+        int requestcode = 40;
+        List<String> permissionArray = new ArrayList<>();
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            permissionArray.add(Manifest.permission.CAMERA);
+            requestcode = requestcode + 1;
         }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            permissionArray.add(Manifest.permission.RECORD_AUDIO);
+            requestcode = requestcode + 1;
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            permissionArray.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            requestcode = requestcode + 1;
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            permissionArray.add(Manifest.permission.ACCESS_FINE_LOCATION);
+            requestcode = requestcode + 1;
+        }
+        if (requestcode != 40) {
+            String[] permissions = new String[permissionArray.size()];
+            permissions = permissionArray.toArray(permissions);
+            rationaleDialog(permissions, requestcode);
+        } else {
+            goCamera();
+        }
+    }
+
+    private void rationaleDialog(final String[] permissions, final int requestCode) {
+        new MaterialDialog.Builder(this)
+                .title("権限許可のお願い")
+                .titleColorRes(R.color.namegrey)
+                .content("カメラを起動するには以下のような権限が必要になります。\n\n"
+                        + "・カメラ(動画の撮影)\n\n"
+                        + "・録音(音声の録音)\n\n"
+                        + "・ストレージ(動画の作成)\n\n"
+                        + "・位置情報(店舗情報の取得)\n\n"
+                        + "権限を許可しますか？")
+                .contentColorRes(R.color.nameblack)
+                .positiveText("許可する").positiveColorRes(R.color.gocci_header)
+                .negativeText("いいえ").negativeColorRes(R.color.gocci_header)
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                        ActivityCompat.requestPermissions(MyprofActivity.this, permissions, requestCode);
+                    }
+                })
+                .onNegative(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                        Toast.makeText(MyprofActivity.this, "カメラは起動できませんでした...", Toast.LENGTH_SHORT).show();
+                    }
+                }).show();
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
         switch (requestCode) {
-            case 43: {
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if (SavedData.getVideoUrl(MyprofActivity.this).equals("") || SavedData.getLat(MyprofActivity.this) == 0.0) {
-                        startActivity(new Intent(MyprofActivity.this, CameraActivity.class));
-                    } else {
-                        new MaterialDialog.Builder(MyprofActivity.this)
-                                .title(getString(R.string.already_exist_video))
-                                .titleColorRes(R.color.namegrey)
-                                .content(getString(R.string.already_exist_video_message))
-                                .contentColorRes(R.color.namegrey)
-                                .positiveText(getString(R.string.already_exist_video_yeah))
-                                .positiveColorRes(R.color.gocci_header)
-                                .negativeText(getString(R.string.already_exist_video_no))
-                                .negativeColorRes(R.color.gocci_header)
-                                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                                    @Override
-                                    public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
-                                        Intent intent = new Intent(MyprofActivity.this, CameraPreviewAlreadyExistActivity.class);
-                                        startActivity(intent);
-                                        overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-                                    }
-                                })
-                                .onNegative(new MaterialDialog.SingleButtonCallback() {
-                                    @Override
-                                    public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
-                                        SharedPreferences prefs = getSharedPreferences("movie", Context.MODE_PRIVATE);
-                                        SharedPreferences.Editor editor = prefs.edit();
-                                        editor.clear();
-                                        editor.apply();
-                                        startActivity(new Intent(MyprofActivity.this, CameraActivity.class));
-                                    }
-                                }).show();
-                    }
+            case 25:
+                if (grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Util.facebookVideoShare(this, shareDialog, mShareShare);
                 } else {
-                    Toast.makeText(MyprofActivity.this, "なんでくれないのよ.....", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MyprofActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
                 }
-                return;
-            }
-            // other 'case' lines to check for other
-            // permissions this app might request
+                break;
+            case 26:
+                if (grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Util.twitterShare(this, mShareImage, mShareRestname);
+                } else {
+                    Toast.makeText(MyprofActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case 27:
+                if (grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Util.instaVideoShare(this, mShareRestname, mShareShare);
+                } else {
+                    Toast.makeText(MyprofActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case 44:
+                if (grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+                        grantResults[1] == PackageManager.PERMISSION_GRANTED &&
+                        grantResults[2] == PackageManager.PERMISSION_GRANTED &&
+                        grantResults[3] == PackageManager.PERMISSION_GRANTED) {
+                    goCamera();
+                } else {
+                    Toast.makeText(MyprofActivity.this, "カメラは起動できませんでした", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case 43:
+                if (grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+                        grantResults[1] == PackageManager.PERMISSION_GRANTED &&
+                        grantResults[2] == PackageManager.PERMISSION_GRANTED) {
+                    goCamera();
+                } else {
+                    Toast.makeText(MyprofActivity.this, "カメラは起動できませんでした", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case 42:
+                if (grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+                        grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                    goCamera();
+                } else {
+                    Toast.makeText(MyprofActivity.this, "カメラは起動できませんでした", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case 41:
+                if (grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    goCamera();
+                } else {
+                    Toast.makeText(MyprofActivity.this, "カメラは起動できませんでした", Toast.LENGTH_SHORT).show();
+                }
+                break;
+        }
+        // other 'case' lines to check for other
+        // permissions this app might request
+    }
+
+    private void goCamera() {
+        if (SavedData.getVideoUrl(MyprofActivity.this).equals("") || SavedData.getLat(MyprofActivity.this) == 0.0) {
+            startActivity(new Intent(MyprofActivity.this, CameraActivity.class));
+        } else {
+            new MaterialDialog.Builder(MyprofActivity.this)
+                    .title(getString(R.string.already_exist_video))
+                    .titleColorRes(R.color.namegrey)
+                    .content(getString(R.string.already_exist_video_message))
+                    .contentColorRes(R.color.namegrey)
+                    .positiveText(getString(R.string.already_exist_video_yeah))
+                    .positiveColorRes(R.color.gocci_header)
+                    .negativeText(getString(R.string.already_exist_video_no))
+                    .negativeColorRes(R.color.gocci_header)
+                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                        @Override
+                        public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                            Intent intent = new Intent(MyprofActivity.this, CameraPreviewAlreadyExistActivity.class);
+                            startActivity(intent);
+                            overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+                        }
+                    })
+                    .onNegative(new MaterialDialog.SingleButtonCallback() {
+                        @Override
+                        public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                            SharedPreferences prefs = getSharedPreferences("movie", Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = prefs.edit();
+                            editor.clear();
+                            editor.apply();
+                            startActivity(new Intent(MyprofActivity.this, CameraActivity.class));
+                        }
+                    }).show();
         }
     }
 
@@ -788,5 +924,40 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
                 mGochi.addGochi(R.drawable.ic_icon_beef_orange, pointX, y);
             }
         });
+    }
+
+    public void shareVideoPost(int requastCode, SquareImageView view, String share, String restname) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                mShareShare = share;
+                mShareRestname = restname;
+                mShareImage = view;
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, requastCode);
+            } else {
+                switch (requastCode) {
+                    case 25:
+                        Util.facebookVideoShare(this, shareDialog, mShareShare);
+                        break;
+                    case 26:
+                        Util.twitterShare(this, mShareImage, mShareRestname);
+                        break;
+                    case 27:
+                        Util.instaVideoShare(this, mShareRestname, mShareShare);
+                        break;
+                }
+            }
+        } else {
+            switch (requastCode) {
+                case 25:
+                    Util.facebookVideoShare(this, shareDialog, mShareShare);
+                    break;
+                case 26:
+                    Util.twitterShare(this, mShareImage, mShareRestname);
+                    break;
+                case 27:
+                    Util.instaVideoShare(this, mShareRestname, mShareShare);
+                    break;
+            }
+        }
     }
 }

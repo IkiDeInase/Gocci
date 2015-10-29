@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -65,6 +66,9 @@ import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
 import com.squareup.otto.Subscribe;
 import com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -525,7 +529,11 @@ public class TimelineActivity extends AppCompatActivity {
         cameraitem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                enableCamera();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    enableCamera();
+                } else {
+                    goCamera();
+                }
                 return false;
             }
         });
@@ -533,68 +541,141 @@ public class TimelineActivity extends AppCompatActivity {
     }
 
     private void enableCamera() {
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.CAMERA)) {
-
-                Toast.makeText(TimelineActivity.this, "権限よこせや", Toast.LENGTH_SHORT).show();
-
-            } else {
-
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.READ_CONTACTS},
-                        43);
-            }
+        int requestcode = 40;
+        List<String> permissionArray = new ArrayList<>();
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            permissionArray.add(Manifest.permission.CAMERA);
+            requestcode = requestcode + 1;
         }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            permissionArray.add(Manifest.permission.RECORD_AUDIO);
+            requestcode = requestcode + 1;
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            permissionArray.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            requestcode = requestcode + 1;
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            permissionArray.add(Manifest.permission.ACCESS_FINE_LOCATION);
+            requestcode = requestcode + 1;
+        }
+        if (requestcode != 40) {
+            String[] permissions = new String[permissionArray.size()];
+            permissions = permissionArray.toArray(permissions);
+            rationaleDialog(permissions, requestcode);
+        } else {
+            goCamera();
+        }
+    }
+
+    private void rationaleDialog(final String[] permissions, final int requestCode) {
+        new MaterialDialog.Builder(this)
+                .title("権限許可のお願い")
+                .titleColorRes(R.color.namegrey)
+                .content("カメラを起動するには以下のような権限が必要になります。\n\n"
+                        + "・カメラ(動画の撮影)\n\n"
+                        + "・録音(音声の録音)\n\n"
+                        + "・ストレージ(動画の作成)\n\n"
+                        + "・位置情報(店舗情報の取得)\n\n"
+                        + "権限を許可しますか？")
+                .contentColorRes(R.color.nameblack)
+                .positiveText("許可する").positiveColorRes(R.color.gocci_header)
+                .negativeText("いいえ").negativeColorRes(R.color.gocci_header)
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                        ActivityCompat.requestPermissions(TimelineActivity.this, permissions, requestCode);
+                    }
+                })
+                .onNegative(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                        Toast.makeText(TimelineActivity.this, "カメラは起動できませんでした...", Toast.LENGTH_SHORT).show();
+                    }
+                }).show();
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
         switch (requestCode) {
-            case 43: {
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if (SavedData.getVideoUrl(TimelineActivity.this).equals("") || SavedData.getLat(TimelineActivity.this) == 0.0) {
-                        startActivity(new Intent(TimelineActivity.this, CameraActivity.class));
-                    } else {
-                        new MaterialDialog.Builder(TimelineActivity.this)
-                                .title(getString(R.string.already_exist_video))
-                                .titleColorRes(R.color.namegrey)
-                                .content(getString(R.string.already_exist_video_message))
-                                .contentColorRes(R.color.namegrey)
-                                .positiveText(getString(R.string.already_exist_video_yeah))
-                                .positiveColorRes(R.color.gocci_header)
-                                .negativeText(getString(R.string.already_exist_video_no))
-                                .negativeColorRes(R.color.gocci_header)
-                                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                                    @Override
-                                    public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
-                                        Intent intent = new Intent(TimelineActivity.this, CameraPreviewAlreadyExistActivity.class);
-                                        startActivity(intent);
-                                        overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-                                    }
-                                })
-                                .onNegative(new MaterialDialog.SingleButtonCallback() {
-                                    @Override
-                                    public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
-                                        SharedPreferences prefs = getSharedPreferences("movie", Context.MODE_PRIVATE);
-                                        SharedPreferences.Editor editor = prefs.edit();
-                                        editor.clear();
-                                        editor.apply();
-                                        startActivity(new Intent(TimelineActivity.this, CameraActivity.class));
-                                    }
-                                }).show();
-                    }
+            case 44:
+                if (grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+                        grantResults[1] == PackageManager.PERMISSION_GRANTED &&
+                        grantResults[2] == PackageManager.PERMISSION_GRANTED &&
+                        grantResults[3] == PackageManager.PERMISSION_GRANTED) {
+                    goCamera();
                 } else {
-                    Toast.makeText(TimelineActivity.this, "なんでくれないのよ.....", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(TimelineActivity.this, "カメラは起動できませんでした", Toast.LENGTH_SHORT).show();
                 }
-                return;
-            }
-            // other 'case' lines to check for other
-            // permissions this app might request
+                break;
+            case 43:
+                if (grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+                        grantResults[1] == PackageManager.PERMISSION_GRANTED &&
+                        grantResults[2] == PackageManager.PERMISSION_GRANTED) {
+                    goCamera();
+                } else {
+                    Toast.makeText(TimelineActivity.this, "カメラは起動できませんでした", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case 42:
+                if (grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+                        grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                    goCamera();
+                } else {
+                    Toast.makeText(TimelineActivity.this, "カメラは起動できませんでした", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case 41:
+                if (grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    goCamera();
+                } else {
+                    Toast.makeText(TimelineActivity.this, "カメラは起動できませんでした", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case 38:
+            case 39:
+                adapter.getPage(0).onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+        // other 'case' lines to check for other
+        // permissions this app might request
+    }
+
+    private void goCamera() {
+        if (SavedData.getVideoUrl(TimelineActivity.this).equals("") || SavedData.getLat(TimelineActivity.this) == 0.0) {
+            startActivity(new Intent(TimelineActivity.this, CameraActivity.class));
+        } else {
+            new MaterialDialog.Builder(TimelineActivity.this)
+                    .title(getString(R.string.already_exist_video))
+                    .titleColorRes(R.color.namegrey)
+                    .content(getString(R.string.already_exist_video_message))
+                    .contentColorRes(R.color.namegrey)
+                    .positiveText(getString(R.string.already_exist_video_yeah))
+                    .positiveColorRes(R.color.gocci_header)
+                    .negativeText(getString(R.string.already_exist_video_no))
+                    .negativeColorRes(R.color.gocci_header)
+                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                        @Override
+                        public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                            Intent intent = new Intent(TimelineActivity.this, CameraPreviewAlreadyExistActivity.class);
+                            startActivity(intent);
+                            overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+                        }
+                    })
+                    .onNegative(new MaterialDialog.SingleButtonCallback() {
+                        @Override
+                        public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                            SharedPreferences prefs = getSharedPreferences("movie", Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = prefs.edit();
+                            editor.clear();
+                            editor.apply();
+                            startActivity(new Intent(TimelineActivity.this, CameraActivity.class));
+                        }
+                    }).show();
         }
     }
 
