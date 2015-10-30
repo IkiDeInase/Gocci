@@ -43,6 +43,7 @@ import com.inase.android.gocci.event.NotificationNumberEvent;
 import com.inase.android.gocci.presenter.ShowCommentPagePresenter;
 import com.inase.android.gocci.ui.adapter.CommentAdapter;
 import com.inase.android.gocci.utils.SavedData;
+import com.pnikosis.materialishprogress.ProgressWheel;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
@@ -64,6 +65,8 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
     EditText mCommentEdit;
     @Bind(R.id.send_button)
     ImageButton mSendButton;
+    @Bind(R.id.progress_wheel)
+    ProgressWheel mProgress;
 
     @OnClick(R.id.comment_edit)
     public void onEdit() {
@@ -86,6 +89,7 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
             button.setFocusableInTouchMode(true);
             button.requestFocus();
             mCommentEdit.setText("");
+            mProgress.setVisibility(View.VISIBLE);
             if (isNotice) {
                 mPresenter.postComment(Const.getPostCommentWithNoticeAPI(mPost_id, comment, mNoticeUser_id), Const.getCommentAPI(mPost_id));
             } else {
@@ -375,6 +379,7 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
     public void showNoResultCase(int api, PostData postData) {
         switch (api) {
             case Const.COMMENT_FIRST:
+                mProgress.setVisibility(View.INVISIBLE);
                 mCommentAdapter = new CommentAdapter(this, mPost_id, mCommentusers);
                 mCommentAdapter.setCommentCallback(this);
                 mCommentRecyclerView.setAdapter(mCommentAdapter);
@@ -403,6 +408,7 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
         mCommentusers.addAll(commentData);
         switch (api) {
             case Const.COMMENT_FIRST:
+                mProgress.setVisibility(View.INVISIBLE);
                 mCommentAdapter = new CommentAdapter(this, mPost_id, mCommentusers);
                 mCommentAdapter.setCommentCallback(this);
                 mCommentRecyclerView.setAdapter(mCommentAdapter);
@@ -416,6 +422,7 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
 
     @Override
     public void postCommented(PostData postData, ArrayList<HeaderData> commentData) {
+        mProgress.setVisibility(View.INVISIBLE);
         mCommentusers.clear();
         mCommentusers.addAll(commentData);
         mCommentAdapter.setData();
@@ -424,12 +431,14 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
 
     @Override
     public void postCommentEmpty(PostData postData) {
+        mProgress.setVisibility(View.INVISIBLE);
         mCommentusers.clear();
         mCommentAdapter.setData();
     }
 
     @Override
     public void postCommentFailed() {
+        mProgress.setVisibility(View.INVISIBLE);
         Toast.makeText(this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
     }
 }

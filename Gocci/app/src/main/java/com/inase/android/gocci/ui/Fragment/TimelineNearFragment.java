@@ -59,6 +59,7 @@ import com.inase.android.gocci.utils.SavedData;
 import com.inase.android.gocci.utils.Util;
 import com.inase.android.gocci.utils.video.HlsRendererBuilder;
 import com.inase.android.gocci.utils.video.VideoPlayer;
+import com.pnikosis.materialishprogress.ProgressWheel;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
@@ -81,6 +82,8 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
     TextView mEmptyText;
     @Bind(R.id.empty_image)
     ImageView mEmptyImage;
+    @Bind(R.id.progress_wheel)
+    ProgressWheel mProgress;
 
     private AppBarLayout appBarLayout;
     private FloatingActionButton fab;
@@ -202,6 +205,8 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
         mPlayingPostId = null;
         mViewHolderHash = new ConcurrentHashMap<>();
 
+        mProgress.setVisibility(View.VISIBLE);
+
         activity = (TimelineActivity) getActivity();
 
         mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
@@ -215,7 +220,6 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
         appBarLayout = (AppBarLayout) getActivity().findViewById(R.id.app_bar);
 
         if (Util.getConnectedState(getActivity()) != Util.NetworkStatus.OFF) {
-            mSwipeContainer.setRefreshing(true);
             getSignupAsync(getActivity());
         } else {
             Toast.makeText(getActivity(), getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
@@ -670,6 +674,7 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
     public void showNoResultCase(int api) {
         switch (api) {
             case Const.TIMELINE_FIRST:
+                mProgress.setVisibility(View.INVISIBLE);
                 mTimelineAdapter = new TimelineAdapter(getActivity(), mTimelineusers);
                 mTimelineAdapter.setTimelineCallback(this);
                 mTimelineRecyclerView.setAdapter(mTimelineAdapter);
@@ -708,6 +713,7 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
     public void showResult(int api, ArrayList<PostData> mPostData, ArrayList<String> post_ids) {
         switch (api) {
             case Const.TIMELINE_FIRST:
+                mProgress.setVisibility(View.INVISIBLE);
                 mTimelineusers.addAll(mPostData);
                 mPost_ids.addAll(post_ids);
                 mTimelineAdapter = new TimelineAdapter(getActivity(), mTimelineusers);

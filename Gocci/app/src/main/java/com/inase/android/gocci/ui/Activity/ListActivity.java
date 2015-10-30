@@ -43,6 +43,7 @@ import com.mikepenz.materialdrawer.holder.StringHolder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.pnikosis.materialishprogress.ProgressWheel;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
 
@@ -72,6 +73,8 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
     ImageView mEmptyImage;
     @Bind(R.id.coordinator_layout)
     CoordinatorLayout mCoordinatorLayout;
+    @Bind(R.id.progress_wheel)
+    ProgressWheel mProgress;
 
     private int mCategory;
     private int mId;
@@ -382,6 +385,8 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                     e.printStackTrace();
                 }
 
+                mProgress.setVisibility(View.INVISIBLE);
+
                 mRecyclerView.setAdapter(followefollowerAdapter);
 
                 if (users.isEmpty()) {
@@ -427,6 +432,8 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                     e.printStackTrace();
                 }
 
+                mProgress.setVisibility(View.INVISIBLE);
+
                 mRecyclerView.setAdapter(followefollowerAdapter);
 
                 if (users.isEmpty()) {
@@ -469,6 +476,8 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+
+                mProgress.setVisibility(View.INVISIBLE);
 
                 mRecyclerView.setAdapter(usercheerAdapter);
 
@@ -513,6 +522,8 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                     e.printStackTrace();
                 }
 
+                mProgress.setVisibility(View.INVISIBLE);
+
                 mRecyclerView.setAdapter(wantAdapter);
 
                 if (users.isEmpty()) {
@@ -556,6 +567,8 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+
+                mProgress.setVisibility(View.INVISIBLE);
 
                 mRecyclerView.setAdapter(restcheerAdapter);
 
