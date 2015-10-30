@@ -167,13 +167,13 @@ public class MapProfActivity extends AppCompatActivity implements ClusterManager
     @Override
     public boolean onClusterItemClick(PhotoLog item) {
         // Does nothing, but you could go into the user's profile page, for example.
-        return false;
+        TenpoActivity.startTenpoActivity(item.userdata.getPost_rest_id(), item.userdata.getRestname(), MapProfActivity.this);
+        return true;
     }
 
     @Override
     public void onClusterItemInfoWindowClick(PhotoLog item) {
         // Does nothing, but you could go into the user's profile page, for example.
-        TenpoActivity.startTenpoActivity(item.userdata.getPost_rest_id(), item.userdata.getRestname(), MapProfActivity.this);
     }
 
     @Override

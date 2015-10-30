@@ -237,24 +237,28 @@ public class Application_Gocci extends Application {
                     protected void onPostExecute(Void result) {
                         if (SavedData.getPostingId(context) != 0) {
                             TransferObserver observer = transferUtility.resume(SavedData.getPostingId(context));
-                            observer.setTransferListener(new TransferListener() {
-                                @Override
-                                public void onStateChanged(int id, TransferState state) {
-                                    if (state == TransferState.COMPLETED) {
-                                        SavedData.setPostingId(context, 0);
+                            if (observer != null) {
+                                observer.setTransferListener(new TransferListener() {
+                                    @Override
+                                    public void onStateChanged(int id, TransferState state) {
+                                        if (state == TransferState.COMPLETED) {
+                                            SavedData.setPostingId(context, 0);
+                                        }
                                     }
-                                }
 
-                                @Override
-                                public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                                    @Override
+                                    public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
 
-                                }
+                                    }
 
-                                @Override
-                                public void onError(int id, Exception ex) {
+                                    @Override
+                                    public void onError(int id, Exception ex) {
 
-                                }
-                            });
+                                    }
+                                });
+                            } else {
+                                SavedData.setPostingId(context, 0);
+                            }
                         }
                     }
                 }.execute();
