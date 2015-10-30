@@ -215,6 +215,7 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
         appBarLayout = (AppBarLayout) getActivity().findViewById(R.id.app_bar);
 
         if (Util.getConnectedState(getActivity()) != Util.NetworkStatus.OFF) {
+            mSwipeContainer.setRefreshing(true);
             getSignupAsync(getActivity());
         } else {
             Toast.makeText(getActivity(), getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
