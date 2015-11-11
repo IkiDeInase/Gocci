@@ -23,22 +23,36 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.TileOverlay;
+import com.google.android.gms.maps.model.TileOverlayOptions;
+import com.google.maps.android.heatmaps.HeatmapTileProvider;
 import com.inase.android.gocci.R;
+import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.datasource.repository.HeatmapRepository;
+import com.inase.android.gocci.datasource.repository.HeatmapRepositoryImpl;
+import com.inase.android.gocci.domain.executor.UIThread;
+import com.inase.android.gocci.domain.usecase.HeatmapUseCase;
+import com.inase.android.gocci.domain.usecase.HeatmapUseCaseImpl;
+import com.inase.android.gocci.presenter.ShowHeatmapPresenter;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class MapSearchActivity extends AppCompatActivity {
+public class MapSearchActivity extends AppCompatActivity implements ShowHeatmapPresenter.ShowHeatmapView {
 
     @Bind(R.id.tool_bar)
     Toolbar toolBar;
     @Bind(R.id.map_layout)
     RelativeLayout mapLayout;
 
-    Snackbar mSnack;
+    private Snackbar mSnack;
+
+    private HeatmapTileProvider mProvider;
+    private TileOverlay mOverlay;
 
     private SupportMapFragment fm;
 
@@ -51,6 +65,8 @@ public class MapSearchActivity extends AppCompatActivity {
     private double mLon;
 
     private MenuItem pin;
+
+    private ShowHeatmapPresenter mPresenter;
 
     public static void startMapSearchActivity(int requestCode, double longitude, double latitude, Activity startingActivity) {
         Intent intent = new Intent(startingActivity, MapSearchActivity.class);
@@ -80,6 +96,11 @@ public class MapSearchActivity extends AppCompatActivity {
             fm.getMapAsync(readyCallback);
         }
 
+        HeatmapRepository heatmapRepositoryImpl = HeatmapRepositoryImpl.getRepository();
+        HeatmapUseCase heatmapUseCaseImpl = HeatmapUseCaseImpl.getUseCase(heatmapRepositoryImpl, UIThread.getInstance());
+        mPresenter = new ShowHeatmapPresenter(heatmapUseCaseImpl);
+        mPresenter.setHeatmapView(this);
+
         toolBar.setTitle("場所を選択する");
         setSupportActionBar(toolBar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -88,6 +109,8 @@ public class MapSearchActivity extends AppCompatActivity {
     OnMapReadyCallback readyCallback = new OnMapReadyCallback() {
         @Override
         public void onMapReady(GoogleMap googleMap) {
+            mPresenter.getHeatmapData(Const.getHeatmapAPI());
+
             mMap = googleMap;
 
             //fragmentからGoogleMap objectを取得
@@ -97,7 +120,7 @@ public class MapSearchActivity extends AppCompatActivity {
             mMap.setMyLocationEnabled(true);
             mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(getIntent().getDoubleExtra("latitude", 35.681382), getIntent().getDoubleExtra("longitude", 139.766084)), 16));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(getIntent().getDoubleExtra("latitude", 35.681382), getIntent().getDoubleExtra("longitude", 139.766084)), 10));
 
             mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                 @Override
@@ -121,6 +144,7 @@ public class MapSearchActivity extends AppCompatActivity {
                         String address = list.get(0).getAddressLine(1);
                         int index = address.indexOf(" ");
                         mPlace = address.substring(index + 1);
+                        toolBar.setTitle(mPlace);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -171,5 +195,33 @@ public class MapSearchActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         overridePendingTransition(R.anim.activity_back_in, R.anim.activity_back_out);
+    }
+
+    @Override
+    public void showLoading() {
+
+    }
+
+    @Override
+    public void hideLoading() {
+
+    }
+
+    @Override
+    public void showError() {
+        Toast.makeText(this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showResult(ArrayList<LatLng> heatData) {
+        if (mProvider == null) {
+            mProvider = new HeatmapTileProvider.Builder().data(
+                    heatData).build();
+            mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider));
+            // Render links
+        } else {
+            mProvider.setData(heatData);
+            mOverlay.clearTileCache();
+        }
     }
 }
