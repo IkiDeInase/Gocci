@@ -16,7 +16,7 @@ apply plugin: 'io.fabric'
 apply plugin: 'com.google.gms.google-services'
 android {
     compileSdkVersion 23
-    buildToolsVersion '23.0.1'
+    buildToolsVersion '23.0.2'
     packagingOptions {
         exclude 'META-INF/DEPENDENCIES'
         exclude 'META-INF/NOTICE'
@@ -57,10 +57,10 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile('io.nlopez.smartlocation:library:3.2.0') { transitive = false; }
-    compile('com.twitter.sdk.android:twitter:1.9.0@aar') { transitive = true }
+    compile('com.twitter.sdk.android:twitter:1.9.1@aar') { transitive = true }
     compile('com.crashlytics.sdk.android:crashlytics:2.5.2@aar') { transitive = true }
     compile('com.twitter.sdk.android:tweet-composer:1.0.0@aar') { transitive = true; }
-    compile('com.mikepenz:materialdrawer:4.4.2@aar') { transitive = true }
+    compile('com.mikepenz:materialdrawer:4.4.6@aar') { transitive = true }
     compile('com.weiwangcn.betterspinner:library-material:1.1.0') {
         exclude group: 'com.android.support', module: 'appcompat-v7'
     }
@@ -70,8 +70,8 @@ dependencies {
     compile 'com.android.support:multidex:1.0.1'
     compile 'com.github.emanzanoaxa:RippleEffect:52ea2a0ab6'
     compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'com.google.android.gms:play-services:8.1.0'
-    compile 'com.google.android.gms:play-services-analytics:8.1.0'
+    compile 'com.google.android.gms:play-services:8.3.0'
+    compile 'com.google.android.gms:play-services-analytics:8.3.0'
     compile 'com.loopj.android:android-async-http:1.4.9'
     compile 'com.github.ksoichiro:android-observablescrollview:1.6.0'
     compile 'com.googlecode.mp4parser:isoparser:1.1.14'
@@ -82,17 +82,17 @@ dependencies {
     compile 'com.ogaclejapan.smarttablayout:library:1.4.2@aar'
     compile 'com.ogaclejapan.smarttablayout:utils-v4:1.4.2@aar'
     compile 'com.google.maps.android:android-maps-utils:0.4'
-    compile 'com.amazonaws:aws-android-sdk-core:2.2.7'
-    compile 'com.amazonaws:aws-android-sdk-cognito:2.2.7'
-    compile 'com.amazonaws:aws-android-sdk-s3:2.2.7'
-    compile 'com.amazonaws:aws-android-sdk-mobileanalytics:2.2.7'
+    compile 'com.amazonaws:aws-android-sdk-core:2.2.8'
+    compile 'com.amazonaws:aws-android-sdk-cognito:2.2.8'
+    compile 'com.amazonaws:aws-android-sdk-s3:2.2.8'
+    compile 'com.amazonaws:aws-android-sdk-mobileanalytics:2.2.8'
     compile 'com.soundcloud.android:android-crop:1.0.1@aar'
     compile 'com.google.android.exoplayer:exoplayer:r1.5.2'
     compile 'com.github.jorgecastilloprz:fabprogresscircle:1.01@aar'
     compile 'com.flaviofaria:kenburnsview:1.0.6'
-    compile 'com.google.android.gms:play-services-ads:8.1.0'
-    compile 'com.google.android.gms:play-services-identity:8.1.0'
-    compile 'com.google.android.gms:play-services-gcm:8.1.0'
+    compile 'com.google.android.gms:play-services-ads:8.3.0'
+    compile 'com.google.android.gms:play-services-identity:8.3.0'
+    compile 'com.google.android.gms:play-services-gcm:8.3.0'
     compile 'com.android.support:support-v4:23.1.0'
     compile 'com.android.support:appcompat-v7:23.1.0'
     compile 'com.android.support:design:23.1.0'
