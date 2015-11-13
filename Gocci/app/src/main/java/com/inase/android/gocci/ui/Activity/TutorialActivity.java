@@ -20,11 +20,8 @@ import android.widget.LinearLayout;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
 import com.andexert.library.RippleView;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
-import com.inase.android.gocci.service.RegistrationIntentService;
 import com.inase.android.gocci.ui.fragment.LoginCreateUserNameFragment;
 import com.inase.android.gocci.ui.fragment.LoginSocialAuthenticationFragment;
 import com.nineoldandroids.view.ViewHelper;
@@ -38,10 +35,6 @@ public class TutorialActivity extends AppCompatActivity {
     static final int NUM_PAGES = 5;
 
     PagerAdapter pagerAdapter;
-
-    private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
-
-    static final String TAG = "GCMDemo";
 
     private static MobileAnalyticsManager analytics;
 
@@ -72,13 +65,6 @@ public class TutorialActivity extends AppCompatActivity {
         window.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         setContentView(R.layout.activity_tutorial);
         ButterKnife.bind(this);
-
-        if (checkPlayServices()) {
-            Intent intent = new Intent(this, RegistrationIntentService.class);
-            startService(intent);
-        } else {
-            Log.e(TAG, "No valid Google Play Services APK found.");
-        }
 
         pagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
         mPager.setAdapter(pagerAdapter);
@@ -344,20 +330,5 @@ public class TutorialActivity extends AppCompatActivity {
             ViewGroup rootView = (ViewGroup) inflater.inflate(layoutId, container, false);
             return rootView;
         }
-    }
-
-    private boolean checkPlayServices() {
-        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
-        if (resultCode != ConnectionResult.SUCCESS) {
-            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
-                GooglePlayServicesUtil.getErrorDialog(resultCode, this,
-                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
-            } else {
-                Log.e(TAG, "This device is not supported.");
-                finish();
-            }
-            return false;
-        }
-        return true;
     }
 }

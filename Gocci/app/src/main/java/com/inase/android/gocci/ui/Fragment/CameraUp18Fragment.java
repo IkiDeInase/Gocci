@@ -720,7 +720,7 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
 
         @Override
         public void onError(Exception e) {
-            if (DEBUG) Log.v(TAG, "onError:" + e.getMessage());
+            if (DEBUG) Log.v(TAG, "onIllegalError:" + e.getMessage());
         }
     };
 

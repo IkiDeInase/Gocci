@@ -1,6 +1,7 @@
 package com.inase.android.gocci.domain.usecase;
 
-import com.inase.android.gocci.domain.model.User;
+import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.datasource.repository.API3;
 
 /**
  * Created by kinagafuji on 15/09/25.
@@ -8,14 +9,14 @@ import com.inase.android.gocci.domain.model.User;
 public interface UserLoginUseCase {
 
     interface UserLoginUseCaseCallback {
-        void onUserLogin(int api, User user);
+        void onUserLogin(Const.APICategory api);
 
-        void onUserNotLogin(int api);
+        void onUserNotLoginCausedByLocalError(Const.APICategory api, String errorMessage);
 
-        void onError();
+        void onUserNotLoginCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode);
     }
 
-    void execute(int api, String url, UserLoginUseCaseCallback callback);
+    void execute(Const.APICategory api, String url, UserLoginUseCaseCallback callback);
 
     void setCallback(UserLoginUseCaseCallback callback);
 

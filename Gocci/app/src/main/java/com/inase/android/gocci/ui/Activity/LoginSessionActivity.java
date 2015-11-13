@@ -19,26 +19,26 @@ import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
-import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.datasource.repository.API3;
+import com.inase.android.gocci.datasource.repository.CheckRegIdRepository;
+import com.inase.android.gocci.datasource.repository.CheckRegIdRepositoryImpl;
 import com.inase.android.gocci.datasource.repository.LoginRepository;
 import com.inase.android.gocci.datasource.repository.LoginRepositoryImpl;
 import com.inase.android.gocci.domain.executor.UIThread;
-import com.inase.android.gocci.domain.model.User;
+import com.inase.android.gocci.domain.usecase.CheckRegIdUseCase;
+import com.inase.android.gocci.domain.usecase.CheckRegIdUseCaseImpl;
 import com.inase.android.gocci.domain.usecase.UserLoginUseCase;
 import com.inase.android.gocci.domain.usecase.UserLoginUseCaseImpl;
-import com.inase.android.gocci.event.BusHolder;
-import com.inase.android.gocci.event.CreateProviderFinishEvent;
 import com.inase.android.gocci.presenter.ShowUserLoginPresenter;
 import com.inase.android.gocci.ui.view.GocciTwitterLoginButton;
 import com.inase.android.gocci.utils.SavedData;
 import com.pnikosis.materialishprogress.ProgressWheel;
-import com.squareup.otto.Subscribe;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
@@ -71,12 +71,6 @@ public class LoginSessionActivity extends AppCompatActivity implements ShowUserL
     ProgressWheel mProgressWheel;
 
     private CallbackManager callbackManager;
-
-    private final LoginSessionActivity self = this;
-
-    private String profile_img;
-    private String token;
-    private String providerName;
 
     private static MobileAnalyticsManager analytics;
 
@@ -114,9 +108,12 @@ public class LoginSessionActivity extends AppCompatActivity implements ShowUserL
 
         callbackManager = CallbackManager.Factory.create();
 
-        LoginRepository loginRepositoryImpl = LoginRepositoryImpl.getRepository();
+        final API3 api3Impl = API3.Impl.getRepository();
+        LoginRepository loginRepositoryImpl = LoginRepositoryImpl.getRepository(api3Impl);
+        CheckRegIdRepository checkRegIdRepositoryImpl = CheckRegIdRepositoryImpl.getRepository(api3Impl);
         UserLoginUseCase userLoginUseCaseImpl = UserLoginUseCaseImpl.getUseCase(loginRepositoryImpl, UIThread.getInstance());
-        mPresenter = new ShowUserLoginPresenter(userLoginUseCaseImpl);
+        CheckRegIdUseCase checkRegIdUseCaseImpl = CheckRegIdUseCaseImpl.getUseCase(checkRegIdRepositoryImpl, UIThread.getInstance());
+        mPresenter = new ShowUserLoginPresenter(userLoginUseCaseImpl, checkRegIdUseCaseImpl);
         mPresenter.setShowUserLoginView(this);
 
         setContentView(R.layout.activity_login_session);
@@ -147,17 +144,22 @@ public class LoginSessionActivity extends AppCompatActivity implements ShowUserL
         mFacebookLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                Profile profile = Profile.getCurrentProfile();
-                if (profile != null) {
-                    profile_img = "https://graph.facebook.com/" + profile.getId() + "/picture";
-                }
-                token = AccessToken.getCurrentAccessToken().getToken();
-                providerName = Const.ENDPOINT_FACEBOOK;
+                Application_Gocci.SNSInit(LoginSessionActivity.this, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), new Application_Gocci.SNSAsync.SNSAsyncCallback() {
+                    @Override
+                    public void preExecute() {
+                        mProgressWheel.setVisibility(View.VISIBLE);
+                    }
 
-                Application_Gocci.SNSInit(LoginSessionActivity.this, Const.ENDPOINT_FACEBOOK, token);
-                //Application_Gocci.addLogins("graph.facebook.com", loginResult.getAccessToken().getToken());
-
-                //postLoginAsync(LoginActivity.this, mName, mPictureImageUrl, TAG_SNS_FACEBOOK);
+                    @Override
+                    public void onPostExecute(String identity_id) {
+                        API3.Util.AuthSnsLoginLocalCode localCode = api3Impl.auth_sns_login_parameter_regex(identity_id, "android_" + Build.VERSION.RELEASE, SavedData.getVersionName(LoginSessionActivity.this), Build.MODEL, SavedData.getRegId(LoginSessionActivity.this));
+                        if (localCode == null) {
+                            mPresenter.loginUser(Const.APICategory.AUTH_SNS_LOGIN, API3.Util.getAuthSNSLoginAPI(identity_id, Build.VERSION.RELEASE, SavedData.getVersionName(LoginSessionActivity.this), Build.MODEL, SavedData.getRegId(LoginSessionActivity.this)));
+                        } else {
+                            Toast.makeText(LoginSessionActivity.this, API3.Util.authSnsLoginLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
             }
 
             @Override
@@ -174,17 +176,25 @@ public class LoginSessionActivity extends AppCompatActivity implements ShowUserL
         mTwitterLoginButton.setCallback(new Callback<TwitterSession>() {
             @Override
             public void success(Result<TwitterSession> result) {
-                TwitterSession session =
-                        Twitter.getSessionManager().getActiveSession();
+                TwitterSession session = Twitter.getSessionManager().getActiveSession();
                 TwitterAuthToken authToken = session.getAuthToken();
 
-                String username = session.getUserName();
-                profile_img = "http://www.paper-glasses.com/api/twipi/" + username;
-                token = authToken.token + ";" + authToken.secret;
-                providerName = Const.ENDPOINT_TWITTER;
+                Application_Gocci.SNSInit(LoginSessionActivity.this, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, new Application_Gocci.SNSAsync.SNSAsyncCallback() {
+                    @Override
+                    public void preExecute() {
+                        mProgressWheel.setVisibility(View.VISIBLE);
+                    }
 
-                Application_Gocci.SNSInit(LoginSessionActivity.this, Const.ENDPOINT_TWITTER, token);
-                //Application_Gocci.addLogins("api.twitter.com", authToken.token + ";" + authToken.secret);
+                    @Override
+                    public void onPostExecute(String identity_id) {
+                        API3.Util.AuthSnsLoginLocalCode localCode = api3Impl.auth_sns_login_parameter_regex(identity_id, "android_" + Build.VERSION.RELEASE, SavedData.getVersionName(LoginSessionActivity.this), Build.MODEL, SavedData.getRegId(LoginSessionActivity.this));
+                        if (localCode == null) {
+                            mPresenter.loginUser(Const.APICategory.AUTH_SNS_LOGIN, API3.Util.getAuthSNSLoginAPI(identity_id, Build.VERSION.RELEASE, SavedData.getVersionName(LoginSessionActivity.this), Build.MODEL, SavedData.getRegId(LoginSessionActivity.this)));
+                        } else {
+                            Toast.makeText(LoginSessionActivity.this, API3.Util.authSnsLoginLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
             }
 
             @Override
@@ -203,8 +213,14 @@ public class LoginSessionActivity extends AppCompatActivity implements ShowUserL
                     mSigninUsernameEdit.setError(getString(R.string.cheat_input));
                     mSigninPassEdit.setError(getString(R.string.cheat_input));
                 } else {
-                    mPresenter.loginUser(Const.LOGIN_NAME_PASS, Const.getAuthUsernamePasswordAPI(mSigninUsernameEdit.getEditText().getText().toString(),
-                            mSigninPassEdit.getEditText().getText().toString(), Build.VERSION.RELEASE, Build.MODEL, SavedData.getRegId(LoginSessionActivity.this)));
+                    API3.Util.AuthPassLoginLocalCode localCode = api3Impl.auth_pass_login_parameter_regex(mSigninUsernameEdit.getEditText().getText().toString(), mSigninPassEdit.getEditText().getText().toString(),
+                            Build.VERSION.RELEASE, SavedData.getVersionName(LoginSessionActivity.this), Build.MODEL, SavedData.getRegId(LoginSessionActivity.this));
+                    if (localCode == null) {
+                        mPresenter.loginUser(Const.APICategory.AUTH_PASS_LOGIN, API3.Util.getAuthUsernamePasswordAPI(mSigninUsernameEdit.getEditText().getText().toString(),
+                                mSigninPassEdit.getEditText().getText().toString(), Build.VERSION.RELEASE, SavedData.getVersionName(LoginSessionActivity.this), Build.MODEL, SavedData.getRegId(LoginSessionActivity.this)));
+                    } else {
+                        Toast.makeText(LoginSessionActivity.this, API3.Util.authPassLoginLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });
@@ -216,8 +232,6 @@ public class LoginSessionActivity extends AppCompatActivity implements ShowUserL
         if (analytics != null) {
             analytics.getSessionClient().resumeSession();
         }
-        BusHolder.get().register(self);
-
         mPresenter.resume();
     }
 
@@ -228,14 +242,7 @@ public class LoginSessionActivity extends AppCompatActivity implements ShowUserL
             analytics.getSessionClient().pauseSession();
             analytics.getEventClient().submitEvents();
         }
-        BusHolder.get().unregister(self);
-
         mPresenter.pause();
-    }
-
-    @Subscribe
-    public void subscribe(final CreateProviderFinishEvent event) {
-        mPresenter.loginUser(Const.LOGIN_SNS_WELCOME, Const.getAuthSNSLoginAPI(event.identityId, Build.VERSION.RELEASE, Build.MODEL, SavedData.getRegId(this)));
     }
 
     @Override
@@ -264,7 +271,7 @@ public class LoginSessionActivity extends AppCompatActivity implements ShowUserL
 
     @Override
     public void showLoading() {
-        mProgressWheel.setVisibility(View.VISIBLE);
+
     }
 
     @Override
@@ -273,52 +280,40 @@ public class LoginSessionActivity extends AppCompatActivity implements ShowUserL
     }
 
     @Override
-    public void showResult(int api, User user) {
-        switch (api) {
-            case Const.LOGIN_SNS_WELCOME:
-                break;
-            case Const.LOGIN_NAME_PASS:
-            case Const.LOGIN_SNS_CONVERSION:
-                if (user.getCode() == 200) {
-                    Application_Gocci.GuestInit(this, user.getIdentityId(), user.getToken(), String.valueOf(user.getUserId()));
-                }
-                break;
-        }
-        if (user.getCode() == 200) {
-            SavedData.setWelcome(this, user.getUserName(), user.getProfileImg(), String.valueOf(user.getUserId()), user.getIdentityId(), user.getBadgeNum());
+    public void onCheckSuccess() {
 
-            Intent intent = new Intent(this, TimelineActivity.class);
-            overridePendingTransition(0, 0);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            finish();
-
-            overridePendingTransition(0, 0);
-            startActivity(intent);
-        } else {
-            Toast.makeText(this, user.getMessage(), Toast.LENGTH_SHORT).show();
-        }
     }
 
     @Override
-    public void showNoResult(int api) {
-        switch (api) {
-            case Const.LOGIN_SNS_WELCOME:
-                mPresenter.loginUser(Const.LOGIN_SNS_CONVERSION,
-                        Const.getAuthSNSConversionAPI(providerName, token, profile_img, Build.VERSION.RELEASE, Build.MODEL, SavedData.getRegId(this)));
-                break;
-            case Const.LOGIN_NAME_PASS:
-                Toast.makeText(this, getString(R.string.login_error_pass), Toast.LENGTH_SHORT).show();
-                break;
-            case Const.LOGIN_SNS_CONVERSION:
-                Toast.makeText(this, getString(R.string.error_account_no_exist), Toast.LENGTH_SHORT).show();
-                break;
-        }
+    public void onCheckFailureCausedByLocalError(String id, String errorMessage) {
+        Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void showError() {
-        Toast.makeText(this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
+    public void onCheckFailureCausedByGlobalError(API3.Util.GlobalCode globalCode) {
+        Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.AUTH_CHECK, globalCode);
+    }
+
+    @Override
+    public void showResult(Const.APICategory api) {
+        Intent intent = new Intent(this, TimelineActivity.class);
+        overridePendingTransition(0, 0);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        finish();
+
+        overridePendingTransition(0, 0);
+        startActivity(intent);
+    }
+
+    @Override
+    public void showNoResultCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
+        Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
+    }
+
+    @Override
+    public void showNoResultCausedByLocalError(Const.APICategory api, String errorMessage) {
+        Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
     }
 }

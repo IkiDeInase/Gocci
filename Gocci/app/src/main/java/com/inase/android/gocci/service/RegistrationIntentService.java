@@ -12,6 +12,8 @@ import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.QuickstartPreferences;
+import com.inase.android.gocci.event.BusHolder;
+import com.inase.android.gocci.event.RegIdRegisteredEvent;
 import com.inase.android.gocci.utils.SavedData;
 import com.inase.android.gocci.utils.Util;
 
@@ -79,6 +81,8 @@ public class RegistrationIntentService extends IntentService {
      */
     private void sendRegistrationToServer(String token) {
         // Add custom implementation, as needed.
+        BusHolder.get().post(new RegIdRegisteredEvent(token));
+
         String regid = SavedData.getRegId(this);
         if (regid == null) {
             SavedData.setRegId(this, token);

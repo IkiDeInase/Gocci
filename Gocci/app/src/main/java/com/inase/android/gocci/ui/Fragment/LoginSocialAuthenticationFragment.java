@@ -2,8 +2,8 @@ package com.inase.android.gocci.ui.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,11 +23,9 @@ import com.facebook.login.widget.LoginButton;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
-import com.inase.android.gocci.event.BusHolder;
-import com.inase.android.gocci.event.SNSMatchFinishEvent;
+import com.inase.android.gocci.datasource.repository.API3;
 import com.inase.android.gocci.ui.activity.TimelineActivity;
 import com.inase.android.gocci.ui.view.GocciTwitterLoginButton;
-import com.squareup.otto.Subscribe;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.TwitterAuthToken;
@@ -47,6 +45,8 @@ public class LoginSocialAuthenticationFragment extends Fragment {
     LoginButton mFacebookLoginButton;
     @Bind(R.id.twitter_login_button)
     GocciTwitterLoginButton mTwitterLoginButton;
+    @Bind(R.id.set_password_Ripple)
+    RippleView mSetPasswordRipple;
     @Bind(R.id.skip_Ripple)
     RippleView mSkipRipple;
 
@@ -114,14 +114,8 @@ public class LoginSocialAuthenticationFragment extends Fragment {
                 Toast.makeText(getActivity(), getString(R.string.preparing_authorize), Toast.LENGTH_SHORT).show();
                 Profile profile = Profile.getCurrentProfile();
                 String profile_img = "https://graph.facebook.com/" + profile.getId() + "/picture";
-                Application_Gocci.addLogins(getActivity(), Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), profile_img);
 
-                    /*
-                    Intent intent = new Intent(getActivity(), GocciTimelineActivity.class);
-                    startActivity(intent);
-                    getActivity().overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-                    getActivity().finish();
-                    */
+                snsAsync(Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), profile_img);
             }
 
             @Override
@@ -143,14 +137,8 @@ public class LoginSocialAuthenticationFragment extends Fragment {
 
                 String username = result.data.getUserName();
                 String profile_img = "http://www.paper-glasses.com/api/twipi/" + username;
-                Application_Gocci.addLogins(getActivity(), "api.twitter.com", authToken.token + ";" + authToken.secret, profile_img);
 
-                    /*
-                    Intent intent = new Intent(getActivity(), GocciTimelineActivity.class);
-                    startActivity(intent);
-                    getActivity().overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-                    getActivity().finish();
-                    */
+                snsAsync(Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, profile_img);
             }
 
             @Override
@@ -160,11 +148,40 @@ public class LoginSocialAuthenticationFragment extends Fragment {
             }
         });
 
+        mSetPasswordRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
+            @Override
+            public void onComplete(RippleView rippleView) {
+                if (Application_Gocci.getLoginProvider() != null) {
+                    new MaterialDialog.Builder(getActivity())
+                            .content(getString(R.string.password_message))
+                            .contentColorRes(R.color.namegrey)
+                            .inputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD)
+                            .input(null, null, new MaterialDialog.InputCallback() {
+                                @Override
+                                public void onInput(MaterialDialog materialDialog, CharSequence charSequence) {
+                                    String password = charSequence.toString();
+                                    if (!password.isEmpty()) {
+                                        com.inase.android.gocci.utils.Util.passwordAsync(getActivity(), password);
+                                    } else {
+                                        Toast.makeText(getActivity(), getString(R.string.cheat_input_password), Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            })
+                            .widgetColorRes(R.color.gocci_header)
+                            .positiveText(getString(R.string.password_yeah))
+                            .positiveColorRes(R.color.gocci_header)
+                            .show();
+                } else {
+                    Toast.makeText(getActivity(), getString(R.string.please_input_username), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
         mSkipRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
             @Override
             public void onComplete(RippleView rippleView) {
                 if (Application_Gocci.getLoginProvider() != null) {
-                    goTimeline(0);
+                    goTimeline();
                 } else {
                     Toast.makeText(getActivity(), getString(R.string.please_input_username), Toast.LENGTH_SHORT).show();
                 }
@@ -175,45 +192,51 @@ public class LoginSocialAuthenticationFragment extends Fragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        BusHolder.get().register(this);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        BusHolder.get().unregister(this);
-    }
-
-    @Subscribe
-    public void subscribe(SNSMatchFinishEvent event) {
-        goTimeline(0);
-    }
-
-    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         mTwitterLoginButton.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void goTimeline(int time) {
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Intent intent = new Intent(getActivity(), TimelineActivity.class);
-                startActivity(intent);
-                getActivity().overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-                getActivity().finish();
-            }
-        }, time);
+    private void goTimeline() {
+        Intent intent = new Intent(getActivity(), TimelineActivity.class);
+        startActivity(intent);
+        getActivity().overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+        getActivity().finish();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         ButterKnife.unbind(this);
+    }
+
+    private void snsAsync(final String providerName, String token, String profile_img) {
+        API3.Util.PostSnsLocalCode localCode = API3.Impl.getRepository().post_sns_parameter_regex(providerName, token, profile_img);
+        if (localCode == null) {
+            Application_Gocci.addLogins(API3.Util.getPostSnsAPI(providerName, token, profile_img), new Application_Gocci.AddLoginAsync.AddLoginAsyncCallback() {
+                @Override
+                public void preExecute() {
+
+                }
+
+                @Override
+                public void onPostExecute() {
+                    goTimeline();
+                }
+
+                @Override
+                public void onGlobalError(API3.Util.GlobalCode globalCode) {
+                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_SNS, globalCode);
+                }
+
+                @Override
+                public void onLocalError(String errorMessage) {
+                    Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            Toast.makeText(getActivity(), API3.Util.postSnsLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+        }
     }
 }

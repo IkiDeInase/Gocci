@@ -23,9 +23,7 @@ import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.memory.CacheManager;
-import com.inase.android.gocci.event.BusHolder;
-import com.inase.android.gocci.event.CreateProviderFinishEvent;
-import com.inase.android.gocci.event.SNSMatchFinishEvent;
+import com.inase.android.gocci.datasource.repository.API3;
 import com.inase.android.gocci.utils.SavedData;
 import com.inase.android.gocci.utils.aws.CustomProvider;
 import com.loopj.android.http.AsyncHttpClient;
@@ -37,10 +35,10 @@ import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -71,6 +69,10 @@ public class Application_Gocci extends Application {
     }
 
     public static void getJsonSyncHttpClient(String url, JsonHttpResponseHandler responseHandler) {
+        sSsyncHttpClient.get(url, responseHandler);
+    }
+
+    public static void getJsonSync(String url, JsonHttpResponseHandler responseHandler) throws SocketTimeoutException {
         sSsyncHttpClient.get(url, responseHandler);
     }
 
@@ -145,159 +147,212 @@ public class Application_Gocci extends Application {
         return tracker;
     }
 
-    public static void SNSInit(final Context context, final String providerName, final String token) {
-        new AsyncTask<Void, Void, String>() {
-            @Override
-            protected String doInBackground(Void... params) {
-                credentialsProvider = new CognitoCachingCredentialsProvider(context, Const.IDENTITY_POOL_ID, Const.REGION);
+    public static class SNSAsync extends AsyncTask<Void, Void, String> {
 
-                Map<String, String> logins = credentialsProvider.getLogins();
-                if (logins == null) {
-                    logins = new HashMap<String, String>();
-                }
-                logins.put(providerName, token);
-                credentialsProvider.setLogins(logins);
-                credentialsProvider.refresh();
+        public interface SNSAsyncCallback {
+            void preExecute();
 
-                return credentialsProvider.getIdentityId();
+            void onPostExecute(String identity_id);
+        }
+
+        private SNSAsyncCallback callback = null;
+        private Context context;
+        private String provider_name = null;
+        private String token = null;
+
+        public SNSAsync(Context context, String provider_name, String token, SNSAsyncCallback asyncCallback) {
+            this.context = context;
+            this.provider_name = provider_name;
+            this.token = token;
+            this.callback = asyncCallback;
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            credentialsProvider = new CognitoCachingCredentialsProvider(context, Const.IDENTITY_POOL_ID, Const.REGION);
+
+            Map<String, String> logins = credentialsProvider.getLogins();
+            if (logins == null) {
+                logins = new HashMap<String, String>();
             }
+            logins.put(provider_name, token);
+            credentialsProvider.setLogins(logins);
+            credentialsProvider.refresh();
 
-            @Override
-            protected void onPostExecute(String result) {
-                BusHolder.get().post(new CreateProviderFinishEvent(result));
-                new AsyncTask<Void, Void, Void>() {
-                    @Override
-                    protected Void doInBackground(Void... params) {
-                        s3 = new AmazonS3Client(credentialsProvider);
-                        s3.setRegion(Region.getRegion(Regions.AP_NORTHEAST_1));
-                        transferUtility = new TransferUtility(s3, context);
-                        return null;
-                    }
+            return credentialsProvider.getIdentityId();
+        }
 
-                    @Override
-                    protected void onPostExecute(Void result) {
-                        if (SavedData.getPostingId(context) != 0) {
-                            TransferObserver observer = transferUtility.resume(SavedData.getPostingId(context));
-                            observer.setTransferListener(new TransferListener() {
-                                @Override
-                                public void onStateChanged(int id, TransferState state) {
-                                    if (state == TransferState.COMPLETED) {
-                                        SavedData.setPostingId(context, 0);
-                                    }
-                                }
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            callback.preExecute();
+        }
 
-                                @Override
-                                public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+        @Override
+        protected void onPostExecute(String identity_id) {
+            super.onPostExecute(identity_id);
+            this.callback.onPostExecute(identity_id);
+            createS3(context);
+        }
+    }
 
-                                }
+    public static void SNSInit(Context context, final String providerName, final String token, SNSAsync.SNSAsyncCallback cb) {
+        new Application_Gocci.SNSAsync(context, providerName, token, cb).execute();
+    }
 
-                                @Override
-                                public void onError(int id, Exception ex) {
+    public static class GuestAsync extends AsyncTask<Void, Void, String> {
 
-                                }
-                            });
-                        }
-                    }
-                }.execute();
+        private Context context;
+        private String identity_id = null;
+        private String cognito_token = null;
+        private String user_id = null;
+
+        public GuestAsync(Context context, String identity_id, String cognito_token, String user_id) {
+            this.context = context;
+            this.identity_id = identity_id;
+            this.cognito_token = cognito_token;
+            this.user_id = user_id;
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            customProvider = new CustomProvider(identity_id, cognito_token);
+            credentialsProvider = new CognitoCachingCredentialsProvider(context, customProvider, Const.REGION);
+
+            Map<String, String> logins = credentialsProvider.getLogins();
+            if (logins == null) {
+                logins = new HashMap<String, String>();
             }
-        }.execute();
+            logins.put(customProvider.getProviderName(), user_id);
+            credentialsProvider.setLogins(logins);
+            credentialsProvider.refresh();
+
+            return identity_id;
+        }
+
+        @Override
+        protected void onPostExecute(String identity_id) {
+            super.onPostExecute(identity_id);
+            createS3(context);
+        }
     }
 
     public static void GuestInit(final Context context, final String identity_id, final String token, final String user_id) {
-        new AsyncTask<Void, Void, String>() {
+        new Application_Gocci.GuestAsync(context, identity_id, token, user_id).execute();
+    }
+
+    private static void createS3(final Context context) {
+        new AsyncTask<Void, Void, Void>() {
             @Override
-            protected String doInBackground(Void... params) {
-                customProvider = new CustomProvider(identity_id, token);
-                credentialsProvider = new CognitoCachingCredentialsProvider(context, customProvider, Const.REGION);
-
-                Map<String, String> logins = credentialsProvider.getLogins();
-                if (logins == null) {
-                    logins = new HashMap<String, String>();
-                }
-                logins.put(customProvider.getProviderName(), user_id);
-                credentialsProvider.setLogins(logins);
-                credentialsProvider.refresh();
-
-                return "identityId";
+            protected Void doInBackground(Void... params) {
+                s3 = new AmazonS3Client(credentialsProvider);
+                s3.setRegion(Region.getRegion(Regions.AP_NORTHEAST_1));
+                transferUtility = new TransferUtility(s3, context);
+                return null;
             }
 
             @Override
-            protected void onPostExecute(String result) {
-                BusHolder.get().post(new CreateProviderFinishEvent(result));
-                new AsyncTask<Void, Void, Void>() {
-                    @Override
-                    protected Void doInBackground(Void... params) {
-                        s3 = new AmazonS3Client(credentialsProvider);
-                        s3.setRegion(Region.getRegion(Regions.AP_NORTHEAST_1));
-                        transferUtility = new TransferUtility(s3, context);
-                        return null;
-                    }
-
-                    @Override
-                    protected void onPostExecute(Void result) {
-                        if (SavedData.getPostingId(context) != 0) {
-                            TransferObserver observer = transferUtility.resume(SavedData.getPostingId(context));
-                            if (observer != null) {
-                                observer.setTransferListener(new TransferListener() {
-                                    @Override
-                                    public void onStateChanged(int id, TransferState state) {
-                                        if (state == TransferState.COMPLETED) {
-                                            SavedData.setPostingId(context, 0);
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
-
-                                    }
-
-                                    @Override
-                                    public void onError(int id, Exception ex) {
-
-                                    }
-                                });
-                            } else {
-                                SavedData.setPostingId(context, 0);
+            protected void onPostExecute(Void result) {
+                if (SavedData.getPostingId(context) != 0) {
+                    TransferObserver observer = transferUtility.resume(SavedData.getPostingId(context));
+                    if (observer != null) {
+                        observer.setTransferListener(new TransferListener() {
+                            @Override
+                            public void onStateChanged(int id, TransferState state) {
+                                if (state == TransferState.COMPLETED) {
+                                    SavedData.setPostingId(context, 0);
+                                }
                             }
-                        }
+
+                            @Override
+                            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+
+                            }
+
+                            @Override
+                            public void onError(int id, Exception ex) {
+
+                            }
+                        });
+                    } else {
+                        SavedData.setPostingId(context, 0);
                     }
-                }.execute();
+                }
             }
         }.execute();
     }
 
-    public static void addLogins(final Context context, String providerName, String token, String profile_img) {
-        getJsonAsyncHttpClient(Const.getAuthSNSMatchAPI(providerName, token, profile_img), new JsonHttpResponseHandler() {
+    public static class AddLoginAsync extends AsyncTask<Void, Void, Void> {
 
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-            }
+        public interface AddLoginAsyncCallback {
+            void preExecute();
 
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+            void onPostExecute();
+
+            void onGlobalError(API3.Util.GlobalCode globalCode);
+
+            void onLocalError(String errorMessage);
+        }
+
+        private AddLoginAsyncCallback callback = null;
+        private String url = null;
+
+        public AddLoginAsync(String url, AddLoginAsyncCallback asyncCallback) {
+            this.url = url;
+            this.callback = asyncCallback;
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            API3.Util.GlobalCode globalCode = API3.Impl.getRepository().check_global_error();
+            if (globalCode == API3.Util.GlobalCode.SUCCESS) {
                 try {
-                    int code = response.getInt("code");
-                    String message = response.getString("message");
-                    String profile_img = response.getString("profile_img");
+                    getJsonSync(url, new JsonHttpResponseHandler() {
 
-                    if (code == 200) {
-                        SavedData.setServerPicture(context, profile_img);
-                        BusHolder.get().post(new SNSMatchFinishEvent(message, profile_img));
+                        @Override
+                        public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                            callback.onGlobalError(API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED);
+                        }
 
-                        new AsyncTask<Void, Void, Void>() {
-                            @Override
-                            protected Void doInBackground(Void... params) {
-                                credentialsProvider.refresh();
-                                return null;
-                            }
-                        }.execute();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                        @Override
+                        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                            API3.Impl.getRepository().post_sns_response(response, new API3.PostSnsResponseCallback() {
+                                @Override
+                                public void onSuccess() {
+                                    callback.onPostExecute();
+                                    credentialsProvider.refresh();
+                                }
+
+                                @Override
+                                public void onGlobalError(API3.Util.GlobalCode globalCode) {
+                                    callback.onGlobalError(globalCode);
+                                }
+
+                                @Override
+                                public void onLocalError(String errorMessage) {
+                                    callback.onLocalError(errorMessage);
+                                }
+                            });
+                        }
+                    });
+                } catch (SocketTimeoutException e) {
+                    callback.onGlobalError(API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT);
                 }
+            } else {
+                callback.onGlobalError(globalCode);
             }
-        });
+            return null;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            callback.preExecute();
+        }
+    }
+
+    public static void addLogins(String url, AddLoginAsync.AddLoginAsyncCallback cb) {
+        new Application_Gocci.AddLoginAsync(url, cb).execute();
     }
 
     public static void postingVideoToS3(final Context context, String mAwsPostName, File mVideoFile) {
@@ -322,6 +377,45 @@ public class Application_Gocci extends Application {
                 Toast.makeText(context, context.getString(R.string.bad_internet_connection), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    public static void resolveOrHandleGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
+        switch (globalCode) {
+            case ERROR_UNKNOWN_ERROR:
+                //サーバに送る
+                Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), API3.Util.globalErrorMessageTable(globalCode), Toast.LENGTH_SHORT).show();
+                break;
+            case ERROR_SESSION_EXPIRED:
+                //ログインとコグニートリフレッシュ　→　リトライ
+                break;
+            case ERROR_CLIENT_OUTDATED:
+                //アップデートダイアログ
+                break;
+            case ERROR_NO_INTERNET_CONNECTION:
+                //リトライ
+                Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), API3.Util.globalErrorMessageTable(globalCode), Toast.LENGTH_SHORT).show();
+                break;
+            case ERROR_CONNECTION_FAILED:
+                Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), API3.Util.globalErrorMessageTable(globalCode), Toast.LENGTH_SHORT).show();
+                //何かする？
+                break;
+            case ERROR_CONNECTION_TIMEOUT:
+                Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), API3.Util.globalErrorMessageTable(globalCode), Toast.LENGTH_SHORT).show();
+                //リトライ？
+                break;
+            case ERROR_SERVER_SIDE_FAILURE:
+                Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), API3.Util.globalErrorMessageTable(globalCode), Toast.LENGTH_SHORT).show();
+                //サーバーに送る
+                break;
+            case ERROR_NO_DATA_RECIEVED:
+                Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), API3.Util.globalErrorMessageTable(globalCode), Toast.LENGTH_SHORT).show();
+                //サーバーに送る
+                break;
+            case ERROR_BASEFRAME_JSON_MALFORMED:
+                Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), API3.Util.globalErrorMessageTable(globalCode), Toast.LENGTH_SHORT).show();
+                //サーバーに送る
+                break;
+        }
     }
 
     @Override

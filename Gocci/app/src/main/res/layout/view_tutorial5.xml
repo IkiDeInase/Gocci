@@ -94,23 +94,43 @@
     </com.andexert.library.RippleView>
 
     <com.andexert.library.RippleView
-        android:id="@+id/skip_Ripple"
+        android:id="@+id/set_password_Ripple"
         android:layout_width="match_parent"
         android:layout_height="42dp"
         android:layout_below="@+id/facebook_ripple"
         android:layout_centerHorizontal="true"
         android:layout_marginLeft="32dp"
         android:layout_marginRight="32dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="24dp"
         android:background="@color/gocci_button"
         android:gravity="center">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/auth_skip"
+            android:text="@string/setting_password"
             android:textColor="#ffffff"
             android:textSize="@dimen/accent_text" />
+    </com.andexert.library.RippleView>
+
+    <com.andexert.library.RippleView
+        android:id="@+id/skip_Ripple"
+        android:layout_width="wrap_content"
+        android:layout_height="42dp"
+        android:layout_below="@+id/set_password_Ripple"
+        android:layout_centerHorizontal="true"
+        android:background="@color/transparent"
+        android:gravity="center"
+        android:layout_marginTop="8dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/auth_skip"
+            android:textColor="#ffffff"
+            android:textSize="@dimen/normal_text" />
     </com.andexert.library.RippleView>
 
 </RelativeLayout>

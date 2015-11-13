@@ -2,35 +2,38 @@ package com.inase.android.gocci.ui.activity;
 
 
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
-import com.facebook.AccessToken;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.BuildConfig;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.datasource.repository.API3;
+import com.inase.android.gocci.datasource.repository.CheckRegIdRepository;
+import com.inase.android.gocci.datasource.repository.CheckRegIdRepositoryImpl;
 import com.inase.android.gocci.datasource.repository.LoginRepository;
 import com.inase.android.gocci.datasource.repository.LoginRepositoryImpl;
 import com.inase.android.gocci.domain.executor.UIThread;
-import com.inase.android.gocci.domain.model.User;
+import com.inase.android.gocci.domain.usecase.CheckRegIdUseCase;
+import com.inase.android.gocci.domain.usecase.CheckRegIdUseCaseImpl;
 import com.inase.android.gocci.domain.usecase.UserLoginUseCase;
 import com.inase.android.gocci.domain.usecase.UserLoginUseCaseImpl;
 import com.inase.android.gocci.event.BusHolder;
-import com.inase.android.gocci.event.CreateProviderFinishEvent;
+import com.inase.android.gocci.event.RegIdRegisteredEvent;
 import com.inase.android.gocci.presenter.ShowUserLoginPresenter;
+import com.inase.android.gocci.service.RegistrationIntentService;
 import com.inase.android.gocci.utils.SavedData;
-import com.inase.android.gocci.utils.Util;
 import com.squareup.otto.Subscribe;
-import com.twitter.sdk.android.Twitter;
-import com.twitter.sdk.android.core.TwitterAuthToken;
-import com.twitter.sdk.android.core.TwitterSession;
 
 
 public class SplashActivity extends AppCompatActivity implements ShowUserLoginPresenter.ShowUserLogin {
@@ -38,20 +41,13 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
     private Handler handler;
     private loginRunnable runnable;
 
-    private final SplashActivity self = this;
-
-    private String loginFrag;
-
-    private static final String TAG_AUTH = "auth";
-    private static final String TAG_SNS_FACEBOOK = "facebook";
-    private static final String TAG_SNS_TWITTER = "twitter";
-    private static final String TAG_NO_JUDGE = "no judge";
-
-    private boolean isConversion = false;
-
     private static MobileAnalyticsManager analytics;
 
     private ShowUserLoginPresenter mPresenter;
+
+    private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+
+    static final String TAG = "GCMDemo";
 
     @Override
     protected void onCreate(Bundle icicle) {
@@ -68,12 +64,15 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
 
         setContentView(R.layout.activity_splash);
 
-        LoginRepository loginRepositoryImpl = LoginRepositoryImpl.getRepository();
+        API3 api3Impl = API3.Impl.getRepository();
+        LoginRepository loginRepositoryImpl = LoginRepositoryImpl.getRepository(api3Impl);
+        CheckRegIdRepository checkRegIdRepositoryImpl = CheckRegIdRepositoryImpl.getRepository(api3Impl);
         UserLoginUseCase userLoginUseCaseImpl = UserLoginUseCaseImpl.getUseCase(loginRepositoryImpl, UIThread.getInstance());
-        mPresenter = new ShowUserLoginPresenter(userLoginUseCaseImpl);
+        CheckRegIdUseCase checkRegIdUseCaseImpl = CheckRegIdUseCaseImpl.getUseCase(checkRegIdRepositoryImpl, UIThread.getInstance());
+        mPresenter = new ShowUserLoginPresenter(userLoginUseCaseImpl, checkRegIdUseCaseImpl);
         mPresenter.setShowUserLoginView(this);
 
-        if (Util.getConnectedState(SplashActivity.this) != Util.NetworkStatus.OFF) {
+        if (com.inase.android.gocci.utils.Util.getConnectedState(SplashActivity.this) != com.inase.android.gocci.utils.Util.NetworkStatus.OFF) {
 
             //SavedData.setServerName(this, "kazu0914");
             //SavedData.setServerPicture(this, "https://graph.facebook.com/100004985405636/picture");
@@ -81,28 +80,24 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
             //SavedData.setRegId(this, "APA91bFlIfRuMRWjMbKfXyC5votBewFcpj71N0j4aiSEgqvHeHsoDcCjS6TuUTxdHnj13cT_40mkflrl5aqigmPGdj5VH0njkc0MM6aMgkExqZoRVZAv8BcUEFy09ZUaxoiRXNuvktee");
             //SavedData.setIdentityId(this, "us-east-1:6b195305-171c-4b83-aa51-e0b1d38de2f2");
 
-            if (!BuildConfig.VERSION_NAME.equals(SavedData.getVersionName(this))) {
-                //バージョンアップしたよね
-                SavedData.setVersionName(this, BuildConfig.VERSION_NAME);
-            }
-
             String mIdentityId = SavedData.getIdentityId(this);
             if (!mIdentityId.equals("no identityId")) {
                 //２回目
-                mPresenter.loginUser(Const.LOGIN_WELCOME, Const.getAuthLoginAPI(mIdentityId));
-            } else {
-                loginFrag = SavedData.getLoginJudge(SplashActivity.this);
-                if (loginFrag.equals(TAG_NO_JUDGE)) {
-                    //初回
-                    handler = new Handler();
-                    runnable = new loginRunnable();
-                    handler.postDelayed(runnable, 2000);
+                API3.Util.AuthLoginLocalCode localCode = api3Impl.auth_login_parameter_regex(mIdentityId);
+                if (localCode == null) {
+                    mPresenter.loginUser(Const.APICategory.AUTH_LOGIN, API3.Util.getAuthLoginAPI(mIdentityId));
                 } else {
-                    //保存あり
-                    String url = Const.getAuthConversionAPI(SavedData.getServerName(SplashActivity.this), SavedData.getServerPicture(SplashActivity.this),
-                            Build.VERSION.RELEASE, Build.MODEL, SavedData.getRegId(SplashActivity.this));
-                    isConversion = true;
-                    mPresenter.loginUser(Const.LOGIN_CONVERSION, url);
+                    Toast.makeText(SplashActivity.this, API3.Util.authLoginLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                handler = new Handler();
+                runnable = new loginRunnable();
+                handler.post(runnable);
+                if (checkPlayServices()) {
+                    Intent intent = new Intent(this, RegistrationIntentService.class);
+                    startService(intent);
+                } else {
+                    Log.e(TAG, "No valid Google Play Services APK found.");
                 }
             }
         }
@@ -114,8 +109,7 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
         if (analytics != null) {
             analytics.getSessionClient().resumeSession();
         }
-        BusHolder.get().register(self);
-
+        BusHolder.get().register(this);
         mPresenter.resume();
     }
 
@@ -126,44 +120,8 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
             analytics.getSessionClient().pauseSession();
             analytics.getEventClient().submitEvents();
         }
-        BusHolder.get().unregister(self);
-
+        BusHolder.get().unregister(this);
         mPresenter.pause();
-    }
-
-    @Subscribe
-    public void subscribe(final CreateProviderFinishEvent event) {
-        if (isConversion) {
-            //復帰
-            switch (loginFrag) {
-                case TAG_SNS_FACEBOOK:
-                    if (AccessToken.getCurrentAccessToken() != null) {
-                        String token = AccessToken.getCurrentAccessToken().getToken();
-                        Application_Gocci.addLogins(this, Const.ENDPOINT_FACEBOOK, token, "none");
-                    }
-                    break;
-                case TAG_SNS_TWITTER:
-                    TwitterSession session =
-                            Twitter.getSessionManager().getActiveSession();
-                    if (session != null) {
-                        TwitterAuthToken authToken = session.getAuthToken();
-                        Application_Gocci.addLogins(this, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, "none");
-                    }
-                    break;
-                case TAG_AUTH:
-                    break;
-            }
-
-            //ノーマル
-            SavedData.setFlag(SplashActivity.this, 0);
-
-            Intent intent = new Intent(SplashActivity.this, TimelineActivity.class);
-            if (!SplashActivity.this.isFinishing()) {
-                SplashActivity.this.startActivity(intent);
-                overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-                SplashActivity.this.finish();
-            }
-        }
     }
 
     @Override
@@ -172,6 +130,16 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
         if (handler != null) {
             handler.removeCallbacks(runnable);
             handler = null;
+        }
+    }
+
+    @Subscribe
+    public void subscribe(RegIdRegisteredEvent event) {
+        API3.Util.AuthCheckLocalCode localCode = API3.Impl.getRepository().auth_check_parameter_regex(event.register_id);
+        if (localCode == null) {
+            mPresenter.checkRegId(API3.Util.getAuthCheckAPI(event.register_id));
+        } else {
+        Toast.makeText(this, API3.Util.authCheckLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -186,54 +154,76 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
     }
 
     @Override
-    public void showResult(int api, User user) {
-        switch (api) {
-            case Const.LOGIN_WELCOME:
-                if (user.getCode() == 200) {
-                    Application_Gocci.GuestInit(this, user.getIdentityId(), user.getToken(), String.valueOf(user.getUserId()));
-                    SavedData.setWelcome(this, user.getUserName(), user.getProfileImg(), String.valueOf(user.getUserId()), user.getIdentityId(), user.getBadgeNum());
-                    //ノーマル
-                    SavedData.setFlag(SplashActivity.this, 0);
-
-                    Intent intent = new Intent(SplashActivity.this, TimelineActivity.class);
-                    if (!SplashActivity.this.isFinishing()) {
-                        SplashActivity.this.startActivity(intent);
-                        overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-                        SplashActivity.this.finish();
-                    }
-                } else {
-                    Toast.makeText(this, user.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-                break;
-            case Const.LOGIN_CONVERSION:
-                if (user.getCode() == 200) {
-                    SavedData.setWelcome(this, user.getUserName(), user.getProfileImg(), String.valueOf(user.getUserId()), user.getIdentityId(), user.getBadgeNum());
-
-                    Application_Gocci.GuestInit(this, user.getIdentityId(), user.getToken(), String.valueOf(user.getUserId()));
-                } else {
-                    Toast.makeText(this, user.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-                break;
-        }
-    }
-
-    @Override
-    public void showNoResult(int api) {
-        switch (api) {
-            case Const.LOGIN_WELCOME:
-                break;
-            case Const.LOGIN_CONVERSION:
-                break;
-        }
-        Toast.makeText(this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
+    public void onCheckSuccess() {
         handler = new Handler();
         runnable = new loginRunnable();
-        handler.postDelayed(runnable, 1000);
+        handler.post(runnable);
     }
 
     @Override
-    public void showError() {
-        Toast.makeText(this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
+    public void onCheckFailureCausedByLocalError(final String id, String errorMessage) {
+        if (id != null) {
+            new MaterialDialog.Builder(this)
+                    .title("ユーザーデータが存在します")
+                    .titleColorRes(R.color.nameblack)
+                    .content("以前ログインしていたユーザーとしてログインしますか？ \n ※いいえを押した場合、以前のユーザーでログインできない可能性があります")
+                    .contentColorRes(R.color.nameblack)
+                    .positiveText("ログインする")
+                    .positiveColorRes(R.color.gocci_header)
+                    .negativeText("いいえ")
+                    .negativeColorRes(R.color.gocci_header)
+                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                        @Override
+                        public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                            API3.Util.AuthLoginLocalCode localCode = API3.Impl.getRepository().auth_login_parameter_regex(id);
+                            if (localCode == null) {
+                                mPresenter.loginUser(Const.APICategory.AUTH_LOGIN, API3.Util.getAuthLoginAPI(id));
+                            } else {
+                                Toast.makeText(SplashActivity.this, API3.Util.authLoginLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    })
+                    .onNegative(new MaterialDialog.SingleButtonCallback() {
+                        @Override
+                        public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                            handler = new Handler();
+                            runnable = new loginRunnable();
+                            handler.post(runnable);
+                        }
+                    })
+                    .cancelable(false)
+                    .show();
+        } else {
+            Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onCheckFailureCausedByGlobalError(API3.Util.GlobalCode globalCode) {
+        Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.AUTH_CHECK, globalCode);
+    }
+
+    @Override
+    public void showResult(Const.APICategory api) {
+        Intent intent = new Intent(SplashActivity.this, TimelineActivity.class);
+        if (!SplashActivity.this.isFinishing()) {
+            SplashActivity.this.startActivity(intent);
+            overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+            SplashActivity.this.finish();
+        }
+    }
+
+    @Override
+    public void showNoResultCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
+        Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
+    }
+
+    @Override
+    public void showNoResultCausedByLocalError(Const.APICategory api, final String errorMessage) {
+        Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
+        handler = new Handler();
+        runnable = new loginRunnable();
+        handler.post(runnable);
     }
 
     private class loginRunnable implements Runnable {
@@ -246,6 +236,21 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
                 SplashActivity.this.finish();
             }
         }
+    }
+
+    private boolean checkPlayServices() {
+        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+                GooglePlayServicesUtil.getErrorDialog(resultCode, this,
+                        PLAY_SERVICES_RESOLUTION_REQUEST).show();
+            } else {
+                Log.e(TAG, "This device is not supported.");
+                finish();
+            }
+            return false;
+        }
+        return true;
     }
 }
 

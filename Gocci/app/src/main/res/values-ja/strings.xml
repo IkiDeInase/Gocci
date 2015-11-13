@@ -172,6 +172,7 @@
     <string name="auth_twitter_message">Twitter 連携する</string>
     <string name="auth_facebook_message">Facebook 連携する</string>
     <string name="auth_skip">連携せずに始める</string>
+    <string name="setting_password">パスワードを設定して始める</string>
     <string name="remove_auth_twitter_message">Twitterの連携を解除してもいいですか？</string>
     <string name="remove_auth_facebook_message">Facebookの連携を解除してもいいですか？</string>
     <string name="remove_auth_yeah">解除する</string>

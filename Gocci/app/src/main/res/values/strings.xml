@@ -172,6 +172,7 @@
     <string name="auth_twitter_message">Twitter Authentication</string>
     <string name="auth_facebook_message">Facebook Authentication</string>
     <string name="auth_skip">Go Start!</string>
+    <string name="setting_password">Set Password</string>
     <string name="remove_auth_twitter_message">Are you remove Twitter Authentication?</string>
     <string name="remove_auth_facebook_message">Are you remove Facebook Authentication?</string>
     <string name="remove_auth_yeah">Remove it</string>

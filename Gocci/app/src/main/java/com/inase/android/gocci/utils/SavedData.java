@@ -210,7 +210,7 @@ public class SavedData {
 
     public static String getVersionName(Context context) {
         SharedPreferences prefs = context.getSharedPreferences("pref", Context.MODE_PRIVATE);
-        return prefs.getString(KEY_VERSION_NAME, "1.0.0");
+        return prefs.getString(KEY_VERSION_NAME, "3");
     }
 
     public static void setVersionName(Context context, String versionName) {

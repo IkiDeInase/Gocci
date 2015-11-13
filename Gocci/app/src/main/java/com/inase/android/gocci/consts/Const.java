@@ -48,20 +48,14 @@ public class Const {
         return URL_PREFIX + VERSION_NUMBER + "/mobile/auth/login/?identity_id=" + identity_id;
     }
 
-    public static String getAuthSNSLoginAPI(String identity_id, String os, String model, String register_id) {
+    public static String getAuthSNSLoginAPI(String identity_id, String os, String ver, String model, String register_id) {
         return URL_PREFIX + VERSION_NUMBER + "/mobile/auth/sns_login/?identity_id=" + identity_id + "&os=android_" + os +
-                "&model=" + model + "&register_id=" + register_id;
+                "&ver=" + ver + "&model=" + model + "&register_id=" + register_id;
     }
 
-    public static String getAuthSignupAPI(String username, String os, String model, String register_id) {
+    public static String getAuthSignupAPI(String username, String os, String ver, String model, String register_id) {
         return URL_PREFIX + VERSION_NUMBER + "/mobile/auth/signup/?username=" + username + "&os=android_" + os +
-                "&model=" + model + "&register_id=" + register_id;
-    }
-
-    public static String getAuthConversionAPI(String username, String profile_img, String os, String model, String register_id) {
-        return URL_PREFIX + VERSION_NUMBER + "/mobile/auth/conversion/?username=" + username +
-                "&profile_img=" + profile_img + "&os=android_" + os +
-                "&model=" + model + "&register_id=" + register_id;
+                "&ver=" + ver + "&model=" + model + "&register_id=" + register_id;
     }
 
     public static String getAuthSNSMatchAPI(String providerName, String token, String profile_img) {
@@ -80,9 +74,9 @@ public class Const {
                 "&model=" + model + "&register_id=" + register_id;
     }
 
-    public static String getAuthUsernamePasswordAPI(String username, String password, String os, String model, String register_id) {
+    public static String getAuthUsernamePasswordAPI(String username, String password, String os, String ver, String model, String register_id) {
         return URL_PREFIX + VERSION_NUMBER + "/mobile/auth/pass_login/?username=" + username +
-                "&pass=" + password + "&os=android_" + os + "&model=" + model + "&register_id=" + register_id;
+                "&pass=" + password + "&os=android_" + os + "&ver=" + ver + "&model=" + model + "&register_id=" + register_id;
     }
 
     public static String getCustomTimelineAPI(int position, int sort_id, int category_id, int value_id, double lon, double lat, int call) {
@@ -158,6 +152,10 @@ public class Const {
 
     public static String getRestCheerAPI(int rest_id) {
         return URL_PREFIX + VERSION_NUMBER + "/mobile/get/rest_cheer/?rest_id=" + rest_id;
+    }
+
+    public static String getHeatmapAPI() {
+        return URL_PREFIX + VERSION_NUMBER + "/mobile/get/heatmap";
     }
 
     public static String getPostGochiAPI(String post_id) {
@@ -286,12 +284,15 @@ public class Const {
     public static final int COMMENT_FIRST = 8;
     public static final int COMMENT_REFRESH = 9;
 
-    public static final int LOGIN_WELCOME = 20;
-    public static final int LOGIN_CONVERSION = 21;
-    public static final int LOGIN_SNS_WELCOME = 22;
-    public static final int LOGIN_SNS_CONVERSION = 23;
-    public static final int LOGIN_NAME_PASS = 24;
-    public static final int LOGIN_SIGNUP = 25;
+    public enum APICategory {
+        AUTH_LOGIN,
+        AUTH_CHECK,
+        AUTH_SIGNUP,
+        AUTH_SNS_LOGIN,
+        AUTH_PASS_LOGIN,
+        POST_SNS,
+        POST_SNS_UNLINK
+    }
 
     public static final class TwoCellViewHolder extends RecyclerView.ViewHolder {
         @Bind(R.id.video_thumbnail)

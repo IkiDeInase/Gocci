@@ -1,18 +1,18 @@
 package com.inase.android.gocci.datasource.repository;
 
-import com.inase.android.gocci.domain.model.User;
+import com.inase.android.gocci.consts.Const;
 
 /**
  * Created by kinagafuji on 15/09/25.
  */
 public interface LoginRepository {
-    void userLogin(int api, String url, LoginRepositoryCallback cb);
+    void userLogin(Const.APICategory api, String url, LoginRepositoryCallback cb);
 
     interface LoginRepositoryCallback {
-        void onUserLogined(int api, User user);
+        void onLogin(Const.APICategory api);
 
-        void onUserNotLogined(int api);
+        void onNotLoginCausedByLocalError(Const.APICategory api, String errorMessage);
 
-        void onError();
+        void onNotLoginCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode);
     }
 }

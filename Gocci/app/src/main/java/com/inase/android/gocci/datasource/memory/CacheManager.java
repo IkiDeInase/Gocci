@@ -224,7 +224,7 @@ public class CacheManager {
 
                             @Override
                             public void onFailure(int statusCode, Header[] headers, Throwable throwable, File file) {
-                                Log.d("DEBUG", "HttpResponseHeader onFailure: status:" + statusCode);
+                                Log.d("DEBUG", "HttpResponseHeader onCheckFailure: status:" + statusCode);
                                 mRequestFlag = false;
                                 if (mRequestVo.isRetryWithCountUp()) {
                                     mMovieCacheRequestVos.push(mRequestVo);
@@ -238,7 +238,7 @@ public class CacheManager {
 
                             @Override
                             public void onSuccess(int statusCode, Header[] headers, File file) {
-                                Log.d("DEBUG", "HttpResponseHeader onSuccess");
+                                Log.d("DEBUG", "HttpResponseHeader onCheckSuccess");
                                 mCachedIds.add(mRequestVo.getPostId());
                                 // Listenerに通知
                                 mRequestVo.getICacheManagerListener().movieCacheCreated(true, mRequestVo.getPostId());
