@@ -90,9 +90,6 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
                     Toast.makeText(SplashActivity.this, API3.Util.authLoginLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
                 }
             } else {
-                handler = new Handler();
-                runnable = new loginRunnable();
-                handler.post(runnable);
                 if (checkPlayServices()) {
                     Intent intent = new Intent(this, RegistrationIntentService.class);
                     startService(intent);
