@@ -4,15 +4,17 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.Settings;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
+import android.support.v4.content.PermissionChecker;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -24,6 +26,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
 import com.andexert.library.RippleView;
@@ -554,25 +558,33 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
         });
     }
 
-    public void shareVideoPost(int requastCode, SquareImageView view, String share, String restname) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                mShareShare = share;
-                mShareRestname = restname;
-                mShareImage = view;
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, requastCode);
+    public void shareVideoPost(final int requastCode, SquareImageView view, String share, String restname) {
+        if (PermissionChecker.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            mShareShare = share;
+            mShareRestname = restname;
+            mShareImage = view;
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                new MaterialDialog.Builder(this)
+                        .content("シェアをするにはストレージにアクセスする必要があります。権限を許可しますか？")
+                        .contentColorRes(R.color.nameblack)
+                        .positiveText("許可する")
+                        .positiveColorRes(R.color.gocci_header)
+                        .negativeText("いいえ")
+                        .negativeColorRes(R.color.gocci_header)
+                        .onPositive(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                                ActivityCompat.requestPermissions(UserProfActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, requastCode);
+                            }
+                        })
+                        .onNegative(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                                Toast.makeText(UserProfActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+                            }
+                        }).show();
             } else {
-                switch (requastCode) {
-                    case 25:
-                        Util.facebookVideoShare(this, shareDialog, mShareShare);
-                        break;
-                    case 26:
-                        Util.twitterShare(this, mShareImage, mShareRestname);
-                        break;
-                    case 27:
-                        Util.instaVideoShare(this, mShareRestname, mShareShare);
-                        break;
-                }
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, requastCode);
             }
         } else {
             switch (requastCode) {
@@ -594,27 +606,132 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
                                            String permissions[], int[] grantResults) {
         switch (requestCode) {
             case 25:
-                if (grantResults.length > 0 &&
-                        grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Util.facebookVideoShare(this, shareDialog, mShareShare);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (grantResults.length > 0 &&
+                            grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        Util.facebookVideoShare(this, shareDialog, mShareShare);
+                    } else {
+                        if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                            new MaterialDialog.Builder(this)
+                                    .title("権限許可のお願い")
+                                    .titleColorRes(R.color.namegrey)
+                                    .content("シェアするには権限を許可する必要があるため、設定を変更する必要があります")
+                                    .contentColorRes(R.color.nameblack)
+                                    .positiveText("変更する")
+                                    .positiveColorRes(R.color.gocci_header)
+                                    .negativeText("いいえ")
+                                    .negativeColorRes(R.color.gocci_header)
+                                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                        @Override
+                                        public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                                            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                            Uri uri = Uri.fromParts("package", getPackageName(), null); //Fragmentの場合はgetContext().getPackageName()
+                                            intent.setData(uri);
+                                            startActivity(intent);
+                                        }
+                                    })
+                                    .onNegative(new MaterialDialog.SingleButtonCallback() {
+                                        @Override
+                                        public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                                            Toast.makeText(UserProfActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+                                        }
+                                    }).show();
+                        } else {
+                            Toast.makeText(UserProfActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+                        }
+                    }
                 } else {
-                    Toast.makeText(UserProfActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+                    if (PermissionChecker.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                        Toast.makeText(UserProfActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+                    } else {
+                        Util.facebookVideoShare(this, shareDialog, mShareShare);
+                    }
                 }
                 break;
             case 26:
-                if (grantResults.length > 0 &&
-                        grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Util.twitterShare(this, mShareImage, mShareRestname);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (grantResults.length > 0 &&
+                            grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        Util.twitterShare(this, mShareImage, mShareRestname);
+                    } else {
+                        if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                            new MaterialDialog.Builder(this)
+                                    .title("権限許可のお願い")
+                                    .titleColorRes(R.color.namegrey)
+                                    .content("シェアするには権限を許可する必要があるため、設定を変更する必要があります")
+                                    .contentColorRes(R.color.nameblack)
+                                    .positiveText("変更する")
+                                    .positiveColorRes(R.color.gocci_header)
+                                    .negativeText("いいえ")
+                                    .negativeColorRes(R.color.gocci_header)
+                                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                        @Override
+                                        public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                                            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                            Uri uri = Uri.fromParts("package", getPackageName(), null); //Fragmentの場合はgetContext().getPackageName()
+                                            intent.setData(uri);
+                                            startActivity(intent);
+                                        }
+                                    })
+                                    .onNegative(new MaterialDialog.SingleButtonCallback() {
+                                        @Override
+                                        public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                                            Toast.makeText(UserProfActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+                                        }
+                                    }).show();
+                        } else {
+                            Toast.makeText(UserProfActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+                        }
+                    }
                 } else {
-                    Toast.makeText(UserProfActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+                    if (PermissionChecker.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                        Toast.makeText(UserProfActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+                    } else {
+                        Util.twitterShare(this, mShareImage, mShareRestname);
+                    }
                 }
                 break;
             case 27:
-                if (grantResults.length > 0 &&
-                        grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Util.instaVideoShare(this, mShareRestname, mShareShare);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (grantResults.length > 0 &&
+                            grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        Util.instaVideoShare(this, mShareRestname, mShareShare);
+                    } else {
+                        if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                            new MaterialDialog.Builder(this)
+                                    .title("権限許可のお願い")
+                                    .titleColorRes(R.color.namegrey)
+                                    .content("シェアするには権限を許可する必要があるため、設定を変更する必要があります")
+                                    .contentColorRes(R.color.nameblack)
+                                    .positiveText("変更する")
+                                    .positiveColorRes(R.color.gocci_header)
+                                    .negativeText("いいえ")
+                                    .negativeColorRes(R.color.gocci_header)
+                                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                        @Override
+                                        public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                                            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                            Uri uri = Uri.fromParts("package", getPackageName(), null); //Fragmentの場合はgetContext().getPackageName()
+                                            intent.setData(uri);
+                                            startActivity(intent);
+                                        }
+                                    })
+                                    .onNegative(new MaterialDialog.SingleButtonCallback() {
+                                        @Override
+                                        public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                                            Toast.makeText(UserProfActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+                                        }
+                                    }).show();
+                        } else {
+                            Toast.makeText(UserProfActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+                        }
+                    }
                 } else {
-                    Toast.makeText(UserProfActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+                    if (PermissionChecker.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                        Toast.makeText(UserProfActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+                    } else {
+                        Util.instaVideoShare(this, mShareRestname, mShareShare);
+                    }
                 }
                 break;
         }

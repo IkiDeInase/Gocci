@@ -10,7 +10,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
+import android.support.v4.content.PermissionChecker;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,10 +22,14 @@ import com.github.jorgecastilloprz.listeners.FABProgressListener;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.datasource.repository.API3;
+import com.inase.android.gocci.datasource.repository.CheckRegIdRepository;
+import com.inase.android.gocci.datasource.repository.CheckRegIdRepositoryImpl;
 import com.inase.android.gocci.datasource.repository.LoginRepository;
 import com.inase.android.gocci.datasource.repository.LoginRepositoryImpl;
 import com.inase.android.gocci.domain.executor.UIThread;
-import com.inase.android.gocci.domain.model.User;
+import com.inase.android.gocci.domain.usecase.CheckRegIdUseCase;
+import com.inase.android.gocci.domain.usecase.CheckRegIdUseCaseImpl;
 import com.inase.android.gocci.domain.usecase.UserLoginUseCase;
 import com.inase.android.gocci.domain.usecase.UserLoginUseCaseImpl;
 import com.inase.android.gocci.presenter.ShowUserLoginPresenter;
@@ -57,8 +61,13 @@ public class LoginCreateUserNameFragment extends Fragment implements FABProgress
     public void fab() {
         if (mUsernameTextInput.getEditText().getText().length() != 0) {
             mUsernameTextInput.setError("");
-            mPresenter.loginUser(Const.LOGIN_SIGNUP,
-                    Const.getAuthSignupAPI(mUsernameTextInput.getEditText().getText().toString(), Build.VERSION.RELEASE, Build.MODEL, SavedData.getRegId(getActivity())));
+            API3.Util.AuthSignupLocalCode localCode = API3.Impl.getRepository().auth_signup_parameter_regex(mUsernameTextInput.getEditText().getText().toString(), "android", SavedData.getVersionName(getActivity()), Build.MODEL, SavedData.getRegId(getActivity()));
+            if (localCode == null) {
+                mPresenter.loginUser(Const.APICategory.AUTH_SIGNUP,
+                        API3.Util.getAuthSignupAPI(mUsernameTextInput.getEditText().getText().toString(), Build.VERSION.RELEASE, SavedData.getVersionName(getActivity()), Build.MODEL, SavedData.getRegId(getActivity())));
+            } else {
+            Toast.makeText(getActivity(), API3.Util.authSignupLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+            }
         } else {
             Toast.makeText(getActivity(), getString(R.string.please_input_username), Toast.LENGTH_SHORT).show();
         }
@@ -82,9 +91,12 @@ public class LoginCreateUserNameFragment extends Fragment implements FABProgress
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        LoginRepository loginRepositoryImpl = LoginRepositoryImpl.getRepository();
+        API3 api3Impl = API3.Impl.getRepository();
+        LoginRepository loginRepositoryImpl = LoginRepositoryImpl.getRepository(api3Impl);
+        CheckRegIdRepository checkRegIdRepositoryImpl = CheckRegIdRepositoryImpl.getRepository(api3Impl);
         UserLoginUseCase userLoginUseCaseImpl = UserLoginUseCaseImpl.getUseCase(loginRepositoryImpl, UIThread.getInstance());
-        mPresenter = new ShowUserLoginPresenter(userLoginUseCaseImpl);
+        CheckRegIdUseCase checkRegIdUseCaseImpl = CheckRegIdUseCaseImpl.getUseCase(checkRegIdRepositoryImpl, UIThread.getInstance());
+        mPresenter = new ShowUserLoginPresenter(userLoginUseCaseImpl, checkRegIdUseCaseImpl);
         mPresenter.setShowUserLoginView(this);
     }
 
@@ -162,46 +174,46 @@ public class LoginCreateUserNameFragment extends Fragment implements FABProgress
     }
 
     @Override
-    public void showResult(int api, User user) {
-        if (api == Const.LOGIN_SIGNUP) {
-            if (user.getCode() == 200) {
-                SavedData.setWelcome(getActivity(), user.getUserName(), user.getProfileImg(), String.valueOf(user.getUserId()), user.getIdentityId(), user.getBadgeNum());
-                Application_Gocci.GuestInit(getActivity(), user.getIdentityId(), user.getToken(), String.valueOf(user.getUserId()));
-                SavedData.setFlag(getActivity(), 0);
-                mFabProgressCircle.beginFinalAnimation();
-            } else {
-                Toast.makeText(getActivity(), user.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        }
+    public void onCheckSuccess() {
+
     }
 
     @Override
-    public void showNoResult(int api) {
-        if (api == Const.LOGIN_SIGNUP) {
-            mFab.setClickable(true);
-            mFabProgressCircle.hide();
-            mUsernameTextInput.setError(getString(R.string.multiple_username));
-        }
+    public void onCheckFailureCausedByLocalError(String id, String errorMessage) {
+        Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void showError() {
+    public void onCheckFailureCausedByGlobalError(API3.Util.GlobalCode globalCode) {
+        Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.AUTH_CHECK, globalCode);
+    }
+
+    @Override
+    public void showResult(Const.APICategory api) {
+        mFabProgressCircle.beginFinalAnimation();
+    }
+
+    @Override
+    public void showNoResultCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
         mFab.setClickable(true);
         mFabProgressCircle.hide();
-        Toast.makeText(getActivity(), getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
+        mUsernameTextInput.setError(API3.Util.globalErrorMessageTable(globalCode));
+        Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
+    }
+
+    @Override
+    public void showNoResultCausedByLocalError(Const.APICategory api, String errorMessage) {
+        mFab.setClickable(true);
+        mFabProgressCircle.hide();
+        mUsernameTextInput.setError(errorMessage);
     }
 
     private void enableLocationAndStorage() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(getActivity(),
-                    Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (PermissionChecker.checkSelfPermission(getActivity(),
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-                ActivityCompat.requestPermissions(getActivity(),
-                        new String[]{Manifest.permission.GET_ACCOUNTS, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.READ_EXTERNAL_STORAGE}, 45);
-            } else {
-                TutorialActivity activity = (TutorialActivity) getActivity();
-                activity.mPager.setCurrentItem(4, true);
-            }
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{Manifest.permission.GET_ACCOUNTS, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.READ_EXTERNAL_STORAGE}, 45);
         } else {
             TutorialActivity activity = (TutorialActivity) getActivity();
             activity.mPager.setCurrentItem(4, true);

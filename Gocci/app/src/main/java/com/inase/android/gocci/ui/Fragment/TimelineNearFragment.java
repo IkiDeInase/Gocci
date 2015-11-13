@@ -6,13 +6,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
+import android.support.v4.content.PermissionChecker;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -355,46 +357,33 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
     }
 
     private void getSignupAsync(final Context context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(getActivity(),
-                    Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (PermissionChecker.checkSelfPermission(getActivity(),
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-                if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)) {
-                    new MaterialDialog.Builder(getActivity())
-                            .title("権限許可のお願い")
-                            .titleColorRes(R.color.namegrey)
-                            .content("近い店を表示するには位置情報を取得する必要があります。位置情報を許可しますか？")
-                            .contentColorRes(R.color.nameblack)
-                            .positiveText("許可する")
-                            .positiveColorRes(R.color.gocci_header)
-                            .negativeText("いいえ")
-                            .negativeColorRes(R.color.gocci_header)
-                            .onPositive(new MaterialDialog.SingleButtonCallback() {
-                                @Override
-                                public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
-                                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 38);
-                                }
-                            })
-                            .onNegative(new MaterialDialog.SingleButtonCallback() {
-                                @Override
-                                public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
-                                    onNegativeActionCausedByM();
-                                }
-                            }).show();
-                } else {
-                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 38);
-                }
+            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)) {
+                new MaterialDialog.Builder(getActivity())
+                        .title("権限許可のお願い")
+                        .titleColorRes(R.color.namegrey)
+                        .content("近い店を表示するには位置情報を取得する必要があります。位置情報を許可しますか？")
+                        .contentColorRes(R.color.nameblack)
+                        .positiveText("許可する")
+                        .positiveColorRes(R.color.gocci_header)
+                        .negativeText("いいえ")
+                        .negativeColorRes(R.color.gocci_header)
+                        .onPositive(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 38);
+                            }
+                        })
+                        .onNegative(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                                onNegativeActionCausedByM();
+                            }
+                        }).show();
             } else {
-                SmartLocation.with(context).location().oneFix().start(new OnLocationUpdatedListener() {
-                    @Override
-                    public void onLocationUpdated(Location location) {
-                        TimelineActivity.mLongitude = location.getLongitude();
-                        TimelineActivity.mLatitude = location.getLatitude();
-                        mPresenter.getNearTimelinePostData(Const.TIMELINE_FIRST, Const.getCustomTimelineAPI(0,
-                                TimelineActivity.mNearSort_id, TimelineActivity.mNearCategory_id, TimelineActivity.mNearValue_id,
-                                TimelineActivity.mLongitude, TimelineActivity.mLatitude, 0));
-                    }
-                });
+                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 38);
             }
         } else {
             SmartLocation.with(context).location().oneFix().start(new OnLocationUpdatedListener() {
@@ -411,50 +400,34 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
     }
 
     private void getRefreshAsync(final Context context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(getActivity(),
-                    Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (PermissionChecker.checkSelfPermission(getActivity(),
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-                if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)) {
-                    new MaterialDialog.Builder(getActivity())
-                            .content("近い店を表示するには位置情報を取得する必要があります。位置情報を許可しますか？")
-                            .contentColorRes(R.color.nameblack)
-                            .positiveText("許可する")
-                            .positiveColorRes(R.color.gocci_header)
-                            .negativeText("いいえ")
-                            .negativeColorRes(R.color.gocci_header)
-                            .onPositive(new MaterialDialog.SingleButtonCallback() {
-                                @Override
-                                public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
-                                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 39);
-                                }
-                            })
-                            .onNegative(new MaterialDialog.SingleButtonCallback() {
-                                @Override
-                                public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
-                                    mEmptyImage.setVisibility(View.VISIBLE);
-                                    mEmptyText.setVisibility(View.VISIBLE);
-                                    mSwipeContainer.setRefreshing(false);
-                                }
-                            }).show();
-                } else {
-                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 39);
-                }
+            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)) {
+                new MaterialDialog.Builder(getActivity())
+                        .content("近い店を表示するには位置情報を取得する必要があります。位置情報を許可しますか？")
+                        .contentColorRes(R.color.nameblack)
+                        .positiveText("許可する")
+                        .positiveColorRes(R.color.gocci_header)
+                        .negativeText("いいえ")
+                        .negativeColorRes(R.color.gocci_header)
+                        .onPositive(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 39);
+                            }
+                        })
+                        .onNegative(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                                Toast.makeText(getActivity(), "近くの店は表示できなくなります", Toast.LENGTH_SHORT).show();
+                                mEmptyImage.setVisibility(View.VISIBLE);
+                                mEmptyText.setVisibility(View.VISIBLE);
+                                mSwipeContainer.setRefreshing(false);
+                            }
+                        }).show();
             } else {
-                SmartLocation.with(context).location().oneFix().start(new OnLocationUpdatedListener() {
-                    @Override
-                    public void onLocationUpdated(Location location) {
-                        TimelineActivity.mLongitude = location.getLongitude();
-                        TimelineActivity.mLatitude = location.getLatitude();
-                        TimelineActivity.mNearCategory_id = 0;
-                        TimelineActivity.mNearValue_id = 0;
-                        mPresenter.getNearTimelinePostData(Const.TIMELINE_REFRESH, Const.getCustomTimelineAPI(0,
-                                TimelineActivity.mNearSort_id, TimelineActivity.mNearCategory_id, TimelineActivity.mNearValue_id,
-                                TimelineActivity.mLongitude, TimelineActivity.mLatitude, 0));
-                        TimelineActivity activity = (TimelineActivity) getActivity();
-                        activity.setNowLocationTitle();
-                    }
-                });
+                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 39);
             }
         } else {
             SmartLocation.with(context).location().oneFix().start(new OnLocationUpdatedListener() {
@@ -479,48 +452,144 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
                                            String permissions[], int[] grantResults) {
         switch (requestCode) {
             case 38:
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    SmartLocation.with(getActivity()).location().oneFix().start(new OnLocationUpdatedListener() {
-                        @Override
-                        public void onLocationUpdated(Location location) {
-                            TimelineActivity.mLongitude = location.getLongitude();
-                            TimelineActivity.mLatitude = location.getLatitude();
-                            mPresenter.getNearTimelinePostData(Const.TIMELINE_FIRST, Const.getCustomTimelineAPI(0,
-                                    TimelineActivity.mNearSort_id, TimelineActivity.mNearCategory_id, TimelineActivity.mNearValue_id,
-                                    TimelineActivity.mLongitude, TimelineActivity.mLatitude, 0));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (grantResults.length > 0
+                            && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        SmartLocation.with(getActivity()).location().oneFix().start(new OnLocationUpdatedListener() {
+                            @Override
+                            public void onLocationUpdated(Location location) {
+                                TimelineActivity.mLongitude = location.getLongitude();
+                                TimelineActivity.mLatitude = location.getLatitude();
+                                mPresenter.getNearTimelinePostData(Const.TIMELINE_FIRST, Const.getCustomTimelineAPI(0,
+                                        TimelineActivity.mNearSort_id, TimelineActivity.mNearCategory_id, TimelineActivity.mNearValue_id,
+                                        TimelineActivity.mLongitude, TimelineActivity.mLatitude, 0));
+                            }
+                        });
+                    } else {
+                        if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)) {
+                            onNegativeActionCausedByM();
+                        } else {
+                            new MaterialDialog.Builder(getActivity())
+                                    .title("権限許可のお願い")
+                                    .titleColorRes(R.color.namegrey)
+                                    .content("近い店を表示するには位置情報を取得する必要があるため、設定を変更する必要があります")
+                                    .contentColorRes(R.color.nameblack)
+                                    .positiveText("変更する")
+                                    .positiveColorRes(R.color.gocci_header)
+                                    .negativeText("いいえ")
+                                    .negativeColorRes(R.color.gocci_header)
+                                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                        @Override
+                                        public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                                            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                            Uri uri = Uri.fromParts("package", getContext().getPackageName(), null); //Fragmentの場合はgetContext().getPackageName()
+                                            intent.setData(uri);
+                                            startActivity(intent);
+                                        }
+                                    })
+                                    .onNegative(new MaterialDialog.SingleButtonCallback() {
+                                        @Override
+                                        public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                                            onNegativeActionCausedByM();
+                                        }
+                                    }).show();
                         }
-                    });
+                    }
                 } else {
-                    onNegativeActionCausedByM();
+                    if (PermissionChecker.checkSelfPermission(getActivity(),
+                            Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        Toast.makeText(getActivity(), "近くの店は表示できなくなります", Toast.LENGTH_SHORT).show();
+                    } else {
+                        SmartLocation.with(getActivity()).location().oneFix().start(new OnLocationUpdatedListener() {
+                            @Override
+                            public void onLocationUpdated(Location location) {
+                                TimelineActivity.mLongitude = location.getLongitude();
+                                TimelineActivity.mLatitude = location.getLatitude();
+                                mPresenter.getNearTimelinePostData(Const.TIMELINE_FIRST, Const.getCustomTimelineAPI(0,
+                                        TimelineActivity.mNearSort_id, TimelineActivity.mNearCategory_id, TimelineActivity.mNearValue_id,
+                                        TimelineActivity.mLongitude, TimelineActivity.mLatitude, 0));
+                            }
+                        });
+                    }
                 }
                 break;
             case 39:
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    SmartLocation.with(getActivity()).location().oneFix().start(new OnLocationUpdatedListener() {
-                        @Override
-                        public void onLocationUpdated(Location location) {
-                            TimelineActivity.mLongitude = location.getLongitude();
-                            TimelineActivity.mLatitude = location.getLatitude();
-                            TimelineActivity.mNearCategory_id = 0;
-                            TimelineActivity.mNearValue_id = 0;
-                            mPresenter.getNearTimelinePostData(Const.TIMELINE_REFRESH, Const.getCustomTimelineAPI(0,
-                                    TimelineActivity.mNearSort_id, TimelineActivity.mNearCategory_id, TimelineActivity.mNearValue_id,
-                                    TimelineActivity.mLongitude, TimelineActivity.mLatitude, 0));
-                            TimelineActivity activity = (TimelineActivity) getActivity();
-                            activity.setNowLocationTitle();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (grantResults.length > 0
+                            && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        SmartLocation.with(getActivity()).location().oneFix().start(new OnLocationUpdatedListener() {
+                            @Override
+                            public void onLocationUpdated(Location location) {
+                                TimelineActivity.mLongitude = location.getLongitude();
+                                TimelineActivity.mLatitude = location.getLatitude();
+                                TimelineActivity.mNearCategory_id = 0;
+                                TimelineActivity.mNearValue_id = 0;
+                                mPresenter.getNearTimelinePostData(Const.TIMELINE_REFRESH, Const.getCustomTimelineAPI(0,
+                                        TimelineActivity.mNearSort_id, TimelineActivity.mNearCategory_id, TimelineActivity.mNearValue_id,
+                                        TimelineActivity.mLongitude, TimelineActivity.mLatitude, 0));
+                                TimelineActivity activity = (TimelineActivity) getActivity();
+                                activity.setNowLocationTitle();
+                            }
+                        });
+                    } else {
+                        if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)) {
+                            Toast.makeText(getActivity(), "近くの店は表示できなくなります", Toast.LENGTH_SHORT).show();
+                            mEmptyImage.setVisibility(View.VISIBLE);
+                            mEmptyText.setVisibility(View.VISIBLE);
+                            mSwipeContainer.setRefreshing(false);
+                        } else {
+                            new MaterialDialog.Builder(getActivity())
+                                    .title("権限許可のお願い")
+                                    .titleColorRes(R.color.namegrey)
+                                    .content("近い店を表示するには位置情報を取得する必要があるため、設定を変更する必要があります")
+                                    .contentColorRes(R.color.nameblack)
+                                    .positiveText("変更する")
+                                    .positiveColorRes(R.color.gocci_header)
+                                    .negativeText("いいえ")
+                                    .negativeColorRes(R.color.gocci_header)
+                                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                        @Override
+                                        public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                                            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                            Uri uri = Uri.fromParts("package", getContext().getPackageName(), null); //Fragmentの場合はgetContext().getPackageName()
+                                            intent.setData(uri);
+                                            startActivity(intent);
+                                        }
+                                    })
+                                    .onNegative(new MaterialDialog.SingleButtonCallback() {
+                                        @Override
+                                        public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                                            Toast.makeText(getActivity(), "近くの店は表示できなくなります", Toast.LENGTH_SHORT).show();
+                                            mEmptyImage.setVisibility(View.VISIBLE);
+                                            mEmptyText.setVisibility(View.VISIBLE);
+                                            mSwipeContainer.setRefreshing(false);
+                                        }
+                                    }).show();
                         }
-                    });
+                    }
                 } else {
-                    mEmptyImage.setVisibility(View.VISIBLE);
-                    mEmptyText.setVisibility(View.VISIBLE);
-                    mSwipeContainer.setRefreshing(false);
+                    if (PermissionChecker.checkSelfPermission(getActivity(),
+                            Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        Toast.makeText(getActivity(), "近くの店は表示できなくなります", Toast.LENGTH_SHORT).show();
+                    } else {
+                        SmartLocation.with(getActivity()).location().oneFix().start(new OnLocationUpdatedListener() {
+                            @Override
+                            public void onLocationUpdated(Location location) {
+                                TimelineActivity.mLongitude = location.getLongitude();
+                                TimelineActivity.mLatitude = location.getLatitude();
+                                TimelineActivity.mNearCategory_id = 0;
+                                TimelineActivity.mNearValue_id = 0;
+                                mPresenter.getNearTimelinePostData(Const.TIMELINE_REFRESH, Const.getCustomTimelineAPI(0,
+                                        TimelineActivity.mNearSort_id, TimelineActivity.mNearCategory_id, TimelineActivity.mNearValue_id,
+                                        TimelineActivity.mLongitude, TimelineActivity.mLatitude, 0));
+                                TimelineActivity activity = (TimelineActivity) getActivity();
+                                activity.setNowLocationTitle();
+                            }
+                        });
+                    }
                 }
                 break;
         }
-        // other 'case' lines to check for other
-        // permissions this app might request
     }
 
     private void onNegativeActionCausedByM() {

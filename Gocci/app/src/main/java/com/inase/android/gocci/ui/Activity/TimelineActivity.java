@@ -6,15 +6,17 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.Settings;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
+import android.support.v4.content.PermissionChecker;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -111,16 +113,21 @@ public class TimelineActivity extends AppCompatActivity {
 
     @OnClick(R.id.fab)
     public void click() {
-        if (mFab.getVisibility() == View.VISIBLE) {
-            FabTransformation.with(mFab).setOverlay(mOverlay).transformTo(mSheet);
-        }
-        SmartLocation.with(TimelineActivity.this).location().oneFix().start(new OnLocationUpdatedListener() {
-            @Override
-            public void onLocationUpdated(Location location) {
-                mLongitude = location.getLongitude();
-                mLatitude = location.getLatitude();
+        if (PermissionChecker.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            if (mFab.getVisibility() == View.VISIBLE) {
+                FabTransformation.with(mFab).setOverlay(mOverlay).transformTo(mSheet);
             }
-        });
+            SmartLocation.with(TimelineActivity.this).location().oneFix().start(new OnLocationUpdatedListener() {
+                @Override
+                public void onLocationUpdated(Location location) {
+                    mLongitude = location.getLongitude();
+                    mLatitude = location.getLatitude();
+                }
+            });
+        } else {
+            Toast.makeText(this, "位置情報の取得が許可されていません", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @OnClick(R.id.overlay)
@@ -415,6 +422,7 @@ public class TimelineActivity extends AppCompatActivity {
         });
 
         mSortSpinner.setVisibility(View.GONE);
+        mSortCross.setVisibility(View.GONE);
 
         mGochi.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -529,11 +537,7 @@ public class TimelineActivity extends AppCompatActivity {
         cameraitem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    enableCamera();
-                } else {
-                    goCamera();
-                }
+                enableCamera();
                 return false;
             }
         });
@@ -543,19 +547,19 @@ public class TimelineActivity extends AppCompatActivity {
     private void enableCamera() {
         int requestcode = 40;
         List<String> permissionArray = new ArrayList<>();
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+        if (PermissionChecker.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             permissionArray.add(Manifest.permission.CAMERA);
             requestcode = requestcode + 1;
         }
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+        if (PermissionChecker.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
             permissionArray.add(Manifest.permission.RECORD_AUDIO);
             requestcode = requestcode + 1;
         }
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+        if (PermissionChecker.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             permissionArray.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
             requestcode = requestcode + 1;
         }
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (PermissionChecker.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             permissionArray.add(Manifest.permission.ACCESS_FINE_LOCATION);
             requestcode = requestcode + 1;
         }
@@ -600,41 +604,57 @@ public class TimelineActivity extends AppCompatActivity {
                                            String permissions[], int[] grantResults) {
         switch (requestCode) {
             case 44:
-                if (grantResults.length > 0 &&
-                        grantResults[0] == PackageManager.PERMISSION_GRANTED &&
-                        grantResults[1] == PackageManager.PERMISSION_GRANTED &&
-                        grantResults[2] == PackageManager.PERMISSION_GRANTED &&
-                        grantResults[3] == PackageManager.PERMISSION_GRANTED) {
-                    goCamera();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (grantResults.length > 0 &&
+                            grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+                            grantResults[1] == PackageManager.PERMISSION_GRANTED &&
+                            grantResults[2] == PackageManager.PERMISSION_GRANTED &&
+                            grantResults[3] == PackageManager.PERMISSION_GRANTED) {
+                        goCamera();
+                    } else {
+                        rationaleSettingDialog();
+                    }
                 } else {
-                    Toast.makeText(TimelineActivity.this, "カメラは起動できませんでした", Toast.LENGTH_SHORT).show();
+                    checkCamera();
                 }
                 break;
             case 43:
-                if (grantResults.length > 0 &&
-                        grantResults[0] == PackageManager.PERMISSION_GRANTED &&
-                        grantResults[1] == PackageManager.PERMISSION_GRANTED &&
-                        grantResults[2] == PackageManager.PERMISSION_GRANTED) {
-                    goCamera();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (grantResults.length > 0 &&
+                            grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+                            grantResults[1] == PackageManager.PERMISSION_GRANTED &&
+                            grantResults[2] == PackageManager.PERMISSION_GRANTED) {
+                        goCamera();
+                    } else {
+                        rationaleSettingDialog();
+                    }
                 } else {
-                    Toast.makeText(TimelineActivity.this, "カメラは起動できませんでした", Toast.LENGTH_SHORT).show();
+                    checkCamera();
                 }
                 break;
             case 42:
-                if (grantResults.length > 0 &&
-                        grantResults[0] == PackageManager.PERMISSION_GRANTED &&
-                        grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-                    goCamera();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (grantResults.length > 0 &&
+                            grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+                            grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                        goCamera();
+                    } else {
+                        rationaleSettingDialog();
+                    }
                 } else {
-                    Toast.makeText(TimelineActivity.this, "カメラは起動できませんでした", Toast.LENGTH_SHORT).show();
+                    checkCamera();
                 }
                 break;
             case 41:
-                if (grantResults.length > 0 &&
-                        grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    goCamera();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (grantResults.length > 0 &&
+                            grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        goCamera();
+                    } else {
+                        rationaleSettingDialog();
+                    }
                 } else {
-                    Toast.makeText(TimelineActivity.this, "カメラは起動できませんでした", Toast.LENGTH_SHORT).show();
+                    checkCamera();
                 }
                 break;
             case 38:
@@ -643,6 +663,51 @@ public class TimelineActivity extends AppCompatActivity {
         }
         // other 'case' lines to check for other
         // permissions this app might request
+    }
+
+    private void rationaleSettingDialog() {
+        if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA) ||
+                !ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.RECORD_AUDIO) ||
+                !ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) ||
+                !ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+            new MaterialDialog.Builder(this)
+                    .title("権限許可のお願い")
+                    .titleColorRes(R.color.namegrey)
+                    .content("カメラを起動するには権限を許可する必要があるため、設定を変更する必要があります")
+                    .contentColorRes(R.color.nameblack)
+                    .positiveText("変更する")
+                    .positiveColorRes(R.color.gocci_header)
+                    .negativeText("いいえ")
+                    .negativeColorRes(R.color.gocci_header)
+                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                        @Override
+                        public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                            Uri uri = Uri.fromParts("package", getPackageName(), null); //Fragmentの場合はgetContext().getPackageName()
+                            intent.setData(uri);
+                            startActivity(intent);
+                        }
+                    })
+                    .onNegative(new MaterialDialog.SingleButtonCallback() {
+                        @Override
+                        public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                            Toast.makeText(TimelineActivity.this, "カメラは起動できませんでした", Toast.LENGTH_SHORT).show();
+                        }
+                    }).show();
+        } else {
+            Toast.makeText(TimelineActivity.this, "カメラは起動できませんでした", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void checkCamera() {
+        if (PermissionChecker.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED &&
+                PermissionChecker.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED &&
+                PermissionChecker.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
+                PermissionChecker.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            goCamera();
+        } else {
+            Toast.makeText(TimelineActivity.this, "カメラは起動できませんでした", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void goCamera() {
