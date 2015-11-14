@@ -30,6 +30,7 @@ import com.inase.android.gocci.domain.usecase.UserLoginUseCase;
 import com.inase.android.gocci.domain.usecase.UserLoginUseCaseImpl;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.RegIdRegisteredEvent;
+import com.inase.android.gocci.event.RetryApiEvent;
 import com.inase.android.gocci.presenter.ShowUserLoginPresenter;
 import com.inase.android.gocci.service.RegistrationIntentService;
 import com.inase.android.gocci.utils.SavedData;
@@ -248,6 +249,19 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
             return false;
         }
         return true;
+    }
+
+    @Subscribe
+    public void subscribe(RetryApiEvent event) {
+        switch (event.api) {
+            case AUTH_CHECK:
+                mPresenter.checkRegId(API3.Util.getAuthCheckAPI(SavedData.getRegId(this)));
+                break;
+            case AUTH_LOGIN:
+                mPresenter.loginUser(Const.APICategory.AUTH_LOGIN, API3.Util.getAuthLoginAPI(SavedData.getIdentityId(this)));
+                break;
+            default:break;
+        }
     }
 }
 

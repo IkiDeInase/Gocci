@@ -32,10 +32,13 @@ import com.inase.android.gocci.domain.usecase.CheckRegIdUseCase;
 import com.inase.android.gocci.domain.usecase.CheckRegIdUseCaseImpl;
 import com.inase.android.gocci.domain.usecase.UserLoginUseCase;
 import com.inase.android.gocci.domain.usecase.UserLoginUseCaseImpl;
+import com.inase.android.gocci.event.BusHolder;
+import com.inase.android.gocci.event.RetryApiEvent;
 import com.inase.android.gocci.presenter.ShowUserLoginPresenter;
 import com.inase.android.gocci.ui.activity.TutorialActivity;
 import com.inase.android.gocci.ui.activity.WebViewActivity;
 import com.inase.android.gocci.utils.SavedData;
+import com.squareup.otto.Subscribe;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -148,12 +151,16 @@ public class LoginCreateUserNameFragment extends Fragment implements FABProgress
     public void onResume() {
         super.onResume();
         mPresenter.resume();
+
+        BusHolder.get().register(this);
     }
 
     @Override
     public void onPause() {
         super.onPause();
         mPresenter.pause();
+
+        BusHolder.get().unregister(this);
     }
 
     @Override
@@ -217,6 +224,17 @@ public class LoginCreateUserNameFragment extends Fragment implements FABProgress
         } else {
             TutorialActivity activity = (TutorialActivity) getActivity();
             activity.mPager.setCurrentItem(4, true);
+        }
+    }
+
+    @Subscribe
+    public void subscribe(RetryApiEvent event) {
+        switch (event.api) {
+            case AUTH_SIGNUP:
+                mPresenter.loginUser(Const.APICategory.AUTH_SIGNUP,
+                        API3.Util.getAuthSignupAPI(mUsernameTextInput.getEditText().getText().toString(), Build.VERSION.RELEASE, SavedData.getVersionName(getActivity()), Build.MODEL, SavedData.getRegId(getActivity())));
+                break;
+            default:break;
         }
     }
 }

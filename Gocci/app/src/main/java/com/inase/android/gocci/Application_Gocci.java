@@ -24,6 +24,8 @@ import com.google.android.gms.analytics.Tracker;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.memory.CacheManager;
 import com.inase.android.gocci.datasource.repository.API3;
+import com.inase.android.gocci.event.BusHolder;
+import com.inase.android.gocci.event.RetryApiEvent;
 import com.inase.android.gocci.utils.SavedData;
 import com.inase.android.gocci.utils.aws.CustomProvider;
 import com.loopj.android.http.AsyncHttpClient;
@@ -56,7 +58,7 @@ public class Application_Gocci extends Application {
     private static AmazonS3 s3 = null;
     private static TransferUtility transferUtility = null;
 
-    private static final SyncHttpClient sSsyncHttpClient = new SyncHttpClient();
+    private static final SyncHttpClient sSyncHttpClient = new SyncHttpClient();
     private static final AsyncHttpClient sAsyncHttpClient = new AsyncHttpClient();
 
     //経度緯度情報
@@ -69,15 +71,15 @@ public class Application_Gocci extends Application {
     }
 
     public static void getJsonSyncHttpClient(String url, JsonHttpResponseHandler responseHandler) {
-        sSsyncHttpClient.get(url, responseHandler);
+        sSyncHttpClient.get(url, responseHandler);
     }
 
     public static void getJsonSync(String url, JsonHttpResponseHandler responseHandler) throws SocketTimeoutException {
-        sSsyncHttpClient.get(url, responseHandler);
+        sSyncHttpClient.get(url, responseHandler);
     }
 
     public static void getTextSyncHttpClient(String url, TextHttpResponseHandler responseHandler) {
-        sSsyncHttpClient.get(url, responseHandler);
+        sSyncHttpClient.get(url, responseHandler);
     }
 
     public static void getJsonAsyncHttpClient(String url, JsonHttpResponseHandler responseHandler) {
@@ -379,7 +381,7 @@ public class Application_Gocci extends Application {
         });
     }
 
-    public static void resolveOrHandleGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
+    public static void resolveOrHandleGlobalError(final Const.APICategory api, API3.Util.GlobalCode globalCode) {
         switch (globalCode) {
             case ERROR_UNKNOWN_ERROR:
                 //サーバに送る
@@ -387,6 +389,45 @@ public class Application_Gocci extends Application {
                 break;
             case ERROR_SESSION_EXPIRED:
                 //ログインとコグニートリフレッシュ　→　リトライ
+                API3.Util.GlobalCode code = API3.Impl.getRepository().check_global_error();
+                if (code == API3.Util.GlobalCode.SUCCESS) {
+                    getJsonAsyncHttpClient(API3.Util.getAuthLoginAPI(SavedData.getIdentityId(getInstance().getApplicationContext())), new JsonHttpResponseHandler() {
+                        @Override
+                        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                            API3.Impl.getRepository().auth_login_response(response, new API3.AuthResponseCallback() {
+                                @Override
+                                public void onSuccess() {
+                                    //リフレッシュ&リトライ
+                                    BusHolder.get().post(new RetryApiEvent(api));
+                                    new AsyncTask<Void, Void, Void>() {
+                                        @Override
+                                        protected Void doInBackground(Void... params) {
+                                            credentialsProvider.refresh();
+                                            return null;
+                                        }
+                                    }.execute();
+                                }
+
+                                @Override
+                                public void onGlobalError(API3.Util.GlobalCode globalCode) {
+                                    resolveOrHandleGlobalError(api, globalCode);
+                                }
+
+                                @Override
+                                public void onLocalError(String errorMessage) {
+                                    Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), errorMessage, Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                            resolveOrHandleGlobalError(api, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED);
+                        }
+                    });
+                } else {
+                    resolveOrHandleGlobalError(api, code);
+                }
                 break;
             case ERROR_CLIENT_OUTDATED:
                 //アップデートダイアログ
@@ -453,7 +494,7 @@ public class Application_Gocci extends Application {
         tracker.enableAdvertisingIdCollection(true);
         tracker.enableAutoActivityTracking(true);
 
-        sSsyncHttpClient.setCookieStore(SavedData.getCookieStore(this));
+        sSyncHttpClient.setCookieStore(SavedData.getCookieStore(this));
         sAsyncHttpClient.setCookieStore(SavedData.getCookieStore(this));
     }
 

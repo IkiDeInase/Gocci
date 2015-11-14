@@ -24,8 +24,12 @@ import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.repository.API3;
+import com.inase.android.gocci.event.BusHolder;
+import com.inase.android.gocci.event.RetryApiEvent;
 import com.inase.android.gocci.ui.activity.TimelineActivity;
 import com.inase.android.gocci.ui.view.GocciTwitterLoginButton;
+import com.squareup.otto.Subscribe;
+import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.TwitterAuthToken;
@@ -115,7 +119,7 @@ public class LoginSocialAuthenticationFragment extends Fragment {
                 Profile profile = Profile.getCurrentProfile();
                 String profile_img = "https://graph.facebook.com/" + profile.getId() + "/picture";
 
-                snsAsync(Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), profile_img);
+                snsAsync(Const.APICategory.POST_FACEBOOK, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), profile_img);
             }
 
             @Override
@@ -138,7 +142,7 @@ public class LoginSocialAuthenticationFragment extends Fragment {
                 String username = result.data.getUserName();
                 String profile_img = "http://www.paper-glasses.com/api/twipi/" + username;
 
-                snsAsync(Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, profile_img);
+                snsAsync(Const.APICategory.POST_TWITTER, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, profile_img);
             }
 
             @Override
@@ -192,6 +196,18 @@ public class LoginSocialAuthenticationFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        BusHolder.get().register(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        BusHolder.get().unregister(this);
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         mTwitterLoginButton.onActivityResult(requestCode, resultCode, data);
@@ -211,7 +227,7 @@ public class LoginSocialAuthenticationFragment extends Fragment {
         ButterKnife.unbind(this);
     }
 
-    private void snsAsync(final String providerName, String token, String profile_img) {
+    private void snsAsync(final Const.APICategory api, final String providerName, String token, String profile_img) {
         API3.Util.PostSnsLocalCode localCode = API3.Impl.getRepository().post_sns_parameter_regex(providerName, token, profile_img);
         if (localCode == null) {
             Application_Gocci.addLogins(API3.Util.getPostSnsAPI(providerName, token, profile_img), new Application_Gocci.AddLoginAsync.AddLoginAsyncCallback() {
@@ -227,7 +243,7 @@ public class LoginSocialAuthenticationFragment extends Fragment {
 
                 @Override
                 public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_SNS, globalCode);
+                    Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
                 }
 
                 @Override
@@ -237,6 +253,32 @@ public class LoginSocialAuthenticationFragment extends Fragment {
             });
         } else {
             Toast.makeText(getActivity(), API3.Util.postSnsLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Subscribe
+    public void subscribe(RetryApiEvent event) {
+        switch (event.api) {
+            case POST_FACEBOOK:
+                Profile profile = Profile.getCurrentProfile();
+                if (profile != null) {
+                    String profile_img = "https://graph.facebook.com/" + profile.getId() + "/picture";
+
+                    snsAsync(Const.APICategory.POST_FACEBOOK, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), profile_img);
+                }
+                break;
+            case POST_TWITTER:
+                TwitterSession session =
+                        Twitter.getSessionManager().getActiveSession();
+                if (session != null) {
+                    TwitterAuthToken authToken = session.getAuthToken();
+                    String username = session.getUserName();
+                    String profile_img = "http://www.paper-glasses.com/api/twipi/" + username;
+
+                    snsAsync(Const.APICategory.POST_TWITTER, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, profile_img);
+                }
+                break;
+            default:break;
         }
     }
 }

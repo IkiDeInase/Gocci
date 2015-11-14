@@ -35,10 +35,13 @@ import com.inase.android.gocci.domain.usecase.CheckRegIdUseCase;
 import com.inase.android.gocci.domain.usecase.CheckRegIdUseCaseImpl;
 import com.inase.android.gocci.domain.usecase.UserLoginUseCase;
 import com.inase.android.gocci.domain.usecase.UserLoginUseCaseImpl;
+import com.inase.android.gocci.event.BusHolder;
+import com.inase.android.gocci.event.RetryApiEvent;
 import com.inase.android.gocci.presenter.ShowUserLoginPresenter;
 import com.inase.android.gocci.ui.view.GocciTwitterLoginButton;
 import com.inase.android.gocci.utils.SavedData;
 import com.pnikosis.materialishprogress.ProgressWheel;
+import com.squareup.otto.Subscribe;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
@@ -154,7 +157,7 @@ public class LoginSessionActivity extends AppCompatActivity implements ShowUserL
                     public void onPostExecute(String identity_id) {
                         API3.Util.AuthSnsLoginLocalCode localCode = api3Impl.auth_sns_login_parameter_regex(identity_id, "android_" + Build.VERSION.RELEASE, SavedData.getVersionName(LoginSessionActivity.this), Build.MODEL, SavedData.getRegId(LoginSessionActivity.this));
                         if (localCode == null) {
-                            mPresenter.loginUser(Const.APICategory.AUTH_SNS_LOGIN, API3.Util.getAuthSNSLoginAPI(identity_id, Build.VERSION.RELEASE, SavedData.getVersionName(LoginSessionActivity.this), Build.MODEL, SavedData.getRegId(LoginSessionActivity.this)));
+                            mPresenter.loginUser(Const.APICategory.AUTH_FACEBOOK_LOGIN, API3.Util.getAuthSNSLoginAPI(identity_id, Build.VERSION.RELEASE, SavedData.getVersionName(LoginSessionActivity.this), Build.MODEL, SavedData.getRegId(LoginSessionActivity.this)));
                         } else {
                             Toast.makeText(LoginSessionActivity.this, API3.Util.authSnsLoginLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
                         }
@@ -189,7 +192,7 @@ public class LoginSessionActivity extends AppCompatActivity implements ShowUserL
                     public void onPostExecute(String identity_id) {
                         API3.Util.AuthSnsLoginLocalCode localCode = api3Impl.auth_sns_login_parameter_regex(identity_id, "android_" + Build.VERSION.RELEASE, SavedData.getVersionName(LoginSessionActivity.this), Build.MODEL, SavedData.getRegId(LoginSessionActivity.this));
                         if (localCode == null) {
-                            mPresenter.loginUser(Const.APICategory.AUTH_SNS_LOGIN, API3.Util.getAuthSNSLoginAPI(identity_id, Build.VERSION.RELEASE, SavedData.getVersionName(LoginSessionActivity.this), Build.MODEL, SavedData.getRegId(LoginSessionActivity.this)));
+                            mPresenter.loginUser(Const.APICategory.AUTH_TWITTER_LOGIN, API3.Util.getAuthSNSLoginAPI(identity_id, Build.VERSION.RELEASE, SavedData.getVersionName(LoginSessionActivity.this), Build.MODEL, SavedData.getRegId(LoginSessionActivity.this)));
                         } else {
                             Toast.makeText(LoginSessionActivity.this, API3.Util.authSnsLoginLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
                         }
@@ -232,6 +235,7 @@ public class LoginSessionActivity extends AppCompatActivity implements ShowUserL
         if (analytics != null) {
             analytics.getSessionClient().resumeSession();
         }
+        BusHolder.get().register(this);
         mPresenter.resume();
     }
 
@@ -242,6 +246,7 @@ public class LoginSessionActivity extends AppCompatActivity implements ShowUserL
             analytics.getSessionClient().pauseSession();
             analytics.getEventClient().submitEvents();
         }
+        BusHolder.get().unregister(this);
         mPresenter.pause();
     }
 
@@ -315,5 +320,21 @@ public class LoginSessionActivity extends AppCompatActivity implements ShowUserL
     @Override
     public void showNoResultCausedByLocalError(Const.APICategory api, String errorMessage) {
         Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
+    }
+
+    @Subscribe
+    public void subscribe(RetryApiEvent event) {
+        switch (event.api) {
+            case AUTH_FACEBOOK_LOGIN:
+                mFacebookLoginButton.performClick();
+                break;
+            case AUTH_TWITTER_LOGIN:
+                mTwitterLoginButton.performClick();
+                break;
+            case AUTH_PASS_LOGIN:
+                mLoginRipple.performClick();
+                break;
+            default:break;
+        }
     }
 }

@@ -288,10 +288,13 @@ public class Const {
         AUTH_LOGIN,
         AUTH_CHECK,
         AUTH_SIGNUP,
-        AUTH_SNS_LOGIN,
+        AUTH_FACEBOOK_LOGIN,
+        AUTH_TWITTER_LOGIN,
         AUTH_PASS_LOGIN,
-        POST_SNS,
-        POST_SNS_UNLINK
+        POST_FACEBOOK,
+        POST_TWITTER,
+        POST_FACEBOOK_UNLINK,
+        POST_TWITTER_UNLINK,
     }
 
     public static final class TwoCellViewHolder extends RecyclerView.ViewHolder {

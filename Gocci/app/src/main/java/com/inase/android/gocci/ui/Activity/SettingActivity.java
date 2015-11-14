@@ -38,6 +38,7 @@ import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.repository.API3;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.NotificationNumberEvent;
+import com.inase.android.gocci.event.RetryApiEvent;
 import com.inase.android.gocci.ui.view.DrawerProfHeader;
 import com.inase.android.gocci.ui.view.GocciTwitterLoginButton;
 import com.inase.android.gocci.utils.SavedData;
@@ -199,7 +200,7 @@ public class SettingActivity extends AppCompatActivity {
                             TwitterSession session =
                                     Twitter.getSessionManager().getActiveSession();
                             TwitterAuthToken authToken = session.getAuthToken();
-                            snsUnLinkAsync(Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret);
+                            snsUnLinkAsync(Const.APICategory.POST_TWITTER_UNLINK, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret);
                         }
                     }).show();
         } else {
@@ -221,7 +222,7 @@ public class SettingActivity extends AppCompatActivity {
                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                         @Override
                         public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
-                            snsUnLinkAsync(Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken());
+                            snsUnLinkAsync(Const.APICategory.POST_FACEBOOK_UNLINK, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken());
 
                         }
                     }).show();
@@ -400,7 +401,7 @@ public class SettingActivity extends AppCompatActivity {
                 Profile profile = Profile.getCurrentProfile();
                 String profile_img = "https://graph.facebook.com/" + profile.getId() + "/picture";
 
-                snsAsync(Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), profile_img);
+                snsAsync(Const.APICategory.POST_FACEBOOK, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), profile_img);
 
                 mFacebookSetting.setText(profile.getName());
                 isFacebookSetting = true;
@@ -425,7 +426,7 @@ public class SettingActivity extends AppCompatActivity {
                 String username = result.data.getUserName();
                 String profile_img = "http://www.paper-glasses.com/api/twipi/" + username;
 
-                snsAsync(Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, profile_img);
+                snsAsync(Const.APICategory.POST_TWITTER, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, profile_img);
 
                 mTwitterSetting.setText(result.data.getUserName());
                 isTwitterSetting = true;
@@ -445,7 +446,7 @@ public class SettingActivity extends AppCompatActivity {
             String username = session.getUserName();
             String profile_img = "http://www.paper-glasses.com/api/twipi/" + username;
 
-            snsAsync(Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, profile_img);
+            snsAsync(Const.APICategory.POST_TWITTER, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, profile_img);
 
             mTwitterSetting.setText(session.getUserName());
             isTwitterSetting = true;
@@ -457,7 +458,7 @@ public class SettingActivity extends AppCompatActivity {
         if (profile != null) {
             String profile_img = "https://graph.facebook.com/" + profile.getId() + "/picture";
 
-            snsAsync(Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), profile_img);
+            snsAsync(Const.APICategory.POST_FACEBOOK, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), profile_img);
 
             mFacebookSetting.setText(profile.getName());
             isFacebookSetting = true;
@@ -552,7 +553,7 @@ public class SettingActivity extends AppCompatActivity {
         Twitter.logOut();
     }
 
-    private void snsAsync(final String providerName, String token, String profile_img) {
+    private void snsAsync(final Const.APICategory api, final String providerName, String token, String profile_img) {
         API3.Util.PostSnsLocalCode localCode = API3.Impl.getRepository().post_sns_parameter_regex(providerName, token, profile_img);
         if (localCode == null) {
             Application_Gocci.addLogins(API3.Util.getPostSnsAPI(providerName, token, profile_img), new Application_Gocci.AddLoginAsync.AddLoginAsyncCallback() {
@@ -568,7 +569,7 @@ public class SettingActivity extends AppCompatActivity {
 
                 @Override
                 public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_SNS, globalCode);
+                    Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
                 }
 
                 @Override
@@ -581,7 +582,7 @@ public class SettingActivity extends AppCompatActivity {
         }
     }
 
-    private void snsUnLinkAsync(final String providerName, String token) {
+    private void snsUnLinkAsync(final Const.APICategory api, final String providerName, String token) {
         API3.Util.PostSnsUnlinkLocalCode localCode = API3.Impl.getRepository().post_sns_unlink_parameter_regex(providerName, token);
         if (localCode == null) {
             API3.Util.GlobalCode globalCode = API3.Impl.getRepository().check_global_error();
@@ -591,7 +592,7 @@ public class SettingActivity extends AppCompatActivity {
 
                         @Override
                         public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                            Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_SNS_UNLINK, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED);
+                            Application_Gocci.resolveOrHandleGlobalError(api, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED);
                         }
 
                         @Override
@@ -615,7 +616,7 @@ public class SettingActivity extends AppCompatActivity {
 
                                 @Override
                                 public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_SNS_UNLINK, globalCode);
+                                    Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
                                 }
 
                                 @Override
@@ -626,13 +627,48 @@ public class SettingActivity extends AppCompatActivity {
                         }
                     });
                 } catch (SocketTimeoutException e) {
-                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_SNS_UNLINK, API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT);
+                    Application_Gocci.resolveOrHandleGlobalError(api, API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT);
                 }
             } else {
-                Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_SNS_UNLINK, globalCode);
+                Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
             }
         } else {
             Toast.makeText(SettingActivity.this, API3.Util.postSnsUnlinkLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Subscribe
+    public void subscribe(RetryApiEvent event) {
+        switch (event.api) {
+            case POST_FACEBOOK:
+                Profile profile = Profile.getCurrentProfile();
+                if (profile != null) {
+                    String profile_img = "https://graph.facebook.com/" + profile.getId() + "/picture";
+
+                    snsAsync(Const.APICategory.POST_FACEBOOK, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), profile_img);
+                }
+                break;
+            case POST_FACEBOOK_UNLINK:
+                snsUnLinkAsync(Const.APICategory.POST_FACEBOOK_UNLINK, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken());
+                break;
+            case POST_TWITTER:
+                TwitterSession session =
+                        Twitter.getSessionManager().getActiveSession();
+                if (session != null) {
+                    TwitterAuthToken authToken = session.getAuthToken();
+                    String username = session.getUserName();
+                    String profile_img = "http://www.paper-glasses.com/api/twipi/" + username;
+
+                    snsAsync(Const.APICategory.POST_TWITTER, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, profile_img);
+                }
+                break;
+            case POST_TWITTER_UNLINK:
+                TwitterSession unlinksession =
+                        Twitter.getSessionManager().getActiveSession();
+                TwitterAuthToken authToken = unlinksession.getAuthToken();
+                snsUnLinkAsync(Const.APICategory.POST_TWITTER_UNLINK, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret);
+                break;
+            default:break;
         }
     }
 }

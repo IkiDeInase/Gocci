@@ -73,7 +73,8 @@ public class LoginRepositoryImpl implements LoginRepository {
                                     }
                                 });
                                 break;
-                            case AUTH_SNS_LOGIN:
+                            case AUTH_FACEBOOK_LOGIN:
+                            case AUTH_TWITTER_LOGIN:
                                 mAPI3.auth_sns_login_response(response, new API3.AuthResponseCallback() {
                                     @Override
                                     public void onSuccess() {
