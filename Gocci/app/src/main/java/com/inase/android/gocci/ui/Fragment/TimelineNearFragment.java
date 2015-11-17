@@ -38,18 +38,21 @@ import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.google.android.exoplayer.audio.AudioCapabilities;
 import com.google.android.exoplayer.audio.AudioCapabilitiesReceiver;
 import com.google.android.exoplayer.drm.UnsupportedDrmException;
+import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.datasource.repository.API3;
 import com.inase.android.gocci.datasource.repository.PostDataRepository;
 import com.inase.android.gocci.datasource.repository.PostDataRepositoryImpl;
 import com.inase.android.gocci.domain.executor.UIThread;
-import com.inase.android.gocci.domain.model.PostData;
+import com.inase.android.gocci.domain.model.TwoCellData;
 import com.inase.android.gocci.domain.usecase.TimelineNearUseCase;
 import com.inase.android.gocci.domain.usecase.TimelineNearUseCaseImpl;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.FilterTimelineEvent;
 import com.inase.android.gocci.event.NotificationNumberEvent;
 import com.inase.android.gocci.event.PageChangeVideoStopEvent;
+import com.inase.android.gocci.event.RetryApiEvent;
 import com.inase.android.gocci.event.TimelineMuteChangeEvent;
 import com.inase.android.gocci.presenter.ShowNearTimelinePresenter;
 import com.inase.android.gocci.ui.activity.CommentActivity;
@@ -91,7 +94,7 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
     private FloatingActionButton fab;
 
     private StaggeredGridLayoutManager mLayoutManager;
-    private ArrayList<PostData> mTimelineusers = new ArrayList<>();
+    private ArrayList<TwoCellData> mTimelineusers = new ArrayList<>();
     private ArrayList<String> mPost_ids = new ArrayList<>();
     private TimelineAdapter mTimelineAdapter;
 
@@ -158,9 +161,14 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
                 if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
                     loading = false;
                     if (!isEndScrioll) {
-                        mPresenter.getNearTimelinePostData(Const.TIMELINE_ADD, Const.getCustomTimelineAPI(0,
-                                TimelineActivity.mNearSort_id, TimelineActivity.mNearCategory_id, TimelineActivity.mNearValue_id,
-                                TimelineActivity.mLongitude, TimelineActivity.mLatitude, mNextCount));
+                        API3.Util.GetNearlineLocalCode localCode = API3.Impl.getRepository().get_nearline_parameter_regex(TimelineActivity.mLongitude, TimelineActivity.mLatitude);
+                        if (localCode == null) {
+                            mPresenter.getNearTimelinePostData(Const.APICategory.GET_TIMELINE_ADD, Const.getCustomTimelineAPI(0,
+                                    TimelineActivity.mNearSort_id, TimelineActivity.mNearCategory_id, TimelineActivity.mNearValue_id,
+                                    TimelineActivity.mLongitude, TimelineActivity.mLatitude, mNextCount));
+                        } else {
+                            Toast.makeText(getActivity(), API3.Util.getNearlineLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                        }
                     }
                 }
             }
@@ -192,7 +200,8 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
         audioCapabilitiesReceiver = new AudioCapabilitiesReceiver(getActivity().getApplicationContext(), this);
         audioCapabilitiesReceiver.register();
 
-        PostDataRepository postDataRepositoryImpl = PostDataRepositoryImpl.getRepository();
+        API3 api3Impl = API3.Impl.getRepository();
+        PostDataRepository postDataRepositoryImpl = PostDataRepositoryImpl.getRepository(api3Impl);
         TimelineNearUseCase timelineNearUseCaseImpl = TimelineNearUseCaseImpl.getUseCase(postDataRepositoryImpl, UIThread.getInstance());
         mPresenter = new ShowNearTimelinePresenter(timelineNearUseCaseImpl);
         mPresenter.setNearTimelineView(this);
@@ -257,9 +266,13 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
                     TimelineActivity.mLatitude = bundle.getDouble("lat");
                     TimelineActivity.mNearCategory_id = 0;
                     TimelineActivity.mNearValue_id = 0;
-                    mPresenter.getNearTimelinePostData(Const.TIMELINE_REFRESH, Const.getCustomTimelineAPI(0,
-                            TimelineActivity.mNearSort_id, TimelineActivity.mNearCategory_id, TimelineActivity.mNearValue_id,
-                            TimelineActivity.mLongitude, TimelineActivity.mLatitude, 0));
+
+                    API3.Util.GetNearlineLocalCode localCode = API3.Impl.getRepository().get_nearline_parameter_regex(TimelineActivity.mLongitude, TimelineActivity.mLatitude);
+                    if (localCode == null) {
+                        mPresenter.getNearTimelinePostData(Const.APICategory.GET_TIMELINE_REFRESH, API3.Util.getGetNearlineAPI(TimelineActivity.mLongitude, TimelineActivity.mLatitude));
+                    } else {
+                        Toast.makeText(getActivity(), API3.Util.getNearlineLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                    }
                 }
                 break;
             default:
@@ -333,8 +346,13 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
     @Subscribe
     public void subscribe(FilterTimelineEvent event) {
         if (event.currentPage == 0) {
-            mTimelineRecyclerView.scrollVerticallyToPosition(0);
-            mPresenter.getNearTimelinePostData(Const.TIMELINE_FILTER, event.filterUrl);
+            API3.Util.GetNearlineLocalCode localCode = API3.Impl.getRepository().get_nearline_parameter_regex(TimelineActivity.mLongitude, TimelineActivity.mLatitude);
+            if (localCode == null) {
+                mTimelineRecyclerView.scrollVerticallyToPosition(0);
+                mPresenter.getNearTimelinePostData(Const.APICategory.GET_TIMELINE_FILTER, event.filterUrl);
+            } else {
+                Toast.makeText(getActivity(), API3.Util.getNearlineLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -391,9 +409,14 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
                 public void onLocationUpdated(Location location) {
                     TimelineActivity.mLongitude = location.getLongitude();
                     TimelineActivity.mLatitude = location.getLatitude();
-                    mPresenter.getNearTimelinePostData(Const.TIMELINE_FIRST, Const.getCustomTimelineAPI(0,
-                            TimelineActivity.mNearSort_id, TimelineActivity.mNearCategory_id, TimelineActivity.mNearValue_id,
-                            TimelineActivity.mLongitude, TimelineActivity.mLatitude, 0));
+
+                    API3.Util.GetNearlineLocalCode localCode = API3.Impl.getRepository().get_nearline_parameter_regex(TimelineActivity.mLongitude, TimelineActivity.mLatitude);
+                    if (localCode == null) {
+                        mPresenter.getNearTimelinePostData(Const.APICategory.GET_TIMELINE_FIRST, API3.Util.getGetNearlineAPI(TimelineActivity.mLongitude, TimelineActivity.mLatitude));
+
+                    } else {
+                        Toast.makeText(getActivity(), API3.Util.getNearlineLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
         }
@@ -437,11 +460,15 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
                     TimelineActivity.mLatitude = location.getLatitude();
                     TimelineActivity.mNearCategory_id = 0;
                     TimelineActivity.mNearValue_id = 0;
-                    mPresenter.getNearTimelinePostData(Const.TIMELINE_REFRESH, Const.getCustomTimelineAPI(0,
-                            TimelineActivity.mNearSort_id, TimelineActivity.mNearCategory_id, TimelineActivity.mNearValue_id,
-                            TimelineActivity.mLongitude, TimelineActivity.mLatitude, 0));
-                    TimelineActivity activity = (TimelineActivity) getActivity();
-                    activity.setNowLocationTitle();
+
+                    API3.Util.GetNearlineLocalCode localCode = API3.Impl.getRepository().get_nearline_parameter_regex(TimelineActivity.mLongitude, TimelineActivity.mLatitude);
+                    if (localCode == null) {
+                        mPresenter.getNearTimelinePostData(Const.APICategory.GET_TIMELINE_REFRESH, API3.Util.getGetNearlineAPI(TimelineActivity.mLongitude, TimelineActivity.mLatitude));
+                        TimelineActivity activity = (TimelineActivity) getActivity();
+                        activity.setNowLocationTitle();
+                    } else {
+                        Toast.makeText(getActivity(), API3.Util.getNearlineLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
         }
@@ -460,9 +487,13 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
                             public void onLocationUpdated(Location location) {
                                 TimelineActivity.mLongitude = location.getLongitude();
                                 TimelineActivity.mLatitude = location.getLatitude();
-                                mPresenter.getNearTimelinePostData(Const.TIMELINE_FIRST, Const.getCustomTimelineAPI(0,
-                                        TimelineActivity.mNearSort_id, TimelineActivity.mNearCategory_id, TimelineActivity.mNearValue_id,
-                                        TimelineActivity.mLongitude, TimelineActivity.mLatitude, 0));
+
+                                API3.Util.GetNearlineLocalCode localCode = API3.Impl.getRepository().get_nearline_parameter_regex(TimelineActivity.mLongitude, TimelineActivity.mLatitude);
+                                if (localCode == null) {
+                                    mPresenter.getNearTimelinePostData(Const.APICategory.GET_TIMELINE_FIRST, API3.Util.getGetNearlineAPI(TimelineActivity.mLongitude, TimelineActivity.mLatitude));
+                                } else {
+                                    Toast.makeText(getActivity(), API3.Util.getNearlineLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                                }
                             }
                         });
                     } else {
@@ -505,9 +536,13 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
                             public void onLocationUpdated(Location location) {
                                 TimelineActivity.mLongitude = location.getLongitude();
                                 TimelineActivity.mLatitude = location.getLatitude();
-                                mPresenter.getNearTimelinePostData(Const.TIMELINE_FIRST, Const.getCustomTimelineAPI(0,
-                                        TimelineActivity.mNearSort_id, TimelineActivity.mNearCategory_id, TimelineActivity.mNearValue_id,
-                                        TimelineActivity.mLongitude, TimelineActivity.mLatitude, 0));
+
+                                API3.Util.GetNearlineLocalCode localCode = API3.Impl.getRepository().get_nearline_parameter_regex(TimelineActivity.mLongitude, TimelineActivity.mLatitude);
+                                if (localCode == null) {
+                                    mPresenter.getNearTimelinePostData(Const.APICategory.GET_TIMELINE_FIRST, API3.Util.getGetNearlineAPI(TimelineActivity.mLongitude, TimelineActivity.mLatitude));
+                                } else {
+                                    Toast.makeText(getActivity(), API3.Util.getNearlineLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                                }
                             }
                         });
                     }
@@ -524,11 +559,15 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
                                 TimelineActivity.mLatitude = location.getLatitude();
                                 TimelineActivity.mNearCategory_id = 0;
                                 TimelineActivity.mNearValue_id = 0;
-                                mPresenter.getNearTimelinePostData(Const.TIMELINE_REFRESH, Const.getCustomTimelineAPI(0,
-                                        TimelineActivity.mNearSort_id, TimelineActivity.mNearCategory_id, TimelineActivity.mNearValue_id,
-                                        TimelineActivity.mLongitude, TimelineActivity.mLatitude, 0));
-                                TimelineActivity activity = (TimelineActivity) getActivity();
-                                activity.setNowLocationTitle();
+
+                                API3.Util.GetNearlineLocalCode localCode = API3.Impl.getRepository().get_nearline_parameter_regex(TimelineActivity.mLongitude, TimelineActivity.mLatitude);
+                                if (localCode == null) {
+                                    mPresenter.getNearTimelinePostData(Const.APICategory.GET_TIMELINE_REFRESH, API3.Util.getGetNearlineAPI(TimelineActivity.mLongitude, TimelineActivity.mLatitude));
+                                    TimelineActivity activity = (TimelineActivity) getActivity();
+                                    activity.setNowLocationTitle();
+                                } else {
+                                    Toast.makeText(getActivity(), API3.Util.getNearlineLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                                }
                             }
                         });
                     } else {
@@ -579,11 +618,15 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
                                 TimelineActivity.mLatitude = location.getLatitude();
                                 TimelineActivity.mNearCategory_id = 0;
                                 TimelineActivity.mNearValue_id = 0;
-                                mPresenter.getNearTimelinePostData(Const.TIMELINE_REFRESH, Const.getCustomTimelineAPI(0,
-                                        TimelineActivity.mNearSort_id, TimelineActivity.mNearCategory_id, TimelineActivity.mNearValue_id,
-                                        TimelineActivity.mLongitude, TimelineActivity.mLatitude, 0));
-                                TimelineActivity activity = (TimelineActivity) getActivity();
-                                activity.setNowLocationTitle();
+
+                                API3.Util.GetNearlineLocalCode localCode = API3.Impl.getRepository().get_nearline_parameter_regex(TimelineActivity.mLongitude, TimelineActivity.mLatitude);
+                                if (localCode == null) {
+                                    mPresenter.getNearTimelinePostData(Const.APICategory.GET_TIMELINE_REFRESH, API3.Util.getGetNearlineAPI(TimelineActivity.mLongitude, TimelineActivity.mLatitude));
+                                    TimelineActivity activity = (TimelineActivity) getActivity();
+                                    activity.setNowLocationTitle();
+                                } else {
+                                    Toast.makeText(getActivity(), API3.Util.getNearlineLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                                }
                             }
                         });
                     }
@@ -668,7 +711,7 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
         }
     }
 
-    private void changeMovie(PostData postData) {
+    private void changeMovie(TwoCellData postData) {
         // TODO:実装
         if (mPlayingPostId != null) {
             // 前回の動画再生停止処理
@@ -687,7 +730,7 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
             return;
         }
 
-        final String path = postData.getMovie();
+        final String path = postData.getHls_movie();
         releasePlayer();
         preparePlayer(currentViewHolder, path);
     }
@@ -740,22 +783,22 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
     }
 
     @Override
-    public void showNoResultCase(int api) {
+    public void showNoResultCase(Const.APICategory api) {
         switch (api) {
-            case Const.TIMELINE_FIRST:
+            case GET_TIMELINE_FIRST:
                 mProgress.setVisibility(View.INVISIBLE);
                 mTimelineAdapter = new TimelineAdapter(getActivity(), mTimelineusers);
                 mTimelineAdapter.setTimelineCallback(this);
                 mTimelineRecyclerView.setAdapter(mTimelineAdapter);
                 break;
-            case Const.TIMELINE_REFRESH:
+            case GET_TIMELINE_REFRESH:
                 mTimelineusers.clear();
                 isEndScrioll = false;
                 mNextCount = 1;
                 mPlayingPostId = null;
                 mTimelineAdapter.setData();
                 break;
-            case Const.TIMELINE_FILTER:
+            case GET_TIMELINE_FILTER:
                 mTimelineusers.clear();
                 isEndScrioll = false;
                 mNextCount = 1;
@@ -774,14 +817,9 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
     }
 
     @Override
-    public void showError() {
-        Toast.makeText(getActivity(), getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void showResult(int api, ArrayList<PostData> mPostData, ArrayList<String> post_ids) {
+    public void showResult(Const.APICategory api, ArrayList<TwoCellData> mPostData, ArrayList<String> post_ids) {
         switch (api) {
-            case Const.TIMELINE_FIRST:
+            case GET_TIMELINE_FIRST:
                 mProgress.setVisibility(View.INVISIBLE);
                 mTimelineusers.addAll(mPostData);
                 mPost_ids.addAll(post_ids);
@@ -789,7 +827,7 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
                 mTimelineAdapter.setTimelineCallback(this);
                 mTimelineRecyclerView.setAdapter(mTimelineAdapter);
                 break;
-            case Const.TIMELINE_REFRESH:
+            case GET_TIMELINE_REFRESH:
                 mTimelineusers.clear();
                 mTimelineusers.addAll(mPostData);
                 mPost_ids.clear();
@@ -800,7 +838,7 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
                 mViewHolderHash.clear();
                 mTimelineAdapter.setData();
                 break;
-            case Const.TIMELINE_ADD:
+            case GET_TIMELINE_ADD:
                 if (mPostData.size() != 0) {
                     mPlayingPostId = null;
                     mTimelineusers.addAll(mPostData);
@@ -811,7 +849,7 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
                     isEndScrioll = true;
                 }
                 break;
-            case Const.TIMELINE_FILTER:
+            case GET_TIMELINE_FILTER:
                 mTimelineusers.clear();
                 mTimelineusers.addAll(mPostData);
                 mPost_ids.clear();
@@ -826,22 +864,27 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
     }
 
     @Override
-    public void successGochi(int position) {
-
+    public void showNoResultCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
+        Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
     }
 
     @Override
-    public void onUserClick(int user_id, String user_name) {
+    public void showNoResultCausedByLocalError(Const.APICategory api, String errorMessage) {
+        Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onUserClick(String user_id, String user_name) {
         UserProfActivity.startUserProfActivity(user_id, user_name, getActivity());
     }
 
     @Override
-    public void onRestClick(int rest_id, String rest_name) {
+    public void onRestClick(String rest_id, String rest_name) {
         TenpoActivity.startTenpoActivity(rest_id, rest_name, getActivity());
     }
 
     @Override
-    public void onCommentClick(int post_id) {
+    public void onCommentClick(String post_id) {
         CommentActivity.startCommentActivity(post_id, false, getActivity());
     }
 
@@ -860,7 +903,7 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
     }
 
     @Override
-    public void onVideoFrameClick(PostData data) {
+    public void onVideoFrameClick(TwoCellData data) {
         if (player != null && mPlayingPostId.equals(data.getPost_id())) {
             if (player.getPlayerControl().isPlaying()) {
                 player.getPlayerControl().pause();
@@ -875,5 +918,29 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
     @Override
     public void onHashHolder(Const.TwoCellViewHolder holder, String post_id) {
         mViewHolderHash.put(holder, post_id);
+    }
+
+    @Subscribe
+    public void subscribe(RetryApiEvent event) {
+        switch (event.api) {
+            case GET_TIMELINE_FIRST:
+                mPresenter.getNearTimelinePostData(Const.APICategory.GET_TIMELINE_FIRST, API3.Util.getGetNearlineAPI(TimelineActivity.mLongitude, TimelineActivity.mLatitude));
+                break;
+            case GET_TIMELINE_REFRESH:
+                mPresenter.getNearTimelinePostData(Const.APICategory.GET_TIMELINE_REFRESH, API3.Util.getGetNearlineAPI(TimelineActivity.mLongitude, TimelineActivity.mLatitude));
+                TimelineActivity activity = (TimelineActivity) getActivity();
+                activity.setNowLocationTitle();
+                break;
+            case GET_TIMELINE_ADD:
+                mPresenter.getNearTimelinePostData(Const.APICategory.GET_TIMELINE_ADD, Const.getCustomTimelineAPI(0,
+                        TimelineActivity.mNearSort_id, TimelineActivity.mNearCategory_id, TimelineActivity.mNearValue_id,
+                        TimelineActivity.mLongitude, TimelineActivity.mLatitude, mNextCount));
+                break;
+            case GET_TIMELINE_FILTER:
+
+                break;
+            default:
+                break;
+        }
     }
 }

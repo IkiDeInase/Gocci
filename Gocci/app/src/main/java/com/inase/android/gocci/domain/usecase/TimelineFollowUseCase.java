@@ -1,6 +1,8 @@
 package com.inase.android.gocci.domain.usecase;
 
-import com.inase.android.gocci.domain.model.PostData;
+import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.datasource.repository.API3;
+import com.inase.android.gocci.domain.model.TwoCellData;
 
 import java.util.ArrayList;
 
@@ -10,14 +12,16 @@ import java.util.ArrayList;
 public interface TimelineFollowUseCase {
 
     interface FollowTimelineUseCaseCallback {
-        void onFollowTimelineLoaded(int api, ArrayList<PostData> mPostData, ArrayList<String> post_ids);
+        void onFollowTimelineLoaded(Const.APICategory api, ArrayList<TwoCellData> mPostData, ArrayList<String> post_ids);
 
-        void onFollowTimelineEmpty(int api);
+        void onFollowTimelineEmpty(Const.APICategory api);
 
-        void onError();
+        void onCausedByLocalError(Const.APICategory api, String errorMessage);
+
+        void onCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode);
     }
 
-    void execute(int api, String url, FollowTimelineUseCaseCallback callback);
+    void execute(Const.APICategory api, String url, FollowTimelineUseCaseCallback callback);
 
     void setCallback(FollowTimelineUseCaseCallback callback);
 

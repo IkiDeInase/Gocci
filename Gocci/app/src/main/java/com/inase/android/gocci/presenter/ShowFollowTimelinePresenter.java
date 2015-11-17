@@ -1,6 +1,8 @@
 package com.inase.android.gocci.presenter;
 
-import com.inase.android.gocci.domain.model.PostData;
+import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.datasource.repository.API3;
+import com.inase.android.gocci.domain.model.TwoCellData;
 import com.inase.android.gocci.domain.usecase.TimelineFollowUseCase;
 
 import java.util.ArrayList;
@@ -20,29 +22,34 @@ public class ShowFollowTimelinePresenter extends Presenter implements TimelineFo
         mShowFollowTimelineView = view;
     }
 
-    public void getFollowTimelinePostData(int api, String url) {
+    public void getFollowTimelinePostData(Const.APICategory api, String url) {
         mShowFollowTimelineView.showLoading();
         mTimelineFollowUseCase.execute(api, url, this);
     }
 
     @Override
-    public void onFollowTimelineLoaded(int api, ArrayList<PostData> mPostData, ArrayList<String> post_ids) {
+    public void onFollowTimelineLoaded(Const.APICategory api, ArrayList<TwoCellData> mPostData, ArrayList<String> post_ids) {
         mShowFollowTimelineView.hideLoading();
         mShowFollowTimelineView.hideNoResultCase();
         mShowFollowTimelineView.showResult(api, mPostData, post_ids);
     }
 
     @Override
-    public void onFollowTimelineEmpty(int api) {
+    public void onFollowTimelineEmpty(Const.APICategory api) {
         mShowFollowTimelineView.hideLoading();
         mShowFollowTimelineView.showNoResultCase(api);
     }
 
     @Override
-    public void onError() {
+    public void onCausedByLocalError(Const.APICategory api, String errorMessage) {
         mShowFollowTimelineView.hideLoading();
-        mShowFollowTimelineView.hideNoResultCase();
-        mShowFollowTimelineView.showError();
+        mShowFollowTimelineView.showNoResultCausedByLocalError(api, errorMessage);
+    }
+
+    @Override
+    public void onCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
+        mShowFollowTimelineView.hideLoading();
+        mShowFollowTimelineView.showNoResultCausedByGlobalError(api, globalCode);
     }
 
     @Override
@@ -70,14 +77,14 @@ public class ShowFollowTimelinePresenter extends Presenter implements TimelineFo
 
         void hideLoading();
 
-        void showNoResultCase(int api);
+        void showNoResultCase(Const.APICategory api);
 
         void hideNoResultCase();
 
-        void showError();
+        void showResult(Const.APICategory api, ArrayList<TwoCellData> mPostData, ArrayList<String> post_ids);
 
-        void showResult(int api, ArrayList<PostData> mPostData, ArrayList<String> post_ids);
+        void showNoResultCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode);
 
-        void successGochi(int position);
+        void showNoResultCausedByLocalError(Const.APICategory api, String errorMessage);
     }
 }

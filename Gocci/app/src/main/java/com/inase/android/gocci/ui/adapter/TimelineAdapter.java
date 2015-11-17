@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import com.cocosw.bottomsheet.BottomSheet;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
-import com.inase.android.gocci.domain.model.PostData;
+import com.inase.android.gocci.domain.model.TwoCellData;
 import com.inase.android.gocci.utils.Util;
 import com.squareup.picasso.Picasso;
 
@@ -25,11 +25,11 @@ public class TimelineAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
     private Context mContext;
     private int mCellSize;
 
-    private ArrayList<PostData> mData = new ArrayList<>();
+    private ArrayList<TwoCellData> mData = new ArrayList<>();
 
     private TimelineCallback mCallback;
 
-    public TimelineAdapter(Context context, ArrayList<PostData> data) {
+    public TimelineAdapter(Context context, ArrayList<TwoCellData> data) {
         mContext = context;
         mData = data;
         this.mCellSize = Util.getScreenWidth(mContext) / 2;
@@ -43,7 +43,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
         this.notifyDataSetChanged();
     }
 
-    public PostData getItem(int position) {
+    public TwoCellData getItem(int position) {
         return mData.get(position);
     }
 
@@ -65,7 +65,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
 
     @Override
     public void onBindViewHolder(final Const.TwoCellViewHolder holder, final int position) {
-        final PostData user = mData.get(position);
+        final TwoCellData user = mData.get(position);
 
         Picasso.with(mContext)
                 .load(user.getThumbnail())
@@ -94,7 +94,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
                                 mCallback.onRestClick(user.getPost_rest_id(), user.getRestname());
                                 break;
                             case R.id.move_to_comment:
-                                mCallback.onCommentClick(Integer.parseInt(user.getPost_id()));
+                                mCallback.onCommentClick(user.getPost_id());
                                 break;
                             case R.id.violation:
                                 Util.setViolateDialog(mContext, user.getPost_id());
@@ -124,7 +124,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
 
                     if (user.getGochi_flag() == 0) {
                         user.setGochi_flag(1);
-                        user.setGochi_num(user.getGochi_num() + 1);
+                        //user.setGochi_num(user.getGochi_num() + 1);
                         holder.mGochiImage.setImageResource(R.drawable.ic_icon_beef_orange);
                         Util.postGochiAsync(mContext, user);
                     }
@@ -166,17 +166,17 @@ public class TimelineAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
 
     public interface TimelineCallback {
 
-        void onUserClick(int user_id, String user_name);
+        void onUserClick(String user_id, String user_name);
 
-        void onRestClick(int rest_id, String rest_name);
+        void onRestClick(String rest_id, String rest_name);
 
-        void onCommentClick(int post_id);
+        void onCommentClick(String post_id);
 
         void onGochiClick();
 
         void onViewRecycled(Const.TwoCellViewHolder holder);
 
-        void onVideoFrameClick(PostData data);
+        void onVideoFrameClick(TwoCellData data);
 
         void onHashHolder(Const.TwoCellViewHolder holder, String post_id);
     }

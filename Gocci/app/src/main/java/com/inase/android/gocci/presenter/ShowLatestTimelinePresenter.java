@@ -1,6 +1,8 @@
 package com.inase.android.gocci.presenter;
 
-import com.inase.android.gocci.domain.model.PostData;
+import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.datasource.repository.API3;
+import com.inase.android.gocci.domain.model.TwoCellData;
 import com.inase.android.gocci.domain.usecase.TimelineLatestUseCase;
 
 import java.util.ArrayList;
@@ -21,29 +23,9 @@ public class ShowLatestTimelinePresenter extends Presenter implements TimelineLa
         mShowLatestTimelineView = view;
     }
 
-    public void getLatestTimelinePostData(int api, String url) {
+    public void getLatestTimelinePostData(Const.APICategory api, String url) {
         mShowLatestTimelineView.showLoading();
         mTimelineLatestUseCase.execute(api, url, this);
-    }
-
-    @Override
-    public void onLatestTimelineLoaded(int api, ArrayList<PostData> mPostData, ArrayList<String> post_ids) {
-        mShowLatestTimelineView.hideLoading();
-        mShowLatestTimelineView.hideNoResultCase();
-        mShowLatestTimelineView.showResult(api, mPostData, post_ids);
-    }
-
-    @Override
-    public void onLatestTimelineEmpty(int api) {
-        mShowLatestTimelineView.hideLoading();
-        mShowLatestTimelineView.showNoResultCase(api);
-    }
-
-    @Override
-    public void onError() {
-        mShowLatestTimelineView.hideLoading();
-        mShowLatestTimelineView.hideNoResultCase();
-        mShowLatestTimelineView.showError();
     }
 
     @Override
@@ -66,19 +48,44 @@ public class ShowLatestTimelinePresenter extends Presenter implements TimelineLa
 
     }
 
+    @Override
+    public void onLatestTimelineLoaded(Const.APICategory api, ArrayList<TwoCellData> mPostData, ArrayList<String> post_ids) {
+        mShowLatestTimelineView.hideLoading();
+        mShowLatestTimelineView.hideNoResultCase();
+        mShowLatestTimelineView.showResult(api, mPostData, post_ids);
+    }
+
+    @Override
+    public void onLatestTimelineEmpty(Const.APICategory api) {
+        mShowLatestTimelineView.hideLoading();
+        mShowLatestTimelineView.showNoResultCase(api);
+    }
+
+    @Override
+    public void onCausedByLocalError(Const.APICategory api, String errorMessage) {
+        mShowLatestTimelineView.hideLoading();
+        mShowLatestTimelineView.showNoResultCausedByLocalError(api, errorMessage);
+    }
+
+    @Override
+    public void onCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
+        mShowLatestTimelineView.hideLoading();
+        mShowLatestTimelineView.showNoResultCausedByGlobalError(api, globalCode);
+    }
+
     public interface ShowLatestTimelineView {
         void showLoading();
 
         void hideLoading();
 
-        void showNoResultCase(int api);
+        void showNoResultCase(Const.APICategory api);
 
         void hideNoResultCase();
 
-        void showError();
+        void showResult(Const.APICategory api, ArrayList<TwoCellData> mPostData, ArrayList<String> post_ids);
 
-        void showResult(int api, ArrayList<PostData> mPostData, ArrayList<String> post_ids);
+        void showNoResultCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode);
 
-        void successGochi(int position);
+        void showNoResultCausedByLocalError(Const.APICategory api, String errorMessage);
     }
 }

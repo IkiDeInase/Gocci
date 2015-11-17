@@ -1,6 +1,8 @@
 package com.inase.android.gocci.presenter;
 
-import com.inase.android.gocci.domain.model.PostData;
+import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.datasource.repository.API3;
+import com.inase.android.gocci.domain.model.TwoCellData;
 import com.inase.android.gocci.domain.usecase.TimelineNearUseCase;
 
 import java.util.ArrayList;
@@ -21,29 +23,34 @@ public class ShowNearTimelinePresenter extends Presenter implements TimelineNear
         mShowLatestTimelineView = view;
     }
 
-    public void getNearTimelinePostData(int api, String url) {
+    public void getNearTimelinePostData(Const.APICategory api, String url) {
         mShowLatestTimelineView.showLoading();
         mTimelineNearUseCase.execute(api, url, this);
     }
 
     @Override
-    public void onNearTimelineLoaded(int api, ArrayList<PostData> mPostData, ArrayList<String> post_ids) {
+    public void onNearTimelineLoaded(Const.APICategory api, ArrayList<TwoCellData> mPostData, ArrayList<String> post_ids) {
         mShowLatestTimelineView.hideLoading();
         mShowLatestTimelineView.hideNoResultCase();
         mShowLatestTimelineView.showResult(api, mPostData, post_ids);
     }
 
     @Override
-    public void onNearTimelineEmpty(int api) {
+    public void onNearTimelineEmpty(Const.APICategory api) {
         mShowLatestTimelineView.hideLoading();
         mShowLatestTimelineView.showNoResultCase(api);
     }
 
     @Override
-    public void onError() {
+    public void onCausedByLocalError(Const.APICategory api, String errorMessage) {
         mShowLatestTimelineView.hideLoading();
-        mShowLatestTimelineView.hideNoResultCase();
-        mShowLatestTimelineView.showError();
+        mShowLatestTimelineView.showNoResultCausedByLocalError(api, errorMessage);
+    }
+
+    @Override
+    public void onCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
+        mShowLatestTimelineView.hideLoading();
+        mShowLatestTimelineView.showNoResultCausedByGlobalError(api, globalCode);
     }
 
     @Override
@@ -71,14 +78,14 @@ public class ShowNearTimelinePresenter extends Presenter implements TimelineNear
 
         void hideLoading();
 
-        void showNoResultCase(int api);
+        void showNoResultCase(Const.APICategory api);
 
         void hideNoResultCase();
 
-        void showError();
+        void showResult(Const.APICategory api, ArrayList<TwoCellData> mPostData, ArrayList<String> post_ids);
 
-        void showResult(int api, ArrayList<PostData> mPostData, ArrayList<String> post_ids);
+        void showNoResultCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode);
 
-        void successGochi(int position);
+        void showNoResultCausedByLocalError(Const.APICategory api, String errorMessage);
     }
 }
