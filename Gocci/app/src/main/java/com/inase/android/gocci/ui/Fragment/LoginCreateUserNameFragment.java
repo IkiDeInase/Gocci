@@ -67,9 +67,9 @@ public class LoginCreateUserNameFragment extends Fragment implements FABProgress
             API3.Util.AuthSignupLocalCode localCode = API3.Impl.getRepository().auth_signup_parameter_regex(mUsernameTextInput.getEditText().getText().toString(), "android", SavedData.getVersionName(getActivity()), Build.MODEL, SavedData.getRegId(getActivity()));
             if (localCode == null) {
                 mPresenter.loginUser(Const.APICategory.AUTH_SIGNUP,
-                        API3.Util.getAuthSignupAPI(mUsernameTextInput.getEditText().getText().toString(), Build.VERSION.RELEASE, SavedData.getVersionName(getActivity()), Build.MODEL, SavedData.getRegId(getActivity())));
+                        API3.Util.getAuthSignupAPI(mUsernameTextInput.getEditText().getText().toString(), Const.OS, SavedData.getVersionName(getActivity()), Build.MODEL, SavedData.getRegId(getActivity())));
             } else {
-            Toast.makeText(getActivity(), API3.Util.authSignupLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), API3.Util.authSignupLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
             }
         } else {
             Toast.makeText(getActivity(), getString(R.string.please_input_username), Toast.LENGTH_SHORT).show();
@@ -187,7 +187,7 @@ public class LoginCreateUserNameFragment extends Fragment implements FABProgress
 
     @Override
     public void onCheckFailureCausedByLocalError(String id, String errorMessage) {
-        Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
+        mUsernameTextInput.setError(errorMessage);
     }
 
     @Override
@@ -234,7 +234,8 @@ public class LoginCreateUserNameFragment extends Fragment implements FABProgress
                 mPresenter.loginUser(Const.APICategory.AUTH_SIGNUP,
                         API3.Util.getAuthSignupAPI(mUsernameTextInput.getEditText().getText().toString(), Build.VERSION.RELEASE, SavedData.getVersionName(getActivity()), Build.MODEL, SavedData.getRegId(getActivity())));
                 break;
-            default:break;
+            default:
+                break;
         }
     }
 }

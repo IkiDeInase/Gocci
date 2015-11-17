@@ -77,7 +77,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
     ProgressWheel mProgress;
 
     private int mCategory;
-    private int mId;
+    private String mId;
     private String mUrl;
     private int isMypage; // 0　マイページでない　１　マイページ
 
@@ -94,7 +94,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
     private static MobileAnalyticsManager analytics;
 
-    public static void startListActivity(int id, int isMypage, int category, Activity startingActivity) {
+    public static void startListActivity(String id, int isMypage, int category, Activity startingActivity) {
         Intent intent = new Intent(startingActivity, ListActivity.class);
         intent.putExtra("id", id);
         intent.putExtra("check", isMypage);
@@ -145,7 +145,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
         Intent intent = getIntent();
         mCategory = intent.getIntExtra("category", 0);
-        mId = intent.getIntExtra("id", 0);
+        mId = intent.getStringExtra("id");
         isMypage = intent.getIntExtra("check", 0);
 
         mLayoutManager = new LinearLayoutManager(this);
@@ -368,7 +368,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 try {
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject jsonObject = response.getJSONObject(i);
-                        int user_id = jsonObject.getInt("user_id");
+                        String user_id = jsonObject.getString("user_id");
                         String username = jsonObject.getString("username");
                         String profile_img = jsonObject.getString("profile_img");
                         int follow_flag = jsonObject.getInt("follow_flag");
@@ -415,7 +415,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 try {
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject jsonObject = response.getJSONObject(i);
-                        int user_id = jsonObject.getInt("user_id");
+                        String user_id = jsonObject.getString("user_id");
                         String username = jsonObject.getString("username");
                         String profile_img = jsonObject.getString("profile_img");
                         int follow_flag = jsonObject.getInt("follow_flag");
@@ -462,7 +462,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 try {
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject jsonObject = response.getJSONObject(i);
-                        int rest_id = jsonObject.getInt("rest_id");
+                        String rest_id = jsonObject.getString("rest_id");
                         String restname = jsonObject.getString("restname");
                         String locality = jsonObject.getString("locality");
 
@@ -507,7 +507,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 try {
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject jsonObject = response.getJSONObject(i);
-                        int rest_id = jsonObject.getInt("rest_id");
+                        String rest_id = jsonObject.getString("rest_id");
                         String restname = jsonObject.getString("restname");
                         String locality = jsonObject.getString("locality");
 
@@ -551,7 +551,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 try {
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject jsonObject = response.getJSONObject(i);
-                        int user_id = jsonObject.getInt("user_id");
+                        String user_id = jsonObject.getString("user_id");
                         String username = jsonObject.getString("username");
                         String profile_img = jsonObject.getString("profile_img");
                         int follow_flag = jsonObject.getInt("follow_flag");
@@ -597,7 +597,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 try {
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject jsonObject = response.getJSONObject(i);
-                        int user_id = jsonObject.getInt("user_id");
+                        String user_id = jsonObject.getString("user_id");
                         String username = jsonObject.getString("username");
                         String profile_img = jsonObject.getString("profile_img");
                         int follow_flag = jsonObject.getInt("follow_flag");
@@ -648,7 +648,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 try {
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject jsonObject = response.getJSONObject(i);
-                        int user_id = jsonObject.getInt("user_id");
+                        String user_id = jsonObject.getString("user_id");
                         String username = jsonObject.getString("username");
                         String profile_img = jsonObject.getString("profile_img");
                         int follow_flag = jsonObject.getInt("follow_flag");
@@ -698,7 +698,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 try {
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject jsonObject = response.getJSONObject(i);
-                        int rest_id = jsonObject.getInt("rest_id");
+                        String rest_id = jsonObject.getString("rest_id");
                         String restname = jsonObject.getString("restname");
                         String locality = jsonObject.getString("locality");
 
@@ -747,7 +747,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 try {
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject jsonObject = response.getJSONObject(i);
-                        int rest_id = jsonObject.getInt("rest_id");
+                        String rest_id = jsonObject.getString("rest_id");
                         String restname = jsonObject.getString("restname");
                         String locality = jsonObject.getString("locality");
 
@@ -796,7 +796,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 try {
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject jsonObject = response.getJSONObject(i);
-                        int user_id = jsonObject.getInt("user_id");
+                        String user_id = jsonObject.getString("user_id");
                         String username = jsonObject.getString("username");
                         String profile_img = jsonObject.getString("profile_img");
                         int follow_flag = jsonObject.getInt("follow_flag");

@@ -155,9 +155,9 @@ public class LoginSessionActivity extends AppCompatActivity implements ShowUserL
 
                     @Override
                     public void onPostExecute(String identity_id) {
-                        API3.Util.AuthSnsLoginLocalCode localCode = api3Impl.auth_sns_login_parameter_regex(identity_id, "android_" + Build.VERSION.RELEASE, SavedData.getVersionName(LoginSessionActivity.this), Build.MODEL, SavedData.getRegId(LoginSessionActivity.this));
+                        API3.Util.AuthSnsLoginLocalCode localCode = api3Impl.auth_sns_login_parameter_regex(identity_id, Const.OS, SavedData.getVersionName(LoginSessionActivity.this), Build.MODEL, SavedData.getRegId(LoginSessionActivity.this));
                         if (localCode == null) {
-                            mPresenter.loginUser(Const.APICategory.AUTH_FACEBOOK_LOGIN, API3.Util.getAuthSNSLoginAPI(identity_id, Build.VERSION.RELEASE, SavedData.getVersionName(LoginSessionActivity.this), Build.MODEL, SavedData.getRegId(LoginSessionActivity.this)));
+                            mPresenter.loginUser(Const.APICategory.AUTH_FACEBOOK_LOGIN, API3.Util.getAuthSNSLoginAPI(identity_id, Const.OS, SavedData.getVersionName(LoginSessionActivity.this), Build.MODEL, SavedData.getRegId(LoginSessionActivity.this)));
                         } else {
                             Toast.makeText(LoginSessionActivity.this, API3.Util.authSnsLoginLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
                         }
@@ -190,9 +190,9 @@ public class LoginSessionActivity extends AppCompatActivity implements ShowUserL
 
                     @Override
                     public void onPostExecute(String identity_id) {
-                        API3.Util.AuthSnsLoginLocalCode localCode = api3Impl.auth_sns_login_parameter_regex(identity_id, "android_" + Build.VERSION.RELEASE, SavedData.getVersionName(LoginSessionActivity.this), Build.MODEL, SavedData.getRegId(LoginSessionActivity.this));
+                        API3.Util.AuthSnsLoginLocalCode localCode = api3Impl.auth_sns_login_parameter_regex(identity_id, Const.OS, SavedData.getVersionName(LoginSessionActivity.this), Build.MODEL, SavedData.getRegId(LoginSessionActivity.this));
                         if (localCode == null) {
-                            mPresenter.loginUser(Const.APICategory.AUTH_TWITTER_LOGIN, API3.Util.getAuthSNSLoginAPI(identity_id, Build.VERSION.RELEASE, SavedData.getVersionName(LoginSessionActivity.this), Build.MODEL, SavedData.getRegId(LoginSessionActivity.this)));
+                            mPresenter.loginUser(Const.APICategory.AUTH_TWITTER_LOGIN, API3.Util.getAuthSNSLoginAPI(identity_id, Const.OS, SavedData.getVersionName(LoginSessionActivity.this), Build.MODEL, SavedData.getRegId(LoginSessionActivity.this)));
                         } else {
                             Toast.makeText(LoginSessionActivity.this, API3.Util.authSnsLoginLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
                         }
@@ -217,10 +217,10 @@ public class LoginSessionActivity extends AppCompatActivity implements ShowUserL
                     mSigninPassEdit.setError(getString(R.string.cheat_input));
                 } else {
                     API3.Util.AuthPassLoginLocalCode localCode = api3Impl.auth_pass_login_parameter_regex(mSigninUsernameEdit.getEditText().getText().toString(), mSigninPassEdit.getEditText().getText().toString(),
-                            Build.VERSION.RELEASE, SavedData.getVersionName(LoginSessionActivity.this), Build.MODEL, SavedData.getRegId(LoginSessionActivity.this));
+                            Const.OS, SavedData.getVersionName(LoginSessionActivity.this), Build.MODEL, SavedData.getRegId(LoginSessionActivity.this));
                     if (localCode == null) {
                         mPresenter.loginUser(Const.APICategory.AUTH_PASS_LOGIN, API3.Util.getAuthUsernamePasswordAPI(mSigninUsernameEdit.getEditText().getText().toString(),
-                                mSigninPassEdit.getEditText().getText().toString(), Build.VERSION.RELEASE, SavedData.getVersionName(LoginSessionActivity.this), Build.MODEL, SavedData.getRegId(LoginSessionActivity.this)));
+                                mSigninPassEdit.getEditText().getText().toString(), Const.OS, SavedData.getVersionName(LoginSessionActivity.this), Build.MODEL, SavedData.getRegId(LoginSessionActivity.this)));
                     } else {
                         Toast.makeText(LoginSessionActivity.this, API3.Util.authPassLoginLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
                     }
@@ -334,7 +334,8 @@ public class LoginSessionActivity extends AppCompatActivity implements ShowUserL
             case AUTH_PASS_LOGIN:
                 mLoginRipple.performClick();
                 break;
-            default:break;
+            default:
+                break;
         }
     }
 }

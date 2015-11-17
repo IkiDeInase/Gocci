@@ -133,7 +133,7 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
 
     private ShowCommentPagePresenter mPresenter;
 
-    public static void startCommentActivity(int post_id, boolean isMyPage, Activity startingActivity) {
+    public static void startCommentActivity(String post_id, boolean isMyPage, Activity startingActivity) {
         Intent intent = new Intent(startingActivity, CommentActivity.class);
         intent.putExtra("post_id", post_id);
         intent.putExtra("judge", isMyPage);
@@ -141,7 +141,7 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
         startingActivity.overridePendingTransition(R.anim.activity_in, R.anim.activity_out);
     }
 
-    public static void startCommentActivityOnContext(int post_id, boolean isMyPage, Context context) {
+    public static void startCommentActivityOnContext(String post_id, boolean isMyPage, Context context) {
         Intent intent = new Intent(context, CommentActivity.class);
         intent.putExtra("post_id", post_id);
         intent.putExtra("judge", isMyPage);
@@ -313,7 +313,7 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
     }
 
     @Override
-    public void onUserClick(int user_id, String user_name) {
+    public void onUserClick(String user_id, String user_name) {
         UserProfActivity.startUserProfActivity(user_id, user_name, this);
     }
 

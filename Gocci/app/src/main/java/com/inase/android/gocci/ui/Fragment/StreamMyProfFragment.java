@@ -281,14 +281,14 @@ public class StreamMyProfFragment extends Fragment implements AppBarLayout.OnOff
         mPost_ids.addAll(event.mPost_Ids);
         mSwipeContainer.setRefreshing(false);
         switch (event.mApi) {
-            case Const.USERPAGE_FIRST:
+            case GET_USER_FIRST:
                 mStreamMyProfAdapter = new StreamMyProfAdapter(getActivity(), mUsers);
                 mStreamMyProfAdapter.setMyProfCallback(this);
                 mStreamViewHolderHash.clear();
                 mTimelineRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
                 mTimelineRecyclerView.setAdapter(mStreamMyProfAdapter);
                 break;
-            case Const.USERPAGE_REFRESH:
+            case GET_USER_REFRESH:
                 mPlayingPostId = null;
                 mStreamViewHolderHash.clear();
                 mTimelineRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
@@ -318,7 +318,7 @@ public class StreamMyProfFragment extends Fragment implements AppBarLayout.OnOff
             return null;
         }
         //return mCacheManager.getCachePath(userData.getPost_id(), userData.getMovie());
-        return userData.getMovie();
+        return userData.getHls_movie();
     }
 
     private void streamPreparePlayer(final Const.StreamViewHolder viewHolder, String path) {
@@ -413,7 +413,7 @@ public class StreamMyProfFragment extends Fragment implements AppBarLayout.OnOff
                 return;
             }
 
-            final String path = userData.getMovie();
+            final String path = userData.getHls_movie();
             releasePlayer();
             if (Util.isMovieAutoPlay(getActivity())) {
                 streamPreparePlayer(currentViewHolder, path);
@@ -440,12 +440,12 @@ public class StreamMyProfFragment extends Fragment implements AppBarLayout.OnOff
     }
 
     @Override
-    public void onStreamRestClick(int rest_id, String rest_name) {
+    public void onStreamRestClick(String rest_id, String rest_name) {
         TenpoActivity.startTenpoActivity(rest_id, rest_name, getActivity());
     }
 
     @Override
-    public void onStreamCommentClick(int post_id) {
+    public void onStreamCommentClick(String post_id) {
         CommentActivity.startCommentActivity(post_id, true, getActivity());
     }
 

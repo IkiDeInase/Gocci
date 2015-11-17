@@ -249,13 +249,13 @@ public class GridUserProfFragment extends Fragment implements AppBarLayout.OnOff
         mPost_ids.addAll(event.mPost_Ids);
         mSwipeContainer.setRefreshing(false);
         switch (event.mApi) {
-            case Const.USERPAGE_FIRST:
+            case GET_USER_FIRST:
                 mGridProfAdapter = new GridProfAdapter(getActivity(), false, mUsers);
                 mGridProfAdapter.setMyProfCallback(this);
                 mGridViewHolderHash.clear();
                 mTimelineRecyclerView.setAdapter(mGridProfAdapter);
                 break;
-            case Const.USERPAGE_REFRESH:
+            case GET_USER_REFRESH:
                 mPlayingPostId = null;
                 mGridViewHolderHash.clear();
                 mGridProfAdapter.setData();
@@ -360,7 +360,7 @@ public class GridUserProfFragment extends Fragment implements AppBarLayout.OnOff
             return;
         }
 
-        final String path = postData.getMovie();
+        final String path = postData.getHls_movie();
         releasePlayer();
         gridPreparePlayer(currentViewHolder, path);
     }
@@ -384,12 +384,12 @@ public class GridUserProfFragment extends Fragment implements AppBarLayout.OnOff
     }
 
     @Override
-    public void onGridRestClick(int rest_id, String rest_name) {
+    public void onGridRestClick(String rest_id, String rest_name) {
         TenpoActivity.startTenpoActivity(rest_id, rest_name, getActivity());
     }
 
     @Override
-    public void onGridCommentClick(int post_id) {
+    public void onGridCommentClick(String post_id) {
         CommentActivity.startCommentActivity(post_id, false, getActivity());
     }
 

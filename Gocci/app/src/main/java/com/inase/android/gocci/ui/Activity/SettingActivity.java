@@ -58,7 +58,6 @@ import com.twitter.sdk.android.core.TwitterAuthToken;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.SocketTimeoutException;
@@ -668,7 +667,8 @@ public class SettingActivity extends AppCompatActivity {
                 TwitterAuthToken authToken = unlinksession.getAuthToken();
                 snsUnLinkAsync(Const.APICategory.POST_TWITTER_UNLINK, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret);
                 break;
-            default:break;
+            default:
+                break;
         }
     }
 }

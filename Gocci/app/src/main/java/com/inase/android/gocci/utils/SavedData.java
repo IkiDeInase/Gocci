@@ -210,7 +210,7 @@ public class SavedData {
 
     public static String getVersionName(Context context) {
         SharedPreferences prefs = context.getSharedPreferences("pref", Context.MODE_PRIVATE);
-        return prefs.getString(KEY_VERSION_NAME, "3");
+        return prefs.getString(KEY_VERSION_NAME, "3.0");
     }
 
     public static void setVersionName(Context context, String versionName) {
@@ -242,12 +242,12 @@ public class SavedData {
         editor.apply();
     }
 
-    public static void setPostVideoPreview(Context context, String restname, int rest_id, String video_url, String aws_post_name, int category_id,
+    public static void setPostVideoPreview(Context context, String restname, String rest_id, String video_url, String aws_post_name, int category_id,
                                            String memo, String value, boolean isNewRestname, double lon, double lat) {
         SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(KEY_RESTNAME, restname);
-        editor.putInt(KEY_REST_ID, rest_id);
+        editor.putString(KEY_REST_ID, rest_id);
         editor.putString(KEY_VIDEO_URL, video_url);
         editor.putString(KEY_AWS_POST_NAME, aws_post_name);
         editor.putInt(KEY_CATEGORY_ID, category_id);
@@ -266,10 +266,10 @@ public class SavedData {
         editor.apply();
     }
 
-    public static void setRest_id(Context context, int rest_id) {
+    public static void setRest_id(Context context, String rest_id) {
         SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putInt(KEY_REST_ID, rest_id);
+        editor.putString(KEY_REST_ID, rest_id);
         editor.apply();
     }
 
@@ -327,9 +327,9 @@ public class SavedData {
         return prefs.getString(KEY_RESTNAME, "");
     }
 
-    public static int getRest_id(Context context) {
+    public static String getRest_id(Context context) {
         SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
-        return prefs.getInt(KEY_REST_ID, 1);
+        return prefs.getString(KEY_REST_ID, "1");
     }
 
     public static String getVideoUrl(Context context) {

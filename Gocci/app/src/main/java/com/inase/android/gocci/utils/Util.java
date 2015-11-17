@@ -36,6 +36,7 @@ import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.domain.model.HeaderData;
 import com.inase.android.gocci.domain.model.PostData;
+import com.inase.android.gocci.domain.model.TwoCellData;
 import com.inase.android.gocci.ui.activity.UserProfActivity;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -411,6 +412,35 @@ public class Util {
         });
     }
 
+    public static void postGochiAsync(final Context context, final TwoCellData headerData) {
+        Application_Gocci.getJsonAsyncHttpClient(Const.getPostGochiAPI(headerData.getPost_id()), new JsonHttpResponseHandler() {
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                //配列のpushed_atを１にする
+                try {
+                    String message = response.getString(KEY_MESSAGE);
+                    int code = response.getInt(KEY_CODE);
+
+                    if (code != 200) {
+                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+                        headerData.setGochi_flag(0);
+                        //headerData.setGochi_num(headerData.getGochi_num() - 1);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                headerData.setGochi_flag(0);
+                //headerData.setGochi_num(headerData.getGochi_num() - 1);
+                Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
     public static void followAsync(final Context context, final HeaderData headerData) {
         Application_Gocci.getJsonAsyncHttpClient(Const.getPostFollowAPI(headerData.getUser_id()), new JsonHttpResponseHandler() {
             @Override
@@ -620,7 +650,7 @@ public class Util {
                 try {
                     String message = response.getString(KEY_MESSAGE);
                     int code = response.getInt(KEY_CODE);
-                    int user_id = response.getInt(KEY_USER_ID);
+                    String user_id = response.getString(KEY_USER_ID);
 
                     Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
 

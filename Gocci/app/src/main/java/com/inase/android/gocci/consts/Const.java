@@ -37,47 +37,14 @@ public class Const {
 
     public static final Regions REGION = Regions.US_EAST_1;
 
+    public static final String OS = "android";
+
     public static final String POST_MOVIE_BUCKET_NAME = "gocci.movies.bucket.jp-test";
     public static final String GET_MOVIE_BUCKET_NAME = "gocci.movies.provider.jp-test";
     public static final String POST_PHOTO_BUCKET_NAME = "gocci.imgs.provider.jp-test";
 //    public static final String POST_MOVIE_BUCKET_NAME = "gocci.movies.bucket.jp";
 //    public static final String GET_MOVIE_BUCKET_NAME = "gocci.movies.provider.jp";
 //    public static final String POST_PHOTO_BUCKET_NAME = "gocci.imgs.provider.jp";
-
-    public static String getAuthLoginAPI(String identity_id) {
-        return URL_PREFIX + VERSION_NUMBER + "/mobile/auth/login/?identity_id=" + identity_id;
-    }
-
-    public static String getAuthSNSLoginAPI(String identity_id, String os, String ver, String model, String register_id) {
-        return URL_PREFIX + VERSION_NUMBER + "/mobile/auth/sns_login/?identity_id=" + identity_id + "&os=android_" + os +
-                "&ver=" + ver + "&model=" + model + "&register_id=" + register_id;
-    }
-
-    public static String getAuthSignupAPI(String username, String os, String ver, String model, String register_id) {
-        return URL_PREFIX + VERSION_NUMBER + "/mobile/auth/signup/?username=" + username + "&os=android_" + os +
-                "&ver=" + ver + "&model=" + model + "&register_id=" + register_id;
-    }
-
-    public static String getAuthSNSMatchAPI(String providerName, String token, String profile_img) {
-        return URL_PREFIX + VERSION_NUMBER + "/mobile/post/sns/?provider=" + providerName +
-                "&token=" + token + "&profile_img=" + profile_img;
-    }
-
-    public static String getAuthSNSUnLinkAPI(String providerName, String token) {
-        return URL_PREFIX + VERSION_NUMBER + "/mobile/post/sns_unlink/?provider=" + providerName +
-                "&token=" + token;
-    }
-
-    public static String getAuthSNSConversionAPI(String providerName, String token, String profile_img, String os, String model, String register_id) {
-        return URL_PREFIX + VERSION_NUMBER + "/mobile/auth/sns_conversion/?profile_img=" + profile_img +
-                "&token=" + token + "&provider=" + providerName + "&os=android_" + os +
-                "&model=" + model + "&register_id=" + register_id;
-    }
-
-    public static String getAuthUsernamePasswordAPI(String username, String password, String os, String ver, String model, String register_id) {
-        return URL_PREFIX + VERSION_NUMBER + "/mobile/auth/pass_login/?username=" + username +
-                "&pass=" + password + "&os=android_" + os + "&ver=" + ver + "&model=" + model + "&register_id=" + register_id;
-    }
 
     public static String getCustomTimelineAPI(int position, int sort_id, int category_id, int value_id, double lon, double lat, int call) {
         StringBuilder url = null;
@@ -106,24 +73,8 @@ public class Const {
         return new String(url);
     }
 
-    public static String getLatestAPI() {
-        return URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline";
-    }
-
-    public static String getFollowlineApi() {
-        return URL_PREFIX + VERSION_NUMBER + "/mobile/get/followline";
-    }
-
     public static String getCommentAPI(String post_id) {
         return URL_PREFIX + VERSION_NUMBER + "/mobile/get/comment/?post_id=" + post_id;
-    }
-
-    public static String getRestpageAPI(int rest_id) {
-        return URL_PREFIX + VERSION_NUMBER + "/mobile/get/rest/?rest_id=" + rest_id;
-    }
-
-    public static String getUserpageAPI(int user_id) {
-        return URL_PREFIX + VERSION_NUMBER + "/mobile/get/user/?target_user_id=" + user_id;
     }
 
     public static String getNoticeAPI() {
@@ -134,23 +85,23 @@ public class Const {
         return URL_PREFIX + VERSION_NUMBER + "/mobile/get/near/?lon=" + lon + "&lat=" + lat;
     }
 
-    public static String getFollowAPI(int user_id) {
+    public static String getFollowAPI(String user_id) {
         return URL_PREFIX + VERSION_NUMBER + "/mobile/get/follow/?target_user_id=" + user_id;
     }
 
-    public static String getFollowerAPI(int user_id) {
+    public static String getFollowerAPI(String user_id) {
         return URL_PREFIX + VERSION_NUMBER + "/mobile/get/follower/?target_user_id=" + user_id;
     }
 
-    public static String getWantAPI(int user_id) {
+    public static String getWantAPI(String user_id) {
         return URL_PREFIX + VERSION_NUMBER + "/mobile/get/want/?target_user_id=" + user_id;
     }
 
-    public static String getUserCheerAPI(int user_id) {
+    public static String getUserCheerAPI(String user_id) {
         return URL_PREFIX + VERSION_NUMBER + "/mobile/get/user_cheer/?target_user_id=" + user_id;
     }
 
-    public static String getRestCheerAPI(int rest_id) {
+    public static String getRestCheerAPI(String rest_id) {
         return URL_PREFIX + VERSION_NUMBER + "/mobile/get/rest_cheer/?rest_id=" + rest_id;
     }
 
@@ -170,19 +121,19 @@ public class Const {
         return URL_PREFIX + VERSION_NUMBER + "/mobile/post/postblock/?post_id=" + post_id;
     }
 
-    public static String getPostFollowAPI(int user_id) {
+    public static String getPostFollowAPI(String user_id) {
         return URL_PREFIX + VERSION_NUMBER + "/mobile/post/follow/?target_user_id=" + user_id;
     }
 
-    public static String getPostUnFollowAPI(int user_id) {
+    public static String getPostUnFollowAPI(String user_id) {
         return URL_PREFIX + VERSION_NUMBER + "/mobile/post/unfollow/?target_user_id=" + user_id;
     }
 
-    public static String getPostWantAPI(int rest_id) {
+    public static String getPostWantAPI(String rest_id) {
         return URL_PREFIX + VERSION_NUMBER + "/mobile/post/want/?rest_id=" + rest_id;
     }
 
-    public static String getPostUnWantAPI(int rest_id) {
+    public static String getPostUnWantAPI(String rest_id) {
         return URL_PREFIX + VERSION_NUMBER + "/mobile/post/unwant/?rest_id=" + rest_id;
     }
 
@@ -202,7 +153,7 @@ public class Const {
         return URL_PREFIX + VERSION_NUMBER + "/mobile/post/password/?pass=" + password;
     }
 
-    public static String getPostMovieAPI(int rest_id, String movie, int category_id, String value, String memo, int cheer_flag) {
+    public static String getPostMovieAPI(String rest_id, String movie, int category_id, String value, String memo, int cheer_flag) {
         return URL_PREFIX + VERSION_NUMBER + "/mobile/post/post/?rest_id=" + rest_id +
                 "&movie_name=" + movie + "&category_id=" + category_id + "&value=" + value +
                 "&memo=" + memo + "&cheer_flag=" + cheer_flag;
@@ -270,17 +221,6 @@ public class Const {
     public static final int CATEGORY_WANT = 4;
     public static final int CATEGORY_REST_CHEER = 5;
 
-    public static final int TIMELINE_FIRST = 0;
-    public static final int TIMELINE_REFRESH = 1;
-    public static final int TIMELINE_ADD = 2;
-    public static final int TIMELINE_FILTER = 3;
-
-    public static final int USERPAGE_FIRST = 4;
-    public static final int USERPAGE_REFRESH = 5;
-
-    public static final int RESTPAGE_FIRST = 6;
-    public static final int RESTPAGE_REFRESH = 7;
-
     public static final int COMMENT_FIRST = 8;
     public static final int COMMENT_REFRESH = 9;
 
@@ -295,6 +235,14 @@ public class Const {
         POST_TWITTER,
         POST_FACEBOOK_UNLINK,
         POST_TWITTER_UNLINK,
+        GET_TIMELINE_FIRST,
+        GET_TIMELINE_REFRESH,
+        GET_TIMELINE_ADD,
+        GET_TIMELINE_FILTER,
+        GET_USER_FIRST,
+        GET_USER_REFRESH,
+        GET_REST_FIRST,
+        GET_REST_REFRESH
     }
 
     public static final class TwoCellViewHolder extends RecyclerView.ViewHolder {

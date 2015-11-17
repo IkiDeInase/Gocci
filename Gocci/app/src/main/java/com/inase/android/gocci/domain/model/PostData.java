@@ -7,151 +7,127 @@ public class PostData {
 
     //タイムライン　
     private static final String TAG_POST_ID = "post_id";
-    private static final String TAG_POST_USER_ID = "user_id";
-    private static final String TAG_USERNAME = "username";
-    private static final String TAG_PROFILE_IMG = "profile_img";
-    private static final String TAG_POST_REST_ID = "rest_id";
-    private static final String TAG_RESTNAME = "restname";
     private static final String TAG_MOVIE = "movie";
     private static final String TAG_THUMBNAIL = "thumbnail";
     private static final String TAG_CATEGORY = "category";
-    private static final String TAG_TAG = "tag";
     private static final String TAG_VALUE = "value";
     private static final String TAG_MEMO = "memo";
     private static final String TAG_POST_DATE = "post_date";
     private static final String TAG_CHEER_FLAG = "cheer_flag";
+
+    private static final String TAG_POST_REST_ID = "rest_id";
+    private static final String TAG_RESTNAME = "restname";
+
+    private static final String TAG_POST_USER_ID = "user_id";
+    private static final String TAG_USERNAME = "username";
+    private static final String TAG_PROFILE_IMG = "profile_img";
+
+    private static final String TAG_LON = "lon";
+    private static final String TAG_LAT = "lat";
+    private static final String TAG_MP4_MOVIE = "mp4_movie";
+    private static final String TAG_HLS_MOVIE = "hls_movie";
     private static final String TAG_GOCHI_NUM = "gochi_num";
-    private static final String TAG_COMMENT_NUM = "comment_num";
-    private static final String TAG_WANT_FLAG = "want_flag";
-    private static final String TAG_FOLLOW_FLAG = "follow_flag";
     private static final String TAG_GOCHI_FLAG = "gochi_flag";
-    private static final String TAG_LON = "X(lon_lat)";
-    private static final String TAG_LAT = "Y(lon_lat)";
-    private static final String TAG_SHARE = "share";
-
-    private static final String TAG_DISTANCE = "distance";
-
+    private static final String TAG_COMMENT_NUM = "comment_num";
     //JSON用のsetter/getter
 
     //タイムライン
     private String post_id;
-    private int post_user_id;
-    private String username;
-    private String profile_img;
-    private int post_rest_id;
-    private String restname;
     private String movie;
     private String thumbnail;
     private String category;
-    private String tag;
     private String value;
     private String memo;
     private String post_date;
     private int cheer_flag;
-    private int gochi_num;
-    private int comment_num;
-    private int want_flag;
-    private int follow_flag;
-    private int gochi_flag;
-    private double lat;
-    private double lon;
-    private String share;
 
-    private int distance;
+    private String post_rest_id;
+    private String restname;
+
+    private String post_user_id;
+    private String username;
+    private String profile_img;
+
+    private double lon;
+    private double lat;
+    private String mp4_movie;
+    private String hls_movie;
+    private int gochi_num;
+    private int gochi_flag;
+    private int comment_num;
 
     public PostData() {
     }
 
-    public PostData(String post_id, int post_user_id, String username, String profile_img, int post_rest_id,
-                    String restname, String movie, String thumbnail, String category, String tag,
-                    String value, String memo, String post_date, int cheer_flag, int gochi_num,
-                    int comment_num, int want_flag, int follow_flag, int gochi_flag, double lat,
-                    double lon, String share) {
+    //店舗
+    public PostData(String post_id, String movie, String thumbnail, String category,
+                    String value, String memo, String post_date, int cheer_flag, String post_user_id,
+                    String username, String profile_img, String mp4_movie, String hls_movie,
+                    int gochi_num, int gochi_flag, int comment_num) {
         this.post_id = post_id;
-        this.post_user_id = post_user_id;
-        this.username = username;
-        this.profile_img = profile_img;
-        this.post_rest_id = post_rest_id;
-        this.restname = restname;
         this.movie = movie;
         this.thumbnail = thumbnail;
         this.category = category;
-        this.tag = tag;
         this.value = value;
         this.memo = memo;
         this.post_date = post_date;
         this.cheer_flag = cheer_flag;
-        this.gochi_num = gochi_num;
-        this.comment_num = comment_num;
-        this.want_flag = want_flag;
-        this.follow_flag = follow_flag;
-        this.gochi_flag = gochi_flag;
-        this.lat = lat;
-        this.lon = lon;
-        this.share = share;
-    }
-
-    public PostData(String post_id, int post_user_id, String username, String profile_img, int post_rest_id,
-                    String restname, String movie, String thumbnail, String category, String tag,
-                    String value, String memo, String post_date, int cheer_flag, int gochi_num,
-                    int comment_num, int want_flag, int follow_flag, int gochi_flag, double lat,
-                    double lon, String share, int distance) {
-        this.post_id = post_id;
         this.post_user_id = post_user_id;
         this.username = username;
         this.profile_img = profile_img;
-        this.post_rest_id = post_rest_id;
-        this.restname = restname;
+        this.mp4_movie = mp4_movie;
+        this.hls_movie = hls_movie;
+        this.gochi_num = gochi_num;
+        this.gochi_flag = gochi_flag;
+        this.comment_num = comment_num;
+    }
+
+    //ユーザー
+    public PostData(String post_id, String movie, String thumbnail, String category,
+                    String value, String memo, String post_date, int cheer_flag, String post_rest_id,
+                    String restname, double lon, double lat, String mp4_movie, String hls_movie,
+                    int gochi_num, int gochi_flag, int comment_num) {
+        this.post_id = post_id;
         this.movie = movie;
         this.thumbnail = thumbnail;
         this.category = category;
-        this.tag = tag;
         this.value = value;
         this.memo = memo;
         this.post_date = post_date;
         this.cheer_flag = cheer_flag;
-        this.gochi_num = gochi_num;
-        this.comment_num = comment_num;
-        this.want_flag = want_flag;
-        this.follow_flag = follow_flag;
-        this.gochi_flag = gochi_flag;
-        this.lat = lat;
+        this.post_rest_id = post_rest_id;
+        this.restname = restname;
         this.lon = lon;
-        this.share = share;
-
-        this.distance = distance;
+        this.lat = lat;
+        this.mp4_movie = mp4_movie;
+        this.hls_movie = hls_movie;
+        this.gochi_num = gochi_num;
+        this.gochi_flag = gochi_flag;
+        this.comment_num = comment_num;
     }
 
-    public static PostData createPostData(JSONObject jsonObject) {
+    public static PostData createUserPostData(JSONObject jsonObject) {
         try {
             String post_id = jsonObject.getString(TAG_POST_ID);
-            int post_user_id = jsonObject.getInt(TAG_POST_USER_ID);
-            String username = jsonObject.getString(TAG_USERNAME);
-            String profile_img = jsonObject.getString(TAG_PROFILE_IMG);
-            int post_rest_id = jsonObject.getInt(TAG_POST_REST_ID);
-            String restname = jsonObject.getString(TAG_RESTNAME);
             String movie = jsonObject.getString(TAG_MOVIE);
             String thumbnail = jsonObject.getString(TAG_THUMBNAIL);
             String category = jsonObject.getString(TAG_CATEGORY);
-            String tag = jsonObject.getString(TAG_TAG);
             String value = jsonObject.getString(TAG_VALUE);
             String memo = jsonObject.getString(TAG_MEMO);
             String post_date = jsonObject.getString(TAG_POST_DATE);
             int cheer_flag = jsonObject.getInt(TAG_CHEER_FLAG);
+            String post_user_id = jsonObject.getString(TAG_POST_USER_ID);
+            String username = jsonObject.getString(TAG_USERNAME);
+            String profile_img = jsonObject.getString(TAG_PROFILE_IMG);
+            String mp4_movie = jsonObject.getString(TAG_MP4_MOVIE);
+            String hls_movie = jsonObject.getString(TAG_HLS_MOVIE);
             int gochi_num = jsonObject.getInt(TAG_GOCHI_NUM);
-            int comment_num = jsonObject.getInt(TAG_COMMENT_NUM);
-            int want_flag = jsonObject.getInt(TAG_WANT_FLAG);
-            int follow_flag = jsonObject.getInt(TAG_FOLLOW_FLAG);
             int gochi_flag = jsonObject.getInt(TAG_GOCHI_FLAG);
-            double lat = jsonObject.getDouble(TAG_LAT);
-            double lon = jsonObject.getDouble(TAG_LON);
-            String share = jsonObject.getString(TAG_SHARE);
+            int comment_num = jsonObject.getInt(TAG_COMMENT_NUM);
 
-            return new PostData(post_id, post_user_id, username, profile_img, post_rest_id,
-                    restname, movie, thumbnail, category, tag,
-                    value, memo, post_date, cheer_flag, gochi_num,
-                    comment_num, want_flag, follow_flag, gochi_flag, lat,
-                    lon, share);
+            return new PostData(post_id, movie, thumbnail, category, value,
+                    memo, post_date, cheer_flag, post_user_id, username, profile_img,
+                    mp4_movie, hls_movie, gochi_num, gochi_flag, comment_num);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -159,38 +135,29 @@ public class PostData {
         return null;
     }
 
-    public static PostData createDistPostData(JSONObject jsonObject) {
+    public static PostData createRestPostData(JSONObject jsonObject) {
         try {
             String post_id = jsonObject.getString(TAG_POST_ID);
-            int post_user_id = jsonObject.getInt(TAG_POST_USER_ID);
-            String username = jsonObject.getString(TAG_USERNAME);
-            String profile_img = jsonObject.getString(TAG_PROFILE_IMG);
-            int post_rest_id = jsonObject.getInt(TAG_POST_REST_ID);
-            String restname = jsonObject.getString(TAG_RESTNAME);
             String movie = jsonObject.getString(TAG_MOVIE);
             String thumbnail = jsonObject.getString(TAG_THUMBNAIL);
             String category = jsonObject.getString(TAG_CATEGORY);
-            String tag = jsonObject.getString(TAG_TAG);
             String value = jsonObject.getString(TAG_VALUE);
             String memo = jsonObject.getString(TAG_MEMO);
             String post_date = jsonObject.getString(TAG_POST_DATE);
             int cheer_flag = jsonObject.getInt(TAG_CHEER_FLAG);
-            int gochi_num = jsonObject.getInt(TAG_GOCHI_NUM);
-            int comment_num = jsonObject.getInt(TAG_COMMENT_NUM);
-            int want_flag = jsonObject.getInt(TAG_WANT_FLAG);
-            int follow_flag = jsonObject.getInt(TAG_FOLLOW_FLAG);
-            int gochi_flag = jsonObject.getInt(TAG_GOCHI_FLAG);
-            double lat = jsonObject.getDouble(TAG_LAT);
+            String post_rest_id = jsonObject.getString(TAG_POST_REST_ID);
+            String restname = jsonObject.getString(TAG_RESTNAME);
             double lon = jsonObject.getDouble(TAG_LON);
-            String share = jsonObject.getString(TAG_SHARE);
+            double lat = jsonObject.getDouble(TAG_LAT);
+            String mp4_movie = jsonObject.getString(TAG_MP4_MOVIE);
+            String hls_movie = jsonObject.getString(TAG_HLS_MOVIE);
+            int gochi_num = jsonObject.getInt(TAG_GOCHI_NUM);
+            int gochi_flag = jsonObject.getInt(TAG_GOCHI_FLAG);
+            int comment_num = jsonObject.getInt(TAG_COMMENT_NUM);
 
-            int distance = jsonObject.getInt(TAG_DISTANCE);
-
-            return new PostData(post_id, post_user_id, username, profile_img, post_rest_id,
-                    restname, movie, thumbnail, category, tag,
-                    value, memo, post_date, cheer_flag, gochi_num,
-                    comment_num, want_flag, follow_flag, gochi_flag, lat,
-                    lon, share, distance);
+            return new PostData(post_id, movie, thumbnail, category, value,
+                    memo, post_date, cheer_flag, post_rest_id, restname, lon, lat,
+                    mp4_movie, hls_movie, gochi_num, gochi_flag, comment_num);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -206,11 +173,11 @@ public class PostData {
         this.post_id = post_id;
     }
 
-    public int getPost_user_id() {
+    public String getPost_user_id() {
         return post_user_id;
     }
 
-    public void setPost_user_id(int post_user_id) {
+    public void setPost_user_id(String post_user_id) {
         this.post_user_id = post_user_id;
     }
 
@@ -230,11 +197,11 @@ public class PostData {
         this.profile_img = profile_img;
     }
 
-    public int getPost_rest_id() {
+    public String getPost_rest_id() {
         return post_rest_id;
     }
 
-    public void setPost_rest_id(int post_rest_id) {
+    public void setPost_rest_id(String post_rest_id) {
         this.post_rest_id = post_rest_id;
     }
 
@@ -268,14 +235,6 @@ public class PostData {
 
     public void setCategory(String category) {
         this.category = category;
-    }
-
-    public String getTag() {
-        return tag;
-    }
-
-    public void setTag(String tag) {
-        this.tag = tag;
     }
 
     public String getValue() {
@@ -326,22 +285,6 @@ public class PostData {
         this.comment_num = comment_num;
     }
 
-    public int getWant_flag() {
-        return want_flag;
-    }
-
-    public void setWant_flag(int want_flag) {
-        this.want_flag = want_flag;
-    }
-
-    public int getFollow_flag() {
-        return follow_flag;
-    }
-
-    public void setFollow_flag(int follow_flag) {
-        this.follow_flag = follow_flag;
-    }
-
     public int getGochi_flag() {
         return gochi_flag;
     }
@@ -366,19 +309,19 @@ public class PostData {
         this.lon = lon;
     }
 
-    public String getShare() {
-        return share;
+    public String getMp4_movie() {
+        return mp4_movie;
     }
 
-    public void setShare(String share) {
-        this.share = share;
+    public void setMp4_movie(String mp4_movie) {
+        this.mp4_movie = mp4_movie;
     }
 
-    public int getDistance() {
-        return distance;
+    public String getHls_movie() {
+        return hls_movie;
     }
 
-    public void setDistance(int distance) {
-        this.distance = distance;
+    public void setHls_movie(String hls_movie) {
+        this.hls_movie = hls_movie;
     }
 }

@@ -11,17 +11,17 @@ public class CommentUserData {
     private static final String TAG_USER_ID = "user_id";
     private static final String TAG_USERNAME = "username";
 
-    private int user_id;
+    private String user_id;
     private String username;
 
-    public CommentUserData(int user_id, String username) {
+    public CommentUserData(String user_id, String username) {
         this.user_id = user_id;
         this.username = username;
     }
 
     public static CommentUserData createCommentUserData(JSONObject jsonObject) {
         try {
-            int user_id = jsonObject.getInt(TAG_USER_ID);
+            String user_id = jsonObject.getString(TAG_USER_ID);
             String username = jsonObject.getString(TAG_USERNAME);
 
             return new CommentUserData(user_id, username);
@@ -32,7 +32,7 @@ public class CommentUserData {
         return null;
     }
 
-    public int getUser_id() {
+    public String getUser_id() {
         return user_id;
     }
 

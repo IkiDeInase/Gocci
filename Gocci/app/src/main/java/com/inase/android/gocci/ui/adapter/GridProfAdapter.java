@@ -79,7 +79,7 @@ public class GridProfAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
         holder.mSquareImage.setVisibility(View.VISIBLE);
 
         holder.mRestname.setText(user.getRestname());
-        holder.mDistance.setText(getDist(user.getDistance()));
+        holder.mDistance.setText("");
 
         holder.mOtherAction.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,7 +93,7 @@ public class GridProfAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
                                     mCallback.onGridRestClick(user.getPost_rest_id(), user.getRestname());
                                     break;
                                 case R.id.move_to_comment:
-                                    mCallback.onGridCommentClick(Integer.parseInt(user.getPost_id()));
+                                    mCallback.onGridCommentClick(user.getPost_id());
                                     break;
                                 case R.id.delete:
                                     mCallback.onGridDeleteClick(user.getPost_id(), position);
@@ -112,7 +112,7 @@ public class GridProfAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
                                     mCallback.onGridRestClick(user.getPost_rest_id(), user.getRestname());
                                     break;
                                 case R.id.move_to_comment:
-                                    mCallback.onGridCommentClick(Integer.parseInt(user.getPost_id()));
+                                    mCallback.onGridCommentClick(user.getPost_id());
                                     break;
                                 case R.id.violation:
                                     Util.setViolateDialog(mContext, user.getPost_id());
@@ -182,9 +182,9 @@ public class GridProfAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
 
     public interface GridProfCallback {
 
-        void onGridRestClick(int rest_id, String rest_name);
+        void onGridRestClick(String rest_id, String rest_name);
 
-        void onGridCommentClick(int post_id);
+        void onGridCommentClick(String post_id);
 
         void onGridDeleteClick(String post_id, int position);
 

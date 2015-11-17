@@ -50,7 +50,7 @@ public class HeaderData {
     private static final String TAG_TOTAL_WANT_NUM = "total_want_num";
 
     //コメントページ
-    private int comment_user_id;
+    private String comment_user_id;
     private String username;
     private String profile_img;
     private String comment;
@@ -58,7 +58,7 @@ public class HeaderData {
     private ArrayList<CommentUserData> comment_user_data = new ArrayList<>();
 
     //店舗ページ
-    private int rest_id;
+    private String rest_id;
     private String restname;
     private String locality;
     private double lat;
@@ -69,7 +69,7 @@ public class HeaderData {
     private int want_flag;
 
     //ユーザーページ
-    private int user_id;
+    private String user_id;
     private int follow_num;
     private int follower_num;
     private int cheer_num;
@@ -77,10 +77,10 @@ public class HeaderData {
     private int follow_flag;
 
     //通知
-    private int notice_id;
-    private int notice_user_id;
+    private String notice_id;
+    private String notice_user_id;
     private String notice;
-    private int notice_post_id;
+    private String notice_post_id;
     private int read_flag;
     private String notice_date;
 
@@ -93,7 +93,7 @@ public class HeaderData {
     }
 
     //コメント
-    public HeaderData(int comment_user_id, String username, String profile_img, String comment, String comment_date, ArrayList<CommentUserData> comment_user_data) {
+    public HeaderData(String comment_user_id, String username, String profile_img, String comment, String comment_date, ArrayList<CommentUserData> comment_user_data) {
         this.comment_user_id = comment_user_id;
         this.username = username;
         this.profile_img = profile_img;
@@ -103,7 +103,7 @@ public class HeaderData {
     }
 
     //店舗
-    public HeaderData(int rest_id, String restname, String locality, double lat, double lon,
+    public HeaderData(String rest_id, String restname, String locality, double lat, double lon,
                       String tell, String homepage, String rest_category, int want_flag) {
         this.rest_id = rest_id;
         this.restname = restname;
@@ -117,7 +117,7 @@ public class HeaderData {
     }
 
     //ユーザー
-    public HeaderData(int user_id, String username, String profile_img, int follow_num, int follower_num,
+    public HeaderData(String user_id, String username, String profile_img, int follow_num, int follower_num,
                       int cheer_num, int want_num, int follow_flag) {
         this.user_id = user_id;
         this.username = username;
@@ -130,8 +130,8 @@ public class HeaderData {
     }
 
     //通知
-    public HeaderData(int notice_id, int notice_user_id, String username, String profile_img, String notice,
-                      int notice_post_id, int read_flag, String notice_date) {
+    public HeaderData(String notice_id, String notice_user_id, String username, String profile_img, String notice,
+                      String notice_post_id, int read_flag, String notice_date) {
         this.notice_id = notice_id;
         this.notice_user_id = notice_user_id;
         this.username = username;
@@ -144,7 +144,7 @@ public class HeaderData {
 
     public static HeaderData createCommentHeaderData(JSONObject jsonObject) {
         try {
-            int comment_user_id = jsonObject.getInt(TAG_COMMENT_USER_ID);
+            String comment_user_id = jsonObject.getString(TAG_COMMENT_USER_ID);
             String username = jsonObject.getString(TAG_USERNAME);
             String profile_img = jsonObject.getString(TAG_PROFILE_IMG);
             String comment = jsonObject.getString(TAG_COMMENT);
@@ -166,7 +166,7 @@ public class HeaderData {
 
     public static HeaderData createTenpoHeaderData(JSONObject jsonObject) {
         try {
-            int rest_id = jsonObject.getInt(TAG_REST_ID);
+            String rest_id = jsonObject.getString(TAG_REST_ID);
             String restname = jsonObject.getString(TAG_RESTNAME);
             String localoty = jsonObject.getString(TAG_LOCALITY);
             double lat = jsonObject.getDouble(TAG_LAT);
@@ -187,7 +187,7 @@ public class HeaderData {
 
     public static HeaderData createUserHeaderData(JSONObject jsonObject) {
         try {
-            int user_id = jsonObject.getInt(TAG_USER_ID);
+            String user_id = jsonObject.getString(TAG_USER_ID);
             String username = jsonObject.getString(TAG_USERNAME);
             String profile_img = jsonObject.getString(TAG_PROFILE_IMG);
             int follow_num = jsonObject.getInt(TAG_FOLLOW_NUM);
@@ -207,12 +207,12 @@ public class HeaderData {
 
     public static HeaderData createNoticeHeaderData(JSONObject jsonObject) {
         try {
-            int notice_id = jsonObject.getInt(TAG_NOTICE_ID);
-            int notice_user_id = jsonObject.getInt(TAG_NOTICE_USER_ID);
+            String notice_id = jsonObject.getString(TAG_NOTICE_ID);
+            String notice_user_id = jsonObject.getString(TAG_NOTICE_USER_ID);
             String username = jsonObject.getString(TAG_USERNAME);
             String profile_img = jsonObject.getString(TAG_PROFILE_IMG);
             String notice = jsonObject.getString(TAG_NOTICE);
-            int notice_post_id = jsonObject.getInt(TAG_NOTICE_POST_ID);
+            String notice_post_id = jsonObject.getString(TAG_NOTICE_POST_ID);
             int read_flag = jsonObject.getInt(TAG_READ_FLAG);
             String notice_date = jsonObject.getString(TAG_NOTICE_DATE);
 
@@ -225,11 +225,11 @@ public class HeaderData {
         return null;
     }
 
-    public int getComment_user_id() {
+    public String getComment_user_id() {
         return comment_user_id;
     }
 
-    public void setComment_user_id(int comment_user_id) {
+    public void setComment_user_id(String comment_user_id) {
         this.comment_user_id = comment_user_id;
     }
 
@@ -265,11 +265,11 @@ public class HeaderData {
         this.comment_date = comment_date;
     }
 
-    public int getRest_id() {
+    public String getRest_id() {
         return rest_id;
     }
 
-    public void setRest_id(int rest_id) {
+    public void setRest_id(String rest_id) {
         this.rest_id = rest_id;
     }
 
@@ -337,11 +337,11 @@ public class HeaderData {
         this.want_flag = want_flag;
     }
 
-    public int getUser_id() {
+    public String getUser_id() {
         return user_id;
     }
 
-    public void setUser_id(int user_id) {
+    public void setUser_id(String user_id) {
         this.user_id = user_id;
     }
 
@@ -385,19 +385,19 @@ public class HeaderData {
         this.follow_flag = follow_flag;
     }
 
-    public int getNotice_id() {
+    public String getNotice_id() {
         return notice_id;
     }
 
-    public void setNotice_id(int notice_id) {
+    public void setNotice_id(String notice_id) {
         this.notice_id = notice_id;
     }
 
-    public int getNotice_user_id() {
+    public String getNotice_user_id() {
         return notice_user_id;
     }
 
-    public void setNotice_user_id(int notice_user_id) {
+    public void setNotice_user_id(String notice_user_id) {
         this.notice_user_id = notice_user_id;
     }
 
@@ -409,11 +409,11 @@ public class HeaderData {
         this.notice = notice;
     }
 
-    public int getNotice_post_id() {
+    public String getNotice_post_id() {
         return notice_post_id;
     }
 
-    public void setNotice_post_id(int notice_post_id) {
+    public void setNotice_post_id(String notice_post_id) {
         this.notice_post_id = notice_post_id;
     }
 

@@ -120,7 +120,7 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
     private Runnable progressRunnable = null;
     private Handler handler = null;
 
-    private int mRest_id = 1;
+    private String mRest_id = "1";
     private int mCategory_id = 1;
     private String mRest_name = "";
     private String mFinalVideoUrl = "";
@@ -515,7 +515,7 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
                         JSONObject jsonObject = timeline.getJSONObject(i);
 
                         final String rest_name = jsonObject.getString("restname");
-                        int rest_id = jsonObject.getInt("rest_id");
+                        String rest_id = jsonObject.getString("rest_id");
 
                         CameraActivity.restname[i] = rest_name;
                         CameraActivity.rest_nameArray.add(rest_name);
@@ -689,7 +689,7 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
                                     if (message.equals(getString(R.string.add_restname_complete_message))) {
                                         Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
                                         mIsnewRestname = true;
-                                        mRest_id = response.getInt("rest_id");
+                                        mRest_id = response.getString("rest_id");
                                         mCommentAction.setLabelText(mRest_name);
                                     } else {
                                         Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();

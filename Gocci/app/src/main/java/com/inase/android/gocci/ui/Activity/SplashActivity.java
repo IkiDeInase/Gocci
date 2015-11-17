@@ -8,14 +8,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.inase.android.gocci.Application_Gocci;
-import com.inase.android.gocci.BuildConfig;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.repository.API3;
@@ -73,30 +70,27 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
         mPresenter = new ShowUserLoginPresenter(userLoginUseCaseImpl, checkRegIdUseCaseImpl);
         mPresenter.setShowUserLoginView(this);
 
-        if (com.inase.android.gocci.utils.Util.getConnectedState(SplashActivity.this) != com.inase.android.gocci.utils.Util.NetworkStatus.OFF) {
+        //SavedData.setServerName(this, "kazu0914");
+        //SavedData.setServerPicture(this, "https://graph.facebook.com/100004985405636/picture");
+        //SavedData.setLoginJudge(this, TAG_SNS_FACEBOOK);
+        //SavedData.setRegId(this, "APA91bFlIfRuMRWjMbKfXyC5votBewFcpj71N0j4aiSEgqvHeHsoDcCjS6TuUTxdHnj13cT_40mkflrl5aqigmPGdj5VH0njkc0MM6aMgkExqZoRVZAv8BcUEFy09ZUaxoiRXNuvktee");
+        //SavedData.setIdentityId(this, "us-east-1:6b195305-171c-4b83-aa51-e0b1d38de2f2");
 
-            //SavedData.setServerName(this, "kazu0914");
-            //SavedData.setServerPicture(this, "https://graph.facebook.com/100004985405636/picture");
-            //SavedData.setLoginJudge(this, TAG_SNS_FACEBOOK);
-            //SavedData.setRegId(this, "APA91bFlIfRuMRWjMbKfXyC5votBewFcpj71N0j4aiSEgqvHeHsoDcCjS6TuUTxdHnj13cT_40mkflrl5aqigmPGdj5VH0njkc0MM6aMgkExqZoRVZAv8BcUEFy09ZUaxoiRXNuvktee");
-            //SavedData.setIdentityId(this, "us-east-1:6b195305-171c-4b83-aa51-e0b1d38de2f2");
-
-            String mIdentityId = SavedData.getIdentityId(this);
-            if (!mIdentityId.equals("no identityId")) {
-                //２回目
-                API3.Util.AuthLoginLocalCode localCode = api3Impl.auth_login_parameter_regex(mIdentityId);
-                if (localCode == null) {
-                    mPresenter.loginUser(Const.APICategory.AUTH_LOGIN, API3.Util.getAuthLoginAPI(mIdentityId));
-                } else {
-                    Toast.makeText(SplashActivity.this, API3.Util.authLoginLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
-                }
+        String mIdentityId = SavedData.getIdentityId(this);
+        if (!mIdentityId.equals("no identityId")) {
+            //２回目
+            API3.Util.AuthLoginLocalCode localCode = api3Impl.auth_login_parameter_regex(mIdentityId);
+            if (localCode == null) {
+                mPresenter.loginUser(Const.APICategory.AUTH_LOGIN, API3.Util.getAuthLoginAPI(mIdentityId));
             } else {
-                if (checkPlayServices()) {
-                    Intent intent = new Intent(this, RegistrationIntentService.class);
-                    startService(intent);
-                } else {
-                    Log.e(TAG, "No valid Google Play Services APK found.");
-                }
+                Toast.makeText(SplashActivity.this, API3.Util.authLoginLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            if (checkPlayServices()) {
+                Intent intent = new Intent(this, RegistrationIntentService.class);
+                startService(intent);
+            } else {
+                Log.e(TAG, "No valid Google Play Services APK found.");
             }
         }
     }
@@ -137,7 +131,7 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
         if (localCode == null) {
             mPresenter.checkRegId(API3.Util.getAuthCheckAPI(event.register_id));
         } else {
-        Toast.makeText(this, API3.Util.authCheckLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, API3.Util.authCheckLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -161,36 +155,12 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
     @Override
     public void onCheckFailureCausedByLocalError(final String id, String errorMessage) {
         if (id != null) {
-            new MaterialDialog.Builder(this)
-                    .title("ユーザーデータが存在します")
-                    .titleColorRes(R.color.nameblack)
-                    .content("以前ログインしていたユーザーとしてログインしますか？ \n ※いいえを押した場合、以前のユーザーでログインできない可能性があります")
-                    .contentColorRes(R.color.nameblack)
-                    .positiveText("ログインする")
-                    .positiveColorRes(R.color.gocci_header)
-                    .negativeText("いいえ")
-                    .negativeColorRes(R.color.gocci_header)
-                    .onPositive(new MaterialDialog.SingleButtonCallback() {
-                        @Override
-                        public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
-                            API3.Util.AuthLoginLocalCode localCode = API3.Impl.getRepository().auth_login_parameter_regex(id);
-                            if (localCode == null) {
-                                mPresenter.loginUser(Const.APICategory.AUTH_LOGIN, API3.Util.getAuthLoginAPI(id));
-                            } else {
-                                Toast.makeText(SplashActivity.this, API3.Util.authLoginLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    })
-                    .onNegative(new MaterialDialog.SingleButtonCallback() {
-                        @Override
-                        public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
-                            handler = new Handler();
-                            runnable = new loginRunnable();
-                            handler.post(runnable);
-                        }
-                    })
-                    .cancelable(false)
-                    .show();
+            API3.Util.AuthLoginLocalCode localCode = API3.Impl.getRepository().auth_login_parameter_regex(id);
+            if (localCode == null) {
+                mPresenter.loginUser(Const.APICategory.AUTH_LOGIN, API3.Util.getAuthLoginAPI(id));
+            } else {
+                Toast.makeText(SplashActivity.this, API3.Util.authLoginLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+            }
         } else {
             Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
         }
@@ -260,7 +230,8 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
             case AUTH_LOGIN:
                 mPresenter.loginUser(Const.APICategory.AUTH_LOGIN, API3.Util.getAuthLoginAPI(SavedData.getIdentityId(this)));
                 break;
-            default:break;
+            default:
+                break;
         }
     }
 }

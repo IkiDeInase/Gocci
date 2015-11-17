@@ -262,7 +262,7 @@ public class Application_Gocci extends Application {
                             @Override
                             public void onStateChanged(int id, TransferState state) {
                                 if (state == TransferState.COMPLETED) {
-                                    SavedData.setPostingId(context, 0);
+                                    SavedData.setPostingId(context, id);
                                 }
                             }
 

@@ -255,11 +255,7 @@ public class RestPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         } else {
             holder.mCategory.setText("　　　　");
         }
-        if (!user.getTag().equals(mContext.getString(R.string.nothing_tag))) {
-            holder.mMood.setText(user.getTag());
-        } else {
-            holder.mMood.setText("　　　　");
-        }
+        holder.mMood.setText("　　　　");
         if (!user.getValue().equals("0")) {
             holder.mValue.setText(user.getValue() + "円");
         } else {
@@ -314,14 +310,14 @@ public class RestPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                             switch (which) {
                                 case R.id.facebook_share:
                                     Toast.makeText(mContext, mContext.getString(R.string.preparing_share), Toast.LENGTH_LONG).show();
-                                    mCallback.onFacebookShare(user.getShare());
+                                    mCallback.onFacebookShare(user.getMovie());
                                     break;
                                 case R.id.twitter_share:
                                     mCallback.onTwitterShare(holder.mVideoThumbnail, user.getRestname());
                                     break;
                                 case R.id.other_share:
                                     Toast.makeText(mContext, mContext.getString(R.string.preparing_share), Toast.LENGTH_LONG).show();
-                                    mCallback.onInstaShare(user.getShare(), user.getRestname());
+                                    mCallback.onInstaShare(user.getMovie(), user.getRestname());
                                     break;
                                 case R.id.close:
                                     dialog.dismiss();
@@ -397,7 +393,7 @@ public class RestPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         void onHomePageClick(Uri uri);
 
-        void onUserClick(int user_id, String user_name);
+        void onUserClick(String user_id, String user_name);
 
         void onCommentClick(String post_id);
 

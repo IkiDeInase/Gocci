@@ -278,7 +278,8 @@ public class LoginSocialAuthenticationFragment extends Fragment {
                     snsAsync(Const.APICategory.POST_TWITTER, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, profile_img);
                 }
                 break;
-            default:break;
+            default:
+                break;
         }
     }
 }

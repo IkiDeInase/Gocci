@@ -188,7 +188,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     public interface CommentCallback {
-        void onUserClick(int user_id, String user_name);
+        void onUserClick(String user_id, String user_name);
 
         void onCommentClick(String username, String user_id);
 

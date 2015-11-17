@@ -136,7 +136,7 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity {
         }
     }
 
-    private int mRest_id;
+    private String mRest_id;
     private int mCategory_id;
     private int mCheer_flag = 0;
     private String mRestname;
@@ -149,7 +149,7 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity {
     private double mLongitude;
 
     private ArrayList<String> rest_nameList = new ArrayList<>();
-    private ArrayList<Integer> rest_idList = new ArrayList<>();
+    private ArrayList<String> rest_idList = new ArrayList<>();
 
     private File mVideoFile;
 
@@ -274,7 +274,7 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity {
             @Override
             public void onComplete(RippleView rippleView) {
                 if (Util.getConnectedState(CameraPreviewAlreadyExistActivity.this) != Util.NetworkStatus.OFF) {
-                    if (mRest_id != 1) {
+                    if (!mRest_id.equals("1")) {
                         if (mEditValue.getText().length() != 0) {
                             mValue = mEditValue.getText().toString();
                         } else {
@@ -347,7 +347,7 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity {
                         JSONObject jsonObject = timeline.getJSONObject(i);
 
                         final String rest_name = jsonObject.getString("restname");
-                        int rest_id = jsonObject.getInt("rest_id");
+                        String rest_id = jsonObject.getString("rest_id");
 
                         rest_nameList.add(rest_name);
                         rest_idList.add(rest_id);
@@ -394,7 +394,7 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity {
                                         //店名をセット
                                         mIsnewRestname = true;
                                         mRestnameSpinner.setText(mRestname);
-                                        mRest_id = response.getInt("rest_id");
+                                        mRest_id = response.getString("rest_id");
                                         mRestnameSpinner.setClickable(false);
                                         SavedData.setIsNewRestname(CameraPreviewAlreadyExistActivity.this, mIsnewRestname);
                                         SavedData.setRestname(CameraPreviewAlreadyExistActivity.this, mRestname);
