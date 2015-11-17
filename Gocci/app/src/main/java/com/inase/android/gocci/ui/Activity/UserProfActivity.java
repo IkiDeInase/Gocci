@@ -36,8 +36,10 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.share.Sharer;
 import com.facebook.share.widget.ShareDialog;
+import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.datasource.repository.API3;
 import com.inase.android.gocci.datasource.repository.UserAndRestDataRepository;
 import com.inase.android.gocci.datasource.repository.UserAndRestDataRepositoryImpl;
 import com.inase.android.gocci.domain.executor.UIThread;
@@ -49,6 +51,7 @@ import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.NotificationNumberEvent;
 import com.inase.android.gocci.event.PageChangeVideoStopEvent;
 import com.inase.android.gocci.event.ProfJsonEvent;
+import com.inase.android.gocci.event.RetryApiEvent;
 import com.inase.android.gocci.presenter.ShowUserProfPresenter;
 import com.inase.android.gocci.ui.fragment.GridUserProfFragment;
 import com.inase.android.gocci.ui.fragment.StreamUserProfFragment;
@@ -146,7 +149,7 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
 
     public static int mShowPosition = 0;
 
-    private int mUser_id;
+    private String mUser_id;
 
     private final UserProfActivity self = this;
 
@@ -189,7 +192,7 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
         }
     };
 
-    public static void startUserProfActivity(int user_id, String username, Activity startingActivity) {
+    public static void startUserProfActivity(String user_id, String username, Activity startingActivity) {
         Intent intent = new Intent(startingActivity, UserProfActivity.class);
         intent.putExtra("user_id", user_id);
         intent.putExtra("user_name", username);
@@ -210,7 +213,8 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
             Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
         }
 
-        UserAndRestDataRepository userAndRestDataRepositoryImpl = UserAndRestDataRepositoryImpl.getRepository();
+        final API3 api3Impl = API3.Impl.getRepository();
+        UserAndRestDataRepository userAndRestDataRepositoryImpl = UserAndRestDataRepositoryImpl.getRepository(api3Impl);
         UserAndRestUseCase userAndRestUseCaseImpl = ProfPageUseCaseImpl.getUseCase(userAndRestDataRepositoryImpl, UIThread.getInstance());
         mPresenter = new ShowUserProfPresenter(userAndRestUseCaseImpl);
         mPresenter.setProfView(this);
@@ -240,7 +244,7 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
         ButterKnife.bind(this);
 
         Intent userintent = getIntent();
-        mUser_id = userintent.getIntExtra("user_id", 0);
+        mUser_id = userintent.getStringExtra("user_id");
 
         //toolbar.inflateMenu(R.menu.toolbar_menu);
         mToolBar.setTitle("");
@@ -274,7 +278,12 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
             }
         });
 
-        mPresenter.getProfData(Const.USERPAGE_FIRST, Const.getUserpageAPI(mUser_id));
+        API3.Util.GetUserLocalCode localCode = api3Impl.get_user_parameter_regex(mUser_id);
+        if (localCode == null) {
+            mPresenter.getProfData(Const.APICategory.GET_USER_FIRST, API3.Util.getGetUserAPI(mUser_id));
+        } else {
+            Toast.makeText(UserProfActivity.this, API3.Util.getUserLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+        }
 
         mFollowRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
             @Override
@@ -436,7 +445,7 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
     }
 
     @Override
-    public void showNoResultCase(int api, HeaderData mUserData) {
+    public void showNoResultCase(Const.APICategory api, HeaderData mUserData) {
         headerUserData = mUserData;
 
         Picasso.with(this)
@@ -490,12 +499,17 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
     }
 
     @Override
-    public void showError() {
-        Toast.makeText(this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
+    public void showNoResultCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
+        Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
     }
 
     @Override
-    public void showResult(int api, HeaderData mUserData, ArrayList<PostData> mPostData, ArrayList<String> post_ids) {
+    public void showNoResultCausedByLocalError(Const.APICategory api, String errorMessage) {
+        Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showResult(Const.APICategory api, HeaderData mUserData, ArrayList<PostData> mPostData, ArrayList<String> post_ids) {
         headerUserData = mUserData;
 
         Picasso.with(this)
@@ -545,7 +559,12 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
     }
 
     public void refreshJson() {
-        mPresenter.getProfData(Const.USERPAGE_REFRESH, Const.getUserpageAPI(mUser_id));
+        API3.Util.GetUserLocalCode localCode = API3.Impl.getRepository().get_user_parameter_regex(mUser_id);
+        if (localCode == null) {
+            mPresenter.getProfData(Const.APICategory.GET_USER_REFRESH, API3.Util.getGetUserAPI(mUser_id));
+        } else {
+            Toast.makeText(UserProfActivity.this, API3.Util.getUserLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void setGochiLayout() {
@@ -737,5 +756,17 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
         }
         // other 'case' lines to check for other
         // permissions this app might request
+    }
+
+    @Subscribe
+    public void subscribe(RetryApiEvent event) {
+        switch (event.api) {
+            case GET_USER_FIRST:
+            case GET_USER_REFRESH:
+                mPresenter.getProfData(Const.APICategory.GET_USER_FIRST, API3.Util.getGetUserAPI(mUser_id));
+                break;
+            default:
+                break;
+        }
     }
 }

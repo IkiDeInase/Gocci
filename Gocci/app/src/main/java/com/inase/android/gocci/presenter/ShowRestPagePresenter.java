@@ -1,5 +1,7 @@
 package com.inase.android.gocci.presenter;
 
+import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.datasource.repository.API3;
 import com.inase.android.gocci.domain.model.HeaderData;
 import com.inase.android.gocci.domain.model.PostData;
 import com.inase.android.gocci.domain.usecase.UserAndRestUseCase;
@@ -21,29 +23,34 @@ public class ShowRestPagePresenter extends Presenter implements UserAndRestUseCa
         mShowRestView = view;
     }
 
-    public void getRestData(int api, String url) {
+    public void getRestData(Const.APICategory api, String url) {
         mShowRestView.showLoading();
         mUserAndRestUseCase.execute(api, url, this);
     }
 
     @Override
-    public void onDataLoaded(int api, HeaderData mUserdata, ArrayList<PostData> mPostData, ArrayList<String> post_ids) {
+    public void onDataLoaded(Const.APICategory api, HeaderData mUserdata, ArrayList<PostData> mPostData, ArrayList<String> post_ids) {
         mShowRestView.hideLoading();
         mShowRestView.hideNoResultCase();
         mShowRestView.showResult(api, mUserdata, mPostData, post_ids);
     }
 
     @Override
-    public void onDataEmpty(int api, HeaderData mUserData) {
+    public void onDataEmpty(Const.APICategory api, HeaderData mUserData) {
         mShowRestView.hideLoading();
         mShowRestView.showNoResultCase(api, mUserData);
     }
 
     @Override
-    public void onError() {
+    public void onCausedByLocalError(Const.APICategory api, String errorMessage) {
         mShowRestView.hideLoading();
-        mShowRestView.hideNoResultCase();
-        mShowRestView.showError();
+        mShowRestView.showNoResultCausedByLocalError(api, errorMessage);
+    }
+
+    @Override
+    public void onCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
+        mShowRestView.hideLoading();
+        mShowRestView.showNoResultCausedByGlobalError(api, globalCode);
     }
 
     @Override
@@ -71,12 +78,14 @@ public class ShowRestPagePresenter extends Presenter implements UserAndRestUseCa
 
         void hideLoading();
 
-        void showNoResultCase(int api, HeaderData mRestData);
+        void showNoResultCase(Const.APICategory api, HeaderData mRestData);
 
         void hideNoResultCase();
 
-        void showError();
+        void showNoResultCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode);
 
-        void showResult(int api, HeaderData mRestData, ArrayList<PostData> mPostData, ArrayList<String> post_ids);
+        void showNoResultCausedByLocalError(Const.APICategory api, String errorMessage);
+
+        void showResult(Const.APICategory api, HeaderData mRestData, ArrayList<PostData> mPostData, ArrayList<String> post_ids);
     }
 }

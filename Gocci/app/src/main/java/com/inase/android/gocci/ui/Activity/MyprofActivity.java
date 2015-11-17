@@ -43,8 +43,10 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.share.Sharer;
 import com.facebook.share.widget.ShareDialog;
+import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.datasource.repository.API3;
 import com.inase.android.gocci.datasource.repository.MyPageActionRepository;
 import com.inase.android.gocci.datasource.repository.MyPageActionRepositoryImpl;
 import com.inase.android.gocci.datasource.repository.UserAndRestDataRepository;
@@ -62,6 +64,7 @@ import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.NotificationNumberEvent;
 import com.inase.android.gocci.event.PageChangeVideoStopEvent;
 import com.inase.android.gocci.event.ProfJsonEvent;
+import com.inase.android.gocci.event.RetryApiEvent;
 import com.inase.android.gocci.presenter.ShowMyProfPresenter;
 import com.inase.android.gocci.ui.fragment.GridMyProfFragment;
 import com.inase.android.gocci.ui.fragment.StreamMyProfFragment;
@@ -232,7 +235,8 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
             Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
         }
 
-        UserAndRestDataRepository userAndRestDataRepositoryImpl = UserAndRestDataRepositoryImpl.getRepository();
+        final API3 api3Impl = API3.Impl.getRepository();
+        UserAndRestDataRepository userAndRestDataRepositoryImpl = UserAndRestDataRepositoryImpl.getRepository(api3Impl);
         MyPageActionRepository myPageActionRepositoryImpl = MyPageActionRepositoryImpl.getRepository();
         UserAndRestUseCase userAndRestUseCaseImpl = ProfPageUseCaseImpl.getUseCase(userAndRestDataRepositoryImpl, UIThread.getInstance());
         ProfChangeUseCase profChangeUseCaseImpl = ProfChangeUseCaseImpl.getUseCase(myPageActionRepositoryImpl, UIThread.getInstance());
@@ -289,7 +293,12 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
             }
         });
 
-        mPresenter.getProfData(Const.USERPAGE_FIRST, Const.getUserpageAPI(Integer.parseInt(SavedData.getServerUserId(this))));
+        API3.Util.GetUserLocalCode localCode = api3Impl.get_user_parameter_regex(SavedData.getServerUserId(this));
+        if (localCode == null) {
+            mPresenter.getProfData(Const.APICategory.GET_USER_FIRST, API3.Util.getGetUserAPI(SavedData.getServerUserId(this)));
+        } else {
+            Toast.makeText(MyprofActivity.this, API3.Util.getUserLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+        }
 
         mToolBar.setLogo(R.drawable.ic_gocci_moji_white45);
         setSupportActionBar(mToolBar);
@@ -298,28 +307,28 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
         mFollowRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
             @Override
             public void onComplete(RippleView rippleView) {
-                ListActivity.startListActivity(Integer.parseInt(SavedData.getServerUserId(MyprofActivity.this)), 1, Const.CATEGORY_FOLLOW, MyprofActivity.this);
+                ListActivity.startListActivity(SavedData.getServerUserId(MyprofActivity.this), 1, Const.CATEGORY_FOLLOW, MyprofActivity.this);
             }
         });
 
         mFollowerRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
             @Override
             public void onComplete(RippleView rippleView) {
-                ListActivity.startListActivity(Integer.parseInt(SavedData.getServerUserId(MyprofActivity.this)), 1, Const.CATEGORY_FOLLOWER, MyprofActivity.this);
+                ListActivity.startListActivity(SavedData.getServerUserId(MyprofActivity.this), 1, Const.CATEGORY_FOLLOWER, MyprofActivity.this);
             }
         });
 
         mUsercheerRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
             @Override
             public void onComplete(RippleView rippleView) {
-                ListActivity.startListActivity(Integer.parseInt(SavedData.getServerUserId(MyprofActivity.this)), 1, Const.CATEGORY_USER_CHEER, MyprofActivity.this);
+                ListActivity.startListActivity(SavedData.getServerUserId(MyprofActivity.this), 1, Const.CATEGORY_USER_CHEER, MyprofActivity.this);
             }
         });
 
         mWantRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
             @Override
             public void onComplete(RippleView rippleView) {
-                ListActivity.startListActivity(Integer.parseInt(SavedData.getServerUserId(MyprofActivity.this)), 1, Const.CATEGORY_WANT, MyprofActivity.this);
+                ListActivity.startListActivity(SavedData.getServerUserId(MyprofActivity.this), 1, Const.CATEGORY_WANT, MyprofActivity.this);
             }
         });
 
@@ -508,7 +517,12 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
     public void subscribe(NotificationNumberEvent event) {
         Snackbar.make(mCoordinatorLayout, event.mMessage, Snackbar.LENGTH_SHORT).show();
         if (event.mMessage.equals(getString(R.string.videoposting_complete))) {
-            mPresenter.getProfData(Const.USERPAGE_REFRESH, Const.getUserpageAPI(Integer.parseInt(SavedData.getServerUserId(this))));
+            API3.Util.GetUserLocalCode localCode = API3.Impl.getRepository().get_user_parameter_regex(SavedData.getServerUserId(this));
+            if (localCode == null) {
+                mPresenter.getProfData(Const.APICategory.GET_USER_REFRESH, API3.Util.getGetUserAPI(SavedData.getServerUserId(this)));
+            } else {
+                Toast.makeText(MyprofActivity.this, API3.Util.getUserLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+            }
         } else {
             mNotificationNumber.setVisibility(View.VISIBLE);
             mNotificationNumber.setText(String.valueOf(event.mNotificationNumber));
@@ -940,7 +954,12 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
     }
 
     public void refreshJson() {
-        mPresenter.getProfData(Const.USERPAGE_REFRESH, Const.getUserpageAPI(Integer.parseInt(SavedData.getServerUserId(MyprofActivity.this))));
+        API3.Util.GetUserLocalCode localCode = API3.Impl.getRepository().get_user_parameter_regex(SavedData.getServerUserId(this));
+        if (localCode == null) {
+            mPresenter.getProfData(Const.APICategory.GET_USER_REFRESH, API3.Util.getGetUserAPI(SavedData.getServerUserId(this)));
+        } else {
+            Toast.makeText(MyprofActivity.this, API3.Util.getUserLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void setDeleteDialog(final String post_id, final int position) {
@@ -971,7 +990,7 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
     }
 
     @Override
-    public void showNoResultCase(int api, HeaderData userData) {
+    public void showNoResultCase(Const.APICategory api, HeaderData userData) {
         mHeaderUserData = userData;
 
         mUsername.setText(mHeaderUserData.getUsername());
@@ -999,12 +1018,17 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
     }
 
     @Override
-    public void showError() {
-        Toast.makeText(this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
+    public void showNoResultCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
+        Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
     }
 
     @Override
-    public void showResult(int api, HeaderData userData, ArrayList<PostData> postData, ArrayList<String> post_ids) {
+    public void showNoResultCausedByLocalError(Const.APICategory api, String errorMessage) {
+        Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showResult(Const.APICategory api, HeaderData userData, ArrayList<PostData> postData, ArrayList<String> post_ids) {
         mHeaderUserData = userData;
 
         mUsername.setText(mHeaderUserData.getUsername());
@@ -1061,7 +1085,7 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
         mUsers.remove(position);
         mPost_ids.remove(position);
 
-        BusHolder.get().post(new ProfJsonEvent(Const.USERPAGE_REFRESH, mUsers, mPost_ids));
+        BusHolder.get().post(new ProfJsonEvent(Const.APICategory.GET_USER_REFRESH, mUsers, mPost_ids));
 
         if (mUsers.isEmpty()) {
             mEmptyImage.setVisibility(View.VISIBLE);
@@ -1127,6 +1151,18 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
                     Util.instaVideoShare(this, mShareRestname, mShareShare);
                     break;
             }
+        }
+    }
+
+    @Subscribe
+    public void subscribe(RetryApiEvent event) {
+        switch (event.api) {
+            case GET_USER_FIRST:
+            case GET_USER_REFRESH:
+                mPresenter.getProfData(Const.APICategory.GET_USER_FIRST, API3.Util.getGetUserAPI(SavedData.getServerUserId(this)));
+                break;
+            default:
+                break;
         }
     }
 }

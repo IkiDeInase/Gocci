@@ -45,8 +45,10 @@ import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.google.android.exoplayer.audio.AudioCapabilities;
 import com.google.android.exoplayer.audio.AudioCapabilitiesReceiver;
 import com.google.android.exoplayer.drm.UnsupportedDrmException;
+import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.datasource.repository.API3;
 import com.inase.android.gocci.datasource.repository.UserAndRestDataRepository;
 import com.inase.android.gocci.datasource.repository.UserAndRestDataRepositoryImpl;
 import com.inase.android.gocci.domain.executor.UIThread;
@@ -56,6 +58,7 @@ import com.inase.android.gocci.domain.usecase.RestPageUseCaseImpl;
 import com.inase.android.gocci.domain.usecase.UserAndRestUseCase;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.NotificationNumberEvent;
+import com.inase.android.gocci.event.RetryApiEvent;
 import com.inase.android.gocci.presenter.ShowRestPagePresenter;
 import com.inase.android.gocci.ui.adapter.RestPageAdapter;
 import com.inase.android.gocci.ui.view.CustomKenBurnsView;
@@ -120,7 +123,7 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
 
     private HeaderData mHeaderRestData;
 
-    private int mRest_id;
+    private String mRest_id;
 
     private Point mDisplaySize;
     private String mPlayingPostId;
@@ -194,7 +197,7 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
         }
     };
 
-    public static void startTenpoActivity(int rest_id, String restname, Activity startingActivity) {
+    public static void startTenpoActivity(String rest_id, String restname, Activity startingActivity) {
         Intent intent = new Intent(startingActivity, TenpoActivity.class);
         intent.putExtra("rest_id", rest_id);
         intent.putExtra("rest_name", restname);
@@ -243,7 +246,8 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
 
         Fabric.with(this, new TweetComposer());
 
-        UserAndRestDataRepository userAndRestDataRepositoryImpl = UserAndRestDataRepositoryImpl.getRepository();
+        final API3 api3Impl = API3.Impl.getRepository();
+        UserAndRestDataRepository userAndRestDataRepositoryImpl = UserAndRestDataRepositoryImpl.getRepository(api3Impl);
         UserAndRestUseCase userAndRestUseCaseImpl = RestPageUseCaseImpl.getUseCase(userAndRestDataRepositoryImpl, UIThread.getInstance());
         mPresenter = new ShowRestPagePresenter(userAndRestUseCaseImpl);
         mPresenter.setRestView(this);
@@ -258,7 +262,7 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
         ButterKnife.bind(this);
 
         Intent intent = getIntent();
-        mRest_id = intent.getIntExtra("rest_id", 0);
+        mRest_id = intent.getStringExtra("rest_id");
 
         //toolbar.inflateMenu(R.menu.toolbar_menu);
         //toolbar.setLogo(R.drawable.ic_gocci_moji_white45);
@@ -270,7 +274,12 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
         mTenpoRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
         mTenpoRecyclerView.setScrollViewCallbacks(this);
 
-        mPresenter.getRestData(Const.RESTPAGE_FIRST, Const.getRestpageAPI(mRest_id));
+        API3.Util.GetRestLocalCode localCode = api3Impl.get_rest_parameter_regex(mRest_id);
+        if (localCode == null) {
+            mPresenter.getRestData(Const.APICategory.GET_REST_FIRST, API3.Util.getGetRestAPI(mRest_id));
+        } else {
+            Toast.makeText(this, API3.Util.getRestLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+        }
 
         result = new DrawerBuilder()
                 .withActivity(this)
@@ -398,7 +407,12 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
             public void onRefresh() {
                 mSwipeContainer.setRefreshing(true);
                 if (Util.getConnectedState(TenpoActivity.this) != Util.NetworkStatus.OFF) {
-                    mPresenter.getRestData(Const.RESTPAGE_REFRESH, Const.getRestpageAPI(mRest_id));
+                    API3.Util.GetRestLocalCode localCode = api3Impl.get_rest_parameter_regex(mRest_id);
+                    if (localCode == null) {
+                        mPresenter.getRestData(Const.APICategory.GET_REST_REFRESH, API3.Util.getGetRestAPI(mRest_id));
+                    } else {
+                        Toast.makeText(TenpoActivity.this, API3.Util.getRestLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                    }
                 } else {
                     Toast.makeText(TenpoActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
                     mSwipeContainer.setRefreshing(false);
@@ -547,7 +561,7 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
             return null;
         }
         //return mCacheManager.getCachePath(userData.getPost_id(), userData.getMovie());
-        return userData.getMovie();
+        return userData.getHls_movie();
     }
 
     private void preparePlayer(final Const.StreamViewHolder viewHolder, String path) {
@@ -643,7 +657,7 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
                 return;
             }
 
-            final String path = userData.getMovie();
+            final String path = userData.getHls_movie();
             releasePlayer();
             if (Util.isMovieAutoPlay(this)) {
                 preparePlayer(currentViewHolder, path);
@@ -713,13 +727,13 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
     }
 
     @Override
-    public void onUserClick(int user_id, String user_name) {
+    public void onUserClick(String user_id, String user_name) {
         UserProfActivity.startUserProfActivity(user_id, user_name, this);
     }
 
     @Override
     public void onCommentClick(String post_id) {
-        CommentActivity.startCommentActivity(Integer.parseInt(post_id), false, this);
+        CommentActivity.startCommentActivity(post_id, false, this);
     }
 
     @Override
@@ -836,17 +850,20 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
     }
 
     @Override
-    public void showNoResultCase(int api, HeaderData restData) {
+    public void showNoResultCase(Const.APICategory api, HeaderData restData) {
         mHeaderRestData = restData;
-        if (api == Const.RESTPAGE_FIRST) {
-            mBackgroundImage.setImageResource(R.drawable.ic_background_login);
-            mRestPageAdapter = new RestPageAdapter(this, mHeaderRestData, mTenpousers);
-            mRestPageAdapter.setRestPageCallback(this);
-            mTenpoRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
-            mTenpoRecyclerView.setAdapter(mRestPageAdapter);
-        } else if (api == Const.USERPAGE_REFRESH) {
-            mTenpousers.clear();
-            mRestPageAdapter.setData(mHeaderRestData);
+        switch (api) {
+            case GET_REST_FIRST:
+                mBackgroundImage.setImageResource(R.drawable.ic_background_login);
+                mRestPageAdapter = new RestPageAdapter(this, mHeaderRestData, mTenpousers);
+                mRestPageAdapter.setRestPageCallback(this);
+                mTenpoRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
+                mTenpoRecyclerView.setAdapter(mRestPageAdapter);
+                break;
+            case GET_REST_REFRESH:
+                mTenpousers.clear();
+                mRestPageAdapter.setData(mHeaderRestData);
+                break;
         }
     }
 
@@ -856,25 +873,30 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
     }
 
     @Override
-    public void showError() {
-        Toast.makeText(this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
+    public void showNoResultCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
+        Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
     }
 
     @Override
-    public void showResult(int api, HeaderData
+    public void showNoResultCausedByLocalError(Const.APICategory api, String errorMessage) {
+        Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showResult(Const.APICategory api, HeaderData
             restData, ArrayList<PostData> mPostData, ArrayList<String> post_ids) {
         mHeaderRestData = restData;
         mTenpousers.clear();
         mTenpousers.addAll(mPostData);
         switch (api) {
-            case Const.RESTPAGE_FIRST:
+            case GET_REST_FIRST:
                 Picasso.with(this).load(mTenpousers.get(0).getThumbnail()).into(mBackgroundImage);
                 mRestPageAdapter = new RestPageAdapter(this, mHeaderRestData, mTenpousers);
                 mRestPageAdapter.setRestPageCallback(this);
                 mTenpoRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
                 mTenpoRecyclerView.setAdapter(mRestPageAdapter);
                 break;
-            case Const.RESTPAGE_REFRESH:
+            case GET_REST_REFRESH:
                 mPlayingPostId = null;
                 mViewHolderHash.clear();
                 mTenpoRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
@@ -891,5 +913,17 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
                 mGochi.addGochi(R.drawable.ic_icon_beef_orange, pointX, y);
             }
         });
+    }
+
+    @Subscribe
+    public void subscribe(RetryApiEvent event) {
+        switch (event.api) {
+            case GET_REST_FIRST:
+            case GET_REST_REFRESH:
+                mPresenter.getRestData(Const.APICategory.GET_REST_FIRST, API3.Util.getGetRestAPI(mRest_id));
+                break;
+            default:
+                break;
+        }
     }
 }

@@ -1,5 +1,7 @@
 package com.inase.android.gocci.presenter;
 
+import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.datasource.repository.API3;
 import com.inase.android.gocci.domain.model.HeaderData;
 import com.inase.android.gocci.domain.model.PostData;
 import com.inase.android.gocci.domain.usecase.PostDeleteUseCase;
@@ -30,7 +32,7 @@ public class ShowMyProfPresenter extends Presenter implements UserAndRestUseCase
         mShowProfView = view;
     }
 
-    public void getProfData(int api, String url) {
+    public void getProfData(Const.APICategory api, String url) {
         mShowProfView.showLoading();
         mUserAndRestUseCase.execute(api, url, this);
     }
@@ -45,14 +47,14 @@ public class ShowMyProfPresenter extends Presenter implements UserAndRestUseCase
     }
 
     @Override
-    public void onDataLoaded(int api, HeaderData mUserdata, ArrayList<PostData> mPostData, ArrayList<String> post_ids) {
+    public void onDataLoaded(Const.APICategory api, HeaderData mUserdata, ArrayList<PostData> mPostData, ArrayList<String> post_ids) {
         mShowProfView.hideLoading();
         mShowProfView.hideNoResultCase();
         mShowProfView.showResult(api, mUserdata, mPostData, post_ids);
     }
 
     @Override
-    public void onDataEmpty(int api, HeaderData mUserData) {
+    public void onDataEmpty(Const.APICategory api, HeaderData mUserData) {
         mShowProfView.hideLoading();
         mShowProfView.showNoResultCase(api, mUserData);
     }
@@ -81,9 +83,19 @@ public class ShowMyProfPresenter extends Presenter implements UserAndRestUseCase
 
     @Override
     public void onError() {
+
+    }
+
+    @Override
+    public void onCausedByLocalError(Const.APICategory api, String errorMessage) {
         mShowProfView.hideLoading();
-        mShowProfView.hideNoResultCase();
-        mShowProfView.showError();
+        mShowProfView.showNoResultCausedByLocalError(api, errorMessage);
+    }
+
+    @Override
+    public void onCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
+        mShowProfView.hideLoading();
+        mShowProfView.showNoResultCausedByGlobalError(api, globalCode);
     }
 
     @Override
@@ -115,13 +127,15 @@ public class ShowMyProfPresenter extends Presenter implements UserAndRestUseCase
 
         void hideLoading();
 
-        void showNoResultCase(int api, HeaderData mUserData);
+        void showNoResultCase(Const.APICategory api, HeaderData mUserData);
 
         void hideNoResultCase();
 
-        void showError();
+        void showNoResultCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode);
 
-        void showResult(int api, HeaderData mUserData, ArrayList<PostData> mPostData, ArrayList<String> post_ids);
+        void showNoResultCausedByLocalError(Const.APICategory api, String errorMessage);
+
+        void showResult(Const.APICategory api, HeaderData mUserData, ArrayList<PostData> mPostData, ArrayList<String> post_ids);
 
         void profChanged(String userName, String profile_img);
 

@@ -1,5 +1,7 @@
 package com.inase.android.gocci.presenter;
 
+import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.datasource.repository.API3;
 import com.inase.android.gocci.domain.model.HeaderData;
 import com.inase.android.gocci.domain.model.PostData;
 import com.inase.android.gocci.domain.usecase.UserAndRestUseCase;
@@ -22,7 +24,7 @@ public class ShowUserProfPresenter extends Presenter implements UserAndRestUseCa
         mShowUserProfView = view;
     }
 
-    public void getProfData(int api, String url) {
+    public void getProfData(Const.APICategory api, String url) {
         mShowUserProfView.showLoading();
         mUserAndRestUseCase.execute(api, url, this);
     }
@@ -48,23 +50,28 @@ public class ShowUserProfPresenter extends Presenter implements UserAndRestUseCa
     }
 
     @Override
-    public void onDataLoaded(int api, HeaderData mUserdata, ArrayList<PostData> mPostData, ArrayList<String> post_ids) {
+    public void onDataLoaded(Const.APICategory api, HeaderData mUserdata, ArrayList<PostData> mPostData, ArrayList<String> post_ids) {
         mShowUserProfView.hideLoading();
         mShowUserProfView.hideNoResultCase();
         mShowUserProfView.showResult(api, mUserdata, mPostData, post_ids);
     }
 
     @Override
-    public void onDataEmpty(int api, HeaderData mUserData) {
+    public void onDataEmpty(Const.APICategory api, HeaderData mUserData) {
         mShowUserProfView.hideLoading();
         mShowUserProfView.showNoResultCase(api, mUserData);
     }
 
     @Override
-    public void onError() {
+    public void onCausedByLocalError(Const.APICategory api, String errorMessage) {
         mShowUserProfView.hideLoading();
-        mShowUserProfView.hideNoResultCase();
-        mShowUserProfView.showError();
+        mShowUserProfView.showNoResultCausedByLocalError(api, errorMessage);
+    }
+
+    @Override
+    public void onCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
+        mShowUserProfView.hideLoading();
+        mShowUserProfView.showNoResultCausedByGlobalError(api, globalCode);
     }
 
     public interface ShowUserProfView {
@@ -72,12 +79,14 @@ public class ShowUserProfPresenter extends Presenter implements UserAndRestUseCa
 
         void hideLoading();
 
-        void showNoResultCase(int api, HeaderData userData);
+        void showNoResultCase(Const.APICategory api, HeaderData userData);
 
         void hideNoResultCase();
 
-        void showError();
+        void showNoResultCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode);
 
-        void showResult(int api, HeaderData userData, ArrayList<PostData> postData, ArrayList<String> post_ids);
+        void showNoResultCausedByLocalError(Const.APICategory api, String errorMessage);
+
+        void showResult(Const.APICategory api, HeaderData userData, ArrayList<PostData> postData, ArrayList<String> post_ids);
     }
 }

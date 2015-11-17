@@ -1,5 +1,7 @@
 package com.inase.android.gocci.domain.usecase;
 
+import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.datasource.repository.API3;
 import com.inase.android.gocci.datasource.repository.UserAndRestDataRepository;
 import com.inase.android.gocci.domain.executor.PostExecutionThread;
 import com.inase.android.gocci.domain.model.HeaderData;
@@ -10,7 +12,7 @@ import java.util.ArrayList;
 /**
  * Created by kinagafuji on 15/10/04.
  */
-public class RestPageUseCaseImpl extends UseCase2<Integer, String> implements UserAndRestUseCase, UserAndRestDataRepository.UserAndRestDataRepositoryCallback {
+public class RestPageUseCaseImpl extends UseCase2<Const.APICategory, String> implements UserAndRestUseCase, UserAndRestDataRepository.UserAndRestDataRepositoryCallback {
     private static RestPageUseCaseImpl sUseCase;
     private final UserAndRestDataRepository mUserAndRestDataRepository;
     private PostExecutionThread mPostExecutionThread;
@@ -29,13 +31,13 @@ public class RestPageUseCaseImpl extends UseCase2<Integer, String> implements Us
     }
 
     @Override
-    public void execute(int api, String url, UserAndRestUseCaseCallback callback) {
+    public void execute(Const.APICategory api, String url, UserAndRestUseCaseCallback callback) {
         mCallback = callback;
         this.start(api, url);
     }
 
     @Override
-    protected void call(Integer param1, String param2) {
+    protected void call(Const.APICategory param1, String param2) {
         mUserAndRestDataRepository.getRestDataList(param1, param2, this);
     }
 
@@ -50,7 +52,7 @@ public class RestPageUseCaseImpl extends UseCase2<Integer, String> implements Us
     }
 
     @Override
-    public void onUserAndRestDataLoaded(final int api, final HeaderData userData, final ArrayList<PostData> postData, final ArrayList<String> post_ids) {
+    public void onUserAndRestDataLoaded(final Const.APICategory api, final HeaderData userData, final ArrayList<PostData> postData, final ArrayList<String> post_ids) {
         mPostExecutionThread.post(new Runnable() {
             @Override
             public void run() {
@@ -62,7 +64,7 @@ public class RestPageUseCaseImpl extends UseCase2<Integer, String> implements Us
     }
 
     @Override
-    public void onUserAndRestDataEmpty(final int api, final HeaderData userData) {
+    public void onUserAndRestDataEmpty(final Const.APICategory api, final HeaderData userData) {
         mPostExecutionThread.post(new Runnable() {
             @Override
             public void run() {
@@ -74,12 +76,24 @@ public class RestPageUseCaseImpl extends UseCase2<Integer, String> implements Us
     }
 
     @Override
-    public void onError() {
+    public void onCausedByLocalError(final Const.APICategory api, final String errorMessage) {
         mPostExecutionThread.post(new Runnable() {
             @Override
             public void run() {
                 if (mCallback != null) {
-                    mCallback.onError();
+                    mCallback.onCausedByLocalError(api, errorMessage);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onCausedByGlobalError(final Const.APICategory api, final API3.Util.GlobalCode globalCode) {
+        mPostExecutionThread.post(new Runnable() {
+            @Override
+            public void run() {
+                if (mCallback != null) {
+                    mCallback.onCausedByGlobalError(api, globalCode);
                 }
             }
         });
