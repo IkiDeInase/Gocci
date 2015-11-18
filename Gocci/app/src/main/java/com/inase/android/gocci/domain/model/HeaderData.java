@@ -45,10 +45,9 @@ public class HeaderData {
 
     //通知
     private static final String TAG_NOTICE_ID = "notice_id";
-    private static final String TAG_NOTICE_USER_ID = "notice_a_user_id";
+    private static final String TAG_NOTICE_USER_ID = "user_id";
     private static final String TAG_NOTICE = "notice";
     private static final String TAG_NOTICE_POST_ID = "notice_post_id";
-    private static final String TAG_READ_FLAG = "read_flag";
     private static final String TAG_NOTICE_DATE = "notice_date";
 
     private static final String TAG_TOTAL_CHEER_NUM = "total_cheer_num";
@@ -87,7 +86,6 @@ public class HeaderData {
 
     //通知
     private String notice_id;
-    private String notice_user_id;
     private String notice;
     private String notice_post_id;
     private int read_flag;
@@ -148,15 +146,14 @@ public class HeaderData {
     }
 
     //通知
-    public HeaderData(String notice_id, String notice_user_id, String username, String profile_img, String notice,
-                      String notice_post_id, int read_flag, String notice_date) {
+    public HeaderData(String notice_id, String user_id, String username, String profile_img, String notice,
+                      String notice_post_id, String notice_date) {
         this.notice_id = notice_id;
-        this.notice_user_id = notice_user_id;
+        this.user_id = user_id;
         this.username = username;
         this.profile_img = profile_img;
         this.notice = notice;
         this.notice_post_id = notice_post_id;
-        this.read_flag = read_flag;
         this.notice_date = notice_date;
     }
 
@@ -243,16 +240,15 @@ public class HeaderData {
     public static HeaderData createNoticeHeaderData(JSONObject jsonObject) {
         try {
             String notice_id = jsonObject.getString(TAG_NOTICE_ID);
-            String notice_user_id = jsonObject.getString(TAG_NOTICE_USER_ID);
+            String user_id = jsonObject.getString(TAG_NOTICE_USER_ID);
             String username = jsonObject.getString(TAG_USERNAME);
             String profile_img = jsonObject.getString(TAG_PROFILE_IMG);
             String notice = jsonObject.getString(TAG_NOTICE);
             String notice_post_id = jsonObject.getString(TAG_NOTICE_POST_ID);
-            int read_flag = jsonObject.getInt(TAG_READ_FLAG);
             String notice_date = jsonObject.getString(TAG_NOTICE_DATE);
 
-            return new HeaderData(notice_id, notice_user_id, username, profile_img, notice,
-                    notice_post_id, read_flag, notice_date);
+            return new HeaderData(notice_id, user_id, username, profile_img, notice,
+                    notice_post_id, notice_date);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -426,14 +422,6 @@ public class HeaderData {
 
     public void setNotice_id(String notice_id) {
         this.notice_id = notice_id;
-    }
-
-    public String getNotice_user_id() {
-        return notice_user_id;
-    }
-
-    public void setNotice_user_id(String notice_user_id) {
-        this.notice_user_id = notice_user_id;
     }
 
     public String getNotice() {

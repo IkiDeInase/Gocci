@@ -498,7 +498,7 @@ public class TimelineActivity extends AppCompatActivity {
         MenuItemCompat.setActionView(item, R.layout.toolbar_notification_icon);
         View view = MenuItemCompat.getActionView(item);
         mNotificationNumber = (TextView) view.findViewById(R.id.notification_number);
-        int notifications = SavedData.getNotification(this);
+        final int notifications = SavedData.getNotification(this);
 
         // バッジの数字を更新。0の場合はバッジを表示させない
 
@@ -513,7 +513,9 @@ public class TimelineActivity extends AppCompatActivity {
             public void onClick(View v) {
                 mNotificationNumber.setVisibility(View.INVISIBLE);
                 SavedData.setNotification(TimelineActivity.this, 0);
-                View notification = new NotificationListView(TimelineActivity.this);
+                final NotificationListView notification = new NotificationListView(TimelineActivity.this);
+
+                notification.resume();
 
                 final PopupWindow window = ToukouPopup.newBasicPopupWindow(TimelineActivity.this);
 
@@ -523,6 +525,7 @@ public class TimelineActivity extends AppCompatActivity {
                     public void onClick(View v) {
                         if (window.isShowing()) {
                             window.dismiss();
+                            notification.pause();
                         }
                     }
                 });

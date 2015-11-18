@@ -93,7 +93,7 @@ public class TwoCellData {
             if (jsonObject.has(TAG_DISTANCE)) {
                 int distance = jsonObject.getInt(TAG_DISTANCE);
                 return new TwoCellData(post_id, movie, thumbnail, post_rest_id, restname,
-                        username, post_user_id, cheer_flag, gochi_flag, post_date, mp4_movie, hls_movie, distance);
+                        post_user_id, username, cheer_flag, gochi_flag, post_date, mp4_movie, hls_movie, distance);
             } else {
                 return new TwoCellData(post_id, movie, thumbnail, post_rest_id, restname,
                         post_user_id, username, cheer_flag, gochi_flag, post_date, mp4_movie, hls_movie);

@@ -73,32 +73,8 @@ public class Const {
         return new String(url);
     }
 
-    public static String getNoticeAPI() {
-        return URL_PREFIX + VERSION_NUMBER + "/mobile/get/notice";
-    }
-
     public static String getNearAPI(double lat, double lon) {
         return URL_PREFIX + VERSION_NUMBER + "/mobile/get/near/?lon=" + lon + "&lat=" + lat;
-    }
-
-    public static String getFollowAPI(String user_id) {
-        return URL_PREFIX + VERSION_NUMBER + "/mobile/get/follow/?target_user_id=" + user_id;
-    }
-
-    public static String getFollowerAPI(String user_id) {
-        return URL_PREFIX + VERSION_NUMBER + "/mobile/get/follower/?target_user_id=" + user_id;
-    }
-
-    public static String getWantAPI(String user_id) {
-        return URL_PREFIX + VERSION_NUMBER + "/mobile/get/want/?target_user_id=" + user_id;
-    }
-
-    public static String getUserCheerAPI(String user_id) {
-        return URL_PREFIX + VERSION_NUMBER + "/mobile/get/user_cheer/?target_user_id=" + user_id;
-    }
-
-    public static String getRestCheerAPI(String rest_id) {
-        return URL_PREFIX + VERSION_NUMBER + "/mobile/get/rest_cheer/?rest_id=" + rest_id;
     }
 
     public static String getHeatmapAPI() {
@@ -211,11 +187,13 @@ public class Const {
     public static final int INTENT_TO_LIST = 9;
     public static final int INTENT_TO_SETTING = 10;
 
-    public static final int CATEGORY_FOLLOW = 1;
-    public static final int CATEGORY_FOLLOWER = 2;
-    public static final int CATEGORY_USER_CHEER = 3;
-    public static final int CATEGORY_WANT = 4;
-    public static final int CATEGORY_REST_CHEER = 5;
+    public enum ListCategory {
+        FOLLOW,
+        FOLLOWER,
+        WANT,
+        USER_CHEER,
+        REST_CHEER
+    }
 
     public enum APICategory {
         AUTH_LOGIN,
@@ -238,6 +216,17 @@ public class Const {
         GET_REST_REFRESH,
         GET_COMMENT_FIRST,
         GET_COMMENT_REFRESH,
+        GET_FOLLOW_FIRST,
+        GET_FOLLOW_REFRESH,
+        GET_FOLLOWER_FIRST,
+        GET_FOLLOWER_REFRESH,
+        GET_WANT_FIRST,
+        GET_WANT_REFRESH,
+        GET_USER_CHEER_FIRST,
+        GET_USER_CHEER_REFRESH,
+        GET_REST_CHEER_FIRST,
+        GET_REST_CHEER_REFRESH,
+        GET_NOTICE_FIRST,
     }
 
     public static final class TwoCellViewHolder extends RecyclerView.ViewHolder {
@@ -307,6 +296,91 @@ public class Const {
 
         public StreamViewHolder(View view) {
             super(view);
+            ButterKnife.bind(this, view);
+        }
+    }
+
+    public static class FollowFollowerViewHolder extends RecyclerView.ViewHolder {
+        @Bind(R.id.follow_follower_picture)
+        public ImageView mFollowFollowerPicture;
+        @Bind(R.id.user_name)
+        public TextView mUserName;
+        @Bind(R.id.add_follow_button)
+        public ImageView mAddFollowButton;
+        @Bind(R.id.delete_follow_button)
+        public ImageView mDeleteFollowButton;
+        @Bind(R.id.account_button)
+        public RippleView mAccountRipple;
+
+        public FollowFollowerViewHolder(View view) {
+            super(view);
+            ButterKnife.bind(this, view);
+        }
+    }
+
+    public static class UserCheerViewHolder extends RecyclerView.ViewHolder {
+        @Bind(R.id.cheer_picture)
+        public ImageView mCheerPicture;
+        @Bind(R.id.rest_name)
+        public TextView mRestName;
+        @Bind(R.id.locality)
+        public TextView mLocality;
+
+        public UserCheerViewHolder(View view) {
+            super(view);
+            ButterKnife.bind(this, view);
+        }
+    }
+
+    public static class WantViewHolder extends RecyclerView.ViewHolder {
+        @Bind(R.id.want_picture)
+        public ImageView mWantPicture;
+        @Bind(R.id.rest_name)
+        public TextView mRestName;
+        @Bind(R.id.locality)
+        public TextView mLocality;
+        @Bind(R.id.delete_want_button)
+        public ImageView mDeleteWantButton;
+        @Bind(R.id.add_want_button)
+        public ImageView mAddWantButton;
+        @Bind(R.id.want_button)
+        public RippleView mWantRipple;
+
+        public WantViewHolder(View view) {
+            super(view);
+            ButterKnife.bind(this, view);
+        }
+    }
+
+    public static class RestCheerViewHolder extends RecyclerView.ViewHolder {
+        @Bind(R.id.tenpo_cheer_picture)
+        public ImageView mTenpoCheerPicture;
+        @Bind(R.id.user_name)
+        public TextView mUserName;
+        @Bind(R.id.add_follow_button)
+        public ImageView mAddFollowButton;
+        @Bind(R.id.delete_follow_button)
+        public ImageView mDeleteFollowButton;
+        @Bind(R.id.account_button)
+        public RippleView mAccountRipple;
+
+        public RestCheerViewHolder(View view) {
+            super(view);
+            ButterKnife.bind(this, view);
+        }
+    }
+
+    public static class NoticeHolder {
+        @Bind(R.id.circle_image)
+        public ImageView mCircleImage;
+        @Bind(R.id.notice_username)
+        public TextView mNoticeUsername;
+        @Bind(R.id.notice_sub_text)
+        public TextView mNoticeSubText;
+        @Bind(R.id.date_time)
+        public TextView mDateTime;
+
+        public NoticeHolder(View view) {
             ButterKnife.bind(this, view);
         }
     }

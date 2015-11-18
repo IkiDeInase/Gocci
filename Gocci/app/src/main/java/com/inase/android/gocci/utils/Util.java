@@ -35,6 +35,7 @@ import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.domain.model.HeaderData;
+import com.inase.android.gocci.domain.model.ListGetData;
 import com.inase.android.gocci.domain.model.PostData;
 import com.inase.android.gocci.domain.model.TwoCellData;
 import com.inase.android.gocci.ui.activity.UserProfActivity;
@@ -466,7 +467,57 @@ public class Util {
         });
     }
 
+    public static void followAsync(final Context context, final ListGetData headerData) {
+        Application_Gocci.getJsonAsyncHttpClient(Const.getPostFollowAPI(headerData.getUser_id()), new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                try {
+                    String message = response.getString(KEY_MESSAGE);
+                    int code = response.getInt(KEY_CODE);
+
+                    if (code == 200) {
+                        headerData.setFollow_flag(1);
+                    } else {
+                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
     public static void unfollowAsync(final Context context, final HeaderData headerData) {
+        Application_Gocci.getJsonAsyncHttpClient(Const.getPostUnFollowAPI(headerData.getUser_id()), new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                try {
+                    String message = response.getString(KEY_MESSAGE);
+                    int code = response.getInt(KEY_CODE);
+
+                    if (code == 200) {
+                        headerData.setFollow_flag(0);
+                    } else {
+                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public static void unfollowAsync(final Context context, final ListGetData headerData) {
         Application_Gocci.getJsonAsyncHttpClient(Const.getPostUnFollowAPI(headerData.getUser_id()), new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -516,6 +567,30 @@ public class Util {
         });
     }
 
+    public static void wantAsync(final Context context, final ListGetData headerData) {
+        Application_Gocci.getJsonAsyncHttpClient(Const.getPostWantAPI(headerData.getRest_id()), new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                try {
+                    String message = response.getString(KEY_MESSAGE);
+                    int code = response.getInt(KEY_CODE);
+
+                    if (code != 200) {
+                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
     public static void unwantAsync(final Context context, final HeaderData headerData) {
         Application_Gocci.getJsonAsyncHttpClient(Const.getPostUnWantAPI(headerData.getRest_id()), new JsonHttpResponseHandler() {
             @Override
@@ -527,6 +602,29 @@ public class Util {
                     if (code == 200) {
                         headerData.setWant_flag(0);
                     } else {
+                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public static void unwantAsync(final Context context, final ListGetData headerData) {
+        Application_Gocci.getJsonAsyncHttpClient(Const.getPostUnWantAPI(headerData.getRest_id()), new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                try {
+                    String message = response.getString(KEY_MESSAGE);
+                    int code = response.getInt(KEY_CODE);
+
+                    if (code != 200) {
                         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                     }
                 } catch (JSONException e) {

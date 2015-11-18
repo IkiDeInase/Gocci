@@ -8,7 +8,6 @@ import com.inase.android.gocci.domain.executor.PostExecutionThread;
  * Created by kinagafuji on 15/11/10.
  */
 public class CheckRegIdUseCaseImpl extends UseCase<String> implements CheckRegIdUseCase, CheckRegIdRepository.CheckRegIdRepositoryCallback {
-
     private static CheckRegIdUseCaseImpl sUseCase;
     private final CheckRegIdRepository mCheckRegIdRepository;
     private PostExecutionThread mPostExecutionThread;

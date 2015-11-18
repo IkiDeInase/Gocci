@@ -307,28 +307,28 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
         mFollowRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
             @Override
             public void onComplete(RippleView rippleView) {
-                ListActivity.startListActivity(SavedData.getServerUserId(MyprofActivity.this), 1, Const.CATEGORY_FOLLOW, MyprofActivity.this);
+                ListActivity.startListActivity(SavedData.getServerUserId(MyprofActivity.this), true, Const.ListCategory.FOLLOW, MyprofActivity.this);
             }
         });
 
         mFollowerRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
             @Override
             public void onComplete(RippleView rippleView) {
-                ListActivity.startListActivity(SavedData.getServerUserId(MyprofActivity.this), 1, Const.CATEGORY_FOLLOWER, MyprofActivity.this);
+                ListActivity.startListActivity(SavedData.getServerUserId(MyprofActivity.this), true, Const.ListCategory.FOLLOWER, MyprofActivity.this);
             }
         });
 
         mUsercheerRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
             @Override
             public void onComplete(RippleView rippleView) {
-                ListActivity.startListActivity(SavedData.getServerUserId(MyprofActivity.this), 1, Const.CATEGORY_USER_CHEER, MyprofActivity.this);
+                ListActivity.startListActivity(SavedData.getServerUserId(MyprofActivity.this), true, Const.ListCategory.USER_CHEER, MyprofActivity.this);
             }
         });
 
         mWantRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
             @Override
             public void onComplete(RippleView rippleView) {
-                ListActivity.startListActivity(SavedData.getServerUserId(MyprofActivity.this), 1, Const.CATEGORY_WANT, MyprofActivity.this);
+                ListActivity.startListActivity(SavedData.getServerUserId(MyprofActivity.this), true, Const.ListCategory.WANT, MyprofActivity.this);
             }
         });
 
@@ -558,7 +558,9 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
             public void onClick(View v) {
                 mNotificationNumber.setVisibility(View.INVISIBLE);
                 SavedData.setNotification(MyprofActivity.this, 0);
-                View notification = new NotificationListView(MyprofActivity.this);
+                final NotificationListView notification = new NotificationListView(MyprofActivity.this);
+
+                notification.resume();
 
                 final PopupWindow window = ToukouPopup.newBasicPopupWindow(MyprofActivity.this);
 
@@ -568,6 +570,7 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
                     public void onClick(View v) {
                         if (window.isShowing()) {
                             window.dismiss();
+                            notification.pause();
                         }
                     }
                 });

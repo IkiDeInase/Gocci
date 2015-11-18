@@ -1,7 +1,6 @@
 package com.inase.android.gocci.ui.activity;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,27 +14,31 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
-import com.andexert.library.RippleView;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
-import com.inase.android.gocci.domain.model.HeaderData;
+import com.inase.android.gocci.datasource.repository.API3;
+import com.inase.android.gocci.datasource.repository.ListRepository;
+import com.inase.android.gocci.datasource.repository.ListRepositoryImpl;
+import com.inase.android.gocci.domain.executor.UIThread;
+import com.inase.android.gocci.domain.model.ListGetData;
+import com.inase.android.gocci.domain.usecase.ListGetUseCase;
+import com.inase.android.gocci.domain.usecase.ListGetUseCaseImpl;
+import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.NotificationNumberEvent;
+import com.inase.android.gocci.presenter.ShowListPresenter;
+import com.inase.android.gocci.ui.adapter.ListGetAdapter;
 import com.inase.android.gocci.ui.view.DrawerProfHeader;
-import com.inase.android.gocci.ui.view.RoundedTransformation;
 import com.inase.android.gocci.utils.SavedData;
 import com.inase.android.gocci.utils.Util;
-import com.loopj.android.http.JsonHttpResponseHandler;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
@@ -45,19 +48,14 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.squareup.otto.Subscribe;
-import com.squareup.picasso.Picasso;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import cz.msebera.android.httpclient.Header;
 
-public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOffsetChangedListener {
+public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOffsetChangedListener,
+        ShowListPresenter.ShowListGetView, ListGetAdapter.ListGetCallback {
 
     @Bind(R.id.tool_bar)
     Toolbar mToolBar;
@@ -76,25 +74,21 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
     @Bind(R.id.progress_wheel)
     ProgressWheel mProgress;
 
-    private int mCategory;
+    private Const.ListCategory mCategory;
     private String mId;
-    private String mUrl;
-    private int isMypage; // 0　マイページでない　１　マイページ
-
-    private ArrayList<HeaderData> users = new ArrayList<>();
+    private boolean isMypage;
 
     private LinearLayoutManager mLayoutManager;
-
-    private FollowFollowerAdapter followefollowerAdapter;
-    private UserCheerAdapter usercheerAdapter;
-    private WantAdapter wantAdapter;
-    private RestCheerAdapter restcheerAdapter;
+    private ArrayList<ListGetData> mList = new ArrayList<>();
+    private ListGetAdapter mListGetAdapter;
 
     private Drawer result;
 
     private static MobileAnalyticsManager analytics;
 
-    public static void startListActivity(String id, int isMypage, int category, Activity startingActivity) {
+    private ShowListPresenter mPresenter;
+
+    public static void startListActivity(String id, boolean isMypage, Const.ListCategory category, Activity startingActivity) {
         Intent intent = new Intent(startingActivity, ListActivity.class);
         intent.putExtra("id", id);
         intent.putExtra("check", isMypage);
@@ -140,13 +134,21 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
             Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
         }
 
+        final API3 api3Impl = API3.Impl.getRepository();
+        ListRepository listRepositoryImpl = ListRepositoryImpl.getRepository(api3Impl);
+        ListGetUseCase listGetUseCaseImpl = ListGetUseCaseImpl.getUseCase(listRepositoryImpl, UIThread.getInstance());
+        mPresenter = new ShowListPresenter(listGetUseCaseImpl);
+        mPresenter.setListView(this);
+
         setContentView(R.layout.activity_list_follow_follower_cheer);
         ButterKnife.bind(this);
 
         Intent intent = getIntent();
-        mCategory = intent.getIntExtra("category", 0);
+        mCategory = (Const.ListCategory) intent.getSerializableExtra("category");
         mId = intent.getStringExtra("id");
-        isMypage = intent.getIntExtra("check", 0);
+        isMypage = intent.getBooleanExtra("check", false);
+
+        setSupportActionBar(mToolBar);
 
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
@@ -157,15 +159,54 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
             public void onRefresh() {
                 mSwipeRefresh.setRefreshing(true);
                 if (Util.getConnectedState(ListActivity.this) != Util.NetworkStatus.OFF) {
-                    getRefreshJSON(mUrl, mCategory);
+                    switch (mCategory) {
+                        case FOLLOW:
+                            API3.Util.GetFollowLocalCode getFollowLocalCode = api3Impl.get_follow_parameter_regex(mId);
+                            if (getFollowLocalCode == null) {
+                                mPresenter.getListData(Const.APICategory.GET_FOLLOW_REFRESH, API3.Util.getGetFollowAPI(mId));
+                            } else {
+                                Toast.makeText(ListActivity.this, API3.Util.getFollowLocalErrorMessageTable(getFollowLocalCode), Toast.LENGTH_SHORT).show();
+                            }
+                            break;
+                        case FOLLOWER:
+                            API3.Util.GetFollowerLocalCode getFollowerLocalCode = api3Impl.get_follower_parameter_regex(mId);
+                            if (getFollowerLocalCode == null) {
+                                mPresenter.getListData(Const.APICategory.GET_FOLLOWER_REFRESH, API3.Util.getGetFollowerAPI(mId));
+                            } else {
+                                Toast.makeText(ListActivity.this, API3.Util.getFollowerLocalErrorMessageTable(getFollowerLocalCode), Toast.LENGTH_SHORT).show();
+                            }
+                            break;
+                        case USER_CHEER:
+                            API3.Util.GetUserCheerLocalCode getUserCheerLocalCode = api3Impl.get_user_cheer_parameter_regex(mId);
+                            if (getUserCheerLocalCode == null) {
+                                mPresenter.getListData(Const.APICategory.GET_USER_CHEER_REFRESH, API3.Util.getGetUserCheerAPI(mId));
+                            } else {
+                                Toast.makeText(ListActivity.this, API3.Util.getUserCheerLocalErrorMessageTable(getUserCheerLocalCode), Toast.LENGTH_SHORT).show();
+                            }
+                            break;
+                        case WANT:
+                            API3.Util.GetWantLocalCode getWantLocalCode = api3Impl.get_want_parameter_regex(mId);
+                            if (getWantLocalCode == null) {
+                                mPresenter.getListData(Const.APICategory.GET_WANT_REFRESH, API3.Util.getGetWantAPI(mId));
+                            } else {
+                                Toast.makeText(ListActivity.this, API3.Util.getWantLocalErrorMessageTable(getWantLocalCode), Toast.LENGTH_SHORT).show();
+                            }
+                            break;
+                        case REST_CHEER:
+                            API3.Util.GetRestCheerLocalCode getRestCheerLocalCode = api3Impl.get_rest_cheer_parameter_regex(mId);
+                            if (getRestCheerLocalCode == null) {
+                                mPresenter.getListData(Const.APICategory.GET_REST_CHEER_REFRESH, API3.Util.getGetRestCheerAPI(mId));
+                            } else {
+                                Toast.makeText(ListActivity.this, API3.Util.getRestCheerLocalErrorMessageTable(getRestCheerLocalCode), Toast.LENGTH_SHORT).show();
+                            }
+                            break;
+                    }
                 } else {
                     Toast.makeText(ListActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
                     mSwipeRefresh.setRefreshing(false);
                 }
             }
         });
-
-        setSupportActionBar(mToolBar);
 
         result = new DrawerBuilder()
                 .withActivity(this)
@@ -231,59 +272,79 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         switch (mCategory) {
-            case Const.CATEGORY_FOLLOW:
+            case FOLLOW:
                 getSupportActionBar().setTitle(getString(R.string.follow_list));
                 mEmptyText.setText(getString(R.string.follow_empty_text));
-                followefollowerAdapter = new FollowFollowerAdapter(this);
-                mUrl = Const.getFollowAPI(mId);
+                API3.Util.GetFollowLocalCode getFollowLocalCode = api3Impl.get_follow_parameter_regex(mId);
+                if (getFollowLocalCode == null) {
+                    mPresenter.getListData(Const.APICategory.GET_FOLLOW_FIRST, API3.Util.getGetFollowAPI(mId));
+                } else {
+                    Toast.makeText(ListActivity.this, API3.Util.getFollowLocalErrorMessageTable(getFollowLocalCode), Toast.LENGTH_SHORT).show();
+                }
                 break;
-            case Const.CATEGORY_FOLLOWER:
+            case FOLLOWER:
                 getSupportActionBar().setTitle(getString(R.string.follower_list));
                 mEmptyText.setText(getString(R.string.follower_empty_text));
-                followefollowerAdapter = new FollowFollowerAdapter(this);
-                mUrl = Const.getFollowerAPI(mId);
+                API3.Util.GetFollowerLocalCode getFollowerLocalCode = api3Impl.get_follower_parameter_regex(mId);
+                if (getFollowerLocalCode == null) {
+                    mPresenter.getListData(Const.APICategory.GET_FOLLOWER_FIRST, API3.Util.getGetFollowerAPI(mId));
+                } else {
+                    Toast.makeText(ListActivity.this, API3.Util.getFollowerLocalErrorMessageTable(getFollowerLocalCode), Toast.LENGTH_SHORT).show();
+                }
                 break;
-            case Const.CATEGORY_USER_CHEER:
+            case USER_CHEER:
                 getSupportActionBar().setTitle(getString(R.string.cheer_list));
                 mEmptyText.setText(getString(R.string.cheer_empty_text));
-                usercheerAdapter = new UserCheerAdapter(this);
-                mUrl = Const.getUserCheerAPI(mId);
+                API3.Util.GetUserCheerLocalCode getUserCheerLocalCode = api3Impl.get_user_cheer_parameter_regex(mId);
+                if (getUserCheerLocalCode == null) {
+                    mPresenter.getListData(Const.APICategory.GET_USER_CHEER_FIRST, API3.Util.getGetUserCheerAPI(mId));
+                } else {
+                    Toast.makeText(ListActivity.this, API3.Util.getUserCheerLocalErrorMessageTable(getUserCheerLocalCode), Toast.LENGTH_SHORT).show();
+                }
                 break;
-            case Const.CATEGORY_WANT:
+            case WANT:
                 getSupportActionBar().setTitle(getString(R.string.want_list));
                 mEmptyText.setText(getString(R.string.want_empty_text));
-                wantAdapter = new WantAdapter(this);
-                mUrl = Const.getWantAPI(mId);
+                API3.Util.GetWantLocalCode getWantLocalCode = api3Impl.get_want_parameter_regex(mId);
+                if (getWantLocalCode == null) {
+                    mPresenter.getListData(Const.APICategory.GET_WANT_FIRST, API3.Util.getGetWantAPI(mId));
+                } else {
+                    Toast.makeText(ListActivity.this, API3.Util.getWantLocalErrorMessageTable(getWantLocalCode), Toast.LENGTH_SHORT).show();
+                }
                 break;
-            case Const.CATEGORY_REST_CHEER:
+            case REST_CHEER:
                 getSupportActionBar().setTitle(getString(R.string.cheer_user_list));
                 mEmptyText.setText(getString(R.string.usercheer_empty_text));
-                restcheerAdapter = new RestCheerAdapter(this);
-                mUrl = Const.getRestCheerAPI(mId);
+                API3.Util.GetRestCheerLocalCode getRestCheerLocalCode = api3Impl.get_rest_cheer_parameter_regex(mId);
+                if (getRestCheerLocalCode == null) {
+                    mPresenter.getListData(Const.APICategory.GET_REST_CHEER_FIRST, API3.Util.getGetRestCheerAPI(mId));
+                } else {
+                    Toast.makeText(ListActivity.this, API3.Util.getRestCheerLocalErrorMessageTable(getRestCheerLocalCode), Toast.LENGTH_SHORT).show();
+                }
                 break;
         }
-
-        getJSON(mUrl, mCategory);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        BusHolder.get().unregister(this);
         if (analytics != null) {
             analytics.getSessionClient().pauseSession();
             analytics.getEventClient().submitEvents();
         }
-
+        mPresenter.pause();
         mAppBar.removeOnOffsetChangedListener(this);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        BusHolder.get().register(this);
         if (analytics != null) {
             analytics.getSessionClient().resumeSession();
         }
-
+        mPresenter.resume();
         mAppBar.addOnOffsetChangedListener(this);
     }
 
@@ -320,874 +381,120 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
         super.onSaveInstanceState(outState);
     }
 
-    private void getJSON(String url, int category) {
-        switch (category) {
-            case Const.CATEGORY_FOLLOW:
-                getFollowJSON(url);
-                break;
-            case Const.CATEGORY_FOLLOWER:
-                getFollowerJSON(url);
-                break;
-            case Const.CATEGORY_USER_CHEER:
-                getUserCheerJSON(url);
-                break;
-            case Const.CATEGORY_WANT:
-                getWantJSON(url);
-                break;
-            case Const.CATEGORY_REST_CHEER:
-                getRestCheerJSON(url);
-                break;
-        }
-    }
-
-    private void getRefreshJSON(String url, int category) {
-        switch (category) {
-            case Const.CATEGORY_FOLLOW:
-                getRefreshFollowJSON(url);
-                break;
-            case Const.CATEGORY_FOLLOWER:
-                getRefreshFollowerJSON(url);
-                break;
-            case Const.CATEGORY_USER_CHEER:
-                getRefreshUserCheerJSON(url);
-                break;
-            case Const.CATEGORY_WANT:
-                getRefreshWantJSON(url);
-                break;
-            case Const.CATEGORY_REST_CHEER:
-                getRefreshRestCheerJSON(url);
-                break;
-        }
-    }
-
-    private void getFollowJSON(String url) {
-        Application_Gocci.getJsonAsyncHttpClient(url, new JsonHttpResponseHandler() {
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                try {
-                    for (int i = 0; i < response.length(); i++) {
-                        JSONObject jsonObject = response.getJSONObject(i);
-                        String user_id = jsonObject.getString("user_id");
-                        String username = jsonObject.getString("username");
-                        String profile_img = jsonObject.getString("profile_img");
-                        int follow_flag = jsonObject.getInt("follow_flag");
-
-                        HeaderData user = new HeaderData();
-                        user.setUser_id(user_id);
-                        user.setUsername(username);
-                        user.setProfile_img(profile_img);
-                        user.setFollow_flag(follow_flag);
-
-                        users.add(user);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                mProgress.setVisibility(View.INVISIBLE);
-
-                mRecyclerView.setAdapter(followefollowerAdapter);
-
-                if (users.isEmpty()) {
-                    mEmptyImage.setVisibility(View.VISIBLE);
-                    mEmptyText.setVisibility(View.VISIBLE);
-                } else {
-                    mEmptyImage.setVisibility(View.GONE);
-                    mEmptyText.setVisibility(View.GONE);
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                Toast.makeText(ListActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-            }
-
-        });
-
-    }
-
-    private void getFollowerJSON(String url) {
-        Application_Gocci.getJsonAsyncHttpClient(url, new JsonHttpResponseHandler() {
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                try {
-                    for (int i = 0; i < response.length(); i++) {
-                        JSONObject jsonObject = response.getJSONObject(i);
-                        String user_id = jsonObject.getString("user_id");
-                        String username = jsonObject.getString("username");
-                        String profile_img = jsonObject.getString("profile_img");
-                        int follow_flag = jsonObject.getInt("follow_flag");
-
-                        HeaderData user = new HeaderData();
-                        user.setUser_id(user_id);
-                        user.setUsername(username);
-                        user.setProfile_img(profile_img);
-                        user.setFollow_flag(follow_flag);
-
-                        users.add(user);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                mProgress.setVisibility(View.INVISIBLE);
-
-                mRecyclerView.setAdapter(followefollowerAdapter);
-
-                if (users.isEmpty()) {
-                    mEmptyImage.setVisibility(View.VISIBLE);
-                    mEmptyText.setVisibility(View.VISIBLE);
-                } else {
-                    mEmptyImage.setVisibility(View.GONE);
-                    mEmptyText.setVisibility(View.GONE);
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                Toast.makeText(ListActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-            }
-
-        });
-
-    }
-
-    private void getUserCheerJSON(String url) {
-        Application_Gocci.getJsonAsyncHttpClient(url, new JsonHttpResponseHandler() {
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                try {
-                    for (int i = 0; i < response.length(); i++) {
-                        JSONObject jsonObject = response.getJSONObject(i);
-                        String rest_id = jsonObject.getString("rest_id");
-                        String restname = jsonObject.getString("restname");
-                        String locality = jsonObject.getString("locality");
-
-                        HeaderData user = new HeaderData();
-                        user.setRest_id(rest_id);
-                        user.setRestname(restname);
-                        user.setLocality(locality);
-
-                        users.add(user);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                mProgress.setVisibility(View.INVISIBLE);
-
-                mRecyclerView.setAdapter(usercheerAdapter);
-
-                if (users.isEmpty()) {
-                    mEmptyImage.setVisibility(View.VISIBLE);
-                    mEmptyText.setVisibility(View.VISIBLE);
-                } else {
-                    mEmptyImage.setVisibility(View.GONE);
-                    mEmptyText.setVisibility(View.GONE);
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                Toast.makeText(ListActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-            }
-
-        });
-
-    }
-
-    private void getWantJSON(String url) {
-        Application_Gocci.getJsonAsyncHttpClient(url, new JsonHttpResponseHandler() {
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                try {
-                    for (int i = 0; i < response.length(); i++) {
-                        JSONObject jsonObject = response.getJSONObject(i);
-                        String rest_id = jsonObject.getString("rest_id");
-                        String restname = jsonObject.getString("restname");
-                        String locality = jsonObject.getString("locality");
-
-                        HeaderData user = new HeaderData();
-                        user.setRest_id(rest_id);
-                        user.setRestname(restname);
-                        user.setLocality(locality);
-
-                        users.add(user);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                mProgress.setVisibility(View.INVISIBLE);
-
-                mRecyclerView.setAdapter(wantAdapter);
-
-                if (users.isEmpty()) {
-                    mEmptyImage.setVisibility(View.VISIBLE);
-                    mEmptyText.setVisibility(View.VISIBLE);
-                } else {
-                    mEmptyImage.setVisibility(View.GONE);
-                    mEmptyText.setVisibility(View.GONE);
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                Toast.makeText(ListActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-            }
-        });
-
-    }
-
-    private void getRestCheerJSON(String url) {
-        Application_Gocci.getJsonAsyncHttpClient(url, new JsonHttpResponseHandler() {
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                try {
-                    for (int i = 0; i < response.length(); i++) {
-                        JSONObject jsonObject = response.getJSONObject(i);
-                        String user_id = jsonObject.getString("user_id");
-                        String username = jsonObject.getString("username");
-                        String profile_img = jsonObject.getString("profile_img");
-                        int follow_flag = jsonObject.getInt("follow_flag");
-
-                        HeaderData user = new HeaderData();
-                        user.setUser_id(user_id);
-                        user.setUsername(username);
-                        user.setProfile_img(profile_img);
-                        user.setFollow_flag(follow_flag);
-
-                        users.add(user);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                mProgress.setVisibility(View.INVISIBLE);
-
-                mRecyclerView.setAdapter(restcheerAdapter);
-
-                if (users.isEmpty()) {
-                    mEmptyImage.setVisibility(View.VISIBLE);
-                    mEmptyText.setVisibility(View.VISIBLE);
-                } else {
-                    mEmptyImage.setVisibility(View.GONE);
-                    mEmptyText.setVisibility(View.GONE);
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                Toast.makeText(ListActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void getRefreshFollowJSON(String url) {
-        Application_Gocci.getJsonAsyncHttpClient(url, new JsonHttpResponseHandler() {
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                users.clear();
-                try {
-                    for (int i = 0; i < response.length(); i++) {
-                        JSONObject jsonObject = response.getJSONObject(i);
-                        String user_id = jsonObject.getString("user_id");
-                        String username = jsonObject.getString("username");
-                        String profile_img = jsonObject.getString("profile_img");
-                        int follow_flag = jsonObject.getInt("follow_flag");
-
-                        HeaderData user = new HeaderData();
-                        user.setUser_id(user_id);
-                        user.setUsername(username);
-                        user.setProfile_img(profile_img);
-                        user.setFollow_flag(follow_flag);
-
-                        users.add(user);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                followefollowerAdapter.notifyDataSetChanged();
-
-                if (users.isEmpty()) {
-                    mEmptyImage.setVisibility(View.VISIBLE);
-                    mEmptyText.setVisibility(View.VISIBLE);
-                } else {
-                    mEmptyImage.setVisibility(View.GONE);
-                    mEmptyText.setVisibility(View.GONE);
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                Toast.makeText(ListActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onFinish() {
-                mSwipeRefresh.setRefreshing(false);
-            }
-
-        });
-
-    }
-
-    private void getRefreshFollowerJSON(String url) {
-        Application_Gocci.getJsonAsyncHttpClient(url, new JsonHttpResponseHandler() {
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                users.clear();
-                try {
-                    for (int i = 0; i < response.length(); i++) {
-                        JSONObject jsonObject = response.getJSONObject(i);
-                        String user_id = jsonObject.getString("user_id");
-                        String username = jsonObject.getString("username");
-                        String profile_img = jsonObject.getString("profile_img");
-                        int follow_flag = jsonObject.getInt("follow_flag");
-
-                        HeaderData user = new HeaderData();
-                        user.setUser_id(user_id);
-                        user.setUsername(username);
-                        user.setProfile_img(profile_img);
-                        user.setFollow_flag(follow_flag);
-
-                        users.add(user);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                followefollowerAdapter.notifyDataSetChanged();
-
-                if (users.isEmpty()) {
-                    mEmptyImage.setVisibility(View.VISIBLE);
-                    mEmptyText.setVisibility(View.VISIBLE);
-                } else {
-                    mEmptyImage.setVisibility(View.GONE);
-                    mEmptyText.setVisibility(View.GONE);
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                Toast.makeText(ListActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onFinish() {
-                mSwipeRefresh.setRefreshing(false);
-            }
-        });
-
-    }
-
-    private void getRefreshUserCheerJSON(String url) {
-        Application_Gocci.getJsonAsyncHttpClient(url, new JsonHttpResponseHandler() {
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                users.clear();
-                try {
-                    for (int i = 0; i < response.length(); i++) {
-                        JSONObject jsonObject = response.getJSONObject(i);
-                        String rest_id = jsonObject.getString("rest_id");
-                        String restname = jsonObject.getString("restname");
-                        String locality = jsonObject.getString("locality");
-
-                        HeaderData user = new HeaderData();
-                        user.setRest_id(rest_id);
-                        user.setRestname(restname);
-                        user.setLocality(locality);
-
-                        users.add(user);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                usercheerAdapter.notifyDataSetChanged();
-
-                if (users.isEmpty()) {
-                    mEmptyImage.setVisibility(View.VISIBLE);
-                    mEmptyText.setVisibility(View.VISIBLE);
-                } else {
-                    mEmptyImage.setVisibility(View.GONE);
-                    mEmptyText.setVisibility(View.GONE);
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                Toast.makeText(ListActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onFinish() {
-                mSwipeRefresh.setRefreshing(false);
-            }
-
-        });
-
-    }
-
-    private void getRefreshWantJSON(String url) {
-        Application_Gocci.getJsonAsyncHttpClient(url, new JsonHttpResponseHandler() {
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                users.clear();
-                try {
-                    for (int i = 0; i < response.length(); i++) {
-                        JSONObject jsonObject = response.getJSONObject(i);
-                        String rest_id = jsonObject.getString("rest_id");
-                        String restname = jsonObject.getString("restname");
-                        String locality = jsonObject.getString("locality");
-
-                        HeaderData user = new HeaderData();
-                        user.setRest_id(rest_id);
-                        user.setRestname(restname);
-                        user.setLocality(locality);
-
-                        users.add(user);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                wantAdapter.notifyDataSetChanged();
-
-                if (users.isEmpty()) {
-                    mEmptyImage.setVisibility(View.VISIBLE);
-                    mEmptyText.setVisibility(View.VISIBLE);
-                } else {
-                    mEmptyImage.setVisibility(View.GONE);
-                    mEmptyText.setVisibility(View.GONE);
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                Toast.makeText(ListActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onFinish() {
-                mSwipeRefresh.setRefreshing(false);
-            }
-
-        });
-
-    }
-
-    private void getRefreshRestCheerJSON(String url) {
-        Application_Gocci.getJsonAsyncHttpClient(url, new JsonHttpResponseHandler() {
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                users.clear();
-                try {
-                    for (int i = 0; i < response.length(); i++) {
-                        JSONObject jsonObject = response.getJSONObject(i);
-                        String user_id = jsonObject.getString("user_id");
-                        String username = jsonObject.getString("username");
-                        String profile_img = jsonObject.getString("profile_img");
-                        int follow_flag = jsonObject.getInt("follow_flag");
-
-                        HeaderData user = new HeaderData();
-                        user.setUser_id(user_id);
-                        user.setUsername(username);
-                        user.setProfile_img(profile_img);
-                        user.setFollow_flag(follow_flag);
-
-                        users.add(user);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                restcheerAdapter.notifyDataSetChanged();
-
-                if (users.isEmpty()) {
-                    mEmptyImage.setVisibility(View.VISIBLE);
-                    mEmptyText.setVisibility(View.VISIBLE);
-                } else {
-                    mEmptyImage.setVisibility(View.GONE);
-                    mEmptyText.setVisibility(View.GONE);
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                Toast.makeText(ListActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-            }
-
-        });
-
-    }
-
     @Override
     public void onOffsetChanged(AppBarLayout appBarLayout, int i) {
         mSwipeRefresh.setEnabled(i == 0);
     }
 
-    public static class FollowFollowerViewHolder extends RecyclerView.ViewHolder {
-        @Bind(R.id.follow_follower_picture)
-        ImageView mFollowFollowerPicture;
-        @Bind(R.id.user_name)
-        TextView mUserName;
-        @Bind(R.id.add_follow_button)
-        ImageView mAddFollowButton;
-        @Bind(R.id.delete_follow_button)
-        ImageView mDeleteFollowButton;
-        @Bind(R.id.account_button)
-        RippleView mAccountRipple;
+    @Override
+    public void onUserClick(String user_id, String username) {
+        UserProfActivity.startUserProfActivity(user_id, username, this);
+    }
 
-        public FollowFollowerViewHolder(View view) {
-            super(view);
-            ButterKnife.bind(this, view);
+    @Override
+    public void onRestClick(String rest_id, String restname) {
+        TenpoActivity.startTenpoActivity(rest_id, restname, this);
+    }
+
+    @Override
+    public void showLoading() {
+
+    }
+
+    @Override
+    public void hideLoading() {
+        mProgress.setVisibility(View.INVISIBLE);
+    }
+
+    @Override
+    public void showNoResultCase(Const.APICategory api) {
+        switch (api) {
+            case GET_FOLLOW_FIRST:
+            case GET_FOLLOWER_FIRST:
+            case GET_WANT_FIRST:
+            case GET_USER_CHEER_FIRST:
+            case GET_REST_CHEER_FIRST:
+                mProgress.setVisibility(View.INVISIBLE);
+                mListGetAdapter = new ListGetAdapter(this, isMypage, mCategory, mList);
+                mListGetAdapter.setListGetCallback(this);
+                mRecyclerView.setAdapter(mListGetAdapter);
+                break;
+            case GET_FOLLOW_REFRESH:
+            case GET_FOLLOWER_REFRESH:
+            case GET_WANT_REFRESH:
+            case GET_USER_CHEER_REFRESH:
+            case GET_REST_CHEER_REFRESH:
+                mList.clear();
+                mListGetAdapter.setData();
+                break;
+        }
+        mEmptyImage.setVisibility(View.VISIBLE);
+        mEmptyText.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideNoResultCase() {
+        mEmptyImage.setVisibility(View.INVISIBLE);
+        mEmptyText.setVisibility(View.INVISIBLE);
+    }
+
+    @Override
+    public void showNoResultCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
+        Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
+        mProgress.setVisibility(View.INVISIBLE);
+        switch (api) {
+            case GET_FOLLOW_FIRST:
+            case GET_FOLLOWER_FIRST:
+            case GET_WANT_FIRST:
+            case GET_USER_CHEER_FIRST:
+            case GET_REST_CHEER_FIRST:
+                mListGetAdapter = new ListGetAdapter(this, isMypage, mCategory, mList);
+                mListGetAdapter.setListGetCallback(this);
+                mRecyclerView.setAdapter(mListGetAdapter);
+                break;
         }
     }
 
-    public static class UserCheerViewHolder extends RecyclerView.ViewHolder {
-        @Bind(R.id.cheer_picture)
-        ImageView mCheerPicture;
-        @Bind(R.id.rest_name)
-        TextView mRestName;
-        @Bind(R.id.locality)
-        TextView mLocality;
-
-        public UserCheerViewHolder(View view) {
-            super(view);
-            ButterKnife.bind(this, view);
+    @Override
+    public void showNoResultCausedByLocalError(Const.APICategory api, String errorMessage) {
+        Toast.makeText(ListActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+        mProgress.setVisibility(View.INVISIBLE);
+        switch (api) {
+            case GET_FOLLOW_FIRST:
+            case GET_FOLLOWER_FIRST:
+            case GET_WANT_FIRST:
+            case GET_USER_CHEER_FIRST:
+            case GET_REST_CHEER_FIRST:
+                mListGetAdapter = new ListGetAdapter(this, isMypage, mCategory, mList);
+                mListGetAdapter.setListGetCallback(this);
+                mRecyclerView.setAdapter(mListGetAdapter);
+                break;
         }
     }
 
-    public static class WantViewHolder extends RecyclerView.ViewHolder {
-        @Bind(R.id.want_picture)
-        ImageView mWantPicture;
-        @Bind(R.id.rest_name)
-        TextView mRestName;
-        @Bind(R.id.locality)
-        TextView mLocality;
-        @Bind(R.id.delete_want_button)
-        ImageView mDeleteWantButton;
-        @Bind(R.id.add_want_button)
-        ImageView mAddWantButton;
-        @Bind(R.id.want_button)
-        RippleView mWantRipple;
-
-        public WantViewHolder(View view) {
-            super(view);
-            ButterKnife.bind(this, view);
-        }
-    }
-
-    public static class RestCheerViewHolder extends RecyclerView.ViewHolder {
-        @Bind(R.id.tenpo_cheer_picture)
-        ImageView mTenpoCheerPicture;
-        @Bind(R.id.user_name)
-        TextView mUserName;
-        @Bind(R.id.add_follow_button)
-        ImageView mAddFollowButton;
-        @Bind(R.id.delete_follow_button)
-        ImageView mDeleteFollowButton;
-        @Bind(R.id.account_button)
-        RippleView mAccountRipple;
-
-        public RestCheerViewHolder(View view) {
-            super(view);
-            ButterKnife.bind(this, view);
-        }
-    }
-
-    public class FollowFollowerAdapter extends RecyclerView.Adapter<FollowFollowerViewHolder> {
-
-        private Context mContext;
-
-        public FollowFollowerAdapter(Context context) {
-            mContext = context;
-        }
-
-        @Override
-        public FollowFollowerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View v = LayoutInflater.from(mContext)
-                    .inflate(R.layout.cell_follow_follower, parent, false);
-            return new FollowFollowerViewHolder(v);
-        }
-
-        @Override
-        public void onBindViewHolder(FollowFollowerViewHolder viewHolder, final int position) {
-            final HeaderData user = users.get(position);
-
-            viewHolder.mUserName.setText(user.getUsername());
-
-            Picasso.with(mContext)
-                    .load(user.getProfile_img())
-                    .placeholder(R.drawable.ic_userpicture)
-                    .transform(new RoundedTransformation())
-                    .into(viewHolder.mFollowFollowerPicture);
-
-            viewHolder.mUserName.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    UserProfActivity.startUserProfActivity(user.getUser_id(), user.getUsername(), ListActivity.this);
-                }
-            });
-
-            viewHolder.mFollowFollowerPicture.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    UserProfActivity.startUserProfActivity(user.getUser_id(), user.getUsername(), ListActivity.this);
-                }
-            });
-
-
-            switch (mCategory) {
-                case Const.CATEGORY_FOLLOW:
-                    if (isMypage == 1) {
-                        viewHolder.mDeleteFollowButton.setVisibility(View.VISIBLE);
-                        final FollowFollowerViewHolder finalViewHolder = viewHolder;
-                        viewHolder.mAccountRipple.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                if (finalViewHolder.mDeleteFollowButton.isShown()) {
-                                    finalViewHolder.mDeleteFollowButton.setVisibility(View.INVISIBLE);
-                                    finalViewHolder.mAddFollowButton.setVisibility(View.VISIBLE);
-                                    Util.unfollowAsync(ListActivity.this, user);
-                                } else {
-                                    finalViewHolder.mDeleteFollowButton.setVisibility(View.VISIBLE);
-                                    finalViewHolder.mAddFollowButton.setVisibility(View.INVISIBLE);
-                                    Util.followAsync(ListActivity.this, user);
-                                }
-                            }
-                        });
-                    }
-                    break;
-                case Const.CATEGORY_FOLLOWER:
-                    if (isMypage == 1) {
-                        if (user.getFollow_flag() == 0) {
-                            viewHolder.mAddFollowButton.setVisibility(View.VISIBLE);
-                        } else {
-                            viewHolder.mDeleteFollowButton.setVisibility(View.VISIBLE);
-                        }
-                        final FollowFollowerViewHolder finalViewHolder1 = viewHolder;
-                        viewHolder.mAccountRipple.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                if (finalViewHolder1.mAddFollowButton.isShown()) {
-                                    finalViewHolder1.mAddFollowButton.setVisibility(View.INVISIBLE);
-                                    finalViewHolder1.mDeleteFollowButton.setVisibility(View.VISIBLE);
-                                    Util.followAsync(ListActivity.this, user);
-                                } else {
-                                    finalViewHolder1.mAddFollowButton.setVisibility(View.VISIBLE);
-                                    finalViewHolder1.mDeleteFollowButton.setVisibility(View.INVISIBLE);
-                                    Util.unfollowAsync(ListActivity.this, user);
-                                }
-                            }
-                        });
-                    }
-                    break;
-            }
-        }
-
-        @Override
-        public int getItemCount() {
-            return users.size();
-        }
-    }
-
-    public class UserCheerAdapter extends RecyclerView.Adapter<UserCheerViewHolder> {
-
-        private Context mContext;
-
-        public UserCheerAdapter(Context context) {
-            mContext = context;
-        }
-
-        @Override
-        public UserCheerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View v = LayoutInflater.from(mContext)
-                    .inflate(R.layout.cell_cheer, parent, false);
-            return new UserCheerViewHolder(v);
-        }
-
-        @Override
-        public void onBindViewHolder(UserCheerViewHolder viewHolder, final int position) {
-            final HeaderData user = users.get(position);
-
-            viewHolder.mRestName.setText(user.getRestname());
-            viewHolder.mLocality.setText(user.getLocality());
-
-            /*
-            Picasso.with(mContext)
-                    .load(user.getProfile_img())
-                    .placeholder(R.drawable.ic_userpicture)
-                    .transform(new RoundedTransformation())
-                    .into(viewHolder.restpicture);
-                    */
-
-            viewHolder.mRestName.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    TenpoActivity.startTenpoActivity(user.getRest_id(), user.getRestname(), ListActivity.this);
-                }
-            });
-
-            viewHolder.mCheerPicture.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    TenpoActivity.startTenpoActivity(user.getRest_id(), user.getRestname(), ListActivity.this);
-                }
-            });
-        }
-
-        @Override
-        public int getItemCount() {
-            return users.size();
-        }
-    }
-
-    public class WantAdapter extends RecyclerView.Adapter<WantViewHolder> {
-        private Context mContext;
-
-        public WantAdapter(Context context) {
-            mContext = context;
-        }
-
-        @Override
-        public WantViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View v = LayoutInflater.from(mContext)
-                    .inflate(R.layout.cell_want, parent, false);
-            return new WantViewHolder(v);
-        }
-
-        @Override
-        public void onBindViewHolder(WantViewHolder viewHolder, final int position) {
-            final HeaderData user = users.get(position);
-
-            viewHolder.mRestName.setText(user.getRestname());
-            viewHolder.mLocality.setText(user.getLocality());
-
-            /*
-            Picasso.with(mContext)
-                    .load(user.getProfile_img())
-                    .placeholder(R.drawable.ic_userpicture)
-                    .transform(new RoundedTransformation())
-                    .into(viewHolder.restpicture);
-                    */
-
-            viewHolder.mRestName.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    TenpoActivity.startTenpoActivity(user.getRest_id(), user.getRestname(), ListActivity.this);
-                }
-            });
-
-            viewHolder.mWantPicture.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    TenpoActivity.startTenpoActivity(user.getRest_id(), user.getRestname(), ListActivity.this);
-                }
-            });
-
-            viewHolder.mDeleteWantButton.setVisibility(View.VISIBLE);
-            final WantViewHolder finalViewHolder = viewHolder;
-            viewHolder.mWantRipple.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (finalViewHolder.mDeleteWantButton.isShown()) {
-                        finalViewHolder.mDeleteWantButton.setVisibility(View.INVISIBLE);
-                        finalViewHolder.mAddWantButton.setVisibility(View.VISIBLE);
-                        Util.unwantAsync(ListActivity.this, user);
-                    } else {
-                        finalViewHolder.mDeleteWantButton.setVisibility(View.VISIBLE);
-                        finalViewHolder.mAddWantButton.setVisibility(View.INVISIBLE);
-                        Util.wantAsync(ListActivity.this, user);
-                    }
-                }
-            });
-
-        }
-
-        @Override
-        public int getItemCount() {
-            return users.size();
-        }
-    }
-
-    public class RestCheerAdapter extends RecyclerView.Adapter<RestCheerViewHolder> {
-        private Context mContext;
-
-        public RestCheerAdapter(Context context) {
-            mContext = context;
-        }
-
-        @Override
-        public RestCheerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View v = LayoutInflater.from(mContext)
-                    .inflate(R.layout.cell_tenpo_cheer, parent, false);
-            return new RestCheerViewHolder(v);
-        }
-
-        @Override
-        public void onBindViewHolder(RestCheerViewHolder viewHolder, final int position) {
-            final HeaderData user = users.get(position);
-
-            viewHolder.mUserName.setText(user.getUsername());
-
-            Picasso.with(mContext)
-                    .load(user.getProfile_img())
-                    .placeholder(R.drawable.ic_userpicture)
-                    .transform(new RoundedTransformation())
-                    .into(viewHolder.mTenpoCheerPicture);
-
-            viewHolder.mUserName.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    UserProfActivity.startUserProfActivity(user.getUser_id(), user.getUsername(), ListActivity.this);
-                }
-            });
-
-            viewHolder.mTenpoCheerPicture.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    UserProfActivity.startUserProfActivity(user.getUser_id(), user.getUsername(), ListActivity.this);
-                }
-            });
-
-            if (user.getFollow_flag() == 0) {
-                viewHolder.mAddFollowButton.setVisibility(View.VISIBLE);
-            } else {
-                viewHolder.mDeleteFollowButton.setVisibility(View.VISIBLE);
-            }
-            final RestCheerViewHolder finalViewHolder1 = viewHolder;
-            viewHolder.mAccountRipple.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (finalViewHolder1.mAddFollowButton.isShown()) {
-                        finalViewHolder1.mAddFollowButton.setVisibility(View.INVISIBLE);
-                        finalViewHolder1.mDeleteFollowButton.setVisibility(View.VISIBLE);
-                        Util.followAsync(ListActivity.this, user);
-                    } else {
-                        finalViewHolder1.mAddFollowButton.setVisibility(View.VISIBLE);
-                        finalViewHolder1.mDeleteFollowButton.setVisibility(View.INVISIBLE);
-                        Util.unfollowAsync(ListActivity.this, user);
-                    }
-                }
-            });
-        }
-
-        @Override
-        public int getItemCount() {
-            return users.size();
+    @Override
+    public void showResult(Const.APICategory api, ArrayList<ListGetData> list) {
+        switch (api) {
+            case GET_FOLLOW_FIRST:
+            case GET_FOLLOWER_FIRST:
+            case GET_WANT_FIRST:
+            case GET_USER_CHEER_FIRST:
+            case GET_REST_CHEER_FIRST:
+                mProgress.setVisibility(View.INVISIBLE);
+                mList.addAll(list);
+                mListGetAdapter = new ListGetAdapter(this, isMypage, mCategory, mList);
+                mListGetAdapter.setListGetCallback(this);
+                mRecyclerView.setAdapter(mListGetAdapter);
+                break;
+            case GET_FOLLOW_REFRESH:
+            case GET_FOLLOWER_REFRESH:
+            case GET_WANT_REFRESH:
+            case GET_USER_CHEER_REFRESH:
+            case GET_REST_CHEER_REFRESH:
+                mList.clear();
+                mList.addAll(list);
+                mListGetAdapter.setData();
+                break;
         }
     }
 }

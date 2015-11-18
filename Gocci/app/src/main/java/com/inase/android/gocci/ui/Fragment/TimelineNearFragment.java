@@ -160,13 +160,13 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
                 if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
                     loading = false;
                     if (!isEndScrioll) {
-                        API3.Util.GetNearlineLocalCode localCode = API3.Impl.getRepository().get_nearline_parameter_regex(TimelineActivity.mLongitude, TimelineActivity.mLatitude);
+                        API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().get_nearline_parameter_regex(TimelineActivity.mLongitude, TimelineActivity.mLatitude);
                         if (localCode == null) {
                             mPresenter.getNearTimelinePostData(Const.APICategory.GET_TIMELINE_ADD, Const.getCustomTimelineAPI(0,
                                     TimelineActivity.mNearSort_id, TimelineActivity.mNearCategory_id, TimelineActivity.mNearValue_id,
                                     TimelineActivity.mLongitude, TimelineActivity.mLatitude, mNextCount));
                         } else {
-                            Toast.makeText(getActivity(), API3.Util.getNearlineLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), API3.Util.getTimelineLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
@@ -267,11 +267,11 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
                     TimelineActivity.mNearCategory_id = 0;
                     TimelineActivity.mNearValue_id = 0;
 
-                    API3.Util.GetNearlineLocalCode localCode = API3.Impl.getRepository().get_nearline_parameter_regex(TimelineActivity.mLongitude, TimelineActivity.mLatitude);
+                    API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().get_nearline_parameter_regex(TimelineActivity.mLongitude, TimelineActivity.mLatitude);
                     if (localCode == null) {
                         mPresenter.getNearTimelinePostData(Const.APICategory.GET_TIMELINE_REFRESH, API3.Util.getGetNearlineAPI(TimelineActivity.mLongitude, TimelineActivity.mLatitude));
                     } else {
-                        Toast.makeText(getActivity(), API3.Util.getNearlineLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), API3.Util.getTimelineLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
                     }
                 }
                 break;
@@ -346,12 +346,12 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
     @Subscribe
     public void subscribe(FilterTimelineEvent event) {
         if (event.currentPage == 0) {
-            API3.Util.GetNearlineLocalCode localCode = API3.Impl.getRepository().get_nearline_parameter_regex(TimelineActivity.mLongitude, TimelineActivity.mLatitude);
+            API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().get_nearline_parameter_regex(TimelineActivity.mLongitude, TimelineActivity.mLatitude);
             if (localCode == null) {
                 mTimelineRecyclerView.scrollVerticallyToPosition(0);
                 mPresenter.getNearTimelinePostData(Const.APICategory.GET_TIMELINE_FILTER, event.filterUrl);
             } else {
-                Toast.makeText(getActivity(), API3.Util.getNearlineLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), API3.Util.getTimelineLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -410,12 +410,12 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
                     TimelineActivity.mLongitude = location.getLongitude();
                     TimelineActivity.mLatitude = location.getLatitude();
 
-                    API3.Util.GetNearlineLocalCode localCode = API3.Impl.getRepository().get_nearline_parameter_regex(TimelineActivity.mLongitude, TimelineActivity.mLatitude);
+                    API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().get_nearline_parameter_regex(TimelineActivity.mLongitude, TimelineActivity.mLatitude);
                     if (localCode == null) {
                         mPresenter.getNearTimelinePostData(Const.APICategory.GET_TIMELINE_FIRST, API3.Util.getGetNearlineAPI(TimelineActivity.mLongitude, TimelineActivity.mLatitude));
 
                     } else {
-                        Toast.makeText(getActivity(), API3.Util.getNearlineLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), API3.Util.getTimelineLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
                     }
                 }
             });
@@ -461,13 +461,13 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
                     TimelineActivity.mNearCategory_id = 0;
                     TimelineActivity.mNearValue_id = 0;
 
-                    API3.Util.GetNearlineLocalCode localCode = API3.Impl.getRepository().get_nearline_parameter_regex(TimelineActivity.mLongitude, TimelineActivity.mLatitude);
+                    API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().get_nearline_parameter_regex(TimelineActivity.mLongitude, TimelineActivity.mLatitude);
                     if (localCode == null) {
                         mPresenter.getNearTimelinePostData(Const.APICategory.GET_TIMELINE_REFRESH, API3.Util.getGetNearlineAPI(TimelineActivity.mLongitude, TimelineActivity.mLatitude));
                         TimelineActivity activity = (TimelineActivity) getActivity();
                         activity.setNowLocationTitle();
                     } else {
-                        Toast.makeText(getActivity(), API3.Util.getNearlineLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), API3.Util.getTimelineLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
                     }
                 }
             });
@@ -488,11 +488,11 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
                                 TimelineActivity.mLongitude = location.getLongitude();
                                 TimelineActivity.mLatitude = location.getLatitude();
 
-                                API3.Util.GetNearlineLocalCode localCode = API3.Impl.getRepository().get_nearline_parameter_regex(TimelineActivity.mLongitude, TimelineActivity.mLatitude);
+                                API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().get_nearline_parameter_regex(TimelineActivity.mLongitude, TimelineActivity.mLatitude);
                                 if (localCode == null) {
                                     mPresenter.getNearTimelinePostData(Const.APICategory.GET_TIMELINE_FIRST, API3.Util.getGetNearlineAPI(TimelineActivity.mLongitude, TimelineActivity.mLatitude));
                                 } else {
-                                    Toast.makeText(getActivity(), API3.Util.getNearlineLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getActivity(), API3.Util.getTimelineLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });
@@ -537,11 +537,11 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
                                 TimelineActivity.mLongitude = location.getLongitude();
                                 TimelineActivity.mLatitude = location.getLatitude();
 
-                                API3.Util.GetNearlineLocalCode localCode = API3.Impl.getRepository().get_nearline_parameter_regex(TimelineActivity.mLongitude, TimelineActivity.mLatitude);
+                                API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().get_nearline_parameter_regex(TimelineActivity.mLongitude, TimelineActivity.mLatitude);
                                 if (localCode == null) {
                                     mPresenter.getNearTimelinePostData(Const.APICategory.GET_TIMELINE_FIRST, API3.Util.getGetNearlineAPI(TimelineActivity.mLongitude, TimelineActivity.mLatitude));
                                 } else {
-                                    Toast.makeText(getActivity(), API3.Util.getNearlineLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getActivity(), API3.Util.getTimelineLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });
@@ -560,13 +560,13 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
                                 TimelineActivity.mNearCategory_id = 0;
                                 TimelineActivity.mNearValue_id = 0;
 
-                                API3.Util.GetNearlineLocalCode localCode = API3.Impl.getRepository().get_nearline_parameter_regex(TimelineActivity.mLongitude, TimelineActivity.mLatitude);
+                                API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().get_nearline_parameter_regex(TimelineActivity.mLongitude, TimelineActivity.mLatitude);
                                 if (localCode == null) {
                                     mPresenter.getNearTimelinePostData(Const.APICategory.GET_TIMELINE_REFRESH, API3.Util.getGetNearlineAPI(TimelineActivity.mLongitude, TimelineActivity.mLatitude));
                                     TimelineActivity activity = (TimelineActivity) getActivity();
                                     activity.setNowLocationTitle();
                                 } else {
-                                    Toast.makeText(getActivity(), API3.Util.getNearlineLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getActivity(), API3.Util.getTimelineLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });
@@ -619,13 +619,13 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
                                 TimelineActivity.mNearCategory_id = 0;
                                 TimelineActivity.mNearValue_id = 0;
 
-                                API3.Util.GetNearlineLocalCode localCode = API3.Impl.getRepository().get_nearline_parameter_regex(TimelineActivity.mLongitude, TimelineActivity.mLatitude);
+                                API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().get_nearline_parameter_regex(TimelineActivity.mLongitude, TimelineActivity.mLatitude);
                                 if (localCode == null) {
                                     mPresenter.getNearTimelinePostData(Const.APICategory.GET_TIMELINE_REFRESH, API3.Util.getGetNearlineAPI(TimelineActivity.mLongitude, TimelineActivity.mLatitude));
                                     TimelineActivity activity = (TimelineActivity) getActivity();
                                     activity.setNowLocationTitle();
                                 } else {
-                                    Toast.makeText(getActivity(), API3.Util.getNearlineLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getActivity(), API3.Util.getTimelineLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });

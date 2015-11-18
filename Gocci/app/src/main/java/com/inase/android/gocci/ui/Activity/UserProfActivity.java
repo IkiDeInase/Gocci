@@ -288,21 +288,21 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
         mFollowRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
             @Override
             public void onComplete(RippleView rippleView) {
-                ListActivity.startListActivity(mUser_id, 0, Const.CATEGORY_FOLLOW, UserProfActivity.this);
+                ListActivity.startListActivity(mUser_id, false, Const.ListCategory.FOLLOW, UserProfActivity.this);
             }
         });
 
         mFollowerRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
             @Override
             public void onComplete(RippleView rippleView) {
-                ListActivity.startListActivity(mUser_id, 0, Const.CATEGORY_FOLLOWER, UserProfActivity.this);
+                ListActivity.startListActivity(mUser_id, false, Const.ListCategory.FOLLOWER, UserProfActivity.this);
             }
         });
 
         mUsercheerRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
             @Override
             public void onComplete(RippleView rippleView) {
-                ListActivity.startListActivity(mUser_id, 0, Const.CATEGORY_USER_CHEER, UserProfActivity.this);
+                ListActivity.startListActivity(mUser_id, false, Const.ListCategory.USER_CHEER, UserProfActivity.this);
             }
         });
 
