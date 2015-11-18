@@ -11,8 +11,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.inase.android.gocci.R;
+import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.domain.model.CommentUserData;
 import com.inase.android.gocci.domain.model.HeaderData;
+import com.inase.android.gocci.domain.model.PostData;
 import com.inase.android.gocci.ui.view.RoundedTransformation;
 import com.squareup.picasso.Picasso;
 
@@ -25,8 +27,12 @@ import butterknife.ButterKnife;
  * Created by kinagafuji on 15/10/06.
  */
 public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private static final int TYPE_MEMO = 0;
+    private static final int TYPE_COMMENT = 1;
 
     private Context mContext;
+
+    private HeaderData mMemoData;
     private ArrayList<HeaderData> mCommentData = new ArrayList<>();
 
     private String mPost_id;
@@ -41,9 +47,19 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         this.notifyDataSetChanged();
     }
 
-    public CommentAdapter(Context context, String post_id, ArrayList<HeaderData> commentData) {
+    @Override
+    public int getItemViewType(int position) {
+        if (position == 0) {
+            return TYPE_MEMO;
+        } else {
+            return TYPE_COMMENT;
+        }
+    }
+
+    public CommentAdapter(Context context, String post_id, HeaderData memoData, ArrayList<HeaderData> commentData) {
         this.mContext = context;
         this.mPost_id = post_id;
+        this.mMemoData = memoData;
         this.mCommentData = commentData;
     }
 
@@ -55,8 +71,67 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        HeaderData users = mCommentData.get(position);
-        bindComment((CommentViewHolder) holder, users);
+        int viewType = getItemViewType(position);
+        if (TYPE_MEMO == viewType) {
+            bindMemo((CommentViewHolder) holder, mMemoData);
+        } else {
+            HeaderData users = mCommentData.get(position);
+            bindComment((CommentViewHolder) holder, users);
+        }
+    }
+
+    private void bindMemo(final CommentViewHolder holder, final HeaderData memo) {
+        if (!memo.getMemo().equals("none")) {
+            Picasso.with(mContext)
+                    .load(memo.getProfile_img())
+                    .placeholder(R.drawable.ic_userpicture)
+                    .transform(new RoundedTransformation())
+                    .into(holder.mCommentUserImage);
+            holder.mUserName.setText(memo.getUsername());
+            holder.mDateTime.setText(memo.getPost_date());
+
+            TextView comment = new TextView(mContext);
+            comment.setText(memo.getMemo());
+            comment.setTextColor(mContext.getResources().getColor(R.color.nameblack));
+            comment.setTextSize(12);
+            comment.setPadding(8, 0, 0, 0);
+            holder.mReUser.addView(comment, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+            holder.mCommentCell.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    final StringBuilder user_name = new StringBuilder();
+                    final StringBuilder user_id = new StringBuilder();
+                    user_name.append("@" + memo.getUsername() + " ");
+                    user_id.append(memo.getUser_id());
+                    mCallback.onCommentClick(user_name.toString(), user_id.toString());
+                }
+            });
+
+            holder.mCommentCell.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    mCallback.onCommentLongClick(String.valueOf(memo.getUser_id()));
+                    return false;
+                }
+            });
+
+            holder.mUserName.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mCallback.onUserClick(memo.getUser_id(), memo.getUsername());
+                }
+            });
+
+            holder.mCommentUserImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mCallback.onUserClick(memo.getUser_id(), memo.getUsername());
+                }
+            });
+        } else {
+            holder.mCommentCell.setVisibility(View.GONE);
+        }
     }
 
     private void bindComment(final CommentViewHolder holder, final HeaderData users) {

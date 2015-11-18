@@ -11,7 +11,12 @@ import java.util.ArrayList;
  */
 public class HeaderData {
 
+    //追加メモ
+    private static final String TAG_MEMO = "memo";
+    private static final String TAG_POST_DATE = "post_date";
+
     //追加コメントページ
+    private static final String TAG_COMMENT_ID = "comment_id";
     private static final String TAG_COMMENT_USER_ID = "comment_user_id";
     private static final String TAG_USERNAME = "username";
     private static final String TAG_PROFILE_IMG = "profile_img";
@@ -49,7 +54,11 @@ public class HeaderData {
     private static final String TAG_TOTAL_CHEER_NUM = "total_cheer_num";
     private static final String TAG_TOTAL_WANT_NUM = "total_want_num";
 
+    private String memo;
+    private String post_date;
+
     //コメントページ
+    private String comment_id;
     private String comment_user_id;
     private String username;
     private String profile_img;
@@ -92,8 +101,17 @@ public class HeaderData {
     public HeaderData() {
     }
 
+    public HeaderData(String user_id, String username, String profile_img, String memo, String post_date) {
+        this.user_id = user_id;
+        this.username = username;
+        this.profile_img = profile_img;
+        this.memo = memo;
+        this.post_date = post_date;
+    }
+
     //コメント
-    public HeaderData(String comment_user_id, String username, String profile_img, String comment, String comment_date, ArrayList<CommentUserData> comment_user_data) {
+    public HeaderData(String comment_id, String comment_user_id, String username, String profile_img, String comment, String comment_date, ArrayList<CommentUserData> comment_user_data) {
+        this.comment_id = comment_id;
         this.comment_user_id = comment_user_id;
         this.username = username;
         this.profile_img = profile_img;
@@ -142,8 +160,25 @@ public class HeaderData {
         this.notice_date = notice_date;
     }
 
-    public static HeaderData createCommentHeaderData(JSONObject jsonObject) {
+    public static HeaderData createMemoData(JSONObject jsonObject) {
         try {
+            String user_id = jsonObject.getString(TAG_USER_ID);
+            String username = jsonObject.getString(TAG_USERNAME);
+            String profile_img = jsonObject.getString(TAG_PROFILE_IMG);
+            String memo = jsonObject.getString(TAG_MEMO);
+            String post_date = jsonObject.getString(TAG_POST_DATE);
+
+            return new HeaderData(user_id, username, profile_img, memo, post_date);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static HeaderData createCommentData(JSONObject jsonObject) {
+        try {
+            String comment_id = jsonObject.getString(TAG_COMMENT_ID);
             String comment_user_id = jsonObject.getString(TAG_COMMENT_USER_ID);
             String username = jsonObject.getString(TAG_USERNAME);
             String profile_img = jsonObject.getString(TAG_PROFILE_IMG);
@@ -156,7 +191,7 @@ public class HeaderData {
                 commentUserDatas.add(CommentUserData.createCommentUserData(re_user_obj));
             }
 
-            return new HeaderData(comment_user_id, username, profile_img, comment, comment_date, commentUserDatas);
+            return new HeaderData(comment_id, comment_user_id, username, profile_img, comment, comment_date, commentUserDatas);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -435,5 +470,29 @@ public class HeaderData {
 
     public ArrayList<CommentUserData> getComment_user_data() {
         return comment_user_data;
+    }
+
+    public String getMemo() {
+        return memo;
+    }
+
+    public void setMemo(String memo) {
+        this.memo = memo;
+    }
+
+    public String getPost_date() {
+        return post_date;
+    }
+
+    public void setPost_date(String post_date) {
+        this.post_date = post_date;
+    }
+
+    public String getComment_id() {
+        return comment_id;
+    }
+
+    public void setComment_id(String comment_id) {
+        this.comment_id = comment_id;
     }
 }

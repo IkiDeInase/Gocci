@@ -1,5 +1,8 @@
 package com.inase.android.gocci.domain.usecase;
 
+import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.datasource.repository.API3;
+import com.inase.android.gocci.domain.model.CommentUserData;
 import com.inase.android.gocci.domain.model.HeaderData;
 import com.inase.android.gocci.domain.model.PostData;
 
@@ -10,14 +13,16 @@ import java.util.ArrayList;
  */
 public interface CommentPageUseCase {
     interface CommentPageUseCaseCallback {
-        void onDataLoaded(int api, PostData postData, ArrayList<HeaderData> commentData);
+        void onDataLoaded(Const.APICategory api, HeaderData memoData, ArrayList<HeaderData> commentData);
 
-        void onDataEmpty(int api, PostData postData);
+        void onDataEmpty(Const.APICategory api, HeaderData memoData);
 
-        void onError();
+        void onCausedByLocalError(Const.APICategory api, String errorMessage);
+
+        void onCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode);
     }
 
-    void execute(int api, String url, CommentPageUseCaseCallback callback);
+    void execute(Const.APICategory api, String url, CommentPageUseCaseCallback callback);
 
     void setCallback(CommentPageUseCaseCallback callback);
 

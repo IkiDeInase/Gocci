@@ -71,14 +71,14 @@ public class CommentActionRepositoryImpl implements CommentActionRepository {
                     JSONArray array = new JSONArray(jsonObject.getString("comments"));
                     JSONObject obj = new JSONObject(jsonObject.getString("post"));
 
-                    PostData mPostData = PostData.createPostData(obj);
+                    PostData mPostData = PostData.createUserPostData(obj);
 
                     if (array.length() != 0) {
                         for (int i = 0; i < array.length(); i++) {
                             JSONObject comment = array.getJSONObject(i);
                             String judge = jsonObject.getString("comment");
                             if (!judge.equals("none")) {
-                                mCommentData.add(HeaderData.createCommentHeaderData(comment));
+                                mCommentData.add(HeaderData.createCommentData(comment));
                             }
                         }
                         cb.onPostCommented(mPostData, mCommentData);

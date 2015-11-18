@@ -80,11 +80,10 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
     TextView mEmptyText;
     @Bind(R.id.empty_image)
     ImageView mEmptyImage;
-    @Bind(R.id.progress_wheel)
-    ProgressWheel mProgress;
 
     private AppBarLayout appBarLayout;
     private FloatingActionButton fab;
+    private ProgressWheel mProgress;
 
     private StaggeredGridLayoutManager mLayoutManager;
     private ArrayList<TwoCellData> mTimelineusers = new ArrayList<>();
@@ -212,10 +211,9 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
         mPlayingPostId = null;
         mViewHolderHash = new ConcurrentHashMap<>();
 
-        mProgress.setVisibility(View.VISIBLE);
-
         activity = (TimelineActivity) getActivity();
 
+        mProgress = (ProgressWheel) getActivity().findViewById(R.id.progress_wheel);
         fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
         appBarLayout = (AppBarLayout) getActivity().findViewById(R.id.app_bar);
 
@@ -507,6 +505,7 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
     @Override
     public void hideLoading() {
         mSwipeContainer.setRefreshing(false);
+        mProgress.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -593,11 +592,25 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
     @Override
     public void showNoResultCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
         Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
+        mProgress.setVisibility(View.INVISIBLE);
+        mSwipeContainer.setRefreshing(false);
+        if (api == Const.APICategory.GET_TIMELINE_FIRST) {
+            mTimelineAdapter = new TimelineAdapter(getActivity(), mTimelineusers);
+            mTimelineAdapter.setTimelineCallback(this);
+            mTimelineRecyclerView.setAdapter(mTimelineAdapter);
+        }
     }
 
     @Override
     public void showNoResultCausedByLocalError(Const.APICategory api, String errorMessage) {
         Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
+        mProgress.setVisibility(View.INVISIBLE);
+        mSwipeContainer.setRefreshing(false);
+        if (api == Const.APICategory.GET_TIMELINE_FIRST) {
+            mTimelineAdapter = new TimelineAdapter(getActivity(), mTimelineusers);
+            mTimelineAdapter.setTimelineCallback(this);
+            mTimelineRecyclerView.setAdapter(mTimelineAdapter);
+        }
     }
 
     @Override

@@ -116,9 +116,10 @@ public class PostData {
             String memo = jsonObject.getString(TAG_MEMO);
             String post_date = jsonObject.getString(TAG_POST_DATE);
             int cheer_flag = jsonObject.getInt(TAG_CHEER_FLAG);
-            String post_user_id = jsonObject.getString(TAG_POST_USER_ID);
-            String username = jsonObject.getString(TAG_USERNAME);
-            String profile_img = jsonObject.getString(TAG_PROFILE_IMG);
+            String post_rest_id = jsonObject.getString(TAG_POST_REST_ID);
+            String restname = jsonObject.getString(TAG_RESTNAME);
+            double lon = jsonObject.getDouble(TAG_LON);
+            double lat = jsonObject.getDouble(TAG_LAT);
             String mp4_movie = jsonObject.getString(TAG_MP4_MOVIE);
             String hls_movie = jsonObject.getString(TAG_HLS_MOVIE);
             int gochi_num = jsonObject.getInt(TAG_GOCHI_NUM);
@@ -126,7 +127,7 @@ public class PostData {
             int comment_num = jsonObject.getInt(TAG_COMMENT_NUM);
 
             return new PostData(post_id, movie, thumbnail, category, value,
-                    memo, post_date, cheer_flag, post_user_id, username, profile_img,
+                    memo, post_date, cheer_flag, post_rest_id, restname, lon, lat,
                     mp4_movie, hls_movie, gochi_num, gochi_flag, comment_num);
 
         } catch (JSONException e) {
@@ -145,10 +146,9 @@ public class PostData {
             String memo = jsonObject.getString(TAG_MEMO);
             String post_date = jsonObject.getString(TAG_POST_DATE);
             int cheer_flag = jsonObject.getInt(TAG_CHEER_FLAG);
-            String post_rest_id = jsonObject.getString(TAG_POST_REST_ID);
-            String restname = jsonObject.getString(TAG_RESTNAME);
-            double lon = jsonObject.getDouble(TAG_LON);
-            double lat = jsonObject.getDouble(TAG_LAT);
+            String post_user_id = jsonObject.getString(TAG_POST_USER_ID);
+            String username = jsonObject.getString(TAG_USERNAME);
+            String profile_img = jsonObject.getString(TAG_PROFILE_IMG);
             String mp4_movie = jsonObject.getString(TAG_MP4_MOVIE);
             String hls_movie = jsonObject.getString(TAG_HLS_MOVIE);
             int gochi_num = jsonObject.getInt(TAG_GOCHI_NUM);
@@ -156,7 +156,7 @@ public class PostData {
             int comment_num = jsonObject.getInt(TAG_COMMENT_NUM);
 
             return new PostData(post_id, movie, thumbnail, category, value,
-                    memo, post_date, cheer_flag, post_rest_id, restname, lon, lat,
+                    memo, post_date, cheer_flag, post_user_id, username, profile_img,
                     mp4_movie, hls_movie, gochi_num, gochi_flag, comment_num);
 
         } catch (JSONException e) {

@@ -1,5 +1,7 @@
 package com.inase.android.gocci.presenter;
 
+import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.datasource.repository.API3;
 import com.inase.android.gocci.domain.model.HeaderData;
 import com.inase.android.gocci.domain.model.PostData;
 import com.inase.android.gocci.domain.usecase.CommentPageUseCase;
@@ -25,7 +27,7 @@ public class ShowCommentPagePresenter extends Presenter implements CommentPageUs
         mShowCommentView = view;
     }
 
-    public void getCommentData(int api, String url) {
+    public void getCommentData(Const.APICategory api, String url) {
         mShowCommentView.showLoading();
         mCommentPageUseCase.execute(api, url, this);
     }
@@ -36,29 +38,41 @@ public class ShowCommentPagePresenter extends Presenter implements CommentPageUs
     }
 
     @Override
-    public void onDataLoaded(int api, PostData postData, ArrayList<HeaderData> commentData) {
+    public void onDataLoaded(Const.APICategory api, HeaderData memoData, ArrayList<HeaderData> commentData) {
         mShowCommentView.hideLoading();
         mShowCommentView.hideNoResultCase();
-        mShowCommentView.showResult(api, postData, commentData);
+        mShowCommentView.showResult(api, memoData, commentData);
     }
 
     @Override
-    public void onDataEmpty(int api, PostData postData) {
+    public void onDataEmpty(Const.APICategory api, HeaderData memoData) {
         mShowCommentView.hideLoading();
-        mShowCommentView.showNoResultCase(api, postData);
+        mShowCommentView.showNoResultCase(api, memoData);
+    }
+
+    @Override
+    public void onCausedByLocalError(Const.APICategory api, String errorMessage) {
+        mShowCommentView.hideLoading();
+        mShowCommentView.showNoResultCausedByLocalError(api, errorMessage);
+    }
+
+    @Override
+    public void onCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
+        mShowCommentView.hideLoading();
+        mShowCommentView.showNoResultCausedByGlobalError(api, globalCode);
     }
 
     @Override
     public void onCommentPosted(PostData postData, ArrayList<HeaderData> commentData) {
         mShowCommentView.hideLoading();
         mShowCommentView.hideNoResultCase();
-        mShowCommentView.postCommented(postData, commentData);
+        mShowCommentView.postCommented(null, commentData);
     }
 
     @Override
     public void onCommentPostEmpty(PostData postData) {
         mShowCommentView.hideLoading();
-        mShowCommentView.postCommentEmpty(postData);
+        mShowCommentView.postCommentEmpty(null);
     }
 
     @Override
@@ -70,9 +84,7 @@ public class ShowCommentPagePresenter extends Presenter implements CommentPageUs
 
     @Override
     public void onError() {
-        mShowCommentView.hideLoading();
-        mShowCommentView.hideNoResultCase();
-        mShowCommentView.showError();
+
     }
 
     @Override
@@ -102,17 +114,19 @@ public class ShowCommentPagePresenter extends Presenter implements CommentPageUs
 
         void hideLoading();
 
-        void showNoResultCase(int api, PostData postData);
+        void showNoResultCase(Const.APICategory api, HeaderData postData);
 
         void hideNoResultCase();
 
-        void showError();
+        void showNoResultCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode);
 
-        void showResult(int api, PostData postData, ArrayList<HeaderData> commentData);
+        void showNoResultCausedByLocalError(Const.APICategory api, String errorMessage);
 
-        void postCommented(PostData postData, ArrayList<HeaderData> commentData);
+        void showResult(Const.APICategory api, HeaderData postData, ArrayList<HeaderData> commentData);
 
-        void postCommentEmpty(PostData postData);
+        void postCommented(HeaderData postData, ArrayList<HeaderData> commentData);
+
+        void postCommentEmpty(HeaderData postData);
 
         void postCommentFailed();
     }

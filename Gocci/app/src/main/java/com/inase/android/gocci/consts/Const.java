@@ -73,10 +73,6 @@ public class Const {
         return new String(url);
     }
 
-    public static String getCommentAPI(String post_id) {
-        return URL_PREFIX + VERSION_NUMBER + "/mobile/get/comment/?post_id=" + post_id;
-    }
-
     public static String getNoticeAPI() {
         return URL_PREFIX + VERSION_NUMBER + "/mobile/get/notice";
     }
@@ -221,9 +217,6 @@ public class Const {
     public static final int CATEGORY_WANT = 4;
     public static final int CATEGORY_REST_CHEER = 5;
 
-    public static final int COMMENT_FIRST = 8;
-    public static final int COMMENT_REFRESH = 9;
-
     public enum APICategory {
         AUTH_LOGIN,
         AUTH_CHECK,
@@ -242,7 +235,9 @@ public class Const {
         GET_USER_FIRST,
         GET_USER_REFRESH,
         GET_REST_FIRST,
-        GET_REST_REFRESH
+        GET_REST_REFRESH,
+        GET_COMMENT_FIRST,
+        GET_COMMENT_REFRESH,
     }
 
     public static final class TwoCellViewHolder extends RecyclerView.ViewHolder {

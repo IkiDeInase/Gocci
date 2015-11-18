@@ -41,8 +41,8 @@ import butterknife.ButterKnife;
  * Created by kinagafuji on 15/10/04.
  */
 public class RestPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    public static final int TYPE_TENPO_HEADER = 0;
-    public static final int TYPE_POST = 1;
+    private static final int TYPE_TENPO_HEADER = 0;
+    private static final int TYPE_POST = 1;
 
     private Context mContext;
     private HeaderData mRestData;

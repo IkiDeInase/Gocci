@@ -920,7 +920,7 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
         switch (event.api) {
             case GET_REST_FIRST:
             case GET_REST_REFRESH:
-                mPresenter.getRestData(Const.APICategory.GET_REST_FIRST, API3.Util.getGetRestAPI(mRest_id));
+                mPresenter.getRestData(event.api, API3.Util.getGetRestAPI(mRest_id));
                 break;
             default:
                 break;

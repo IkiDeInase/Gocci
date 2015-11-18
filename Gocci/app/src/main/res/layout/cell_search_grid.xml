@@ -39,7 +39,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_above="@+id/footer"
-            android:layout_marginLeft="8dp"
+            android:layout_marginLeft="12dp"
             android:layout_marginRight="8dp"
             android:gravity="right"
             android:singleLine="true"
@@ -63,7 +63,6 @@
                 android:singleLine="true"
                 android:textColor="@color/white"
                 android:textStyle="bold"
-                android:text="100m"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
                 android:layout_gravity="center_vertical" />

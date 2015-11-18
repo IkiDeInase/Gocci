@@ -763,7 +763,7 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
         switch (event.api) {
             case GET_USER_FIRST:
             case GET_USER_REFRESH:
-                mPresenter.getProfData(Const.APICategory.GET_USER_FIRST, API3.Util.getGetUserAPI(mUser_id));
+                mPresenter.getProfData(event.api, API3.Util.getGetUserAPI(mUser_id));
                 break;
             default:
                 break;

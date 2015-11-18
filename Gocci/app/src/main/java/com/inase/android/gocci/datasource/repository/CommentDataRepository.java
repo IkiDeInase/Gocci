@@ -1,5 +1,7 @@
 package com.inase.android.gocci.datasource.repository;
 
+import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.domain.model.CommentUserData;
 import com.inase.android.gocci.domain.model.HeaderData;
 import com.inase.android.gocci.domain.model.PostData;
 
@@ -10,13 +12,15 @@ import java.util.ArrayList;
  */
 public interface CommentDataRepository {
 
-    void getCommentDataList(int api, String url, CommentDataRepositoryCallback cb);
+    void getCommentDataList(Const.APICategory api, String url, CommentDataRepositoryCallback cb);
 
     interface CommentDataRepositoryCallback {
-        void onCommentDataLoaded(int api, PostData postData, ArrayList<HeaderData> commentData);
+        void onCommentDataLoaded(Const.APICategory api, HeaderData memoData, ArrayList<HeaderData> commentData);
 
-        void onCommentDataEmpty(int api, PostData postData);
+        void onCommentDataEmpty(Const.APICategory api, HeaderData memoData);
 
-        void onError();
+        void onCausedByLocalError(Const.APICategory api, String errorMessage);
+
+        void onCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode);
     }
 }

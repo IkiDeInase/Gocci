@@ -1159,7 +1159,7 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
         switch (event.api) {
             case GET_USER_FIRST:
             case GET_USER_REFRESH:
-                mPresenter.getProfData(Const.APICategory.GET_USER_FIRST, API3.Util.getGetUserAPI(SavedData.getServerUserId(this)));
+                mPresenter.getProfData(event.api, API3.Util.getGetUserAPI(SavedData.getServerUserId(this)));
                 break;
             default:
                 break;

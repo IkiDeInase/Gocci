@@ -25,8 +25,10 @@ import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManag
 import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
+import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.datasource.repository.API3;
 import com.inase.android.gocci.datasource.repository.CommentActionRepository;
 import com.inase.android.gocci.datasource.repository.CommentActionRepositoryImpl;
 import com.inase.android.gocci.datasource.repository.CommentDataRepository;
@@ -40,6 +42,7 @@ import com.inase.android.gocci.domain.usecase.CommentPostUseCase;
 import com.inase.android.gocci.domain.usecase.CommentPostUseCaseImpl;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.NotificationNumberEvent;
+import com.inase.android.gocci.event.RetryApiEvent;
 import com.inase.android.gocci.presenter.ShowCommentPagePresenter;
 import com.inase.android.gocci.ui.adapter.CommentAdapter;
 import com.inase.android.gocci.utils.SavedData;
@@ -91,9 +94,9 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
             mCommentEdit.setText("");
             mProgress.setVisibility(View.VISIBLE);
             if (isNotice) {
-                mPresenter.postComment(Const.getPostCommentWithNoticeAPI(mPost_id, comment, mNoticeUser_id), Const.getCommentAPI(mPost_id));
+                mPresenter.postComment(Const.getPostCommentWithNoticeAPI(mPost_id, comment, mNoticeUser_id), API3.Util.getGetCommentAPI(mPost_id));
             } else {
-                mPresenter.postComment(Const.getPostCommentAPI(mPost_id, comment), Const.getCommentAPI(mPost_id));
+                mPresenter.postComment(Const.getPostCommentAPI(mPost_id, comment), API3.Util.getGetCommentAPI(mPost_id));
             }
             if (mOverlay.getVisibility() == View.VISIBLE) {
                 mOverlay.setVisibility(View.GONE);
@@ -161,7 +164,8 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
             Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
         }
 
-        CommentDataRepository commentDataRepositoryImpl = CommentDataRepositoryImpl.getRepository();
+        API3 api3Impl = API3.Impl.getRepository();
+        CommentDataRepository commentDataRepositoryImpl = CommentDataRepositoryImpl.getRepository(api3Impl);
         CommentActionRepository commentActionRepositoryImpl = CommentActionRepositoryImpl.getRepository();
         CommentPageUseCase commentPageUseCaseImpl = CommentPageUseCaseImpl.getUseCase(commentDataRepositoryImpl, UIThread.getInstance());
         CommentPostUseCase commentPostUseCaseImpl = CommentPostUseCaseImpl.getUseCase(commentActionRepositoryImpl, UIThread.getInstance());
@@ -173,7 +177,7 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
 
         Intent intent = getIntent();
         isMyPage = intent.getBooleanExtra("judge", false);
-        mPost_id = String.valueOf(intent.getIntExtra("post_id", 0));
+        mPost_id = intent.getStringExtra("post_id");
 
         setSupportActionBar(mToolBar);
         getSupportActionBar().setTitle(getString(R.string.comment));
@@ -209,8 +213,12 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
         mCommentRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
         mCommentRecyclerView.setScrollViewCallbacks(this);
 
-        mPresenter.getCommentData(Const.COMMENT_FIRST, Const.getCommentAPI(mPost_id));
-        //mPresenter.getCommentData(Const.COMMENT_REFRESH, Const.getCommentAPI(mPost_id));
+        API3.Util.GetCommentLocalCode localCode = api3Impl.get_comment_parameter_regex(mPost_id);
+        if (localCode == null) {
+            mPresenter.getCommentData(Const.APICategory.GET_COMMENT_FIRST, API3.Util.getGetCommentAPI(mPost_id));
+        } else {
+            Toast.makeText(CommentActivity.this, API3.Util.getCommentLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+        }
 
         mCommentRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -376,16 +384,16 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
     }
 
     @Override
-    public void showNoResultCase(int api, PostData postData) {
+    public void showNoResultCase(Const.APICategory api, HeaderData memoData) {
         switch (api) {
-            case Const.COMMENT_FIRST:
+            case GET_COMMENT_FIRST:
                 mProgress.setVisibility(View.INVISIBLE);
-                mCommentAdapter = new CommentAdapter(this, mPost_id, mCommentusers);
+                mCommentAdapter = new CommentAdapter(this, mPost_id, memoData, mCommentusers);
                 mCommentAdapter.setCommentCallback(this);
                 mCommentRecyclerView.setAdapter(mCommentAdapter);
-                mCommentRecyclerView.scrollVerticallyToPosition(mCommentusers.size() - 1);
+                mCommentRecyclerView.scrollVerticallyToPosition(mCommentusers.size());
                 break;
-            case Const.COMMENT_REFRESH:
+            case GET_COMMENT_REFRESH:
                 mCommentusers.clear();
                 mCommentAdapter.setData();
                 break;
@@ -398,39 +406,44 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
     }
 
     @Override
-    public void showError() {
-        Toast.makeText(this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
+    public void showNoResultCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
+        Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
     }
 
     @Override
-    public void showResult(int api, PostData postData, ArrayList<HeaderData> commentData) {
+    public void showNoResultCausedByLocalError(Const.APICategory api, String errorMessage) {
+        Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showResult(Const.APICategory api, HeaderData memoData, ArrayList<HeaderData> commentData) {
         mCommentusers.clear();
         mCommentusers.addAll(commentData);
         switch (api) {
-            case Const.COMMENT_FIRST:
+            case GET_COMMENT_FIRST:
                 mProgress.setVisibility(View.INVISIBLE);
-                mCommentAdapter = new CommentAdapter(this, mPost_id, mCommentusers);
+                mCommentAdapter = new CommentAdapter(this, mPost_id, memoData, mCommentusers);
                 mCommentAdapter.setCommentCallback(this);
                 mCommentRecyclerView.setAdapter(mCommentAdapter);
-                mCommentRecyclerView.scrollVerticallyToPosition(mCommentusers.size() - 1);
+                mCommentRecyclerView.scrollVerticallyToPosition(mCommentusers.size());
                 break;
-            case Const.COMMENT_REFRESH:
+            case GET_COMMENT_REFRESH:
                 mCommentAdapter.setData();
                 break;
         }
     }
 
     @Override
-    public void postCommented(PostData postData, ArrayList<HeaderData> commentData) {
+    public void postCommented(HeaderData postData, ArrayList<HeaderData> commentData) {
         mProgress.setVisibility(View.INVISIBLE);
         mCommentusers.clear();
         mCommentusers.addAll(commentData);
         mCommentAdapter.setData();
-        mCommentRecyclerView.scrollVerticallyToPosition(mCommentusers.size() - 1);
+        mCommentRecyclerView.scrollVerticallyToPosition(mCommentusers.size());
     }
 
     @Override
-    public void postCommentEmpty(PostData postData) {
+    public void postCommentEmpty(HeaderData postData) {
         mProgress.setVisibility(View.INVISIBLE);
         mCommentusers.clear();
         mCommentAdapter.setData();
@@ -440,5 +453,17 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
     public void postCommentFailed() {
         mProgress.setVisibility(View.INVISIBLE);
         Toast.makeText(this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
+    }
+
+    @Subscribe
+    public void subscribe(RetryApiEvent event) {
+        switch (event.api) {
+            case GET_COMMENT_FIRST:
+            case GET_COMMENT_REFRESH:
+                mPresenter.getCommentData(event.api, API3.Util.getGetCommentAPI(mPost_id));
+                break;
+            default:
+                break;
+        }
     }
 }
