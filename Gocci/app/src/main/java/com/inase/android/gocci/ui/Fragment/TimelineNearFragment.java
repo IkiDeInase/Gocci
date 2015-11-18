@@ -41,7 +41,7 @@ import com.google.android.exoplayer.drm.UnsupportedDrmException;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
-import com.inase.android.gocci.datasource.repository.API3;
+import com.inase.android.gocci.datasource.api.API3;
 import com.inase.android.gocci.datasource.repository.PostDataRepository;
 import com.inase.android.gocci.datasource.repository.PostDataRepositoryImpl;
 import com.inase.android.gocci.domain.executor.UIThread;

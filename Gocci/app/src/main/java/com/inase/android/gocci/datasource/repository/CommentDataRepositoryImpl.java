@@ -2,14 +2,10 @@ package com.inase.android.gocci.datasource.repository;
 
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.consts.Const;
-import com.inase.android.gocci.domain.model.CommentUserData;
+import com.inase.android.gocci.datasource.api.API3;
 import com.inase.android.gocci.domain.model.HeaderData;
-import com.inase.android.gocci.domain.model.PostData;
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.TextHttpResponseHandler;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.SocketTimeoutException;

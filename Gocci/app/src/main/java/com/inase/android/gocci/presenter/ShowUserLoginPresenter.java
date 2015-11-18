@@ -1,7 +1,7 @@
 package com.inase.android.gocci.presenter;
 
 import com.inase.android.gocci.consts.Const;
-import com.inase.android.gocci.datasource.repository.API3;
+import com.inase.android.gocci.datasource.api.API3;
 import com.inase.android.gocci.domain.usecase.CheckRegIdUseCase;
 import com.inase.android.gocci.domain.usecase.UserLoginUseCase;
 

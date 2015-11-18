@@ -25,7 +25,7 @@ import com.facebook.login.widget.LoginButton;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
-import com.inase.android.gocci.datasource.repository.API3;
+import com.inase.android.gocci.datasource.api.API3;
 import com.inase.android.gocci.datasource.repository.CheckRegIdRepository;
 import com.inase.android.gocci.datasource.repository.CheckRegIdRepositoryImpl;
 import com.inase.android.gocci.datasource.repository.LoginRepository;

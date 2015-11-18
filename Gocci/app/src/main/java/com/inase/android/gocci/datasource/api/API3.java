@@ -1,4 +1,4 @@
-package com.inase.android.gocci.datasource.repository;
+package com.inase.android.gocci.datasource.api;
 
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.domain.model.HeaderData;

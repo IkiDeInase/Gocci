@@ -1,6 +1,7 @@
 package com.inase.android.gocci.datasource.repository;
 
 import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.datasource.api.API3;
 
 /**
  * Created by kinagafuji on 15/09/25.

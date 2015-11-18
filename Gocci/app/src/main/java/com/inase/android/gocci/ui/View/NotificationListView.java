@@ -5,9 +5,7 @@ import android.content.Intent;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -17,36 +15,20 @@ import android.widget.Toast;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
-import com.inase.android.gocci.datasource.repository.API3;
-import com.inase.android.gocci.datasource.repository.ListRepository;
-import com.inase.android.gocci.datasource.repository.ListRepositoryImpl;
+import com.inase.android.gocci.datasource.api.API3;
 import com.inase.android.gocci.datasource.repository.NoticeRepository;
 import com.inase.android.gocci.datasource.repository.NoticeRepositoryImpl;
 import com.inase.android.gocci.domain.executor.UIThread;
 import com.inase.android.gocci.domain.model.HeaderData;
-import com.inase.android.gocci.domain.usecase.ListGetUseCase;
-import com.inase.android.gocci.domain.usecase.ListGetUseCaseImpl;
 import com.inase.android.gocci.domain.usecase.NoticeDataUseCase;
 import com.inase.android.gocci.domain.usecase.NoticeDataUseCaseImpl;
-import com.inase.android.gocci.presenter.ShowListPresenter;
 import com.inase.android.gocci.presenter.ShowNoticePresenter;
 import com.inase.android.gocci.ui.activity.CommentActivity;
 import com.inase.android.gocci.ui.activity.UserProfActivity;
-import com.inase.android.gocci.ui.adapter.ListGetAdapter;
 import com.inase.android.gocci.ui.adapter.NoticeAdapter;
-import com.loopj.android.http.JsonHttpResponseHandler;
 import com.pnikosis.materialishprogress.ProgressWheel;
-import com.squareup.picasso.Picasso;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
-
-import butterknife.Bind;
-import butterknife.ButterKnife;
-import cz.msebera.android.httpclient.Header;
 
 /**
  * Created by kinagafuji on 15/05/12.

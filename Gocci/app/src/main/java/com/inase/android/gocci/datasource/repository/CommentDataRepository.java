@@ -1,9 +1,8 @@
 package com.inase.android.gocci.datasource.repository;
 
 import com.inase.android.gocci.consts.Const;
-import com.inase.android.gocci.domain.model.CommentUserData;
+import com.inase.android.gocci.datasource.api.API3;
 import com.inase.android.gocci.domain.model.HeaderData;
-import com.inase.android.gocci.domain.model.PostData;
 
 import java.util.ArrayList;
 

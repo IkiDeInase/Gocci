@@ -25,7 +25,7 @@ import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManag
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
-import com.inase.android.gocci.datasource.repository.API3;
+import com.inase.android.gocci.datasource.api.API3;
 import com.inase.android.gocci.datasource.repository.ListRepository;
 import com.inase.android.gocci.datasource.repository.ListRepositoryImpl;
 import com.inase.android.gocci.domain.executor.UIThread;

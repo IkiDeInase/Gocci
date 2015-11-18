@@ -1,10 +1,9 @@
 package com.inase.android.gocci.domain.usecase;
 
 import com.inase.android.gocci.consts.Const;
-import com.inase.android.gocci.datasource.repository.API3;
+import com.inase.android.gocci.datasource.api.API3;
 import com.inase.android.gocci.datasource.repository.ListRepository;
 import com.inase.android.gocci.domain.executor.PostExecutionThread;
-import com.inase.android.gocci.domain.model.HeaderData;
 import com.inase.android.gocci.domain.model.ListGetData;
 
 import java.util.ArrayList;

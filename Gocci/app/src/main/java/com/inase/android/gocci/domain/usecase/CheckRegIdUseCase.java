@@ -1,6 +1,6 @@
 package com.inase.android.gocci.domain.usecase;
 
-import com.inase.android.gocci.datasource.repository.API3;
+import com.inase.android.gocci.datasource.api.API3;
 
 /**
  * Created by kinagafuji on 15/11/10.
