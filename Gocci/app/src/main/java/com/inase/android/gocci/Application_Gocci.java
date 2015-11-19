@@ -78,6 +78,10 @@ public class Application_Gocci extends Application {
         sSyncHttpClient.get(url, responseHandler);
     }
 
+    public static void getJsonAsync(String url, JsonHttpResponseHandler responseHandler) throws SocketTimeoutException {
+        sAsyncHttpClient.get(url, responseHandler);
+    }
+
     public static void getTextSyncHttpClient(String url, TextHttpResponseHandler responseHandler) {
         sSyncHttpClient.get(url, responseHandler);
     }
@@ -318,7 +322,7 @@ public class Application_Gocci extends Application {
 
                         @Override
                         public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                            API3.Impl.getRepository().post_sns_response(response, new API3.PostSnsResponseCallback() {
+                            API3.Impl.getRepository().post_sns_response(response, new API3.PostResponseCallback() {
                                 @Override
                                 public void onSuccess() {
                                     callback.onPostExecute();

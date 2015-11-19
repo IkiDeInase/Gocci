@@ -207,7 +207,7 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
                     activity.overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
                     break;
                 case Const.INTENT_TO_ADVICE:
-                    Util.setAdviceDialog(activity);
+                    Util.setFeedbackDialog(activity);
                     break;
                 case Const.INTENT_TO_SETTING:
                     SettingActivity.startSettingActivity(activity);

@@ -6,6 +6,7 @@ import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.datasource.api.API3;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONException;
@@ -87,7 +88,7 @@ public class MyPageActionRepositoryImpl implements MyPageActionRepository {
 
     @Override
     public void deletePost(String post_id, final int position, final MyPageActionRepositoryCallback cb) {
-        Application_Gocci.getJsonSyncHttpClient(Const.getPostDeleteAPI(post_id), new JsonHttpResponseHandler() {
+        Application_Gocci.getJsonSyncHttpClient(API3.Util.getPostDeleteAPI(post_id), new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 try {

@@ -179,7 +179,7 @@ public class TimelineActivity extends AppCompatActivity {
                     MyprofActivity.startMyProfActivity(activity);
                     break;
                 case Const.INTENT_TO_ADVICE:
-                    Util.setAdviceDialog(activity);
+                    Util.setFeedbackDialog(activity);
                     break;
                 case Const.INTENT_TO_SETTING:
                     SettingActivity.startSettingActivity(activity);

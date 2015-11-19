@@ -81,48 +81,12 @@ public class Const {
         return URL_PREFIX + VERSION_NUMBER + "/mobile/get/heatmap";
     }
 
-    public static String getPostGochiAPI(String post_id) {
-        return URL_PREFIX + VERSION_NUMBER + "/mobile/post/gochi/?post_id=" + post_id;
-    }
-
-    public static String getPostDeleteAPI(String post_id) {
-        return URL_PREFIX + VERSION_NUMBER + "/mobile/post/postdel/?post_id=" + post_id;
-    }
-
-    public static String getPostViolateAPI(String post_id) {
-        return URL_PREFIX + VERSION_NUMBER + "/mobile/post/postblock/?post_id=" + post_id;
-    }
-
-    public static String getPostFollowAPI(String user_id) {
-        return URL_PREFIX + VERSION_NUMBER + "/mobile/post/follow/?target_user_id=" + user_id;
-    }
-
-    public static String getPostUnFollowAPI(String user_id) {
-        return URL_PREFIX + VERSION_NUMBER + "/mobile/post/unfollow/?target_user_id=" + user_id;
-    }
-
     public static String getPostWantAPI(String rest_id) {
         return URL_PREFIX + VERSION_NUMBER + "/mobile/post/want/?rest_id=" + rest_id;
     }
 
     public static String getPostUnWantAPI(String rest_id) {
         return URL_PREFIX + VERSION_NUMBER + "/mobile/post/unwant/?rest_id=" + rest_id;
-    }
-
-    public static String getPostFeedbackAPI(String feedback) {
-        return URL_PREFIX + VERSION_NUMBER + "/mobile/post/feedback/?feedback=" + feedback;
-    }
-
-    public static String getPostCommentAPI(String post_id, String comment) {
-        return URL_PREFIX + VERSION_NUMBER + "/mobile/post/comment/?post_id=" + post_id + "&comment=" + comment;
-    }
-
-    public static String getPostCommentWithNoticeAPI(String post_id, String comment, String re_user_id) {
-        return URL_PREFIX + VERSION_NUMBER + "/mobile/post/comment/?post_id=" + post_id + "&comment=" + comment + "&re_user_id=" + re_user_id;
-    }
-
-    public static String getPostPasswordAPI(String password) {
-        return URL_PREFIX + VERSION_NUMBER + "/mobile/post/password/?pass=" + password;
     }
 
     public static String getPostMovieAPI(String rest_id, String movie, int category_id, String value, String memo, int cheer_flag) {
@@ -202,10 +166,6 @@ public class Const {
         AUTH_FACEBOOK_LOGIN,
         AUTH_TWITTER_LOGIN,
         AUTH_PASS_LOGIN,
-        POST_FACEBOOK,
-        POST_TWITTER,
-        POST_FACEBOOK_UNLINK,
-        POST_TWITTER_UNLINK,
         GET_TIMELINE_FIRST,
         GET_TIMELINE_REFRESH,
         GET_TIMELINE_ADD,
@@ -227,6 +187,18 @@ public class Const {
         GET_REST_CHEER_FIRST,
         GET_REST_CHEER_REFRESH,
         GET_NOTICE_FIRST,
+        POST_FACEBOOK,
+        POST_TWITTER,
+        POST_FACEBOOK_UNLINK,
+        POST_TWITTER_UNLINK,
+        POST_GOCHI,
+        POST_DELETE,
+        POST_BLOCK,
+        POST_FOLLOW,
+        POST_UNFOLLOW,
+        POST_FEEDBACK,
+        POST_PASSWORD,
+        POST_COMMENT,
     }
 
     public static final class TwoCellViewHolder extends RecyclerView.ViewHolder {

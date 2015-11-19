@@ -93,9 +93,9 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
             mCommentEdit.setText("");
             mProgress.setVisibility(View.VISIBLE);
             if (isNotice) {
-                mPresenter.postComment(Const.getPostCommentWithNoticeAPI(mPost_id, comment, mNoticeUser_id), API3.Util.getGetCommentAPI(mPost_id));
+                mPresenter.postComment(API3.Util.getPostCommentAPI(mPost_id, comment, mNoticeUser_id), API3.Util.getGetCommentAPI(mPost_id));
             } else {
-                mPresenter.postComment(Const.getPostCommentAPI(mPost_id, comment), API3.Util.getGetCommentAPI(mPost_id));
+                //mPresenter.postComment(Const.getPostCommentAPI(mPost_id, comment), API3.Util.getGetCommentAPI(mPost_id));
             }
             if (mOverlay.getVisibility() == View.VISIBLE) {
                 mOverlay.setVisibility(View.GONE);

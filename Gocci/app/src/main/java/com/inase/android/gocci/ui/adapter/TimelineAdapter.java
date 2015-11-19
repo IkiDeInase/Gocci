@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import com.cocosw.bottomsheet.BottomSheet;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.datasource.api.API3PostUtil;
 import com.inase.android.gocci.domain.model.TwoCellData;
 import com.inase.android.gocci.utils.Util;
 import com.squareup.picasso.Picasso;
@@ -102,7 +103,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
                                 mCallback.onCommentClick(user.getPost_id());
                                 break;
                             case R.id.violation:
-                                Util.setViolateDialog(mContext, user.getPost_id());
+                                Util.setBlockDialog(mContext, user.getPost_id());
                                 break;
                             case R.id.close:
                                 dialog.dismiss();
@@ -131,7 +132,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
                         user.setGochi_flag(1);
                         //user.setGochi_num(user.getGochi_num() + 1);
                         holder.mGochiImage.setImageResource(R.drawable.ic_icon_beef_orange);
-                        Util.postGochiAsync(mContext, user);
+                        API3PostUtil.postGochiAsync(mContext, user);
                     }
                     //holder.mLikesNumber.setText(String.valueOf((currentgoodnum + 1)));
                     //holder.mG.setClickable(false);

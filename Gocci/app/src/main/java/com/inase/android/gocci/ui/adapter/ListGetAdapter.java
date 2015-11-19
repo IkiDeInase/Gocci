@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.datasource.api.API3PostUtil;
 import com.inase.android.gocci.domain.model.ListGetData;
 import com.inase.android.gocci.ui.view.RoundedTransformation;
 import com.inase.android.gocci.utils.Util;
@@ -119,11 +120,11 @@ public class ListGetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                             if (holder.mDeleteFollowButton.isShown()) {
                                 holder.mDeleteFollowButton.setVisibility(View.INVISIBLE);
                                 holder.mAddFollowButton.setVisibility(View.VISIBLE);
-                                Util.unfollowAsync(mContext, data);
+                                API3PostUtil.postUnfollowAsync(mContext, data);
                             } else {
                                 holder.mDeleteFollowButton.setVisibility(View.VISIBLE);
                                 holder.mAddFollowButton.setVisibility(View.INVISIBLE);
-                                Util.followAsync(mContext, data);
+                                API3PostUtil.postFollowAsync(mContext, data);
                             }
                         }
                     });
@@ -142,11 +143,11 @@ public class ListGetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                             if (holder.mAddFollowButton.isShown()) {
                                 holder.mAddFollowButton.setVisibility(View.INVISIBLE);
                                 holder.mDeleteFollowButton.setVisibility(View.VISIBLE);
-                                Util.followAsync(mContext, data);
+                                API3PostUtil.postFollowAsync(mContext, data);
                             } else {
                                 holder.mAddFollowButton.setVisibility(View.VISIBLE);
                                 holder.mDeleteFollowButton.setVisibility(View.INVISIBLE);
-                                Util.unfollowAsync(mContext, data);
+                                API3PostUtil.postUnfollowAsync(mContext, data);
                             }
                         }
                     });
@@ -259,11 +260,11 @@ public class ListGetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 if (holder.mAddFollowButton.isShown()) {
                     holder.mAddFollowButton.setVisibility(View.INVISIBLE);
                     holder.mDeleteFollowButton.setVisibility(View.VISIBLE);
-                    Util.followAsync(mContext, data);
+                    API3PostUtil.postFollowAsync(mContext, data);
                 } else {
                     holder.mAddFollowButton.setVisibility(View.VISIBLE);
                     holder.mDeleteFollowButton.setVisibility(View.INVISIBLE);
-                    Util.unfollowAsync(mContext, data);
+                    API3PostUtil.postUnfollowAsync(mContext, data);
                 }
             }
         });

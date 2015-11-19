@@ -24,6 +24,7 @@ import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3;
+import com.inase.android.gocci.datasource.api.API3PostUtil;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.RetryApiEvent;
 import com.inase.android.gocci.ui.activity.TimelineActivity;
@@ -165,7 +166,7 @@ public class LoginSocialAuthenticationFragment extends Fragment {
                                 public void onInput(MaterialDialog materialDialog, CharSequence charSequence) {
                                     String password = charSequence.toString();
                                     if (!password.isEmpty()) {
-                                        com.inase.android.gocci.utils.Util.passwordAsync(getActivity(), password);
+                                        API3PostUtil.postPasswordAsync(getActivity(), password);
                                     } else {
                                         Toast.makeText(getActivity(), getString(R.string.cheat_input_password), Toast.LENGTH_SHORT).show();
                                     }

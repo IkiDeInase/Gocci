@@ -13,6 +13,7 @@ import com.cocosw.bottomsheet.BottomSheet;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.datasource.api.API3PostUtil;
 import com.inase.android.gocci.domain.model.PostData;
 import com.inase.android.gocci.ui.view.SquareImageView;
 import com.inase.android.gocci.utils.Util;
@@ -93,7 +94,7 @@ public class StreamMyProfAdapter extends RecyclerView.Adapter<Const.StreamViewHo
                     public void onClick(DialogInterface dialog, int which) {
                         switch (which) {
                             case R.id.delete:
-                                // Util.setViolateDialog(mContext, user.getPost_id());
+                                // Util.setBlockDialog(mContext, user.getPost_id());
                                 break;
                             case R.id.close:
                                 dialog.dismiss();
@@ -144,7 +145,7 @@ public class StreamMyProfAdapter extends RecyclerView.Adapter<Const.StreamViewHo
                         holder.mLikesNumber.setText(String.valueOf((user.getGochi_num())));
                         holder.mLikesImage.setImageResource(R.drawable.ic_icon_beef_orange);
 
-                        Util.postGochiAsync(mContext, user);
+                        API3PostUtil.postGochiAsync(mContext, user);
                     }
                 }
             });

@@ -40,6 +40,7 @@ import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3;
+import com.inase.android.gocci.datasource.api.API3PostUtil;
 import com.inase.android.gocci.datasource.repository.UserAndRestDataRepository;
 import com.inase.android.gocci.datasource.repository.UserAndRestDataRepositoryImpl;
 import com.inase.android.gocci.domain.executor.UIThread;
@@ -183,7 +184,7 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
                     MyprofActivity.startMyProfActivity(activity);
                     break;
                 case Const.INTENT_TO_ADVICE:
-                    Util.setAdviceDialog(activity);
+                    Util.setFeedbackDialog(activity);
                     break;
                 case Const.INTENT_TO_SETTING:
                     SettingActivity.startSettingActivity(activity);
@@ -473,11 +474,11 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
             public void onClick(View v) {
                 switch (mFollowText.getText().toString()) {
                     case "フォローする":
-                        Util.followAsync(UserProfActivity.this, headerUserData);
+                        API3PostUtil.postFollowAsync(UserProfActivity.this, headerUserData);
                         mFollowText.setText(getString(R.string.do_unfollow));
                         break;
                     case "フォロー解除する":
-                        Util.unfollowAsync(UserProfActivity.this, headerUserData);
+                        API3PostUtil.postUnfollowAsync(UserProfActivity.this, headerUserData);
                         mFollowText.setText(getString(R.string.do_follow));
                         break;
                     case "これはあなたです":
@@ -537,11 +538,11 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
             public void onClick(View v) {
                 switch (mFollowText.getText().toString()) {
                     case "フォローする":
-                        Util.followAsync(UserProfActivity.this, headerUserData);
+                        API3PostUtil.postFollowAsync(UserProfActivity.this, headerUserData);
                         mFollowText.setText(getString(R.string.do_unfollow));
                         break;
                     case "フォロー解除する":
-                        Util.unfollowAsync(UserProfActivity.this, headerUserData);
+                        API3PostUtil.postUnfollowAsync(UserProfActivity.this, headerUserData);
                         mFollowText.setText(getString(R.string.do_follow));
                         break;
                     case "これはあなたです":

@@ -36,6 +36,7 @@ import com.inase.android.gocci.BuildConfig;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3;
+import com.inase.android.gocci.datasource.api.API3PostUtil;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.NotificationNumberEvent;
 import com.inase.android.gocci.event.RetryApiEvent;
@@ -126,7 +127,7 @@ public class SettingActivity extends AppCompatActivity {
                     public void onInput(MaterialDialog materialDialog, CharSequence charSequence) {
                         String password = charSequence.toString();
                         if (!password.isEmpty()) {
-                            Util.passwordAsync(SettingActivity.this, password);
+                            API3PostUtil.postPasswordAsync(SettingActivity.this, password);
                         } else {
                             Toast.makeText(SettingActivity.this, getString(R.string.cheat_input_password), Toast.LENGTH_SHORT).show();
                         }
@@ -262,7 +263,7 @@ public class SettingActivity extends AppCompatActivity {
 
     @OnClick(R.id.support_advice)
     public void advice() {
-        Util.setAdviceDialog(SettingActivity.this);
+        Util.setFeedbackDialog(SettingActivity.this);
     }
 
     @OnClick(R.id.support_rule)
@@ -319,7 +320,7 @@ public class SettingActivity extends AppCompatActivity {
                     MyprofActivity.startMyProfActivity(activity);
                     break;
                 case Const.INTENT_TO_ADVICE:
-                    Util.setAdviceDialog(activity);
+                    Util.setFeedbackDialog(activity);
                     break;
             }
         }
@@ -596,7 +597,7 @@ public class SettingActivity extends AppCompatActivity {
 
                         @Override
                         public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                            API3.Impl.getRepository().post_sns_unlink_response(response, new API3.PostSnsResponseCallback() {
+                            API3.Impl.getRepository().post_sns_unlink_response(response, new API3.PostResponseCallback() {
                                 @Override
                                 public void onSuccess() {
                                     switch (providerName) {

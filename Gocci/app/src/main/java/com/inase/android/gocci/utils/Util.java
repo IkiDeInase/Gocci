@@ -34,6 +34,7 @@ import com.facebook.share.widget.ShareDialog;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.datasource.api.API3PostUtil;
 import com.inase.android.gocci.domain.model.HeaderData;
 import com.inase.android.gocci.domain.model.ListGetData;
 import com.inase.android.gocci.domain.model.PostData;
@@ -291,7 +292,7 @@ public class Util {
         });
     }
 
-    public static void setAdviceDialog(final Context context) {
+    public static void setFeedbackDialog(final Context context) {
         new MaterialDialog.Builder(context)
                 .title(context.getString(R.string.advice_title))
                 .titleColorRes(R.color.namegrey)
@@ -303,7 +304,7 @@ public class Util {
                         String message = charSequence.toString();
 
                         if (!message.isEmpty()) {
-                            postAdviceAsync(context, message);
+                            API3PostUtil.postFeedbackAsync(context, message);
                         } else {
                             Toast.makeText(context, context.getString(R.string.advice_alert), Toast.LENGTH_SHORT).show();
                         }
@@ -315,33 +316,7 @@ public class Util {
                 .show();
     }
 
-    private static void postAdviceAsync(final Context context, final String message) {
-        Application_Gocci.getJsonAsyncHttpClient(Const.getPostFeedbackAPI(message), new JsonHttpResponseHandler() {
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                try {
-                    String message = response.getString(KEY_MESSAGE);
-                    int code = response.getInt(KEY_CODE);
-
-                    if (code == 200) {
-                        Toast.makeText(context, context.getString(R.string.advice_complete), Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    public static void setViolateDialog(final Context context, final String post_id) {
+    public static void setBlockDialog(final Context context, final String post_id) {
         new MaterialDialog.Builder(context)
                 .title(context.getString(R.string.violate_title))
                 .titleColorRes(R.color.namegrey)
@@ -353,193 +328,9 @@ public class Util {
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
-                        violateSignupAsync(context, post_id);
+                        API3PostUtil.postBlockAsync(context, post_id);
                     }
                 }).show();
-    }
-
-    private static void violateSignupAsync(final Context context, final String post_id) {
-        Application_Gocci.getJsonAsyncHttpClient(Const.getPostViolateAPI(post_id), new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                try {
-                    String message = response.getString(KEY_MESSAGE);
-                    int code = response.getInt(KEY_CODE);
-
-                    if (code == 200) {
-                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                //mMaterialDialog.dismiss();
-                Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    public static void postGochiAsync(final Context context, final PostData headerData) {
-        Application_Gocci.getJsonAsyncHttpClient(Const.getPostGochiAPI(headerData.getPost_id()), new JsonHttpResponseHandler() {
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                //配列のpushed_atを１にする
-                try {
-                    String message = response.getString(KEY_MESSAGE);
-                    int code = response.getInt(KEY_CODE);
-
-                    if (code != 200) {
-                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-                        headerData.setGochi_flag(0);
-                        headerData.setGochi_num(headerData.getGochi_num() - 1);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                headerData.setGochi_flag(0);
-                headerData.setGochi_num(headerData.getGochi_num() - 1);
-                Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    public static void postGochiAsync(final Context context, final TwoCellData headerData) {
-        Application_Gocci.getJsonAsyncHttpClient(Const.getPostGochiAPI(headerData.getPost_id()), new JsonHttpResponseHandler() {
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                //配列のpushed_atを１にする
-                try {
-                    String message = response.getString(KEY_MESSAGE);
-                    int code = response.getInt(KEY_CODE);
-
-                    if (code != 200) {
-                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-                        headerData.setGochi_flag(0);
-                        //headerData.setGochi_num(headerData.getGochi_num() - 1);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                headerData.setGochi_flag(0);
-                //headerData.setGochi_num(headerData.getGochi_num() - 1);
-                Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    public static void followAsync(final Context context, final HeaderData headerData) {
-        Application_Gocci.getJsonAsyncHttpClient(Const.getPostFollowAPI(headerData.getUser_id()), new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                try {
-                    String message = response.getString(KEY_MESSAGE);
-                    int code = response.getInt(KEY_CODE);
-
-                    if (code == 200) {
-                        headerData.setFollow_flag(1);
-                    } else {
-                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    public static void followAsync(final Context context, final ListGetData headerData) {
-        Application_Gocci.getJsonAsyncHttpClient(Const.getPostFollowAPI(headerData.getUser_id()), new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                try {
-                    String message = response.getString(KEY_MESSAGE);
-                    int code = response.getInt(KEY_CODE);
-
-                    if (code == 200) {
-                        headerData.setFollow_flag(1);
-                    } else {
-                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    public static void unfollowAsync(final Context context, final HeaderData headerData) {
-        Application_Gocci.getJsonAsyncHttpClient(Const.getPostUnFollowAPI(headerData.getUser_id()), new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                try {
-                    String message = response.getString(KEY_MESSAGE);
-                    int code = response.getInt(KEY_CODE);
-
-                    if (code == 200) {
-                        headerData.setFollow_flag(0);
-                    } else {
-                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    public static void unfollowAsync(final Context context, final ListGetData headerData) {
-        Application_Gocci.getJsonAsyncHttpClient(Const.getPostUnFollowAPI(headerData.getUser_id()), new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                try {
-                    String message = response.getString(KEY_MESSAGE);
-                    int code = response.getInt(KEY_CODE);
-
-                    if (code == 200) {
-                        headerData.setFollow_flag(0);
-                    } else {
-                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     public static void wantAsync(final Context context, final HeaderData headerData) {
@@ -627,26 +418,6 @@ public class Util {
                     if (code != 200) {
                         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    public static void passwordAsync(final Context context, final String password) {
-        Application_Gocci.getJsonAsyncHttpClient(Const.getPostPasswordAPI(password), new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                try {
-                    String message = response.getString(KEY_MESSAGE);
-                    int code = response.getInt(KEY_CODE);
-                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
