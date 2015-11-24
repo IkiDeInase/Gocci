@@ -22,8 +22,8 @@ import com.facebook.FacebookSdk;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 import com.inase.android.gocci.consts.Const;
-import com.inase.android.gocci.datasource.memory.CacheManager;
 import com.inase.android.gocci.datasource.api.API3;
+import com.inase.android.gocci.datasource.memory.CacheManager;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.RetryApiEvent;
 import com.inase.android.gocci.utils.SavedData;
@@ -96,6 +96,10 @@ public class Application_Gocci extends Application {
 
     public static void getAsyncHttpClient(String url, AsyncHttpResponseHandler responseHandler) {
         sAsyncHttpClient.get(url, responseHandler);
+    }
+
+    public static AsyncHttpClient getClient() {
+        return sAsyncHttpClient;
     }
 
     public static CognitoCachingCredentialsProvider getLoginProvider() {
@@ -478,7 +482,7 @@ public class Application_Gocci extends Application {
         super.onCreate();
         Log.v(TAG, "Gocci起動");
         sInstance = this;
-        CacheManager.getInstance(getApplicationContext()).clearCache();
+
         //Example: single kit
         TwitterAuthConfig authConfig =
                 new TwitterAuthConfig("kurJalaArRFtwhnZCoMxB2kKU",

@@ -43,7 +43,6 @@ public class CameraActivity extends AppCompatActivity {
             Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
         }
 
-
         setContentView(R.layout.activity_camera);
 
         if (savedInstanceState == null) {

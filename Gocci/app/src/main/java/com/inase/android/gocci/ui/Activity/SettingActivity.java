@@ -450,6 +450,7 @@ public class SettingActivity extends AppCompatActivity {
 
             mTwitterSetting.setText(session.getUserName());
             isTwitterSetting = true;
+
         } else {
             isTwitterSetting = false;
         }

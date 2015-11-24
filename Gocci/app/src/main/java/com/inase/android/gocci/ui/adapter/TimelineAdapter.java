@@ -83,7 +83,8 @@ public class TimelineAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
         if (user.getDistance() != 0) {
             holder.mDistance.setText(getDist(user.getDistance()));
         } else {
-            holder.mDistance.setVisibility(View.INVISIBLE);
+            holder.mDistance.setText(user.getPost_date());
+            holder.mDistance.setTextSize(12);
         }
 
         holder.mOtherAction.setOnClickListener(new View.OnClickListener() {

@@ -28,6 +28,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
+import com.facebook.AccessToken;
 import com.facebook.share.model.ShareVideo;
 import com.facebook.share.model.ShareVideoContent;
 import com.facebook.share.widget.ShareDialog;
@@ -37,17 +38,19 @@ import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3PostUtil;
 import com.inase.android.gocci.domain.model.HeaderData;
 import com.inase.android.gocci.domain.model.ListGetData;
-import com.inase.android.gocci.domain.model.PostData;
-import com.inase.android.gocci.domain.model.TwoCellData;
 import com.inase.android.gocci.ui.activity.UserProfActivity;
+import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.TextHttpResponseHandler;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -426,6 +429,29 @@ public class Util {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                 Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public static void facebooSharing(final Context context, final File movie, String description) {
+        RequestParams param = new RequestParams();
+        try {
+            param.put("access_token", AccessToken.getCurrentAccessToken().getToken());
+            param.put("source", movie, "application/octet-stream", "gocci.mp4");
+            param.put("description", description);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        new AsyncHttpClient().post(context, "https://graph-video.facebook.com/me/videos", param, new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+
             }
         });
     }
