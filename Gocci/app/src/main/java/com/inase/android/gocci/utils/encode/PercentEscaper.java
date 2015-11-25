@@ -12,7 +12,7 @@ public class PercentEscaper extends UnicodeEscaper {
             = "-_.!~*'()@:$,;/?:";
 
     // In some uri escapers spaces are escaped to '+'
-    private static final char[] URI_ESCAPED_SPACE = { '+' };
+    private static final char[] URI_ESCAPED_SPACE = {'+'};
 
     private static final char[] UPPER_HEX_DIGITS =
             "0123456789ABCDEF".toCharArray();

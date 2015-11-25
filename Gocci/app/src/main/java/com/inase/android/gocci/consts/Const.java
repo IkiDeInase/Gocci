@@ -139,17 +139,16 @@ public class Const {
     // 動画取得リトライ上限回数
     public static final int GET_MOVIE_MAX_RETRY_COUNT = 5;
 
-    public static final int INTENT_TO_TIMELINE = 0;
-    public static final int INTENT_TO_MYPAGE = 1;
-    public static final int INTENT_TO_USERPAGE = 2;
-    public static final int INTENT_TO_RESTPAGE = 3;
-    public static final int INTENT_TO_COMMENT = 4;
-    public static final int INTENT_TO_CAMERA = 5;
-    public static final int INTENT_TO_LICENSE = 6;
-    public static final int INTENT_TO_POLICY = 7;
-    public static final int INTENT_TO_ADVICE = 8;
-    public static final int INTENT_TO_LIST = 9;
-    public static final int INTENT_TO_SETTING = 10;
+    public enum ActivityCategory {
+        SPLASH, TUTORIAL, TIMELINE,
+        MY_PAGE, USER_PAGE, REST_PAGE,
+        COMMENT_PAGE, LIST, SETTING,
+        CAMERA, CAMERA_PREVIEW,
+        CAMERA_PREVIEW_ALREADY,
+        MAP_SEARCH, MAP_PROFILE,
+        WEBVIEW_LICENSE, WEBVIEW_POLICY,
+        LOGIN_SESSION
+    }
 
     public enum ListCategory {
         FOLLOW,

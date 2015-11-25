@@ -23,7 +23,6 @@ import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3;
-import com.inase.android.gocci.datasource.memory.CacheManager;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.RetryApiEvent;
 import com.inase.android.gocci.utils.SavedData;

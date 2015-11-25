@@ -4,7 +4,8 @@ package com.inase.android.gocci.utils.encode;
  * Created by kinagafuji on 15/11/22.
  */
 public final class Preconditions {
-    private Preconditions() {}
+    private Preconditions() {
+    }
 
     public static void checkArgument(boolean expression) {
         if (!expression) {

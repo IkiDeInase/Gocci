@@ -168,25 +168,7 @@ public class TimelineActivity extends AppCompatActivity {
 
     private FragmentPagerItemAdapter adapter;
 
-    private static Handler sHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            TimelineActivity activity
-                    = (TimelineActivity) msg.obj;
-            switch (msg.what) {
-                case Const.INTENT_TO_MYPAGE:
-                    MyprofActivity.startMyProfActivity(activity);
-                    break;
-                case Const.INTENT_TO_ADVICE:
-                    Util.setFeedbackDialog(activity);
-                    break;
-                case Const.INTENT_TO_SETTING:
-                    SettingActivity.startSettingActivity(activity);
-                    break;
-            }
-        }
-    };
+    private static Handler sHandler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -235,17 +217,26 @@ public class TimelineActivity extends AppCompatActivity {
                     public boolean onItemClick(View view, int i, IDrawerItem drawerItem) {
                         if (drawerItem != null) {
                             if (drawerItem.getIdentifier() == 2) {
-                                Message msg =
-                                        sHandler.obtainMessage(Const.INTENT_TO_MYPAGE, 0, 0, TimelineActivity.this);
-                                sHandler.sendMessageDelayed(msg, 500);
+                                sHandler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        MyprofActivity.startMyProfActivity(TimelineActivity.this);
+                                    }
+                                }, 500);
                             } else if (drawerItem.getIdentifier() == 3) {
-                                Message msg =
-                                        sHandler.obtainMessage(Const.INTENT_TO_ADVICE, 0, 0, TimelineActivity.this);
-                                sHandler.sendMessageDelayed(msg, 500);
+                                sHandler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Util.setFeedbackDialog(TimelineActivity.this);
+                                    }
+                                }, 500);
                             } else if (drawerItem.getIdentifier() == 4) {
-                                Message msg =
-                                        sHandler.obtainMessage(Const.INTENT_TO_SETTING, 0, 0, TimelineActivity.this);
-                                sHandler.sendMessageDelayed(msg, 500);
+                                sHandler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        SettingActivity.startSettingActivity(TimelineActivity.this);
+                                    }
+                                }, 500);
                             } else if (drawerItem.getIdentifier() == 5) {
                                 switch (SavedData.getSettingMute(TimelineActivity.this)) {
                                     case 0:

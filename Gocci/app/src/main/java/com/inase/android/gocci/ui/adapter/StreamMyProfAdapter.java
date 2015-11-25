@@ -16,7 +16,6 @@ import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3PostUtil;
 import com.inase.android.gocci.domain.model.PostData;
 import com.inase.android.gocci.ui.view.SquareImageView;
-import com.inase.android.gocci.utils.Util;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;

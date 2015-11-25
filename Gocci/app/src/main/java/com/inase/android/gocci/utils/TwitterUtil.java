@@ -269,9 +269,9 @@ public class TwitterUtil {
         int GOMEGA = 1024 * 1024 * 5;
         ArrayList<byte[]> array = new ArrayList<>();
         int begin = 0;
-        for (int i = 0; i < (size.length/GOMEGA); i++) {
-            begin = (i+1)*GOMEGA;
-            array.add(Arrays.copyOfRange(size, i*GOMEGA, begin));
+        for (int i = 0; i < (size.length / GOMEGA); i++) {
+            begin = (i + 1) * GOMEGA;
+            array.add(Arrays.copyOfRange(size, i * GOMEGA, begin));
         }
         array.add(Arrays.copyOfRange(size, begin, size.length));
         return array;
@@ -301,9 +301,9 @@ public class TwitterUtil {
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 try {
                     String media_id = response.getString("media_id_string");
-                    ArrayList<byte[]> array =  TwitterUtil.readByteToArray(total_byte);
+                    ArrayList<byte[]> array = TwitterUtil.readByteToArray(total_byte);
 
-                     performAppend(context, media_id, token, tokenSecret, 0, array, message, cb);
+                    performAppend(context, media_id, token, tokenSecret, 0, array, message, cb);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -335,7 +335,7 @@ public class TwitterUtil {
                 if (list.size() == segment_index + 1) {
                     performFinalize(context, media_id, token, tokenSecret, message, cb);
                 } else {
-                    performAppend(context, media_id, token, tokenSecret, segment_index+1, list, message, cb);
+                    performAppend(context, media_id, token, tokenSecret, segment_index + 1, list, message, cb);
                 }
             }
         });

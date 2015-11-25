@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -305,26 +304,7 @@ public class SettingActivity extends AppCompatActivity {
         startingActivity.overridePendingTransition(R.anim.activity_in, R.anim.activity_out);
     }
 
-    private static Handler sHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            SettingActivity activity
-                    = (SettingActivity) msg.obj;
-            switch (msg.what) {
-                case Const.INTENT_TO_TIMELINE:
-                    activity.startActivity(new Intent(activity, TimelineActivity.class));
-                    activity.overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-                    break;
-                case Const.INTENT_TO_MYPAGE:
-                    MyprofActivity.startMyProfActivity(activity);
-                    break;
-                case Const.INTENT_TO_ADVICE:
-                    Util.setFeedbackDialog(activity);
-                    break;
-            }
-        }
-    };
+    private static Handler sHandler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -363,17 +343,27 @@ public class SettingActivity extends AppCompatActivity {
                     public boolean onItemClick(View view, int i, IDrawerItem drawerItem) {
                         if (drawerItem != null) {
                             if (drawerItem.getIdentifier() == 1) {
-                                Message msg =
-                                        sHandler.obtainMessage(Const.INTENT_TO_TIMELINE, 0, 0, SettingActivity.this);
-                                sHandler.sendMessageDelayed(msg, 500);
+                                sHandler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        startActivity(new Intent(SettingActivity.this, TimelineActivity.class));
+                                        overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+                                    }
+                                }, 500);
                             } else if (drawerItem.getIdentifier() == 2) {
-                                Message msg =
-                                        sHandler.obtainMessage(Const.INTENT_TO_MYPAGE, 0, 0, SettingActivity.this);
-                                sHandler.sendMessageDelayed(msg, 500);
+                                sHandler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        MyprofActivity.startMyProfActivity(SettingActivity.this);
+                                    }
+                                }, 500);
                             } else if (drawerItem.getIdentifier() == 3) {
-                                Message msg =
-                                        sHandler.obtainMessage(Const.INTENT_TO_ADVICE, 0, 0, SettingActivity.this);
-                                sHandler.sendMessageDelayed(msg, 500);
+                                sHandler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Util.setFeedbackDialog(SettingActivity.this);
+                                    }
+                                }, 500);
                             }
                         }
                         return false;

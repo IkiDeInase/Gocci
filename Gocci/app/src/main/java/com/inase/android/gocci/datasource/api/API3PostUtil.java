@@ -4,7 +4,6 @@ import android.content.Context;
 import android.widget.Toast;
 
 import com.inase.android.gocci.Application_Gocci;
-import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.domain.model.HeaderData;
 import com.inase.android.gocci.domain.model.ListGetData;
@@ -12,7 +11,6 @@ import com.inase.android.gocci.domain.model.PostData;
 import com.inase.android.gocci.domain.model.TwoCellData;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.SocketTimeoutException;

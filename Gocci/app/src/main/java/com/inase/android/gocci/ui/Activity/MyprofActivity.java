@@ -10,7 +10,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.provider.Settings;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -65,6 +64,7 @@ import com.inase.android.gocci.event.NotificationNumberEvent;
 import com.inase.android.gocci.event.PageChangeVideoStopEvent;
 import com.inase.android.gocci.event.ProfJsonEvent;
 import com.inase.android.gocci.event.RetryApiEvent;
+import com.inase.android.gocci.event.TimelineMuteChangeEvent;
 import com.inase.android.gocci.presenter.ShowMyProfPresenter;
 import com.inase.android.gocci.ui.fragment.GridMyProfFragment;
 import com.inase.android.gocci.ui.fragment.StreamMyProfFragment;
@@ -195,26 +195,7 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
     private String mShareShare;
     private String mShareRestname;
 
-    private static Handler sHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            MyprofActivity activity
-                    = (MyprofActivity) msg.obj;
-            switch (msg.what) {
-                case Const.INTENT_TO_TIMELINE:
-                    activity.startActivity(new Intent(activity, TimelineActivity.class));
-                    activity.overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-                    break;
-                case Const.INTENT_TO_ADVICE:
-                    Util.setFeedbackDialog(activity);
-                    break;
-                case Const.INTENT_TO_SETTING:
-                    SettingActivity.startSettingActivity(activity);
-                    break;
-            }
-        }
-    };
+    private static Handler sHandler = new Handler();
 
     public static void startMyProfActivity(Activity startingActivity) {
         Intent intent = new Intent(startingActivity, MyprofActivity.class);
@@ -449,24 +430,36 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
                     public boolean onItemClick(View view, int i, IDrawerItem drawerItem) {
                         if (drawerItem != null) {
                             if (drawerItem.getIdentifier() == 1) {
-                                Message msg =
-                                        sHandler.obtainMessage(Const.INTENT_TO_TIMELINE, 0, 0, MyprofActivity.this);
-                                sHandler.sendMessageDelayed(msg, 500);
+                                sHandler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        startActivity(new Intent(MyprofActivity.this, TimelineActivity.class));
+                                        overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+                                    }
+                                }, 500);
                             } else if (drawerItem.getIdentifier() == 3) {
-                                Message msg =
-                                        sHandler.obtainMessage(Const.INTENT_TO_ADVICE, 0, 0, MyprofActivity.this);
-                                sHandler.sendMessageDelayed(msg, 500);
+                                sHandler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Util.setFeedbackDialog(MyprofActivity.this);
+                                    }
+                                }, 500);
                             } else if (drawerItem.getIdentifier() == 4) {
-                                Message msg =
-                                        sHandler.obtainMessage(Const.INTENT_TO_SETTING, 0, 0, MyprofActivity.this);
-                                sHandler.sendMessageDelayed(msg, 500);
+                                sHandler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        SettingActivity.startSettingActivity(MyprofActivity.this);
+                                    }
+                                }, 500);
                             } else if (drawerItem.getIdentifier() == 5) {
                                 switch (SavedData.getSettingMute(MyprofActivity.this)) {
                                     case 0:
+                                        BusHolder.get().post(new TimelineMuteChangeEvent(-1));
                                         SavedData.setSettingMute(MyprofActivity.this, -1);
                                         result.updateName(5, new StringHolder(getString(R.string.setting_support_unmute)));
                                         break;
                                     case -1:
+                                        BusHolder.get().post(new TimelineMuteChangeEvent(0));
                                         SavedData.setSettingMute(MyprofActivity.this, 0);
                                         result.updateName(5, new StringHolder(getString(R.string.setting_support_mute)));
                                         break;

@@ -79,8 +79,7 @@ public class HttpParameters implements Map<String, SortedSet<String>>, Serializa
     /**
      * Convenience method to merge a Map<String, List<String>>.
      *
-     * @param m
-     *        the map
+     * @param m the map
      */
     public void putMap(Map<String, List<String>> m) {
         for (String key : m.keySet()) {

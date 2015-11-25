@@ -173,29 +173,7 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
         }
     };
 
-    private static Handler sHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            TenpoActivity activity
-                    = (TenpoActivity) msg.obj;
-            switch (msg.what) {
-                case Const.INTENT_TO_TIMELINE:
-                    activity.startActivity(new Intent(activity, TimelineActivity.class));
-                    activity.overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-                    break;
-                case Const.INTENT_TO_MYPAGE:
-                    MyprofActivity.startMyProfActivity(activity);
-                    break;
-                case Const.INTENT_TO_ADVICE:
-                    Util.setFeedbackDialog(activity);
-                    break;
-                case Const.INTENT_TO_SETTING:
-                    SettingActivity.startSettingActivity(activity);
-                    break;
-            }
-        }
-    };
+    private static Handler sHandler = new Handler();
 
     public static void startTenpoActivity(String rest_id, String restname, Activity startingActivity) {
         Intent intent = new Intent(startingActivity, TenpoActivity.class);
@@ -298,21 +276,34 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
                     public boolean onItemClick(View view, int i, IDrawerItem drawerItem) {
                         if (drawerItem != null) {
                             if (drawerItem.getIdentifier() == 1) {
-                                Message msg =
-                                        sHandler.obtainMessage(Const.INTENT_TO_TIMELINE, 0, 0, TenpoActivity.this);
-                                sHandler.sendMessageDelayed(msg, 500);
+                                sHandler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        startActivity(new Intent(TenpoActivity.this, TimelineActivity.class));
+                                        overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+                                    }
+                                }, 500);
                             } else if (drawerItem.getIdentifier() == 2) {
-                                Message msg =
-                                        sHandler.obtainMessage(Const.INTENT_TO_MYPAGE, 0, 0, TenpoActivity.this);
-                                sHandler.sendMessageDelayed(msg, 500);
+                                sHandler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        MyprofActivity.startMyProfActivity(TenpoActivity.this);
+                                    }
+                                }, 500);
                             } else if (drawerItem.getIdentifier() == 3) {
-                                Message msg =
-                                        sHandler.obtainMessage(Const.INTENT_TO_ADVICE, 0, 0, TenpoActivity.this);
-                                sHandler.sendMessageDelayed(msg, 500);
+                                sHandler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Util.setFeedbackDialog(TenpoActivity.this);
+                                    }
+                                }, 500);
                             } else if (drawerItem.getIdentifier() == 4) {
-                                Message msg =
-                                        sHandler.obtainMessage(Const.INTENT_TO_SETTING, 0, 0, TenpoActivity.this);
-                                sHandler.sendMessageDelayed(msg, 500);
+                                sHandler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        SettingActivity.startSettingActivity(TenpoActivity.this);
+                                    }
+                                }, 500);
                             } else if (drawerItem.getIdentifier() == 5) {
                                 switch (SavedData.getSettingMute(TenpoActivity.this)) {
                                     case 0:
