@@ -1,5 +1,7 @@
 package com.inase.android.gocci.domain.usecase;
 
+import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.datasource.api.API3;
 import com.inase.android.gocci.datasource.repository.CommentActionRepository;
 import com.inase.android.gocci.domain.executor.PostExecutionThread;
 import com.inase.android.gocci.domain.model.HeaderData;
@@ -10,7 +12,7 @@ import java.util.ArrayList;
 /**
  * Created by kinagafuji on 15/10/06.
  */
-public class CommentPostUseCaseImpl extends UseCase2<String, String> implements CommentPostUseCase, CommentActionRepository.CommentActionRepositoryCallback {
+public class CommentPostUseCaseImpl extends UseCase3<Const.APICategory, String, String> implements CommentPostUseCase, CommentActionRepository.CommentActionRepositoryCallback {
     private static CommentPostUseCaseImpl sUseCase;
     private final CommentActionRepository mCommentActionRepository;
     private PostExecutionThread mPostExecutionThread;
@@ -29,57 +31,9 @@ public class CommentPostUseCaseImpl extends UseCase2<String, String> implements 
     }
 
     @Override
-    public void onPostCommented(final PostData postData, final ArrayList<HeaderData> commentData) {
-        mPostExecutionThread.post(new Runnable() {
-            @Override
-            public void run() {
-                if (mCallback != null) {
-                    mCallback.onCommentPosted(postData, commentData);
-                }
-            }
-        });
-    }
-
-    @Override
-    public void onPostCommentEmpty(final PostData postData) {
-        mPostExecutionThread.post(new Runnable() {
-            @Override
-            public void run() {
-                if (mCallback != null) {
-                    mCallback.onCommentPostEmpty(postData);
-                }
-            }
-        });
-    }
-
-    @Override
-    public void onPostCommentFailed() {
-        mPostExecutionThread.post(new Runnable() {
-            @Override
-            public void run() {
-                if (mCallback != null) {
-                    mCallback.onCommentPostFailed();
-                }
-            }
-        });
-    }
-
-    @Override
-    public void onError() {
-        mPostExecutionThread.post(new Runnable() {
-            @Override
-            public void run() {
-                if (mCallback != null) {
-                    mCallback.onError();
-                }
-            }
-        });
-    }
-
-    @Override
-    public void execute(String postUrl, String getUrl, CommentPostUseCaseCallback callback) {
+    public void execute(Const.APICategory api, String postUrl, String getUrl, CommentPostUseCaseCallback callback) {
         mCallback = callback;
-        this.start(postUrl, getUrl);
+        this.start(api, postUrl, getUrl);
     }
 
     @Override
@@ -93,7 +47,55 @@ public class CommentPostUseCaseImpl extends UseCase2<String, String> implements 
     }
 
     @Override
-    protected void call(String param1, String param2) {
-        mCommentActionRepository.postComment(param1, param2, this);
+    public void onPostCommented(final Const.APICategory api, final HeaderData memoData, final ArrayList<HeaderData> commentData) {
+        mPostExecutionThread.post(new Runnable() {
+            @Override
+            public void run() {
+                if (mCallback != null) {
+                    mCallback.onCommentPosted(api, memoData, commentData);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onPostEmpty(final Const.APICategory api, final HeaderData memoData) {
+        mPostExecutionThread.post(new Runnable() {
+            @Override
+            public void run() {
+                if (mCallback != null) {
+                    mCallback.onCommentPostEmpty(api, memoData);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onPostFailureCausedByLocalError(final Const.APICategory api, final String errorMessage) {
+        mPostExecutionThread.post(new Runnable() {
+            @Override
+            public void run() {
+                if (mCallback != null) {
+                    mCallback.onPostFailureCausedByLocalError(api, errorMessage);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onPostFailureCausedByGlobalError(final Const.APICategory api, final API3.Util.GlobalCode globalCode) {
+        mPostExecutionThread.post(new Runnable() {
+            @Override
+            public void run() {
+                if (mCallback != null) {
+                    mCallback.onPostFailureCausedByGlobalError(api, globalCode);
+                }
+            }
+        });
+    }
+
+    @Override
+    protected void call(Const.APICategory param1, String param2, String param3) {
+        mCommentActionRepository.postComment(param1, param2, param3, this);
     }
 }

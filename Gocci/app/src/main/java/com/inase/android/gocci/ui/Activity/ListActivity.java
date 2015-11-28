@@ -15,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,10 +26,14 @@ import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3;
+import com.inase.android.gocci.datasource.repository.FollowRepository;
+import com.inase.android.gocci.datasource.repository.FollowRepositoryImpl;
 import com.inase.android.gocci.datasource.repository.ListRepository;
 import com.inase.android.gocci.datasource.repository.ListRepositoryImpl;
 import com.inase.android.gocci.domain.executor.UIThread;
 import com.inase.android.gocci.domain.model.ListGetData;
+import com.inase.android.gocci.domain.usecase.FollowUseCase;
+import com.inase.android.gocci.domain.usecase.FollowUseCaseImpl;
 import com.inase.android.gocci.domain.usecase.ListGetUseCase;
 import com.inase.android.gocci.domain.usecase.ListGetUseCaseImpl;
 import com.inase.android.gocci.event.BusHolder;
@@ -79,6 +84,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
     private LinearLayoutManager mLayoutManager;
     private ArrayList<ListGetData> mList = new ArrayList<>();
+    private ArrayList<String> mUser_idList = new ArrayList<>();
     private ListGetAdapter mListGetAdapter;
 
     private Drawer result;
@@ -114,7 +120,9 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
         final API3 api3Impl = API3.Impl.getRepository();
         ListRepository listRepositoryImpl = ListRepositoryImpl.getRepository(api3Impl);
         ListGetUseCase listGetUseCaseImpl = ListGetUseCaseImpl.getUseCase(listRepositoryImpl, UIThread.getInstance());
-        mPresenter = new ShowListPresenter(listGetUseCaseImpl);
+        FollowRepository followRepository = FollowRepositoryImpl.getRepository(api3Impl);
+        FollowUseCase followUseCase = FollowUseCaseImpl.getUseCase(followRepository, UIThread.getInstance());
+        mPresenter = new ShowListPresenter(listGetUseCaseImpl, followUseCase);
         mPresenter.setListView(this);
 
         setContentView(R.layout.activity_list_follow_follower_cheer);
@@ -387,6 +395,25 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
     }
 
     @Override
+    public void onFollowClick(Const.APICategory api, String user_id) {
+        if (api == Const.APICategory.POST_FOLLOW) {
+            API3.Util.PostFollowLocalCode postFollowLocalCode = API3.Impl.getRepository().post_follow_parameter_regex(user_id);
+            if (postFollowLocalCode == null) {
+                mPresenter.postFollow(api, API3.Util.getPostFollowAPI(user_id), user_id);
+            } else {
+                Toast.makeText(ListActivity.this, API3.Util.postFollowLocalErrorMessageTable(postFollowLocalCode), Toast.LENGTH_SHORT).show();
+            }
+        } else if (api == Const.APICategory.POST_UNFOLLOW) {
+            API3.Util.PostUnfollowLocalCode postUnfollowLocalCode = API3.Impl.getRepository().post_unFollow_parameter_regex(user_id);
+            if (postUnfollowLocalCode == null) {
+                mPresenter.postFollow(api, API3.Util.getPostUnfollowAPI(user_id), user_id);
+            } else {
+                Toast.makeText(ListActivity.this, API3.Util.postUnfollowLocalErrorMessageTable(postUnfollowLocalCode), Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    @Override
     public void showLoading() {
 
     }
@@ -397,7 +424,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
     }
 
     @Override
-    public void showNoResultCase(Const.APICategory api) {
+    public void showEmpty(Const.APICategory api) {
         switch (api) {
             case GET_FOLLOW_FIRST:
             case GET_FOLLOWER_FIRST:
@@ -416,6 +443,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
             case GET_REST_CHEER_REFRESH:
                 mList.clear();
                 mListGetAdapter.setData();
+                mUser_idList.clear();
                 break;
         }
         mEmptyImage.setVisibility(View.VISIBLE);
@@ -423,13 +451,13 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
     }
 
     @Override
-    public void hideNoResultCase() {
+    public void hideEmpty() {
         mEmptyImage.setVisibility(View.INVISIBLE);
         mEmptyText.setVisibility(View.INVISIBLE);
     }
 
     @Override
-    public void showNoResultCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
+    public void causedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
         Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
         mProgress.setVisibility(View.INVISIBLE);
         switch (api) {
@@ -446,8 +474,8 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
     }
 
     @Override
-    public void showNoResultCausedByLocalError(Const.APICategory api, String errorMessage) {
-        Toast.makeText(ListActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+    public void causedByLocalError(Const.APICategory api, String errorMessage) {
+        Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
         mProgress.setVisibility(View.INVISIBLE);
         switch (api) {
             case GET_FOLLOW_FIRST:
@@ -463,6 +491,33 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
     }
 
     @Override
+    public void followSuccess(Const.APICategory api, String user_id) {
+
+    }
+
+    @Override
+    public void followFailureCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode, String user_id) {
+        Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
+        if (api == Const.APICategory.POST_FOLLOW) {
+            mList.get(mUser_idList.indexOf(user_id)).setFollow_flag(0);
+        } else if (api == Const.APICategory.POST_UNFOLLOW) {
+            mList.get(mUser_idList.indexOf(user_id)).setFollow_flag(1);
+        }
+        mListGetAdapter.notifyItemChanged(mUser_idList.indexOf(user_id));
+    }
+
+    @Override
+    public void followFailureCausedByLocalError(Const.APICategory api, String errorMessage, String user_id) {
+        Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
+        if (api == Const.APICategory.POST_FOLLOW) {
+            mList.get(mUser_idList.indexOf(user_id)).setFollow_flag(0);
+        } else if (api == Const.APICategory.POST_UNFOLLOW) {
+            mList.get(mUser_idList.indexOf(user_id)).setFollow_flag(1);
+        }
+        mListGetAdapter.notifyItemChanged(mUser_idList.indexOf(user_id));
+    }
+
+    @Override
     public void showResult(Const.APICategory api, ArrayList<ListGetData> list) {
         switch (api) {
             case GET_FOLLOW_FIRST:
@@ -475,6 +530,12 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 mListGetAdapter = new ListGetAdapter(this, isMypage, mCategory, mList);
                 mListGetAdapter.setListGetCallback(this);
                 mRecyclerView.setAdapter(mListGetAdapter);
+
+                if (api == Const.APICategory.GET_FOLLOW_FIRST || api == Const.APICategory.GET_FOLLOWER_FIRST) {
+                    for (int i = 0; i < mList.size(); i++) {
+                        mUser_idList.add(i, mList.get(i).getUser_id());
+                    }
+                }
                 break;
             case GET_FOLLOW_REFRESH:
             case GET_FOLLOWER_REFRESH:
@@ -484,6 +545,13 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 mList.clear();
                 mList.addAll(list);
                 mListGetAdapter.setData();
+
+                if (api == Const.APICategory.GET_FOLLOW_REFRESH || api == Const.APICategory.GET_FOLLOWER_REFRESH) {
+                    mUser_idList.clear();
+                    for (int i = 0; i < mList.size(); i++) {
+                        mUser_idList.add(i, mList.get(i).getUser_id());
+                    }
+                }
                 break;
         }
     }

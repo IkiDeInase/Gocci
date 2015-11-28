@@ -52,6 +52,21 @@ import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.datasource.api.API3;
+import com.inase.android.gocci.datasource.api.API3PostUtil;
+import com.inase.android.gocci.datasource.repository.ListRepository;
+import com.inase.android.gocci.datasource.repository.ListRepositoryImpl;
+import com.inase.android.gocci.datasource.repository.NearRepository;
+import com.inase.android.gocci.datasource.repository.NearRepositoryImpl;
+import com.inase.android.gocci.domain.executor.UIThread;
+import com.inase.android.gocci.domain.usecase.ListGetUseCase;
+import com.inase.android.gocci.domain.usecase.ListGetUseCaseImpl;
+import com.inase.android.gocci.domain.usecase.NearDataUseCase;
+import com.inase.android.gocci.domain.usecase.NearDataUseCaseImpl;
+import com.inase.android.gocci.event.BusHolder;
+import com.inase.android.gocci.event.PostCallbackEvent;
+import com.inase.android.gocci.presenter.ShowCameraPresenter;
+import com.inase.android.gocci.presenter.ShowListPresenter;
 import com.inase.android.gocci.ui.activity.CameraActivity;
 import com.inase.android.gocci.ui.activity.CameraPreviewActivity;
 import com.inase.android.gocci.ui.view.CameraGLView;
@@ -61,12 +76,14 @@ import com.inase.android.gocci.utils.camera.TLMediaMovieBuilder;
 import com.inase.android.gocci.utils.camera.TLMediaVideoEncoder;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.pnikosis.materialishprogress.ProgressWheel;
+import com.squareup.otto.Subscribe;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 
 import at.grabner.circleprogress.CircleProgressView;
@@ -77,7 +94,7 @@ import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
 
 public class CameraUp18Fragment extends Fragment implements LocationListener, GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, ResultCallback<LocationSettingsResult> {
+        GoogleApiClient.OnConnectionFailedListener, ResultCallback<LocationSettingsResult>, ShowCameraPresenter.ShowCameraView {
     private static final boolean DEBUG = true;
     private static final String TAG = "GocciCamera";
     @Bind(R.id.camera_view)
@@ -151,6 +168,8 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
     private final ExampleSpringListener mSpringListener = new ExampleSpringListener();
     private Spring mScaleSpring;
 
+    private ShowCameraPresenter mPresenter;
+
     public CameraUp18Fragment() {
 
     }
@@ -161,6 +180,33 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
         mCameraView.onFinish();
         handler.removeCallbacks(progressRunnable);
         ButterKnife.unbind(this);
+    }
+
+    @Override
+    public void showNoResultCase(Const.APICategory api) {
+
+    }
+
+    @Override
+    public void hideNoResultCase() {
+
+    }
+
+    @Override
+    public void showNoResultCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
+        Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
+    }
+
+    @Override
+    public void showNoResultCausedByLocalError(Const.APICategory api, String errorMessage) {
+        Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showResult(Const.APICategory api, String[] restnames, ArrayList<String> restIdArray, ArrayList<String> restnameArray) {
+        CameraActivity.restname = restnames;
+        CameraActivity.rest_nameArray.addAll(restnameArray);
+        CameraActivity.rest_idArray.addAll(restIdArray);
     }
 
     private class ExampleSpringListener extends SimpleSpringListener {
@@ -190,6 +236,12 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
 
             checkLocationSettings();
         }
+
+        final API3 api3Impl = API3.Impl.getRepository();
+        NearRepository nearRepositoryImpl = NearRepositoryImpl.getRepository(api3Impl);
+        NearDataUseCase neardataUseCaseImpl = NearDataUseCaseImpl.getUseCase(nearRepositoryImpl, UIThread.getInstance());
+        mPresenter = new ShowCameraPresenter(neardataUseCaseImpl);
+        mPresenter.setCameraView(this);
     }
 
     @Override
@@ -383,43 +435,15 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
         mMenuFab.setIconToggleAnimatorSet(set);
     }
 
-    private void getLocation(final Context context, Location location) {
+    private void getLocation(Location location) {
         latitude = location.getLatitude();
         longitude = location.getLongitude();
-        String mSearch_mapUrl = Const.getNearAPI(latitude, longitude);
-        getTenpoJson(context, mSearch_mapUrl);
-    }
-
-    private void getTenpoJson(final Context context, String url) {
-        Application_Gocci.getJsonAsyncHttpClient(url, new JsonHttpResponseHandler() {
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray timeline) {
-                // Pull out the first event on the public timeline
-                CameraActivity.rest_nameArray.clear();
-                CameraActivity.rest_idArray.clear();
-                try {
-                    for (int i = 0; i < timeline.length(); i++) {
-                        JSONObject jsonObject = timeline.getJSONObject(i);
-
-                        final String rest_name = jsonObject.getString("restname");
-                        String rest_id = jsonObject.getString("rest_id");
-
-                        CameraActivity.restname[i] = rest_name;
-                        CameraActivity.rest_nameArray.add(rest_name);
-                        CameraActivity.rest_idArray.add(rest_id);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Toast.makeText(context, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-            }
-
-        });
+        API3.Util.GetNearLocalCode localCode = API3.Impl.getRepository().get_near_parameter_regex(longitude, latitude);
+        if (localCode == null) {
+            mPresenter.getNearData(Const.APICategory.GET_NEAR_FIRST, API3.Util.getGetNearAPI(longitude, latitude));
+        } else {
+            Toast.makeText(getActivity(), API3.Util.getNearLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void startPlay() {
@@ -459,6 +483,8 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
 
         mScaleSpring.addListener(mSpringListener);
         checkPlayServices();
+
+        BusHolder.get().register(this);
 
         if (mGoogleApiClient != null) {
             if (mGoogleApiClient.isConnected() && !isLocationUpdating) {
@@ -505,6 +531,8 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
         if (isLocationUpdating) {
             stopLocationUpdates();
         }
+
+        BusHolder.get().unregister(this);
     }
 
     @Override
@@ -513,6 +541,17 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
         if (mGoogleApiClient != null) {
             if (mGoogleApiClient.isConnected()) {
                 mGoogleApiClient.disconnect();
+            }
+        }
+    }
+
+    @Subscribe
+    public void subscribe(PostCallbackEvent event) {
+        if (event.activityCategory == Const.ActivityCategory.CAMERA) {
+            if (event.apiCategory == Const.APICategory.POST_RESTADD) {
+                mIsnewRestname = true;
+                mRest_id = event.id;
+                mRestaurantAction.setLabelText(mRest_name);
             }
         }
     }
@@ -767,31 +806,7 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
                     @Override
                     public void onInput(MaterialDialog materialDialog, CharSequence charSequence) {
                         mRest_name = charSequence.toString();
-                        Application_Gocci.getJsonAsyncHttpClient(Const.getPostRestAddAPI(mRest_name, latitude, longitude), new JsonHttpResponseHandler() {
-
-                            @Override
-                            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                                Toast.makeText(getActivity(), getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-                            }
-
-                            @Override
-                            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                                try {
-                                    String message = response.getString("message");
-
-                                    if (message.equals(getString(R.string.add_restname_complete_message))) {
-                                        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
-                                        mIsnewRestname = true;
-                                        mRest_id = response.getString("rest_id");
-                                        mCommentAction.setLabelText(mRest_name);
-                                    } else {
-                                        Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
-                                    }
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        });
+                        API3PostUtil.postRestAddAsync(getActivity(), Const.ActivityCategory.CAMERA, mRest_name, longitude, latitude);
                     }
                 }).show();
     }
@@ -819,7 +834,7 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
             @Override
             public void onLocationUpdated(Location location) {
                 if (location != null) {
-                    getLocation(getActivity(), location);
+                    getLocation(location);
                 } else {
                     Toast.makeText(getActivity(), getString(R.string.finish_causedby_location), Toast.LENGTH_LONG).show();
                     getActivity().finish();
@@ -920,7 +935,7 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
 
     @Override
     public void onLocationChanged(Location location) {
-        getLocation(getActivity(), location);
+        getLocation(location);
         stopLocationUpdates();
     }
 }

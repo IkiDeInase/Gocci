@@ -46,26 +46,27 @@ import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3;
-import com.inase.android.gocci.datasource.repository.MyPageActionRepository;
-import com.inase.android.gocci.datasource.repository.MyPageActionRepositoryImpl;
+import com.inase.android.gocci.datasource.api.API3PostUtil;
+import com.inase.android.gocci.datasource.repository.GochiRepository;
+import com.inase.android.gocci.datasource.repository.GochiRepositoryImpl;
 import com.inase.android.gocci.datasource.repository.UserAndRestDataRepository;
 import com.inase.android.gocci.datasource.repository.UserAndRestDataRepositoryImpl;
 import com.inase.android.gocci.domain.executor.UIThread;
 import com.inase.android.gocci.domain.model.HeaderData;
 import com.inase.android.gocci.domain.model.PostData;
-import com.inase.android.gocci.domain.usecase.PostDeleteUseCase;
-import com.inase.android.gocci.domain.usecase.PostDeleteUseCaseImpl;
-import com.inase.android.gocci.domain.usecase.ProfChangeUseCase;
-import com.inase.android.gocci.domain.usecase.ProfChangeUseCaseImpl;
+import com.inase.android.gocci.domain.usecase.GochiUseCase;
+import com.inase.android.gocci.domain.usecase.GochiUseCaseImpl;
 import com.inase.android.gocci.domain.usecase.ProfPageUseCaseImpl;
 import com.inase.android.gocci.domain.usecase.UserAndRestUseCase;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.NotificationNumberEvent;
 import com.inase.android.gocci.event.PageChangeVideoStopEvent;
+import com.inase.android.gocci.event.PostCallbackEvent;
 import com.inase.android.gocci.event.ProfJsonEvent;
 import com.inase.android.gocci.event.RetryApiEvent;
 import com.inase.android.gocci.event.TimelineMuteChangeEvent;
 import com.inase.android.gocci.presenter.ShowMyProfPresenter;
+import com.inase.android.gocci.ui.adapter.StreamMyProfAdapter;
 import com.inase.android.gocci.ui.fragment.GridMyProfFragment;
 import com.inase.android.gocci.ui.fragment.StreamMyProfFragment;
 import com.inase.android.gocci.ui.view.DrawerProfHeader;
@@ -218,11 +219,10 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
 
         final API3 api3Impl = API3.Impl.getRepository();
         UserAndRestDataRepository userAndRestDataRepositoryImpl = UserAndRestDataRepositoryImpl.getRepository(api3Impl);
-        MyPageActionRepository myPageActionRepositoryImpl = MyPageActionRepositoryImpl.getRepository();
+        GochiRepository gochiRepositoryImpl = GochiRepositoryImpl.getRepository(api3Impl);
         UserAndRestUseCase userAndRestUseCaseImpl = ProfPageUseCaseImpl.getUseCase(userAndRestDataRepositoryImpl, UIThread.getInstance());
-        ProfChangeUseCase profChangeUseCaseImpl = ProfChangeUseCaseImpl.getUseCase(myPageActionRepositoryImpl, UIThread.getInstance());
-        PostDeleteUseCase postDeleteUseCaseImpl = PostDeleteUseCaseImpl.getUseCase(myPageActionRepositoryImpl, UIThread.getInstance());
-        mPresenter = new ShowMyProfPresenter(userAndRestUseCaseImpl, profChangeUseCaseImpl, postDeleteUseCaseImpl);
+        GochiUseCase gochiUseCaseImpl = GochiUseCaseImpl.getUseCase(gochiRepositoryImpl, UIThread.getInstance());
+        mPresenter = new ShowMyProfPresenter(userAndRestUseCaseImpl, gochiUseCaseImpl);
         mPresenter.setProfView(this);
 
         callbackManager = CallbackManager.Factory.create();
@@ -326,35 +326,20 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
                             public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
                                 mProgressWheel.setVisibility(View.VISIBLE);
 
-                                String updateUrl = null;
-                                String post_date = null;
-                                File update_file = null;
-
                                 if (isName && isPicture) {
                                     //どっちも変更した
-                                    post_date = SavedData.getServerUserId(MyprofActivity.this) + "_" + Util.getDateTimeString();
-                                    update_file = Util.getLocalBitmapFile(mEditPicture, post_date);
-                                    updateUrl = Const.getPostUpdateProfileAPI(Const.FLAG_CHANGE_BOTH,
-                                            mEditUsername.getText().toString(),
-                                            post_date);
+                                    API3PostUtil.postUsernameAsync(MyprofActivity.this, mEditUsername.getText().toString(), Const.ActivityCategory.MY_PAGE);
                                     isName = false;
-                                    isPicture = false;
                                 } else if (isPicture) {
                                     //写真だけ変更
-                                    post_date = SavedData.getServerUserId(MyprofActivity.this) + "_" + Util.getDateTimeString();
-                                    update_file = Util.getLocalBitmapFile(mEditPicture, post_date);
-                                    updateUrl = Const.getPostUpdateProfileAPI(Const.FLAG_CHANGE_PICTURE,
-                                            null, post_date);
+                                    String post_date = SavedData.getServerUserId(MyprofActivity.this) + "_" + Util.getDateTimeString();
+                                    File update_file = Util.getLocalBitmapFile(mEditPicture, post_date);
+                                    API3PostUtil.postProfileImgAsync(MyprofActivity.this, post_date, update_file, Const.ActivityCategory.MY_PAGE);
                                     isPicture = false;
                                 } else if (isName) {
                                     //名前だけ
-                                    updateUrl = Const.getPostUpdateProfileAPI(Const.FLAG_CHANGE_NAME,
-                                            mEditUsername.getText().toString(), null);
+                                    API3PostUtil.postUsernameAsync(MyprofActivity.this, mEditUsername.getText().toString(), Const.ActivityCategory.MY_PAGE);
                                     isName = false;
-                                }
-
-                                if (updateUrl != null) {
-                                    mPresenter.profChange(post_date, update_file, updateUrl);
                                 }
                             }
                         })
@@ -958,7 +943,7 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
         }
     }
 
-    public void setDeleteDialog(final String post_id, final int position) {
+    public void setDeleteDialog(final String post_id) {
         new MaterialDialog.Builder(this)
                 .content(getString(R.string.check_delete_post))
                 .positiveText(getString(R.string.check_delete_yeah))
@@ -968,12 +953,10 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
-                        mPresenter.postDelete(post_id, position);
+                        API3PostUtil.postDeleteAsync(MyprofActivity.this, post_id, Const.ActivityCategory.MY_PAGE);
                     }
                 }).show();
     }
-
-    //setDeleteDialog(post_id, position);
 
     @Override
     public void showLoading() {
@@ -982,11 +965,11 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
 
     @Override
     public void hideLoading() {
-
+        mProgressWheel.setVisibility(View.GONE);
     }
 
     @Override
-    public void showNoResultCase(Const.APICategory api, HeaderData userData) {
+    public void showEmpty(Const.APICategory api, HeaderData userData) {
         mHeaderUserData = userData;
 
         mUsername.setText(mHeaderUserData.getUsername());
@@ -1008,18 +991,18 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
     }
 
     @Override
-    public void hideNoResultCase() {
+    public void hideEmpty() {
         mEmptyImage.setVisibility(View.INVISIBLE);
         mEmptyText.setVisibility(View.INVISIBLE);
     }
 
     @Override
-    public void showNoResultCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
+    public void causedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
         Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
     }
 
     @Override
-    public void showNoResultCausedByLocalError(Const.APICategory api, String errorMessage) {
+    public void causedByLocalError(Const.APICategory api, String errorMessage) {
         Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
     }
 
@@ -1048,53 +1031,30 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
     }
 
     @Override
-    public void profChanged(String userName, String profile_img) {
-        mProgressWheel.setVisibility(View.GONE);
+    public void gochiSuccess(Const.APICategory api, String post_id) {
+        BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, Const.ActivityCategory.MY_PAGE, api, post_id));
+    }
 
-        if (userName.equals(getString(R.string.change_profile_dialog_error_username))) {
-            SavedData.changeProfile(this, SavedData.getServerName(this), profile_img);
-            Toast.makeText(this, getString(R.string.change_profile_dialog_error_username_message), Toast.LENGTH_SHORT).show();
-        } else {
-            SavedData.changeProfile(this, userName, profile_img);
+    @Override
+    public void gochiFailureCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode, String post_id) {
+        PostData data = mUsers.get(mPost_ids.indexOf(post_id));
+        if (api == Const.APICategory.POST_GOCHI) {
+            data.setGochi_flag(0);
+            data.setGochi_num(data.getGochi_num() - 1);
         }
-
-        Intent intent = getIntent();
-        overridePendingTransition(0, 0);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        finish();
-
-        overridePendingTransition(0, 0);
-        startActivity(intent);
+        BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.GLOBALERROR, Const.ActivityCategory.MY_PAGE, api, post_id));
+        Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
     }
 
     @Override
-    public void profChangeFailed(String message) {
-        mProgressWheel.setVisibility(View.GONE);
-
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void postDeleted(int position) {
-        mUsers.remove(position);
-        mPost_ids.remove(position);
-
-        BusHolder.get().post(new ProfJsonEvent(Const.APICategory.GET_USER_REFRESH, mUsers, mPost_ids));
-
-        if (mUsers.isEmpty()) {
-            mEmptyImage.setVisibility(View.VISIBLE);
-            mEmptyText.setVisibility(View.VISIBLE);
-        } else {
-            mEmptyImage.setVisibility(View.GONE);
-            mEmptyText.setVisibility(View.GONE);
+    public void gochiFailureCausedByLocalError(Const.APICategory api, String errorMessage, String post_id) {
+        PostData data = mUsers.get(mPost_ids.indexOf(post_id));
+        if (api == Const.APICategory.POST_GOCHI) {
+            data.setGochi_flag(0);
+            data.setGochi_num(data.getGochi_num() - 1);
         }
-    }
-
-    @Override
-    public void postDeleteFailed() {
-        Toast.makeText(this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
+        BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.LOCALERROR, Const.ActivityCategory.MY_PAGE, api, post_id));
+        Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
     }
 
     public void setGochiLayout() {
@@ -1105,6 +1065,15 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
                 mGochi.addGochi(R.drawable.ic_icon_beef_orange, pointX, y);
             }
         });
+    }
+
+    public void postGochi(String post_id) {
+        API3.Util.PostGochiLocalCode postGochiLocalCode = API3.Impl.getRepository().post_gochi_parameter_regex(post_id);
+        if (postGochiLocalCode == null) {
+            mPresenter.postGochi(Const.APICategory.POST_GOCHI, API3.Util.getPostGochiAPI(post_id), post_id);
+        } else {
+            Toast.makeText(this, API3.Util.postGochiLocalErrorMessageTable(postGochiLocalCode), Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void shareVideoPost(final int requastCode, SquareImageView view, String share, String restname) {
@@ -1159,6 +1128,60 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
                 break;
             default:
                 break;
+        }
+    }
+
+    @Subscribe
+    public void subscribe(PostCallbackEvent event) {
+        if (event.activityCategory == Const.ActivityCategory.MY_PAGE) {
+            switch (event.apiCategory) {
+                case POST_DELETE:
+                    int position = mPost_ids.indexOf(event.id);
+                    mUsers.remove(position);
+                    mPost_ids.remove(position);
+
+                    BusHolder.get().post(new ProfJsonEvent(Const.APICategory.GET_USER_REFRESH, mUsers, mPost_ids));
+
+                    if (mUsers.isEmpty()) {
+                        mEmptyImage.setVisibility(View.VISIBLE);
+                        mEmptyText.setVisibility(View.VISIBLE);
+                    } else {
+                        mEmptyImage.setVisibility(View.GONE);
+                        mEmptyText.setVisibility(View.GONE);
+                    }
+                    break;
+                case POST_USERNAME:
+                    if (isPicture) {
+                        String post_date = SavedData.getServerUserId(MyprofActivity.this) + "_" + Util.getDateTimeString();
+                        File update_file = Util.getLocalBitmapFile(mEditPicture, post_date);
+                        API3PostUtil.postProfileImgAsync(MyprofActivity.this, post_date, update_file, Const.ActivityCategory.MY_PAGE);
+                        isPicture = false;
+                    } else {
+                        mProgressWheel.setVisibility(View.GONE);
+
+                        Intent intent = getIntent();
+                        overridePendingTransition(0, 0);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        finish();
+                        overridePendingTransition(0, 0);
+                        startActivity(intent);
+                    }
+                    break;
+                case POST_PROFILEIMG:
+                    mProgressWheel.setVisibility(View.GONE);
+
+                    Intent intent = getIntent();
+                    overridePendingTransition(0, 0);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    finish();
+                    overridePendingTransition(0, 0);
+                    startActivity(intent);
+                    break;
+            }
         }
     }
 }

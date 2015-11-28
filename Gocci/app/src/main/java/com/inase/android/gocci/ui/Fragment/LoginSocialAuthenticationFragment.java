@@ -23,12 +23,14 @@ import com.facebook.login.widget.LoginButton;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
-import com.inase.android.gocci.datasource.api.API3;
 import com.inase.android.gocci.datasource.api.API3PostUtil;
 import com.inase.android.gocci.event.BusHolder;
+import com.inase.android.gocci.event.PostCallbackEvent;
 import com.inase.android.gocci.event.RetryApiEvent;
 import com.inase.android.gocci.ui.activity.TimelineActivity;
 import com.inase.android.gocci.ui.view.GocciTwitterLoginButton;
+import com.inase.android.gocci.utils.SavedData;
+import com.inase.android.gocci.utils.Util;
 import com.squareup.otto.Subscribe;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;
@@ -36,6 +38,8 @@ import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.TwitterAuthToken;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
+
+import java.io.File;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -116,11 +120,12 @@ public class LoginSocialAuthenticationFragment extends Fragment {
         mFacebookLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                Toast.makeText(getActivity(), getString(R.string.preparing_authorize), Toast.LENGTH_SHORT).show();
+                API3PostUtil.postSnsLinkAsync(getActivity(), Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), Const.ActivityCategory.TUTORIAL, Const.APICategory.POST_FACEBOOK);
                 Profile profile = Profile.getCurrentProfile();
                 String profile_img = "https://graph.facebook.com/" + profile.getId() + "/picture";
-
-                snsAsync(Const.APICategory.POST_FACEBOOK, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), profile_img);
+                String post_date = SavedData.getServerUserId(getActivity()) + "_" + Util.getDateTimeString();
+                File update_file = Util.getFile(getActivity(), profile_img, post_date);
+                API3PostUtil.postProfileImgAsync(getActivity(), post_date, update_file, Const.ActivityCategory.SETTING);
             }
 
             @Override
@@ -137,13 +142,13 @@ public class LoginSocialAuthenticationFragment extends Fragment {
         mTwitterLoginButton.setCallback(new Callback<TwitterSession>() {
             @Override
             public void success(Result<TwitterSession> result) {
-                Toast.makeText(getActivity(), getString(R.string.preparing_authorize), Toast.LENGTH_SHORT).show();
                 TwitterAuthToken authToken = result.data.getAuthToken();
-
+                API3PostUtil.postSnsLinkAsync(getActivity(), Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, Const.ActivityCategory.TUTORIAL, Const.APICategory.POST_TWITTER);
                 String username = result.data.getUserName();
                 String profile_img = "http://www.paper-glasses.com/api/twipi/" + username;
-
-                snsAsync(Const.APICategory.POST_TWITTER, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, profile_img);
+                String post_date = SavedData.getServerUserId(getActivity()) + "_" + Util.getDateTimeString();
+                File update_file = Util.getFile(getActivity(), profile_img, post_date);
+                API3PostUtil.postProfileImgAsync(getActivity(), post_date, update_file, Const.ActivityCategory.SETTING);
             }
 
             @Override
@@ -228,32 +233,15 @@ public class LoginSocialAuthenticationFragment extends Fragment {
         ButterKnife.unbind(this);
     }
 
-    private void snsAsync(final Const.APICategory api, final String providerName, String token, String profile_img) {
-        API3.Util.PostSnsLocalCode localCode = API3.Impl.getRepository().post_sns_parameter_regex(providerName, token, profile_img);
-        if (localCode == null) {
-            Application_Gocci.addLogins(API3.Util.getPostSnsAPI(providerName, token, profile_img), new Application_Gocci.AddLoginAsync.AddLoginAsyncCallback() {
-                @Override
-                public void preExecute() {
-
-                }
-
-                @Override
-                public void onPostExecute() {
+    @Subscribe
+    public void subscribe(PostCallbackEvent event) {
+        if (event.activityCategory == Const.ActivityCategory.SETTING) {
+            switch (event.apiCategory) {
+                case POST_FACEBOOK:
+                case POST_TWITTER:
                     goTimeline();
-                }
-
-                @Override
-                public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                    Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
-                }
-
-                @Override
-                public void onLocalError(String errorMessage) {
-                    Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
-                }
-            });
-        } else {
-            Toast.makeText(getActivity(), API3.Util.postSnsLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                    break;
+            }
         }
     }
 
@@ -263,9 +251,7 @@ public class LoginSocialAuthenticationFragment extends Fragment {
             case POST_FACEBOOK:
                 Profile profile = Profile.getCurrentProfile();
                 if (profile != null) {
-                    String profile_img = "https://graph.facebook.com/" + profile.getId() + "/picture";
-
-                    snsAsync(Const.APICategory.POST_FACEBOOK, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), profile_img);
+                    API3PostUtil.postSnsLinkAsync(getActivity(), Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), Const.ActivityCategory.TUTORIAL, Const.APICategory.POST_FACEBOOK);
                 }
                 break;
             case POST_TWITTER:
@@ -273,10 +259,7 @@ public class LoginSocialAuthenticationFragment extends Fragment {
                         Twitter.getSessionManager().getActiveSession();
                 if (session != null) {
                     TwitterAuthToken authToken = session.getAuthToken();
-                    String username = session.getUserName();
-                    String profile_img = "http://www.paper-glasses.com/api/twipi/" + username;
-
-                    snsAsync(Const.APICategory.POST_TWITTER, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, profile_img);
+                    API3PostUtil.postSnsLinkAsync(getActivity(), Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, Const.ActivityCategory.TUTORIAL, Const.APICategory.POST_TWITTER);
                 }
                 break;
             default:

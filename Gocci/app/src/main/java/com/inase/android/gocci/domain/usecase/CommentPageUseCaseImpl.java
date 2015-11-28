@@ -75,24 +75,24 @@ public class CommentPageUseCaseImpl extends UseCase2<Const.APICategory, String> 
     }
 
     @Override
-    public void onCausedByLocalError(final Const.APICategory api, final String errorMessage) {
+    public void onGetCausedByLocalError(final Const.APICategory api, final String errorMessage) {
         mPostExecutionThread.post(new Runnable() {
             @Override
             public void run() {
                 if (mCallback != null) {
-                    mCallback.onCausedByLocalError(api, errorMessage);
+                    mCallback.onGetCausedByLocalError(api, errorMessage);
                 }
             }
         });
     }
 
     @Override
-    public void onCausedByGlobalError(final Const.APICategory api, final API3.Util.GlobalCode globalCode) {
+    public void onGetByGlobalError(final Const.APICategory api, final API3.Util.GlobalCode globalCode) {
         mPostExecutionThread.post(new Runnable() {
             @Override
             public void run() {
                 if (mCallback != null) {
-                    mCallback.onCausedByGlobalError(api, globalCode);
+                    mCallback.onGetCausedByGlobalError(api, globalCode);
                 }
             }
         });

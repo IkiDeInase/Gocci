@@ -1,6 +1,5 @@
 package com.inase.android.gocci.datasource.repository;
 
-import com.google.android.gms.maps.model.LatLng;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3;
@@ -9,65 +8,63 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import org.json.JSONObject;
 
 import java.net.SocketTimeoutException;
-import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.Header;
 
 /**
- * Created by kinagafuji on 15/11/05.
+ * Created by kinagafuji on 15/11/26.
  */
-public class HeatmapRepositoryImpl implements HeatmapRepository {
-    private static HeatmapRepositoryImpl sHeatmapRepository;
+public class GochiRepositoryImpl implements GochiRepository {
+    private static GochiRepositoryImpl sGochiRepository;
     private final API3 mAPI3;
 
-    public HeatmapRepositoryImpl(API3 api3) {
+    public GochiRepositoryImpl(API3 api3) {
         mAPI3 = api3;
     }
 
-    public static HeatmapRepositoryImpl getRepository(API3 api3) {
-        if (sHeatmapRepository == null) {
-            sHeatmapRepository = new HeatmapRepositoryImpl(api3);
+    public static GochiRepositoryImpl getRepository(API3 api3) {
+        if (sGochiRepository == null) {
+            sGochiRepository = new GochiRepositoryImpl(api3);
         }
-        return sHeatmapRepository;
+        return sGochiRepository;
     }
 
     @Override
-    public void getHeatmap(final Const.APICategory api, final String url, final HeatmapRepositoryCallback cb) {
+    public void postGochi(final Const.APICategory api, String url, final String post_id, final GochiRepositoryCallback cb) {
         API3.Util.GlobalCode globalCode = mAPI3.check_global_error();
         if (globalCode == API3.Util.GlobalCode.SUCCESS) {
             try {
                 Application_Gocci.getJsonSync(url, new JsonHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        mAPI3.get_heatmap_response(response, new API3.GetHeatmapResponseCallback() {
-
+                        mAPI3.post_gochi_response(response, new API3.PostResponseCallback() {
                             @Override
-                            public void onSuccess(ArrayList<LatLng> list) {
-                                cb.onSuccess(api, list);
+                            public void onSuccess() {
+                                cb.onSuccess(api, post_id);
                             }
 
                             @Override
                             public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                cb.onFailureCausedByGlobalError(api, globalCode);
+                                cb.onFailureCausedByGlobalError(api, globalCode, post_id);
                             }
 
                             @Override
                             public void onLocalError(String errorMessage) {
-                                cb.onFailureCausedByLocalError(api, errorMessage);
+                                cb.onFailureCausedByLocalError(api, errorMessage, post_id);
                             }
                         });
                     }
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                        cb.onFailureCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED);
+                        cb.onFailureCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED, post_id);
                     }
                 });
             } catch (SocketTimeoutException e) {
-                cb.onFailureCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT);
+                cb.onFailureCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT, post_id);
             }
         } else {
-            cb.onFailureCausedByGlobalError(api, globalCode);
+            cb.onFailureCausedByGlobalError(api, globalCode, post_id);
         }
     }
 }

@@ -469,7 +469,6 @@ public class TimelineActivity extends AppCompatActivity {
         }
     }
 
-
     @Subscribe
     public void subscribe(NotificationNumberEvent event) {
         Snackbar.make(mCoordinatorLayout, event.mMessage, Snackbar.LENGTH_SHORT).show();

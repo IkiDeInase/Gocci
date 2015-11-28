@@ -32,10 +32,14 @@ import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3;
+import com.inase.android.gocci.datasource.repository.GochiRepository;
+import com.inase.android.gocci.datasource.repository.GochiRepositoryImpl;
 import com.inase.android.gocci.datasource.repository.PostDataRepository;
 import com.inase.android.gocci.datasource.repository.PostDataRepositoryImpl;
 import com.inase.android.gocci.domain.executor.UIThread;
 import com.inase.android.gocci.domain.model.TwoCellData;
+import com.inase.android.gocci.domain.usecase.GochiUseCase;
+import com.inase.android.gocci.domain.usecase.GochiUseCaseImpl;
 import com.inase.android.gocci.domain.usecase.TimelineFollowUseCase;
 import com.inase.android.gocci.domain.usecase.TimelineFollowUseCaseImpl;
 import com.inase.android.gocci.event.BusHolder;
@@ -83,7 +87,6 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
 
     private AppBarLayout appBarLayout;
     private FloatingActionButton fab;
-    private ProgressWheel mProgress;
 
     private StaggeredGridLayoutManager mLayoutManager;
     private ArrayList<TwoCellData> mTimelineusers = new ArrayList<>();
@@ -195,7 +198,9 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
         API3 api3Impl = API3.Impl.getRepository();
         PostDataRepository postDataRepositoryImpl = PostDataRepositoryImpl.getRepository(api3Impl);
         TimelineFollowUseCase followtTimelineUseCaseImpl = TimelineFollowUseCaseImpl.getUseCase(postDataRepositoryImpl, UIThread.getInstance());
-        mPresenter = new ShowFollowTimelinePresenter(followtTimelineUseCaseImpl);
+        GochiRepository gochiRepository = GochiRepositoryImpl.getRepository(api3Impl);
+        GochiUseCase gochiUseCase = GochiUseCaseImpl.getUseCase(gochiRepository, UIThread.getInstance());
+        mPresenter = new ShowFollowTimelinePresenter(followtTimelineUseCaseImpl, gochiUseCase);
         mPresenter.setFollowTimelineView(this);
     }
 
@@ -217,7 +222,6 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
         mTimelineRecyclerView.setScrollViewCallbacks(this);
         mTimelineRecyclerView.addOnScrollListener(scrollListener);
 
-        mProgress = (ProgressWheel) getActivity().findViewById(R.id.progress_wheel);
         fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
         appBarLayout = (AppBarLayout) getActivity().findViewById(R.id.app_bar);
 
@@ -503,14 +507,12 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
     @Override
     public void hideLoading() {
         mSwipeContainer.setRefreshing(false);
-        mProgress.setVisibility(View.INVISIBLE);
     }
 
     @Override
-    public void showNoResultCase(Const.APICategory api) {
+    public void showEmpty(Const.APICategory api) {
         switch (api) {
             case GET_TIMELINE_FIRST:
-                mProgress.setVisibility(View.INVISIBLE);
                 mTimelineAdapter = new TimelineAdapter(getActivity(), mTimelineusers);
                 mTimelineAdapter.setTimelineCallback(this);
                 mTimelineRecyclerView.setAdapter(mTimelineAdapter);
@@ -535,7 +537,7 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
     }
 
     @Override
-    public void hideNoResultCase() {
+    public void hideEmpty() {
         mEmptyImage.setVisibility(View.INVISIBLE);
         mEmptyText.setVisibility(View.INVISIBLE);
     }
@@ -544,7 +546,6 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
     public void showResult(Const.APICategory api, ArrayList<TwoCellData> mPostData, ArrayList<String> post_ids) {
         switch (api) {
             case GET_TIMELINE_FIRST:
-                mProgress.setVisibility(View.INVISIBLE);
                 mTimelineusers.addAll(mPostData);
                 mPost_ids.addAll(post_ids);
                 mTimelineAdapter = new TimelineAdapter(getActivity(), mTimelineusers);
@@ -588,9 +589,8 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
     }
 
     @Override
-    public void showNoResultCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
+    public void causedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
         Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
-        mProgress.setVisibility(View.INVISIBLE);
         mSwipeContainer.setRefreshing(false);
         if (api == Const.APICategory.GET_TIMELINE_FIRST) {
             mTimelineAdapter = new TimelineAdapter(getActivity(), mTimelineusers);
@@ -600,15 +600,33 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
     }
 
     @Override
-    public void showNoResultCausedByLocalError(Const.APICategory api, String errorMessage) {
+    public void causedByLocalError(Const.APICategory api, String errorMessage) {
         Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
-        mProgress.setVisibility(View.INVISIBLE);
         mSwipeContainer.setRefreshing(false);
         if (api == Const.APICategory.GET_TIMELINE_FIRST) {
             mTimelineAdapter = new TimelineAdapter(getActivity(), mTimelineusers);
             mTimelineAdapter.setTimelineCallback(this);
             mTimelineRecyclerView.setAdapter(mTimelineAdapter);
         }
+    }
+
+    @Override
+    public void gochiSuccess(Const.APICategory api, String post_id) {
+
+    }
+
+    @Override
+    public void gochiFailureCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode, String post_id) {
+        Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
+        mTimelineusers.get(mPost_ids.indexOf(post_id)).setGochi_flag(0);
+        mTimelineAdapter.notifyItemChanged(mPost_ids.indexOf(post_id));
+    }
+
+    @Override
+    public void gochiFailureCausedByLocalError(Const.APICategory api, String errorMessage, String post_id) {
+        Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
+        mTimelineusers.get(mPost_ids.indexOf(post_id)).setGochi_flag(0);
+        mTimelineAdapter.notifyItemChanged(mPost_ids.indexOf(post_id));
     }
 
     @Override
@@ -627,11 +645,21 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
     }
 
     @Override
-    public void onGochiClick() {
+    public void onGochiTap() {
         if (activity != null) {
             activity.setGochiLayout();
         } else {
             activity = (TimelineActivity) getActivity();
+        }
+    }
+
+    @Override
+    public void onGochiClick(String post_id) {
+        API3.Util.PostGochiLocalCode postGochiLocalCode = API3.Impl.getRepository().post_gochi_parameter_regex(post_id);
+        if (postGochiLocalCode == null) {
+            mPresenter.postGochi(Const.APICategory.POST_GOCHI, API3.Util.getPostGochiAPI(post_id), post_id);
+        } else {
+            Toast.makeText(getActivity(), API3.Util.postGochiLocalErrorMessageTable(postGochiLocalCode), Toast.LENGTH_SHORT).show();
         }
     }
 

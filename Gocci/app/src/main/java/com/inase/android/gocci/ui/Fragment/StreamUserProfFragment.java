@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.domain.model.PostData;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.PageChangeVideoStopEvent;
+import com.inase.android.gocci.event.PostCallbackEvent;
 import com.inase.android.gocci.event.ProfJsonEvent;
 import com.inase.android.gocci.event.TimelineMuteChangeEvent;
 import com.inase.android.gocci.ui.activity.CommentActivity;
@@ -201,6 +203,15 @@ public class StreamUserProfFragment extends Fragment implements AppBarLayout.OnO
         super.onDestroy();
         audioCapabilitiesReceiver.unregister();
         releasePlayer();
+    }
+
+    @Subscribe
+    public void subscribe(PostCallbackEvent event) {
+        if (event.activityCategory == Const.ActivityCategory.USER_PAGE) {
+            if (event.apiCategory == Const.APICategory.POST_GOCHI) {
+                mStreamUserProfAdapter.setData();
+            }
+        }
     }
 
     @Subscribe
@@ -433,11 +444,21 @@ public class StreamUserProfFragment extends Fragment implements AppBarLayout.OnO
     }
 
     @Override
-    public void onGochiClick() {
+    public void onGochiTap() {
         if (activity != null) {
             activity.setGochiLayout();
         } else {
             activity = (UserProfActivity) getActivity();
+        }
+    }
+
+    @Override
+    public void onGochiClick(String post_id) {
+        if (activity != null) {
+            activity.postGochi(post_id);
+        } else {
+            activity = (UserProfActivity) getActivity();
+            activity.postGochi(post_id);
         }
     }
 

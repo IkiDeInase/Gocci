@@ -3,6 +3,7 @@ package com.inase.android.gocci.ui.adapter;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -137,15 +138,14 @@ public class StreamUserProfAdapter extends RecyclerView.Adapter<Const.StreamView
             holder.mLikesRipple.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mCallback.onGochiClick();
+                    mCallback.onGochiTap();
 
                     if (user.getGochi_flag() == 0) {
+                        mCallback.onGochiClick(user.getPost_id());
                         user.setGochi_flag(1);
                         user.setGochi_num(user.getGochi_num() + 1);
                         holder.mLikesNumber.setText(String.valueOf((user.getGochi_num())));
                         holder.mLikesImage.setImageResource(R.drawable.ic_icon_beef_orange);
-
-                        API3PostUtil.postGochiAsync(mContext, user);
                     }
                 }
             });
@@ -154,7 +154,7 @@ public class StreamUserProfAdapter extends RecyclerView.Adapter<Const.StreamView
             holder.mLikesRipple.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mCallback.onGochiClick();
+                    mCallback.onGochiTap();
                 }
             });
         }
@@ -212,7 +212,9 @@ public class StreamUserProfAdapter extends RecyclerView.Adapter<Const.StreamView
 
         void onStreamVideoFrameClick(PostData data);
 
-        void onGochiClick();
+        void onGochiTap();
+
+        void onGochiClick(String post_id);
 
         void onFacebookShare(String share);
 

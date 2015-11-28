@@ -18,8 +18,8 @@ public interface CommentDataRepository {
 
         void onCommentDataEmpty(Const.APICategory api, HeaderData memoData);
 
-        void onCausedByLocalError(Const.APICategory api, String errorMessage);
+        void onGetCausedByLocalError(Const.APICategory api, String errorMessage);
 
-        void onCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode);
+        void onGetByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode);
     }
 }

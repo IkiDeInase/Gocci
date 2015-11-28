@@ -28,6 +28,7 @@ import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.domain.model.PostData;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.PageChangeVideoStopEvent;
+import com.inase.android.gocci.event.PostCallbackEvent;
 import com.inase.android.gocci.event.ProfJsonEvent;
 import com.inase.android.gocci.event.TimelineMuteChangeEvent;
 import com.inase.android.gocci.ui.activity.CommentActivity;
@@ -234,6 +235,15 @@ public class StreamMyProfFragment extends Fragment implements AppBarLayout.OnOff
         super.onDestroy();
         audioCapabilitiesReceiver.unregister();
         releasePlayer();
+    }
+
+    @Subscribe
+    public void subscribe(PostCallbackEvent event) {
+        if (event.activityCategory == Const.ActivityCategory.MY_PAGE) {
+            if (event.apiCategory == Const.APICategory.POST_GOCHI) {
+                mStreamMyProfAdapter.setData();
+            }
+        }
     }
 
     @Subscribe
@@ -466,11 +476,21 @@ public class StreamMyProfFragment extends Fragment implements AppBarLayout.OnOff
     }
 
     @Override
-    public void onGochiClick() {
+    public void onGochiTap() {
         if (activity != null) {
             activity.setGochiLayout();
         } else {
             activity = (MyprofActivity) getActivity();
+        }
+    }
+
+    @Override
+    public void onGochiClick(String post_id) {
+        if (activity != null) {
+            activity.postGochi(post_id);
+        } else {
+            activity = (MyprofActivity) getActivity();
+            activity.postGochi(post_id);
         }
     }
 

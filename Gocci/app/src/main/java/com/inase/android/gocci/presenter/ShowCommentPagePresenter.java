@@ -32,59 +32,34 @@ public class ShowCommentPagePresenter extends Presenter implements CommentPageUs
         mCommentPageUseCase.execute(api, url, this);
     }
 
-    public void postComment(String postUrl, String getUrl) {
+    public void postComment(Const.APICategory api, String postUrl, String getUrl) {
         mShowCommentView.showLoading();
-        mCommentPostUseCase.execute(postUrl, getUrl, this);
+        mCommentPostUseCase.execute(api, postUrl, getUrl, this);
     }
 
     @Override
     public void onDataLoaded(Const.APICategory api, HeaderData memoData, ArrayList<HeaderData> commentData) {
         mShowCommentView.hideLoading();
-        mShowCommentView.hideNoResultCase();
+        mShowCommentView.hideEmpty();
         mShowCommentView.showResult(api, memoData, commentData);
     }
 
     @Override
     public void onDataEmpty(Const.APICategory api, HeaderData memoData) {
         mShowCommentView.hideLoading();
-        mShowCommentView.showNoResultCase(api, memoData);
+        mShowCommentView.showEmpty(api, memoData);
     }
 
     @Override
-    public void onCausedByLocalError(Const.APICategory api, String errorMessage) {
+    public void onGetCausedByLocalError(Const.APICategory api, String errorMessage) {
         mShowCommentView.hideLoading();
-        mShowCommentView.showNoResultCausedByLocalError(api, errorMessage);
+        mShowCommentView.causedByLocalError(api, errorMessage);
     }
 
     @Override
-    public void onCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
+    public void onGetCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
         mShowCommentView.hideLoading();
-        mShowCommentView.showNoResultCausedByGlobalError(api, globalCode);
-    }
-
-    @Override
-    public void onCommentPosted(PostData postData, ArrayList<HeaderData> commentData) {
-        mShowCommentView.hideLoading();
-        mShowCommentView.hideNoResultCase();
-        mShowCommentView.postCommented(null, commentData);
-    }
-
-    @Override
-    public void onCommentPostEmpty(PostData postData) {
-        mShowCommentView.hideLoading();
-        mShowCommentView.postCommentEmpty(null);
-    }
-
-    @Override
-    public void onCommentPostFailed() {
-        mShowCommentView.hideLoading();
-        mShowCommentView.hideNoResultCase();
-        mShowCommentView.postCommentFailed();
-    }
-
-    @Override
-    public void onError() {
-
+        mShowCommentView.causedByGlobalError(api, globalCode);
     }
 
     @Override
@@ -109,25 +84,52 @@ public class ShowCommentPagePresenter extends Presenter implements CommentPageUs
 
     }
 
+    @Override
+    public void onCommentPosted(Const.APICategory api, HeaderData memoData, ArrayList<HeaderData> commentData) {
+        mShowCommentView.hideLoading();
+        mShowCommentView.hideEmpty();
+        mShowCommentView.postCommented(api, memoData, commentData);
+    }
+
+    @Override
+    public void onCommentPostEmpty(Const.APICategory api, HeaderData memoData) {
+        mShowCommentView.hideLoading();
+        mShowCommentView.postCommentEmpty(api, memoData);
+    }
+
+    @Override
+    public void onPostFailureCausedByLocalError(Const.APICategory api, String errorMessage) {
+        mShowCommentView.hideLoading();
+        mShowCommentView.postFailureCausedByLocalError(api, errorMessage);
+    }
+
+    @Override
+    public void onPostFailureCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
+        mShowCommentView.hideLoading();
+        mShowCommentView.postFailureCausedByGlobalError(api, globalCode);
+    }
+
     public interface ShowCommentView {
         void showLoading();
 
         void hideLoading();
 
-        void showNoResultCase(Const.APICategory api, HeaderData postData);
+        void showEmpty(Const.APICategory api, HeaderData postData);
 
-        void hideNoResultCase();
+        void hideEmpty();
 
-        void showNoResultCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode);
+        void causedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode);
 
-        void showNoResultCausedByLocalError(Const.APICategory api, String errorMessage);
+        void causedByLocalError(Const.APICategory api, String errorMessage);
 
         void showResult(Const.APICategory api, HeaderData postData, ArrayList<HeaderData> commentData);
 
-        void postCommented(HeaderData postData, ArrayList<HeaderData> commentData);
+        void postCommented(Const.APICategory api, HeaderData postData, ArrayList<HeaderData> commentData);
 
-        void postCommentEmpty(HeaderData postData);
+        void postCommentEmpty(Const.APICategory api, HeaderData postData);
 
-        void postCommentFailed();
+        void postFailureCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode);
+
+        void postFailureCausedByLocalError(Const.APICategory api, String errorMessage);
     }
 }

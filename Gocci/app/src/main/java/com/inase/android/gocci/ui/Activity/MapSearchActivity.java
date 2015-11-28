@@ -26,8 +26,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
+import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.datasource.api.API3;
 import com.inase.android.gocci.datasource.repository.HeatmapRepository;
 import com.inase.android.gocci.datasource.repository.HeatmapRepositoryImpl;
 import com.inase.android.gocci.domain.executor.UIThread;
@@ -96,7 +98,8 @@ public class MapSearchActivity extends AppCompatActivity implements ShowHeatmapP
             fm.getMapAsync(readyCallback);
         }
 
-        HeatmapRepository heatmapRepositoryImpl = HeatmapRepositoryImpl.getRepository();
+        final API3 api3Impl = API3.Impl.getRepository();
+        HeatmapRepository heatmapRepositoryImpl = HeatmapRepositoryImpl.getRepository(api3Impl);
         HeatmapUseCase heatmapUseCaseImpl = HeatmapUseCaseImpl.getUseCase(heatmapRepositoryImpl, UIThread.getInstance());
         mPresenter = new ShowHeatmapPresenter(heatmapUseCaseImpl);
         mPresenter.setHeatmapView(this);
@@ -109,7 +112,12 @@ public class MapSearchActivity extends AppCompatActivity implements ShowHeatmapP
     OnMapReadyCallback readyCallback = new OnMapReadyCallback() {
         @Override
         public void onMapReady(GoogleMap googleMap) {
-            mPresenter.getHeatmapData(Const.getHeatmapAPI());
+            API3.Util.GetHeatmapLocalCode localCode = API3.Impl.getRepository().get_heatmap_parameter_regex();
+            if (localCode == null) {
+                mPresenter.getHeatmapData(Const.APICategory.GET_HEATMAP_FIRST, API3.Util.getGetHeatmapAPI());
+            } else {
+                Toast.makeText(MapSearchActivity.this, API3.Util.getHeatmapLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+            }
 
             mMap = googleMap;
 
@@ -208,19 +216,24 @@ public class MapSearchActivity extends AppCompatActivity implements ShowHeatmapP
     }
 
     @Override
-    public void showError() {
-        Toast.makeText(this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
+    public void showNoResultCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
+        Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
     }
 
     @Override
-    public void showResult(ArrayList<LatLng> heatData) {
+    public void showNoResultCausedByLocalError(Const.APICategory api, String errorMessage) {
+        Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showResult(Const.APICategory api, ArrayList<LatLng> data) {
         if (mProvider == null) {
             mProvider = new HeatmapTileProvider.Builder().data(
-                    heatData).build();
+                    data).build();
             mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider));
             // Render links
         } else {
-            mProvider.setData(heatData);
+            mProvider.setData(data);
             mOverlay.clearTileCache();
         }
     }

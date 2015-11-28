@@ -12,7 +12,6 @@ import android.media.ThumbnailUtils;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.telephony.TelephonyManager;
@@ -35,15 +34,15 @@ import com.facebook.share.widget.ShareDialog;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.datasource.api.API3;
 import com.inase.android.gocci.datasource.api.API3PostUtil;
-import com.inase.android.gocci.domain.model.HeaderData;
-import com.inase.android.gocci.domain.model.ListGetData;
 import com.inase.android.gocci.ui.activity.UserProfActivity;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
+import com.squareup.picasso.Picasso;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
 import org.json.JSONException;
@@ -235,10 +234,14 @@ public class Util {
         return file;
     }
 
-    /*
-    public static File getFile(String url, String post_date) {
+    public static File getFile(Context context, String url, String post_date) {
         // Extract Bitmap from ImageView drawable
-        Bitmap bmp = ImageLoader.getInstance().loadImageSync(url);
+        Bitmap bmp = null;
+        try {
+            bmp = Picasso.with(context).load(url).get();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         // Store image to default external storage directory
         File file = null;
         try {
@@ -253,7 +256,6 @@ public class Util {
         }
         return file;
     }
-    */
 
     public static final String getDateTimeString() {
         final GregorianCalendar now = new GregorianCalendar();
@@ -279,20 +281,6 @@ public class Util {
             e.printStackTrace();
         }
         return bmpUri;
-    }
-
-    public static void postRefreshRegId(Context context, String regId) {
-        Application_Gocci.getAsyncHttpClient(Const.getPostRefreshRegId(regId, SavedData.getServerUserId(context), Build.VERSION.RELEASE), new AsyncHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-
-            }
-        });
     }
 
     public static void setFeedbackDialog(final Context context) {
@@ -334,103 +322,6 @@ public class Util {
                         API3PostUtil.postBlockAsync(context, post_id);
                     }
                 }).show();
-    }
-
-    public static void wantAsync(final Context context, final HeaderData headerData) {
-        Application_Gocci.getJsonAsyncHttpClient(Const.getPostWantAPI(headerData.getRest_id()), new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                try {
-                    String message = response.getString(KEY_MESSAGE);
-                    int code = response.getInt(KEY_CODE);
-
-                    if (code == 200) {
-                        headerData.setWant_flag(1);
-                    } else {
-                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    public static void wantAsync(final Context context, final ListGetData headerData) {
-        Application_Gocci.getJsonAsyncHttpClient(Const.getPostWantAPI(headerData.getRest_id()), new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                try {
-                    String message = response.getString(KEY_MESSAGE);
-                    int code = response.getInt(KEY_CODE);
-
-                    if (code != 200) {
-                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-
-    public static void unwantAsync(final Context context, final HeaderData headerData) {
-        Application_Gocci.getJsonAsyncHttpClient(Const.getPostUnWantAPI(headerData.getRest_id()), new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                try {
-                    String message = response.getString(KEY_MESSAGE);
-                    int code = response.getInt(KEY_CODE);
-
-                    if (code == 200) {
-                        headerData.setWant_flag(0);
-                    } else {
-                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    public static void unwantAsync(final Context context, final ListGetData headerData) {
-        Application_Gocci.getJsonAsyncHttpClient(Const.getPostUnWantAPI(headerData.getRest_id()), new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                try {
-                    String message = response.getString(KEY_MESSAGE);
-                    int code = response.getInt(KEY_CODE);
-
-                    if (code != 200) {
-                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     public static void facebooSharing(final Context context, final File movie, String description) {

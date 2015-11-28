@@ -3,6 +3,7 @@ package com.inase.android.gocci.presenter;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3;
 import com.inase.android.gocci.domain.model.TwoCellData;
+import com.inase.android.gocci.domain.usecase.GochiUseCase;
 import com.inase.android.gocci.domain.usecase.TimelineFollowUseCase;
 
 import java.util.ArrayList;
@@ -10,12 +11,14 @@ import java.util.ArrayList;
 /**
  * Created by kinagafuji on 15/09/29.
  */
-public class ShowFollowTimelinePresenter extends Presenter implements TimelineFollowUseCase.FollowTimelineUseCaseCallback {
+public class ShowFollowTimelinePresenter extends Presenter implements TimelineFollowUseCase.FollowTimelineUseCaseCallback, GochiUseCase.GochiUseCaseCallback {
     private TimelineFollowUseCase mTimelineFollowUseCase;
+    private GochiUseCase mGochiUseCase;
     private ShowFollowTimelineView mShowFollowTimelineView;
 
-    public ShowFollowTimelinePresenter(TimelineFollowUseCase timelineFollowUseCase) {
+    public ShowFollowTimelinePresenter(TimelineFollowUseCase timelineFollowUseCase, GochiUseCase gochiUseCase) {
         mTimelineFollowUseCase = timelineFollowUseCase;
+        mGochiUseCase = gochiUseCase;
     }
 
     public void setFollowTimelineView(ShowFollowTimelineView view) {
@@ -27,29 +30,33 @@ public class ShowFollowTimelinePresenter extends Presenter implements TimelineFo
         mTimelineFollowUseCase.execute(api, url, this);
     }
 
+    public void postGochi(Const.APICategory api, String url, String post_id) {
+        mGochiUseCase.execute(api, url, post_id, this);
+    }
+
     @Override
     public void onFollowTimelineLoaded(Const.APICategory api, ArrayList<TwoCellData> mPostData, ArrayList<String> post_ids) {
         mShowFollowTimelineView.hideLoading();
-        mShowFollowTimelineView.hideNoResultCase();
+        mShowFollowTimelineView.hideEmpty();
         mShowFollowTimelineView.showResult(api, mPostData, post_ids);
     }
 
     @Override
     public void onFollowTimelineEmpty(Const.APICategory api) {
         mShowFollowTimelineView.hideLoading();
-        mShowFollowTimelineView.showNoResultCase(api);
+        mShowFollowTimelineView.showEmpty(api);
     }
 
     @Override
     public void onCausedByLocalError(Const.APICategory api, String errorMessage) {
         mShowFollowTimelineView.hideLoading();
-        mShowFollowTimelineView.showNoResultCausedByLocalError(api, errorMessage);
+        mShowFollowTimelineView.causedByLocalError(api, errorMessage);
     }
 
     @Override
     public void onCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
         mShowFollowTimelineView.hideLoading();
-        mShowFollowTimelineView.showNoResultCausedByGlobalError(api, globalCode);
+        mShowFollowTimelineView.causedByGlobalError(api, globalCode);
     }
 
     @Override
@@ -60,11 +67,13 @@ public class ShowFollowTimelinePresenter extends Presenter implements TimelineFo
     @Override
     public void resume() {
         mTimelineFollowUseCase.setCallback(this);
+        mGochiUseCase.setCallback(this);
     }
 
     @Override
     public void pause() {
         mTimelineFollowUseCase.removeCallback();
+        mGochiUseCase.removeCallback();
     }
 
     @Override
@@ -72,19 +81,40 @@ public class ShowFollowTimelinePresenter extends Presenter implements TimelineFo
 
     }
 
+    @Override
+    public void onGochiPosted(Const.APICategory api, String post_id) {
+        mShowFollowTimelineView.gochiSuccess(api, post_id);
+    }
+
+    @Override
+    public void onGochiCausedByLocalError(Const.APICategory api, String errorMessage, String post_id) {
+        mShowFollowTimelineView.gochiFailureCausedByLocalError(api, errorMessage, post_id);
+    }
+
+    @Override
+    public void onGochiCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode, String post_id) {
+        mShowFollowTimelineView.gochiFailureCausedByGlobalError(api, globalCode, post_id);
+    }
+
     public interface ShowFollowTimelineView {
         void showLoading();
 
         void hideLoading();
 
-        void showNoResultCase(Const.APICategory api);
+        void showEmpty(Const.APICategory api);
 
-        void hideNoResultCase();
+        void hideEmpty();
 
         void showResult(Const.APICategory api, ArrayList<TwoCellData> mPostData, ArrayList<String> post_ids);
 
-        void showNoResultCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode);
+        void causedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode);
 
-        void showNoResultCausedByLocalError(Const.APICategory api, String errorMessage);
+        void causedByLocalError(Const.APICategory api, String errorMessage);
+
+        void gochiSuccess(Const.APICategory api, String post_id);
+
+        void gochiFailureCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode, String post_id);
+
+        void gochiFailureCausedByLocalError(Const.APICategory api, String errorMessage, String post_id);
     }
 }

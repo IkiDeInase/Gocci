@@ -24,9 +24,11 @@ import com.google.android.exoplayer.audio.AudioCapabilitiesReceiver;
 import com.google.android.exoplayer.drm.UnsupportedDrmException;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.datasource.api.API3;
 import com.inase.android.gocci.domain.model.PostData;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.PageChangeVideoStopEvent;
+import com.inase.android.gocci.event.PostCallbackEvent;
 import com.inase.android.gocci.event.ProfJsonEvent;
 import com.inase.android.gocci.event.TimelineMuteChangeEvent;
 import com.inase.android.gocci.ui.activity.CommentActivity;
@@ -216,6 +218,15 @@ public class GridMyProfFragment extends Fragment implements AppBarLayout.OnOffse
     }
 
     @Subscribe
+    public void subscribe(PostCallbackEvent event) {
+        if (event.activityCategory == Const.ActivityCategory.MY_PAGE) {
+            if (event.apiCategory == Const.APICategory.POST_GOCHI) {
+                mGridProfAdapter.setData();
+            }
+        }
+    }
+
+    @Subscribe
     public void subscribe(TimelineMuteChangeEvent event) {
         if (player != null) {
             player.setSelectedTrack(VideoPlayer.TYPE_AUDIO, event.mute);
@@ -393,17 +404,27 @@ public class GridMyProfFragment extends Fragment implements AppBarLayout.OnOffse
     }
 
     @Override
-    public void onGridDeleteClick(String post_id, int position) {
+    public void onGridDeleteClick(String post_id) {
         MyprofActivity activity = (MyprofActivity) getActivity();
-        activity.setDeleteDialog(post_id, position);
+        activity.setDeleteDialog(post_id);
     }
 
     @Override
-    public void onGochiClick() {
+    public void onGochiTap() {
         if (activity != null) {
             activity.setGochiLayout();
         } else {
             activity = (MyprofActivity) getActivity();
+        }
+    }
+
+    @Override
+    public void onGochiClick(String post_id) {
+        if (activity != null) {
+            activity.postGochi(post_id);
+        } else {
+            activity = (MyprofActivity) getActivity();
+            activity.postGochi(post_id);
         }
     }
 

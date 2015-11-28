@@ -1,6 +1,8 @@
 package com.inase.android.gocci.presenter;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.datasource.api.API3;
 import com.inase.android.gocci.domain.usecase.HeatmapUseCase;
 
 import java.util.ArrayList;
@@ -21,21 +23,9 @@ public class ShowHeatmapPresenter extends Presenter implements HeatmapUseCase.He
         mShowHeatmapView = view;
     }
 
-    public void getHeatmapData(String url) {
+    public void getHeatmapData(Const.APICategory api, String url) {
         mShowHeatmapView.showLoading();
-        mHeatmapUseCase.execute(url, this);
-    }
-
-    @Override
-    public void onHeatmapLoaded(ArrayList<LatLng> heatData) {
-        mShowHeatmapView.hideLoading();
-        mShowHeatmapView.showResult(heatData);
-    }
-
-    @Override
-    public void onError() {
-        mShowHeatmapView.hideLoading();
-        mShowHeatmapView.showError();
+        mHeatmapUseCase.execute(api, url, this);
     }
 
     @Override
@@ -58,13 +48,33 @@ public class ShowHeatmapPresenter extends Presenter implements HeatmapUseCase.He
 
     }
 
+    @Override
+    public void onHeatmapLoaded(Const.APICategory api, ArrayList<LatLng> data) {
+        mShowHeatmapView.hideLoading();
+        mShowHeatmapView.showResult(api, data);
+    }
+
+    @Override
+    public void onCausedByLocalError(Const.APICategory api, String errorMessage) {
+        mShowHeatmapView.hideLoading();
+        mShowHeatmapView.showNoResultCausedByLocalError(api, errorMessage);
+    }
+
+    @Override
+    public void onCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
+        mShowHeatmapView.hideLoading();
+        mShowHeatmapView.showNoResultCausedByGlobalError(api, globalCode);
+    }
+
     public interface ShowHeatmapView {
         void showLoading();
 
         void hideLoading();
 
-        void showError();
+        void showNoResultCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode);
 
-        void showResult(ArrayList<LatLng> heatData);
+        void showNoResultCausedByLocalError(Const.APICategory api, String errorMessage);
+
+        void showResult(Const.APICategory api, ArrayList<LatLng> data);
     }
 }

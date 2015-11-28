@@ -3,6 +3,7 @@ package com.inase.android.gocci.service;
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -11,11 +12,12 @@ import com.google.android.gms.gcm.GcmPubSub;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 import com.inase.android.gocci.R;
+import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.consts.QuickstartPreferences;
+import com.inase.android.gocci.datasource.api.API3PostUtil;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.RegIdRegisteredEvent;
 import com.inase.android.gocci.utils.SavedData;
-import com.inase.android.gocci.utils.Util;
 
 import java.io.IOException;
 
@@ -89,7 +91,7 @@ public class RegistrationIntentService extends IntentService {
         } else {
             if (!regid.equals(token)) {
                 //サーバー送る
-                Util.postRefreshRegId(this, token);
+                API3PostUtil.postRegIdAsync(this, SavedData.getServerUserId(this), token, Const.OS, Build.VERSION.RELEASE, Build.MODEL);
             }
         }
     }

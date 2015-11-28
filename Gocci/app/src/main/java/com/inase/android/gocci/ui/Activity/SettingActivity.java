@@ -38,6 +38,7 @@ import com.inase.android.gocci.datasource.api.API3;
 import com.inase.android.gocci.datasource.api.API3PostUtil;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.NotificationNumberEvent;
+import com.inase.android.gocci.event.PostCallbackEvent;
 import com.inase.android.gocci.event.RetryApiEvent;
 import com.inase.android.gocci.ui.view.DrawerProfHeader;
 import com.inase.android.gocci.ui.view.GocciTwitterLoginButton;
@@ -60,6 +61,7 @@ import com.twitter.sdk.android.core.TwitterSession;
 
 import org.json.JSONObject;
 
+import java.io.File;
 import java.net.SocketTimeoutException;
 import java.util.Locale;
 
@@ -199,7 +201,7 @@ public class SettingActivity extends AppCompatActivity {
                             TwitterSession session =
                                     Twitter.getSessionManager().getActiveSession();
                             TwitterAuthToken authToken = session.getAuthToken();
-                            snsUnLinkAsync(Const.APICategory.POST_TWITTER_UNLINK, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret);
+                            API3PostUtil.postSnsUnlinkAsync(SettingActivity.this, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, Const.ActivityCategory.SETTING, Const.APICategory.POST_TWITTER_UNLINK);
                         }
                     }).show();
         } else {
@@ -221,8 +223,7 @@ public class SettingActivity extends AppCompatActivity {
                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                         @Override
                         public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
-                            snsUnLinkAsync(Const.APICategory.POST_FACEBOOK_UNLINK, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken());
-
+                            API3PostUtil.postSnsUnlinkAsync(SettingActivity.this, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), Const.ActivityCategory.SETTING, Const.APICategory.POST_FACEBOOK_UNLINK);
                         }
                     }).show();
         } else {
@@ -388,13 +389,12 @@ public class SettingActivity extends AppCompatActivity {
         mFacebookLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
+                API3PostUtil.postSnsLinkAsync(SettingActivity.this, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), Const.ActivityCategory.SETTING, Const.APICategory.POST_FACEBOOK);
                 Profile profile = Profile.getCurrentProfile();
                 String profile_img = "https://graph.facebook.com/" + profile.getId() + "/picture";
-
-                snsAsync(Const.APICategory.POST_FACEBOOK, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), profile_img);
-
-                mFacebookSetting.setText(profile.getName());
-                isFacebookSetting = true;
+                String post_date = SavedData.getServerUserId(SettingActivity.this) + "_" + Util.getDateTimeString();
+                File update_file = Util.getFile(SettingActivity.this, profile_img, post_date);
+                API3PostUtil.postProfileImgAsync(SettingActivity.this, post_date, update_file, Const.ActivityCategory.SETTING);
             }
 
             @Override
@@ -412,14 +412,12 @@ public class SettingActivity extends AppCompatActivity {
             @Override
             public void success(Result<TwitterSession> result) {
                 TwitterAuthToken authToken = result.data.getAuthToken();
-
+                API3PostUtil.postSnsLinkAsync(SettingActivity.this, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, Const.ActivityCategory.SETTING, Const.APICategory.POST_TWITTER);
                 String username = result.data.getUserName();
                 String profile_img = "http://www.paper-glasses.com/api/twipi/" + username;
-
-                snsAsync(Const.APICategory.POST_TWITTER, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, profile_img);
-
-                mTwitterSetting.setText(result.data.getUserName());
-                isTwitterSetting = true;
+                String post_date = SavedData.getServerUserId(SettingActivity.this) + "_" + Util.getDateTimeString();
+                File update_file = Util.getFile(SettingActivity.this, profile_img, post_date);
+                API3PostUtil.postProfileImgAsync(SettingActivity.this, post_date, update_file, Const.ActivityCategory.SETTING);
             }
 
             @Override
@@ -433,26 +431,14 @@ public class SettingActivity extends AppCompatActivity {
                 Twitter.getSessionManager().getActiveSession();
         if (session != null) {
             TwitterAuthToken authToken = session.getAuthToken();
-            String username = session.getUserName();
-            String profile_img = "http://www.paper-glasses.com/api/twipi/" + username;
-
-            snsAsync(Const.APICategory.POST_TWITTER, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, profile_img);
-
-            mTwitterSetting.setText(session.getUserName());
-            isTwitterSetting = true;
-
+            API3PostUtil.postSnsLinkAsync(SettingActivity.this, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, Const.ActivityCategory.SETTING, Const.APICategory.POST_TWITTER);
         } else {
             isTwitterSetting = false;
         }
 
         Profile profile = Profile.getCurrentProfile();
         if (profile != null) {
-            String profile_img = "https://graph.facebook.com/" + profile.getId() + "/picture";
-
-            snsAsync(Const.APICategory.POST_FACEBOOK, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), profile_img);
-
-            mFacebookSetting.setText(profile.getName());
-            isFacebookSetting = true;
+            API3PostUtil.postSnsLinkAsync(SettingActivity.this, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), Const.ActivityCategory.SETTING, Const.APICategory.POST_FACEBOOK);
         } else {
             isFacebookSetting = false;
         }
@@ -544,87 +530,29 @@ public class SettingActivity extends AppCompatActivity {
         Twitter.logOut();
     }
 
-    private void snsAsync(final Const.APICategory api, final String providerName, String token, String profile_img) {
-        API3.Util.PostSnsLocalCode localCode = API3.Impl.getRepository().post_sns_parameter_regex(providerName, token, profile_img);
-        if (localCode == null) {
-            Application_Gocci.addLogins(API3.Util.getPostSnsAPI(providerName, token, profile_img), new Application_Gocci.AddLoginAsync.AddLoginAsyncCallback() {
-                @Override
-                public void preExecute() {
-
-                }
-
-                @Override
-                public void onPostExecute() {
-
-                }
-
-                @Override
-                public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                    Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
-                }
-
-                @Override
-                public void onLocalError(String errorMessage) {
-                    Toast.makeText(SettingActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
-                }
-            });
-        } else {
-            Toast.makeText(SettingActivity.this, API3.Util.postSnsLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void snsUnLinkAsync(final Const.APICategory api, final String providerName, String token) {
-        API3.Util.PostSnsUnlinkLocalCode localCode = API3.Impl.getRepository().post_sns_unlink_parameter_regex(providerName, token);
-        if (localCode == null) {
-            API3.Util.GlobalCode globalCode = API3.Impl.getRepository().check_global_error();
-            if (globalCode == API3.Util.GlobalCode.SUCCESS) {
-                try {
-                    Application_Gocci.getJsonSync(API3.Util.getPostSnsUnlinkAPI(providerName, token), new JsonHttpResponseHandler() {
-
-                        @Override
-                        public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                            Application_Gocci.resolveOrHandleGlobalError(api, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED);
-                        }
-
-                        @Override
-                        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                            API3.Impl.getRepository().post_sns_unlink_response(response, new API3.PostResponseCallback() {
-                                @Override
-                                public void onSuccess() {
-                                    switch (providerName) {
-                                        case Const.ENDPOINT_TWITTER:
-                                            mTwitterSetting.setText(getString(R.string.no_auth_message));
-                                            isTwitterSetting = false;
-                                            logoutTwitter();
-                                            break;
-                                        case Const.ENDPOINT_FACEBOOK:
-                                            mFacebookSetting.setText(getString(R.string.no_auth_message));
-                                            isFacebookSetting = false;
-                                            logoutFacebook();
-                                            break;
-                                    }
-                                }
-
-                                @Override
-                                public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                    Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
-                                }
-
-                                @Override
-                                public void onLocalError(String errorMessage) {
-                                    Toast.makeText(SettingActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                        }
-                    });
-                } catch (SocketTimeoutException e) {
-                    Application_Gocci.resolveOrHandleGlobalError(api, API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT);
-                }
-            } else {
-                Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
+    @Subscribe
+    public void subscribe(PostCallbackEvent event) {
+        if (event.activityCategory == Const.ActivityCategory.SETTING) {
+            switch (event.apiCategory) {
+                case POST_FACEBOOK:
+                    mFacebookSetting.setText(Profile.getCurrentProfile().getName());
+                    isFacebookSetting = true;
+                    break;
+                case POST_FACEBOOK_UNLINK:
+                    mFacebookSetting.setText(getString(R.string.no_auth_message));
+                    isFacebookSetting = false;
+                    logoutFacebook();
+                    break;
+                case POST_TWITTER:
+                    mTwitterSetting.setText(Twitter.getSessionManager().getActiveSession().getUserName());
+                    isTwitterSetting = true;
+                    break;
+                case POST_TWITTER_UNLINK:
+                    mTwitterSetting.setText(getString(R.string.no_auth_message));
+                    isTwitterSetting = false;
+                    logoutTwitter();
+                    break;
             }
-        } else {
-            Toast.makeText(SettingActivity.this, API3.Util.postSnsUnlinkLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -634,30 +562,26 @@ public class SettingActivity extends AppCompatActivity {
             case POST_FACEBOOK:
                 Profile profile = Profile.getCurrentProfile();
                 if (profile != null) {
-                    String profile_img = "https://graph.facebook.com/" + profile.getId() + "/picture";
-
-                    snsAsync(Const.APICategory.POST_FACEBOOK, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), profile_img);
+                    API3PostUtil.postSnsLinkAsync(this, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), Const.ActivityCategory.SETTING, Const.APICategory.POST_FACEBOOK);
                 }
                 break;
             case POST_FACEBOOK_UNLINK:
-                snsUnLinkAsync(Const.APICategory.POST_FACEBOOK_UNLINK, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken());
+                API3PostUtil.postSnsUnlinkAsync(this, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), Const.ActivityCategory.SETTING, Const.APICategory.POST_FACEBOOK_UNLINK);
                 break;
             case POST_TWITTER:
                 TwitterSession session =
                         Twitter.getSessionManager().getActiveSession();
                 if (session != null) {
                     TwitterAuthToken authToken = session.getAuthToken();
-                    String username = session.getUserName();
-                    String profile_img = "http://www.paper-glasses.com/api/twipi/" + username;
 
-                    snsAsync(Const.APICategory.POST_TWITTER, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, profile_img);
+                    API3PostUtil.postSnsLinkAsync(this, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, Const.ActivityCategory.SETTING, Const.APICategory.POST_TWITTER);
                 }
                 break;
             case POST_TWITTER_UNLINK:
                 TwitterSession unlinksession =
                         Twitter.getSessionManager().getActiveSession();
                 TwitterAuthToken authToken = unlinksession.getAuthToken();
-                snsUnLinkAsync(Const.APICategory.POST_TWITTER_UNLINK, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret);
+                API3PostUtil.postSnsUnlinkAsync(this, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, Const.ActivityCategory.SETTING, Const.APICategory.POST_TWITTER_UNLINK);
                 break;
             default:
                 break;

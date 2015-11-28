@@ -9,7 +9,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
@@ -49,15 +48,20 @@ import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3;
+import com.inase.android.gocci.datasource.repository.GochiRepository;
+import com.inase.android.gocci.datasource.repository.GochiRepositoryImpl;
 import com.inase.android.gocci.datasource.repository.UserAndRestDataRepository;
 import com.inase.android.gocci.datasource.repository.UserAndRestDataRepositoryImpl;
 import com.inase.android.gocci.domain.executor.UIThread;
 import com.inase.android.gocci.domain.model.HeaderData;
 import com.inase.android.gocci.domain.model.PostData;
+import com.inase.android.gocci.domain.usecase.GochiUseCase;
+import com.inase.android.gocci.domain.usecase.GochiUseCaseImpl;
 import com.inase.android.gocci.domain.usecase.RestPageUseCaseImpl;
 import com.inase.android.gocci.domain.usecase.UserAndRestUseCase;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.NotificationNumberEvent;
+import com.inase.android.gocci.event.PostCallbackEvent;
 import com.inase.android.gocci.event.RetryApiEvent;
 import com.inase.android.gocci.presenter.ShowRestPagePresenter;
 import com.inase.android.gocci.ui.adapter.RestPageAdapter;
@@ -226,8 +230,10 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
 
         final API3 api3Impl = API3.Impl.getRepository();
         UserAndRestDataRepository userAndRestDataRepositoryImpl = UserAndRestDataRepositoryImpl.getRepository(api3Impl);
+        GochiRepository gochiRepository = GochiRepositoryImpl.getRepository(api3Impl);
         UserAndRestUseCase userAndRestUseCaseImpl = RestPageUseCaseImpl.getUseCase(userAndRestDataRepositoryImpl, UIThread.getInstance());
-        mPresenter = new ShowRestPagePresenter(userAndRestUseCaseImpl);
+        GochiUseCase gochiUseCase = GochiUseCaseImpl.getUseCase(gochiRepository, UIThread.getInstance());
+        mPresenter = new ShowRestPagePresenter(userAndRestUseCaseImpl, gochiUseCase);
         mPresenter.setRestView(this);
 
         mPlayBlockFlag = false;
@@ -728,8 +734,18 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
     }
 
     @Override
-    public void onGochiClick() {
+    public void onGochiTap() {
         setGochiLayout();
+    }
+
+    @Override
+    public void onGochiClick(String post_id) {
+        API3.Util.PostGochiLocalCode postGochiLocalCode = API3.Impl.getRepository().post_gochi_parameter_regex(post_id);
+        if (postGochiLocalCode == null) {
+            mPresenter.postGochi(Const.APICategory.POST_GOCHI, API3.Util.getPostGochiAPI(post_id), post_id);
+        } else {
+            Toast.makeText(TenpoActivity.this, API3.Util.postGochiLocalErrorMessageTable(postGochiLocalCode), Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -841,7 +857,7 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
     }
 
     @Override
-    public void showNoResultCase(Const.APICategory api, HeaderData restData) {
+    public void showEmpty(Const.APICategory api, HeaderData restData) {
         mHeaderRestData = restData;
         switch (api) {
             case GET_REST_FIRST:
@@ -859,23 +875,22 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
     }
 
     @Override
-    public void hideNoResultCase() {
+    public void hideEmpty() {
 
     }
 
     @Override
-    public void showNoResultCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
+    public void causedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
         Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
     }
 
     @Override
-    public void showNoResultCausedByLocalError(Const.APICategory api, String errorMessage) {
+    public void causedByLocalError(Const.APICategory api, String errorMessage) {
         Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void showResult(Const.APICategory api, HeaderData
-            restData, ArrayList<PostData> mPostData, ArrayList<String> post_ids) {
+    public void showResult(Const.APICategory api, HeaderData restData, ArrayList<PostData> mPostData, ArrayList<String> post_ids) {
         mHeaderRestData = restData;
         mTenpousers.clear();
         mTenpousers.addAll(mPostData);
@@ -894,6 +909,23 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
                 mRestPageAdapter.setData(mHeaderRestData);
                 break;
         }
+    }
+
+    @Override
+    public void gochiSuccess(Const.APICategory api, String post_id) {
+        BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, Const.ActivityCategory.REST_PAGE, api, post_id));
+    }
+
+    @Override
+    public void gochiFailureCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode, String post_id) {
+        BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.GLOBALERROR, Const.ActivityCategory.REST_PAGE, api, post_id));
+        Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
+    }
+
+    @Override
+    public void gochiFailureCausedByLocalError(Const.APICategory api, String errorMessage, String post_id) {
+        BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.LOCALERROR, Const.ActivityCategory.REST_PAGE, api, post_id));
+        Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
     }
 
     private void setGochiLayout() {

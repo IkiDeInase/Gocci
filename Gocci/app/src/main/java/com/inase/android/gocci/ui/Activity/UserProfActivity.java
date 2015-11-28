@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.provider.Settings;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
@@ -40,17 +39,25 @@ import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3;
-import com.inase.android.gocci.datasource.api.API3PostUtil;
+import com.inase.android.gocci.datasource.repository.FollowRepository;
+import com.inase.android.gocci.datasource.repository.FollowRepositoryImpl;
+import com.inase.android.gocci.datasource.repository.GochiRepository;
+import com.inase.android.gocci.datasource.repository.GochiRepositoryImpl;
 import com.inase.android.gocci.datasource.repository.UserAndRestDataRepository;
 import com.inase.android.gocci.datasource.repository.UserAndRestDataRepositoryImpl;
 import com.inase.android.gocci.domain.executor.UIThread;
 import com.inase.android.gocci.domain.model.HeaderData;
 import com.inase.android.gocci.domain.model.PostData;
+import com.inase.android.gocci.domain.usecase.FollowUseCase;
+import com.inase.android.gocci.domain.usecase.FollowUseCaseImpl;
+import com.inase.android.gocci.domain.usecase.GochiUseCase;
+import com.inase.android.gocci.domain.usecase.GochiUseCaseImpl;
 import com.inase.android.gocci.domain.usecase.ProfPageUseCaseImpl;
 import com.inase.android.gocci.domain.usecase.UserAndRestUseCase;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.NotificationNumberEvent;
 import com.inase.android.gocci.event.PageChangeVideoStopEvent;
+import com.inase.android.gocci.event.PostCallbackEvent;
 import com.inase.android.gocci.event.ProfJsonEvent;
 import com.inase.android.gocci.event.RetryApiEvent;
 import com.inase.android.gocci.event.TimelineMuteChangeEvent;
@@ -195,8 +202,12 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
 
         final API3 api3Impl = API3.Impl.getRepository();
         UserAndRestDataRepository userAndRestDataRepositoryImpl = UserAndRestDataRepositoryImpl.getRepository(api3Impl);
+        FollowRepository followRepository = FollowRepositoryImpl.getRepository(api3Impl);
+        GochiRepository gochiRepository = GochiRepositoryImpl.getRepository(api3Impl);
         UserAndRestUseCase userAndRestUseCaseImpl = ProfPageUseCaseImpl.getUseCase(userAndRestDataRepositoryImpl, UIThread.getInstance());
-        mPresenter = new ShowUserProfPresenter(userAndRestUseCaseImpl);
+        FollowUseCase followUseCase = FollowUseCaseImpl.getUseCase(followRepository, UIThread.getInstance());
+        GochiUseCase gochiUseCase = GochiUseCaseImpl.getUseCase(gochiRepository, UIThread.getInstance());
+        mPresenter = new ShowUserProfPresenter(userAndRestUseCaseImpl, followUseCase, gochiUseCase);
         mPresenter.setProfView(this);
 
         callbackManager = CallbackManager.Factory.create();
@@ -440,7 +451,7 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
     }
 
     @Override
-    public void showNoResultCase(Const.APICategory api, HeaderData mUserData) {
+    public void showEmpty(Const.APICategory api, HeaderData mUserData) {
         headerUserData = mUserData;
 
         Picasso.with(this)
@@ -468,12 +479,24 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
             public void onClick(View v) {
                 switch (mFollowText.getText().toString()) {
                     case "フォローする":
-                        API3PostUtil.postFollowAsync(UserProfActivity.this, headerUserData);
-                        mFollowText.setText(getString(R.string.do_unfollow));
+                        API3.Util.PostFollowLocalCode postFollowLocalCode = API3.Impl.getRepository().post_follow_parameter_regex(mUser_id);
+                        if (postFollowLocalCode == null) {
+                            mPresenter.postFollow(Const.APICategory.POST_FOLLOW, API3.Util.getPostFollowAPI(mUser_id), mUser_id);
+                            mFollowText.setText(getString(R.string.do_unfollow));
+                            headerUserData.setFollow_flag(1);
+                        } else {
+                            Toast.makeText(UserProfActivity.this, API3.Util.postFollowLocalErrorMessageTable(postFollowLocalCode), Toast.LENGTH_SHORT).show();
+                        }
                         break;
                     case "フォロー解除する":
-                        API3PostUtil.postUnfollowAsync(UserProfActivity.this, headerUserData);
-                        mFollowText.setText(getString(R.string.do_follow));
+                        API3.Util.PostUnfollowLocalCode postUnfollowLocalCode = API3.Impl.getRepository().post_unFollow_parameter_regex(mUser_id);
+                        if (postUnfollowLocalCode == null) {
+                            mPresenter.postFollow(Const.APICategory.POST_UNFOLLOW, API3.Util.getPostUnfollowAPI(mUser_id), mUser_id);
+                            mFollowText.setText(getString(R.string.do_follow));
+                            headerUserData.setFollow_flag(0);
+                        } else {
+                            Toast.makeText(UserProfActivity.this, API3.Util.postUnfollowLocalErrorMessageTable(postUnfollowLocalCode), Toast.LENGTH_SHORT).show();
+                        }
                         break;
                     case "これはあなたです":
                         break;
@@ -488,19 +511,48 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
     }
 
     @Override
-    public void hideNoResultCase() {
+    public void hideEmpty() {
         mEmptyImage.setVisibility(View.INVISIBLE);
         mEmptyText.setVisibility(View.INVISIBLE);
     }
 
     @Override
-    public void showNoResultCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
+    public void causedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
         Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
     }
 
     @Override
-    public void showNoResultCausedByLocalError(Const.APICategory api, String errorMessage) {
+    public void causedByLocalError(Const.APICategory api, String errorMessage) {
         Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void followSuccess(Const.APICategory api, String user_id) {
+
+    }
+
+    @Override
+    public void followFailureCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode, String user_id) {
+        Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
+        if (api == Const.APICategory.POST_FOLLOW) {
+            mFollowText.setText(getString(R.string.do_follow));
+            headerUserData.setFollow_flag(0);
+        } else if (api == Const.APICategory.POST_UNFOLLOW) {
+            mFollowText.setText(getString(R.string.do_unfollow));
+            headerUserData.setFollow_flag(1);
+        }
+    }
+
+    @Override
+    public void followFailureCausedByLocalError(Const.APICategory api, String errorMessage, String user_id) {
+        Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
+        if (api == Const.APICategory.POST_FOLLOW) {
+            mFollowText.setText(getString(R.string.do_follow));
+            headerUserData.setFollow_flag(0);
+        } else if (api == Const.APICategory.POST_UNFOLLOW) {
+            mFollowText.setText(getString(R.string.do_unfollow));
+            headerUserData.setFollow_flag(1);
+        }
     }
 
     @Override
@@ -532,12 +584,24 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
             public void onClick(View v) {
                 switch (mFollowText.getText().toString()) {
                     case "フォローする":
-                        API3PostUtil.postFollowAsync(UserProfActivity.this, headerUserData);
-                        mFollowText.setText(getString(R.string.do_unfollow));
+                        API3.Util.PostFollowLocalCode postFollowLocalCode = API3.Impl.getRepository().post_follow_parameter_regex(mUser_id);
+                        if (postFollowLocalCode == null) {
+                            mPresenter.postFollow(Const.APICategory.POST_FOLLOW, API3.Util.getPostFollowAPI(mUser_id), mUser_id);
+                            mFollowText.setText(getString(R.string.do_unfollow));
+                            headerUserData.setFollow_flag(1);
+                        } else {
+                            Toast.makeText(UserProfActivity.this, API3.Util.postFollowLocalErrorMessageTable(postFollowLocalCode), Toast.LENGTH_SHORT).show();
+                        }
                         break;
                     case "フォロー解除する":
-                        API3PostUtil.postUnfollowAsync(UserProfActivity.this, headerUserData);
-                        mFollowText.setText(getString(R.string.do_follow));
+                        API3.Util.PostUnfollowLocalCode postUnfollowLocalCode = API3.Impl.getRepository().post_unFollow_parameter_regex(mUser_id);
+                        if (postUnfollowLocalCode == null) {
+                            mPresenter.postFollow(Const.APICategory.POST_UNFOLLOW, API3.Util.getPostUnfollowAPI(mUser_id), mUser_id);
+                            mFollowText.setText(getString(R.string.do_follow));
+                            headerUserData.setFollow_flag(0);
+                        } else {
+                            Toast.makeText(UserProfActivity.this, API3.Util.postUnfollowLocalErrorMessageTable(postUnfollowLocalCode), Toast.LENGTH_SHORT).show();
+                        }
                         break;
                     case "これはあなたです":
                         break;
@@ -551,6 +615,33 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
         mPost_ids.addAll(post_ids);
         BusHolder.get().post(new ProfJsonEvent(api, mUsers, mPost_ids));
 
+    }
+
+    @Override
+    public void gochiSuccess(Const.APICategory api, String post_id) {
+        BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, Const.ActivityCategory.USER_PAGE, api, post_id));
+    }
+
+    @Override
+    public void gochiFailureCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode, String post_id) {
+        PostData data = mUsers.get(mPost_ids.indexOf(post_id));
+        if (api == Const.APICategory.POST_GOCHI) {
+            data.setGochi_flag(0);
+            data.setGochi_num(data.getGochi_num() - 1);
+        }
+        BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.GLOBALERROR, Const.ActivityCategory.USER_PAGE, api, post_id));
+        Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
+    }
+
+    @Override
+    public void gochiFailureCausedByLocalError(Const.APICategory api, String errorMessage, String post_id) {
+        PostData data = mUsers.get(mPost_ids.indexOf(post_id));
+        if (api == Const.APICategory.POST_GOCHI) {
+            data.setGochi_flag(0);
+            data.setGochi_num(data.getGochi_num() - 1);
+        }
+        BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.LOCALERROR, Const.ActivityCategory.USER_PAGE, api, post_id));
+        Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
     }
 
     public void refreshJson() {
@@ -570,6 +661,15 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
                 mGochi.addGochi(R.drawable.ic_icon_beef_orange, pointX, y);
             }
         });
+    }
+
+    public void postGochi(String post_id) {
+        API3.Util.PostGochiLocalCode postGochiLocalCode = API3.Impl.getRepository().post_gochi_parameter_regex(post_id);
+        if (postGochiLocalCode == null) {
+            mPresenter.postGochi(Const.APICategory.POST_GOCHI, API3.Util.getPostGochiAPI(post_id), post_id);
+        } else {
+            Toast.makeText(this, API3.Util.postGochiLocalErrorMessageTable(postGochiLocalCode), Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void shareVideoPost(final int requastCode, SquareImageView view, String share, String restname) {

@@ -67,7 +67,7 @@ public class LoginCreateUserNameFragment extends Fragment implements FABProgress
             API3.Util.AuthSignupLocalCode localCode = API3.Impl.getRepository().auth_signup_parameter_regex(mUsernameTextInput.getEditText().getText().toString(), "android", SavedData.getVersionName(getActivity()), Build.MODEL, SavedData.getRegId(getActivity()));
             if (localCode == null) {
                 mPresenter.loginUser(Const.APICategory.AUTH_SIGNUP,
-                        API3.Util.getAuthSignupAPI(mUsernameTextInput.getEditText().getText().toString(), Const.OS, SavedData.getVersionName(getActivity()), Build.MODEL, SavedData.getRegId(getActivity())));
+                        API3.Util.getAuthSignupAPI(mUsernameTextInput.getEditText().getText().toString(), Const.OS, Build.VERSION.RELEASE, Build.MODEL, SavedData.getRegId(getActivity())));
             } else {
                 Toast.makeText(getActivity(), API3.Util.authSignupLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
             }
@@ -232,7 +232,7 @@ public class LoginCreateUserNameFragment extends Fragment implements FABProgress
         switch (event.api) {
             case AUTH_SIGNUP:
                 mPresenter.loginUser(Const.APICategory.AUTH_SIGNUP,
-                        API3.Util.getAuthSignupAPI(mUsernameTextInput.getEditText().getText().toString(), Build.VERSION.RELEASE, SavedData.getVersionName(getActivity()), Build.MODEL, SavedData.getRegId(getActivity())));
+                        API3.Util.getAuthSignupAPI(mUsernameTextInput.getEditText().getText().toString(), Const.OS, Build.VERSION.RELEASE, Build.MODEL, SavedData.getRegId(getActivity())));
                 break;
             default:
                 break;

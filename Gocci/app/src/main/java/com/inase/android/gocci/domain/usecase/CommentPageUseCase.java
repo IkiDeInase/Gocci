@@ -15,9 +15,9 @@ public interface CommentPageUseCase {
 
         void onDataEmpty(Const.APICategory api, HeaderData memoData);
 
-        void onCausedByLocalError(Const.APICategory api, String errorMessage);
+        void onGetCausedByLocalError(Const.APICategory api, String errorMessage);
 
-        void onCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode);
+        void onGetCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode);
     }
 
     void execute(Const.APICategory api, String url, CommentPageUseCaseCallback callback);

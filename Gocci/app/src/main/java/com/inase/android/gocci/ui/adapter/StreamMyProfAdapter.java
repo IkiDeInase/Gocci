@@ -136,15 +136,14 @@ public class StreamMyProfAdapter extends RecyclerView.Adapter<Const.StreamViewHo
             holder.mLikesRipple.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mCallback.onGochiClick();
+                    mCallback.onGochiTap();
 
                     if (user.getGochi_flag() == 0) {
+                        mCallback.onGochiClick(user.getPost_id());
                         user.setGochi_flag(1);
                         user.setGochi_num(user.getGochi_num() + 1);
                         holder.mLikesNumber.setText(String.valueOf((user.getGochi_num())));
                         holder.mLikesImage.setImageResource(R.drawable.ic_icon_beef_orange);
-
-                        API3PostUtil.postGochiAsync(mContext, user);
                     }
                 }
             });
@@ -153,7 +152,7 @@ public class StreamMyProfAdapter extends RecyclerView.Adapter<Const.StreamViewHo
             holder.mLikesRipple.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mCallback.onGochiClick();
+                    mCallback.onGochiTap();
                 }
             });
         }
@@ -211,7 +210,9 @@ public class StreamMyProfAdapter extends RecyclerView.Adapter<Const.StreamViewHo
 
         void onStreamVideoFrameClick(PostData data);
 
-        void onGochiClick();
+        void onGochiTap();
+
+        void onGochiClick(String post_id);
 
         void onFacebookShare(String share);
 

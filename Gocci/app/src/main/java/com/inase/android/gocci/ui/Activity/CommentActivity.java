@@ -90,12 +90,11 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
             button.setFocusable(true);
             button.setFocusableInTouchMode(true);
             button.requestFocus();
-            mCommentEdit.setText("");
             mProgress.setVisibility(View.VISIBLE);
             if (isNotice) {
-                mPresenter.postComment(API3.Util.getPostCommentAPI(mPost_id, comment, mNoticeUser_id), API3.Util.getGetCommentAPI(mPost_id));
+                mPresenter.postComment(Const.APICategory.POST_COMMENT, API3.Util.getPostCommentAPI(mPost_id, comment, mNoticeUser_id), API3.Util.getGetCommentAPI(mPost_id));
             } else {
-                //mPresenter.postComment(Const.getPostCommentAPI(mPost_id, comment), API3.Util.getGetCommentAPI(mPost_id));
+                mPresenter.postComment(Const.APICategory.POST_COMMENT, API3.Util.getPostCommentAPI(mPost_id, comment, ""), API3.Util.getGetCommentAPI(mPost_id));
             }
             if (mOverlay.getVisibility() == View.VISIBLE) {
                 mOverlay.setVisibility(View.GONE);
@@ -165,7 +164,7 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
 
         API3 api3Impl = API3.Impl.getRepository();
         CommentDataRepository commentDataRepositoryImpl = CommentDataRepositoryImpl.getRepository(api3Impl);
-        CommentActionRepository commentActionRepositoryImpl = CommentActionRepositoryImpl.getRepository();
+        CommentActionRepository commentActionRepositoryImpl = CommentActionRepositoryImpl.getRepository(api3Impl);
         CommentPageUseCase commentPageUseCaseImpl = CommentPageUseCaseImpl.getUseCase(commentDataRepositoryImpl, UIThread.getInstance());
         CommentPostUseCase commentPostUseCaseImpl = CommentPostUseCaseImpl.getUseCase(commentActionRepositoryImpl, UIThread.getInstance());
         mPresenter = new ShowCommentPagePresenter(commentPageUseCaseImpl, commentPostUseCaseImpl);
@@ -379,11 +378,11 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
 
     @Override
     public void hideLoading() {
-
+        mProgress.setVisibility(View.INVISIBLE);
     }
 
     @Override
-    public void showNoResultCase(Const.APICategory api, HeaderData memoData) {
+    public void showEmpty(Const.APICategory api, HeaderData memoData) {
         switch (api) {
             case GET_COMMENT_FIRST:
                 mProgress.setVisibility(View.INVISIBLE);
@@ -400,17 +399,17 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
     }
 
     @Override
-    public void hideNoResultCase() {
+    public void hideEmpty() {
 
     }
 
     @Override
-    public void showNoResultCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
+    public void causedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
         Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
     }
 
     @Override
-    public void showNoResultCausedByLocalError(Const.APICategory api, String errorMessage) {
+    public void causedByLocalError(Const.APICategory api, String errorMessage) {
         Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
     }
 
@@ -433,8 +432,9 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
     }
 
     @Override
-    public void postCommented(HeaderData postData, ArrayList<HeaderData> commentData) {
+    public void postCommented(Const.APICategory api, HeaderData postData, ArrayList<HeaderData> commentData) {
         mProgress.setVisibility(View.INVISIBLE);
+        mCommentEdit.setText("");
         mCommentusers.clear();
         mCommentusers.addAll(commentData);
         mCommentAdapter.setData();
@@ -442,16 +442,20 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
     }
 
     @Override
-    public void postCommentEmpty(HeaderData postData) {
+    public void postCommentEmpty(Const.APICategory api, HeaderData postData) {
         mProgress.setVisibility(View.INVISIBLE);
         mCommentusers.clear();
         mCommentAdapter.setData();
     }
 
     @Override
-    public void postCommentFailed() {
-        mProgress.setVisibility(View.INVISIBLE);
-        Toast.makeText(this, getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
+    public void postFailureCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
+        Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
+    }
+
+    @Override
+    public void postFailureCausedByLocalError(Const.APICategory api, String errorMessage) {
+        Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
     }
 
     @Subscribe

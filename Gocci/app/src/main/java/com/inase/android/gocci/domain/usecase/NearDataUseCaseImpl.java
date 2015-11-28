@@ -1,42 +1,41 @@
 package com.inase.android.gocci.domain.usecase;
 
-import com.google.android.gms.maps.model.LatLng;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3;
-import com.inase.android.gocci.datasource.repository.HeatmapRepository;
+import com.inase.android.gocci.datasource.repository.NearRepository;
 import com.inase.android.gocci.domain.executor.PostExecutionThread;
 
 import java.util.ArrayList;
 
 /**
- * Created by kinagafuji on 15/11/05.
+ * Created by kinagafuji on 15/11/25.
  */
-public class HeatmapUseCaseImpl extends UseCase2<Const.APICategory, String> implements HeatmapUseCase, HeatmapRepository.HeatmapRepositoryCallback {
-    private static HeatmapUseCaseImpl sUseCase;
-    private final HeatmapRepository mHeatmapRepository;
+public class NearDataUseCaseImpl extends UseCase2<Const.APICategory, String> implements NearDataUseCase, NearRepository.NearRepositoryCallback {
+    private static NearDataUseCaseImpl sUseCase;
+    private final NearRepository mNearRepository;
     private PostExecutionThread mPostExecutionThread;
-    private HeatmapUseCaseCallback mCallback;
+    private NearDataUseCaseCallback mCallback;
 
-    public static HeatmapUseCaseImpl getUseCase(HeatmapRepository heatmapRepository, PostExecutionThread postExecutionThread) {
+    public static NearDataUseCaseImpl getUseCase(NearRepository nearRepository, PostExecutionThread postExecutionThread) {
         if (sUseCase == null) {
-            sUseCase = new HeatmapUseCaseImpl(heatmapRepository, postExecutionThread);
+            sUseCase = new NearDataUseCaseImpl(nearRepository, postExecutionThread);
         }
         return sUseCase;
     }
 
-    public HeatmapUseCaseImpl(HeatmapRepository heatmapRepository, PostExecutionThread postExecutionThread) {
-        mHeatmapRepository = heatmapRepository;
+    public NearDataUseCaseImpl(NearRepository nearRepository, PostExecutionThread postExecutionThread) {
+        mNearRepository = nearRepository;
         mPostExecutionThread = postExecutionThread;
     }
 
     @Override
-    public void execute(Const.APICategory api, String url, HeatmapUseCaseCallback callback) {
+    public void execute(Const.APICategory api, String url, NearDataUseCaseCallback callback) {
         mCallback = callback;
         this.start(api, url);
     }
 
     @Override
-    public void setCallback(HeatmapUseCaseCallback callback) {
+    public void setCallback(NearDataUseCaseCallback callback) {
         mCallback = callback;
     }
 
@@ -46,17 +45,24 @@ public class HeatmapUseCaseImpl extends UseCase2<Const.APICategory, String> impl
     }
 
     @Override
-    protected void call(Const.APICategory param1, String param2) {
-        mHeatmapRepository.getHeatmap(param1, param2, this);
-    }
-
-    @Override
-    public void onSuccess(final Const.APICategory api, final ArrayList<LatLng> heatData) {
+    public void onSuccess(final Const.APICategory api, final String[] restnames, final ArrayList<String> restIdArray, final ArrayList<String> restnameArray) {
         mPostExecutionThread.post(new Runnable() {
             @Override
             public void run() {
                 if (mCallback != null) {
-                    mCallback.onHeatmapLoaded(api, heatData);
+                    mCallback.onLoaded(api, restnames, restIdArray, restnameArray);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onEmpty(final Const.APICategory api) {
+        mPostExecutionThread.post(new Runnable() {
+            @Override
+            public void run() {
+                if (mCallback != null) {
+                    mCallback.onEmpty(api);
                 }
             }
         });
@@ -84,5 +90,10 @@ public class HeatmapUseCaseImpl extends UseCase2<Const.APICategory, String> impl
                 }
             }
         });
+    }
+
+    @Override
+    protected void call(Const.APICategory param1, String param2) {
+        mNearRepository.getNear(param1, param2, this);
     }
 }

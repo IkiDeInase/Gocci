@@ -1,5 +1,7 @@
 package com.inase.android.gocci.datasource.repository;
 
+import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.datasource.api.API3;
 import com.inase.android.gocci.domain.model.HeaderData;
 import com.inase.android.gocci.domain.model.PostData;
 
@@ -9,15 +11,15 @@ import java.util.ArrayList;
  * Created by kinagafuji on 15/10/06.
  */
 public interface CommentActionRepository {
-    void postComment(String postUrl, String getUrl, CommentActionRepositoryCallback cb);
+    void postComment(Const.APICategory api, String postUrl, String getUrl, CommentActionRepositoryCallback cb);
 
     interface CommentActionRepositoryCallback {
-        void onPostCommented(PostData postData, ArrayList<HeaderData> commentData);
+        void onPostCommented(Const.APICategory api, HeaderData memoData, ArrayList<HeaderData> commentData);
 
-        void onPostCommentEmpty(PostData postData);
+        void onPostEmpty(Const.APICategory api, HeaderData memoData);
 
-        void onPostCommentFailed();
+        void onPostFailureCausedByLocalError(Const.APICategory api, String errorMessage);
 
-        void onError();
+        void onPostFailureCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode);
     }
 }

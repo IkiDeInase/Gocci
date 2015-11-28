@@ -97,7 +97,7 @@ public class GridProfAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
                                     mCallback.onGridCommentClick(user.getPost_id());
                                     break;
                                 case R.id.delete:
-                                    mCallback.onGridDeleteClick(user.getPost_id(), position);
+                                    mCallback.onGridDeleteClick(user.getPost_id());
                                     break;
                                 case R.id.close:
                                     dialog.dismiss();
@@ -140,17 +140,14 @@ public class GridProfAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
             holder.mGochiAction.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mCallback.onGochiClick();
+                    mCallback.onGochiTap();
 
                     if (user.getGochi_flag() == 0) {
+                        mCallback.onGochiClick(user.getPost_id());
                         user.setGochi_flag(1);
                         user.setGochi_num(user.getGochi_num() + 1);
                         holder.mGochiImage.setImageResource(R.drawable.ic_icon_beef_orange);
-
-                        API3PostUtil.postGochiAsync(mContext, user);
                     }
-                    //holder.mLikesNumber.setText(String.valueOf((currentgoodnum + 1)));
-                    //holder.mG.setClickable(false);
                 }
             });
         } else {
@@ -158,7 +155,7 @@ public class GridProfAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
             holder.mGochiAction.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mCallback.onGochiClick();
+                    mCallback.onGochiTap();
                 }
             });
         }
@@ -187,9 +184,11 @@ public class GridProfAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
 
         void onGridCommentClick(String post_id);
 
-        void onGridDeleteClick(String post_id, int position);
+        void onGridDeleteClick(String post_id);
 
-        void onGochiClick();
+        void onGochiTap();
+
+        void onGochiClick(String post_id);
 
         void onGridVideoFrameClick(PostData data);
 

@@ -4,8 +4,7 @@ import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3;
 import com.inase.android.gocci.domain.model.HeaderData;
 import com.inase.android.gocci.domain.model.PostData;
-import com.inase.android.gocci.domain.usecase.PostDeleteUseCase;
-import com.inase.android.gocci.domain.usecase.ProfChangeUseCase;
+import com.inase.android.gocci.domain.usecase.GochiUseCase;
 import com.inase.android.gocci.domain.usecase.UserAndRestUseCase;
 
 import java.io.File;
@@ -14,18 +13,15 @@ import java.util.ArrayList;
 /**
  * Created by kinagafuji on 15/09/29.
  */
-public class ShowMyProfPresenter extends Presenter implements UserAndRestUseCase.UserAndRestUseCaseCallback,
-        ProfChangeUseCase.ProfChangeUseCaseCallback, PostDeleteUseCase.PostDeleteUseCaseCallback {
+public class ShowMyProfPresenter extends Presenter implements UserAndRestUseCase.UserAndRestUseCaseCallback, GochiUseCase.GochiUseCaseCallback {
 
     private UserAndRestUseCase mUserAndRestUseCase;
-    private ProfChangeUseCase mProfChangeUseCase;
-    private PostDeleteUseCase mPostDeleteUseCase;
+    private GochiUseCase mGochiUseCase;
     private ShowProfView mShowProfView;
 
-    public ShowMyProfPresenter(UserAndRestUseCase userAndRestUseCase, ProfChangeUseCase profChangeUseCase, PostDeleteUseCase postDeleteUseCase) {
+    public ShowMyProfPresenter(UserAndRestUseCase userAndRestUseCase, GochiUseCase gochiUseCase) {
         mUserAndRestUseCase = userAndRestUseCase;
-        mProfChangeUseCase = profChangeUseCase;
-        mPostDeleteUseCase = postDeleteUseCase;
+        mGochiUseCase = gochiUseCase;
     }
 
     public void setProfView(ShowProfView view) {
@@ -37,65 +33,33 @@ public class ShowMyProfPresenter extends Presenter implements UserAndRestUseCase
         mUserAndRestUseCase.execute(api, url, this);
     }
 
-    public void profChange(String post_date, File file, String url) {
-        mShowProfView.showLoading();
-        mProfChangeUseCase.execute(post_date, file, url, this);
-    }
-
-    public void postDelete(String post_id, int position) {
-        mPostDeleteUseCase.execute(post_id, position, this);
+    public void postGochi(Const.APICategory api, String url, String post_id) {
+        mGochiUseCase.execute(api, url, post_id, this);
     }
 
     @Override
     public void onDataLoaded(Const.APICategory api, HeaderData mUserdata, ArrayList<PostData> mPostData, ArrayList<String> post_ids) {
         mShowProfView.hideLoading();
-        mShowProfView.hideNoResultCase();
+        mShowProfView.hideEmpty();
         mShowProfView.showResult(api, mUserdata, mPostData, post_ids);
     }
 
     @Override
     public void onDataEmpty(Const.APICategory api, HeaderData mUserData) {
         mShowProfView.hideLoading();
-        mShowProfView.showNoResultCase(api, mUserData);
-    }
-
-    @Override
-    public void onPostDeleted(int position) {
-        mShowProfView.postDeleted(position);
-    }
-
-    @Override
-    public void onPostDeleteFailed() {
-        mShowProfView.postDeleteFailed();
-    }
-
-    @Override
-    public void onProfChanged(String userName, String profile_img) {
-        mShowProfView.hideLoading();
-        mShowProfView.profChanged(userName, profile_img);
-    }
-
-    @Override
-    public void onProfChangeFailed(String message) {
-        mShowProfView.hideLoading();
-        mShowProfView.profChangeFailed(message);
-    }
-
-    @Override
-    public void onError() {
-
+        mShowProfView.showEmpty(api, mUserData);
     }
 
     @Override
     public void onCausedByLocalError(Const.APICategory api, String errorMessage) {
         mShowProfView.hideLoading();
-        mShowProfView.showNoResultCausedByLocalError(api, errorMessage);
+        mShowProfView.causedByLocalError(api, errorMessage);
     }
 
     @Override
     public void onCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
         mShowProfView.hideLoading();
-        mShowProfView.showNoResultCausedByGlobalError(api, globalCode);
+        mShowProfView.causedByGlobalError(api, globalCode);
     }
 
     @Override
@@ -106,15 +70,13 @@ public class ShowMyProfPresenter extends Presenter implements UserAndRestUseCase
     @Override
     public void resume() {
         mUserAndRestUseCase.setCallback(this);
-        mProfChangeUseCase.setCallback(this);
-        mPostDeleteUseCase.setCallback(this);
+        mGochiUseCase.setCallback(this);
     }
 
     @Override
     public void pause() {
         mUserAndRestUseCase.removeCallback();
-        mProfChangeUseCase.removeCallback();
-        mPostDeleteUseCase.removeCallback();
+        mGochiUseCase.removeCallback();
     }
 
     @Override
@@ -122,27 +84,40 @@ public class ShowMyProfPresenter extends Presenter implements UserAndRestUseCase
 
     }
 
+    @Override
+    public void onGochiPosted(Const.APICategory api, String post_id) {
+        mShowProfView.gochiSuccess(api, post_id);
+    }
+
+    @Override
+    public void onGochiCausedByLocalError(Const.APICategory api, String errorMessage, String post_id) {
+        mShowProfView.gochiFailureCausedByLocalError(api, errorMessage, post_id);
+    }
+
+    @Override
+    public void onGochiCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode, String post_id) {
+        mShowProfView.gochiFailureCausedByGlobalError(api, globalCode, post_id);
+    }
+
     public interface ShowProfView {
         void showLoading();
 
         void hideLoading();
 
-        void showNoResultCase(Const.APICategory api, HeaderData mUserData);
+        void showEmpty(Const.APICategory api, HeaderData mUserData);
 
-        void hideNoResultCase();
+        void hideEmpty();
 
-        void showNoResultCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode);
+        void causedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode);
 
-        void showNoResultCausedByLocalError(Const.APICategory api, String errorMessage);
+        void causedByLocalError(Const.APICategory api, String errorMessage);
 
         void showResult(Const.APICategory api, HeaderData mUserData, ArrayList<PostData> mPostData, ArrayList<String> post_ids);
 
-        void profChanged(String userName, String profile_img);
+        void gochiSuccess(Const.APICategory api, String post_id);
 
-        void profChangeFailed(String message);
+        void gochiFailureCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode, String post_id);
 
-        void postDeleted(int position);
-
-        void postDeleteFailed();
+        void gochiFailureCausedByLocalError(Const.APICategory api, String errorMessage, String post_id);
     }
 }

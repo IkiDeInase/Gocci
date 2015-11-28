@@ -73,61 +73,8 @@ public class Const {
         return new String(url);
     }
 
-    public static String getNearAPI(double lat, double lon) {
-        return URL_PREFIX + VERSION_NUMBER + "/mobile/get/near/?lon=" + lon + "&lat=" + lat;
-    }
-
-    public static String getHeatmapAPI() {
-        return URL_PREFIX + VERSION_NUMBER + "/mobile/get/heatmap";
-    }
-
-    public static String getPostWantAPI(String rest_id) {
-        return URL_PREFIX + VERSION_NUMBER + "/mobile/post/want/?rest_id=" + rest_id;
-    }
-
-    public static String getPostUnWantAPI(String rest_id) {
-        return URL_PREFIX + VERSION_NUMBER + "/mobile/post/unwant/?rest_id=" + rest_id;
-    }
-
-    public static String getPostMovieAPI(String rest_id, String movie, int category_id, String value, String memo, int cheer_flag) {
-        return URL_PREFIX + VERSION_NUMBER + "/mobile/post/post/?rest_id=" + rest_id +
-                "&movie_name=" + movie + "&category_id=" + category_id + "&value=" + value +
-                "&memo=" + memo + "&cheer_flag=" + cheer_flag;
-    }
-
-    public static String getPostRestAddAPI(String restname, double lat, double lon) {
-        return URL_PREFIX + VERSION_NUMBER + "/mobile/post/restadd/?rest_name=" + restname +
-                "&lat=" + lat + "&lon=" + lon;
-    }
-
-    public static String getPostRefreshRegId(String token, String user_id, String os) {
-        return URL_PREFIX + VERSION_NUMBER + "/mobile/background/update_register_id/?user_id=" + user_id +
-                "&os=android_" + os + "&register_id=" + token;
-    }
-
     public static String getPostSearchUser(String username) {
         return URL_PREFIX + VERSION_NUMBER + "/mobile/get/user_search/?username=" + username;
-    }
-
-    public static final int FLAG_CHANGE_NAME = 0;
-    public static final int FLAG_CHANGE_PICTURE = 1;
-    public static final int FLAG_CHANGE_BOTH = 2;
-
-    public static String getPostUpdateProfileAPI(int flag, String username, String profile_img) {
-        String returnUrl = null;
-        switch (flag) {
-            case FLAG_CHANGE_NAME:
-                returnUrl = URL_PREFIX + VERSION_NUMBER + "/mobile/post/update_profile/?username=" + username;
-                break;
-            case FLAG_CHANGE_PICTURE:
-                returnUrl = URL_PREFIX + VERSION_NUMBER + "/mobile/post/update_profile/?profile_img=" + profile_img;
-                break;
-            case FLAG_CHANGE_BOTH:
-                returnUrl = URL_PREFIX + VERSION_NUMBER + "/mobile/post/update_profile/?username=" + username +
-                        "&profile_img=" + profile_img;
-                break;
-        }
-        return returnUrl;
     }
 
     // 動画ファイルのキャッシュファイルの接頭辞
@@ -138,6 +85,10 @@ public class Const {
 
     // 動画取得リトライ上限回数
     public static final int GET_MOVIE_MAX_RETRY_COUNT = 5;
+
+    public enum PostCallback {
+        SUCCESS, LOCALERROR, GLOBALERROR
+    }
 
     public enum ActivityCategory {
         SPLASH, TUTORIAL, TIMELINE,
@@ -186,6 +137,8 @@ public class Const {
         GET_REST_CHEER_FIRST,
         GET_REST_CHEER_REFRESH,
         GET_NOTICE_FIRST,
+        GET_HEATMAP_FIRST,
+        GET_NEAR_FIRST,
         POST_FACEBOOK,
         POST_TWITTER,
         POST_FACEBOOK_UNLINK,
@@ -198,6 +151,11 @@ public class Const {
         POST_FEEDBACK,
         POST_PASSWORD,
         POST_COMMENT,
+        POST_USERNAME,
+        POST_PROFILEIMG,
+        POST_RESTADD,
+        POST_POST,
+        PUBLIC_UPDATE_PROFILE,
     }
 
     public static final class TwoCellViewHolder extends RecyclerView.ViewHolder {

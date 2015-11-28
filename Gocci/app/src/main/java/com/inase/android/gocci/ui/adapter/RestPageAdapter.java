@@ -127,12 +127,12 @@ public class RestPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     holder.mCheckImage.setImageResource(R.drawable.ic_favorite_orange);
                     holder.mCheckText.setText(mContext.getString(R.string.remove_want));
 
-                    Util.wantAsync(mContext, mRestData);
+                    //Util.wantAsync(mContext, mRestData);
                 } else {
                     holder.mCheckImage.setImageResource(R.drawable.ic_like_white);
                     holder.mCheckText.setText(mContext.getString(R.string.add_want));
 
-                    Util.unwantAsync(mContext, mRestData);
+                    //Util.unwantAsync(mContext, mRestData);
                 }
             }
         });
@@ -272,15 +272,14 @@ public class RestPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             holder.mLikesRipple.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mCallback.onGochiClick();
+                    mCallback.onGochiTap();
 
                     if (user.getGochi_flag() == 0) {
+                        mCallback.onGochiClick(user.getPost_id());
                         user.setGochi_flag(1);
                         user.setGochi_num(user.getGochi_num() + 1);
                         holder.mLikesNumber.setText(String.valueOf((user.getGochi_num())));
                         holder.mLikesImage.setImageResource(R.drawable.ic_icon_beef_orange);
-
-                        API3PostUtil.postGochiAsync(mContext, user);
                     }
                 }
             });
@@ -289,7 +288,7 @@ public class RestPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             holder.mLikesRipple.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mCallback.onGochiClick();
+                    mCallback.onGochiTap();
                 }
             });
         }
@@ -398,7 +397,9 @@ public class RestPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         void onCommentClick(String post_id);
 
-        void onGochiClick();
+        void onGochiTap();
+
+        void onGochiClick(String post_id);
 
         void onVideoFrameClick();
 
