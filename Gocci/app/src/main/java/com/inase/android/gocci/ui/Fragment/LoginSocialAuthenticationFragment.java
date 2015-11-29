@@ -239,6 +239,7 @@ public class LoginSocialAuthenticationFragment extends Fragment {
             switch (event.apiCategory) {
                 case POST_FACEBOOK:
                 case POST_TWITTER:
+                    Application_Gocci.getLoginProvider().refresh();
                     goTimeline();
                     break;
             }

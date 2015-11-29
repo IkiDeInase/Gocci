@@ -323,23 +323,23 @@ public interface API3 {
     }
 
     class Util {
-        private static final String baseurl = "https://api.gocci.me/v1/mobile";
+        private static final String baseurl = "http://mobile.api.gocci.me/v3";
         private static final String testurl = "http://test.mobile.api.gocci.me/v3";
 
         public static final ConcurrentHashMap<GlobalCode, String> globalMap = new ConcurrentHashMap<>();
         public static final ConcurrentHashMap<String, GlobalCode> globalReverseMap = new ConcurrentHashMap<>();
 
         public enum GlobalCode {
-            SUCCESS,    //"Successful API request"
-            ERROR_UNKNOWN_ERROR,    //"Unknown global error" //サーバに送る
-            ERROR_SESSION_EXPIRED,  //"Session cookie is not valid anymore"　//ログインとコグニートリフレッシュ　→　リトライ
-            ERROR_CLIENT_OUTDATED,  //"The client version is too old for this API. Client update necessary" //アップデートダイアログ
-            ERROR_NO_INTERNET_CONNECTION,   //"The device appreas to be not connected to the internet" //リトライ
-            ERROR_CONNECTION_FAILED,    //"Server connection failed"
-            ERROR_CONNECTION_TIMEOUT,   //"Timeout reached before request finished" //リトライ？
-            ERROR_SERVER_SIDE_FAILURE,  //"HTTP status differed from 200, indicationg failure on the server side"　//サーバーに送る
-            ERROR_NO_DATA_RECIEVED, //"Connection successful but no data recieved" //サーバーに送る
-            ERROR_BASEFRAME_JSON_MALFORMED,   //"JSON response baseframe not parsable" //サーバーに送る
+            SUCCESS,
+            ERROR_UNKNOWN_ERROR,
+            ERROR_SESSION_EXPIRED,
+            ERROR_CLIENT_OUTDATED,
+            ERROR_NO_INTERNET_CONNECTION,
+            ERROR_CONNECTION_FAILED,
+            ERROR_CONNECTION_TIMEOUT,
+            ERROR_SERVER_SIDE_FAILURE,
+            ERROR_NO_DATA_RECIEVED,
+            ERROR_BASEFRAME_JSON_MALFORMED,
         }
 
         public static GlobalCode globalErrorReverseLookupTable(String code) {
@@ -392,8 +392,8 @@ public interface API3 {
         public static final ConcurrentHashMap<String, AuthSignupLocalCode> authSignupLocalReverseMap = new ConcurrentHashMap<>();
 
         public enum AuthSignupLocalCode {
-            ERROR_USERNAME_ALREADY_REGISTERD,   //"The provided username was already registerd by another user"
-            ERROR_REGISTER_ID_ALREADY_REGISTERD,    //"This deviced already has an registerd account"
+            ERROR_USERNAME_ALREADY_REGISTERD,
+            ERROR_REGISTER_ID_ALREADY_REGISTERD,
             ERROR_PARAMETER_USERNAME_MISSING,
             ERROR_PARAMETER_USERNAME_MALFORMED,
             ERROR_PARAMETER_OS_MISSING,
@@ -620,7 +620,7 @@ public interface API3 {
         public static final ConcurrentHashMap<String, AuthSnsLoginLocalCode> authSnsLoginLocalReverseMap = new ConcurrentHashMap<>();
 
         public enum AuthSnsLoginLocalCode {
-            ERROR_REGISTER_ID_ALREADY_REGISTERD,    //"This deviced already has an registerd account"
+            ERROR_REGISTER_ID_ALREADY_REGISTERD,
             ERROR_IDENTITY_ID_NOT_REGISTERD,
             ERROR_PARAMETER_IDENTITY_ID_MISSING,
             ERROR_PARAMETER_IDENTITY_ID_MALFORMED,
@@ -1908,12 +1908,36 @@ public interface API3 {
             return testurl + "/get/nearline/?lon=" + lon + "&lat=" + lat;
         }
 
+        public static String getGetNearlineCustomAPI(double lon, double lat, int call, int category_id, int value_id) {
+            StringBuilder url = null;
+            url = new StringBuilder(testurl + "/get/nearline/?lon=" + lon + "&lat=" + lat + "&call=" + call);
+            if (category_id != 0) url.append("&category_id=").append(category_id);
+            if (value_id != 0) url.append("&value_id=").append(value_id);
+            return new String(url);
+        }
+
         public static String getGetFollowlineAPI() {
             return testurl + "/get/followline";
         }
 
+        public static String getGetFollowlineCustomAPI(int call, int category_id, int value_id) {
+            StringBuilder url = null;
+            url = new StringBuilder(testurl + "/get/followline/?call=" + call);
+            if (category_id != 0) url.append("&category_id=").append(category_id);
+            if (value_id != 0) url.append("&value_id=").append(value_id);
+            return new String(url);
+        }
+
         public static String getGetTimelineAPI() {
             return testurl + "/get/timeline";
+        }
+
+        public static String getGetTimelineCustomAPI(int call, int category_id, int value_id) {
+            StringBuilder url = null;
+            url = new StringBuilder(testurl + "/get/timeline/?call=" + call);
+            if (category_id != 0) url.append("&category_id=").append(category_id);
+            if (value_id != 0) url.append("&value_id=").append(value_id);
+            return new String(url);
         }
 
         public static String getGetUserAPI(String user_id) {
@@ -2010,7 +2034,7 @@ public interface API3 {
                     "&lon=" + lon + "&lat=" + lat;
         }
 
-        public static String getUpdateDevice(String user_id, String regId, String os, String ver, String model) {
+        public static String getPublicUpdateDevice(String user_id, String regId, String os, String ver, String model) {
             return testurl + "/update/device/?user_id=" + user_id +
                     "&register_id=" + regId + "&os=" + os + "&ver=" + ver + "&model=" + model;
         }

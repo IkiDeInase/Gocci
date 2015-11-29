@@ -34,7 +34,6 @@ import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.BuildConfig;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
-import com.inase.android.gocci.datasource.api.API3;
 import com.inase.android.gocci.datasource.api.API3PostUtil;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.NotificationNumberEvent;
@@ -44,7 +43,6 @@ import com.inase.android.gocci.ui.view.DrawerProfHeader;
 import com.inase.android.gocci.ui.view.GocciTwitterLoginButton;
 import com.inase.android.gocci.utils.SavedData;
 import com.inase.android.gocci.utils.Util;
-import com.loopj.android.http.JsonHttpResponseHandler;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
@@ -59,16 +57,12 @@ import com.twitter.sdk.android.core.TwitterAuthToken;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 
-import org.json.JSONObject;
-
 import java.io.File;
-import java.net.SocketTimeoutException;
 import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import cz.msebera.android.httpclient.Header;
 
 public class SettingActivity extends AppCompatActivity {
 
@@ -167,7 +161,7 @@ public class SettingActivity extends AppCompatActivity {
                     @Override
                     public void onInput(MaterialDialog dialog, CharSequence input) {
                         // Do something
-                        Util.searchUserPost(SettingActivity.this, SettingActivity.this, input.toString());
+                        //Util.searchUserPost(SettingActivity.this, SettingActivity.this, input.toString());
                     }
                 })
                 .widgetColorRes(R.color.gocci_header)
@@ -537,20 +531,24 @@ public class SettingActivity extends AppCompatActivity {
                 case POST_FACEBOOK:
                     mFacebookSetting.setText(Profile.getCurrentProfile().getName());
                     isFacebookSetting = true;
+                    Application_Gocci.getLoginProvider().refresh();
                     break;
                 case POST_FACEBOOK_UNLINK:
                     mFacebookSetting.setText(getString(R.string.no_auth_message));
                     isFacebookSetting = false;
                     logoutFacebook();
+                    Application_Gocci.getLoginProvider().refresh();
                     break;
                 case POST_TWITTER:
                     mTwitterSetting.setText(Twitter.getSessionManager().getActiveSession().getUserName());
                     isTwitterSetting = true;
+                    Application_Gocci.getLoginProvider().refresh();
                     break;
                 case POST_TWITTER_UNLINK:
                     mTwitterSetting.setText(getString(R.string.no_auth_message));
                     isTwitterSetting = false;
                     logoutTwitter();
+                    Application_Gocci.getLoginProvider().refresh();
                     break;
             }
         }

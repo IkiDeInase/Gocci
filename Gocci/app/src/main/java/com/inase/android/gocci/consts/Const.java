@@ -46,37 +46,6 @@ public class Const {
 //    public static final String GET_MOVIE_BUCKET_NAME = "gocci.movies.provider.jp";
 //    public static final String POST_PHOTO_BUCKET_NAME = "gocci.imgs.provider.jp";
 
-    public static String getCustomTimelineAPI(int position, int sort_id, int category_id, int value_id, double lon, double lat, int call) {
-        StringBuilder url = null;
-        switch (position) {
-            case 0: //近い店
-                url = new StringBuilder(URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline/?order_id=1&lon=" + lon + "&lat=" + lat);
-                if (category_id != 0) url.append("&category_id=").append(category_id);
-                if (value_id != 0) url.append("&value_id=").append(value_id);
-                if (call != 0) url.append("&call=").append(call);
-                break;
-            case 1: //フォロー
-                url = new StringBuilder(URL_PREFIX + VERSION_NUMBER + "/mobile/get/followline/?call=" + call);
-                if (sort_id != 0) url.append("&order_id=").append(sort_id);
-                if (sort_id == 1) url.append("&lon=").append(lon).append("&lat=").append(lat);
-                if (category_id != 0) url.append("&category_id=").append(category_id);
-                if (value_id != 0) url.append("&value_id=").append(value_id);
-                break;
-            case 2: //新着
-                url = new StringBuilder(URL_PREFIX + VERSION_NUMBER + "/mobile/get/timeline/?call=" + call);
-                if (sort_id != 0) url.append("&order_id=").append(sort_id);
-                if (sort_id == 1) url.append("&lon=").append(lon).append("&lat=").append(lat);
-                if (category_id != 0) url.append("&category_id=").append(category_id);
-                if (value_id != 0) url.append("&value_id=").append(value_id);
-                break;
-        }
-        return new String(url);
-    }
-
-    public static String getPostSearchUser(String username) {
-        return URL_PREFIX + VERSION_NUMBER + "/mobile/get/user_search/?username=" + username;
-    }
-
     // 動画ファイルのキャッシュファイルの接頭辞
     public static final String MOVIE_CACHE_PREFIX = "movie_cache_";
 

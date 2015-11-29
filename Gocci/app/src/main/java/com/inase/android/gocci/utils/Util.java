@@ -1,6 +1,5 @@
 package com.inase.android.gocci.utils;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -34,19 +33,12 @@ import com.facebook.share.widget.ShareDialog;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
-import com.inase.android.gocci.datasource.api.API3;
 import com.inase.android.gocci.datasource.api.API3PostUtil;
-import com.inase.android.gocci.ui.activity.UserProfActivity;
 import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.squareup.picasso.Picasso;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -64,17 +56,6 @@ import cz.msebera.android.httpclient.Header;
  */
 public class Util {
 
-    private static final String KEY_MESSAGE = "message";
-    private static final String KEY_CODE = "code";
-
-    private static final String KEY_USER_ID = "user_id";
-
-    /**
-     * ファイルの拡張子を返す(ex: hoge.html -> .html)
-     *
-     * @param path ファイルパス
-     * @return 拡張子
-     */
     public static String getFileExtension(String path) {
         final int lastDotPosition = path.lastIndexOf(".");
         return lastDotPosition == -1 ? "" : path.substring(lastDotPosition);
@@ -425,32 +406,6 @@ public class Util {
             @Override
             public void onError(int id, Exception ex) {
                 Toast.makeText(context, context.getString(R.string.error_share), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    public static void searchUserPost(final Activity activiy, final Context context, final String username) {
-        Application_Gocci.getJsonAsyncHttpClient(Const.getPostSearchUser(username), new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                try {
-                    String message = response.getString(KEY_MESSAGE);
-                    int code = response.getInt(KEY_CODE);
-                    String user_id = response.getString(KEY_USER_ID);
-
-                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-
-                    if (code == 200) {
-                        UserProfActivity.startUserProfActivity(user_id, username, activiy);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_SHORT).show();
             }
         });
     }

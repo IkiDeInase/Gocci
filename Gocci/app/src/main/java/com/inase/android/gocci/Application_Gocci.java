@@ -69,31 +69,11 @@ public class Application_Gocci extends Application {
         mLongitude = longitude;
     }
 
-    public static void getJsonSyncHttpClient(String url, JsonHttpResponseHandler responseHandler) {
-        sSyncHttpClient.get(url, responseHandler);
-    }
-
     public static void getJsonSync(String url, JsonHttpResponseHandler responseHandler) throws SocketTimeoutException {
         sSyncHttpClient.get(url, responseHandler);
     }
 
     public static void getJsonAsync(String url, JsonHttpResponseHandler responseHandler) throws SocketTimeoutException {
-        sAsyncHttpClient.get(url, responseHandler);
-    }
-
-    public static void getTextSyncHttpClient(String url, TextHttpResponseHandler responseHandler) {
-        sSyncHttpClient.get(url, responseHandler);
-    }
-
-    public static void getJsonAsyncHttpClient(String url, JsonHttpResponseHandler responseHandler) {
-        sAsyncHttpClient.get(url, responseHandler);
-    }
-
-    public static void getTextAsyncHttpClient(String url, TextHttpResponseHandler responseHandler) {
-        sAsyncHttpClient.get(url, responseHandler);
-    }
-
-    public static void getAsyncHttpClient(String url, AsyncHttpResponseHandler responseHandler) {
         sAsyncHttpClient.get(url, responseHandler);
     }
 
@@ -325,40 +305,44 @@ public class Application_Gocci extends Application {
                 //ログインとコグニートリフレッシュ　→　リトライ
                 API3.Util.GlobalCode code = API3.Impl.getRepository().check_global_error();
                 if (code == API3.Util.GlobalCode.SUCCESS) {
-                    getJsonAsyncHttpClient(API3.Util.getAuthLoginAPI(SavedData.getIdentityId(getInstance().getApplicationContext())), new JsonHttpResponseHandler() {
-                        @Override
-                        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                            API3.Impl.getRepository().auth_login_response(response, new API3.AuthResponseCallback() {
-                                @Override
-                                public void onSuccess() {
-                                    //リフレッシュ&リトライ
-                                    BusHolder.get().post(new RetryApiEvent(api));
-                                    new AsyncTask<Void, Void, Void>() {
-                                        @Override
-                                        protected Void doInBackground(Void... params) {
-                                            credentialsProvider.refresh();
-                                            return null;
-                                        }
-                                    }.execute();
-                                }
+                    try {
+                        getJsonAsync(API3.Util.getAuthLoginAPI(SavedData.getIdentityId(getInstance().getApplicationContext())), new JsonHttpResponseHandler() {
+                            @Override
+                            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                                API3.Impl.getRepository().auth_login_response(response, new API3.AuthResponseCallback() {
+                                    @Override
+                                    public void onSuccess() {
+                                        //リフレッシュ&リトライ
+                                        BusHolder.get().post(new RetryApiEvent(api));
+                                        new AsyncTask<Void, Void, Void>() {
+                                            @Override
+                                            protected Void doInBackground(Void... params) {
+                                                credentialsProvider.refresh();
+                                                return null;
+                                            }
+                                        }.execute();
+                                    }
 
-                                @Override
-                                public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                    resolveOrHandleGlobalError(api, globalCode);
-                                }
+                                    @Override
+                                    public void onGlobalError(API3.Util.GlobalCode globalCode) {
+                                        resolveOrHandleGlobalError(api, globalCode);
+                                    }
 
-                                @Override
-                                public void onLocalError(String errorMessage) {
-                                    Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), errorMessage, Toast.LENGTH_LONG).show();
-                                }
-                            });
-                        }
+                                    @Override
+                                    public void onLocalError(String errorMessage) {
+                                        Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), errorMessage, Toast.LENGTH_LONG).show();
+                                    }
+                                });
+                            }
 
-                        @Override
-                        public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                            resolveOrHandleGlobalError(api, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED);
-                        }
-                    });
+                            @Override
+                            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                                resolveOrHandleGlobalError(api, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED);
+                            }
+                        });
+                    } catch (SocketTimeoutException e) {
+                        resolveOrHandleGlobalError(api, API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT);
+                    }
                 } else {
                     resolveOrHandleGlobalError(api, code);
                 }

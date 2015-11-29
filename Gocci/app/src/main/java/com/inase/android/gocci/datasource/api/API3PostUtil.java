@@ -332,13 +332,13 @@ public class API3PostUtil {
         }
     }
 
-    public static void postRegIdAsync(final Context context, String user_id, final String regId, String os, String ver, String model) {
+    public static void publicUpdateDeviceAsync(final Context context, String user_id, final String regId, String os, String ver, String model) {
         API3.Util.PublicUpdateDeviceLocalCode localCode = API3.Impl.getRepository().public_update_device_parameter_regex(user_id, regId, os, ver, model);
         if (localCode == null) {
             API3.Util.GlobalCode globalCode = API3.Impl.getRepository().check_global_error();
             if (globalCode == API3.Util.GlobalCode.SUCCESS) {
                 try {
-                    Application_Gocci.getJsonAsync(API3.Util.getUpdateDevice(user_id, regId, os, ver, model), new JsonHttpResponseHandler() {
+                    Application_Gocci.getJsonAsync(API3.Util.getPublicUpdateDevice(user_id, regId, os, ver, model), new JsonHttpResponseHandler() {
 
                         @Override
                         public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -350,7 +350,7 @@ public class API3PostUtil {
 
                                 @Override
                                 public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_PASSWORD, globalCode);
+                                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.PUBLIC_UPDATE_PROFILE, globalCode);
                                 }
 
                                 @Override
@@ -362,14 +362,14 @@ public class API3PostUtil {
 
                         @Override
                         public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                            Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_PASSWORD, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED);
+                            Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.PUBLIC_UPDATE_PROFILE, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED);
                         }
                     });
                 } catch (SocketTimeoutException e) {
-                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_PASSWORD, API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT);
+                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.PUBLIC_UPDATE_PROFILE, API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT);
                 }
             } else {
-                Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_PASSWORD, globalCode);
+                Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.PUBLIC_UPDATE_PROFILE, globalCode);
             }
         } else {
             Toast.makeText(context, API3.Util.publicUpdateDeviceErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();

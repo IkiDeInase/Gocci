@@ -16,8 +16,6 @@ public class SavedData {
     private static final String KEY_SERVER_NAME_ID = "ServerNameID";
     private static final String KEY_SERVER_PICTURE = "ServerPicture";
 
-    private static final String KEY_LOGIN_JUDGE = "judge";
-
     private static final String KEY_NOTIFICATION = "notification";
     private static final String KEY_REGID = "regId";
 
@@ -41,7 +39,6 @@ public class SavedData {
     private static final String KEY_VIDEO_URL = "video_url";
     private static final String KEY_AWS_POST_NAME = "aws_post_name";
     private static final String KEY_CATEGORY_ID = "category_id";
-    private static final String KEY_TAG_ID = "tag_id";
     private static final String KEY_MEMO = "memo";
     private static final String KEY_VALUE = "value";
     private static final String KEY_ISNEWRESTNAME = "isNewRestname";
@@ -58,14 +55,6 @@ public class SavedData {
         editor.putString(KEY_SERVER_NAME_ID, user_id);
         editor.putString(KEY_IDENTITYID, identityId);
         editor.putInt(KEY_NOTIFICATION, badge_num);
-        editor.apply();
-    }
-
-    public static void changeProfile(Context context, String name, String picture) {
-        SharedPreferences prefs = context.getSharedPreferences("pref", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putString(KEY_SERVER_NAME, name);
-        editor.putString(KEY_SERVER_PICTURE, picture);
         editor.apply();
     }
 
@@ -105,13 +94,6 @@ public class SavedData {
         editor.apply();
     }
 
-    public static void setLoginJudge(Context context, String judge) {
-        SharedPreferences pref = context.getSharedPreferences("pref", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = pref.edit();
-        editor.putString(KEY_LOGIN_JUDGE, judge);
-        editor.apply();
-    }
-
     public static String getServerUserId(Context context) {
         SharedPreferences pref = context.getSharedPreferences("pref", Context.MODE_PRIVATE);
         return pref.getString(KEY_SERVER_NAME_ID, "1");
@@ -120,11 +102,6 @@ public class SavedData {
     public static String getRegId(Context context) {
         SharedPreferences pref = context.getSharedPreferences("pref", Context.MODE_PRIVATE);
         return pref.getString(KEY_REGID, null);
-    }
-
-    public static String getLoginJudge(Context context) {
-        SharedPreferences pref = context.getSharedPreferences("pref", Context.MODE_PRIVATE);
-        return pref.getString(KEY_LOGIN_JUDGE, "no judge");
     }
 
     public static String getIdentityId(Context context) {
@@ -280,13 +257,6 @@ public class SavedData {
         editor.apply();
     }
 
-    public static void setTag_id(Context context, int tag_id) {
-        SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putInt(KEY_TAG_ID, tag_id);
-        editor.apply();
-    }
-
     public static void setMemo(Context context, String memo) {
         SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
@@ -345,11 +315,6 @@ public class SavedData {
     public static int getCategory_id(Context context) {
         SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
         return prefs.getInt(KEY_CATEGORY_ID, 1);
-    }
-
-    public static int getTag_id(Context context) {
-        SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
-        return prefs.getInt(KEY_TAG_ID, 1);
     }
 
     public static String getMemo(Context context) {
