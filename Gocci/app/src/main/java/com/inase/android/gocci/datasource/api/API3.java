@@ -1908,9 +1908,9 @@ public interface API3 {
             return testurl + "/get/nearline/?lon=" + lon + "&lat=" + lat;
         }
 
-        public static String getGetNearlineCustomAPI(double lon, double lat, int call, int category_id, int value_id) {
+        public static String getGetNearlineCustomAPI(double lon, double lat, int page, int category_id, int value_id) {
             StringBuilder url = null;
-            url = new StringBuilder(testurl + "/get/nearline/?lon=" + lon + "&lat=" + lat + "&call=" + call);
+            url = new StringBuilder(testurl + "/get/nearline/?lon=" + lon + "&lat=" + lat + "&page=" + page);
             if (category_id != 0) url.append("&category_id=").append(category_id);
             if (value_id != 0) url.append("&value_id=").append(value_id);
             return new String(url);
@@ -1920,9 +1920,9 @@ public interface API3 {
             return testurl + "/get/followline";
         }
 
-        public static String getGetFollowlineCustomAPI(int call, int category_id, int value_id) {
+        public static String getGetFollowlineCustomAPI(int page, int category_id, int value_id) {
             StringBuilder url = null;
-            url = new StringBuilder(testurl + "/get/followline/?call=" + call);
+            url = new StringBuilder(testurl + "/get/followline/?page=" + page);
             if (category_id != 0) url.append("&category_id=").append(category_id);
             if (value_id != 0) url.append("&value_id=").append(value_id);
             return new String(url);
@@ -1932,9 +1932,9 @@ public interface API3 {
             return testurl + "/get/timeline";
         }
 
-        public static String getGetTimelineCustomAPI(int call, int category_id, int value_id) {
+        public static String getGetTimelineCustomAPI(int page, int category_id, int value_id) {
             StringBuilder url = null;
-            url = new StringBuilder(testurl + "/get/timeline/?call=" + call);
+            url = new StringBuilder(testurl + "/get/timeline/?page=" + page);
             if (category_id != 0) url.append("&category_id=").append(category_id);
             if (value_id != 0) url.append("&value_id=").append(value_id);
             return new String(url);
