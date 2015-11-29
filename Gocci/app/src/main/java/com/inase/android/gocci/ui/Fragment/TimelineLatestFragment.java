@@ -161,9 +161,8 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
                     if (!isEndScrioll) {
                         API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().get_timeline_parameter_regex();
                         if (localCode == null) {
-                            mPresenter.getLatestTimelinePostData(Const.APICategory.GET_TIMELINE_ADD, Const.getCustomTimelineAPI(2,
-                                    TimelineActivity.mLatestSort_id, TimelineActivity.mLatestCategory_id, TimelineActivity.mLatestValue_id,
-                                    TimelineActivity.mLongitude, TimelineActivity.mLatitude, mNextCount));
+                            mPresenter.getLatestTimelinePostData(Const.APICategory.GET_TIMELINE_ADD, API3.Util.getGetTimelineCustomAPI(
+                                    mNextCount, TimelineActivity.mLatestCategory_id, TimelineActivity.mLatestValue_id));
                         } else {
                             Toast.makeText(getActivity(), API3.Util.getTimelineLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
                         }
@@ -462,15 +461,13 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
             public void onLocationUpdated(Location location) {
                 TimelineActivity.mLongitude = location.getLongitude();
                 TimelineActivity.mLatitude = location.getLatitude();
-                TimelineActivity.mLatestSort_id = 0;
                 TimelineActivity.mLatestCategory_id = 0;
                 TimelineActivity.mLatestValue_id = 0;
 
                 API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().get_timeline_parameter_regex();
                 if (localCode == null) {
-                    mPresenter.getLatestTimelinePostData(Const.APICategory.GET_TIMELINE_REFRESH, Const.getCustomTimelineAPI(2,
-                            TimelineActivity.mLatestSort_id, TimelineActivity.mLatestCategory_id, TimelineActivity.mLatestValue_id,
-                            TimelineActivity.mLongitude, TimelineActivity.mLatitude, 0));
+                    mPresenter.getLatestTimelinePostData(Const.APICategory.GET_TIMELINE_REFRESH, API3.Util.getGetTimelineCustomAPI(
+                            0, TimelineActivity.mLatestCategory_id, TimelineActivity.mLatestValue_id));
                 } else {
                     Toast.makeText(getActivity(), API3.Util.getTimelineLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
                 }
@@ -695,14 +692,12 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
                 mPresenter.getLatestTimelinePostData(Const.APICategory.GET_TIMELINE_FIRST, API3.Util.getGetTimelineAPI());
                 break;
             case GET_TIMELINE_REFRESH:
-                mPresenter.getLatestTimelinePostData(Const.APICategory.GET_TIMELINE_REFRESH, Const.getCustomTimelineAPI(2,
-                        TimelineActivity.mLatestSort_id, TimelineActivity.mLatestCategory_id, TimelineActivity.mLatestValue_id,
-                        TimelineActivity.mLongitude, TimelineActivity.mLatitude, 0));
+                mPresenter.getLatestTimelinePostData(Const.APICategory.GET_TIMELINE_REFRESH, API3.Util.getGetTimelineCustomAPI(
+                        0, TimelineActivity.mLatestCategory_id, TimelineActivity.mLatestValue_id));
                 break;
             case GET_TIMELINE_ADD:
-                mPresenter.getLatestTimelinePostData(Const.APICategory.GET_TIMELINE_ADD, Const.getCustomTimelineAPI(2,
-                        TimelineActivity.mLatestSort_id, TimelineActivity.mLatestCategory_id, TimelineActivity.mLatestValue_id,
-                        TimelineActivity.mLongitude, TimelineActivity.mLatitude, mNextCount));
+                mPresenter.getLatestTimelinePostData(Const.APICategory.GET_TIMELINE_ADD, API3.Util.getGetTimelineCustomAPI(
+                        mNextCount, TimelineActivity.mLatestCategory_id, TimelineActivity.mLatestValue_id));
                 break;
             case GET_TIMELINE_FILTER:
 

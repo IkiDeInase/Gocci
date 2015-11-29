@@ -26,12 +26,6 @@
         <item>@string/rich</item>
     </array>
 
-    <array name="list_sort">
-        <item>@string/line_latest</item>
-        <item>@string/line_near</item>
-        <item>@string/line_gochi</item>
-    </array>
-
     <array name="list_mood">
         <!--<item>@string/no_tag</item>-->
         <item>@string/nigi</item>

@@ -165,9 +165,9 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
                     if (!isEndScrioll) {
                         API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().get_nearline_parameter_regex(TimelineActivity.mLongitude, TimelineActivity.mLatitude);
                         if (localCode == null) {
-                            mPresenter.getNearTimelinePostData(Const.APICategory.GET_TIMELINE_ADD, Const.getCustomTimelineAPI(0,
-                                    TimelineActivity.mNearSort_id, TimelineActivity.mNearCategory_id, TimelineActivity.mNearValue_id,
-                                    TimelineActivity.mLongitude, TimelineActivity.mLatitude, mNextCount));
+                            mPresenter.getNearTimelinePostData(Const.APICategory.GET_TIMELINE_ADD, API3.Util.getGetNearlineCustomAPI(
+                                    TimelineActivity.mLongitude, TimelineActivity.mLatitude, mNextCount,
+                                    TimelineActivity.mNearCategory_id, TimelineActivity.mNearValue_id));
                         } else {
                             Toast.makeText(getActivity(), API3.Util.getTimelineLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
                         }
@@ -271,7 +271,9 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
 
                     API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().get_nearline_parameter_regex(TimelineActivity.mLongitude, TimelineActivity.mLatitude);
                     if (localCode == null) {
-                        mPresenter.getNearTimelinePostData(Const.APICategory.GET_TIMELINE_REFRESH, API3.Util.getGetNearlineAPI(TimelineActivity.mLongitude, TimelineActivity.mLatitude));
+                        mPresenter.getNearTimelinePostData(Const.APICategory.GET_TIMELINE_REFRESH, API3.Util.getGetNearlineCustomAPI(
+                                TimelineActivity.mLongitude, TimelineActivity.mLatitude, 0,
+                                TimelineActivity.mNearCategory_id, TimelineActivity.mNearValue_id));
                     } else {
                         Toast.makeText(getActivity(), API3.Util.getTimelineLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
                     }
@@ -465,7 +467,9 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
 
                     API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().get_nearline_parameter_regex(TimelineActivity.mLongitude, TimelineActivity.mLatitude);
                     if (localCode == null) {
-                        mPresenter.getNearTimelinePostData(Const.APICategory.GET_TIMELINE_REFRESH, API3.Util.getGetNearlineAPI(TimelineActivity.mLongitude, TimelineActivity.mLatitude));
+                        mPresenter.getNearTimelinePostData(Const.APICategory.GET_TIMELINE_REFRESH, API3.Util.getGetNearlineCustomAPI(
+                                TimelineActivity.mLongitude, TimelineActivity.mLatitude, 0,
+                                TimelineActivity.mNearCategory_id, TimelineActivity.mNearValue_id));
                         TimelineActivity activity = (TimelineActivity) getActivity();
                         activity.setNowLocationTitle();
                     } else {
@@ -564,7 +568,9 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
 
                                 API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().get_nearline_parameter_regex(TimelineActivity.mLongitude, TimelineActivity.mLatitude);
                                 if (localCode == null) {
-                                    mPresenter.getNearTimelinePostData(Const.APICategory.GET_TIMELINE_REFRESH, API3.Util.getGetNearlineAPI(TimelineActivity.mLongitude, TimelineActivity.mLatitude));
+                                    mPresenter.getNearTimelinePostData(Const.APICategory.GET_TIMELINE_REFRESH, API3.Util.getGetNearlineCustomAPI(
+                                            TimelineActivity.mLongitude, TimelineActivity.mLatitude, 0,
+                                            TimelineActivity.mNearCategory_id, TimelineActivity.mNearValue_id));
                                     TimelineActivity activity = (TimelineActivity) getActivity();
                                     activity.setNowLocationTitle();
                                 } else {
@@ -623,7 +629,9 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
 
                                 API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().get_nearline_parameter_regex(TimelineActivity.mLongitude, TimelineActivity.mLatitude);
                                 if (localCode == null) {
-                                    mPresenter.getNearTimelinePostData(Const.APICategory.GET_TIMELINE_REFRESH, API3.Util.getGetNearlineAPI(TimelineActivity.mLongitude, TimelineActivity.mLatitude));
+                                    mPresenter.getNearTimelinePostData(Const.APICategory.GET_TIMELINE_REFRESH, API3.Util.getGetNearlineCustomAPI(
+                                            TimelineActivity.mLongitude, TimelineActivity.mLatitude, 0,
+                                            TimelineActivity.mNearCategory_id, TimelineActivity.mNearValue_id));
                                     TimelineActivity activity = (TimelineActivity) getActivity();
                                     activity.setNowLocationTitle();
                                 } else {
@@ -968,14 +976,16 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
                 mPresenter.getNearTimelinePostData(Const.APICategory.GET_TIMELINE_FIRST, API3.Util.getGetNearlineAPI(TimelineActivity.mLongitude, TimelineActivity.mLatitude));
                 break;
             case GET_TIMELINE_REFRESH:
-                mPresenter.getNearTimelinePostData(Const.APICategory.GET_TIMELINE_REFRESH, API3.Util.getGetNearlineAPI(TimelineActivity.mLongitude, TimelineActivity.mLatitude));
+                mPresenter.getNearTimelinePostData(Const.APICategory.GET_TIMELINE_REFRESH, API3.Util.getGetNearlineCustomAPI(
+                        TimelineActivity.mLongitude, TimelineActivity.mLatitude, 0,
+                        TimelineActivity.mNearCategory_id, TimelineActivity.mNearValue_id));
                 TimelineActivity activity = (TimelineActivity) getActivity();
                 activity.setNowLocationTitle();
                 break;
             case GET_TIMELINE_ADD:
-                mPresenter.getNearTimelinePostData(Const.APICategory.GET_TIMELINE_ADD, Const.getCustomTimelineAPI(0,
-                        TimelineActivity.mNearSort_id, TimelineActivity.mNearCategory_id, TimelineActivity.mNearValue_id,
-                        TimelineActivity.mLongitude, TimelineActivity.mLatitude, mNextCount));
+                mPresenter.getNearTimelinePostData(Const.APICategory.GET_TIMELINE_ADD, API3.Util.getGetNearlineCustomAPI(
+                        TimelineActivity.mLongitude, TimelineActivity.mLatitude, mNextCount,
+                        TimelineActivity.mNearCategory_id, TimelineActivity.mNearValue_id));
                 break;
             case GET_TIMELINE_FILTER:
 

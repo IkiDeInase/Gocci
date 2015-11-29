@@ -158,9 +158,8 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
                     if (!isEndScrioll) {
                         API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().get_followline_parameter_regex();
                         if (localCode == null) {
-                            mPresenter.getFollowTimelinePostData(Const.APICategory.GET_TIMELINE_ADD, Const.getCustomTimelineAPI(1,
-                                    TimelineActivity.mFollowSort_id, TimelineActivity.mFollowCategory_id, TimelineActivity.mFollowValue_id,
-                                    TimelineActivity.mLongitude, TimelineActivity.mLatitude, mNextCount));
+                            mPresenter.getFollowTimelinePostData(Const.APICategory.GET_TIMELINE_ADD, API3.Util.getGetFollowlineCustomAPI(
+                                    mNextCount, TimelineActivity.mFollowCategory_id, TimelineActivity.mFollowValue_id));
                         } else {
                             Toast.makeText(getActivity(), API3.Util.getTimelineLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
                         }
@@ -423,15 +422,13 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
             public void onLocationUpdated(Location location) {
                 TimelineActivity.mLongitude = location.getLongitude();
                 TimelineActivity.mLatitude = location.getLatitude();
-                TimelineActivity.mFollowSort_id = 0;
                 TimelineActivity.mFollowValue_id = 0;
                 TimelineActivity.mFollowCategory_id = 0;
 
                 API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().get_followline_parameter_regex();
                 if (localCode == null) {
-                    mPresenter.getFollowTimelinePostData(Const.APICategory.GET_TIMELINE_REFRESH, Const.getCustomTimelineAPI(1,
-                            TimelineActivity.mFollowSort_id, TimelineActivity.mFollowCategory_id, TimelineActivity.mFollowValue_id,
-                            TimelineActivity.mLongitude, TimelineActivity.mLatitude, 0));
+                    mPresenter.getFollowTimelinePostData(Const.APICategory.GET_TIMELINE_REFRESH, API3.Util.getGetFollowlineCustomAPI(
+                            0, TimelineActivity.mFollowCategory_id, TimelineActivity.mFollowValue_id));
                 } else {
                     Toast.makeText(getActivity(), API3.Util.getTimelineLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
                 }
@@ -693,14 +690,12 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
                 mPresenter.getFollowTimelinePostData(Const.APICategory.GET_TIMELINE_FIRST, API3.Util.getGetFollowlineAPI());
                 break;
             case GET_TIMELINE_REFRESH:
-                mPresenter.getFollowTimelinePostData(Const.APICategory.GET_TIMELINE_REFRESH, Const.getCustomTimelineAPI(1,
-                        TimelineActivity.mFollowSort_id, TimelineActivity.mFollowCategory_id, TimelineActivity.mFollowValue_id,
-                        TimelineActivity.mLongitude, TimelineActivity.mLatitude, 0));
+                mPresenter.getFollowTimelinePostData(Const.APICategory.GET_TIMELINE_REFRESH, API3.Util.getGetFollowlineCustomAPI(
+                        0, TimelineActivity.mFollowCategory_id, TimelineActivity.mFollowValue_id));
                 break;
             case GET_TIMELINE_ADD:
-                mPresenter.getFollowTimelinePostData(Const.APICategory.GET_TIMELINE_ADD, Const.getCustomTimelineAPI(1,
-                        TimelineActivity.mFollowSort_id, TimelineActivity.mFollowCategory_id, TimelineActivity.mFollowValue_id,
-                        TimelineActivity.mLongitude, TimelineActivity.mLatitude, mNextCount));
+                mPresenter.getFollowTimelinePostData(Const.APICategory.GET_TIMELINE_ADD, API3.Util.getGetFollowlineCustomAPI(
+                        mNextCount, TimelineActivity.mFollowCategory_id, TimelineActivity.mFollowValue_id));
                 break;
             case GET_TIMELINE_FILTER:
 

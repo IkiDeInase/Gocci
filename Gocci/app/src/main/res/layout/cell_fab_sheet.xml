@@ -39,26 +39,6 @@
         app:met_floatingLabel="normal"
         app:met_floatingLabelTextSize="10sp" />
 
-    <ImageView
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_marginTop="8dp"
-        android:layout_gravity="center_horizontal"
-        android:src="@drawable/bs_ic_clear_light"
-        android:id="@+id/sort_cross" />
-
-    <com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner
-        android:id="@+id/sort_spinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:hint="@string/sort"
-        android:textColor="@color/timecolor"
-        android:textSize="@dimen/small_text"
-        app:met_floatingLabel="normal"
-        app:met_floatingLabelTextSize="10sp" />
-
     <com.andexert.library.RippleView
         android:id="@+id/filter_ripple"
         android:layout_width="match_parent"
@@ -66,6 +46,7 @@
         android:layout_centerHorizontal="true"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
+        android:layout_marginTop="8dp"
         android:background="@color/gocci_button"
         android:gravity="center_vertical">
 

@@ -41,6 +41,7 @@ import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManag
 import com.andexert.library.RippleView;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.datasource.api.API3;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.FilterTimelineEvent;
 import com.inase.android.gocci.event.NotificationNumberEvent;
@@ -95,10 +96,6 @@ public class TimelineActivity extends AppCompatActivity {
     MaterialBetterSpinner mCategorySpinner;
     @Bind(R.id.value_spinner)
     MaterialBetterSpinner mValueSpinner;
-    @Bind(R.id.sort_spinner)
-    MaterialBetterSpinner mSortSpinner;
-    @Bind(R.id.sort_cross)
-    ImageView mSortCross;
     @Bind(R.id.filter_ripple)
     RippleView mFilterRipple;
     @Bind(R.id.sheet)
@@ -141,15 +138,12 @@ public class TimelineActivity extends AppCompatActivity {
 
     public static int mShowPosition = 0;
 
-    public static int mNearSort_id = 1;
     public static int mNearCategory_id = 0;
     public static int mNearValue_id = 0;
 
-    public static int mLatestSort_id = 0;
     public static int mLatestCategory_id = 0;
     public static int mLatestValue_id = 0;
 
-    public static int mFollowSort_id = 0;
     public static int mFollowCategory_id = 0;
     public static int mFollowValue_id = 0;
 
@@ -158,7 +152,6 @@ public class TimelineActivity extends AppCompatActivity {
 
     private String mTitle = "現在地";
 
-    private String[] SORT;
     private String[] CATEGORY;
     private String[] VALUE;
 
@@ -282,9 +275,6 @@ public class TimelineActivity extends AppCompatActivity {
                 mShowPosition = position;
                 switch (mShowPosition) {
                     case 0:
-                        mSortSpinner.setVisibility(View.GONE);
-                        mSortCross.setVisibility(View.GONE);
-                        mSortSpinner.setText(SORT[mNearSort_id]);
                         if (mNearCategory_id != 0)
                             mCategorySpinner.setText(CATEGORY[mNearCategory_id]);
                         if (mNearValue_id != 0) mValueSpinner.setText(VALUE[mNearValue_id]);
@@ -295,9 +285,6 @@ public class TimelineActivity extends AppCompatActivity {
                         mToolBar.setLogo(null);
                         break;
                     case 1:
-                        mSortSpinner.setVisibility(View.VISIBLE);
-                        mSortCross.setVisibility(View.VISIBLE);
-                        mSortSpinner.setText(SORT[mFollowSort_id]);
                         if (mFollowCategory_id != 0)
                             mCategorySpinner.setText(CATEGORY[mFollowCategory_id]);
                         if (mFollowValue_id != 0) mValueSpinner.setText(VALUE[mFollowValue_id]);
@@ -307,9 +294,6 @@ public class TimelineActivity extends AppCompatActivity {
                         mToolBar.setLogo(R.drawable.ic_gocci_moji_white45);
                         break;
                     case 2:
-                        mSortSpinner.setVisibility(View.VISIBLE);
-                        mSortCross.setVisibility(View.VISIBLE);
-                        mSortSpinner.setText(SORT[mLatestSort_id]);
                         if (mLatestCategory_id != 0)
                             mCategorySpinner.setText(CATEGORY[mLatestCategory_id]);
                         if (mLatestValue_id != 0) mValueSpinner.setText(VALUE[mLatestValue_id]);
@@ -330,7 +314,6 @@ public class TimelineActivity extends AppCompatActivity {
 
         CATEGORY = getResources().getStringArray(R.array.list_category);
         VALUE = getResources().getStringArray(R.array.list_value);
-        SORT = getResources().getStringArray(R.array.list_sort);
 
         ArrayAdapter<String> categoryAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_dropdown_item_1line, CATEGORY);
@@ -368,24 +351,9 @@ public class TimelineActivity extends AppCompatActivity {
                 }
             }
         });
-        ArrayAdapter<String> sortAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_dropdown_item_1line, SORT);
-        mSortSpinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                switch (mShowPosition) {
-                    case 1:
-                        mFollowSort_id = position;
-                        break;
-                    case 2:
-                        mLatestSort_id = position;
-                        break;
-                }
-            }
-        });
+
         mCategorySpinner.setAdapter(categoryAdapter);
         mValueSpinner.setAdapter(valueAdapter);
-        mSortSpinner.setAdapter(sortAdapter);
 
         mFilterRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
             @Override
@@ -394,26 +362,20 @@ public class TimelineActivity extends AppCompatActivity {
                 //Otto currentpageと絞り込みurl
                 switch (mShowPosition) {
                     case 0:
-                        BusHolder.get().post(new FilterTimelineEvent(mShowPosition, Const.getCustomTimelineAPI(mShowPosition,
-                                mNearSort_id, mNearCategory_id, mNearValue_id,
-                                mLongitude, mLatitude, 0)));
+                        BusHolder.get().post(new FilterTimelineEvent(mShowPosition, API3.Util.getGetNearlineCustomAPI(
+                                mLongitude, mLatitude, 0, mNearCategory_id, mNearValue_id)));
                         break;
                     case 1:
-                        BusHolder.get().post(new FilterTimelineEvent(mShowPosition, Const.getCustomTimelineAPI(mShowPosition,
-                                mFollowSort_id, mFollowCategory_id, mFollowValue_id,
-                                mLongitude, mLatitude, 0)));
+                        BusHolder.get().post(new FilterTimelineEvent(mShowPosition, API3.Util.getGetFollowlineCustomAPI(
+                                0, mFollowCategory_id, mFollowValue_id)));
                         break;
                     case 2:
-                        BusHolder.get().post(new FilterTimelineEvent(mShowPosition, Const.getCustomTimelineAPI(mShowPosition,
-                                mLatestSort_id, mLatestCategory_id, mLatestValue_id,
-                                mLongitude, mLatitude, 0)));
+                        BusHolder.get().post(new FilterTimelineEvent(mShowPosition, API3.Util.getGetTimelineCustomAPI(
+                                0, mLatestCategory_id, mLatestValue_id)));
                         break;
                 }
             }
         });
-
-        mSortSpinner.setVisibility(View.GONE);
-        mSortCross.setVisibility(View.GONE);
 
         mGochi.setOnTouchListener(new View.OnTouchListener() {
             @Override
