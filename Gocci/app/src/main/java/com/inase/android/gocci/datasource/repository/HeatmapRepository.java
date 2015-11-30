@@ -3,7 +3,6 @@ package com.inase.android.gocci.datasource.repository;
 import com.google.android.gms.maps.model.LatLng;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3;
-import com.inase.android.gocci.domain.model.HeaderData;
 
 import java.util.ArrayList;
 
