@@ -257,7 +257,7 @@ public class API3PostUtil {
                             API3.Impl.getRepository().post_sns_response(response, new API3.PostResponseCallback() {
                                 @Override
                                 public void onSuccess() {
-                                    BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, activityCategory, api, null));
+                                    BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, activityCategory, api, sns_token));
                                 }
 
                                 @Override
@@ -301,7 +301,7 @@ public class API3PostUtil {
                             API3.Impl.getRepository().post_sns_unlink_response(response, new API3.PostResponseCallback() {
                                 @Override
                                 public void onSuccess() {
-                                    BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, activityCategory, api, null));
+                                    BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, activityCategory, api, sns_token));
                                 }
 
                                 @Override
@@ -482,7 +482,7 @@ public class API3PostUtil {
         });
     }
 
-    public static void postMovieAsync(final Context context, final Const.ActivityCategory activityCategory, final String rest_id, String movie_name, int category_id, String value, String memo, int cheer_flag) {
+    public static void postMovieAsync(final Context context, final Const.ActivityCategory activityCategory, final String rest_id, String movie_name, int category_id, String value, final String memo, int cheer_flag) {
         API3.Util.PostPostLocalCode localCode = API3.Impl.getRepository().post_post_parameter_regex(rest_id, movie_name, category_id, value, memo, cheer_flag);
         if (localCode == null) {
             API3.Util.GlobalCode globalCode = API3.Impl.getRepository().check_global_error();
@@ -495,19 +495,19 @@ public class API3PostUtil {
                             API3.Impl.getRepository().post_post_response(response, new API3.PostResponseCallback() {
                                 @Override
                                 public void onSuccess() {
-                                    BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, activityCategory, Const.APICategory.POST_POST, null));
+                                    BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, activityCategory, Const.APICategory.POST_POST, memo));
                                 }
 
                                 @Override
                                 public void onGlobalError(API3.Util.GlobalCode globalCode) {
                                     Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_POST, globalCode);
-                                    BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.GLOBALERROR, activityCategory, Const.APICategory.POST_POST, null));
+                                    BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.GLOBALERROR, activityCategory, Const.APICategory.POST_POST, memo));
                                 }
 
                                 @Override
                                 public void onLocalError(String errorMessage) {
                                     Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
-                                    BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.LOCALERROR, activityCategory, Const.APICategory.POST_POST, null));
+                                    BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.LOCALERROR, activityCategory, Const.APICategory.POST_POST, memo));
                                 }
                             });
                         }
@@ -515,20 +515,20 @@ public class API3PostUtil {
                         @Override
                         public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                             Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_POST, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED);
-                            BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.GLOBALERROR, activityCategory, Const.APICategory.POST_POST, null));
+                            BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.GLOBALERROR, activityCategory, Const.APICategory.POST_POST, memo));
                         }
                     });
                 } catch (SocketTimeoutException e) {
                     Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_POST, API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT);
-                    BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.GLOBALERROR, activityCategory, Const.APICategory.POST_POST, null));
+                    BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.GLOBALERROR, activityCategory, Const.APICategory.POST_POST, memo));
                 }
             } else {
                 Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_POST, globalCode);
-                BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.GLOBALERROR, activityCategory, Const.APICategory.POST_POST, null));
+                BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.GLOBALERROR, activityCategory, Const.APICategory.POST_POST, memo));
             }
         } else {
             Toast.makeText(context, API3.Util.postPostLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
-            BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.LOCALERROR, activityCategory, Const.APICategory.POST_POST, null));
+            BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.LOCALERROR, activityCategory, Const.APICategory.POST_POST, memo));
         }
     }
 }
