@@ -3,8 +3,6 @@ package com.inase.android.gocci.datasource.memory;
 import android.content.Context;
 import android.util.Log;
 
-import com.inase.android.gocci.consts.Const;
-import com.inase.android.gocci.utils.Util;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.BinaryHttpResponseHandler;
 import com.loopj.android.http.FileAsyncHttpResponseHandler;

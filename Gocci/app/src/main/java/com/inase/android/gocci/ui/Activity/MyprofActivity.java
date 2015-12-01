@@ -66,7 +66,6 @@ import com.inase.android.gocci.event.ProfJsonEvent;
 import com.inase.android.gocci.event.RetryApiEvent;
 import com.inase.android.gocci.event.TimelineMuteChangeEvent;
 import com.inase.android.gocci.presenter.ShowMyProfPresenter;
-import com.inase.android.gocci.ui.adapter.StreamMyProfAdapter;
 import com.inase.android.gocci.ui.fragment.GridMyProfFragment;
 import com.inase.android.gocci.ui.fragment.StreamMyProfFragment;
 import com.inase.android.gocci.ui.view.DrawerProfHeader;

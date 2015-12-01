@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import com.cocosw.bottomsheet.BottomSheet;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
-import com.inase.android.gocci.datasource.api.API3PostUtil;
 import com.inase.android.gocci.domain.model.TwoCellData;
 import com.inase.android.gocci.utils.Util;
 import com.squareup.picasso.Picasso;

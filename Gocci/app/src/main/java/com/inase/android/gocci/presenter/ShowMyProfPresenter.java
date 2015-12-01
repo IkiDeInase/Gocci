@@ -7,7 +7,6 @@ import com.inase.android.gocci.domain.model.PostData;
 import com.inase.android.gocci.domain.usecase.GochiUseCase;
 import com.inase.android.gocci.domain.usecase.UserAndRestUseCase;
 
-import java.io.File;
 import java.util.ArrayList;
 
 /**

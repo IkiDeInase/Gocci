@@ -2,7 +2,6 @@ package com.inase.android.gocci.utils;
 
 import android.content.Context;
 import android.util.Base64;
-import android.util.Log;
 
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.utils.encode.HttpParameters;
@@ -10,7 +9,6 @@ import com.inase.android.gocci.utils.encode.PercentEscaper;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayInputStream;

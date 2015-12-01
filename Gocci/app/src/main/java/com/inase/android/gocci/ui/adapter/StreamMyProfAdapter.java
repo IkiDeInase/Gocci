@@ -13,7 +13,6 @@ import com.cocosw.bottomsheet.BottomSheet;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
-import com.inase.android.gocci.datasource.api.API3PostUtil;
 import com.inase.android.gocci.domain.model.PostData;
 import com.inase.android.gocci.ui.view.SquareImageView;
 import com.squareup.picasso.Picasso;
