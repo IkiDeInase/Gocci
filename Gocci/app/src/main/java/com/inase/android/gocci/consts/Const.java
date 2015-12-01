@@ -20,9 +20,6 @@ import butterknife.ButterKnife;
  * Created by kmaeda on 2015/01/22.
  */
 public class Const {
-    public static final int VERSION_NUMBER = 1;
-    public static final String URL_PREFIX = "http://test.api.gocci.me/v";
-//    public static final String URL_PREFIX = "https://api.gocci.me/v";
 
     //AWS SN　ログイン　エンドポイント
     public static final String ENDPOINT_FACEBOOK = "graph.facebook.com";
@@ -45,15 +42,6 @@ public class Const {
 //    public static final String POST_MOVIE_BUCKET_NAME = "gocci.movies.bucket.jp";
 //    public static final String GET_MOVIE_BUCKET_NAME = "gocci.movies.provider.jp";
 //    public static final String POST_PHOTO_BUCKET_NAME = "gocci.imgs.provider.jp";
-
-    // 動画ファイルのキャッシュファイルの接頭辞
-    public static final String MOVIE_CACHE_PREFIX = "movie_cache_";
-
-    // HTTP Status Not Modified
-    public static final int HTTP_STATUS_NOT_MODIFIED = 304;
-
-    // 動画取得リトライ上限回数
-    public static final int GET_MOVIE_MAX_RETRY_COUNT = 5;
 
     public enum PostCallback {
         SUCCESS, LOCALERROR, GLOBALERROR

@@ -1,6 +1,7 @@
 package com.inase.android.gocci.ui.fragment;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.InputType;
@@ -239,7 +240,13 @@ public class LoginSocialAuthenticationFragment extends Fragment {
             switch (event.apiCategory) {
                 case POST_FACEBOOK:
                 case POST_TWITTER:
-                    Application_Gocci.getLoginProvider().refresh();
+                    new AsyncTask<Void, Void, Void>() {
+                        @Override
+                        protected Void doInBackground(Void... params) {
+                            Application_Gocci.getLoginProvider().refresh();
+                            return null;
+                        }
+                    }.execute();
                     goTimeline();
                     break;
             }

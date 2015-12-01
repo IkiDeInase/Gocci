@@ -157,38 +157,6 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             }
         });
 
-//        holder.mReplyButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                //Toast.makeText(context, Arrays.asList(users.getComment_user_data()).toString(), Toast.LENGTH_SHORT).show();
-//                final StringBuilder user_name = new StringBuilder();
-//                final StringBuilder user_id = new StringBuilder();
-//                user_name.append("@" + users.getUsername() + " ");
-//                user_id.append(users.getComment_user_id());
-//                for (CommentUserData data : users.getComment_user_data()) {
-//                    user_name.append("@" + data.getUserName() + " ");
-//                    user_id.append("," + data.getUser_id());
-//                }
-//                new MaterialDialog.Builder(mContext)
-//                        .title(mContext.getString(R.string.comment))
-//                        .titleColorRes(R.color.namegrey)
-//                        .inputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_IME_MULTI_LINE)
-//                        .inputMaxLength(140)
-//                        .input(null, user_name.toString(), false, new MaterialDialog.InputCallback() {
-//                            @Override
-//                            public void onInput(MaterialDialog dialog, CharSequence input) {
-//                                // Do something
-//                                String comment = input.toString().replace(user_name.toString(), "");
-//                                mCallback.onCommentPostClick(Const.getPostCommentWithNoticeAPI(mPost_id, comment, user_id.toString()));
-//                            }
-//                        })
-//                        .widgetColorRes(R.color.gocci_header)
-//                        .positiveText(mContext.getString(R.string.post_comment))
-//                        .positiveColorRes(R.color.gocci_header)
-//                        .show();
-//            }
-//        });
-
         if (!users.getComment_user_data().isEmpty()) {
             for (final CommentUserData data : users.getComment_user_data()) {
                 TextView userText = new TextView(mContext);

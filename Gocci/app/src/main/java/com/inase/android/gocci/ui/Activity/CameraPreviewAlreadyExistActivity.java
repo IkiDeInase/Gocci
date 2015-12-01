@@ -8,12 +8,14 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,8 +28,6 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.share.Sharer;
-import com.facebook.share.model.ShareVideo;
-import com.facebook.share.model.ShareVideoContent;
 import com.facebook.share.widget.ShareDialog;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
@@ -44,10 +44,15 @@ import com.inase.android.gocci.event.PostCallbackEvent;
 import com.inase.android.gocci.presenter.ShowCameraPresenter;
 import com.inase.android.gocci.ui.view.SquareVideoView;
 import com.inase.android.gocci.utils.SavedData;
+import com.inase.android.gocci.utils.TwitterUtil;
 import com.inase.android.gocci.utils.Util;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.rengwuxian.materialedittext.MaterialEditText;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.squareup.otto.Subscribe;
+import com.twitter.sdk.android.Twitter;
+import com.twitter.sdk.android.core.TwitterAuthToken;
+import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 import com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner;
 
@@ -81,64 +86,47 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
     ProgressWheel mProgressWheel;
     @Bind(R.id.add_rest_text)
     TextView mAddRestText;
+    @Bind(R.id.check_twitter)
+    CheckBox mCheckTwitter;
+    @Bind(R.id.check_facebook)
+    CheckBox mCheckFacebook;
+    @Bind(R.id.sliding_layout)
+    SlidingUpPanelLayout mSlidingLayout;
+    @Bind(R.id.preview_view)
+    ScrollView mPreviewView;
 
     @OnClick(R.id.add_rest_text)
     public void restAdd() {
         createTenpo();
     }
 
-    @OnClick(R.id.button_twitter)
-    public void twitter() {
-        Uri bmpUri = Util.getUri(mVideoUrl);
-        if (bmpUri != null) {
-            if (mRestname.equals("")) {
-                Toast.makeText(CameraPreviewAlreadyExistActivity.this, getString(R.string.please_input_restname), Toast.LENGTH_SHORT).show();
-            } else {
-                TweetComposer.Builder builder = new TweetComposer.Builder(CameraPreviewAlreadyExistActivity.this)
-                        .text("#" + mRestname.replaceAll("\\s+", "") + " #Gocci")
-                        .image(bmpUri);
+    @OnClick(R.id.edit_twitter)
+    public void edit_twitter() {
 
-                builder.show();
-            }
-        } else {
-            // ...sharing failed, handle error
-            Toast.makeText(CameraPreviewAlreadyExistActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
-        }
     }
 
-    @OnClick(R.id.button_facebook)
-    public void facebook() {
-        Uri uri = Uri.fromFile(mVideoFile);
-        if (ShareDialog.canShow(ShareVideoContent.class)) {
-            ShareVideo video = new ShareVideo.Builder()
-                    .setLocalUrl(uri)
-                    .build();
-            ShareVideoContent content = new ShareVideoContent.Builder()
-                    .setVideo(video)
-                    .build();
-            shareDialog.show(content);
-        } else {
-            // ...sharing failed, handle error
-            Toast.makeText(CameraPreviewAlreadyExistActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
-        }
+    @OnClick(R.id.edit_facebook)
+    public void edit_facebook() {
+
     }
 
-    @OnClick(R.id.button_instagram)
+    @OnClick(R.id.edit_instagram)
+    public void edit_instagram() {
+
+    }
+
+    @OnClick(R.id.check_instagram)
     public void instagram() {
-        if (!mRestname.equals("")) {
-            Uri uri = Uri.fromFile(mVideoFile);
-            Intent share = new Intent(Intent.ACTION_SEND);
-            // Set the MIME type
-            share.setType("video/*");
-            // Add the URI and the caption to the Intent.
-            share.putExtra(Intent.EXTRA_STREAM, uri);
-            share.setPackage("com.instagram.android");
-            share.putExtra(Intent.EXTRA_TEXT, "#" + mRestname.replaceAll("\\s+", "") + " #Gocci");
-            // Broadcast the Intent.
-            startActivity(Intent.createChooser(share, "Share to"));
-        } else {
-            Toast.makeText(CameraPreviewAlreadyExistActivity.this, getString(R.string.please_input_restname), Toast.LENGTH_SHORT).show();
-        }
+        Uri uri = Uri.fromFile(mVideoFile);
+        Intent share = new Intent(Intent.ACTION_SEND);
+        // Set the MIME type
+        share.setType("video/*");
+        // Add the URI and the caption to the Intent.
+        share.putExtra(Intent.EXTRA_STREAM, uri);
+        share.setPackage("com.instagram.android");
+        share.putExtra(Intent.EXTRA_TEXT, "#" + mRestname.replaceAll("\\s+", "") + " #Gocci");
+        // Broadcast the Intent.
+        startActivity(Intent.createChooser(share, "Share to"));
     }
 
     private String mRest_id;
@@ -188,6 +176,10 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
 
         setContentView(R.layout.activity_camera_preview_already_exist);
         ButterKnife.bind(this);
+
+        setSupportActionBar((Toolbar) findViewById(R.id.main_toolbar));
+
+        mSlidingLayout.setAnchorPoint(0.7f);
 
         mRest_id = SavedData.getRest_id(this);
         mRestname = SavedData.getRestname(this);
@@ -313,6 +305,30 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
                         if (mCheckCheer.isChecked()) {
                             mCheer_flag = 1;
                         }
+                        if (mCheckTwitter.isChecked()) {
+                            TwitterSession session =
+                                    Twitter.getSessionManager().getActiveSession();
+                            if (session != null) {
+                                if (mVideoFile.length() < 1024 * 1024 * 15) {
+                                    try {
+                                        final TwitterAuthToken authToken = session.getAuthToken();
+                                        TwitterUtil.performShare(CameraPreviewAlreadyExistActivity.this, authToken.token, authToken.secret, mVideoFile, mMemo + " #Gocci", new TwitterUtil.TwitterShareCallback() {
+                                            @Override
+                                            public void onSuccess() {
+                                                Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), "シェアしました", Toast.LENGTH_SHORT).show();
+                                            }
+
+                                            @Override
+                                            public void onFailure(String message) {
+                                                Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), "エラー:" + message, Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+                        }
                         mProgressWheel.setVisibility(View.VISIBLE);
                         API3PostUtil.postMovieAsync(CameraPreviewAlreadyExistActivity.this, Const.ActivityCategory.CAMERA_PREVIEW_ALREADY, mRest_id, mAwsPostName, mCategory_id, mValue, mMemo, mCheer_flag);
                         Application_Gocci.postingVideoToS3(CameraPreviewAlreadyExistActivity.this, mAwsPostName, mVideoFile);
@@ -393,6 +409,16 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
         super.onSaveInstanceState(outState);
         SavedData.setPostVideoPreview(this, mRestname, mRest_id, mVideoUrl, mAwsPostName, mCategory_id, mMemo, mValue, mIsnewRestname,
                 mLongitude, mLatitude);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mSlidingLayout != null &&
+                (mSlidingLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED || mSlidingLayout.getPanelState() == SlidingUpPanelLayout.PanelState.ANCHORED)) {
+            mSlidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+        } else {
+            super.onBackPressed();
+        }
     }
 
     private void createTenpo() {

@@ -8,12 +8,14 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,8 +29,6 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.share.Sharer;
-import com.facebook.share.model.ShareVideo;
-import com.facebook.share.model.ShareVideoContent;
 import com.facebook.share.widget.ShareDialog;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
@@ -49,6 +49,7 @@ import com.inase.android.gocci.utils.TwitterUtil;
 import com.inase.android.gocci.utils.Util;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.rengwuxian.materialedittext.MaterialEditText;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.squareup.otto.Subscribe;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthToken;
@@ -86,70 +87,44 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
     RippleView mToukouButtonRipple;
     @Bind(R.id.progress_wheel)
     ProgressWheel mProgressWheel;
+    @Bind(R.id.check_twitter)
+    CheckBox mCheckTwitter;
+    @Bind(R.id.check_facebook)
+    CheckBox mCheckFacebook;
+    @Bind(R.id.sliding_layout)
+    SlidingUpPanelLayout mSlidingLayout;
+    @Bind(R.id.preview_view)
+    ScrollView mPreviewView;
 
     @OnClick(R.id.add_rest_text)
     public void restAdd() {
         createTenpo();
     }
 
-    @OnClick(R.id.button_twitter)
-    public void twitter() {
-        TwitterSession session =
-                Twitter.getSessionManager().getActiveSession();
-        if (session != null) {
-            try {
-                final TwitterAuthToken authToken = session.getAuthToken();
-                final byte[] size = TwitterUtil.readFileToByte(mVideoUrl);
-                TwitterUtil.performShare(this, authToken.token, authToken.secret, size, mMemo + " #Gocci", new TwitterUtil.TwitterShareCallback() {
-                    @Override
-                    public void onSuccess() {
-                        Log.e("ログ", "成功");
-                    }
+    @OnClick(R.id.edit_twitter)
+    public void edit_twitter() {
 
-                    @Override
-                    public void onFailure(String message) {
-                        Log.e("ログ", message);
-                    }
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
     }
 
-    @OnClick(R.id.button_facebook)
-    public void facebook() {
-        Uri uri = Uri.fromFile(mVideoFile);
-        if (ShareDialog.canShow(ShareVideoContent.class)) {
-            ShareVideo video = new ShareVideo.Builder()
-                    .setLocalUrl(uri)
-                    .build();
-            ShareVideoContent content = new ShareVideoContent.Builder()
-                    .setVideo(video)
-                    .build();
-            shareDialog.show(content);
-        } else {
-            // ...sharing failed, handle error
-            Toast.makeText(CameraPreviewActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
-        }
+    @OnClick(R.id.edit_facebook)
+    public void edit_facebook() {
+
     }
 
-    @OnClick(R.id.button_instagram)
+    @OnClick(R.id.edit_instagram)
+    public void edit_instagram() {
+
+    }
+
+    @OnClick(R.id.check_instagram)
     public void instagram() {
-        if (!mRestname.equals("")) {
-            Uri uri = Uri.fromFile(mVideoFile);
-            Intent share = new Intent(Intent.ACTION_SEND);
-            // Set the MIME type
-            share.setType("video/*");
-            // Add the URI and the caption to the Intent.
-            share.putExtra(Intent.EXTRA_STREAM, uri);
-            share.setPackage("com.instagram.android");
-            share.putExtra(Intent.EXTRA_TEXT, "#" + mRestname.replaceAll("\\s+", "") + " #Gocci");
-            // Broadcast the Intent.
-            startActivity(Intent.createChooser(share, "Share to"));
-        } else {
-            Toast.makeText(CameraPreviewActivity.this, getString(R.string.please_input_restname), Toast.LENGTH_SHORT).show();
-        }
+        Uri uri = Uri.fromFile(mVideoFile);
+        Intent share = new Intent(Intent.ACTION_SEND);
+        // Set the MIME type
+        share.setType("video/*");
+        share.putExtra(Intent.EXTRA_STREAM, uri);
+        share.setPackage("com.instagram.android");
+        startActivity(Intent.createChooser(share, "Share to"));
     }
 
     private String mRest_id;
@@ -196,6 +171,10 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
 
         setContentView(R.layout.activity_camera_preview);
         ButterKnife.bind(this);
+
+        setSupportActionBar((Toolbar) findViewById(R.id.main_toolbar));
+
+        mSlidingLayout.setAnchorPoint(0.7f);
 
         Intent intent = getIntent();
         mRestname = intent.getStringExtra("restname");
@@ -318,6 +297,30 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
                         if (mCheckCheer.isChecked()) {
                             mCheer_flag = 1;
                         }
+                        if (mCheckTwitter.isChecked()) {
+                            TwitterSession session =
+                                    Twitter.getSessionManager().getActiveSession();
+                            if (session != null) {
+                                if (mVideoFile.length() < 1024 * 1024 * 15) {
+                                    try {
+                                        final TwitterAuthToken authToken = session.getAuthToken();
+                                        TwitterUtil.performShare(CameraPreviewActivity.this, authToken.token, authToken.secret, mVideoFile, mMemo + " #Gocci", new TwitterUtil.TwitterShareCallback() {
+                                            @Override
+                                            public void onSuccess() {
+                                                Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), "シェアしました", Toast.LENGTH_SHORT).show();
+                                            }
+
+                                            @Override
+                                            public void onFailure(String message) {
+                                                Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), "エラー:" + message, Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+                        }
                         mProgressWheel.setVisibility(View.VISIBLE);
                         API3PostUtil.postMovieAsync(CameraPreviewActivity.this, Const.ActivityCategory.CAMERA_PREVIEW, mRest_id, mAwsPostName, mCategory_id, mValue, mMemo, mCheer_flag);
                         Application_Gocci.postingVideoToS3(CameraPreviewActivity.this, mAwsPostName, mVideoFile);
@@ -385,19 +388,24 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
 
     @Override
     public void onBackPressed() {
-        new MaterialDialog.Builder(this)
-                .content(getString(R.string.check_videoposting_cancel))
-                .contentColorRes(R.color.nameblack)
-                .positiveText(getString(R.string.check_videoposting_yeah))
-                .positiveColorRes(R.color.gocci_header)
-                .negativeText(getString(R.string.check_videoposting_no))
-                .negativeColorRes(R.color.gocci_header)
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
-                        CameraPreviewActivity.this.finish();
-                    }
-                }).show();
+        if (mSlidingLayout != null &&
+                (mSlidingLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED || mSlidingLayout.getPanelState() == SlidingUpPanelLayout.PanelState.ANCHORED)) {
+            mSlidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+        } else {
+            new MaterialDialog.Builder(this)
+                    .content(getString(R.string.check_videoposting_cancel))
+                    .contentColorRes(R.color.nameblack)
+                    .positiveText(getString(R.string.check_videoposting_yeah))
+                    .positiveColorRes(R.color.gocci_header)
+                    .negativeText(getString(R.string.check_videoposting_no))
+                    .negativeColorRes(R.color.gocci_header)
+                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                        @Override
+                        public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                            CameraPreviewActivity.this.finish();
+                        }
+                    }).show();
+        }
     }
 
     @Override

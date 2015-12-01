@@ -249,7 +249,7 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
         final View rootView = inflater.inflate(R.layout.fragment_camera_up18, container, false);
         ButterKnife.bind(this, rootView);
 
-        mCameraView.setVideoSize(640, 480);
+        mCameraView.setVideoSize(480, 480);
 
         mCircleProgress.setValue(0);
 

@@ -71,15 +71,18 @@ public class CacheManager {
 
         public boolean isRetryWithCountUp() {
             mRetryCount++;
-            return mRetryCount < Const.GET_MOVIE_MAX_RETRY_COUNT;
+//            return mRetryCount < Const.GET_MOVIE_MAX_RETRY_COUNT;
+            return true;
         }
 
         public String getCacheName() {
-            return Const.MOVIE_CACHE_PREFIX.concat(getPostId()).concat(Util.getFileExtension(getUrl()));
+//            return Const.MOVIE_CACHE_PREFIX.concat(getPostId()).concat(Util.getFileExtension(getUrl()));
+            return "";
         }
 
         public static String getCacheName(String postId, String url) {
-            return Const.MOVIE_CACHE_PREFIX.concat(postId).concat(Util.getFileExtension(url));
+//            return Const.MOVIE_CACHE_PREFIX.concat(postId).concat(Util.getFileExtension(url));
+            return "";
         }
 
     }

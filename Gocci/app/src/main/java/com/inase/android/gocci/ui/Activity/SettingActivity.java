@@ -2,6 +2,7 @@ package com.inase.android.gocci.ui.activity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.CoordinatorLayout;
@@ -531,24 +532,48 @@ public class SettingActivity extends AppCompatActivity {
                 case POST_FACEBOOK:
                     mFacebookSetting.setText(Profile.getCurrentProfile().getName());
                     isFacebookSetting = true;
-                    Application_Gocci.getLoginProvider().refresh();
+                    new AsyncTask<Void, Void, Void>() {
+                        @Override
+                        protected Void doInBackground(Void... params) {
+                            Application_Gocci.getLoginProvider().refresh();
+                            return null;
+                        }
+                    }.execute();
                     break;
                 case POST_FACEBOOK_UNLINK:
                     mFacebookSetting.setText(getString(R.string.no_auth_message));
                     isFacebookSetting = false;
                     logoutFacebook();
-                    Application_Gocci.getLoginProvider().refresh();
+                    new AsyncTask<Void, Void, Void>() {
+                        @Override
+                        protected Void doInBackground(Void... params) {
+                            Application_Gocci.getLoginProvider().refresh();
+                            return null;
+                        }
+                    }.execute();
                     break;
                 case POST_TWITTER:
                     mTwitterSetting.setText(Twitter.getSessionManager().getActiveSession().getUserName());
                     isTwitterSetting = true;
-                    Application_Gocci.getLoginProvider().refresh();
+                    new AsyncTask<Void, Void, Void>() {
+                        @Override
+                        protected Void doInBackground(Void... params) {
+                            Application_Gocci.getLoginProvider().refresh();
+                            return null;
+                        }
+                    }.execute();
                     break;
                 case POST_TWITTER_UNLINK:
                     mTwitterSetting.setText(getString(R.string.no_auth_message));
                     isTwitterSetting = false;
                     logoutTwitter();
-                    Application_Gocci.getLoginProvider().refresh();
+                    new AsyncTask<Void, Void, Void>() {
+                        @Override
+                        protected Void doInBackground(Void... params) {
+                            Application_Gocci.getLoginProvider().refresh();
+                            return null;
+                        }
+                    }.execute();
                     break;
             }
         }
