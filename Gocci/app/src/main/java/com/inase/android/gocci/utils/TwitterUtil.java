@@ -2,6 +2,7 @@ package com.inase.android.gocci.utils;
 
 import android.content.Context;
 import android.util.Base64;
+import android.util.Log;
 
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.utils.encode.HttpParameters;
@@ -14,6 +15,7 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -251,42 +253,41 @@ public class TwitterUtil {
         return Long.toString(new Random().nextLong());
     }
 
-    public static byte[] readFileToByte(String filePath) throws Exception {
-        byte[] b = new byte[1];
-        FileInputStream fis = new FileInputStream(filePath);
+    public static ArrayList<byte[]> readFileToByteArray(File file) throws Exception {
+        ArrayList<byte[]> array = new ArrayList<>();
+        byte[] b = new byte[(int) file.length()];
+
+        FileInputStream fis = new FileInputStream(file);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         while (fis.read(b) > 0) {
             baos.write(b);
         }
+        baos.flush();
         baos.close();
         fis.close();
+
         b = baos.toByteArray();
 
-        return b;
-    }
-
-    public static ArrayList<byte[]> readByteToArray(byte[] size) {
         int GOMEGA = 1024 * 1024 * 5;
-        ArrayList<byte[]> array = new ArrayList<>();
         int begin = 0;
-        for (int i = 0; i < (size.length / GOMEGA); i++) {
+        for (int i = 0; i < (b.length / GOMEGA); i++) {
             begin = (i + 1) * GOMEGA;
-            array.add(Arrays.copyOfRange(size, i * GOMEGA, begin));
+            array.add(Arrays.copyOfRange(b, i * GOMEGA, begin));
         }
-        array.add(Arrays.copyOfRange(size, begin, size.length));
+        array.add(Arrays.copyOfRange(b, begin, b.length));
         return array;
     }
 
-    public static void performShare(final Context context, final String token, final String tokenSecret, final byte[] total_byte, final String message, final TwitterShareCallback cb) {
+    public static void performShare(final Context context, final String token, final String tokenSecret, final File file, final String message, final TwitterShareCallback cb) {
         HttpParameters httpParameters = getParam(token);
         httpParameters.put("command", "INIT", true);
         httpParameters.put("media_type", "video/mp4", true);
-        httpParameters.put("total_bytes", String.valueOf(total_byte.length), true);
+        httpParameters.put("total_bytes", String.valueOf(file.length()), true);
 
         RequestParams requestParams = new RequestParams();
         requestParams.put("command", "INIT");
         requestParams.put("media_type", "video/mp4");
-        requestParams.put("total_bytes", String.valueOf(total_byte.length));
+        requestParams.put("total_bytes", String.valueOf(file.length()));
 
         httpParameters.put(OAUTH_SIGNATURE, createOAuthSignature("POST", POST_TWITTER, tokenSecret, httpParameters), true);
 
@@ -301,10 +302,9 @@ public class TwitterUtil {
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 try {
                     String media_id = response.getString("media_id_string");
-                    ArrayList<byte[]> array = TwitterUtil.readByteToArray(total_byte);
-
+                    ArrayList<byte[]> array = TwitterUtil.readFileToByteArray(file);
                     performAppend(context, media_id, token, tokenSecret, 0, array, message, cb);
-                } catch (JSONException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }

@@ -54,7 +54,7 @@ public class CameraManager {
             camera = null;
         }
         try {
-            parameters.setPreviewSize(640, 480);
+            parameters.setPreviewSize(480, 480);
             camera.setParameters(parameters);
             defaultSize = null;
         } catch (Exception e) {

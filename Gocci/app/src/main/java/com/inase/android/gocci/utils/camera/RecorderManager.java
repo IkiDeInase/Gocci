@@ -131,7 +131,7 @@ public class RecorderManager {
         if (defaultSize != null) {
             mediaRecorder.setVideoSize(defaultSize.width, defaultSize.height);
         } else {
-            mediaRecorder.setVideoSize(640, 480);
+            mediaRecorder.setVideoSize(480, 480);
         }
 
         // camera.getParameters().setPictureSize(cameraSize.width,

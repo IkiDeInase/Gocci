@@ -222,7 +222,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:padding="8dp"
-                android:src="@drawable/ic_apps_grey600_24dp" />
+                android:src="@drawable/ic_now_widgets_grey_500_24dp" />
 
             <View
                 android:layout_width="1dp"

@@ -6,6 +6,10 @@
         <!-- Customize your theme here. -->
     </style>
 
+    <style name="ActionBar" parent="ThemeOverlay.AppCompat.ActionBar">
+        <item name="android:displayOptions">homeAsUp</item>
+    </style>
+
     <style name="AppTheme.Toolbar" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/material_drawer_primary</item>
         <item name="colorPrimaryDark">@color/material_drawer_primary_dark</item>

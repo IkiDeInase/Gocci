@@ -22,7 +22,7 @@ public class TLMediaVideoEncoder extends TLMediaEncoder {
     private static final String TAG = TLMediaVideoEncoder.class.getSimpleName();
 
     private static final String MIME_TYPE = "video/avc";
-    private static final int DEFAULT_VIDEO_WIDTH = 640;
+    private static final int DEFAULT_VIDEO_WIDTH = 480;
     private static final int DEFAULT_VIDEO_HEIGHT = 480;
     private static final int DEFAULT_FRAME_RATE = 30;
     private static final float DEFAULT_BPP = 0.25f;

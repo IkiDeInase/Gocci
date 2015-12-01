@@ -4,25 +4,53 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.inase.android.gocci.ui.view.SquareVideoView
+    <com.sothree.slidinguppanel.SlidingUpPanelLayout
+        xmlns:sothree="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/sliding_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/preview_video" />
+        android:layout_height="match_parent"
+        android:gravity="bottom"
+        sothree:umanoPanelHeight="220dp"
+        sothree:umanoParallaxOffset="11dp"
+        sothree:umanoDragView="@+id/preview_view"
+        sothree:umanoOverlay="true"
+        sothree:umanoScrollableView="@+id/preview_view"
+        sothree:umanoShadowHeight="4dp">
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:src="@drawable/ic_gocci_white"
-        android:layout_marginTop="8dp" />
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.inase.android.gocci.ui.view.SquareVideoView
+                android:id="@+id/preview_video"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/main_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@color/transparent"
+                sothree:theme="@style/ActionBar">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginRight="16dp"
+                    android:src="@drawable/ic_gocci_white" />
+            </android.support.v7.widget.Toolbar>
+        </FrameLayout>
 
     <include
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="match_parent"
+        android:id="@+id/preview_view"
         layout="@layout/view_camera_preview_select"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
+
+    </com.sothree.slidinguppanel.SlidingUpPanelLayout>
 
     <com.pnikosis.materialishprogress.ProgressWheel
         android:id="@+id/progress_wheel"
