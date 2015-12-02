@@ -75,11 +75,21 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
         //SavedData.setLoginJudge(this, TAG_SNS_FACEBOOK);
         //SavedData.setRegId(this, "APA91bFlIfRuMRWjMbKfXyC5votBewFcpj71N0j4aiSEgqvHeHsoDcCjS6TuUTxdHnj13cT_40mkflrl5aqigmPGdj5VH0njkc0MM6aMgkExqZoRVZAv8BcUEFy09ZUaxoiRXNuvktee");
         //SavedData.setIdentityId(this, "us-east-1:6b195305-171c-4b83-aa51-e0b1d38de2f2");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (analytics != null) {
+            analytics.getSessionClient().resumeSession();
+        }
+        BusHolder.get().register(this);
+        mPresenter.resume();
 
         String mIdentityId = SavedData.getIdentityId(this);
         if (!mIdentityId.equals("no identityId")) {
             //２回目
-            API3.Util.AuthLoginLocalCode localCode = api3Impl.auth_login_parameter_regex(mIdentityId);
+            API3.Util.AuthLoginLocalCode localCode = API3.Impl.getRepository().auth_login_parameter_regex(mIdentityId);
             if (localCode == null) {
                 mPresenter.loginUser(Const.APICategory.AUTH_LOGIN, API3.Util.getAuthLoginAPI(mIdentityId));
             } else {
@@ -93,16 +103,6 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
                 Log.e(TAG, "No valid Google Play Services APK found.");
             }
         }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (analytics != null) {
-            analytics.getSessionClient().resumeSession();
-        }
-        BusHolder.get().register(this);
-        mPresenter.resume();
     }
 
     @Override
