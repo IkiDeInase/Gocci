@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:fillViewport="true"
@@ -148,14 +149,19 @@
                 android:layout_marginRight="8dp"
                 android:checked="false" />
 
-            <ImageButton
-                android:id="@+id/edit_twitter"
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/edit_twitter_fab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="8dp"
                 android:layout_toLeftOf="@+id/check_twitter"
-                android:background="@drawable/ic_edit_grey_600_24dp" />
+                android:src="@drawable/ic_edit_grey_600_24dp"
+                fab:fab_colorNormal="@color/view_background"
+                fab:fab_colorPressed="@color/view_background"
+                fab:fab_colorRipple="@color/view_background"
+                fab:fab_showShadow="false"
+                fab:fab_size="mini" />
 
         </RelativeLayout>
 
@@ -193,14 +199,19 @@
                 android:layout_marginRight="8dp"
                 android:checked="false" />
 
-            <ImageButton
-                android:id="@+id/edit_facebook"
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/edit_facebook_fab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="8dp"
                 android:layout_toLeftOf="@+id/check_facebook"
-                android:background="@drawable/ic_edit_grey_600_24dp" />
+                android:src="@drawable/ic_edit_grey_600_24dp"
+                fab:fab_colorNormal="@color/view_background"
+                fab:fab_colorPressed="@color/view_background"
+                fab:fab_colorRipple="@color/view_background"
+                fab:fab_showShadow="false"
+                fab:fab_size="mini" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -237,14 +248,19 @@
                 android:layout_marginRight="8dp"
                 android:checked="false" />
 
-            <ImageButton
-                android:id="@+id/edit_instagram"
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/edit_instagram_fab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="8dp"
                 android:layout_toLeftOf="@+id/check_instagram"
-                android:background="@drawable/ic_edit_grey_600_24dp" />
+                android:src="@drawable/ic_edit_grey_600_24dp"
+                fab:fab_colorNormal="@color/view_background"
+                fab:fab_colorPressed="@color/view_background"
+                fab:fab_colorRipple="@color/view_background"
+                fab:fab_showShadow="false"
+                fab:fab_size="mini" />
 
         </RelativeLayout>
 

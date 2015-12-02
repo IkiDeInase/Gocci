@@ -29,6 +29,7 @@ import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.share.Sharer;
 import com.facebook.share.widget.ShareDialog;
+import com.github.clans.fab.FloatingActionButton;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
@@ -94,25 +95,49 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
     SlidingUpPanelLayout mSlidingLayout;
     @Bind(R.id.preview_view)
     ScrollView mPreviewView;
+    @Bind(R.id.edit_twitter_fab)
+    FloatingActionButton mTwitterEdit;
+    @Bind(R.id.edit_facebook_fab)
+    FloatingActionButton mFacebookEdit;
+    @Bind(R.id.edit_instagram_fab)
+    FloatingActionButton mInstagramEdit;
 
     @OnClick(R.id.add_rest_text)
     public void restAdd() {
         createTenpo();
     }
 
-    @OnClick(R.id.edit_twitter)
+    @OnClick(R.id.edit_twitter_fab)
     public void edit_twitter() {
 
     }
 
-    @OnClick(R.id.edit_facebook)
+    @OnClick(R.id.edit_facebook_fab)
     public void edit_facebook() {
 
     }
 
-    @OnClick(R.id.edit_instagram)
+    @OnClick(R.id.edit_instagram_fab)
     public void edit_instagram() {
 
+    }
+
+    @OnClick(R.id.check_twitter)
+    public void twitter() {
+        if (mTwitterEdit.isHidden()) {
+            mTwitterEdit.show(true);
+        } else {
+            mTwitterEdit.hide(true);
+        }
+    }
+
+    @OnClick(R.id.check_facebook)
+    public void facebook() {
+        if (mFacebookEdit.isHidden()) {
+            mFacebookEdit.show(true);
+        } else {
+            mFacebookEdit.hide(true);
+        }
     }
 
     @OnClick(R.id.check_instagram)
@@ -177,9 +202,13 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
         setContentView(R.layout.activity_camera_preview_already_exist);
         ButterKnife.bind(this);
 
+        mTwitterEdit.hide(false);
+        mFacebookEdit.hide(false);
+        mInstagramEdit.hide(false);
+
         setSupportActionBar((Toolbar) findViewById(R.id.main_toolbar));
 
-        mSlidingLayout.setAnchorPoint(0.7f);
+        mSlidingLayout.setAnchorPoint(0.6f);
 
         mRest_id = SavedData.getRest_id(this);
         mRestname = SavedData.getRestname(this);
