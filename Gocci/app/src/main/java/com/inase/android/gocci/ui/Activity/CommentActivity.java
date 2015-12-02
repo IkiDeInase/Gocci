@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -45,6 +46,7 @@ import com.inase.android.gocci.event.RetryApiEvent;
 import com.inase.android.gocci.presenter.ShowCommentPagePresenter;
 import com.inase.android.gocci.ui.adapter.CommentAdapter;
 import com.inase.android.gocci.utils.SavedData;
+import com.inase.android.gocci.utils.Util;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.squareup.otto.Subscribe;
 
@@ -61,6 +63,8 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
     Toolbar mToolBar;
     @Bind(R.id.overlay)
     View mOverlay;
+    @Bind(R.id.swipe_refresh)
+    SwipeRefreshLayout mSwipeRefresh;
     @Bind(R.id.list)
     ObservableRecyclerView mCommentRecyclerView;
     @Bind(R.id.comment_edit)
@@ -162,7 +166,7 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
             Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
         }
 
-        API3 api3Impl = API3.Impl.getRepository();
+        final API3 api3Impl = API3.Impl.getRepository();
         CommentDataRepository commentDataRepositoryImpl = CommentDataRepositoryImpl.getRepository(api3Impl);
         CommentActionRepository commentActionRepositoryImpl = CommentActionRepositoryImpl.getRepository(api3Impl);
         CommentPageUseCase commentPageUseCaseImpl = CommentPageUseCaseImpl.getUseCase(commentDataRepositoryImpl, UIThread.getInstance());
@@ -210,6 +214,25 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
         mCommentRecyclerView.setHasFixedSize(true);
         mCommentRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
         mCommentRecyclerView.setScrollViewCallbacks(this);
+        mSwipeRefresh.setColorSchemeResources(R.color.gocci_1, R.color.gocci_2, R.color.gocci_3, R.color.gocci_4);
+        mSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mSwipeRefresh.setRefreshing(true);
+                if (Util.getConnectedState(CommentActivity.this) != Util.NetworkStatus.OFF) {
+                    API3.Util.GetCommentLocalCode localCode = api3Impl.get_comment_parameter_regex(mPost_id);
+                    if (localCode == null) {
+                        mPresenter.getCommentData(Const.APICategory.GET_COMMENT_REFRESH, API3.Util.getGetCommentAPI(mPost_id));
+                    } else {
+                        mSwipeRefresh.setRefreshing(false);
+                        Toast.makeText(CommentActivity.this, API3.Util.getCommentLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(CommentActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
+                    mSwipeRefresh.setRefreshing(false);
+                }
+            }
+        });
 
         API3.Util.GetCommentLocalCode localCode = api3Impl.get_comment_parameter_regex(mPost_id);
         if (localCode == null) {
@@ -379,6 +402,7 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
     @Override
     public void hideLoading() {
         mProgress.setVisibility(View.INVISIBLE);
+        mSwipeRefresh.setRefreshing(false);
     }
 
     @Override

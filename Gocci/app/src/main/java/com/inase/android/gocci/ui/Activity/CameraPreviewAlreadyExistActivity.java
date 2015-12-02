@@ -321,16 +321,16 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
                     if (!mRest_id.equals("1")) {
                         if (mEditValue.getText().length() != 0) {
                             mValue = mEditValue.getText().toString();
+                            SavedData.setValue(CameraPreviewAlreadyExistActivity.this, mValue);
                         } else {
                             mValue = "0";
                         }
-                        SavedData.setValue(CameraPreviewAlreadyExistActivity.this, mValue);
                         if (mEditComment.getText().length() != 0) {
                             mMemo = mEditComment.getText().toString();
+                            SavedData.setMemo(CameraPreviewAlreadyExistActivity.this, mMemo);
                         } else {
                             mMemo = "none";
                         }
-                        SavedData.setMemo(CameraPreviewAlreadyExistActivity.this, mMemo);
                         if (mCheckCheer.isChecked()) {
                             mCheer_flag = 1;
                         }

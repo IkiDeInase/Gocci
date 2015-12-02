@@ -313,16 +313,16 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
                     if (!mRest_id.equals("1")) {
                         if (mEditValue.getText().length() != 0) {
                             mValue = mEditValue.getText().toString();
+                            SavedData.setValue(CameraPreviewActivity.this, mValue);
                         } else {
                             mValue = "0";
                         }
-                        SavedData.setValue(CameraPreviewActivity.this, mValue);
                         if (mEditComment.getText().length() != 0) {
                             mMemo = mEditComment.getText().toString();
+                            SavedData.setMemo(CameraPreviewActivity.this, mMemo);
                         } else {
                             mMemo = "none";
                         }
-                        SavedData.setMemo(CameraPreviewActivity.this, mMemo);
                         if (mCheckCheer.isChecked()) {
                             mCheer_flag = 1;
                         }
