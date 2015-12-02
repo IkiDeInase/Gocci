@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -63,6 +65,8 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
     Toolbar mToolBar;
     @Bind(R.id.overlay)
     View mOverlay;
+    @Bind(R.id.coordinator_layout)
+    CoordinatorLayout mCoordinatorLayout;
     @Bind(R.id.swipe_refresh)
     SwipeRefreshLayout mSwipeRefresh;
     @Bind(R.id.list)
@@ -78,7 +82,6 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
     public void onEdit() {
         if (mOverlay.getVisibility() != View.VISIBLE) {
             mOverlay.setVisibility(View.VISIBLE);
-            isNotice = false;
         }
     }
 
@@ -99,9 +102,6 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
                 mPresenter.postComment(Const.APICategory.POST_COMMENT, API3.Util.getPostCommentAPI(mPost_id, comment, mNoticeUser_id), API3.Util.getGetCommentAPI(mPost_id));
             } else {
                 mPresenter.postComment(Const.APICategory.POST_COMMENT, API3.Util.getPostCommentAPI(mPost_id, comment, ""), API3.Util.getGetCommentAPI(mPost_id));
-            }
-            if (mOverlay.getVisibility() == View.VISIBLE) {
-                mOverlay.setVisibility(View.GONE);
             }
         }
     }
@@ -306,7 +306,7 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
 
     @Subscribe
     public void subscribe(NotificationNumberEvent event) {
-        //Snackbar.make(mCoordinatorLayout, event.mMessage, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(mCoordinatorLayout, event.mMessage, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
@@ -413,7 +413,6 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
                 mCommentAdapter = new CommentAdapter(this, mPost_id, memoData, mCommentusers);
                 mCommentAdapter.setCommentCallback(this);
                 mCommentRecyclerView.setAdapter(mCommentAdapter);
-                mCommentRecyclerView.scrollVerticallyToPosition(mCommentusers.size());
                 break;
             case GET_COMMENT_REFRESH:
                 mCommentusers.clear();
@@ -447,7 +446,8 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
                 mCommentAdapter = new CommentAdapter(this, mPost_id, memoData, mCommentusers);
                 mCommentAdapter.setCommentCallback(this);
                 mCommentRecyclerView.setAdapter(mCommentAdapter);
-                mCommentRecyclerView.scrollVerticallyToPosition(mCommentusers.size());
+
+                mLayoutManager.scrollToPosition(mCommentusers.size());
                 break;
             case GET_COMMENT_REFRESH:
                 mCommentAdapter.setData();
@@ -457,17 +457,19 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
 
     @Override
     public void postCommented(Const.APICategory api, HeaderData postData, ArrayList<HeaderData> commentData) {
-        mProgress.setVisibility(View.INVISIBLE);
         mCommentEdit.setText("");
         mCommentusers.clear();
         mCommentusers.addAll(commentData);
         mCommentAdapter.setData();
-        mCommentRecyclerView.scrollVerticallyToPosition(mCommentusers.size());
+        if (mOverlay.getVisibility() == View.VISIBLE) {
+            mOverlay.setVisibility(View.GONE);
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(mCommentEdit.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        }
     }
 
     @Override
     public void postCommentEmpty(Const.APICategory api, HeaderData postData) {
-        mProgress.setVisibility(View.INVISIBLE);
         mCommentusers.clear();
         mCommentAdapter.setData();
     }

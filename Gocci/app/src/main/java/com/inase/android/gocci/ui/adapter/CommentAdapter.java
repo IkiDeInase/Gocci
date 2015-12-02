@@ -73,7 +73,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         if (TYPE_MEMO == viewType) {
             bindMemo((CommentViewHolder) holder, mMemoData);
         } else {
-            HeaderData users = mCommentData.get(position);
+            HeaderData users = mCommentData.get(position - 1);
             bindComment((CommentViewHolder) holder, users);
         }
     }
@@ -209,11 +209,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public int getItemCount() {
-        if (mCommentData.isEmpty()) {
-            return 1;
-        } else {
-            return mCommentData.size();
-        }
+        return mCommentData.size() + 1;
     }
 
     static class CommentViewHolder extends RecyclerView.ViewHolder {

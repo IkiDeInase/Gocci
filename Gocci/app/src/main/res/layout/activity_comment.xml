@@ -1,99 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:wheel="http://schemas.android.com/apk/res-auto"
-    android:fitsSystemWindows="true"
+    android:id="@+id/coordinator_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/tool_bar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/gocci_header"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        android:layout_alignParentTop="true">
-
-    </android.support.v7.widget.Toolbar>
-
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/swipe_refresh"
-        android:layout_above="@+id/messageView"
-        android:layout_below="@+id/tool_bar"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    <com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView
-        android:id="@+id/list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-    </android.support.v4.widget.SwipeRefreshLayout>
-
-    <View
-        android:id="@+id/overlay"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/tool_bar"
-        android:layout_above="@+id/messageView"
-        android:background="#55d1d1d1"
-        android:clickable="true"
-        android:visibility="visible" />
-
-    <com.pnikosis.materialishprogress.ProgressWheel
-        android:layout_width="@dimen/progress_size"
-        android:layout_height="@dimen/progress_size"
-        wheel:matProg_barColor="@color/gocci_header"
-        wheel:matProg_progressIndeterminate="true"
-        android:layout_centerInParent="true"
-        android:id="@+id/progress_wheel" />
-
-    <RelativeLayout
-        android:orientation="horizontal"
-        android:id="@+id/messageView"
-        android:background="@color/view_background"
-        android:layout_alignParentBottom="true"
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <View
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/tool_bar"
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:id="@+id/header_view"
-            android:background="#c5c6c9"
-            android:layout_toLeftOf="@+id/send_button" />
-
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/comment_edit"
-            android:layout_toLeftOf="@+id/send_button"
-            android:background="#00000000"
-            android:hint="@string/comment"
-            android:layout_gravity="center_vertical"
-            android:layout_centerVertical="true"
-            android:padding="12dp"
-            android:textSize="14sp"
-            android:textColor="@color/nameblack"
-            android:inputType="textMultiLine"
-            android:maxLength="140">
-
-            <requestFocus />
-        </EditText>
-
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:id="@+id/send_button"
-            android:src="@drawable/ic_send_white"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_alignParentTop="true"
             android:background="@color/gocci_header"
-            android:padding="12dp"
-            android:alpha="0.4"
-            android:clickable="false"
-            android:layout_alignTop="@+id/comment_edit"
-            android:layout_alignBottom="@+id/comment_edit" />
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
+        </android.support.v7.widget.Toolbar>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/swipe_refresh"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/messageView">
+
+            <com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView
+                android:id="@+id/list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </android.support.v4.widget.SwipeRefreshLayout>
+
+        <View
+            android:id="@+id/overlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/messageView"
+            android:background="#55d1d1d1"
+            android:clickable="true" />
+
+        <com.pnikosis.materialishprogress.ProgressWheel
+            android:id="@+id/progress_wheel"
+            android:layout_width="@dimen/progress_size"
+            android:layout_height="@dimen/progress_size"
+            android:layout_centerInParent="true"
+            wheel:matProg_barColor="@color/gocci_header"
+            wheel:matProg_progressIndeterminate="true" />
+
+        <RelativeLayout
+            android:id="@+id/messageView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="@color/view_background"
+            android:orientation="horizontal">
+
+            <View
+                android:id="@+id/header_view"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_toLeftOf="@+id/send_button"
+                android:background="#c5c6c9" />
+
+            <EditText
+                android:id="@+id/comment_edit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center_vertical"
+                android:layout_toLeftOf="@+id/send_button"
+                android:background="#00000000"
+                android:hint="@string/comment"
+                android:inputType="textMultiLine"
+                android:maxLength="140"
+                android:padding="12dp"
+                android:textColor="@color/nameblack"
+                android:textSize="14sp">
+
+                <requestFocus />
+            </EditText>
+
+            <ImageButton
+                android:id="@+id/send_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/comment_edit"
+                android:layout_alignParentRight="true"
+                android:layout_alignTop="@+id/comment_edit"
+                android:layout_centerVertical="true"
+                android:alpha="0.4"
+                android:background="@color/gocci_header"
+                android:clickable="false"
+                android:padding="12dp"
+                android:src="@drawable/ic_send_white" />
+
+        </RelativeLayout>
     </RelativeLayout>
 
-</RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>
