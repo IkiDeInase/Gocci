@@ -139,11 +139,11 @@ public class TimelineActivity extends AppCompatActivity {
     public static int mNearCategory_id = 0;
     public static int mNearValue_id = 0;
 
-    public static int mLatestCategory_id = 0;
-    public static int mLatestValue_id = 0;
-
     public static int mFollowCategory_id = 0;
     public static int mFollowValue_id = 0;
+
+    public static int mLatestCategory_id = 0;
+    public static int mLatestValue_id = 0;
 
     public static double mLongitude = 139.745433;
     public static double mLatitude = 35.658581;
@@ -273,9 +273,17 @@ public class TimelineActivity extends AppCompatActivity {
                 mShowPosition = position;
                 switch (mShowPosition) {
                     case 0:
-                        if (mNearCategory_id != 0)
+                        if (mNearCategory_id != 0) {
                             mCategorySpinner.setText(CATEGORY[mNearCategory_id]);
-                        if (mNearValue_id != 0) mValueSpinner.setText(VALUE[mNearValue_id]);
+                        } else {
+                            mCategorySpinner.setText("");
+                        }
+
+                        if (mNearValue_id != 0) {
+                            mValueSpinner.setText(VALUE[mNearValue_id]);
+                        } else {
+                            mValueSpinner.setText("");
+                        }
 
                         mToolBar.setTitle(mTitle);
                         mToolBar.setSubtitle("エリアを変更する");
@@ -283,18 +291,34 @@ public class TimelineActivity extends AppCompatActivity {
                         mToolBar.setLogo(null);
                         break;
                     case 1:
-                        if (mFollowCategory_id != 0)
+                        if (mFollowCategory_id != 0) {
                             mCategorySpinner.setText(CATEGORY[mFollowCategory_id]);
-                        if (mFollowValue_id != 0) mValueSpinner.setText(VALUE[mFollowValue_id]);
+                        } else {
+                            mCategorySpinner.setText("");
+                        }
+
+                        if (mFollowValue_id != 0) {
+                            mValueSpinner.setText(VALUE[mFollowValue_id]);
+                        } else {
+                            mValueSpinner.setText("");
+                        }
 
                         mToolBar.setTitle("");
                         mToolBar.setSubtitle("");
                         mToolBar.setLogo(R.drawable.ic_gocci_moji_white45);
                         break;
                     case 2:
-                        if (mLatestCategory_id != 0)
+                        if (mLatestCategory_id != 0) {
                             mCategorySpinner.setText(CATEGORY[mLatestCategory_id]);
-                        if (mLatestValue_id != 0) mValueSpinner.setText(VALUE[mLatestValue_id]);
+                        } else {
+                            mCategorySpinner.setText("");
+                        }
+
+                        if (mLatestValue_id != 0) {
+                            mValueSpinner.setText(VALUE[mLatestValue_id]);
+                        } else {
+                            mValueSpinner.setText("");
+                        }
 
                         mToolBar.setTitle("");
                         mToolBar.setSubtitle("");
@@ -722,5 +746,10 @@ public class TimelineActivity extends AppCompatActivity {
                 mGochi.addGochi(R.drawable.ic_icon_beef_orange, pointX, y);
             }
         });
+    }
+
+    public void refreshSheet() {
+        mCategorySpinner.setText("");
+        mValueSpinner.setText("");
     }
 }

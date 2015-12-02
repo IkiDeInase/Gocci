@@ -560,6 +560,13 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
                 mPlayingPostId = null;
                 mViewHolderHash.clear();
                 mTimelineAdapter.setData();
+
+                if (activity != null) {
+                    activity.refreshSheet();
+                } else {
+                    activity = (TimelineActivity)getActivity();
+                    activity.refreshSheet();
+                }
                 break;
             case GET_TIMELINE_ADD:
                 if (mPostData.size() != 0) {

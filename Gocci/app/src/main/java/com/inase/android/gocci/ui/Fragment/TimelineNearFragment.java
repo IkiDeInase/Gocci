@@ -844,6 +844,13 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
                 mPlayingPostId = null;
                 mViewHolderHash.clear();
                 mTimelineAdapter.setData();
+
+                if (activity != null) {
+                    activity.refreshSheet();
+                } else {
+                    activity = (TimelineActivity)getActivity();
+                    activity.refreshSheet();
+                }
                 break;
             case GET_TIMELINE_ADD:
                 if (mPostData.size() != 0) {
