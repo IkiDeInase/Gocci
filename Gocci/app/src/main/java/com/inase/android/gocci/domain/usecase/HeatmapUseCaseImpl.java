@@ -1,10 +1,10 @@
 package com.inase.android.gocci.domain.usecase;
 
-import com.google.android.gms.maps.model.LatLng;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3;
 import com.inase.android.gocci.datasource.repository.HeatmapRepository;
 import com.inase.android.gocci.domain.executor.PostExecutionThread;
+import com.inase.android.gocci.utils.map.HeatmapLog;
 
 import java.util.ArrayList;
 
@@ -51,7 +51,7 @@ public class HeatmapUseCaseImpl extends UseCase2<Const.APICategory, String> impl
     }
 
     @Override
-    public void onSuccess(final Const.APICategory api, final ArrayList<LatLng> heatData) {
+    public void onSuccess(final Const.APICategory api, final ArrayList<HeatmapLog> heatData) {
         mPostExecutionThread.post(new Runnable() {
             @Override
             public void run() {

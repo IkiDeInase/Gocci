@@ -1,9 +1,9 @@
 package com.inase.android.gocci.datasource.repository;
 
-import com.google.android.gms.maps.model.LatLng;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3;
+import com.inase.android.gocci.utils.map.HeatmapLog;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONObject;
@@ -42,7 +42,7 @@ public class HeatmapRepositoryImpl implements HeatmapRepository {
                         mAPI3.get_heatmap_response(response, new API3.GetHeatmapResponseCallback() {
 
                             @Override
-                            public void onSuccess(ArrayList<LatLng> list) {
+                            public void onSuccess(ArrayList<HeatmapLog> list) {
                                 cb.onSuccess(api, list);
                             }
 

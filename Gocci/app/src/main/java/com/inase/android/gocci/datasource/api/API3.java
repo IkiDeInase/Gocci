@@ -1,12 +1,12 @@
 package com.inase.android.gocci.datasource.api;
 
-import com.google.android.gms.maps.model.LatLng;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.domain.model.HeaderData;
 import com.inase.android.gocci.domain.model.ListGetData;
 import com.inase.android.gocci.domain.model.PostData;
 import com.inase.android.gocci.domain.model.TwoCellData;
 import com.inase.android.gocci.utils.SavedData;
+import com.inase.android.gocci.utils.map.HeatmapLog;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -305,7 +305,7 @@ public interface API3 {
     }
 
     interface GetHeatmapResponseCallback {
-        void onSuccess(ArrayList<LatLng> list);
+        void onSuccess(ArrayList<HeatmapLog> list);
 
         void onGlobalError(Util.GlobalCode globalCode);
 
@@ -4257,12 +4257,16 @@ public interface API3 {
                     //GlobalCodeにヒット && LocalCodeではない
                     if (globalCode == Util.GlobalCode.SUCCESS) {
                         //成功
-                        final ArrayList<LatLng> mListData = new ArrayList<>();
+                        final ArrayList<HeatmapLog> mListData = new ArrayList<>();
 
                         JSONArray payload = jsonObject.getJSONArray("payload");
                         for (int i = 0; i < payload.length(); i++) {
                             JSONObject listData = payload.getJSONObject(i);
-                            mListData.add(new LatLng(listData.getDouble("lat"), listData.getDouble("lon")));
+                            String rest_id = listData.getString("post_rest_id");
+                            String restname = listData.getString("restname");
+                            double lat = listData.getDouble("lat");
+                            double lon = listData.getDouble("lon");
+                            mListData.add(new HeatmapLog(rest_id, restname, lat, lon));
                         }
                         cb.onSuccess(mListData);
                     } else {

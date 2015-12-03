@@ -1,9 +1,9 @@
 package com.inase.android.gocci.presenter;
 
-import com.google.android.gms.maps.model.LatLng;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3;
 import com.inase.android.gocci.domain.usecase.HeatmapUseCase;
+import com.inase.android.gocci.utils.map.HeatmapLog;
 
 import java.util.ArrayList;
 
@@ -49,7 +49,7 @@ public class ShowHeatmapPresenter extends Presenter implements HeatmapUseCase.He
     }
 
     @Override
-    public void onHeatmapLoaded(Const.APICategory api, ArrayList<LatLng> data) {
+    public void onHeatmapLoaded(Const.APICategory api, ArrayList<HeatmapLog> data) {
         mShowHeatmapView.hideLoading();
         mShowHeatmapView.showResult(api, data);
     }
@@ -75,6 +75,6 @@ public class ShowHeatmapPresenter extends Presenter implements HeatmapUseCase.He
 
         void showNoResultCausedByLocalError(Const.APICategory api, String errorMessage);
 
-        void showResult(Const.APICategory api, ArrayList<LatLng> data);
+        void showResult(Const.APICategory api, ArrayList<HeatmapLog> data);
     }
 }

@@ -407,6 +407,7 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
                 ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 38);
             }
         } else {
+
             SmartLocation.with(context).location().oneFix().start(new OnLocationUpdatedListener() {
                 @Override
                 public void onLocationUpdated(Location location) {

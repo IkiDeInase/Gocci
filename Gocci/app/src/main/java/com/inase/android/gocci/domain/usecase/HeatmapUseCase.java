@@ -1,8 +1,8 @@
 package com.inase.android.gocci.domain.usecase;
 
-import com.google.android.gms.maps.model.LatLng;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3;
+import com.inase.android.gocci.utils.map.HeatmapLog;
 
 import java.util.ArrayList;
 
@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public interface HeatmapUseCase {
 
     interface HeatmapUseCaseCallback {
-        void onHeatmapLoaded(Const.APICategory api, ArrayList<LatLng> heatData);
+        void onHeatmapLoaded(Const.APICategory api, ArrayList<HeatmapLog> heatData);
 
         void onCausedByLocalError(Const.APICategory api, String errorMessage);
 
