@@ -23,13 +23,10 @@ import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3;
-import com.inase.android.gocci.datasource.repository.CheckRegIdRepository;
-import com.inase.android.gocci.datasource.repository.CheckRegIdRepositoryImpl;
+import com.inase.android.gocci.datasource.api.API3PostUtil;
 import com.inase.android.gocci.datasource.repository.LoginRepository;
 import com.inase.android.gocci.datasource.repository.LoginRepositoryImpl;
 import com.inase.android.gocci.domain.executor.UIThread;
-import com.inase.android.gocci.domain.usecase.CheckRegIdUseCase;
-import com.inase.android.gocci.domain.usecase.CheckRegIdUseCaseImpl;
 import com.inase.android.gocci.domain.usecase.UserLoginUseCase;
 import com.inase.android.gocci.domain.usecase.UserLoginUseCaseImpl;
 import com.inase.android.gocci.event.BusHolder;
@@ -64,10 +61,10 @@ public class LoginCreateUserNameFragment extends Fragment implements FABProgress
     public void fab() {
         if (mUsernameTextInput.getEditText().getText().length() != 0) {
             mUsernameTextInput.setError("");
-            API3.Util.AuthSignupLocalCode localCode = API3.Impl.getRepository().auth_signup_parameter_regex(mUsernameTextInput.getEditText().getText().toString(), "android", SavedData.getVersionName(getActivity()), Build.MODEL, SavedData.getRegId(getActivity()));
+            API3.Util.AuthSignupLocalCode localCode = API3.Impl.getRepository().auth_signup_parameter_regex(mUsernameTextInput.getEditText().getText().toString());
             if (localCode == null) {
                 mPresenter.loginUser(Const.APICategory.AUTH_SIGNUP,
-                        API3.Util.getAuthSignupAPI(mUsernameTextInput.getEditText().getText().toString(), Const.OS, Build.VERSION.RELEASE, Build.MODEL, SavedData.getRegId(getActivity())));
+                        API3.Util.getAuthSignupAPI(mUsernameTextInput.getEditText().getText().toString()));
             } else {
                 Toast.makeText(getActivity(), API3.Util.authSignupLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
             }
@@ -96,10 +93,8 @@ public class LoginCreateUserNameFragment extends Fragment implements FABProgress
         super.onCreate(savedInstanceState);
         API3 api3Impl = API3.Impl.getRepository();
         LoginRepository loginRepositoryImpl = LoginRepositoryImpl.getRepository(api3Impl);
-        CheckRegIdRepository checkRegIdRepositoryImpl = CheckRegIdRepositoryImpl.getRepository(api3Impl);
         UserLoginUseCase userLoginUseCaseImpl = UserLoginUseCaseImpl.getUseCase(loginRepositoryImpl, UIThread.getInstance());
-        CheckRegIdUseCase checkRegIdUseCaseImpl = CheckRegIdUseCaseImpl.getUseCase(checkRegIdRepositoryImpl, UIThread.getInstance());
-        mPresenter = new ShowUserLoginPresenter(userLoginUseCaseImpl, checkRegIdUseCaseImpl);
+        mPresenter = new ShowUserLoginPresenter(userLoginUseCaseImpl);
         mPresenter.setShowUserLoginView(this);
     }
 
@@ -181,22 +176,8 @@ public class LoginCreateUserNameFragment extends Fragment implements FABProgress
     }
 
     @Override
-    public void onCheckSuccess() {
-
-    }
-
-    @Override
-    public void onCheckFailureCausedByLocalError(String id, String errorMessage) {
-        mUsernameTextInput.setError(errorMessage);
-    }
-
-    @Override
-    public void onCheckFailureCausedByGlobalError(API3.Util.GlobalCode globalCode) {
-        Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.AUTH_CHECK, globalCode);
-    }
-
-    @Override
     public void showResult(Const.APICategory api) {
+        API3PostUtil.postDeviceAsync(getActivity(), SavedData.getRegId(getActivity()), Const.OS, Build.VERSION.RELEASE, Build.MODEL);
         mFabProgressCircle.beginFinalAnimation();
     }
 
@@ -232,7 +213,7 @@ public class LoginCreateUserNameFragment extends Fragment implements FABProgress
         switch (event.api) {
             case AUTH_SIGNUP:
                 mPresenter.loginUser(Const.APICategory.AUTH_SIGNUP,
-                        API3.Util.getAuthSignupAPI(mUsernameTextInput.getEditText().getText().toString(), Const.OS, Build.VERSION.RELEASE, Build.MODEL, SavedData.getRegId(getActivity())));
+                        API3.Util.getAuthSignupAPI(mUsernameTextInput.getEditText().getText().toString()));
                 break;
             default:
                 break;

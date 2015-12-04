@@ -11,6 +11,7 @@ import android.util.Log;
 import com.google.android.gms.gcm.GcmPubSub;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
+import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3PostUtil;
@@ -84,15 +85,20 @@ public class RegistrationIntentService extends IntentService {
      */
     private void sendRegistrationToServer(String token) {
         // Add custom implementation, as needed.
-        BusHolder.get().post(new RegIdRegisteredEvent(token));
 
+        //チュートリアルでログインした時/トークンがリフレッシュで変わった時
+        //チュートリアル　regId==null
+        //トークンリフレッシュ　regId !=null regId != token
+        BusHolder.get().post(new RegIdRegisteredEvent(token));
         String regid = SavedData.getRegId(this);
         if (regid == null) {
             SavedData.setRegId(this, token);
         } else {
             if (!regid.equals(token)) {
                 //サーバー送る
-                API3PostUtil.publicUpdateDeviceAsync(this, SavedData.getServerUserId(this), token, Const.OS, Build.VERSION.RELEASE, Build.MODEL);
+                SavedData.setRegId(this, token);
+                Application_Gocci.getClient().setCookieStore(SavedData.getCookieStore(this));
+                API3PostUtil.postDeviceAsync(this, token, Const.OS, Build.VERSION.RELEASE, Build.MODEL);
             }
         }
     }

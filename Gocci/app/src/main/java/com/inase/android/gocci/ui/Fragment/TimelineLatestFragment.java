@@ -511,7 +511,7 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
     public void showEmpty(Const.APICategory api) {
         switch (api) {
             case GET_TIMELINE_FIRST:
-                mTimelineAdapter = new TimelineAdapter(getActivity(), mTimelineusers);
+                mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.TIMELINE, mTimelineusers);
                 mTimelineAdapter.setTimelineCallback(this);
                 mTimelineRecyclerView.setAdapter(mTimelineAdapter);
                 break;
@@ -546,7 +546,7 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
             case GET_TIMELINE_FIRST:
                 mTimelineusers.addAll(mPostData);
                 mPost_ids.addAll(post_ids);
-                mTimelineAdapter = new TimelineAdapter(getActivity(), mTimelineusers);
+                mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.TIMELINE, mTimelineusers);
                 mTimelineAdapter.setTimelineCallback(this);
                 mTimelineRecyclerView.setAdapter(mTimelineAdapter);
                 break;
@@ -598,7 +598,7 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
         Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
         mSwipeContainer.setRefreshing(false);
         if (api == Const.APICategory.GET_TIMELINE_FIRST) {
-            mTimelineAdapter = new TimelineAdapter(getActivity(), mTimelineusers);
+            mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.TIMELINE, mTimelineusers);
             mTimelineAdapter.setTimelineCallback(this);
             mTimelineRecyclerView.setAdapter(mTimelineAdapter);
         }
@@ -609,7 +609,7 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
         Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
         mSwipeContainer.setRefreshing(false);
         if (api == Const.APICategory.GET_TIMELINE_FIRST) {
-            mTimelineAdapter = new TimelineAdapter(getActivity(), mTimelineusers);
+            mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.TIMELINE, mTimelineusers);
             mTimelineAdapter.setTimelineCallback(this);
             mTimelineRecyclerView.setAdapter(mTimelineAdapter);
         }

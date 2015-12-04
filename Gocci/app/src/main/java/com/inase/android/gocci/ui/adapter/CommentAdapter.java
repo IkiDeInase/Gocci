@@ -14,6 +14,7 @@ import com.inase.android.gocci.R;
 import com.inase.android.gocci.domain.model.CommentUserData;
 import com.inase.android.gocci.domain.model.HeaderData;
 import com.inase.android.gocci.ui.view.RoundedTransformation;
+import com.inase.android.gocci.utils.SavedData;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -105,8 +106,10 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             public void onClick(View v) {
                 final StringBuilder user_name = new StringBuilder();
                 final StringBuilder user_id = new StringBuilder();
-                user_name.append("@" + memo.getUsername() + " ");
-                user_id.append(memo.getUser_id());
+                if (!memo.getUsername().equals(SavedData.getServerName(mContext))) {
+                    user_name.append("@" + memo.getUsername() + " ");
+                    user_id.append(memo.getUser_id());
+                }
                 mCallback.onCommentClick(user_name.toString(), user_id.toString());
             }
         });
@@ -191,8 +194,10 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 user_name.append("@" + users.getUsername() + " ");
                 user_id.append(users.getComment_user_id());
                 for (CommentUserData data : users.getComment_user_data()) {
-                    user_name.append("@" + data.getUserName() + " ");
-                    user_id.append("," + data.getUser_id());
+                    if (!users.getUsername().equals(SavedData.getServerName(mContext))) {
+                        user_name.append("@" + data.getUserName() + " ");
+                        user_id.append("," + data.getUser_id());
+                    }
                 }
                 mCallback.onCommentClick(user_name.toString(), user_id.toString());
             }

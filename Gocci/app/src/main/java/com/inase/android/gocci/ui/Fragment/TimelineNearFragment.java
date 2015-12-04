@@ -649,7 +649,7 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
         mEmptyImage.setVisibility(View.VISIBLE);
         mEmptyText.setVisibility(View.VISIBLE);
         mSwipeContainer.setRefreshing(false);
-        mTimelineAdapter = new TimelineAdapter(getActivity(), mTimelineusers);
+        mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.NEARLINE, mTimelineusers);
         mTimelineAdapter.setTimelineCallback(this);
         mTimelineRecyclerView.setAdapter(mTimelineAdapter);
     }
@@ -796,7 +796,7 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
     public void showEmpty(Const.APICategory api) {
         switch (api) {
             case GET_TIMELINE_FIRST:
-                mTimelineAdapter = new TimelineAdapter(getActivity(), mTimelineusers);
+                mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.NEARLINE, mTimelineusers);
                 mTimelineAdapter.setTimelineCallback(this);
                 mTimelineRecyclerView.setAdapter(mTimelineAdapter);
                 break;
@@ -831,7 +831,7 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
             case GET_TIMELINE_FIRST:
                 mTimelineusers.addAll(mPostData);
                 mPost_ids.addAll(post_ids);
-                mTimelineAdapter = new TimelineAdapter(getActivity(), mTimelineusers);
+                mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.NEARLINE, mTimelineusers);
                 mTimelineAdapter.setTimelineCallback(this);
                 mTimelineRecyclerView.setAdapter(mTimelineAdapter);
                 break;
@@ -883,7 +883,7 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
         Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
         mSwipeContainer.setRefreshing(false);
         if (api == Const.APICategory.GET_TIMELINE_FIRST) {
-            mTimelineAdapter = new TimelineAdapter(getActivity(), mTimelineusers);
+            mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.NEARLINE, mTimelineusers);
             mTimelineAdapter.setTimelineCallback(this);
             mTimelineRecyclerView.setAdapter(mTimelineAdapter);
         }
@@ -894,7 +894,7 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
         Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
         mSwipeContainer.setRefreshing(false);
         if (api == Const.APICategory.GET_TIMELINE_FIRST) {
-            mTimelineAdapter = new TimelineAdapter(getActivity(), mTimelineusers);
+            mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.NEARLINE, mTimelineusers);
             mTimelineAdapter.setTimelineCallback(this);
             mTimelineRecyclerView.setAdapter(mTimelineAdapter);
         }

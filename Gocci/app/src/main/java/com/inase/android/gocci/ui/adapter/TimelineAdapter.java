@@ -25,13 +25,16 @@ public class TimelineAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
     private Context mContext;
     private int mCellSize;
 
+    private Const.TimelineCategory mCategory;
+
     private ArrayList<TwoCellData> mData = new ArrayList<>();
 
     private TimelineCallback mCallback;
 
-    public TimelineAdapter(Context context, ArrayList<TwoCellData> data) {
+    public TimelineAdapter(Context context, Const.TimelineCategory category, ArrayList<TwoCellData> data) {
         mContext = context;
         mData = data;
+        mCategory = category;
         this.mCellSize = Util.getScreenWidth(mContext) / 2;
     }
 
@@ -79,7 +82,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
 
         holder.mRestname.setText(user.getRestname());
 
-        if (user.getDistance() != 0) {
+        if (mCategory == Const.TimelineCategory.NEARLINE) {
             holder.mDistance.setText(getDist(user.getDistance()));
         } else {
             holder.mDistance.setText(user.getPost_date());
