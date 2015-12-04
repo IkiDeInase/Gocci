@@ -43,6 +43,10 @@ public class Const {
 //    public static final String GET_MOVIE_BUCKET_NAME = "gocci.movies.provider.jp";
 //    public static final String POST_PHOTO_BUCKET_NAME = "gocci.imgs.provider.jp";
 
+    public enum TimelineCategory {
+        NEARLINE, FOLLOWLINE, TIMELINE,
+    }
+
     public enum PostCallback {
         SUCCESS, LOCALERROR, GLOBALERROR
     }
@@ -68,7 +72,6 @@ public class Const {
 
     public enum APICategory {
         AUTH_LOGIN,
-        AUTH_CHECK,
         AUTH_SIGNUP,
         AUTH_FACEBOOK_LOGIN,
         AUTH_TWITTER_LOGIN,
@@ -112,7 +115,8 @@ public class Const {
         POST_PROFILEIMG,
         POST_RESTADD,
         POST_POST,
-        PUBLIC_UPDATE_PROFILE,
+        POST_REGISTER_DEVICE_TOKEN,
+        POST_UNREGISTER_DEVICE_TOKEN
     }
 
     public static final class TwoCellViewHolder extends RecyclerView.ViewHolder {

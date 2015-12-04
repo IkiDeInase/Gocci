@@ -332,17 +332,17 @@ public class API3PostUtil {
         }
     }
 
-    public static void publicUpdateDeviceAsync(final Context context, String user_id, final String regId, String os, String ver, String model) {
-        API3.Util.PublicUpdateDeviceLocalCode localCode = API3.Impl.getRepository().public_update_device_parameter_regex(user_id, regId, os, ver, model);
+    public static void postDeviceAsync(final Context context, final String regId, String os, String ver, String model) {
+        API3.Util.PostRegisterDeviceTokenLocalCode localCode = API3.Impl.getRepository().post_register_device_token_parameter_regex(regId, os, ver, model);
         if (localCode == null) {
             API3.Util.GlobalCode globalCode = API3.Impl.getRepository().check_global_error();
             if (globalCode == API3.Util.GlobalCode.SUCCESS) {
                 try {
-                    Application_Gocci.getJsonAsync(API3.Util.getPublicUpdateDevice(user_id, regId, os, ver, model), new JsonHttpResponseHandler() {
+                    Application_Gocci.getJsonAsync(API3.Util.getPostRegisterDeviceTokenAPI(regId, os, ver, model), new JsonHttpResponseHandler() {
 
                         @Override
                         public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                            API3.Impl.getRepository().public_update_device_response(response, new API3.PostResponseCallback() {
+                            API3.Impl.getRepository().post_register_device_token_response(response, new API3.PostResponseCallback() {
                                 @Override
                                 public void onSuccess() {
 
@@ -350,7 +350,7 @@ public class API3PostUtil {
 
                                 @Override
                                 public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.PUBLIC_UPDATE_PROFILE, globalCode);
+                                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_REGISTER_DEVICE_TOKEN, globalCode);
                                 }
 
                                 @Override
@@ -362,17 +362,61 @@ public class API3PostUtil {
 
                         @Override
                         public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                            Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.PUBLIC_UPDATE_PROFILE, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED);
+                            Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_REGISTER_DEVICE_TOKEN, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED);
                         }
                     });
                 } catch (SocketTimeoutException e) {
-                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.PUBLIC_UPDATE_PROFILE, API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT);
+                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_REGISTER_DEVICE_TOKEN, API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT);
                 }
             } else {
-                Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.PUBLIC_UPDATE_PROFILE, globalCode);
+                Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_REGISTER_DEVICE_TOKEN, globalCode);
             }
         } else {
-            Toast.makeText(context, API3.Util.publicUpdateDeviceErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, API3.Util.postRegisterDeviceTokenLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public static void postUnDeviceAsync(final Context context, final String regId) {
+        API3.Util.PostUnregisterDeviceTokenLocalCode localCode = API3.Impl.getRepository().post_unregister_device_token_parameter_regex(regId);
+        if (localCode == null) {
+            API3.Util.GlobalCode globalCode = API3.Impl.getRepository().check_global_error();
+            if (globalCode == API3.Util.GlobalCode.SUCCESS) {
+                try {
+                    Application_Gocci.getJsonAsync(API3.Util.getPostUnregisterDeviceTokenAPI(regId), new JsonHttpResponseHandler() {
+
+                        @Override
+                        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                            API3.Impl.getRepository().post_unregister_device_token_response(response, new API3.PostResponseCallback() {
+                                @Override
+                                public void onSuccess() {
+
+                                }
+
+                                @Override
+                                public void onGlobalError(API3.Util.GlobalCode globalCode) {
+                                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_UNREGISTER_DEVICE_TOKEN, globalCode);
+                                }
+
+                                @Override
+                                public void onLocalError(String errorMessage) {
+                                    Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                            Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_UNREGISTER_DEVICE_TOKEN, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED);
+                        }
+                    });
+                } catch (SocketTimeoutException e) {
+                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_UNREGISTER_DEVICE_TOKEN, API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT);
+                }
+            } else {
+                Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_UNREGISTER_DEVICE_TOKEN, globalCode);
+            }
+        } else {
+            Toast.makeText(context, API3.Util.postUnregisterDeviceTokenLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
         }
     }
 

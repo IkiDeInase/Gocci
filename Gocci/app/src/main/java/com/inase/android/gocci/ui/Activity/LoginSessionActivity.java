@@ -26,13 +26,10 @@ import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3;
-import com.inase.android.gocci.datasource.repository.CheckRegIdRepository;
-import com.inase.android.gocci.datasource.repository.CheckRegIdRepositoryImpl;
+import com.inase.android.gocci.datasource.api.API3PostUtil;
 import com.inase.android.gocci.datasource.repository.LoginRepository;
 import com.inase.android.gocci.datasource.repository.LoginRepositoryImpl;
 import com.inase.android.gocci.domain.executor.UIThread;
-import com.inase.android.gocci.domain.usecase.CheckRegIdUseCase;
-import com.inase.android.gocci.domain.usecase.CheckRegIdUseCaseImpl;
 import com.inase.android.gocci.domain.usecase.UserLoginUseCase;
 import com.inase.android.gocci.domain.usecase.UserLoginUseCaseImpl;
 import com.inase.android.gocci.event.BusHolder;
@@ -113,10 +110,8 @@ public class LoginSessionActivity extends AppCompatActivity implements ShowUserL
 
         final API3 api3Impl = API3.Impl.getRepository();
         LoginRepository loginRepositoryImpl = LoginRepositoryImpl.getRepository(api3Impl);
-        CheckRegIdRepository checkRegIdRepositoryImpl = CheckRegIdRepositoryImpl.getRepository(api3Impl);
         UserLoginUseCase userLoginUseCaseImpl = UserLoginUseCaseImpl.getUseCase(loginRepositoryImpl, UIThread.getInstance());
-        CheckRegIdUseCase checkRegIdUseCaseImpl = CheckRegIdUseCaseImpl.getUseCase(checkRegIdRepositoryImpl, UIThread.getInstance());
-        mPresenter = new ShowUserLoginPresenter(userLoginUseCaseImpl, checkRegIdUseCaseImpl);
+        mPresenter = new ShowUserLoginPresenter(userLoginUseCaseImpl);
         mPresenter.setShowUserLoginView(this);
 
         setContentView(R.layout.activity_login_session);
@@ -155,11 +150,12 @@ public class LoginSessionActivity extends AppCompatActivity implements ShowUserL
 
                     @Override
                     public void onPostExecute(String identity_id) {
-                        API3.Util.AuthSnsLoginLocalCode localCode = api3Impl.auth_sns_login_parameter_regex(identity_id, Const.OS, SavedData.getVersionName(LoginSessionActivity.this), Build.MODEL, SavedData.getRegId(LoginSessionActivity.this));
+                        API3.Util.AuthLoginLocalCode localCode = api3Impl.auth_login_parameter_regex(identity_id);
                         if (localCode == null) {
-                            mPresenter.loginUser(Const.APICategory.AUTH_FACEBOOK_LOGIN, API3.Util.getAuthSNSLoginAPI(identity_id, Const.OS, Build.VERSION.RELEASE, Build.MODEL, SavedData.getRegId(LoginSessionActivity.this)));
+                            SavedData.setIdentityId(LoginSessionActivity.this, identity_id);
+                            mPresenter.loginUser(Const.APICategory.AUTH_FACEBOOK_LOGIN, API3.Util.getAuthLoginAPI(identity_id));
                         } else {
-                            Toast.makeText(LoginSessionActivity.this, API3.Util.authSnsLoginLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginSessionActivity.this, API3.Util.authLoginLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -190,11 +186,12 @@ public class LoginSessionActivity extends AppCompatActivity implements ShowUserL
 
                     @Override
                     public void onPostExecute(String identity_id) {
-                        API3.Util.AuthSnsLoginLocalCode localCode = api3Impl.auth_sns_login_parameter_regex(identity_id, Const.OS, SavedData.getVersionName(LoginSessionActivity.this), Build.MODEL, SavedData.getRegId(LoginSessionActivity.this));
+                        API3.Util.AuthLoginLocalCode localCode = api3Impl.auth_login_parameter_regex(identity_id);
                         if (localCode == null) {
-                            mPresenter.loginUser(Const.APICategory.AUTH_TWITTER_LOGIN, API3.Util.getAuthSNSLoginAPI(identity_id, Const.OS, Build.VERSION.RELEASE, Build.MODEL, SavedData.getRegId(LoginSessionActivity.this)));
+                            SavedData.setIdentityId(LoginSessionActivity.this, identity_id);
+                            mPresenter.loginUser(Const.APICategory.AUTH_TWITTER_LOGIN, API3.Util.getAuthLoginAPI(identity_id));
                         } else {
-                            Toast.makeText(LoginSessionActivity.this, API3.Util.authSnsLoginLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginSessionActivity.this, API3.Util.authLoginLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -216,11 +213,9 @@ public class LoginSessionActivity extends AppCompatActivity implements ShowUserL
                     mSigninUsernameEdit.setError(getString(R.string.cheat_input));
                     mSigninPassEdit.setError(getString(R.string.cheat_input));
                 } else {
-                    API3.Util.AuthPassLoginLocalCode localCode = api3Impl.auth_pass_login_parameter_regex(mSigninUsernameEdit.getEditText().getText().toString(), mSigninPassEdit.getEditText().getText().toString(),
-                            Const.OS, SavedData.getVersionName(LoginSessionActivity.this), Build.MODEL, SavedData.getRegId(LoginSessionActivity.this));
+                    API3.Util.AuthPassLoginLocalCode localCode = api3Impl.auth_pass_login_parameter_regex(mSigninUsernameEdit.getEditText().getText().toString(), mSigninPassEdit.getEditText().getText().toString());
                     if (localCode == null) {
-                        mPresenter.loginUser(Const.APICategory.AUTH_PASS_LOGIN, API3.Util.getAuthUsernamePasswordAPI(mSigninUsernameEdit.getEditText().getText().toString(),
-                                mSigninPassEdit.getEditText().getText().toString(), Const.OS, Build.VERSION.RELEASE, Build.MODEL, SavedData.getRegId(LoginSessionActivity.this)));
+                        mPresenter.loginUser(Const.APICategory.AUTH_PASS_LOGIN, API3.Util.getAuthUsernamePasswordAPI(mSigninUsernameEdit.getEditText().getText().toString(), mSigninPassEdit.getEditText().getText().toString()));
                     } else {
                         Toast.makeText(LoginSessionActivity.this, API3.Util.authPassLoginLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
                     }
@@ -285,22 +280,9 @@ public class LoginSessionActivity extends AppCompatActivity implements ShowUserL
     }
 
     @Override
-    public void onCheckSuccess() {
-
-    }
-
-    @Override
-    public void onCheckFailureCausedByLocalError(String id, String errorMessage) {
-        Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onCheckFailureCausedByGlobalError(API3.Util.GlobalCode globalCode) {
-        Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.AUTH_CHECK, globalCode);
-    }
-
-    @Override
     public void showResult(Const.APICategory api) {
+        API3PostUtil.postDeviceAsync(this, SavedData.getRegId(this), Const.OS, Build.VERSION.RELEASE, Build.MODEL);
+
         Intent intent = new Intent(this, TimelineActivity.class);
         overridePendingTransition(0, 0);
         intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);

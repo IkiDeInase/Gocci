@@ -3,6 +3,7 @@ package com.inase.android.gocci.datasource.repository;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3;
+import com.inase.android.gocci.utils.SavedData;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONObject;
@@ -39,7 +40,9 @@ public class LoginRepositoryImpl implements LoginRepository {
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                         switch (api) {
                             case AUTH_LOGIN:
-                                mAPI3.auth_login_response(response, new API3.AuthResponseCallback() {
+                            case AUTH_FACEBOOK_LOGIN:
+                            case AUTH_TWITTER_LOGIN:
+                                mAPI3.auth_login_response(response, new API3.LoginResponseCallback() {
                                     @Override
                                     public void onSuccess() {
                                         cb.onLogin(api);
@@ -59,27 +62,9 @@ public class LoginRepositoryImpl implements LoginRepository {
                             case AUTH_PASS_LOGIN:
                                 mAPI3.auth_pass_login_response(response, new API3.AuthResponseCallback() {
                                     @Override
-                                    public void onSuccess() {
-                                        cb.onLogin(api);
-                                    }
-
-                                    @Override
-                                    public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                        cb.onNotLoginCausedByGlobalError(api, globalCode);
-                                    }
-
-                                    @Override
-                                    public void onLocalError(String errorMessage) {
-                                        cb.onNotLoginCausedByLocalError(api, errorMessage);
-                                    }
-                                });
-                                break;
-                            case AUTH_FACEBOOK_LOGIN:
-                            case AUTH_TWITTER_LOGIN:
-                                mAPI3.auth_sns_login_response(response, new API3.AuthResponseCallback() {
-                                    @Override
-                                    public void onSuccess() {
-                                        cb.onLogin(api);
+                                    public void onSuccess(String identity_id) {
+                                        SavedData.setIdentityId(Application_Gocci.getInstance().getApplicationContext(), identity_id);
+                                        userLogin(Const.APICategory.AUTH_LOGIN, API3.Util.getAuthLoginAPI(identity_id), cb);
                                     }
 
                                     @Override
@@ -96,8 +81,9 @@ public class LoginRepositoryImpl implements LoginRepository {
                             case AUTH_SIGNUP:
                                 mAPI3.auth_signup_response(response, new API3.AuthResponseCallback() {
                                     @Override
-                                    public void onSuccess() {
-                                        cb.onLogin(api);
+                                    public void onSuccess(String identity_id) {
+                                        SavedData.setIdentityId(Application_Gocci.getInstance().getApplicationContext(), identity_id);
+                                        userLogin(Const.APICategory.AUTH_LOGIN, API3.Util.getAuthLoginAPI(identity_id), cb);
                                     }
 
                                     @Override

@@ -2,20 +2,17 @@ package com.inase.android.gocci.presenter;
 
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3;
-import com.inase.android.gocci.domain.usecase.CheckRegIdUseCase;
 import com.inase.android.gocci.domain.usecase.UserLoginUseCase;
 
 /**
  * Created by kinagafuji on 15/09/25.
  */
-public class ShowUserLoginPresenter extends Presenter implements UserLoginUseCase.UserLoginUseCaseCallback, CheckRegIdUseCase.CheckRegIdUseCaseCallback {
+public class ShowUserLoginPresenter extends Presenter implements UserLoginUseCase.UserLoginUseCaseCallback {
 
     private UserLoginUseCase mUserLoginUseCase;
-    private CheckRegIdUseCase mCheckRegIdUseCase;
     private ShowUserLogin mShowUserLogin;
 
-    public ShowUserLoginPresenter(UserLoginUseCase userLoginUseCase, CheckRegIdUseCase checkRegIdUseCase) {
-        mCheckRegIdUseCase = checkRegIdUseCase;
+    public ShowUserLoginPresenter(UserLoginUseCase userLoginUseCase) {
         mUserLoginUseCase = userLoginUseCase;
     }
 
@@ -26,10 +23,6 @@ public class ShowUserLoginPresenter extends Presenter implements UserLoginUseCas
     public void loginUser(Const.APICategory api, String url) {
         mShowUserLogin.showLoading();
         mUserLoginUseCase.execute(api, url, this);
-    }
-
-    public void checkRegId(String url) {
-        mCheckRegIdUseCase.execute(url, this);
     }
 
     @Override
@@ -70,31 +63,10 @@ public class ShowUserLoginPresenter extends Presenter implements UserLoginUseCas
         mShowUserLogin.showNoResultCausedByGlobalError(api, globalCode);
     }
 
-    @Override
-    public void onSuccess() {
-        mShowUserLogin.onCheckSuccess();
-    }
-
-    @Override
-    public void onFailureCausedByLocalError(String id, String errorMessage) {
-        mShowUserLogin.onCheckFailureCausedByLocalError(id, errorMessage);
-    }
-
-    @Override
-    public void onFailureCausedByGlobalError(API3.Util.GlobalCode globalCode) {
-        mShowUserLogin.onCheckFailureCausedByGlobalError(globalCode);
-    }
-
     public interface ShowUserLogin {
         void showLoading();
 
         void hideLoading();
-
-        void onCheckSuccess();
-
-        void onCheckFailureCausedByLocalError(String id, String errorMessage);
-
-        void onCheckFailureCausedByGlobalError(API3.Util.GlobalCode globalCode);
 
         void showResult(Const.APICategory api);
 

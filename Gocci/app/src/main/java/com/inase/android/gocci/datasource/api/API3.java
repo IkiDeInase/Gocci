@@ -22,23 +22,15 @@ import java.util.concurrent.ConcurrentHashMap;
 public interface API3 {
     Util.AuthLoginLocalCode auth_login_parameter_regex(String identity_id);
 
-    Util.AuthLoginLocalCode auth_login_response_regex(String user_id, String username, String profile_img, String identity_id, String badge_num, String token);
+    Util.AuthLoginLocalCode auth_login_response_regex(String user_id, String username, String profile_img, String badge_num, String cognito_token);
 
-    Util.AuthCheckLocalCode auth_check_parameter_regex(String register_id);
+    Util.AuthSignupLocalCode auth_signup_parameter_regex(String username);
 
-    Util.AuthCheckLocalCode auth_check_response_regex(String register_id);
+    Util.AuthSignupLocalCode auth_signup_response_regex(String identity_id);
 
-    Util.AuthSignupLocalCode auth_signup_parameter_regex(String username, String os, String ver, String model, String register_id);
+    Util.AuthPassLoginLocalCode auth_pass_login_parameter_regex(String username, String password);
 
-    Util.AuthSignupLocalCode auth_signup_response_regex(String user_id, String username, String profile_img, String identity_id, String badge_num, String token);
-
-    Util.AuthSnsLoginLocalCode auth_sns_login_parameter_regex(String identity_id, String os, String ver, String model, String register_id);
-
-    Util.AuthSnsLoginLocalCode auth_sns_login_response_regex(String user_id, String username, String profile_img, String identity_id, String badge_num, String token);
-
-    Util.AuthPassLoginLocalCode auth_pass_login_parameter_regex(String username, String password, String os, String ver, String model, String register_id);
-
-    Util.AuthPassLoginLocalCode auth_pass_login_response_regex(String user_id, String username, String profile_img, String identity_id, String badge_num, String token);
+    Util.AuthPassLoginLocalCode auth_pass_login_response_regex(String identity_id);
 
     Util.GetTimelineLocalCode get_nearline_parameter_regex(double lon, double lat);
 
@@ -96,6 +88,14 @@ public interface API3 {
 
     Util.GetHeatmapLocalCode get_heatmap_response_regex();
 
+    Util.PostRegisterDeviceTokenLocalCode post_register_device_token_parameter_regex(String device_token, String os, String ver, String model);
+
+    Util.PostRegisterDeviceTokenLocalCode post_register_device_token_response_regex();
+
+    Util.PostUnregisterDeviceTokenLocalCode post_unregister_device_token_parameter_regex(String device_token);
+
+    Util.PostUnregisterDeviceTokenLocalCode post_unregister_device_token_response_regex();
+
     Util.PostSnsLinkLocalCode post_sns_link_parameter_regex(String provider, String token);
 
     Util.PostSnsLinkLocalCode post_sns_link_response_regex();
@@ -144,10 +144,6 @@ public interface API3 {
 
     Util.PostRestAddLocalCode post_restadd_response_regex();
 
-    Util.PublicUpdateDeviceLocalCode public_update_device_parameter_regex(String user_id, String regId, String os, String ver, String model);
-
-    Util.PublicUpdateDeviceLocalCode public_update_device_response_regex();
-
     Util.PostUsernameLocalCode post_username_parameter_regex(String username);
 
     Util.PostUsernameLocalCode post_username_response_regex(String username);
@@ -158,13 +154,9 @@ public interface API3 {
 
     Util.GlobalCode check_global_error();
 
-    void auth_login_response(JSONObject jsonObject, AuthResponseCallback cb);
-
-    void auth_check_response(JSONObject jsonObject, CheckResponseCallback cb);
+    void auth_login_response(JSONObject jsonObject, LoginResponseCallback cb);
 
     void auth_signup_response(JSONObject jsonObject, AuthResponseCallback cb);
-
-    void auth_sns_login_response(JSONObject jsonObject, AuthResponseCallback cb);
 
     void auth_pass_login_response(JSONObject jsonObject, AuthResponseCallback cb);
 
@@ -192,6 +184,10 @@ public interface API3 {
 
     void get_heatmap_response(JSONObject jsonObject, GetHeatmapResponseCallback cb);
 
+    void post_register_device_token_response(JSONObject jsonObject, PostResponseCallback cb);
+
+    void post_unregister_device_token_response(JSONObject jsonObject, PostResponseCallback cb);
+
     void post_sns_response(JSONObject jsonObject, PostResponseCallback cb);
 
     void post_sns_unlink_response(JSONObject jsonObject, PostResponseCallback cb);
@@ -216,26 +212,24 @@ public interface API3 {
 
     void post_restadd_response(JSONObject jsonObject, PostRestAddResponseCallback cb);
 
-    void public_update_device_response(JSONObject jsonObject, PostResponseCallback cb);
-
     void post_username_response(JSONObject jsonObject, PostResponseCallback cb);
 
     void post_profileImg_response(JSONObject jsonObject, PostResponseCallback cb);
 
     interface AuthResponseCallback {
-        void onSuccess();
+        void onSuccess(String identity_id);
 
         void onGlobalError(Util.GlobalCode globalCode);
 
         void onLocalError(String errorMessage);
     }
 
-    interface CheckResponseCallback {
+    interface LoginResponseCallback {
         void onSuccess();
 
         void onGlobalError(Util.GlobalCode globalCode);
 
-        void onLocalError(String id, String errorMessage);
+        void onLocalError(String errorMessage);
     }
 
     interface PostResponseCallback {
@@ -396,26 +390,8 @@ public interface API3 {
             ERROR_REGISTER_ID_ALREADY_REGISTERD,
             ERROR_PARAMETER_USERNAME_MISSING,
             ERROR_PARAMETER_USERNAME_MALFORMED,
-            ERROR_PARAMETER_OS_MISSING,
-            ERROR_PARAMETER_OS_MALFORMED,
-            ERROR_PARAMETER_VER_MISSING,
-            ERROR_PARAMETER_VER_MALFORMED,
-            ERROR_PARAMETER_MODEL_MISSING,
-            ERROR_PARAMETER_MODEL_MALFORMED,
-            ERROR_PARAMETER_REGISTER_ID_MISSING,
-            ERROR_PARAMETER_REGISTER_ID_MALFORMED,
-            ERROR_RESPONSE_USER_ID_MISSING,
-            ERROR_RESPONSE_USER_ID_MALFORMED,
-            ERROR_RESPONSE_USERNAME_MISSING,
-            ERROR_RESPONSE_USERNAME_MALFORMED,
-            ERROR_RESPONSE_PROFILE_IMG_MISSING,
-            ERROR_RESPONSE_PROFILE_IMG_MALFORMED,
             ERROR_RESPONSE_IDENTITY_ID_MISSING,
             ERROR_RESPONSE_IDENTITY_ID_MALFORMED,
-            ERROR_RESPONSE_BADGE_NUM_MISSING,
-            ERROR_RESPONSE_BADGE_NUM_MALFORMED,
-            ERROR_RESPONSE_TOKEN_MISSING,
-            ERROR_RESPONSE_TOKEN_MALFORMED
         }
 
         public static AuthSignupLocalCode authSignupLocalErrorReverseLookupTable(String code) {
@@ -424,26 +400,8 @@ public interface API3 {
                 authSignupLocalReverseMap.put("ERROR_REGISTER_ID_ALREADY_REGISTERD", AuthSignupLocalCode.ERROR_REGISTER_ID_ALREADY_REGISTERD);
                 authSignupLocalReverseMap.put("ERROR_PARAMETER_USERNAME_MISSING", AuthSignupLocalCode.ERROR_PARAMETER_USERNAME_MISSING);
                 authSignupLocalReverseMap.put("ERROR_PARAMETER_USERNAME_MALFORMED", AuthSignupLocalCode.ERROR_PARAMETER_USERNAME_MALFORMED);
-                authSignupLocalReverseMap.put("ERROR_PARAMETER_OS_MISSING", AuthSignupLocalCode.ERROR_PARAMETER_OS_MISSING);
-                authSignupLocalReverseMap.put("ERROR_PARAMETER_OS_MALFORMED", AuthSignupLocalCode.ERROR_PARAMETER_OS_MALFORMED);
-                authSignupLocalReverseMap.put("ERROR_PARAMETER_VER_MISSING", AuthSignupLocalCode.ERROR_PARAMETER_VER_MISSING);
-                authSignupLocalReverseMap.put("ERROR_PARAMETER_VER_MALFORMED", AuthSignupLocalCode.ERROR_PARAMETER_VER_MALFORMED);
-                authSignupLocalReverseMap.put("ERROR_PARAMETER_MODEL_MISSING", AuthSignupLocalCode.ERROR_PARAMETER_MODEL_MISSING);
-                authSignupLocalReverseMap.put("ERROR_PARAMETER_MODEL_MALFORMED", AuthSignupLocalCode.ERROR_PARAMETER_MODEL_MALFORMED);
-                authSignupLocalReverseMap.put("ERROR_PARAMETER_REGISTER_ID_MISSING", AuthSignupLocalCode.ERROR_PARAMETER_REGISTER_ID_MISSING);
-                authSignupLocalReverseMap.put("ERROR_PARAMETER_REGISTER_ID_MALFORMED", AuthSignupLocalCode.ERROR_PARAMETER_REGISTER_ID_MALFORMED);
-                authSignupLocalReverseMap.put("ERROR_RESPONSE_USER_ID_MISSING", AuthSignupLocalCode.ERROR_RESPONSE_USER_ID_MISSING);
-                authSignupLocalReverseMap.put("ERROR_RESPONSE_USER_ID_MALFORMED", AuthSignupLocalCode.ERROR_RESPONSE_USER_ID_MALFORMED);
-                authSignupLocalReverseMap.put("ERROR_RESPONSE_USERNAME_MISSING", AuthSignupLocalCode.ERROR_RESPONSE_USERNAME_MISSING);
-                authSignupLocalReverseMap.put("ERROR_RESPONSE_USERNAME_MALFORMED", AuthSignupLocalCode.ERROR_RESPONSE_USERNAME_MALFORMED);
-                authSignupLocalReverseMap.put("ERROR_RESPONSE_PROFILE_IMG_MISSING", AuthSignupLocalCode.ERROR_RESPONSE_PROFILE_IMG_MISSING);
-                authSignupLocalReverseMap.put("ERROR_RESPONSE_PROFILE_IMG_MALFORMED", AuthSignupLocalCode.ERROR_RESPONSE_PROFILE_IMG_MALFORMED);
                 authSignupLocalReverseMap.put("ERROR_RESPONSE_IDENTITY_ID_MISSING", AuthSignupLocalCode.ERROR_RESPONSE_IDENTITY_ID_MISSING);
                 authSignupLocalReverseMap.put("ERROR_RESPONSE_IDENTITY_ID_MALFORMED", AuthSignupLocalCode.ERROR_RESPONSE_IDENTITY_ID_MALFORMED);
-                authSignupLocalReverseMap.put("ERROR_RESPONSE_BADGE_NUM_MISSING", AuthSignupLocalCode.ERROR_RESPONSE_BADGE_NUM_MISSING);
-                authSignupLocalReverseMap.put("ERROR_RESPONSE_BADGE_NUM_MALFORMED", AuthSignupLocalCode.ERROR_RESPONSE_BADGE_NUM_MALFORMED);
-                authSignupLocalReverseMap.put("ERROR_RESPONSE_TOKEN_MISSING", AuthSignupLocalCode.ERROR_RESPONSE_TOKEN_MISSING);
-                authSignupLocalReverseMap.put("ERROR_RESPONSE_TOKEN_MALFORMED", AuthSignupLocalCode.ERROR_RESPONSE_TOKEN_MALFORMED);
             }
             AuthSignupLocalCode localCode = null;
             for (Map.Entry<String, AuthSignupLocalCode> entry : authSignupLocalReverseMap.entrySet()) {
@@ -461,76 +419,11 @@ public interface API3 {
                 authSignupLocalMap.put(AuthSignupLocalCode.ERROR_REGISTER_ID_ALREADY_REGISTERD, "This deviced already has an registerd account");
                 authSignupLocalMap.put(AuthSignupLocalCode.ERROR_PARAMETER_USERNAME_MISSING, "Parameter 'username' does not exist.");
                 authSignupLocalMap.put(AuthSignupLocalCode.ERROR_PARAMETER_USERNAME_MALFORMED, "Parameter 'username' is malformed. Should correspond to '^\\w{4,20}$'");
-                authSignupLocalMap.put(AuthSignupLocalCode.ERROR_PARAMETER_OS_MISSING, "Parameter 'os' does not exist.");
-                authSignupLocalMap.put(AuthSignupLocalCode.ERROR_PARAMETER_OS_MALFORMED, "Parameter 'os' is malformed. Should correspond to '^android$|^iOS$'");
-                authSignupLocalMap.put(AuthSignupLocalCode.ERROR_PARAMETER_VER_MISSING, "Parameter 'ver' does not exist.");
-                authSignupLocalMap.put(AuthSignupLocalCode.ERROR_PARAMETER_VER_MALFORMED, "Parameter 'ver' is malformed. Should correspond to '^[0-9]+$'");
-                authSignupLocalMap.put(AuthSignupLocalCode.ERROR_PARAMETER_MODEL_MISSING, "Parameter 'model' does not exist.");
-                authSignupLocalMap.put(AuthSignupLocalCode.ERROR_PARAMETER_MODEL_MALFORMED, "Parameter 'model' is malformed. Should correspond to '^[a-zA-Z0-9_-]{0,10}$'");
-                authSignupLocalMap.put(AuthSignupLocalCode.ERROR_PARAMETER_REGISTER_ID_MISSING, "Parameter 'register_id' does not exist.");
-                authSignupLocalMap.put(AuthSignupLocalCode.ERROR_PARAMETER_REGISTER_ID_MALFORMED, "Parameter 'register_id' is malformed. Should correspond to '^([a-f0-9]{64})|([a-zA-Z0-9:_-]{140,250})$'");
-                authSignupLocalMap.put(AuthSignupLocalCode.ERROR_RESPONSE_USER_ID_MISSING, "Response 'user_id' was not received");
-                authSignupLocalMap.put(AuthSignupLocalCode.ERROR_RESPONSE_USER_ID_MALFORMED, "Response 'user_id' is malformed. Should correspond to '^[0-9]+$'");
-                authSignupLocalMap.put(AuthSignupLocalCode.ERROR_RESPONSE_USERNAME_MISSING, "Response 'username' was not received");
-                authSignupLocalMap.put(AuthSignupLocalCode.ERROR_RESPONSE_USERNAME_MALFORMED, "Response 'username' is malformed. Should correspond to '^\\w{4,20}$'");
-                authSignupLocalMap.put(AuthSignupLocalCode.ERROR_RESPONSE_PROFILE_IMG_MISSING, "Response 'profile_img' was not received");
-                authSignupLocalMap.put(AuthSignupLocalCode.ERROR_RESPONSE_PROFILE_IMG_MALFORMED, "Response 'profile_img' is malformed. Should correspond to '^http\\S+$'");
                 authSignupLocalMap.put(AuthSignupLocalCode.ERROR_RESPONSE_IDENTITY_ID_MISSING, "Response 'identity_id' was not received");
                 authSignupLocalMap.put(AuthSignupLocalCode.ERROR_RESPONSE_IDENTITY_ID_MALFORMED, "Response 'identity_id' is malformed. Should correspond to '^us-east-1:[a-f0-9]{8}(-[a-f0-9]{4}){3}-[a-f0-9]{12}$'");
-                authSignupLocalMap.put(AuthSignupLocalCode.ERROR_RESPONSE_BADGE_NUM_MISSING, "Response 'badge_num' was not received");
-                authSignupLocalMap.put(AuthSignupLocalCode.ERROR_RESPONSE_BADGE_NUM_MALFORMED, "Response 'badge_num' is malformed. Should correspond to '^[0-9]+$'");
-                authSignupLocalMap.put(AuthSignupLocalCode.ERROR_RESPONSE_TOKEN_MISSING, "Response 'token' was not received");
-                authSignupLocalMap.put(AuthSignupLocalCode.ERROR_RESPONSE_TOKEN_MALFORMED, "Response 'token' is malformed. Should correspond to '^[a-zA-Z0-9.-_]{400,2200}$'");
             }
             String message = null;
             for (Map.Entry<AuthSignupLocalCode, String> entry : authSignupLocalMap.entrySet()) {
-                if (entry.getKey().equals(localCode)) {
-                    message = entry.getValue();
-                    break;
-                }
-            }
-            return message;
-        }
-
-        public static final ConcurrentHashMap<AuthCheckLocalCode, String> authCheckLocalMap = new ConcurrentHashMap<>();
-        public static final ConcurrentHashMap<String, AuthCheckLocalCode> authCheckLocalReverseMap = new ConcurrentHashMap<>();
-
-        public enum AuthCheckLocalCode {
-            ERROR_REGISTER_ID_ALREADY_REGISTERD,
-            ERROR_PARAMETER_REGISTER_ID_MISSING,
-            ERROR_PARAMETER_REGISTER_ID_MALFORMED,
-            ERROR_RESPONSE_IDENTITY_ID_MISSING,
-            ERROR_RESPONSE_IDENTITY_ID_MALFORMED
-        }
-
-        public static AuthCheckLocalCode authCheckLocalErrorReverseLookupTable(String code) {
-            if (authCheckLocalReverseMap.isEmpty()) {
-                authCheckLocalReverseMap.put("ERROR_REGISTER_ID_ALREADY_REGISTERD", AuthCheckLocalCode.ERROR_REGISTER_ID_ALREADY_REGISTERD);
-                authCheckLocalReverseMap.put("ERROR_PARAMETER_REGISTER_ID_MISSING", AuthCheckLocalCode.ERROR_PARAMETER_REGISTER_ID_MISSING);
-                authCheckLocalReverseMap.put("ERROR_PARAMETER_REGISTER_ID_MALFORMED", AuthCheckLocalCode.ERROR_PARAMETER_REGISTER_ID_MALFORMED);
-                authCheckLocalReverseMap.put("ERROR_RESPONSE_IDENTITY_ID_MISSING", AuthCheckLocalCode.ERROR_RESPONSE_IDENTITY_ID_MISSING);
-                authCheckLocalReverseMap.put("ERROR_RESPONSE_IDENTITY_ID_MALFORMED", AuthCheckLocalCode.ERROR_RESPONSE_IDENTITY_ID_MALFORMED);
-            }
-            AuthCheckLocalCode localCode = null;
-            for (Map.Entry<String, AuthCheckLocalCode> entry : authCheckLocalReverseMap.entrySet()) {
-                if (entry.getKey().equals(code)) {
-                    localCode = entry.getValue();
-                    break;
-                }
-            }
-            return localCode;
-        }
-
-        public static String authCheckLocalErrorMessageTable(AuthCheckLocalCode localCode) {
-            if (authCheckLocalMap.isEmpty()) {
-                authCheckLocalMap.put(AuthCheckLocalCode.ERROR_REGISTER_ID_ALREADY_REGISTERD, "This deviced already has an registerd account");
-                authCheckLocalMap.put(AuthCheckLocalCode.ERROR_PARAMETER_REGISTER_ID_MISSING, "Parameter 'register_id' does not exist.");
-                authCheckLocalMap.put(AuthCheckLocalCode.ERROR_PARAMETER_REGISTER_ID_MALFORMED, "Parameter 'register_id' is malformed. Should correspond to '^([a-f0-9]{64})|([a-zA-Z0-9:_-]{140,250})$'");
-                authCheckLocalMap.put(AuthCheckLocalCode.ERROR_RESPONSE_IDENTITY_ID_MISSING, "Response 'identity_id' was not received");
-                authCheckLocalMap.put(AuthCheckLocalCode.ERROR_RESPONSE_IDENTITY_ID_MALFORMED, "Response 'identity_id' is malformed. Should correspond to '^us-east-1:[a-f0-9]{8}(-[a-f0-9]{4}){3}-[a-f0-9]{12}$'");
-            }
-            String message = null;
-            for (Map.Entry<AuthCheckLocalCode, String> entry : authCheckLocalMap.entrySet()) {
                 if (entry.getKey().equals(localCode)) {
                     message = entry.getValue();
                     break;
@@ -616,110 +509,6 @@ public interface API3 {
             return message;
         }
 
-        public static final ConcurrentHashMap<AuthSnsLoginLocalCode, String> authSnsLoginLocalMap = new ConcurrentHashMap<>();
-        public static final ConcurrentHashMap<String, AuthSnsLoginLocalCode> authSnsLoginLocalReverseMap = new ConcurrentHashMap<>();
-
-        public enum AuthSnsLoginLocalCode {
-            ERROR_REGISTER_ID_ALREADY_REGISTERD,
-            ERROR_IDENTITY_ID_NOT_REGISTERD,
-            ERROR_PARAMETER_IDENTITY_ID_MISSING,
-            ERROR_PARAMETER_IDENTITY_ID_MALFORMED,
-            ERROR_PARAMETER_OS_MISSING,
-            ERROR_PARAMETER_OS_MALFORMED,
-            ERROR_PARAMETER_VER_MISSING,
-            ERROR_PARAMETER_VER_MALFORMED,
-            ERROR_PARAMETER_MODEL_MISSING,
-            ERROR_PARAMETER_MODEL_MALFORMED,
-            ERROR_PARAMETER_REGISTER_ID_MISSING,
-            ERROR_PARAMETER_REGISTER_ID_MALFORMED,
-            ERROR_RESPONSE_USER_ID_MISSING,
-            ERROR_RESPONSE_USER_ID_MALFORMED,
-            ERROR_RESPONSE_USERNAME_MISSING,
-            ERROR_RESPONSE_USERNAME_MALFORMED,
-            ERROR_RESPONSE_PROFILE_IMG_MISSING,
-            ERROR_RESPONSE_PROFILE_IMG_MALFORMED,
-            ERROR_RESPONSE_IDENTITY_ID_MISSING,
-            ERROR_RESPONSE_IDENTITY_ID_MALFORMED,
-            ERROR_RESPONSE_BADGE_NUM_MISSING,
-            ERROR_RESPONSE_BADGE_NUM_MALFORMED,
-            ERROR_RESPONSE_TOKEN_MISSING,
-            ERROR_RESPONSE_TOKEN_MALFORMED
-        }
-
-        public static AuthSnsLoginLocalCode authSnsLoginLocalErrorReverseLookupTable(String code) {
-            if (authSnsLoginLocalReverseMap.isEmpty()) {
-                authSnsLoginLocalReverseMap.put("ERROR_REGISTER_ID_ALREADY_REGISTERD", AuthSnsLoginLocalCode.ERROR_REGISTER_ID_ALREADY_REGISTERD);
-                authSnsLoginLocalReverseMap.put("ERROR_IDENTITY_ID_NOT_REGISTERD", AuthSnsLoginLocalCode.ERROR_IDENTITY_ID_NOT_REGISTERD);
-                authSnsLoginLocalReverseMap.put("ERROR_PARAMETER_IDENTITY_ID_MISSING", AuthSnsLoginLocalCode.ERROR_PARAMETER_IDENTITY_ID_MISSING);
-                authSnsLoginLocalReverseMap.put("ERROR_PARAMETER_IDENTITY_ID_MALFORMED", AuthSnsLoginLocalCode.ERROR_PARAMETER_IDENTITY_ID_MALFORMED);
-                authSnsLoginLocalReverseMap.put("ERROR_PARAMETER_OS_MISSING", AuthSnsLoginLocalCode.ERROR_PARAMETER_OS_MISSING);
-                authSnsLoginLocalReverseMap.put("ERROR_PARAMETER_OS_MALFORMED", AuthSnsLoginLocalCode.ERROR_PARAMETER_OS_MALFORMED);
-                authSnsLoginLocalReverseMap.put("ERROR_PARAMETER_VER_MISSING", AuthSnsLoginLocalCode.ERROR_PARAMETER_VER_MISSING);
-                authSnsLoginLocalReverseMap.put("ERROR_PARAMETER_VER_MALFORMED", AuthSnsLoginLocalCode.ERROR_PARAMETER_VER_MALFORMED);
-                authSnsLoginLocalReverseMap.put("ERROR_PARAMETER_MODEL_MISSING", AuthSnsLoginLocalCode.ERROR_PARAMETER_MODEL_MISSING);
-                authSnsLoginLocalReverseMap.put("ERROR_PARAMETER_MODEL_MALFORMED", AuthSnsLoginLocalCode.ERROR_PARAMETER_MODEL_MALFORMED);
-                authSnsLoginLocalReverseMap.put("ERROR_PARAMETER_REGISTER_ID_MISSING", AuthSnsLoginLocalCode.ERROR_PARAMETER_REGISTER_ID_MISSING);
-                authSnsLoginLocalReverseMap.put("ERROR_PARAMETER_REGISTER_ID_MALFORMED", AuthSnsLoginLocalCode.ERROR_PARAMETER_REGISTER_ID_MALFORMED);
-                authSnsLoginLocalReverseMap.put("ERROR_RESPONSE_USER_ID_MISSING", AuthSnsLoginLocalCode.ERROR_RESPONSE_USER_ID_MISSING);
-                authSnsLoginLocalReverseMap.put("ERROR_RESPONSE_USER_ID_MALFORMED", AuthSnsLoginLocalCode.ERROR_RESPONSE_USER_ID_MALFORMED);
-                authSnsLoginLocalReverseMap.put("ERROR_RESPONSE_USERNAME_MISSING", AuthSnsLoginLocalCode.ERROR_RESPONSE_USERNAME_MISSING);
-                authSnsLoginLocalReverseMap.put("ERROR_RESPONSE_USERNAME_MALFORMED", AuthSnsLoginLocalCode.ERROR_RESPONSE_USERNAME_MALFORMED);
-                authSnsLoginLocalReverseMap.put("ERROR_RESPONSE_PROFILE_IMG_MISSING", AuthSnsLoginLocalCode.ERROR_RESPONSE_PROFILE_IMG_MISSING);
-                authSnsLoginLocalReverseMap.put("ERROR_RESPONSE_PROFILE_IMG_MALFORMED", AuthSnsLoginLocalCode.ERROR_RESPONSE_PROFILE_IMG_MALFORMED);
-                authSnsLoginLocalReverseMap.put("ERROR_RESPONSE_IDENTITY_ID_MISSING", AuthSnsLoginLocalCode.ERROR_RESPONSE_IDENTITY_ID_MISSING);
-                authSnsLoginLocalReverseMap.put("ERROR_RESPONSE_IDENTITY_ID_MALFORMED", AuthSnsLoginLocalCode.ERROR_RESPONSE_IDENTITY_ID_MALFORMED);
-                authSnsLoginLocalReverseMap.put("ERROR_RESPONSE_BADGE_NUM_MISSING", AuthSnsLoginLocalCode.ERROR_RESPONSE_BADGE_NUM_MISSING);
-                authSnsLoginLocalReverseMap.put("ERROR_RESPONSE_BADGE_NUM_MALFORMED", AuthSnsLoginLocalCode.ERROR_RESPONSE_BADGE_NUM_MALFORMED);
-                authSnsLoginLocalReverseMap.put("ERROR_RESPONSE_TOKEN_MISSING", AuthSnsLoginLocalCode.ERROR_RESPONSE_TOKEN_MISSING);
-                authSnsLoginLocalReverseMap.put("ERROR_RESPONSE_TOKEN_MALFORMED", AuthSnsLoginLocalCode.ERROR_RESPONSE_TOKEN_MALFORMED);
-            }
-            AuthSnsLoginLocalCode localCode = null;
-            for (Map.Entry<String, AuthSnsLoginLocalCode> entry : authSnsLoginLocalReverseMap.entrySet()) {
-                if (entry.getKey().equals(code)) {
-                    localCode = entry.getValue();
-                    break;
-                }
-            }
-            return localCode;
-        }
-
-        public static String authSnsLoginLocalErrorMessageTable(AuthSnsLoginLocalCode localCode) {
-            if (authSnsLoginLocalMap.isEmpty()) {
-                authSnsLoginLocalMap.put(AuthSnsLoginLocalCode.ERROR_REGISTER_ID_ALREADY_REGISTERD, "This deviced already has an registerd account");
-                authSnsLoginLocalMap.put(AuthSnsLoginLocalCode.ERROR_IDENTITY_ID_NOT_REGISTERD, "This deviced already has an registerd account");
-                authSnsLoginLocalMap.put(AuthSnsLoginLocalCode.ERROR_PARAMETER_IDENTITY_ID_MISSING, "Parameter 'username' does not exist.");
-                authSnsLoginLocalMap.put(AuthSnsLoginLocalCode.ERROR_PARAMETER_IDENTITY_ID_MALFORMED, "Parameter 'username' is malformed. Should correspond to '^\\w{4,20}$'");
-                authSnsLoginLocalMap.put(AuthSnsLoginLocalCode.ERROR_PARAMETER_OS_MISSING, "Parameter 'os' does not exist.");
-                authSnsLoginLocalMap.put(AuthSnsLoginLocalCode.ERROR_PARAMETER_OS_MALFORMED, "Parameter 'os' is malformed. Should correspond to '^android$|^iOS$'");
-                authSnsLoginLocalMap.put(AuthSnsLoginLocalCode.ERROR_PARAMETER_VER_MISSING, "Parameter 'ver' does not exist.");
-                authSnsLoginLocalMap.put(AuthSnsLoginLocalCode.ERROR_PARAMETER_VER_MALFORMED, "Parameter 'ver' is malformed. Should correspond to '^[0-9]+$'");
-                authSnsLoginLocalMap.put(AuthSnsLoginLocalCode.ERROR_PARAMETER_MODEL_MISSING, "Parameter 'model' does not exist.");
-                authSnsLoginLocalMap.put(AuthSnsLoginLocalCode.ERROR_PARAMETER_MODEL_MALFORMED, "Parameter 'model' is malformed. Should correspond to '^[a-zA-Z0-9_-]{0,10}$'");
-                authSnsLoginLocalMap.put(AuthSnsLoginLocalCode.ERROR_PARAMETER_REGISTER_ID_MISSING, "Parameter 'register_id' does not exist.");
-                authSnsLoginLocalMap.put(AuthSnsLoginLocalCode.ERROR_PARAMETER_REGISTER_ID_MALFORMED, "Parameter 'register_id' is malformed. Should correspond to '^([a-f0-9]{64})|([a-zA-Z0-9:_-]{140,250})$'");
-                authSnsLoginLocalMap.put(AuthSnsLoginLocalCode.ERROR_RESPONSE_USER_ID_MISSING, "Response 'user_id' was not received");
-                authSnsLoginLocalMap.put(AuthSnsLoginLocalCode.ERROR_RESPONSE_USER_ID_MALFORMED, "Response 'user_id' is malformed. Should correspond to '^[0-9]+$'");
-                authSnsLoginLocalMap.put(AuthSnsLoginLocalCode.ERROR_RESPONSE_USERNAME_MISSING, "Response 'username' was not received");
-                authSnsLoginLocalMap.put(AuthSnsLoginLocalCode.ERROR_RESPONSE_USERNAME_MALFORMED, "Response 'username' is malformed. Should correspond to '^\\w{4,20}$'");
-                authSnsLoginLocalMap.put(AuthSnsLoginLocalCode.ERROR_RESPONSE_PROFILE_IMG_MISSING, "Response 'profile_img' was not received");
-                authSnsLoginLocalMap.put(AuthSnsLoginLocalCode.ERROR_RESPONSE_PROFILE_IMG_MALFORMED, "Response 'profile_img' is malformed. Should correspond to '^http\\S+$'");
-                authSnsLoginLocalMap.put(AuthSnsLoginLocalCode.ERROR_RESPONSE_IDENTITY_ID_MISSING, "Response 'identity_id' was not received");
-                authSnsLoginLocalMap.put(AuthSnsLoginLocalCode.ERROR_RESPONSE_IDENTITY_ID_MALFORMED, "Response 'identity_id' is malformed. Should correspond to '^us-east-1:[a-f0-9]{8}(-[a-f0-9]{4}){3}-[a-f0-9]{12}$'");
-                authSnsLoginLocalMap.put(AuthSnsLoginLocalCode.ERROR_RESPONSE_BADGE_NUM_MISSING, "Response 'badge_num' was not received");
-                authSnsLoginLocalMap.put(AuthSnsLoginLocalCode.ERROR_RESPONSE_BADGE_NUM_MALFORMED, "Response 'badge_num' is malformed. Should correspond to '^[0-9]+$'");
-                authSnsLoginLocalMap.put(AuthSnsLoginLocalCode.ERROR_RESPONSE_TOKEN_MISSING, "Response 'token' was not received");
-                authSnsLoginLocalMap.put(AuthSnsLoginLocalCode.ERROR_RESPONSE_TOKEN_MALFORMED, "Response 'token' is malformed. Should correspond to '^[a-zA-Z0-9.-_]{400,2200}$'");
-            }
-            String message = null;
-            for (Map.Entry<AuthSnsLoginLocalCode, String> entry : authSnsLoginLocalMap.entrySet()) {
-                if (entry.getKey().equals(localCode)) {
-                    message = entry.getValue();
-                    break;
-                }
-            }
-            return message;
-        }
-
         public static final ConcurrentHashMap<AuthPassLoginLocalCode, String> authPassLoginLocalMap = new ConcurrentHashMap<>();
         public static final ConcurrentHashMap<String, AuthPassLoginLocalCode> authPassLoginLocalReverseMap = new ConcurrentHashMap<>();
 
@@ -732,26 +521,8 @@ public interface API3 {
             ERROR_PARAMETER_USERNAME_MALFORMED,
             ERROR_PARAMETER_PASSWORD_MISSING,
             ERROR_PARAMETER_PASSWORD_MALFORMED,
-            ERROR_PARAMETER_OS_MISSING,
-            ERROR_PARAMETER_OS_MALFORMED,
-            ERROR_PARAMETER_VER_MISSING,
-            ERROR_PARAMETER_VER_MALFORMED,
-            ERROR_PARAMETER_MODEL_MISSING,
-            ERROR_PARAMETER_MODEL_MALFORMED,
-            ERROR_PARAMETER_REGISTER_ID_MISSING,
-            ERROR_PARAMETER_REGISTER_ID_MALFORMED,
-            ERROR_RESPONSE_USER_ID_MISSING,
-            ERROR_RESPONSE_USER_ID_MALFORMED,
-            ERROR_RESPONSE_USERNAME_MISSING,
-            ERROR_RESPONSE_USERNAME_MALFORMED,
-            ERROR_RESPONSE_PROFILE_IMG_MISSING,
-            ERROR_RESPONSE_PROFILE_IMG_MALFORMED,
             ERROR_RESPONSE_IDENTITY_ID_MISSING,
             ERROR_RESPONSE_IDENTITY_ID_MALFORMED,
-            ERROR_RESPONSE_BADGE_NUM_MISSING,
-            ERROR_RESPONSE_BADGE_NUM_MALFORMED,
-            ERROR_RESPONSE_TOKEN_MISSING,
-            ERROR_RESPONSE_TOKEN_MALFORMED
         }
 
         public static AuthPassLoginLocalCode authPassLoginLocalErrorReverseLookupTable(String code) {
@@ -764,26 +535,8 @@ public interface API3 {
                 authPassLoginLocalReverseMap.put("ERROR_PARAMETER_USERNAME_MALFORMED", AuthPassLoginLocalCode.ERROR_PARAMETER_USERNAME_MALFORMED);
                 authPassLoginLocalReverseMap.put("ERROR_PARAMETER_PASSWORD_MISSING", AuthPassLoginLocalCode.ERROR_PARAMETER_PASSWORD_MISSING);
                 authPassLoginLocalReverseMap.put("ERROR_PARAMETER_PASSWORD_MALFORMED", AuthPassLoginLocalCode.ERROR_PARAMETER_PASSWORD_MALFORMED);
-                authPassLoginLocalReverseMap.put("ERROR_PARAMETER_OS_MISSING", AuthPassLoginLocalCode.ERROR_PARAMETER_OS_MISSING);
-                authPassLoginLocalReverseMap.put("ERROR_PARAMETER_OS_MALFORMED", AuthPassLoginLocalCode.ERROR_PARAMETER_OS_MALFORMED);
-                authPassLoginLocalReverseMap.put("ERROR_PARAMETER_VER_MISSING", AuthPassLoginLocalCode.ERROR_PARAMETER_VER_MISSING);
-                authPassLoginLocalReverseMap.put("ERROR_PARAMETER_VER_MALFORMED", AuthPassLoginLocalCode.ERROR_PARAMETER_VER_MALFORMED);
-                authPassLoginLocalReverseMap.put("ERROR_PARAMETER_MODEL_MISSING", AuthPassLoginLocalCode.ERROR_PARAMETER_MODEL_MISSING);
-                authPassLoginLocalReverseMap.put("ERROR_PARAMETER_MODEL_MALFORMED", AuthPassLoginLocalCode.ERROR_PARAMETER_MODEL_MALFORMED);
-                authPassLoginLocalReverseMap.put("ERROR_PARAMETER_REGISTER_ID_MISSING", AuthPassLoginLocalCode.ERROR_PARAMETER_REGISTER_ID_MISSING);
-                authPassLoginLocalReverseMap.put("ERROR_PARAMETER_REGISTER_ID_MALFORMED", AuthPassLoginLocalCode.ERROR_PARAMETER_REGISTER_ID_MALFORMED);
-                authPassLoginLocalReverseMap.put("ERROR_RESPONSE_USER_ID_MISSING", AuthPassLoginLocalCode.ERROR_RESPONSE_USER_ID_MISSING);
-                authPassLoginLocalReverseMap.put("ERROR_RESPONSE_USER_ID_MALFORMED", AuthPassLoginLocalCode.ERROR_RESPONSE_USER_ID_MALFORMED);
-                authPassLoginLocalReverseMap.put("ERROR_RESPONSE_USERNAME_MISSING", AuthPassLoginLocalCode.ERROR_RESPONSE_USERNAME_MISSING);
-                authPassLoginLocalReverseMap.put("ERROR_RESPONSE_USERNAME_MALFORMED", AuthPassLoginLocalCode.ERROR_RESPONSE_USERNAME_MALFORMED);
-                authPassLoginLocalReverseMap.put("ERROR_RESPONSE_PROFILE_IMG_MISSING", AuthPassLoginLocalCode.ERROR_RESPONSE_PROFILE_IMG_MISSING);
-                authPassLoginLocalReverseMap.put("ERROR_RESPONSE_PROFILE_IMG_MALFORMED", AuthPassLoginLocalCode.ERROR_RESPONSE_PROFILE_IMG_MALFORMED);
                 authPassLoginLocalReverseMap.put("ERROR_RESPONSE_IDENTITY_ID_MISSING", AuthPassLoginLocalCode.ERROR_RESPONSE_IDENTITY_ID_MISSING);
                 authPassLoginLocalReverseMap.put("ERROR_RESPONSE_IDENTITY_ID_MALFORMED", AuthPassLoginLocalCode.ERROR_RESPONSE_IDENTITY_ID_MALFORMED);
-                authPassLoginLocalReverseMap.put("ERROR_RESPONSE_BADGE_NUM_MISSING", AuthPassLoginLocalCode.ERROR_RESPONSE_BADGE_NUM_MISSING);
-                authPassLoginLocalReverseMap.put("ERROR_RESPONSE_BADGE_NUM_MALFORMED", AuthPassLoginLocalCode.ERROR_RESPONSE_BADGE_NUM_MALFORMED);
-                authPassLoginLocalReverseMap.put("ERROR_RESPONSE_TOKEN_MISSING", AuthPassLoginLocalCode.ERROR_RESPONSE_TOKEN_MISSING);
-                authPassLoginLocalReverseMap.put("ERROR_RESPONSE_TOKEN_MALFORMED", AuthPassLoginLocalCode.ERROR_RESPONSE_TOKEN_MALFORMED);
             }
             AuthPassLoginLocalCode localCode = null;
             for (Map.Entry<String, AuthPassLoginLocalCode> entry : authPassLoginLocalReverseMap.entrySet()) {
@@ -805,26 +558,8 @@ public interface API3 {
                 authPassLoginLocalMap.put(AuthPassLoginLocalCode.ERROR_PARAMETER_USERNAME_MALFORMED, "Parameter 'username' is malformed. Should correspond to '^\\w{4,20}$'");
                 authPassLoginLocalMap.put(AuthPassLoginLocalCode.ERROR_PARAMETER_PASSWORD_MISSING, "Parameter 'password' does not exist.");
                 authPassLoginLocalMap.put(AuthPassLoginLocalCode.ERROR_PARAMETER_PASSWORD_MALFORMED, "Parameter 'password' is malformed. Should correspond to '^\\w{4,20}$'");
-                authPassLoginLocalMap.put(AuthPassLoginLocalCode.ERROR_PARAMETER_OS_MISSING, "Parameter 'os' does not exist.");
-                authPassLoginLocalMap.put(AuthPassLoginLocalCode.ERROR_PARAMETER_OS_MALFORMED, "Parameter 'os' is malformed. Should correspond to '^android$|^iOS$'");
-                authPassLoginLocalMap.put(AuthPassLoginLocalCode.ERROR_PARAMETER_VER_MISSING, "Parameter 'ver' does not exist.");
-                authPassLoginLocalMap.put(AuthPassLoginLocalCode.ERROR_PARAMETER_VER_MALFORMED, "Parameter 'ver' is malformed. Should correspond to '^[0-9]+$'");
-                authPassLoginLocalMap.put(AuthPassLoginLocalCode.ERROR_PARAMETER_MODEL_MISSING, "Parameter 'model' does not exist.");
-                authPassLoginLocalMap.put(AuthPassLoginLocalCode.ERROR_PARAMETER_MODEL_MALFORMED, "Parameter 'model' is malformed. Should correspond to '^[a-zA-Z0-9_-]{0,10}$'");
-                authPassLoginLocalMap.put(AuthPassLoginLocalCode.ERROR_PARAMETER_REGISTER_ID_MISSING, "Parameter 'register_id' does not exist.");
-                authPassLoginLocalMap.put(AuthPassLoginLocalCode.ERROR_PARAMETER_REGISTER_ID_MALFORMED, "Parameter 'register_id' is malformed. Should correspond to '^([a-f0-9]{64})|([a-zA-Z0-9:_-]{140,250})$'");
-                authPassLoginLocalMap.put(AuthPassLoginLocalCode.ERROR_RESPONSE_USER_ID_MISSING, "Response 'user_id' was not received");
-                authPassLoginLocalMap.put(AuthPassLoginLocalCode.ERROR_RESPONSE_USER_ID_MALFORMED, "Response 'user_id' is malformed. Should correspond to '^[0-9]+$'");
-                authPassLoginLocalMap.put(AuthPassLoginLocalCode.ERROR_RESPONSE_USERNAME_MISSING, "Response 'username' was not received");
-                authPassLoginLocalMap.put(AuthPassLoginLocalCode.ERROR_RESPONSE_USERNAME_MALFORMED, "Response 'username' is malformed. Should correspond to '^\\w{4,20}$'");
-                authPassLoginLocalMap.put(AuthPassLoginLocalCode.ERROR_RESPONSE_PROFILE_IMG_MISSING, "Response 'profile_img' was not received");
-                authPassLoginLocalMap.put(AuthPassLoginLocalCode.ERROR_RESPONSE_PROFILE_IMG_MALFORMED, "Response 'profile_img' is malformed. Should correspond to '^http\\S+$'");
                 authPassLoginLocalMap.put(AuthPassLoginLocalCode.ERROR_RESPONSE_IDENTITY_ID_MISSING, "Response 'identity_id' was not received");
                 authPassLoginLocalMap.put(AuthPassLoginLocalCode.ERROR_RESPONSE_IDENTITY_ID_MALFORMED, "Response 'identity_id' is malformed. Should correspond to '^us-east-1:[a-f0-9]{8}(-[a-f0-9]{4}){3}-[a-f0-9]{12}$'");
-                authPassLoginLocalMap.put(AuthPassLoginLocalCode.ERROR_RESPONSE_BADGE_NUM_MISSING, "Response 'badge_num' was not received");
-                authPassLoginLocalMap.put(AuthPassLoginLocalCode.ERROR_RESPONSE_BADGE_NUM_MALFORMED, "Response 'badge_num' is malformed. Should correspond to '^[0-9]+$'");
-                authPassLoginLocalMap.put(AuthPassLoginLocalCode.ERROR_RESPONSE_TOKEN_MISSING, "Response 'token' was not received");
-                authPassLoginLocalMap.put(AuthPassLoginLocalCode.ERROR_RESPONSE_TOKEN_MALFORMED, "Response 'token' is malformed. Should correspond to '^[a-zA-Z0-9.-_]{400,2200}$'");
             }
             String message = null;
             for (Map.Entry<AuthPassLoginLocalCode, String> entry : authPassLoginLocalMap.entrySet()) {
@@ -1275,6 +1010,100 @@ public interface API3 {
             }
             String message = null;
             for (Map.Entry<GetHeatmapLocalCode, String> entry : getHeatmapLocalMap.entrySet()) {
+                if (entry.getKey().equals(localCode)) {
+                    message = entry.getValue();
+                    break;
+                }
+            }
+            return message;
+        }
+
+        public static final ConcurrentHashMap<PostRegisterDeviceTokenLocalCode, String> postRegisterDeviceTokenLocalMap = new ConcurrentHashMap<>();
+        public static final ConcurrentHashMap<String, PostRegisterDeviceTokenLocalCode> postRegisterDeviceTokenLocalReverseMap = new ConcurrentHashMap<>();
+
+        public enum PostRegisterDeviceTokenLocalCode {
+            ERROR_PARAMETER_DEVICE_TOKEN_MISSING,
+            ERROR_PARAMETER_DEVICE_TOKEN_MALFORMED,
+            ERROR_PARAMETER_OS_MISSING,
+            ERROR_PARAMETER_OS_MALFORMED,
+            ERROR_PARAMETER_VER_MISSING,
+            ERROR_PARAMETER_VER_MALFORMED,
+            ERROR_PARAMETER_MODEL_MISSING,
+            ERROR_PARAMETER_MODEL_MALFORMED,
+        }
+
+        public static PostRegisterDeviceTokenLocalCode postRegisterDeviceTokenLocalErrorReverseLookupTable(String code) {
+            if (postRegisterDeviceTokenLocalReverseMap.isEmpty()) {
+                postRegisterDeviceTokenLocalReverseMap.put("ERROR_PARAMETER_DEVICE_TOKEN_MISSING", PostRegisterDeviceTokenLocalCode.ERROR_PARAMETER_DEVICE_TOKEN_MISSING);
+                postRegisterDeviceTokenLocalReverseMap.put("ERROR_PARAMETER_DEVICE_TOKEN_MALFORMED", PostRegisterDeviceTokenLocalCode.ERROR_PARAMETER_DEVICE_TOKEN_MALFORMED);
+                postRegisterDeviceTokenLocalReverseMap.put("ERROR_PARAMETER_OS_MISSING", PostRegisterDeviceTokenLocalCode.ERROR_PARAMETER_OS_MISSING);
+                postRegisterDeviceTokenLocalReverseMap.put("ERROR_PARAMETER_OS_MALFORMED", PostRegisterDeviceTokenLocalCode.ERROR_PARAMETER_OS_MALFORMED);
+                postRegisterDeviceTokenLocalReverseMap.put("ERROR_PARAMETER_VER_MISSING", PostRegisterDeviceTokenLocalCode.ERROR_PARAMETER_VER_MISSING);
+                postRegisterDeviceTokenLocalReverseMap.put("ERROR_PARAMETER_VER_MALFORMED", PostRegisterDeviceTokenLocalCode.ERROR_PARAMETER_VER_MALFORMED);
+                postRegisterDeviceTokenLocalReverseMap.put("ERROR_PARAMETER_MODEL_MISSING", PostRegisterDeviceTokenLocalCode.ERROR_PARAMETER_MODEL_MISSING);
+                postRegisterDeviceTokenLocalReverseMap.put("ERROR_PARAMETER_MODEL_MALFORMED", PostRegisterDeviceTokenLocalCode.ERROR_PARAMETER_MODEL_MALFORMED);
+            }
+            PostRegisterDeviceTokenLocalCode localCode = null;
+            for (Map.Entry<String, PostRegisterDeviceTokenLocalCode> entry : postRegisterDeviceTokenLocalReverseMap.entrySet()) {
+                if (entry.getKey().equals(code)) {
+                    localCode = entry.getValue();
+                    break;
+                }
+            }
+            return localCode;
+        }
+
+        public static String postRegisterDeviceTokenLocalErrorMessageTable(PostRegisterDeviceTokenLocalCode localCode) {
+            if (postRegisterDeviceTokenLocalMap.isEmpty()) {
+                postRegisterDeviceTokenLocalMap.put(PostRegisterDeviceTokenLocalCode.ERROR_PARAMETER_DEVICE_TOKEN_MISSING, "The provided sns token is invalid or has expired");
+                postRegisterDeviceTokenLocalMap.put(PostRegisterDeviceTokenLocalCode.ERROR_PARAMETER_DEVICE_TOKEN_MALFORMED, "The provided link to the profile image cound not be downloaded");
+                postRegisterDeviceTokenLocalMap.put(PostRegisterDeviceTokenLocalCode.ERROR_PARAMETER_OS_MISSING, "The providers server infrastructure appears to be down");
+                postRegisterDeviceTokenLocalMap.put(PostRegisterDeviceTokenLocalCode.ERROR_PARAMETER_OS_MALFORMED, "Parameter 'provider' does not exist.");
+                postRegisterDeviceTokenLocalMap.put(PostRegisterDeviceTokenLocalCode.ERROR_PARAMETER_VER_MISSING, "Parameter 'provider' is malformed. Should correspond to '^\\w{4,20}$'");
+                postRegisterDeviceTokenLocalMap.put(PostRegisterDeviceTokenLocalCode.ERROR_PARAMETER_VER_MALFORMED, "Parameter 'token' does not exist.");
+                postRegisterDeviceTokenLocalMap.put(PostRegisterDeviceTokenLocalCode.ERROR_PARAMETER_MODEL_MISSING, "Parameter 'token' is malformed. Should correspond to '^\\w{4,20}$'");
+                postRegisterDeviceTokenLocalMap.put(PostRegisterDeviceTokenLocalCode.ERROR_PARAMETER_MODEL_MALFORMED, "Parameter 'token' does not exist.");
+            }
+            String message = null;
+            for (Map.Entry<PostRegisterDeviceTokenLocalCode, String> entry : postRegisterDeviceTokenLocalMap.entrySet()) {
+                if (entry.getKey().equals(localCode)) {
+                    message = entry.getValue();
+                    break;
+                }
+            }
+            return message;
+        }
+
+        public static final ConcurrentHashMap<PostUnregisterDeviceTokenLocalCode, String> postUnregisterDeviceTokenLocalMap = new ConcurrentHashMap<>();
+        public static final ConcurrentHashMap<String, PostUnregisterDeviceTokenLocalCode> postUnregisterDeviceTokenLocalReverseMap = new ConcurrentHashMap<>();
+
+        public enum PostUnregisterDeviceTokenLocalCode {
+            ERROR_PARAMETER_DEVICE_TOKEN_MISSING,
+            ERROR_PARAMETER_DEVICE_TOKEN_MALFORMED,
+        }
+
+        public static PostUnregisterDeviceTokenLocalCode postUnregisterDeviceTokenLocalErrorReverseLookupTable(String code) {
+            if (postUnregisterDeviceTokenLocalReverseMap.isEmpty()) {
+                postUnregisterDeviceTokenLocalReverseMap.put("ERROR_PARAMETER_DEVICE_TOKEN_MISSING", PostUnregisterDeviceTokenLocalCode.ERROR_PARAMETER_DEVICE_TOKEN_MISSING);
+                postUnregisterDeviceTokenLocalReverseMap.put("ERROR_PARAMETER_DEVICE_TOKEN_MALFORMED", PostUnregisterDeviceTokenLocalCode.ERROR_PARAMETER_DEVICE_TOKEN_MALFORMED);
+            }
+            PostUnregisterDeviceTokenLocalCode localCode = null;
+            for (Map.Entry<String, PostUnregisterDeviceTokenLocalCode> entry : postUnregisterDeviceTokenLocalReverseMap.entrySet()) {
+                if (entry.getKey().equals(code)) {
+                    localCode = entry.getValue();
+                    break;
+                }
+            }
+            return localCode;
+        }
+
+        public static String postUnregisterDeviceTokenLocalErrorMessageTable(PostUnregisterDeviceTokenLocalCode localCode) {
+            if (postUnregisterDeviceTokenLocalMap.isEmpty()) {
+                postUnregisterDeviceTokenLocalMap.put(PostUnregisterDeviceTokenLocalCode.ERROR_PARAMETER_DEVICE_TOKEN_MISSING, "The provided sns token is invalid or has expired");
+                postUnregisterDeviceTokenLocalMap.put(PostUnregisterDeviceTokenLocalCode.ERROR_PARAMETER_DEVICE_TOKEN_MALFORMED, "The provided link to the profile image cound not be downloaded");
+            }
+            String message = null;
+            for (Map.Entry<PostUnregisterDeviceTokenLocalCode, String> entry : postUnregisterDeviceTokenLocalMap.entrySet()) {
                 if (entry.getKey().equals(localCode)) {
                     message = entry.getValue();
                     break;
@@ -1888,20 +1717,12 @@ public interface API3 {
             return testurl + "/auth/login/?identity_id=" + identity_id;
         }
 
-        public static String getAuthCheckAPI(String register_id) {
-            return testurl + "/auth/check/?register_id=" + register_id;
+        public static String getAuthSignupAPI(String username) {
+            return testurl + "/auth/signup/?username=" + username;
         }
 
-        public static String getAuthSNSLoginAPI(String identity_id, String os, String ver, String model, String register_id) {
-            return testurl + "/auth/sns_login/?identity_id=" + identity_id + "&os=" + os + "&ver=" + ver + "&model=" + model + "&register_id=" + register_id;
-        }
-
-        public static String getAuthSignupAPI(String username, String os, String ver, String model, String register_id) {
-            return testurl + "/auth/signup/?username=" + username + "&os=" + os + "&ver=" + ver + "&model=" + model + "&register_id=" + register_id;
-        }
-
-        public static String getAuthUsernamePasswordAPI(String username, String password, String os, String ver, String model, String register_id) {
-            return testurl + "/auth/pass_login/?username=" + username + "&password=" + password + "&os=" + os + "&ver=" + ver + "&model=" + model + "&register_id=" + register_id;
+        public static String getAuthUsernamePasswordAPI(String username, String password) {
+            return testurl + "/auth/pass_login/?username=" + username + "&password=" + password;
         }
 
         public static String getGetNearlineAPI(double lon, double lat) {
@@ -1984,6 +1805,14 @@ public interface API3 {
             return testurl + "/get/heatmap";
         }
 
+        public static String getPostRegisterDeviceTokenAPI(String device_token, String os, String ver, String model) {
+            return testurl + "/set/device/?device_token=" + device_token + "&os=" + os + "&ver=" + ver + "&model=" + model;
+        }
+
+        public static String getPostUnregisterDeviceTokenAPI(String device_token) {
+            return testurl + "/set/unregister_device_token/?device_token=" + device_token;
+        }
+
         public static String getPostSnsLinkAPI(String provider, String token) {
             return testurl + "/set/sns_link/?provider=" + provider + "&sns_token=" + token;
         }
@@ -2034,11 +1863,6 @@ public interface API3 {
                     "&lon=" + lon + "&lat=" + lat;
         }
 
-        public static String getPublicUpdateDevice(String user_id, String regId, String os, String ver, String model) {
-            return testurl + "/update/device/?user_id=" + user_id +
-                    "&register_id=" + regId + "&os=" + os + "&ver=" + ver + "&model=" + model;
-        }
-
         public static String getPostUsernameAPI(String username) {
             return testurl + "/set/username/?username=" + username;
         }
@@ -2074,7 +1898,7 @@ public interface API3 {
         }
 
         @Override
-        public Util.AuthLoginLocalCode auth_login_response_regex(String user_id, String username, String profile_img, String identity_id, String badge_num, String token) {
+        public Util.AuthLoginLocalCode auth_login_response_regex(String user_id, String username, String profile_img, String badge_num, String token) {
             if (user_id != null) {
                 if (!user_id.matches("^[0-9]+$")) {
                     return Util.AuthLoginLocalCode.ERROR_RESPONSE_USER_ID_MALFORMED;
@@ -2096,13 +1920,6 @@ public interface API3 {
             } else {
                 return Util.AuthLoginLocalCode.ERROR_RESPONSE_PROFILE_IMG_MISSING;
             }
-            if (identity_id != null) {
-                if (!identity_id.matches("^us-east-1:[a-f0-9]{8}(-[a-f0-9]{4}){3}-[a-f0-9]{12}$")) {
-                    return Util.AuthLoginLocalCode.ERROR_RESPONSE_IDENTITY_ID_MALFORMED;
-                }
-            } else {
-                return Util.AuthLoginLocalCode.ERROR_RESPONSE_IDENTITY_ID_MISSING;
-            }
             if (badge_num != null) {
                 if (!badge_num.matches("^[0-9]+$")) {
                     return Util.AuthLoginLocalCode.ERROR_RESPONSE_BADGE_NUM_MALFORMED;
@@ -2121,31 +1938,7 @@ public interface API3 {
         }
 
         @Override
-        public Util.AuthCheckLocalCode auth_check_parameter_regex(String register_id) {
-            if (register_id != null) {
-                if (!register_id.matches("^([a-f0-9]{64})|([a-zA-Z0-9:_-]{140,250})$")) {
-                    return Util.AuthCheckLocalCode.ERROR_PARAMETER_REGISTER_ID_MALFORMED;
-                }
-            } else {
-                return Util.AuthCheckLocalCode.ERROR_PARAMETER_REGISTER_ID_MISSING;
-            }
-            return null;
-        }
-
-        @Override
-        public Util.AuthCheckLocalCode auth_check_response_regex(String identity_id) {
-            if (identity_id != null) {
-                if (!identity_id.matches("^us-east-1:[a-f0-9]{8}(-[a-f0-9]{4}){3}-[a-f0-9]{12}$")) {
-                    return Util.AuthCheckLocalCode.ERROR_RESPONSE_IDENTITY_ID_MALFORMED;
-                }
-            } else {
-                return Util.AuthCheckLocalCode.ERROR_RESPONSE_IDENTITY_ID_MISSING;
-            }
-            return null;
-        }
-
-        @Override
-        public Util.AuthSignupLocalCode auth_signup_parameter_regex(String username, String os, String ver, String model, String register_id) {
+        public Util.AuthSignupLocalCode auth_signup_parameter_regex(String username) {
             if (username != null) {
                 if (!username.matches("^\\S{4,20}$")) {
                     return Util.AuthSignupLocalCode.ERROR_PARAMETER_USERNAME_MALFORMED;
@@ -2153,60 +1946,11 @@ public interface API3 {
             } else {
                 return Util.AuthSignupLocalCode.ERROR_PARAMETER_USERNAME_MISSING;
             }
-            if (os != null) {
-                if (!os.matches("^android$|^iOS$")) {
-                    return Util.AuthSignupLocalCode.ERROR_PARAMETER_OS_MALFORMED;
-                }
-            } else {
-                return Util.AuthSignupLocalCode.ERROR_PARAMETER_OS_MISSING;
-            }
-            if (ver != null) {
-                if (!ver.matches("^\\d+.\\d$")) {
-                    return Util.AuthSignupLocalCode.ERROR_PARAMETER_VER_MALFORMED;
-                }
-            } else {
-                return Util.AuthSignupLocalCode.ERROR_PARAMETER_VER_MISSING;
-            }
-            if (model != null) {
-//                if (!model.matches("^[a-zA-Z0-9_-]{0,10}$")) {
-//                    return Util.AuthSignupLocalCode.ERROR_PARAMETER_MODEL_MALFORMED;
-//                }
-            } else {
-                return Util.AuthSignupLocalCode.ERROR_PARAMETER_MODEL_MISSING;
-            }
-            if (register_id != null) {
-                if (!register_id.matches("^([a-f0-9]{64})|([a-zA-Z0-9:_-]{140,250})$")) {
-                    return Util.AuthSignupLocalCode.ERROR_PARAMETER_REGISTER_ID_MALFORMED;
-                }
-            } else {
-                return Util.AuthSignupLocalCode.ERROR_PARAMETER_REGISTER_ID_MISSING;
-            }
             return null;
         }
 
         @Override
-        public Util.AuthSignupLocalCode auth_signup_response_regex(String user_id, String username, String profile_img, String identity_id, String badge_num, String token) {
-            if (user_id != null) {
-                if (!user_id.matches("^[0-9]+$")) {
-                    return Util.AuthSignupLocalCode.ERROR_RESPONSE_USER_ID_MALFORMED;
-                }
-            } else {
-                return Util.AuthSignupLocalCode.ERROR_RESPONSE_USER_ID_MISSING;
-            }
-            if (username != null) {
-                if (!username.matches("^\\S{4,20}$")) {
-                    return Util.AuthSignupLocalCode.ERROR_RESPONSE_USERNAME_MALFORMED;
-                }
-            } else {
-                return Util.AuthSignupLocalCode.ERROR_RESPONSE_USERNAME_MISSING;
-            }
-            if (profile_img != null) {
-                if (!profile_img.matches("^http\\S+$")) {
-                    return Util.AuthSignupLocalCode.ERROR_RESPONSE_PROFILE_IMG_MALFORMED;
-                }
-            } else {
-                return Util.AuthSignupLocalCode.ERROR_RESPONSE_PROFILE_IMG_MISSING;
-            }
+        public Util.AuthSignupLocalCode auth_signup_response_regex(String identity_id) {
             if (identity_id != null) {
                 if (!identity_id.matches("^us-east-1:[a-f0-9]{8}(-[a-f0-9]{4}){3}-[a-f0-9]{12}$")) {
                     return Util.AuthSignupLocalCode.ERROR_RESPONSE_IDENTITY_ID_MALFORMED;
@@ -2214,112 +1958,11 @@ public interface API3 {
             } else {
                 return Util.AuthSignupLocalCode.ERROR_RESPONSE_IDENTITY_ID_MISSING;
             }
-            if (badge_num != null) {
-                if (!badge_num.matches("^[0-9]+$")) {
-                    return Util.AuthSignupLocalCode.ERROR_RESPONSE_BADGE_NUM_MALFORMED;
-                }
-            } else {
-                return Util.AuthSignupLocalCode.ERROR_RESPONSE_BADGE_NUM_MISSING;
-            }
-            if (token != null) {
-                if (!token.matches("^[a-zA-Z0-9_.-]{400,2200}$")) {
-                    return Util.AuthSignupLocalCode.ERROR_RESPONSE_TOKEN_MALFORMED;
-                }
-            } else {
-                return Util.AuthSignupLocalCode.ERROR_RESPONSE_TOKEN_MISSING;
-            }
             return null;
         }
 
         @Override
-        public Util.AuthSnsLoginLocalCode auth_sns_login_parameter_regex(String identity_id, String os, String ver, String model, String register_id) {
-            if (identity_id != null) {
-                if (!identity_id.matches("\"^us-east-1:[a-f0-9]{8}(-[a-f0-9]{4}){3}-[a-f0-9]{12}$\"")) {
-                    return Util.AuthSnsLoginLocalCode.ERROR_PARAMETER_IDENTITY_ID_MALFORMED;
-                }
-            } else {
-                return Util.AuthSnsLoginLocalCode.ERROR_PARAMETER_IDENTITY_ID_MISSING;
-            }
-            if (os != null) {
-                if (!os.matches("^android$|^iOS$")) {
-                    return Util.AuthSnsLoginLocalCode.ERROR_PARAMETER_OS_MALFORMED;
-                }
-            } else {
-                return Util.AuthSnsLoginLocalCode.ERROR_PARAMETER_OS_MISSING;
-            }
-            if (ver != null) {
-                if (!ver.matches("^\\d+.\\d$")) {
-                    return Util.AuthSnsLoginLocalCode.ERROR_PARAMETER_VER_MALFORMED;
-                }
-            } else {
-                return Util.AuthSnsLoginLocalCode.ERROR_PARAMETER_VER_MISSING;
-            }
-            if (model != null) {
-                if (!model.matches("^[a-zA-Z0-9_-]{0,10}$")) {
-                    return Util.AuthSnsLoginLocalCode.ERROR_PARAMETER_MODEL_MALFORMED;
-                }
-            } else {
-                return Util.AuthSnsLoginLocalCode.ERROR_PARAMETER_MODEL_MISSING;
-            }
-            if (register_id != null) {
-                if (!register_id.matches("^([a-f0-9]{64})|([a-zA-Z0-9:_-]{140,250})$")) {
-                    return Util.AuthSnsLoginLocalCode.ERROR_PARAMETER_REGISTER_ID_MALFORMED;
-                }
-            } else {
-                return Util.AuthSnsLoginLocalCode.ERROR_PARAMETER_REGISTER_ID_MISSING;
-            }
-            return null;
-        }
-
-        @Override
-        public Util.AuthSnsLoginLocalCode auth_sns_login_response_regex(String user_id, String username, String profile_img, String identity_id, String badge_num, String token) {
-            if (user_id != null) {
-                if (!user_id.matches("^[0-9]+$")) {
-                    return Util.AuthSnsLoginLocalCode.ERROR_RESPONSE_USER_ID_MALFORMED;
-                }
-            } else {
-                return Util.AuthSnsLoginLocalCode.ERROR_RESPONSE_USER_ID_MISSING;
-            }
-            if (username != null) {
-                if (!username.matches("^\\S{4,20}$")) {
-                    return Util.AuthSnsLoginLocalCode.ERROR_RESPONSE_USERNAME_MALFORMED;
-                }
-            } else {
-                return Util.AuthSnsLoginLocalCode.ERROR_RESPONSE_USERNAME_MISSING;
-            }
-            if (profile_img != null) {
-                if (!profile_img.matches("^http\\S+$")) {
-                    return Util.AuthSnsLoginLocalCode.ERROR_RESPONSE_PROFILE_IMG_MALFORMED;
-                }
-            } else {
-                return Util.AuthSnsLoginLocalCode.ERROR_RESPONSE_PROFILE_IMG_MISSING;
-            }
-            if (identity_id != null) {
-                if (!identity_id.matches("^us-east-1:[a-f0-9]{8}(-[a-f0-9]{4}){3}-[a-f0-9]{12}$")) {
-                    return Util.AuthSnsLoginLocalCode.ERROR_RESPONSE_IDENTITY_ID_MALFORMED;
-                }
-            } else {
-                return Util.AuthSnsLoginLocalCode.ERROR_RESPONSE_IDENTITY_ID_MISSING;
-            }
-            if (badge_num != null) {
-                if (!badge_num.matches("^[0-9]+$")) {
-                    return Util.AuthSnsLoginLocalCode.ERROR_RESPONSE_BADGE_NUM_MALFORMED;
-                }
-            } else {
-                return Util.AuthSnsLoginLocalCode.ERROR_RESPONSE_BADGE_NUM_MISSING;
-            }
-            if (token != null) {
-                if (!token.matches("^[a-zA-Z0-9_.-]{400,2200}$")) {
-                    return Util.AuthSnsLoginLocalCode.ERROR_RESPONSE_TOKEN_MALFORMED;
-                }
-            } else {
-                return Util.AuthSnsLoginLocalCode.ERROR_RESPONSE_TOKEN_MISSING;
-            }
-            return null;
-        }
-
-        @Override
-        public Util.AuthPassLoginLocalCode auth_pass_login_parameter_regex(String username, String password, String os, String ver, String model, String register_id) {
+        public Util.AuthPassLoginLocalCode auth_pass_login_parameter_regex(String username, String password) {
             if (username != null) {
                 if (!username.matches("^\\S{4,20}$")) {
                     return Util.AuthPassLoginLocalCode.ERROR_PARAMETER_USERNAME_MALFORMED;
@@ -2334,80 +1977,17 @@ public interface API3 {
             } else {
                 return Util.AuthPassLoginLocalCode.ERROR_PARAMETER_PASSWORD_MISSING;
             }
-            if (os != null) {
-                if (!os.matches("^android$|^iOS$")) {
-                    return Util.AuthPassLoginLocalCode.ERROR_PARAMETER_OS_MALFORMED;
-                }
-            } else {
-                return Util.AuthPassLoginLocalCode.ERROR_PARAMETER_OS_MISSING;
-            }
-            if (ver != null) {
-                if (!ver.matches("^\\d+.\\d$")) {
-                    return Util.AuthPassLoginLocalCode.ERROR_PARAMETER_VER_MALFORMED;
-                }
-            } else {
-                return Util.AuthPassLoginLocalCode.ERROR_PARAMETER_VER_MISSING;
-            }
-            if (model != null) {
-                if (!model.matches("^[a-zA-Z0-9_-]{0,10}$")) {
-                    return Util.AuthPassLoginLocalCode.ERROR_PARAMETER_MODEL_MALFORMED;
-                }
-            } else {
-                return Util.AuthPassLoginLocalCode.ERROR_PARAMETER_MODEL_MISSING;
-            }
-            if (register_id != null) {
-                if (!register_id.matches("^([a-f0-9]{64})|([a-zA-Z0-9:_-]{140,250})$")) {
-                    return Util.AuthPassLoginLocalCode.ERROR_PARAMETER_REGISTER_ID_MALFORMED;
-                }
-            } else {
-                return Util.AuthPassLoginLocalCode.ERROR_PARAMETER_REGISTER_ID_MISSING;
-            }
             return null;
         }
 
         @Override
-        public Util.AuthPassLoginLocalCode auth_pass_login_response_regex(String user_id, String username, String profile_img, String identity_id, String badge_num, String token) {
-            if (user_id != null) {
-                if (!user_id.matches("^[0-9]+$")) {
-                    return Util.AuthPassLoginLocalCode.ERROR_RESPONSE_USER_ID_MALFORMED;
-                }
-            } else {
-                return Util.AuthPassLoginLocalCode.ERROR_RESPONSE_USER_ID_MISSING;
-            }
-            if (username != null) {
-                if (!username.matches("^\\S{4,20}$")) {
-                    return Util.AuthPassLoginLocalCode.ERROR_RESPONSE_USERNAME_MALFORMED;
-                }
-            } else {
-                return Util.AuthPassLoginLocalCode.ERROR_RESPONSE_USERNAME_MISSING;
-            }
-            if (profile_img != null) {
-                if (!profile_img.matches("^http\\S+$")) {
-                    return Util.AuthPassLoginLocalCode.ERROR_RESPONSE_PROFILE_IMG_MALFORMED;
-                }
-            } else {
-                return Util.AuthPassLoginLocalCode.ERROR_RESPONSE_PROFILE_IMG_MISSING;
-            }
+        public Util.AuthPassLoginLocalCode auth_pass_login_response_regex(String identity_id) {
             if (identity_id != null) {
                 if (!identity_id.matches("^us-east-1:[a-f0-9]{8}(-[a-f0-9]{4}){3}-[a-f0-9]{12}$")) {
                     return Util.AuthPassLoginLocalCode.ERROR_RESPONSE_IDENTITY_ID_MALFORMED;
                 }
             } else {
                 return Util.AuthPassLoginLocalCode.ERROR_RESPONSE_IDENTITY_ID_MISSING;
-            }
-            if (badge_num != null) {
-                if (!badge_num.matches("^[0-9]+$")) {
-                    return Util.AuthPassLoginLocalCode.ERROR_RESPONSE_BADGE_NUM_MALFORMED;
-                }
-            } else {
-                return Util.AuthPassLoginLocalCode.ERROR_RESPONSE_BADGE_NUM_MISSING;
-            }
-            if (token != null) {
-                if (!token.matches("^[a-zA-Z0-9_.-]{400,2200}$")) {
-                    return Util.AuthPassLoginLocalCode.ERROR_RESPONSE_TOKEN_MALFORMED;
-                }
-            } else {
-                return Util.AuthPassLoginLocalCode.ERROR_RESPONSE_TOKEN_MISSING;
             }
             return null;
         }
@@ -2599,16 +2179,6 @@ public interface API3 {
 
         @Override
         public Util.PostRestAddLocalCode post_restadd_response_regex() {
-            return null;
-        }
-
-        @Override
-        public Util.PublicUpdateDeviceLocalCode public_update_device_parameter_regex(String user_id, String regId, String os, String ver, String model) {
-            return null;
-        }
-
-        @Override
-        public Util.PublicUpdateDeviceLocalCode public_update_device_response_regex() {
             return null;
         }
 
@@ -2837,6 +2407,26 @@ public interface API3 {
         }
 
         @Override
+        public Util.PostRegisterDeviceTokenLocalCode post_register_device_token_parameter_regex(String device_token, String os, String ver, String model) {
+            return null;
+        }
+
+        @Override
+        public Util.PostRegisterDeviceTokenLocalCode post_register_device_token_response_regex() {
+            return null;
+        }
+
+        @Override
+        public Util.PostUnregisterDeviceTokenLocalCode post_unregister_device_token_parameter_regex(String device_token) {
+            return null;
+        }
+
+        @Override
+        public Util.PostUnregisterDeviceTokenLocalCode post_unregister_device_token_response_regex() {
+            return null;
+        }
+
+        @Override
         public Util.GlobalCode check_global_error() {
             if (com.inase.android.gocci.utils.Util.getConnectedState(Application_Gocci.getInstance().getApplicationContext()) == com.inase.android.gocci.utils.Util.NetworkStatus.OFF) {
                 return Util.GlobalCode.ERROR_NO_INTERNET_CONNECTION;
@@ -2845,7 +2435,7 @@ public interface API3 {
         }
 
         @Override
-        public void auth_login_response(JSONObject jsonObject, AuthResponseCallback cb) {
+        public void auth_login_response(JSONObject jsonObject, LoginResponseCallback cb) {
             try {
                 String version = jsonObject.getString("version");
                 String uri = jsonObject.getString("uri");
@@ -2860,16 +2450,15 @@ public interface API3 {
                         JSONObject payload = jsonObject.getJSONObject("payload");
                         String user_id = payload.getString("user_id");
                         String username = payload.getString("username");
-                        String identity_id = payload.getString("identity_id");
                         String profile_img = payload.getString("profile_img");
                         String badge_num = payload.getString("badge_num");
                         String cognito_token = payload.getString("cognito_token");
 
-                        Util.AuthLoginLocalCode localCode = auth_login_response_regex(user_id, username, profile_img, identity_id, badge_num, cognito_token);
+                        Util.AuthLoginLocalCode localCode = auth_login_response_regex(user_id, username, profile_img, badge_num, cognito_token);
                         if (localCode == null) {
                             //エラーなし
-                            Application_Gocci.GuestInit(Application_Gocci.getInstance().getApplicationContext(), identity_id, cognito_token, user_id);
-                            SavedData.setWelcome(Application_Gocci.getInstance().getApplicationContext(), username, profile_img, user_id, identity_id, Integer.parseInt(badge_num));
+                            Application_Gocci.GuestInit(Application_Gocci.getInstance().getApplicationContext(), SavedData.getIdentityId(Application_Gocci.getInstance().getApplicationContext()), cognito_token, user_id);
+                            SavedData.setWelcome(Application_Gocci.getInstance().getApplicationContext(), username, profile_img, user_id, Integer.parseInt(badge_num));
                             cb.onSuccess();
                         } else {
                             //LocalCodeエラー
@@ -2899,58 +2488,6 @@ public interface API3 {
         }
 
         @Override
-        public void auth_check_response(JSONObject jsonObject, CheckResponseCallback cb) {
-            try {
-                String version = jsonObject.getString("version");
-                String uri = jsonObject.getString("uri");
-                String code = jsonObject.getString("code");
-                String message = jsonObject.getString("message");
-
-                Util.GlobalCode globalCode = Util.globalErrorReverseLookupTable(code);
-                if (globalCode != null) {
-                    //GlobalCodeにヒット && LocalCodeではない
-                    if (globalCode == Util.GlobalCode.SUCCESS) {
-                        //成功
-                        cb.onSuccess();
-                    } else {
-                        cb.onGlobalError(globalCode);
-                    }
-                } else {
-                    Util.AuthCheckLocalCode localCode = Util.authCheckLocalErrorReverseLookupTable(code);
-                    if (localCode != null) {
-                        String errorMessage = Util.authCheckLocalErrorMessageTable(localCode);
-                        if (message.equals(errorMessage)) {
-                            if (localCode == Util.AuthCheckLocalCode.ERROR_REGISTER_ID_ALREADY_REGISTERD) {
-                                JSONObject payload = jsonObject.getJSONObject("payload");
-                                String identity_id = payload.getString("identity_id");
-
-                                Util.AuthCheckLocalCode check = auth_check_response_regex(identity_id);
-                                if (check == null) {
-                                    //エラーなし
-                                    cb.onLocalError(identity_id, message);
-                                } else {
-                                    //LocalCodeエラー
-                                    String checkErrorMessage = Util.authCheckLocalErrorMessageTable(check);
-                                    cb.onLocalError(null, checkErrorMessage);
-                                }
-                            } else {
-                                cb.onLocalError(null, message);
-                            }
-                        } else {
-                            //ハンドリング不可　致命的バグ
-                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
-                        }
-                    } else {
-                        //ハンドリング不可　致命的バグ
-                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                    }
-                }
-            } catch (JSONException e) {
-                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
-            }
-        }
-
-        @Override
         public void auth_signup_response(JSONObject jsonObject, AuthResponseCallback cb) {
             try {
                 String version = jsonObject.getString("version");
@@ -2964,19 +2501,12 @@ public interface API3 {
                     if (globalCode == Util.GlobalCode.SUCCESS) {
                         //成功
                         JSONObject payload = jsonObject.getJSONObject("payload");
-                        String user_id = payload.getString("user_id");
-                        String username = payload.getString("username");
                         String identity_id = payload.getString("identity_id");
-                        String profile_img = payload.getString("profile_img");
-                        String badge_num = payload.getString("badge_num");
-                        String cognito_token = payload.getString("cognito_token");
 
-                        Util.AuthSignupLocalCode localCode = auth_signup_response_regex(user_id, username, profile_img, identity_id, badge_num, cognito_token);
+                        Util.AuthSignupLocalCode localCode = auth_signup_response_regex(identity_id);
                         if (localCode == null) {
                             //エラーなし
-                            Application_Gocci.GuestInit(Application_Gocci.getInstance().getApplicationContext(), identity_id, cognito_token, user_id);
-                            SavedData.setWelcome(Application_Gocci.getInstance().getApplicationContext(), username, profile_img, user_id, identity_id, Integer.parseInt(badge_num));
-                            cb.onSuccess();
+                            cb.onSuccess(identity_id);
                         } else {
                             //LocalCodeエラー
                             String errorMessage = Util.authSignupLocalErrorMessageTable(localCode);
@@ -2989,60 +2519,6 @@ public interface API3 {
                     Util.AuthSignupLocalCode localCode = Util.authSignupLocalErrorReverseLookupTable(code);
                     if (localCode != null) {
                         String errorMessage = Util.authSignupLocalErrorMessageTable(localCode);
-                        if (message.equals(errorMessage)) {
-                            cb.onLocalError(message);
-                        } else {
-                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
-                        }
-                    } else {
-                        //ハンドリング不可　致命的バグ
-                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                    }
-                }
-            } catch (JSONException e) {
-                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
-            }
-        }
-
-        @Override
-        public void auth_sns_login_response(JSONObject jsonObject, AuthResponseCallback cb) {
-            try {
-                String version = jsonObject.getString("version");
-                String uri = jsonObject.getString("uri");
-                String code = jsonObject.getString("code");
-                String message = jsonObject.getString("message");
-
-                Util.GlobalCode globalCode = Util.globalErrorReverseLookupTable(code);
-                if (globalCode != null) {
-                    //GlobalCodeにヒット && LocalCodeではない
-                    if (globalCode == Util.GlobalCode.SUCCESS) {
-                        //成功
-                        JSONObject payload = jsonObject.getJSONObject("payload");
-                        String user_id = payload.getString("user_id");
-                        String username = payload.getString("username");
-                        String identity_id = payload.getString("identity_id");
-                        String profile_img = payload.getString("profile_img");
-                        String badge_num = payload.getString("badge_num");
-                        String cognito_token = payload.getString("cognito_token");
-
-                        Util.AuthSnsLoginLocalCode localCode = auth_sns_login_response_regex(user_id, username, profile_img, identity_id, badge_num, cognito_token);
-                        if (localCode == null) {
-                            //エラーなし
-                            Application_Gocci.GuestInit(Application_Gocci.getInstance().getApplicationContext(), identity_id, cognito_token, user_id);
-                            SavedData.setWelcome(Application_Gocci.getInstance().getApplicationContext(), username, profile_img, user_id, identity_id, Integer.parseInt(badge_num));
-                            cb.onSuccess();
-                        } else {
-                            //LocalCodeエラー
-                            String errorMessage = Util.authSnsLoginLocalErrorMessageTable(localCode);
-                            cb.onLocalError(errorMessage);
-                        }
-                    } else {
-                        cb.onGlobalError(globalCode);
-                    }
-                } else {
-                    Util.AuthSnsLoginLocalCode localCode = Util.authSnsLoginLocalErrorReverseLookupTable(code);
-                    if (localCode != null) {
-                        String errorMessage = Util.authSnsLoginLocalErrorMessageTable(localCode);
                         if (message.equals(errorMessage)) {
                             cb.onLocalError(message);
                         } else {
@@ -3072,19 +2548,12 @@ public interface API3 {
                     if (globalCode == Util.GlobalCode.SUCCESS) {
                         //成功
                         JSONObject payload = jsonObject.getJSONObject("payload");
-                        String user_id = payload.getString("user_id");
-                        String username = payload.getString("username");
                         String identity_id = payload.getString("identity_id");
-                        String profile_img = payload.getString("profile_img");
-                        String badge_num = payload.getString("badge_num");
-                        String cognito_token = payload.getString("cognito_token");
 
-                        Util.AuthPassLoginLocalCode localCode = auth_pass_login_response_regex(user_id, username, profile_img, identity_id, badge_num, cognito_token);
+                        Util.AuthPassLoginLocalCode localCode = auth_pass_login_response_regex(identity_id);
                         if (localCode == null) {
                             //エラーなし
-                            Application_Gocci.GuestInit(Application_Gocci.getInstance().getApplicationContext(), identity_id, cognito_token, user_id);
-                            SavedData.setWelcome(Application_Gocci.getInstance().getApplicationContext(), username, profile_img, user_id, identity_id, Integer.parseInt(badge_num));
-                            cb.onSuccess();
+                            cb.onSuccess(identity_id);
                         } else {
                             //LocalCodeエラー
                             String errorMessage = Util.authPassLoginLocalErrorMessageTable(localCode);
@@ -3540,54 +3009,6 @@ public interface API3 {
                     Util.PostRestAddLocalCode localCode = Util.postRestAddLocalErrorReverseLookupTable(code);
                     if (localCode != null) {
                         String errorMessage = Util.postRestAddLocalErrorMessageTable(localCode);
-                        if (message.equals(errorMessage)) {
-                            cb.onLocalError(message);
-                        } else {
-                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
-                        }
-                    } else {
-                        //ハンドリング不可　致命的バグ
-                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                    }
-                }
-            } catch (JSONException e) {
-                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
-            }
-        }
-
-        @Override
-        public void public_update_device_response(JSONObject jsonObject, PostResponseCallback cb) {
-            try {
-                String version = jsonObject.getString("version");
-                String uri = jsonObject.getString("uri");
-                String code = jsonObject.getString("code");
-                String message = jsonObject.getString("message");
-
-                Util.GlobalCode globalCode = Util.globalErrorReverseLookupTable(code);
-                if (globalCode != null) {
-                    //GlobalCodeにヒット && LocalCodeではない
-                    if (globalCode == Util.GlobalCode.SUCCESS) {
-                        //成功
-                        JSONObject payload = jsonObject.getJSONObject("payload");
-                        String register_id = payload.getString("register_id");
-
-                        Util.PublicUpdateDeviceLocalCode localCode = public_update_device_response_regex();
-                        if (localCode == null) {
-                            //エラーなし
-                            SavedData.setRegId(Application_Gocci.getInstance().getApplicationContext(), register_id);
-                            cb.onSuccess();
-                        } else {
-                            //LocalCodeエラー
-                            String errorMessage = Util.publicUpdateDeviceErrorMessageTable(localCode);
-                            cb.onLocalError(errorMessage);
-                        }
-                    } else {
-                        cb.onGlobalError(globalCode);
-                    }
-                } else {
-                    Util.PublicUpdateDeviceLocalCode localCode = Util.publicUpdateDeviceLocalErrorReverseLookupTable(code);
-                    if (localCode != null) {
-                        String errorMessage = Util.publicUpdateDeviceErrorMessageTable(localCode);
                         if (message.equals(errorMessage)) {
                             cb.onLocalError(message);
                         } else {
@@ -4276,6 +3697,80 @@ public interface API3 {
                     Util.GetHeatmapLocalCode localCode = Util.getHeatmapLocalErrorReverseLookupTable(code);
                     if (localCode != null) {
                         String errorMessage = Util.getHeatmapLocalErrorMessageTable(localCode);
+                        if (message.equals(errorMessage)) {
+                            cb.onLocalError(message);
+                        } else {
+                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
+                        }
+                    } else {
+                        //ハンドリング不可　致命的バグ
+                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                    }
+                }
+            } catch (JSONException e) {
+                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
+            }
+        }
+
+        @Override
+        public void post_register_device_token_response(JSONObject jsonObject, PostResponseCallback cb) {
+            try {
+                String version = jsonObject.getString("version");
+                String uri = jsonObject.getString("uri");
+                String code = jsonObject.getString("code");
+                String message = jsonObject.getString("message");
+
+                Util.GlobalCode globalCode = Util.globalErrorReverseLookupTable(code);
+                if (globalCode != null) {
+                    //GlobalCodeにヒット && LocalCodeではない
+                    if (globalCode == Util.GlobalCode.SUCCESS) {
+                        //成功
+                        //SavedData.setRegId(Application_Gocci.getInstance().getApplicationContext(), register_id);
+                        cb.onSuccess();
+                    } else {
+                        cb.onGlobalError(globalCode);
+                    }
+                } else {
+                    Util.PostRegisterDeviceTokenLocalCode localCode = Util.postRegisterDeviceTokenLocalErrorReverseLookupTable(code);
+                    if (localCode != null) {
+                        String errorMessage = Util.postRegisterDeviceTokenLocalErrorMessageTable(localCode);
+                        if (message.equals(errorMessage)) {
+                            cb.onLocalError(message);
+                        } else {
+                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
+                        }
+                    } else {
+                        //ハンドリング不可　致命的バグ
+                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                    }
+                }
+            } catch (JSONException e) {
+                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
+            }
+        }
+
+        @Override
+        public void post_unregister_device_token_response(JSONObject jsonObject, PostResponseCallback cb) {
+            try {
+                String version = jsonObject.getString("version");
+                String uri = jsonObject.getString("uri");
+                String code = jsonObject.getString("code");
+                String message = jsonObject.getString("message");
+
+                Util.GlobalCode globalCode = Util.globalErrorReverseLookupTable(code);
+                if (globalCode != null) {
+                    //GlobalCodeにヒット && LocalCodeではない
+                    if (globalCode == Util.GlobalCode.SUCCESS) {
+                        //成功
+                        //SavedData.setRegId(Application_Gocci.getInstance().getApplicationContext(), register_id);
+                        cb.onSuccess();
+                    } else {
+                        cb.onGlobalError(globalCode);
+                    }
+                } else {
+                    Util.PostUnregisterDeviceTokenLocalCode localCode = Util.postUnregisterDeviceTokenLocalErrorReverseLookupTable(code);
+                    if (localCode != null) {
+                        String errorMessage = Util.postUnregisterDeviceTokenLocalErrorMessageTable(localCode);
                         if (message.equals(errorMessage)) {
                             cb.onLocalError(message);
                         } else {

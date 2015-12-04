@@ -47,13 +47,12 @@ public class SavedData {
 
     private static final String KEY_ID = "id";
 
-    public static void setWelcome(Context context, String username, String picture, String user_id, String identityId, int badge_num) {
+    public static void setWelcome(Context context, String username, String picture, String user_id, int badge_num) {
         SharedPreferences prefs = context.getSharedPreferences("pref", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(KEY_SERVER_NAME, username);
         editor.putString(KEY_SERVER_PICTURE, picture);
         editor.putString(KEY_SERVER_NAME_ID, user_id);
-        editor.putString(KEY_IDENTITYID, identityId);
         editor.putInt(KEY_NOTIFICATION, badge_num);
         editor.apply();
     }

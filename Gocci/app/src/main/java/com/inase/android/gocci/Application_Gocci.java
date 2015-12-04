@@ -68,10 +68,12 @@ public class Application_Gocci extends Application {
     }
 
     public static void getJsonSync(String url, JsonHttpResponseHandler responseHandler) throws SocketTimeoutException {
+        sSyncHttpClient.setCookieStore(SavedData.getCookieStore(getInstance().getApplicationContext()));
         sSyncHttpClient.get(url, responseHandler);
     }
 
     public static void getJsonAsync(String url, JsonHttpResponseHandler responseHandler) throws SocketTimeoutException {
+        sAsyncHttpClient.setCookieStore(SavedData.getCookieStore(getInstance().getApplicationContext()));
         sAsyncHttpClient.get(url, responseHandler);
     }
 
@@ -307,7 +309,7 @@ public class Application_Gocci extends Application {
                         getJsonAsync(API3.Util.getAuthLoginAPI(SavedData.getIdentityId(getInstance().getApplicationContext())), new JsonHttpResponseHandler() {
                             @Override
                             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                                API3.Impl.getRepository().auth_login_response(response, new API3.AuthResponseCallback() {
+                                API3.Impl.getRepository().auth_login_response(response, new API3.LoginResponseCallback() {
                                     @Override
                                     public void onSuccess() {
                                         //リフレッシュ&リトライ
@@ -409,9 +411,6 @@ public class Application_Gocci extends Application {
         tracker.enableExceptionReporting(true);
         tracker.enableAdvertisingIdCollection(true);
         tracker.enableAutoActivityTracking(true);
-
-        sSyncHttpClient.setCookieStore(SavedData.getCookieStore(this));
-        sAsyncHttpClient.setCookieStore(SavedData.getCookieStore(this));
     }
 
     @Override

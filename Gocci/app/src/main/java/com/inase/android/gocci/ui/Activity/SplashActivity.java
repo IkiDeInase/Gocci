@@ -16,13 +16,9 @@ import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3;
-import com.inase.android.gocci.datasource.repository.CheckRegIdRepository;
-import com.inase.android.gocci.datasource.repository.CheckRegIdRepositoryImpl;
 import com.inase.android.gocci.datasource.repository.LoginRepository;
 import com.inase.android.gocci.datasource.repository.LoginRepositoryImpl;
 import com.inase.android.gocci.domain.executor.UIThread;
-import com.inase.android.gocci.domain.usecase.CheckRegIdUseCase;
-import com.inase.android.gocci.domain.usecase.CheckRegIdUseCaseImpl;
 import com.inase.android.gocci.domain.usecase.UserLoginUseCase;
 import com.inase.android.gocci.domain.usecase.UserLoginUseCaseImpl;
 import com.inase.android.gocci.event.BusHolder;
@@ -64,17 +60,9 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
 
         API3 api3Impl = API3.Impl.getRepository();
         LoginRepository loginRepositoryImpl = LoginRepositoryImpl.getRepository(api3Impl);
-        CheckRegIdRepository checkRegIdRepositoryImpl = CheckRegIdRepositoryImpl.getRepository(api3Impl);
         UserLoginUseCase userLoginUseCaseImpl = UserLoginUseCaseImpl.getUseCase(loginRepositoryImpl, UIThread.getInstance());
-        CheckRegIdUseCase checkRegIdUseCaseImpl = CheckRegIdUseCaseImpl.getUseCase(checkRegIdRepositoryImpl, UIThread.getInstance());
-        mPresenter = new ShowUserLoginPresenter(userLoginUseCaseImpl, checkRegIdUseCaseImpl);
+        mPresenter = new ShowUserLoginPresenter(userLoginUseCaseImpl);
         mPresenter.setShowUserLoginView(this);
-
-        //SavedData.setServerName(this, "kazu0914");
-        //SavedData.setServerPicture(this, "https://graph.facebook.com/100004985405636/picture");
-        //SavedData.setLoginJudge(this, TAG_SNS_FACEBOOK);
-        //SavedData.setRegId(this, "APA91bFlIfRuMRWjMbKfXyC5votBewFcpj71N0j4aiSEgqvHeHsoDcCjS6TuUTxdHnj13cT_40mkflrl5aqigmPGdj5VH0njkc0MM6aMgkExqZoRVZAv8BcUEFy09ZUaxoiRXNuvktee");
-        //SavedData.setIdentityId(this, "us-east-1:6b195305-171c-4b83-aa51-e0b1d38de2f2");
     }
 
     @Override
@@ -127,12 +115,9 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
 
     @Subscribe
     public void subscribe(RegIdRegisteredEvent event) {
-        API3.Util.AuthCheckLocalCode localCode = API3.Impl.getRepository().auth_check_parameter_regex(event.register_id);
-        if (localCode == null) {
-            mPresenter.checkRegId(API3.Util.getAuthCheckAPI(event.register_id));
-        } else {
-            Toast.makeText(this, API3.Util.authCheckLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
-        }
+        handler = new Handler();
+        runnable = new loginRunnable();
+        handler.post(runnable);
     }
 
     @Override
@@ -143,32 +128,6 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
     @Override
     public void hideLoading() {
 
-    }
-
-    @Override
-    public void onCheckSuccess() {
-        handler = new Handler();
-        runnable = new loginRunnable();
-        handler.post(runnable);
-    }
-
-    @Override
-    public void onCheckFailureCausedByLocalError(final String id, String errorMessage) {
-        if (id != null) {
-            API3.Util.AuthLoginLocalCode localCode = API3.Impl.getRepository().auth_login_parameter_regex(id);
-            if (localCode == null) {
-                mPresenter.loginUser(Const.APICategory.AUTH_LOGIN, API3.Util.getAuthLoginAPI(id));
-            } else {
-                Toast.makeText(SplashActivity.this, API3.Util.authLoginLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
-            }
-        } else {
-            Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @Override
-    public void onCheckFailureCausedByGlobalError(API3.Util.GlobalCode globalCode) {
-        Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.AUTH_CHECK, globalCode);
     }
 
     @Override
@@ -224,9 +183,6 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
     @Subscribe
     public void subscribe(RetryApiEvent event) {
         switch (event.api) {
-            case AUTH_CHECK:
-                mPresenter.checkRegId(API3.Util.getAuthCheckAPI(SavedData.getRegId(this)));
-                break;
             case AUTH_LOGIN:
                 mPresenter.loginUser(Const.APICategory.AUTH_LOGIN, API3.Util.getAuthLoginAPI(SavedData.getIdentityId(this)));
                 break;
