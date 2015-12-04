@@ -58,7 +58,6 @@ import com.twitter.sdk.android.core.TwitterAuthToken;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 
-import java.io.File;
 import java.util.Locale;
 
 import butterknife.Bind;
@@ -388,8 +387,7 @@ public class SettingActivity extends AppCompatActivity {
                 Profile profile = Profile.getCurrentProfile();
                 String profile_img = "https://graph.facebook.com/" + profile.getId() + "/picture";
                 String post_date = SavedData.getServerUserId(SettingActivity.this) + "_" + Util.getDateTimeString();
-                File update_file = Util.getFile(SettingActivity.this, profile_img, post_date);
-                API3PostUtil.postProfileImgAsync(SettingActivity.this, post_date, update_file, Const.ActivityCategory.SETTING);
+                API3PostUtil.postProfileImgAsync(SettingActivity.this, post_date, profile_img, Const.ActivityCategory.SETTING);
             }
 
             @Override
@@ -411,8 +409,7 @@ public class SettingActivity extends AppCompatActivity {
                 String username = result.data.getUserName();
                 String profile_img = "http://www.paper-glasses.com/api/twipi/" + username;
                 String post_date = SavedData.getServerUserId(SettingActivity.this) + "_" + Util.getDateTimeString();
-                File update_file = Util.getFile(SettingActivity.this, profile_img, post_date);
-                API3PostUtil.postProfileImgAsync(SettingActivity.this, post_date, update_file, Const.ActivityCategory.SETTING);
+                API3PostUtil.postProfileImgAsync(SettingActivity.this, post_date, profile_img, Const.ActivityCategory.SETTING);
             }
 
             @Override
@@ -535,7 +532,7 @@ public class SettingActivity extends AppCompatActivity {
                     new AsyncTask<Void, Void, Void>() {
                         @Override
                         protected Void doInBackground(Void... params) {
-                            Application_Gocci.getLoginProvider().refresh();
+                            Application_Gocci.getProvider(SettingActivity.this).refresh();
                             return null;
                         }
                     }.execute();
@@ -547,7 +544,7 @@ public class SettingActivity extends AppCompatActivity {
                     new AsyncTask<Void, Void, Void>() {
                         @Override
                         protected Void doInBackground(Void... params) {
-                            Application_Gocci.getLoginProvider().refresh();
+                            Application_Gocci.getProvider(SettingActivity.this).refresh();
                             return null;
                         }
                     }.execute();
@@ -558,7 +555,7 @@ public class SettingActivity extends AppCompatActivity {
                     new AsyncTask<Void, Void, Void>() {
                         @Override
                         protected Void doInBackground(Void... params) {
-                            Application_Gocci.getLoginProvider().refresh();
+                            Application_Gocci.getProvider(SettingActivity.this).refresh();
                             return null;
                         }
                     }.execute();
@@ -570,7 +567,7 @@ public class SettingActivity extends AppCompatActivity {
                     new AsyncTask<Void, Void, Void>() {
                         @Override
                         protected Void doInBackground(Void... params) {
-                            Application_Gocci.getLoginProvider().refresh();
+                            Application_Gocci.getProvider(SettingActivity.this).refresh();
                             return null;
                         }
                     }.execute();

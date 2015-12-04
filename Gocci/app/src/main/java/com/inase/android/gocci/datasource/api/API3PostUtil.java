@@ -1,6 +1,10 @@
 package com.inase.android.gocci.datasource.api;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.os.Environment;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
@@ -11,10 +15,14 @@ import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.PostCallbackEvent;
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.SocketTimeoutException;
 
 import cz.msebera.android.httpclient.Header;
@@ -522,6 +530,94 @@ public class API3PostUtil {
             @Override
             public void onError(int id, Exception ex) {
                 Toast.makeText(context, ex.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public static void postProfileImgAsync(final Context context, final String post_date, String url, final Const.ActivityCategory activityCategory) {
+        Picasso.with(context).load(url).into(new Target() {
+            @Override
+            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                File file = null;
+                try {
+                    file = new File(Environment.getExternalStoragePublicDirectory(
+                            Environment.DIRECTORY_DOWNLOADS), post_date + ".png");
+                    file.getParentFile().mkdirs();
+                    FileOutputStream out = new FileOutputStream(file);
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
+                    out.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                TransferObserver transferObserver = Application_Gocci.getShareTransfer().upload(Const.POST_PHOTO_BUCKET_NAME, post_date + ".png", file);
+                transferObserver.setTransferListener(new TransferListener() {
+                    @Override
+                    public void onStateChanged(int id, TransferState state) {
+                        if (state == TransferState.COMPLETED) {
+                            API3.Util.PostProfileImgLocalCode localCode = API3.Impl.getRepository().post_profileImg_parameter_regex();
+                            if (localCode == null) {
+                                API3.Util.GlobalCode globalCode = API3.Impl.getRepository().check_global_error();
+                                if (globalCode == API3.Util.GlobalCode.SUCCESS) {
+                                    try {
+                                        Application_Gocci.getJsonAsync(API3.Util.getPostProfileImg(post_date), new JsonHttpResponseHandler() {
+
+                                            @Override
+                                            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                                                API3.Impl.getRepository().post_profileImg_response(response, new API3.PostResponseCallback() {
+                                                    @Override
+                                                    public void onSuccess() {
+                                                        BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, activityCategory, Const.APICategory.POST_PROFILEIMG, post_date));
+                                                    }
+
+                                                    @Override
+                                                    public void onGlobalError(API3.Util.GlobalCode globalCode) {
+                                                        Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_PROFILEIMG, globalCode);
+                                                    }
+
+                                                    @Override
+                                                    public void onLocalError(String errorMessage) {
+                                                        Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
+                                                    }
+                                                });
+                                            }
+
+                                            @Override
+                                            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                                                Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_PROFILEIMG, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED);
+                                            }
+                                        });
+                                    } catch (SocketTimeoutException e) {
+                                        Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_PROFILEIMG, API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT);
+                                    }
+                                } else {
+                                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_PROFILEIMG, globalCode);
+                                }
+                            } else {
+                                Toast.makeText(context, API3.Util.postProfileImgLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+
+                    }
+
+                    @Override
+                    public void onError(int id, Exception ex) {
+                        Toast.makeText(context, ex.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onBitmapFailed(Drawable errorDrawable) {
+
+            }
+
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {
+
             }
         });
     }

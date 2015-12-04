@@ -215,29 +215,6 @@ public class Util {
         return file;
     }
 
-    public static File getFile(Context context, String url, String post_date) {
-        // Extract Bitmap from ImageView drawable
-        Bitmap bmp = null;
-        try {
-            bmp = Picasso.with(context).load(url).get();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        // Store image to default external storage directory
-        File file = null;
-        try {
-            file = new File(Environment.getExternalStoragePublicDirectory(
-                    Environment.DIRECTORY_DOWNLOADS), post_date + ".png");
-            file.getParentFile().mkdirs();
-            FileOutputStream out = new FileOutputStream(file);
-            bmp.compress(Bitmap.CompressFormat.PNG, 90, out);
-            out.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return file;
-    }
-
     public static final String getDateTimeString() {
         final GregorianCalendar now = new GregorianCalendar();
         final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss", Locale.US);

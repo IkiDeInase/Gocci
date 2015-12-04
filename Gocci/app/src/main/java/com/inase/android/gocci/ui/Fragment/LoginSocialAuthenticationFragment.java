@@ -125,8 +125,7 @@ public class LoginSocialAuthenticationFragment extends Fragment {
                 Profile profile = Profile.getCurrentProfile();
                 String profile_img = "https://graph.facebook.com/" + profile.getId() + "/picture";
                 String post_date = SavedData.getServerUserId(getActivity()) + "_" + Util.getDateTimeString();
-                File update_file = Util.getFile(getActivity(), profile_img, post_date);
-                API3PostUtil.postProfileImgAsync(getActivity(), post_date, update_file, Const.ActivityCategory.SETTING);
+                API3PostUtil.postProfileImgAsync(getActivity(), post_date, profile_img, Const.ActivityCategory.SETTING);
             }
 
             @Override
@@ -148,8 +147,7 @@ public class LoginSocialAuthenticationFragment extends Fragment {
                 String username = result.data.getUserName();
                 String profile_img = "http://www.paper-glasses.com/api/twipi/" + username;
                 String post_date = SavedData.getServerUserId(getActivity()) + "_" + Util.getDateTimeString();
-                File update_file = Util.getFile(getActivity(), profile_img, post_date);
-                API3PostUtil.postProfileImgAsync(getActivity(), post_date, update_file, Const.ActivityCategory.SETTING);
+                API3PostUtil.postProfileImgAsync(getActivity(), post_date, profile_img, Const.ActivityCategory.SETTING);
             }
 
             @Override
