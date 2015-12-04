@@ -68,6 +68,9 @@ public class MapSearchActivity extends AppCompatActivity implements ShowHeatmapP
     private double mLat;
     private double mLon;
 
+    private LatLng clickedClusterPosition = null;
+    private LatLng clickedItemPosition = null;
+
     private ShowHeatmapPresenter mPresenter;
 
     public static void startMapSearchActivity(int requestCode, double longitude, double latitude, Activity startingActivity) {
@@ -80,28 +83,41 @@ public class MapSearchActivity extends AppCompatActivity implements ShowHeatmapP
 
     @Override
     public boolean onClusterClick(Cluster<HeatmapLog> cluster) {
-        mLat = cluster.getPosition().latitude;
-        mLon = cluster.getPosition().longitude;
+        if (clickedClusterPosition != null) {
+            if (cluster.getPosition() != clickedClusterPosition) {
+                clickedClusterPosition = cluster.getPosition();
+                mLat = cluster.getPosition().latitude;
+                mLon = cluster.getPosition().longitude;
 
-        if (mSnack.isShown()) {
-            mSnack.dismiss();
-        }
-        Toast.makeText(MapSearchActivity.this, "位置を特定しています", Toast.LENGTH_SHORT).show();
-        Geocoder geo = new Geocoder(MapSearchActivity.this);
-        try {
-            List<Address> list = geo.getFromLocation(mLat, mLon, 1);
-            String address = list.get(0).getAddressLine(1);
-            int index = address.indexOf(" ");
-            mPlace = address.substring(index + 1);
-            toolBar.setTitle(mPlace);
-        } catch (IOException e) {
-            e.printStackTrace();
+                if (mSnack.isShown()) {
+                    mSnack.dismiss();
+                }
+                Toast.makeText(MapSearchActivity.this, "位置を特定しています", Toast.LENGTH_SHORT).show();
+                Geocoder geo = new Geocoder(MapSearchActivity.this);
+                try {
+                    List<Address> list = geo.getFromLocation(mLat, mLon, 1);
+                    String address = list.get(0).getAddressLine(1);
+                    int index = address.indexOf(" ");
+                    mPlace = address.substring(index + 1);
+                    toolBar.setTitle(mPlace);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                backNearline();
+            }
+        } else {
+            clickedClusterPosition = cluster.getPosition();
         }
         return false;
     }
 
     @Override
     public void onClusterInfoWindowClick(Cluster<HeatmapLog> cluster) {
+        backNearline();
+    }
+
+    private void backNearline() {
         Intent data = new Intent();
         Bundle bundle = new Bundle();
         bundle.putString("place", mPlace);
@@ -114,6 +130,15 @@ public class MapSearchActivity extends AppCompatActivity implements ShowHeatmapP
 
     @Override
     public boolean onClusterItemClick(HeatmapLog heatmapLog) {
+        if (clickedItemPosition != null) {
+            if (heatmapLog.getPosition() != clickedItemPosition) {
+                clickedItemPosition = heatmapLog.getPosition();
+            } else {
+                TenpoActivity.startTenpoActivity(heatmapLog.mRest_id, heatmapLog.mRestname, MapSearchActivity.this);
+            }
+        } else {
+            clickedItemPosition = heatmapLog.getPosition();
+        }
         return false;
     }
 
