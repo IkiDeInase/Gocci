@@ -58,15 +58,6 @@ public class Application_Gocci extends Application {
     private static final SyncHttpClient sSyncHttpClient = new SyncHttpClient();
     private static final AsyncHttpClient sAsyncHttpClient = new AsyncHttpClient();
 
-    //経度緯度情報
-    private double mLatitude;
-    private double mLongitude;
-
-    public void setFirstLocation(double latitude, double longitude) {
-        mLatitude = latitude;
-        mLongitude = longitude;
-    }
-
     public static void getJsonSync(String url, JsonHttpResponseHandler responseHandler) throws SocketTimeoutException {
         sSyncHttpClient.setCookieStore(SavedData.getCookieStore(getInstance().getApplicationContext()));
         sSyncHttpClient.get(url, responseHandler);
@@ -108,14 +99,6 @@ public class Application_Gocci extends Application {
 
     public static TransferUtility getShareTransfer() {
         return transferUtility;
-    }
-
-    public double getFirstLatitude() {
-        return mLatitude;
-    }
-
-    public double getFirstLongitude() {
-        return mLongitude;
     }
 
     private static final String PROPERTY_ID = "UA-63362687-1";

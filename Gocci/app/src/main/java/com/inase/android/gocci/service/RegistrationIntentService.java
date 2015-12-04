@@ -97,7 +97,6 @@ public class RegistrationIntentService extends IntentService {
             if (!regid.equals(token)) {
                 //サーバー送る
                 SavedData.setRegId(this, token);
-                Application_Gocci.getClient().setCookieStore(SavedData.getCookieStore(this));
                 API3PostUtil.postDeviceAsync(this, token, Const.OS, Build.VERSION.RELEASE, Build.MODEL);
             }
         }
