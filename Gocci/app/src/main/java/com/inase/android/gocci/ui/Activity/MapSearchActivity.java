@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.location.Address;
-import android.location.Geocoder;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -37,14 +35,19 @@ import com.inase.android.gocci.domain.usecase.HeatmapUseCase;
 import com.inase.android.gocci.domain.usecase.HeatmapUseCaseImpl;
 import com.inase.android.gocci.presenter.ShowHeatmapPresenter;
 import com.inase.android.gocci.utils.map.HeatmapLog;
+import com.loopj.android.http.JsonHttpResponseHandler;
 import com.pnikosis.materialishprogress.ProgressWheel;
 
-import java.io.IOException;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import cz.msebera.android.httpclient.Header;
 
 public class MapSearchActivity extends AppCompatActivity implements ShowHeatmapPresenter.ShowHeatmapView, ClusterManager.OnClusterClickListener<HeatmapLog>,
         ClusterManager.OnClusterInfoWindowClickListener<HeatmapLog>, ClusterManager.OnClusterItemClickListener<HeatmapLog>, ClusterManager.OnClusterItemInfoWindowClickListener<HeatmapLog> {
@@ -83,31 +86,18 @@ public class MapSearchActivity extends AppCompatActivity implements ShowHeatmapP
 
     @Override
     public boolean onClusterClick(Cluster<HeatmapLog> cluster) {
-        if (clickedClusterPosition != null) {
-            if (cluster.getPosition() != clickedClusterPosition) {
-                clickedClusterPosition = cluster.getPosition();
-                mLat = cluster.getPosition().latitude;
-                mLon = cluster.getPosition().longitude;
-
-                if (mSnack.isShown()) {
-                    mSnack.dismiss();
-                }
-                Toast.makeText(MapSearchActivity.this, "位置を特定しています", Toast.LENGTH_SHORT).show();
-                Geocoder geo = new Geocoder(MapSearchActivity.this);
-                try {
-                    List<Address> list = geo.getFromLocation(mLat, mLon, 1);
-                    String address = list.get(0).getAddressLine(1);
-                    int index = address.indexOf(" ");
-                    mPlace = address.substring(index + 1);
-                    toolBar.setTitle(mPlace);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                backNearline();
-            }
-        } else {
+        if (cluster.getPosition() != clickedClusterPosition) {
             clickedClusterPosition = cluster.getPosition();
+            mLat = cluster.getPosition().latitude;
+            mLon = cluster.getPosition().longitude;
+
+            if (mSnack.isShown()) {
+                mSnack.dismiss();
+            }
+            Toast.makeText(MapSearchActivity.this, "位置を特定しています", Toast.LENGTH_SHORT).show();
+            getRevGeo(mLat, mLon);
+        } else {
+            backNearline();
         }
         return false;
     }
@@ -283,5 +273,52 @@ public class MapSearchActivity extends AppCompatActivity implements ShowHeatmapP
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(getIntent().getDoubleExtra("latitude", 35.681382), getIntent().getDoubleExtra("longitude", 139.766084)), 8));
         mClusterManager.addItems(data);
         mClusterManager.cluster();
+    }
+
+    private void getRevGeo(double lat, double lng) {
+        try {
+            Application_Gocci.getJsonAsync("http://maps.googleapis.com/maps/api/geocode/json?latlng=" + lat + "," + lng + "&sensor=true&language=ja", new JsonHttpResponseHandler() {
+
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    try {
+                        JSONArray resultsArray = response.getJSONArray("results");
+                        // 配列を用意
+                        String locality = "";
+                        for (int i = 0; i < resultsArray.length(); i++) {
+                            if (!locality.isEmpty()) break;
+                            JSONObject jsonObject = resultsArray.getJSONObject(i);
+                            JSONArray typesArray = jsonObject.getJSONArray("types");
+                            for (int j = 0; j < typesArray.length(); j++) {
+                                if (!locality.isEmpty()) break;
+                                String elem = typesArray.getString(j);
+                                if (elem.equals("locality") && locality.isEmpty()) {
+                                    locality = jsonObject.getString("formatted_address");
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (!locality.isEmpty()) {
+                            // 区市町村を返す
+                            int index = locality.indexOf(" ");
+                            mPlace = locality.substring(index + 1);
+                            toolBar.setTitle(mPlace.isEmpty() ? "場所不明" : mPlace);
+                        } else {
+                            toolBar.setTitle("場所不明");
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+
+                }
+            });
+        } catch (SocketTimeoutException e) {
+            e.printStackTrace();
+        }
     }
 }
