@@ -562,7 +562,7 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
                 if (activity != null) {
                     activity.refreshSheet();
                 } else {
-                    activity = (TimelineActivity)getActivity();
+                    activity = (TimelineActivity) getActivity();
                     activity.refreshSheet();
                 }
                 break;

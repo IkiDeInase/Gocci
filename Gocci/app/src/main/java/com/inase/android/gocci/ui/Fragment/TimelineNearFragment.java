@@ -849,7 +849,7 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
                 if (activity != null) {
                     activity.refreshSheet();
                 } else {
-                    activity = (TimelineActivity)getActivity();
+                    activity = (TimelineActivity) getActivity();
                     activity.refreshSheet();
                 }
                 break;

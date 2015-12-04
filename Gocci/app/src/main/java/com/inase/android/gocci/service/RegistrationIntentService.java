@@ -11,7 +11,6 @@ import android.util.Log;
 import com.google.android.gms.gcm.GcmPubSub;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
-import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3PostUtil;

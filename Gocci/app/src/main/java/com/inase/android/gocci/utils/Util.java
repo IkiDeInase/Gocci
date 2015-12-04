@@ -37,7 +37,6 @@ import com.inase.android.gocci.datasource.api.API3PostUtil;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
-import com.squareup.picasso.Picasso;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
 import java.io.File;

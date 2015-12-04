@@ -40,8 +40,6 @@ import com.twitter.sdk.android.core.TwitterAuthToken;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 
-import java.io.File;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;

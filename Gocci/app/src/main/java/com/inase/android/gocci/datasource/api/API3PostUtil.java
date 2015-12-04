@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Environment;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
