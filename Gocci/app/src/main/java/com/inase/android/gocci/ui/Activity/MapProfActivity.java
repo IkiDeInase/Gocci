@@ -69,6 +69,8 @@ public class MapProfActivity extends AppCompatActivity implements ClusterManager
 
     private static ArrayList<PostData> mList = new ArrayList<>();
 
+    private LatLng clickedItemPosition = null;
+
     public static void startProfMapActivity(double longitude, double latitude, ArrayList<PostData> data, Activity startingActivity) {
         mList = data;
         Intent intent = new Intent(startingActivity, MapProfActivity.class);
@@ -167,13 +169,18 @@ public class MapProfActivity extends AppCompatActivity implements ClusterManager
     @Override
     public boolean onClusterItemClick(PhotoLog item) {
         // Does nothing, but you could go into the user's profile page, for example.
-        TenpoActivity.startTenpoActivity(item.userdata.getPost_rest_id(), item.userdata.getRestname(), MapProfActivity.this);
-        return true;
+        if (item.getPosition() != clickedItemPosition) {
+            clickedItemPosition = item.getPosition();
+        } else {
+            TenpoActivity.startTenpoActivity(item.userdata.getPost_rest_id(), item.userdata.getRestname(), MapProfActivity.this);
+        }
+        return false;
     }
 
     @Override
     public void onClusterItemInfoWindowClick(PhotoLog item) {
         // Does nothing, but you could go into the user's profile page, for example.
+        TenpoActivity.startTenpoActivity(item.userdata.getPost_rest_id(), item.userdata.getRestname(), MapProfActivity.this);
     }
 
     @Override

@@ -120,14 +120,10 @@ public class MapSearchActivity extends AppCompatActivity implements ShowHeatmapP
 
     @Override
     public boolean onClusterItemClick(HeatmapLog heatmapLog) {
-        if (clickedItemPosition != null) {
-            if (heatmapLog.getPosition() != clickedItemPosition) {
-                clickedItemPosition = heatmapLog.getPosition();
-            } else {
-                TenpoActivity.startTenpoActivity(heatmapLog.mRest_id, heatmapLog.mRestname, MapSearchActivity.this);
-            }
-        } else {
+        if (heatmapLog.getPosition() != clickedItemPosition) {
             clickedItemPosition = heatmapLog.getPosition();
+        } else {
+            TenpoActivity.startTenpoActivity(heatmapLog.mRest_id, heatmapLog.mRestname, MapSearchActivity.this);
         }
         return false;
     }
