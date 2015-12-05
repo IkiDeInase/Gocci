@@ -154,11 +154,17 @@ public class MapProfActivity extends AppCompatActivity implements ClusterManager
         }
 
         if (isSame) {
-            TenpoActivity.startTenpoActivity(cluster.getItems().iterator().next().userdata.getPost_rest_id(), cluster.getItems().iterator().next().userdata.getRestname(), MapProfActivity.this);
+            if (cluster.getPosition() != clickedItemPosition) {
+                clickedItemPosition = cluster.getPosition();
+                return false;
+            } else {
+                TenpoActivity.startTenpoActivity(cluster.getItems().iterator().next().userdata.getPost_rest_id(), cluster.getItems().iterator().next().userdata.getRestname(), MapProfActivity.this);
+                return true;
+            }
         } else {
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(cluster.getPosition(), mMap.getCameraPosition().zoom + 3));
+            return true;
         }
-        return true;
     }
 
     @Override
