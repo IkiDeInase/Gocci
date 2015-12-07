@@ -208,7 +208,7 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
 
         setSupportActionBar((Toolbar) findViewById(R.id.main_toolbar));
 
-        mSlidingLayout.setAnchorPoint(0.6f);
+        mSlidingLayout.setAnchorPoint(0.5f);
 
         mRest_id = SavedData.getRest_id(this);
         mRestname = SavedData.getRestname(this);

@@ -349,7 +349,11 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
     @Override
     public void onCommentClick(String username, String user_id) {
         mNoticeUser_id = user_id;
-        mNoticeUser_name = username + "\n";
+        if (username.isEmpty()) {
+            mNoticeUser_name = username;
+        } else {
+            mNoticeUser_name = username + "\n";
+        }
         isNotice = true;
         mCommentEdit.setText(mNoticeUser_name);
         mCommentEdit.setSelection(mCommentEdit.getText().length());

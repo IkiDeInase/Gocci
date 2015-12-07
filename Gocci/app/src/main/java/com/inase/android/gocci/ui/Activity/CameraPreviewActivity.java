@@ -203,7 +203,7 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
 
         setSupportActionBar((Toolbar) findViewById(R.id.main_toolbar));
 
-        mSlidingLayout.setAnchorPoint(0.6f);
+        mSlidingLayout.setAnchorPoint(0.5f);
 
         Intent intent = getIntent();
         mRestname = intent.getStringExtra("restname");

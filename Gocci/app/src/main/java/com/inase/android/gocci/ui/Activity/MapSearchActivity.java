@@ -86,6 +86,7 @@ public class MapSearchActivity extends AppCompatActivity implements ShowHeatmapP
 
     @Override
     public boolean onClusterClick(Cluster<HeatmapLog> cluster) {
+        clickedItemPosition = null;
         if (cluster.getPosition() != clickedClusterPosition) {
             clickedClusterPosition = cluster.getPosition();
             mLat = cluster.getPosition().latitude;
@@ -120,6 +121,7 @@ public class MapSearchActivity extends AppCompatActivity implements ShowHeatmapP
 
     @Override
     public boolean onClusterItemClick(HeatmapLog heatmapLog) {
+        clickedClusterPosition = null;
         if (heatmapLog.getPosition() != clickedItemPosition) {
             clickedItemPosition = heatmapLog.getPosition();
         } else {

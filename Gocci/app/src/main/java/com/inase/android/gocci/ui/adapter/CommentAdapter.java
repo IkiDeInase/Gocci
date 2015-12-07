@@ -191,10 +191,12 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             public void onClick(View v) {
                 final StringBuilder user_name = new StringBuilder();
                 final StringBuilder user_id = new StringBuilder();
-                user_name.append("@" + users.getUsername() + " ");
-                user_id.append(users.getComment_user_id());
+                if (!users.getUsername().equals(SavedData.getServerName(mContext))) {
+                    user_name.append("@" + users.getUsername() + " ");
+                    user_id.append(users.getComment_user_id());
+                }
                 for (CommentUserData data : users.getComment_user_data()) {
-                    if (!users.getUsername().equals(SavedData.getServerName(mContext))) {
+                    if (!data.getUserName().equals(SavedData.getServerName(mContext))) {
                         user_name.append("@" + data.getUserName() + " ");
                         user_id.append("," + data.getUser_id());
                     }
