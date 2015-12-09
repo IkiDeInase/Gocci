@@ -35,14 +35,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/add_follow_button"
-            android:src="@drawable/ic_account_plus"
+            android:src="@drawable/ic_favorite_outline_grey_600_24dp"
             android:visibility="invisible" />
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/delete_follow_button"
-            android:src="@drawable/ic_account_check"
+            android:src="@drawable/ic_favorite_white_24dp"
             android:visibility="invisible" />
     </com.andexert.library.RippleView>
 

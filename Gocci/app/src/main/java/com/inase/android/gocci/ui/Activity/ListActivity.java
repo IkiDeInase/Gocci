@@ -79,7 +79,6 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
     private Const.ListCategory mCategory;
     private String mId;
-    private boolean isMypage;
 
     private LinearLayoutManager mLayoutManager;
     private ArrayList<ListGetData> mList = new ArrayList<>();
@@ -92,10 +91,9 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
     private ShowListPresenter mPresenter;
 
-    public static void startListActivity(String id, boolean isMypage, Const.ListCategory category, Activity startingActivity) {
+    public static void startListActivity(String id, Const.ListCategory category, Activity startingActivity) {
         Intent intent = new Intent(startingActivity, ListActivity.class);
         intent.putExtra("id", id);
-        intent.putExtra("check", isMypage);
         intent.putExtra("category", category);
         startingActivity.startActivity(intent);
         startingActivity.overridePendingTransition(R.anim.activity_in, R.anim.activity_out);
@@ -130,7 +128,6 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
         Intent intent = getIntent();
         mCategory = (Const.ListCategory) intent.getSerializableExtra("category");
         mId = intent.getStringExtra("id");
-        isMypage = intent.getBooleanExtra("check", false);
 
         setSupportActionBar(mToolBar);
 
@@ -431,7 +428,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
             case GET_USER_CHEER_FIRST:
             case GET_REST_CHEER_FIRST:
                 mProgress.setVisibility(View.INVISIBLE);
-                mListGetAdapter = new ListGetAdapter(this, isMypage, mCategory, mList);
+                mListGetAdapter = new ListGetAdapter(this, mCategory, mList);
                 mListGetAdapter.setListGetCallback(this);
                 mRecyclerView.setAdapter(mListGetAdapter);
                 break;
@@ -465,7 +462,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
             case GET_WANT_FIRST:
             case GET_USER_CHEER_FIRST:
             case GET_REST_CHEER_FIRST:
-                mListGetAdapter = new ListGetAdapter(this, isMypage, mCategory, mList);
+                mListGetAdapter = new ListGetAdapter(this, mCategory, mList);
                 mListGetAdapter.setListGetCallback(this);
                 mRecyclerView.setAdapter(mListGetAdapter);
                 break;
@@ -482,7 +479,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
             case GET_WANT_FIRST:
             case GET_USER_CHEER_FIRST:
             case GET_REST_CHEER_FIRST:
-                mListGetAdapter = new ListGetAdapter(this, isMypage, mCategory, mList);
+                mListGetAdapter = new ListGetAdapter(this, mCategory, mList);
                 mListGetAdapter.setListGetCallback(this);
                 mRecyclerView.setAdapter(mListGetAdapter);
                 break;
@@ -526,7 +523,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
             case GET_REST_CHEER_FIRST:
                 mProgress.setVisibility(View.INVISIBLE);
                 mList.addAll(list);
-                mListGetAdapter = new ListGetAdapter(this, isMypage, mCategory, mList);
+                mListGetAdapter = new ListGetAdapter(this, mCategory, mList);
                 mListGetAdapter.setListGetCallback(this);
                 mRecyclerView.setAdapter(mListGetAdapter);
 

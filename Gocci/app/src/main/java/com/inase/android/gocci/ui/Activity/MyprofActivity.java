@@ -288,28 +288,28 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
         mFollowRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
             @Override
             public void onComplete(RippleView rippleView) {
-                ListActivity.startListActivity(SavedData.getServerUserId(MyprofActivity.this), true, Const.ListCategory.FOLLOW, MyprofActivity.this);
+                ListActivity.startListActivity(SavedData.getServerUserId(MyprofActivity.this), Const.ListCategory.FOLLOW, MyprofActivity.this);
             }
         });
 
         mFollowerRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
             @Override
             public void onComplete(RippleView rippleView) {
-                ListActivity.startListActivity(SavedData.getServerUserId(MyprofActivity.this), true, Const.ListCategory.FOLLOWER, MyprofActivity.this);
+                ListActivity.startListActivity(SavedData.getServerUserId(MyprofActivity.this), Const.ListCategory.FOLLOWER, MyprofActivity.this);
             }
         });
 
         mUsercheerRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
             @Override
             public void onComplete(RippleView rippleView) {
-                ListActivity.startListActivity(SavedData.getServerUserId(MyprofActivity.this), true, Const.ListCategory.USER_CHEER, MyprofActivity.this);
+                ListActivity.startListActivity(SavedData.getServerUserId(MyprofActivity.this), Const.ListCategory.USER_CHEER, MyprofActivity.this);
             }
         });
 
         mWantRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
             @Override
             public void onComplete(RippleView rippleView) {
-                ListActivity.startListActivity(SavedData.getServerUserId(MyprofActivity.this), true, Const.ListCategory.WANT, MyprofActivity.this);
+                ListActivity.startListActivity(SavedData.getServerUserId(MyprofActivity.this), Const.ListCategory.WANT, MyprofActivity.this);
             }
         });
 

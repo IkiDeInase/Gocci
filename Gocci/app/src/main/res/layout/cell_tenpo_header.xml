@@ -21,7 +21,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_like_white"
+                android:src="@drawable/ic_favorite_outline_grey_600_24dp"
                 android:id="@+id/check_image"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="12dp" />
@@ -50,7 +50,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_call_tenpo"
+                android:src="@drawable/ic_call_grey_600_24dp"
                 android:id="@+id/button_call"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="12dp" />
@@ -78,7 +78,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_pin_tenpo"
+                android:src="@drawable/ic_place_grey_600_24dp"
                 android:id="@+id/button_go"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="12dp" />
@@ -106,7 +106,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_etc_tenpo"
+                android:src="@drawable/ic_more_horiz_grey_600_24dp"
                 android:id="@+id/button_etc"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="12dp" />

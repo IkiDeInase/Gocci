@@ -6,7 +6,7 @@
         android:id="@+id/want_picture"
         android:layout_width="@dimen/userpicture_size"
         android:layout_height="@dimen/userpicture_size"
-        android:layout_margin="8dp"
+        android:layout_margin="12dp"
         android:src="@drawable/ic_userpicture" />
 
     <com.andexert.library.RippleView
@@ -15,20 +15,20 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:padding="12dp">
+        android:padding="16dp">
 
         <ImageView
             android:id="@+id/delete_want_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_like_red"
+            android:src="@drawable/ic_favorite_white_24dp"
             android:visibility="invisible" />
 
         <ImageView
             android:id="@+id/add_want_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_like_white"
+            android:src="@drawable/ic_favorite_outline_grey_600_24dp"
             android:visibility="invisible" />
 
     </com.andexert.library.RippleView>

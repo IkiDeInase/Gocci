@@ -8,7 +8,7 @@
         android:layout_height="@dimen/userpicture_size"
         android:id="@+id/cheer_picture"
         android:src="@drawable/ic_userpicture"
-        android:layout_margin="8dp" />
+        android:layout_margin="12dp" />
 
     <!--
     <com.andexert.library.RippleView

@@ -111,10 +111,10 @@ public class RestPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private void bindHeader(final TenpoHeaderViewHolder holder) {
         if (mRestData.getWant_flag() == 0) {
-            holder.mCheckImage.setImageResource(R.drawable.ic_like_white);
+            holder.mCheckImage.setImageResource(R.drawable.ic_favorite_outline_grey_600_24dp);
             holder.mCheckText.setText(mContext.getString(R.string.add_want));
         } else {
-            holder.mCheckImage.setImageResource(R.drawable.ic_favorite_orange);
+            holder.mCheckImage.setImageResource(R.drawable.ic_favorite_white_24dp);
             holder.mCheckText.setText(mContext.getString(R.string.remove_want));
         }
 
@@ -122,12 +122,12 @@ public class RestPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             @Override
             public void onClick(View v) {
                 if (holder.mCheckText.getText().toString().equals(mContext.getString(R.string.add_want))) {
-                    holder.mCheckImage.setImageResource(R.drawable.ic_favorite_orange);
+                    holder.mCheckImage.setImageResource(R.drawable.ic_favorite_white_24dp);
                     holder.mCheckText.setText(mContext.getString(R.string.remove_want));
 
                     //Util.wantAsync(mContext, mRestData);
                 } else {
-                    holder.mCheckImage.setImageResource(R.drawable.ic_like_white);
+                    holder.mCheckImage.setImageResource(R.drawable.ic_favorite_outline_grey_600_24dp);
                     holder.mCheckText.setText(mContext.getString(R.string.add_want));
 
                     //Util.unwantAsync(mContext, mRestData);

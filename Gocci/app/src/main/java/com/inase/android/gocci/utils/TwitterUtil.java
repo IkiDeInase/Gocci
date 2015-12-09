@@ -289,7 +289,6 @@ public class TwitterUtil {
         Application_Gocci.getClient().post(context, POST_TWITTER, requestParams, new JsonHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Log.e("ログ", errorResponse.toString());
                 Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), "Twitterシェアに失敗しました", Toast.LENGTH_SHORT).show();
             }
 
@@ -322,7 +321,6 @@ public class TwitterUtil {
         Application_Gocci.getClient().post(context, POST_TWITTER, requestParams, new JsonHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Log.e("ログ", errorResponse.toString());
                 Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), "Twitterシェアに失敗しました", Toast.LENGTH_SHORT).show();
             }
 
@@ -353,7 +351,6 @@ public class TwitterUtil {
         Application_Gocci.getClient().post(context, POST_TWITTER, requestParams, new JsonHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Log.e("ログ", errorResponse.toString());
                 Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), "Twitterシェアに失敗しました", Toast.LENGTH_SHORT).show();
             }
 
@@ -380,13 +377,11 @@ public class TwitterUtil {
         Application_Gocci.getClient().post(context, TWEET_TWITTER, requestParams, new JsonHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Log.e("ログ", errorResponse.toString());
                 Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), "Twitterシェアに失敗しました", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                Log.e("ログ", "成功");
                 Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), "Twitterシェアが完了しました", Toast.LENGTH_SHORT).show();
             }
         });
@@ -409,7 +404,6 @@ public class TwitterUtil {
         Application_Gocci.getClient().get(context, url, new JsonHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Log.e("ログ", errorResponse.toString());
                 Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), "Twitter認証に失敗しました", Toast.LENGTH_SHORT).show();
             }
 
