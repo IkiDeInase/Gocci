@@ -6,6 +6,7 @@ import com.inase.android.gocci.datasource.api.API3;
 import com.inase.android.gocci.domain.model.TwoCellData;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.net.SocketTimeoutException;
@@ -43,6 +44,20 @@ public class PostDataRepositoryImpl implements PostDataRepository {
 
                             @Override
                             public void onSuccess(ArrayList<TwoCellData> postData, ArrayList<String> post_ids) {
+//                                final ArrayList<TwoCellData> mPostData = new ArrayList<>();
+//                                final ArrayList<String> mPost_Ids = new ArrayList<>();
+//
+//                                JSONArray payload = jsonObject.getJSONArray("payload");
+//                                if (payload.length() != 0) {
+//                                    for (int i = 0; i < payload.length(); i++) {
+//                                        JSONObject postdata = payload.getJSONObject(i);
+//                                        mPostData.add(TwoCellData.createPostData(postdata));
+//                                        mPost_Ids.add(postdata.getString("post_id"));
+//                                    }
+//                                    cb.onSuccess(mPostData, mPost_Ids);
+//                                } else {
+//                                    cb.onEmpty();
+//                                }
                                 cb.onPostDataLoaded(api, postData, post_ids);
                             }
 

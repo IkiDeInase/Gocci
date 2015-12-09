@@ -6,6 +6,7 @@ import com.inase.android.gocci.datasource.api.API3;
 import com.inase.android.gocci.utils.SavedData;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.SocketTimeoutException;
@@ -45,6 +46,19 @@ public class LoginRepositoryImpl implements LoginRepository {
                                 mAPI3.auth_login_response(response, new API3.LoginResponseCallback() {
                                     @Override
                                     public void onSuccess() {
+//                                        JSONObject payload = jsonObject.getJSONObject("payload");
+//                                        try {
+//                                            String user_id = payload.getString("user_id");
+//                                            String username = payload.getString("username");
+//                                            String profile_img = payload.getString("profile_img");
+//                                            String badge_num = payload.getString("badge_num");
+//                                            String cognito_token = payload.getString("cognito_token");
+//                                            Application_Gocci.GuestInit(Application_Gocci.getInstance().getApplicationContext(), SavedData.getIdentityId(Application_Gocci.getInstance().getApplicationContext()), cognito_token, user_id);
+//                                            SavedData.setWelcome(Application_Gocci.getInstance().getApplicationContext(), username, profile_img, user_id, Integer.parseInt(badge_num));
+//
+//                                        } catch (JSONException e) {
+//                                            e.printStackTrace();
+//                                        }
                                         cb.onLogin(api);
                                     }
 
@@ -63,6 +77,8 @@ public class LoginRepositoryImpl implements LoginRepository {
                                 mAPI3.auth_pass_login_response(response, new API3.AuthResponseCallback() {
                                     @Override
                                     public void onSuccess(String identity_id) {
+//                                        JSONObject payload = jsonObject.getJSONObject("payload");
+//                                        String identity_id = payload.getString("identity_id");
                                         SavedData.setIdentityId(Application_Gocci.getInstance().getApplicationContext(), identity_id);
                                         userLogin(Const.APICategory.AUTH_LOGIN, API3.Util.getAuthLoginAPI(identity_id), cb);
                                     }
@@ -82,6 +98,8 @@ public class LoginRepositoryImpl implements LoginRepository {
                                 mAPI3.auth_signup_response(response, new API3.AuthResponseCallback() {
                                     @Override
                                     public void onSuccess(String identity_id) {
+//                                        JSONObject payload = jsonObject.getJSONObject("payload");
+//                                        String identity_id = payload.getString("identity_id");
                                         SavedData.setIdentityId(Application_Gocci.getInstance().getApplicationContext(), identity_id);
                                         userLogin(Const.APICategory.AUTH_LOGIN, API3.Util.getAuthLoginAPI(identity_id), cb);
                                     }

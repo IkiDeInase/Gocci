@@ -6,6 +6,7 @@ import com.inase.android.gocci.datasource.api.API3;
 import com.inase.android.gocci.domain.model.HeaderData;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.net.SocketTimeoutException;
@@ -43,6 +44,18 @@ public class NoticeRepositoryImpl implements NoticeRepository {
 
                             @Override
                             public void onSuccess(ArrayList<HeaderData> list) {
+//                                final ArrayList<HeaderData> mListData = new ArrayList<>();
+//
+//                                JSONArray payload = jsonObject.getJSONArray("payload");
+//                                if (payload.length() != 0) {
+//                                    for (int i = 0; i < payload.length(); i++) {
+//                                        JSONObject listData = payload.getJSONObject(i);
+//                                        mListData.add(HeaderData.createNoticeHeaderData(listData));
+//                                    }
+//                                    cb.onSuccess(mListData);
+//                                } else {
+//                                    cb.onEmpty();
+//                                }
                                 cb.onSuccess(api, list);
                             }
 

@@ -5,6 +5,7 @@ import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.net.SocketTimeoutException;
@@ -42,6 +43,25 @@ public class NearRepositoryImpl implements NearRepository {
 
                             @Override
                             public void onSuccess(String[] restnames, ArrayList<String> restIdArray, ArrayList<String> restnameArray) {
+//                                String[] restnames = new String[30];
+//                                final ArrayList<String> restIdArray = new ArrayList<>();
+//                                final ArrayList<String> restnameArray = new ArrayList<>();
+//
+//                                JSONArray payload = jsonObject.getJSONArray("payload");
+//                                if (payload.length() != 0) {
+//                                    for (int i = 0; i < payload.length(); i++) {
+//                                        JSONObject listData = payload.getJSONObject(i);
+//                                        final String rest_name = listData.getString("restname");
+//                                        String rest_id = listData.getString("rest_id");
+//
+//                                        restnames[i] = rest_name;
+//                                        restIdArray.add(rest_id);
+//                                        restnameArray.add(rest_name);
+//                                    }
+//                                    cb.onSuccess(restnames, restIdArray, restnameArray);
+//                                } else {
+//                                    cb.onEmpty();
+//                                }
                                 cb.onSuccess(api, restnames, restIdArray, restnameArray);
                             }
 
