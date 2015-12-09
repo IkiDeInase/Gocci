@@ -2608,7 +2608,6 @@ public interface API3 {
                             cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
                         }
                     } else {
-                        //ハンドリング不可　致命的バグ
                         cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
                     }
                 }

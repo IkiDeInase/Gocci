@@ -44,7 +44,7 @@
         <include
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="72dp"
             android:id="@+id/preview_view"
             layout="@layout/view_camera_preview_select"
             android:layout_alignParentBottom="true"

@@ -19,14 +19,19 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.GravityEnum;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
 import com.andexert.library.RippleView;
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
+import com.facebook.Profile;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.facebook.share.Sharer;
 import com.facebook.share.widget.ShareDialog;
 import com.github.clans.fab.FloatingActionButton;
@@ -43,6 +48,7 @@ import com.inase.android.gocci.domain.usecase.NearDataUseCaseImpl;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.PostCallbackEvent;
 import com.inase.android.gocci.presenter.ShowCameraPresenter;
+import com.inase.android.gocci.ui.view.GocciTwitterLoginButton;
 import com.inase.android.gocci.ui.view.SquareVideoView;
 import com.inase.android.gocci.utils.SavedData;
 import com.inase.android.gocci.utils.TwitterUtil;
@@ -52,7 +58,10 @@ import com.rengwuxian.materialedittext.MaterialEditText;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.squareup.otto.Subscribe;
 import com.twitter.sdk.android.Twitter;
+import com.twitter.sdk.android.core.Callback;
+import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.TwitterAuthToken;
+import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 import com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner;
@@ -101,6 +110,10 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
     FloatingActionButton mFacebookEdit;
     @Bind(R.id.edit_instagram_fab)
     FloatingActionButton mInstagramEdit;
+    @Bind(R.id.login_button)
+    LoginButton mFacebookLoginButton;
+    @Bind(R.id.twitter_login_button)
+    GocciTwitterLoginButton mTwitterLoginButton;
 
     @OnClick(R.id.add_rest_text)
     public void restAdd() {
@@ -109,12 +122,38 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
 
     @OnClick(R.id.edit_twitter_fab)
     public void edit_twitter() {
-
+        new MaterialDialog.Builder(this)
+                .content("Twitter編集")
+                .contentColorRes(R.color.nameblack)
+                .contentGravity(GravityEnum.CENTER)
+                .inputType(InputType.TYPE_CLASS_TEXT)
+                .widgetColorRes(R.color.twitter_background)
+                .positiveText("完了")
+                .positiveColorRes(R.color.gocci_header)
+                .input("", getMessage(), false, new MaterialDialog.InputCallback() {
+                    @Override
+                    public void onInput(MaterialDialog materialDialog, CharSequence charSequence) {
+                        mTwitterMemo = charSequence.toString();
+                    }
+                }).show();
     }
 
     @OnClick(R.id.edit_facebook_fab)
     public void edit_facebook() {
-
+        new MaterialDialog.Builder(this)
+                .content("Facebook編集")
+                .contentColorRes(R.color.nameblack)
+                .contentGravity(GravityEnum.CENTER)
+                .inputType(InputType.TYPE_CLASS_TEXT)
+                .widgetColorRes(R.color.facebook_background)
+                .positiveText("完了")
+                .positiveColorRes(R.color.gocci_header)
+                .input("", getMessage(), false, new MaterialDialog.InputCallback() {
+                    @Override
+                    public void onInput(MaterialDialog materialDialog, CharSequence charSequence) {
+                        mFacebookMemo = charSequence.toString();
+                    }
+                }).show();
     }
 
     @OnClick(R.id.edit_instagram_fab)
@@ -125,7 +164,13 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
     @OnClick(R.id.check_twitter)
     public void twitter() {
         if (mTwitterEdit.isHidden()) {
-            mTwitterEdit.show(true);
+            TwitterSession session =
+                    Twitter.getSessionManager().getActiveSession();
+            if (session != null) {
+                mTwitterEdit.show(true);
+            } else {
+                mTwitterLoginButton.performClick();
+            }
         } else {
             mTwitterEdit.hide(true);
         }
@@ -134,7 +179,12 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
     @OnClick(R.id.check_facebook)
     public void facebook() {
         if (mFacebookEdit.isHidden()) {
-            mFacebookEdit.show(true);
+            Profile profile = Profile.getCurrentProfile();
+            if (profile != null) {
+                mFacebookEdit.show(true);
+            } else {
+                mFacebookLoginButton.performClick();
+            }
         } else {
             mFacebookEdit.hide(true);
         }
@@ -149,7 +199,6 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
         // Add the URI and the caption to the Intent.
         share.putExtra(Intent.EXTRA_STREAM, uri);
         share.setPackage("com.instagram.android");
-        share.putExtra(Intent.EXTRA_TEXT, "#" + mRestname.replaceAll("\\s+", "") + " #Gocci");
         // Broadcast the Intent.
         startActivity(Intent.createChooser(share, "Share to"));
     }
@@ -162,6 +211,8 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
     private String mAwsPostName;
     private String mValue;
     private String mMemo;
+    private String mTwitterMemo;
+    private String mFacebookMemo;
     private boolean mIsnewRestname;
     private double mLatitude;
     private double mLongitude;
@@ -341,17 +392,10 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
                                 if (mVideoFile.length() < 1024 * 1024 * 15) {
                                     try {
                                         final TwitterAuthToken authToken = session.getAuthToken();
-                                        TwitterUtil.performShare(CameraPreviewAlreadyExistActivity.this, authToken.token, authToken.secret, mVideoFile, mMemo + " #Gocci", new TwitterUtil.TwitterShareCallback() {
-                                            @Override
-                                            public void onSuccess() {
-                                                Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), "シェアしました", Toast.LENGTH_SHORT).show();
-                                            }
-
-                                            @Override
-                                            public void onFailure(String message) {
-                                                Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), "エラー:" + message, Toast.LENGTH_SHORT).show();
-                                            }
-                                        });
+                                        if (mTwitterMemo.isEmpty()) {
+                                            mTwitterMemo = getMessage();
+                                        }
+                                        TwitterUtil.performShare(CameraPreviewAlreadyExistActivity.this, authToken.token, authToken.secret, mVideoFile, mTwitterMemo);
                                     } catch (Exception e) {
                                         e.printStackTrace();
                                     }
@@ -373,6 +417,54 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
         if (mIsnewRestname || !mRestname.equals("")) {
             mAddRestText.setVisibility(View.GONE);
         }
+
+        mFacebookLoginButton.setReadPermissions("public_profile");
+        mFacebookLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                mFacebookEdit.show(true);
+                mCheckFacebook.setChecked(true);
+                API3PostUtil.postSnsLinkAsync(CameraPreviewAlreadyExistActivity.this, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), Const.ActivityCategory.CAMERA_PREVIEW_ALREADY, Const.APICategory.POST_FACEBOOK);
+                Profile profile = Profile.getCurrentProfile();
+                String profile_img = "https://graph.facebook.com/" + profile.getId() + "/picture";
+                String post_date = SavedData.getServerUserId(CameraPreviewAlreadyExistActivity.this) + "_" + Util.getDateTimeString();
+                API3PostUtil.postProfileImgAsync(CameraPreviewAlreadyExistActivity.this, post_date, profile_img, Const.ActivityCategory.CAMERA_PREVIEW_ALREADY);
+            }
+
+            @Override
+            public void onCancel() {
+                mFacebookEdit.hide(true);
+                mCheckFacebook.setChecked(false);
+            }
+
+            @Override
+            public void onError(FacebookException e) {
+                mFacebookEdit.hide(true);
+                mCheckFacebook.setChecked(false);
+                Toast.makeText(CameraPreviewAlreadyExistActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        mTwitterLoginButton.setCallback(new Callback<TwitterSession>() {
+            @Override
+            public void success(Result<TwitterSession> result) {
+                mTwitterEdit.show(true);
+                mCheckTwitter.setChecked(true);
+                TwitterAuthToken authToken = result.data.getAuthToken();
+                API3PostUtil.postSnsLinkAsync(CameraPreviewAlreadyExistActivity.this, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, Const.ActivityCategory.CAMERA_PREVIEW_ALREADY, Const.APICategory.POST_TWITTER);
+                String username = result.data.getUserName();
+                String profile_img = "http://www.paper-glasses.com/api/twipi/" + username;
+                String post_date = SavedData.getServerUserId(CameraPreviewAlreadyExistActivity.this) + "_" + Util.getDateTimeString();
+                API3PostUtil.postProfileImgAsync(CameraPreviewAlreadyExistActivity.this, post_date, profile_img, Const.ActivityCategory.CAMERA_PREVIEW_ALREADY);
+            }
+
+            @Override
+            public void failure(TwitterException exception) {
+                mTwitterEdit.hide(true);
+                mCheckTwitter.setChecked(false);
+                Toast.makeText(CameraPreviewAlreadyExistActivity.this, exception.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -427,10 +519,24 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
         }
     }
 
+    private String getMessage() {
+        StringBuilder builder = new StringBuilder();
+        if (!mEditComment.getText().toString().isEmpty())
+            builder.append(mEditComment.getText().toString());
+        builder.append(" #").append(mRestname.replaceAll("\\s+", ""));
+        if (!mCategorySpinner.getText().toString().isEmpty())
+            builder.append(" #").append(mCategorySpinner.getText().toString());
+        if (!mEditValue.getText().toString().isEmpty())
+            builder.append(" #").append(mEditValue.getText().toString()).append("円");
+        builder.append(" #").append("Gocci");
+        return builder.toString();
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
+        mTwitterLoginButton.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override

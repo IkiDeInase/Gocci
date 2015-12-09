@@ -119,7 +119,7 @@ public class LoginSocialAuthenticationFragment extends Fragment {
         mFacebookLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                API3PostUtil.postSnsLinkAsync(getActivity(), Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), Const.ActivityCategory.TUTORIAL, Const.APICategory.POST_FACEBOOK);
+                API3PostUtil.postSnsLinkAsync(getActivity(), Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), Const.ActivityCategory.SETTING, Const.APICategory.POST_FACEBOOK);
                 Profile profile = Profile.getCurrentProfile();
                 String profile_img = "https://graph.facebook.com/" + profile.getId() + "/picture";
                 String post_date = SavedData.getServerUserId(getActivity()) + "_" + Util.getDateTimeString();
@@ -141,7 +141,7 @@ public class LoginSocialAuthenticationFragment extends Fragment {
             @Override
             public void success(Result<TwitterSession> result) {
                 TwitterAuthToken authToken = result.data.getAuthToken();
-                API3PostUtil.postSnsLinkAsync(getActivity(), Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, Const.ActivityCategory.TUTORIAL, Const.APICategory.POST_TWITTER);
+                API3PostUtil.postSnsLinkAsync(getActivity(), Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, Const.ActivityCategory.SETTING, Const.APICategory.POST_TWITTER);
                 String username = result.data.getUserName();
                 String profile_img = "http://www.paper-glasses.com/api/twipi/" + username;
                 String post_date = SavedData.getServerUserId(getActivity()) + "_" + Util.getDateTimeString();

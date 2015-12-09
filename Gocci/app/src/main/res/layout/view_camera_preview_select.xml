@@ -82,7 +82,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="8dp"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:layout_marginTop="8dp">
@@ -121,8 +121,7 @@
             android:layout_marginBottom="8dp"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
-            android:layout_marginTop="8dp"
-            android:visibility="gone">
+            android:layout_marginTop="8dp">
 
             <ImageView
                 android:id="@+id/image_twitter"
@@ -172,8 +171,7 @@
             android:layout_marginBottom="8dp"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
-            android:layout_marginTop="8dp"
-            android:visibility="gone">
+            android:layout_marginTop="8dp">
 
             <ImageView
                 android:id="@+id/image_facebook"
@@ -222,8 +220,7 @@
             android:layout_marginBottom="32dp"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
-            android:layout_marginTop="8dp"
-            android:visibility="gone">
+            android:layout_marginTop="8dp">
 
             <ImageView
                 android:id="@+id/image_instagram"
@@ -285,6 +282,31 @@
                 android:textSize="@dimen/accent_text" />
 
         </com.andexert.library.RippleView>
+
+        <com.facebook.login.widget.LoginButton
+            android:id="@+id/login_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="4dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="16dp"
+            android:visibility="gone" />
+
+        <com.inase.android.gocci.ui.view.GocciTwitterLoginButton
+            android:id="@+id/twitter_login_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:background="@drawable/sign_up_button_twitter"
+            android:text="twitterでアカウント作成/ログイン"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:visibility="gone" />
 
     </com.inase.android.gocci.ui.view.BlockEditTextDefaultFocusLinearLayout>
 </ScrollView>

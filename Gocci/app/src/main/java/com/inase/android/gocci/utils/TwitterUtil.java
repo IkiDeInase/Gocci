@@ -2,6 +2,8 @@ package com.inase.android.gocci.utils;
 
 import android.content.Context;
 import android.util.Base64;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.utils.encode.HttpParameters;
@@ -84,12 +86,6 @@ public class TwitterUtil {
     private static final String TWITTER_KEY = "kurJalaArRFtwhnZCoMxB2kKU";
 
     private static final String TWITTER_SECRET = "oOCDmf29DyJyfxOPAaj8tSASzSPAHNepvbxcfVLkA9dJw7inYa";
-
-    public interface TwitterShareCallback {
-        void onSuccess();
-
-        void onFailure(String message);
-    }
 
     private static final PercentEscaper percentEncoder = new PercentEscaper(
             "-._~", false);
@@ -276,7 +272,7 @@ public class TwitterUtil {
         return array;
     }
 
-    public static void performShare(final Context context, final String token, final String tokenSecret, final File file, final String message, final TwitterShareCallback cb) {
+    public static void performShare(final Context context, final String token, final String tokenSecret, final File file, final String message) {
         HttpParameters httpParameters = getParam(token);
         httpParameters.put("command", "INIT", true);
         httpParameters.put("media_type", "video/mp4", true);
@@ -293,7 +289,8 @@ public class TwitterUtil {
         Application_Gocci.getClient().post(context, POST_TWITTER, requestParams, new JsonHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                cb.onFailure(errorResponse.toString());
+                Log.e("ログ", errorResponse.toString());
+                Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), "Twitterシェアに失敗しました", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -301,7 +298,7 @@ public class TwitterUtil {
                 try {
                     String media_id = response.getString("media_id_string");
                     ArrayList<byte[]> array = TwitterUtil.readFileToByteArray(file);
-                    performAppend(context, media_id, token, tokenSecret, 0, array, message, cb);
+                    performAppend(context, media_id, token, tokenSecret, 0, array, message);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -309,7 +306,7 @@ public class TwitterUtil {
         });
     }
 
-    private static void performAppend(final Context context, final String media_id, final String token, final String tokenSecret, final int segment_index, final ArrayList<byte[]> list, final String message, final TwitterShareCallback cb) {
+    private static void performAppend(final Context context, final String media_id, final String token, final String tokenSecret, final int segment_index, final ArrayList<byte[]> list, final String message) {
         HttpParameters httpParameters = getParam(token);
 
         RequestParams requestParams = new RequestParams();
@@ -325,21 +322,22 @@ public class TwitterUtil {
         Application_Gocci.getClient().post(context, POST_TWITTER, requestParams, new JsonHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                cb.onFailure(errorResponse.toString());
+                Log.e("ログ", errorResponse.toString());
+                Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), "Twitterシェアに失敗しました", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 if (list.size() == segment_index + 1) {
-                    performFinalize(context, media_id, token, tokenSecret, message, cb);
+                    performFinalize(context, media_id, token, tokenSecret, message);
                 } else {
-                    performAppend(context, media_id, token, tokenSecret, segment_index + 1, list, message, cb);
+                    performAppend(context, media_id, token, tokenSecret, segment_index + 1, list, message);
                 }
             }
         });
     }
 
-    private static void performFinalize(final Context context, final String media_id, final String token, final String tokenSecret, final String message, final TwitterShareCallback cb) {
+    private static void performFinalize(final Context context, final String media_id, final String token, final String tokenSecret, final String message) {
         HttpParameters httpParameters = getParam(token);
         httpParameters.put("command", "FINALIZE", true);
         httpParameters.put("media_id", media_id, true);
@@ -355,17 +353,18 @@ public class TwitterUtil {
         Application_Gocci.getClient().post(context, POST_TWITTER, requestParams, new JsonHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                cb.onFailure(errorResponse.toString());
+                Log.e("ログ", errorResponse.toString());
+                Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), "Twitterシェアに失敗しました", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                performVideoTweet(context, media_id, token, tokenSecret, message, cb);
+                performVideoTweet(context, media_id, token, tokenSecret, message);
             }
         });
     }
 
-    private static void performVideoTweet(Context context, final String media_id, String token, String tokenSecret, String message, final TwitterShareCallback cb) {
+    private static void performVideoTweet(Context context, final String media_id, String token, String tokenSecret, String message) {
         HttpParameters httpParameters = getParam(token);
         httpParameters.put("status", message, true);
         httpParameters.put("media_ids", media_id, true);
@@ -381,17 +380,19 @@ public class TwitterUtil {
         Application_Gocci.getClient().post(context, TWEET_TWITTER, requestParams, new JsonHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                cb.onFailure(errorResponse.toString());
+                Log.e("ログ", errorResponse.toString());
+                Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), "Twitterシェアに失敗しました", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                cb.onSuccess();
+                Log.e("ログ", "成功");
+                Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), "Twitterシェアが完了しました", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private static void performAuthentication(final Context context, final String token, final String tokenSecret, final TwitterShareCallback cb) {
+    private static void performAuthentication(final Context context, final String token, final String tokenSecret) {
         HttpParameters httpParameters = getParam(token);
         httpParameters.put("skip_status", "true", true);
         httpParameters.put("include_entities", "false", true);
@@ -408,12 +409,13 @@ public class TwitterUtil {
         Application_Gocci.getClient().get(context, url, new JsonHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                cb.onFailure(errorResponse.toString());
+                Log.e("ログ", errorResponse.toString());
+                Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), "Twitter認証に失敗しました", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                cb.onSuccess();
+
             }
         });
     }
