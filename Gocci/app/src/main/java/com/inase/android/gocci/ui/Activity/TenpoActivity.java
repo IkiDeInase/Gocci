@@ -68,7 +68,6 @@ import com.inase.android.gocci.ui.adapter.RestPageAdapter;
 import com.inase.android.gocci.ui.view.CustomKenBurnsView;
 import com.inase.android.gocci.ui.view.DrawerProfHeader;
 import com.inase.android.gocci.ui.view.GochiLayout;
-import com.inase.android.gocci.ui.view.SquareImageView;
 import com.inase.android.gocci.utils.SavedData;
 import com.inase.android.gocci.utils.Util;
 import com.inase.android.gocci.utils.video.HlsRendererBuilder;
@@ -82,6 +81,9 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
+import com.twitter.sdk.android.Twitter;
+import com.twitter.sdk.android.core.TwitterAuthToken;
+import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
 import java.util.ArrayList;
@@ -161,7 +163,6 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
 
     private ShowRestPagePresenter mPresenter;
 
-    private SquareImageView mShareImage;
     private String mShareShare;
     private String mShareRestname;
 
@@ -779,32 +780,43 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
     }
 
     @Override
-    public void onTwitterShare(SquareImageView view, String rest_name) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                mShareImage = view;
-                mShareRestname = rest_name;
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 26);
-            } else {
-                Util.twitterShare(this, view, rest_name);
-            }
-        } else {
-            Util.twitterShare(this, view, rest_name);
-        }
-    }
-
-    @Override
-    public void onInstaShare(String share, String rest_name) {
+    public void onTwitterShare(String share, String rest_name) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 mShareShare = share;
                 mShareRestname = rest_name;
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 27);
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 26);
             } else {
-                Util.instaVideoShare(this, rest_name, share);
+                TwitterSession session = Twitter.getSessionManager().getActiveSession();
+                if (session != null) {
+                    TwitterAuthToken authToken = session.getAuthToken();
+                    Util.twitterShare(this, "#" + rest_name.replaceAll("\\s+", "") + " #Gocci", share, authToken);
+                } else {
+                    Toast.makeText(this, "設定ページでTwitter連携を行ってください", Toast.LENGTH_SHORT).show();
+                }
             }
         } else {
-            Util.instaVideoShare(this, rest_name, share);
+            TwitterSession session = Twitter.getSessionManager().getActiveSession();
+            if (session != null) {
+                TwitterAuthToken authToken = session.getAuthToken();
+                Util.twitterShare(this, "#" + rest_name.replaceAll("\\s+", "") + " #Gocci", share, authToken);
+            } else {
+                Toast.makeText(this, "設定ページでTwitter連携を行ってください", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    @Override
+    public void onInstaShare(String share) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                mShareShare = share;
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 27);
+            } else {
+                Util.instaVideoShare(this, share);
+            }
+        } else {
+            Util.instaVideoShare(this, share);
         }
     }
 
@@ -823,7 +835,13 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
             case 26:
                 if (grantResults.length > 0 &&
                         grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Util.twitterShare(this, mShareImage, mShareRestname);
+                    TwitterSession session = Twitter.getSessionManager().getActiveSession();
+                    if (session != null) {
+                        TwitterAuthToken authToken = session.getAuthToken();
+                        Util.twitterShare(this, "#" + mShareRestname.replaceAll("\\s+", "") + " #Gocci", mShareShare, authToken);
+                    } else {
+                        Toast.makeText(this, "設定ページでTwitter連携を行ってください", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
                     Toast.makeText(TenpoActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
                 }
@@ -831,14 +849,12 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
             case 27:
                 if (grantResults.length > 0 &&
                         grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Util.instaVideoShare(this, mShareRestname, mShareShare);
+                    Util.instaVideoShare(this, mShareShare);
                 } else {
                     Toast.makeText(TenpoActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
                 }
                 break;
         }
-        // other 'case' lines to check for other
-        // permissions this app might request
     }
 
     @Override

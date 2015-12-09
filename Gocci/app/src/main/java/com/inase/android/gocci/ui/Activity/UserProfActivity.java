@@ -67,7 +67,6 @@ import com.inase.android.gocci.ui.fragment.StreamUserProfFragment;
 import com.inase.android.gocci.ui.view.DrawerProfHeader;
 import com.inase.android.gocci.ui.view.GochiLayout;
 import com.inase.android.gocci.ui.view.RoundedTransformation;
-import com.inase.android.gocci.ui.view.SquareImageView;
 import com.inase.android.gocci.utils.SavedData;
 import com.inase.android.gocci.utils.Util;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
@@ -81,6 +80,9 @@ import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItemAdapter;
 import com.ogaclejapan.smarttablayout.utils.v4.FragmentPagerItems;
 import com.squareup.otto.Subscribe;
 import com.squareup.picasso.Picasso;
+import com.twitter.sdk.android.Twitter;
+import com.twitter.sdk.android.core.TwitterAuthToken;
+import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
 import java.util.ArrayList;
@@ -173,7 +175,6 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
 
     private FragmentPagerItemAdapter adapter;
 
-    private SquareImageView mShareImage;
     private String mShareShare;
     private String mShareRestname;
 
@@ -672,11 +673,10 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
         }
     }
 
-    public void shareVideoPost(final int requastCode, SquareImageView view, String share, String restname) {
+    public void shareVideoPost(final int requastCode, String share, String restname) {
         if (PermissionChecker.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             mShareShare = share;
             mShareRestname = restname;
-            mShareImage = view;
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 new MaterialDialog.Builder(this)
                         .content("シェアをするにはストレージにアクセスする必要があります。権限を許可しますか？")
@@ -703,13 +703,19 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
         } else {
             switch (requastCode) {
                 case 25:
-                    Util.facebookVideoShare(this, shareDialog, mShareShare);
+                    Util.facebookVideoShare(this, shareDialog, share);
                     break;
                 case 26:
-                    Util.twitterShare(this, mShareImage, mShareRestname);
+                    TwitterSession session = Twitter.getSessionManager().getActiveSession();
+                    if (session != null) {
+                        TwitterAuthToken authToken = session.getAuthToken();
+                        Util.twitterShare(this, "#" + restname.replaceAll("\\s+", "") + " #Gocci", share, authToken);
+                    } else {
+                        Toast.makeText(this, "設定ページでTwitter連携を行ってください", Toast.LENGTH_SHORT).show();
+                    }
                     break;
                 case 27:
-                    Util.instaVideoShare(this, mShareRestname, mShareShare);
+                    Util.instaVideoShare(this, share);
                     break;
             }
         }
@@ -766,7 +772,13 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     if (grantResults.length > 0 &&
                             grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                        Util.twitterShare(this, mShareImage, mShareRestname);
+                        TwitterSession session = Twitter.getSessionManager().getActiveSession();
+                        if (session != null) {
+                            TwitterAuthToken authToken = session.getAuthToken();
+                            Util.twitterShare(this, "#" + mShareRestname.replaceAll("\\s+", "") + " #Gocci", mShareShare, authToken);
+                        } else {
+                            Toast.makeText(this, "設定ページでTwitter連携を行ってください", Toast.LENGTH_SHORT).show();
+                        }
                     } else {
                         if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                             new MaterialDialog.Builder(this)
@@ -801,7 +813,13 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
                     if (PermissionChecker.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                         Toast.makeText(UserProfActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
                     } else {
-                        Util.twitterShare(this, mShareImage, mShareRestname);
+                        TwitterSession session = Twitter.getSessionManager().getActiveSession();
+                        if (session != null) {
+                            TwitterAuthToken authToken = session.getAuthToken();
+                            Util.twitterShare(this, "#" + mShareRestname.replaceAll("\\s+", "") + " #Gocci", mShareShare, authToken);
+                        } else {
+                            Toast.makeText(this, "設定ページでTwitter連携を行ってください", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 }
                 break;
@@ -809,7 +827,7 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     if (grantResults.length > 0 &&
                             grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                        Util.instaVideoShare(this, mShareRestname, mShareShare);
+                        Util.instaVideoShare(this, mShareShare);
                     } else {
                         if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                             new MaterialDialog.Builder(this)
@@ -844,7 +862,7 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
                     if (PermissionChecker.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                         Toast.makeText(UserProfActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
                     } else {
-                        Util.instaVideoShare(this, mShareRestname, mShareShare);
+                        Util.instaVideoShare(this, mShareShare);
                     }
                 }
                 break;

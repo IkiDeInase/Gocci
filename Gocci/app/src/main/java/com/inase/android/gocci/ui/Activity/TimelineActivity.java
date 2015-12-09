@@ -444,7 +444,7 @@ public class TimelineActivity extends AppCompatActivity {
                 if (resultCode == RESULT_OK) {
                     Bundle bundle = data.getExtras();
                     mTitle = bundle.getString("place");
-                    mToolBar.setTitle(mTitle.isEmpty()?"場所不明":mTitle);
+                    mToolBar.setTitle(mTitle.isEmpty() ? "場所不明" : mTitle);
                     adapter.getPage(0).onActivityResult(requestCode, resultCode, data);
                 }
                 break;

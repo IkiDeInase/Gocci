@@ -34,6 +34,8 @@ import com.facebook.Profile;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.facebook.share.Sharer;
+import com.facebook.share.model.ShareVideo;
+import com.facebook.share.model.ShareVideoContent;
 import com.facebook.share.widget.ShareDialog;
 import com.github.clans.fab.FloatingActionButton;
 import com.inase.android.gocci.Application_Gocci;
@@ -64,7 +66,6 @@ import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.TwitterAuthToken;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
-import com.twitter.sdk.android.core.identity.TwitterAuthClient;
 import com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner;
 
 import java.io.File;
@@ -100,6 +101,8 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
     CheckBox mCheckTwitter;
     @Bind(R.id.check_facebook)
     CheckBox mCheckFacebook;
+    @Bind(R.id.check_instagram)
+    CheckBox mCheckInstagram;
     @Bind(R.id.sliding_layout)
     SlidingUpPanelLayout mSlidingLayout;
     @Bind(R.id.preview_view)
@@ -178,27 +181,49 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
 
     @OnClick(R.id.check_facebook)
     public void facebook() {
-        if (mFacebookEdit.isHidden()) {
+//        if (mFacebookEdit.isHidden()) {
+//            Profile profile = Profile.getCurrentProfile();
+//            if (profile != null) {
+//                mFacebookEdit.show(true);
+//            } else {
+//                mFacebookLoginButton.performClick();
+//            }
+//        } else {
+//            mFacebookEdit.hide(true);
+//        }
+        if (mCheckFacebook.isChecked()) {
             Profile profile = Profile.getCurrentProfile();
             if (profile != null) {
-                mFacebookEdit.show(true);
+                Uri uri = Uri.fromFile(mVideoFile);
+                if (ShareDialog.canShow(ShareVideoContent.class)) {
+                    ShareVideo video = new ShareVideo.Builder()
+                            .setLocalUrl(uri)
+                            .build();
+                    ShareVideoContent content = new ShareVideoContent.Builder()
+                            .setVideo(video)
+                            .build();
+                    shareDialog.show(content);
+                } else {
+                    // ...sharing failed, handle error
+                    Toast.makeText(this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+                }
             } else {
                 mFacebookLoginButton.performClick();
             }
-        } else {
-            mFacebookEdit.hide(true);
         }
     }
 
     @OnClick(R.id.check_instagram)
     public void instagram() {
-        Uri uri = Uri.fromFile(mVideoFile);
-        Intent share = new Intent(Intent.ACTION_SEND);
-        // Set the MIME type
-        share.setType("video/*");
-        share.putExtra(Intent.EXTRA_STREAM, uri);
-        share.setPackage("com.instagram.android");
-        startActivity(Intent.createChooser(share, "Share to"));
+        if (mCheckInstagram.isChecked()) {
+            Uri uri = Uri.fromFile(mVideoFile);
+            Intent share = new Intent(Intent.ACTION_SEND);
+            // Set the MIME type
+            share.setType("video/*");
+            share.putExtra(Intent.EXTRA_STREAM, uri);
+            share.setPackage("com.instagram.android");
+            startActivity(Intent.createChooser(share, "Share to"));
+        }
     }
 
     private String mRest_id;
@@ -218,7 +243,6 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
     private File mVideoFile;
 
     private CallbackManager callbackManager;
-    private TwitterAuthClient client;
     private ShareDialog shareDialog;
 
     private static MobileAnalyticsManager analytics;
@@ -409,8 +433,19 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
         mFacebookLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                mFacebookEdit.show(true);
-                mCheckFacebook.setChecked(true);
+                Uri uri = Uri.fromFile(mVideoFile);
+                if (ShareDialog.canShow(ShareVideoContent.class)) {
+                    ShareVideo video = new ShareVideo.Builder()
+                            .setLocalUrl(uri)
+                            .build();
+                    ShareVideoContent content = new ShareVideoContent.Builder()
+                            .setVideo(video)
+                            .build();
+                    shareDialog.show(content);
+                } else {
+                    // ...sharing failed, handle error
+                    Toast.makeText(CameraPreviewActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+                }
                 API3PostUtil.postSnsLinkAsync(CameraPreviewActivity.this, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), Const.ActivityCategory.CAMERA_PREVIEW, Const.APICategory.POST_FACEBOOK);
                 Profile profile = Profile.getCurrentProfile();
                 String profile_img = "https://graph.facebook.com/" + profile.getId() + "/picture";
@@ -420,13 +455,13 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
 
             @Override
             public void onCancel() {
-                mFacebookEdit.hide(true);
+                //mFacebookEdit.hide(true);
                 mCheckFacebook.setChecked(false);
             }
 
             @Override
             public void onError(FacebookException e) {
-                mFacebookEdit.hide(true);
+                //mFacebookEdit.hide(true);
                 mCheckFacebook.setChecked(false);
                 Toast.makeText(CameraPreviewActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
             }

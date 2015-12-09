@@ -14,7 +14,6 @@ import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.domain.model.PostData;
-import com.inase.android.gocci.ui.view.SquareImageView;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -176,11 +175,11 @@ public class StreamMyProfAdapter extends RecyclerView.Adapter<Const.StreamViewHo
                                     mCallback.onFacebookShare(user.getMovie());
                                     break;
                                 case R.id.twitter_share:
-                                    mCallback.onTwitterShare(holder.mVideoThumbnail, user.getRestname());
+                                    mCallback.onTwitterShare(user.getMovie(), user.getRestname());
                                     break;
                                 case R.id.other_share:
                                     Toast.makeText(mContext, mContext.getString(R.string.preparing_share), Toast.LENGTH_LONG).show();
-                                    mCallback.onInstaShare(user.getMovie(), user.getRestname());
+                                    mCallback.onInstaShare(user.getMovie());
                                     break;
                                 case R.id.close:
                                     dialog.dismiss();
@@ -215,9 +214,9 @@ public class StreamMyProfAdapter extends RecyclerView.Adapter<Const.StreamViewHo
 
         void onFacebookShare(String share);
 
-        void onTwitterShare(SquareImageView view, String rest_name);
+        void onTwitterShare(String share, String rest_name);
 
-        void onInstaShare(String share, String rest_name);
+        void onInstaShare(String share);
 
         void onStreamHashHolder(Const.StreamViewHolder holder, String post_id);
 

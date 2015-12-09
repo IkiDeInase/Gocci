@@ -35,7 +35,6 @@ import com.inase.android.gocci.ui.activity.CommentActivity;
 import com.inase.android.gocci.ui.activity.MyprofActivity;
 import com.inase.android.gocci.ui.activity.TenpoActivity;
 import com.inase.android.gocci.ui.adapter.StreamMyProfAdapter;
-import com.inase.android.gocci.ui.view.SquareImageView;
 import com.inase.android.gocci.utils.SavedData;
 import com.inase.android.gocci.utils.Util;
 import com.inase.android.gocci.utils.video.HlsRendererBuilder;
@@ -497,19 +496,19 @@ public class StreamMyProfFragment extends Fragment implements AppBarLayout.OnOff
     @Override
     public void onFacebookShare(String share) {
         MyprofActivity activity = (MyprofActivity) getActivity();
-        activity.shareVideoPost(25, null, share, null);
+        activity.shareVideoPost(25, share, null);
     }
 
     @Override
-    public void onTwitterShare(SquareImageView view, String rest_name) {
+    public void onTwitterShare(String share, String rest_name) {
         MyprofActivity activity = (MyprofActivity) getActivity();
-        activity.shareVideoPost(26, view, null, rest_name);
+        activity.shareVideoPost(26, share, rest_name);
     }
 
     @Override
-    public void onInstaShare(String share, String rest_name) {
+    public void onInstaShare(String share) {
         MyprofActivity activity = (MyprofActivity) getActivity();
-        activity.shareVideoPost(27, null, share, rest_name);
+        activity.shareVideoPost(27, share, null);
     }
 
 

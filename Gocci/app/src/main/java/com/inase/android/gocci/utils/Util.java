@@ -26,7 +26,6 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
-import com.facebook.AccessToken;
 import com.facebook.share.model.ShareVideo;
 import com.facebook.share.model.ShareVideoContent;
 import com.facebook.share.widget.ShareDialog;
@@ -34,20 +33,14 @@ import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3PostUtil;
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.RequestParams;
-import com.loopj.android.http.TextHttpResponseHandler;
-import com.twitter.sdk.android.tweetcomposer.TweetComposer;
+import com.twitter.sdk.android.core.TwitterAuthToken;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
 import java.util.Locale;
-
-import cz.msebera.android.httpclient.Header;
 
 /**
  * 便利メソッド群クラス
@@ -281,32 +274,32 @@ public class Util {
                 }).show();
     }
 
-    public static void facebooSharing(final Context context, final File movie, String description) {
-        RequestParams param = new RequestParams();
-        try {
-            param.put("access_token", AccessToken.getCurrentAccessToken().getToken());
-            param.put("source", movie, "application/octet-stream", "gocci.mp4");
-            param.put("description", description);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        new AsyncHttpClient().post(context, "https://graph-video.facebook.com/me/videos", param, new TextHttpResponseHandler() {
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, String responseString) {
-
-            }
-        });
-    }
+//    public static void facebooSharing(final Context context, final File movie, String description) {
+//        RequestParams param = new RequestParams();
+//        try {
+//            param.put("access_token", AccessToken.getCurrentAccessToken().getToken());
+//            param.put("source", movie, "application/octet-stream", "gocci.mp4");
+//            param.put("description", description);
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//
+//        new AsyncHttpClient().post(context, "https://graph-video.facebook.com/me/videos", param, new TextHttpResponseHandler() {
+//            @Override
+//            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+//
+//            }
+//
+//            @Override
+//            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+//
+//            }
+//        });
+//    }
 
     public static void facebookVideoShare(final Context context, final ShareDialog dialog, String key) {
         final File file = new File(Environment.getExternalStorageDirectory().toString() + "/" + key);
-        TransferObserver transferObserver = Application_Gocci.getTransfer(context).download(Const.GET_MOVIE_BUCKET_NAME, key, file);
+        TransferObserver transferObserver = Application_Gocci.getTransfer(context).download(Const.GET_MOVIE_BUCKET_NAME, "mp4/" + key + ".mp4", file);
         transferObserver.setTransferListener(new TransferListener() {
             @Override
             public void onStateChanged(int id, TransferState state) {
@@ -339,23 +332,32 @@ public class Util {
         });
     }
 
-    public static void twitterShare(Context context, ImageView thumbnail, String restname) {
-        Uri bmpUri = Util.getLocalBitmapUri(thumbnail);
-        if (bmpUri != null) {
-            TweetComposer.Builder builder = new TweetComposer.Builder(context)
-                    .text("#" + restname.replaceAll("\\s+", "") + " #Gocci #FoodPorn")
-                    .image(bmpUri);
+    public static void twitterShare(final Context context, final String message, String key, final TwitterAuthToken authToken) {
+        final File file = new File(Environment.getExternalStorageDirectory().toString() + "/" + key);
+        TransferObserver transferObserver = Application_Gocci.getTransfer(context).download(Const.GET_MOVIE_BUCKET_NAME, "mp4/" + key + ".mp4", file);
+        transferObserver.setTransferListener(new TransferListener() {
+            @Override
+            public void onStateChanged(int id, TransferState state) {
+                if (state == TransferState.COMPLETED) {
+                    TwitterUtil.performShare(context, authToken.token, authToken.secret, file, message);
+                }
+            }
 
-            builder.show();
-        } else {
-            // ...sharing failed, handle error
-            Toast.makeText(context, context.getString(R.string.error_share), Toast.LENGTH_SHORT).show();
-        }
+            @Override
+            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+
+            }
+
+            @Override
+            public void onError(int id, Exception ex) {
+                Toast.makeText(context, context.getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
-    public static void instaVideoShare(final Context context, final String restname, String key) {
+    public static void instaVideoShare(final Context context, String key) {
         final File file = new File(Environment.getExternalStorageDirectory().toString() + "/" + key);
-        TransferObserver transferObserver = Application_Gocci.getTransfer(context).download(Const.GET_MOVIE_BUCKET_NAME, key, file);
+        TransferObserver transferObserver = Application_Gocci.getTransfer(context).download(Const.GET_MOVIE_BUCKET_NAME, "mp4/" + key + ".mp4", file);
         transferObserver.setTransferListener(new TransferListener() {
             @Override
             public void onStateChanged(int id, TransferState state) {
@@ -368,7 +370,6 @@ public class Util {
                     // Add the URI and the caption to the Intent.
                     share.putExtra(Intent.EXTRA_STREAM, uri);
                     share.setPackage("com.instagram.android");
-                    share.putExtra(Intent.EXTRA_TEXT, "#" + restname + " #Gocci #FoodPorn");
                     // Broadcast the Intent.
                     context.startActivity(Intent.createChooser(share, "Share to"));
                 }
