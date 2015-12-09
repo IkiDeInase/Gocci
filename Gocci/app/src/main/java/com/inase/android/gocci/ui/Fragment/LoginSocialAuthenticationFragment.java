@@ -29,6 +29,7 @@ import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.PostCallbackEvent;
 import com.inase.android.gocci.event.RetryApiEvent;
 import com.inase.android.gocci.ui.activity.TimelineActivity;
+import com.inase.android.gocci.ui.activity.TutorialActivity;
 import com.inase.android.gocci.ui.view.GocciTwitterLoginButton;
 import com.inase.android.gocci.utils.SavedData;
 import com.inase.android.gocci.utils.Util;
@@ -75,6 +76,8 @@ public class LoginSocialAuthenticationFragment extends Fragment {
                     }).show();
         } else {
             Toast.makeText(getActivity(), getString(R.string.please_input_username), Toast.LENGTH_SHORT).show();
+            TutorialActivity activity = (TutorialActivity)getActivity();
+            activity.backSlide();
         }
     }
 
@@ -98,6 +101,8 @@ public class LoginSocialAuthenticationFragment extends Fragment {
                     }).show();
         } else {
             Toast.makeText(getActivity(), getString(R.string.please_input_username), Toast.LENGTH_SHORT).show();
+            TutorialActivity activity = (TutorialActivity)getActivity();
+            activity.backSlide();
         }
     }
 
@@ -180,6 +185,8 @@ public class LoginSocialAuthenticationFragment extends Fragment {
                             .show();
                 } else {
                     Toast.makeText(getActivity(), getString(R.string.please_input_username), Toast.LENGTH_SHORT).show();
+                    TutorialActivity activity = (TutorialActivity)getActivity();
+                    activity.backSlide();
                 }
             }
         });
@@ -191,6 +198,8 @@ public class LoginSocialAuthenticationFragment extends Fragment {
                     goTimeline();
                 } else {
                     Toast.makeText(getActivity(), getString(R.string.please_input_username), Toast.LENGTH_SHORT).show();
+                    TutorialActivity activity = (TutorialActivity)getActivity();
+                    activity.backSlide();
                 }
             }
         });

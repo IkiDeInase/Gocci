@@ -168,6 +168,10 @@ public class TutorialActivity extends AppCompatActivity {
         }
     }
 
+    public void backSlide() {
+        mPager.setCurrentItem(3, true);
+    }
+
     @Override
     public void onBackPressed() {
         if (mPager.getCurrentItem() == 0) {
