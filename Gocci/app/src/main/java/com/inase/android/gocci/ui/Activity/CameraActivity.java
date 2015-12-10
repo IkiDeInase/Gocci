@@ -47,8 +47,13 @@ public class CameraActivity extends AppCompatActivity {
 
         if (savedInstanceState == null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                getFragmentManager().beginTransaction()
-                        .add(R.id.container, new CameraUp18Fragment()).commit();
+                if (Build.MODEL.equals("Nexus 4")) {
+                    getFragmentManager().beginTransaction()
+                            .add(R.id.container, new CameraDown18Fragment()).commit();
+                } else {
+                    getFragmentManager().beginTransaction()
+                            .add(R.id.container, new CameraUp18Fragment()).commit();
+                }
             } else {
                 getFragmentManager().beginTransaction()
                         .add(R.id.container, new CameraDown18Fragment()).commit();
