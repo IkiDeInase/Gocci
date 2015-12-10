@@ -33,7 +33,7 @@ public class LoginRepositoryImpl implements LoginRepository {
 
     @Override
     public void userLogin(final Const.APICategory api, final String url, final LoginRepositoryCallback cb) {
-        API3.Util.GlobalCode globalCode = mAPI3.check_global_error();
+        API3.Util.GlobalCode globalCode = mAPI3.CheckGlobalCode();
         if (globalCode == API3.Util.GlobalCode.SUCCESS) {
             try {
                 Application_Gocci.getJsonSync(url, new JsonHttpResponseHandler() {
@@ -43,23 +43,22 @@ public class LoginRepositoryImpl implements LoginRepository {
                             case AUTH_LOGIN:
                             case AUTH_FACEBOOK_LOGIN:
                             case AUTH_TWITTER_LOGIN:
-                                mAPI3.auth_login_response(response, new API3.LoginResponseCallback() {
+                                mAPI3.AuthLoginResponse(response, new API3.PayloadResponseCallback() {
                                     @Override
-                                    public void onSuccess() {
-//                                        JSONObject payload = jsonObject.getJSONObject("payload");
-//                                        try {
-//                                            String user_id = payload.getString("user_id");
-//                                            String username = payload.getString("username");
-//                                            String profile_img = payload.getString("profile_img");
-//                                            String badge_num = payload.getString("badge_num");
-//                                            String cognito_token = payload.getString("cognito_token");
-//                                            Application_Gocci.GuestInit(Application_Gocci.getInstance().getApplicationContext(), SavedData.getIdentityId(Application_Gocci.getInstance().getApplicationContext()), cognito_token, user_id);
-//                                            SavedData.setWelcome(Application_Gocci.getInstance().getApplicationContext(), username, profile_img, user_id, Integer.parseInt(badge_num));
-//
-//                                        } catch (JSONException e) {
-//                                            e.printStackTrace();
-//                                        }
-                                        cb.onLogin(api);
+                                    public void onSuccess(JSONObject jsonObject) {
+                                        try {
+                                            JSONObject payload = jsonObject.getJSONObject("payload");
+                                            String user_id = payload.getString("user_id");
+                                            String username = payload.getString("username");
+                                            String profile_img = payload.getString("profile_img");
+                                            String badge_num = payload.getString("badge_num");
+                                            String cognito_token = payload.getString("cognito_token");
+                                            Application_Gocci.GuestInit(Application_Gocci.getInstance().getApplicationContext(), SavedData.getIdentityId(Application_Gocci.getInstance().getApplicationContext()), cognito_token, user_id);
+                                            SavedData.setWelcome(Application_Gocci.getInstance().getApplicationContext(), username, profile_img, user_id, Integer.parseInt(badge_num));
+                                            cb.onLogin(api);
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
                                     }
 
                                     @Override
@@ -74,13 +73,17 @@ public class LoginRepositoryImpl implements LoginRepository {
                                 });
                                 break;
                             case AUTH_PASS_LOGIN:
-                                mAPI3.auth_pass_login_response(response, new API3.AuthResponseCallback() {
+                                mAPI3.AuthPasswordResponse(response, new API3.PayloadResponseCallback() {
                                     @Override
-                                    public void onSuccess(String identity_id) {
-//                                        JSONObject payload = jsonObject.getJSONObject("payload");
-//                                        String identity_id = payload.getString("identity_id");
-                                        SavedData.setIdentityId(Application_Gocci.getInstance().getApplicationContext(), identity_id);
-                                        userLogin(Const.APICategory.AUTH_LOGIN, API3.Util.getAuthLoginAPI(identity_id), cb);
+                                    public void onSuccess(JSONObject jsonObject) {
+                                        try {
+                                            JSONObject payload = jsonObject.getJSONObject("payload");
+                                            String identity_id = payload.getString("identity_id");
+                                            SavedData.setIdentityId(Application_Gocci.getInstance().getApplicationContext(), identity_id);
+                                            userLogin(Const.APICategory.AUTH_LOGIN, API3.Util.getAuthLoginAPI(identity_id), cb);
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
                                     }
 
                                     @Override
@@ -95,18 +98,21 @@ public class LoginRepositoryImpl implements LoginRepository {
                                 });
                                 break;
                             case AUTH_SIGNUP:
-                                mAPI3.auth_signup_response(response, new API3.AuthResponseCallback() {
+                                mAPI3.AuthSignupResponse(response, new API3.PayloadResponseCallback() {
                                     @Override
-                                    public void onSuccess(String identity_id) {
-//                                        JSONObject payload = jsonObject.getJSONObject("payload");
-//                                        String identity_id = payload.getString("identity_id");
-                                        SavedData.setIdentityId(Application_Gocci.getInstance().getApplicationContext(), identity_id);
-                                        userLogin(Const.APICategory.AUTH_LOGIN, API3.Util.getAuthLoginAPI(identity_id), cb);
+                                    public void onSuccess(JSONObject jsonObject) {
+                                        try {
+                                            JSONObject payload = jsonObject.getJSONObject("payload");
+                                            String identity_id = payload.getString("identity_id");
+                                            SavedData.setIdentityId(Application_Gocci.getInstance().getApplicationContext(), identity_id);
+                                            userLogin(Const.APICategory.AUTH_LOGIN, API3.Util.getAuthLoginAPI(identity_id), cb);
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
                                     }
 
                                     @Override
                                     public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                        //グローバル　なんとかしないと！
                                         cb.onNotLoginCausedByGlobalError(api, globalCode);
                                     }
 

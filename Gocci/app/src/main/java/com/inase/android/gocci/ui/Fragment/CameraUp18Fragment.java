@@ -125,8 +125,8 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
     private String mMemo = "";
     private boolean mIsnewRestname = false;
 
-    private double latitude;
-    private double longitude;
+    private String latitude = "";
+    private String longitude = "";
 
     public static final int MAX_TIME = 7000;
     private boolean isMax = false;
@@ -425,13 +425,13 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
     }
 
     private void getLocation(Location location) {
-        latitude = location.getLatitude();
-        longitude = location.getLongitude();
-        API3.Util.GetNearLocalCode localCode = API3.Impl.getRepository().get_near_parameter_regex(longitude, latitude);
+        latitude = String.valueOf(location.getLatitude());
+        longitude = String.valueOf(location.getLongitude());
+        API3.Util.GetNearLocalCode localCode = API3.Impl.getRepository().GetNearParameterRegex(latitude, longitude);
         if (localCode == null) {
-            mPresenter.getNearData(Const.APICategory.GET_NEAR_FIRST, API3.Util.getGetNearAPI(longitude, latitude));
+            mPresenter.getNearData(Const.APICategory.GET_NEAR_FIRST, API3.Util.getGetNearAPI(latitude, longitude));
         } else {
-            Toast.makeText(getActivity(), API3.Util.getNearLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), API3.Util.GetNearLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
         }
     }
 

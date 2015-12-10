@@ -7,6 +7,7 @@ import com.inase.android.gocci.domain.model.HeaderData;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.SocketTimeoutException;
@@ -34,34 +35,32 @@ public class NoticeRepositoryImpl implements NoticeRepository {
 
     @Override
     public void getNotice(final Const.APICategory api, String url, final NoticeRepositoryCallback cb) {
-        API3.Util.GlobalCode globalCode = mAPI3.check_global_error();
+        API3.Util.GlobalCode globalCode = mAPI3.CheckGlobalCode();
         if (globalCode == API3.Util.GlobalCode.SUCCESS) {
             try {
                 Application_Gocci.getJsonSync(url, new JsonHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        mAPI3.get_notice_response(response, new API3.GetNoticeResponseCallback() {
+                        mAPI3.GetNoticeResponse(response, new API3.PayloadResponseCallback() {
 
                             @Override
-                            public void onSuccess(ArrayList<HeaderData> list) {
-//                                final ArrayList<HeaderData> mListData = new ArrayList<>();
-//
-//                                JSONArray payload = jsonObject.getJSONArray("payload");
-//                                if (payload.length() != 0) {
-//                                    for (int i = 0; i < payload.length(); i++) {
-//                                        JSONObject listData = payload.getJSONObject(i);
-//                                        mListData.add(HeaderData.createNoticeHeaderData(listData));
-//                                    }
-//                                    cb.onSuccess(mListData);
-//                                } else {
-//                                    cb.onEmpty();
-//                                }
-                                cb.onSuccess(api, list);
-                            }
+                            public void onSuccess(JSONObject jsonObject) {
+                                try {
+                                    final ArrayList<HeaderData> mListData = new ArrayList<>();
 
-                            @Override
-                            public void onEmpty() {
-                                cb.onEmpty(api);
+                                    JSONArray payload = jsonObject.getJSONArray("payload");
+                                    if (payload.length() != 0) {
+                                        for (int i = 0; i < payload.length(); i++) {
+                                            JSONObject listData = payload.getJSONObject(i);
+                                            mListData.add(HeaderData.createNoticeHeaderData(listData));
+                                        }
+                                        cb.onSuccess(api, mListData);
+                                    } else {
+                                        cb.onEmpty(api);
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
                             }
 
                             @Override

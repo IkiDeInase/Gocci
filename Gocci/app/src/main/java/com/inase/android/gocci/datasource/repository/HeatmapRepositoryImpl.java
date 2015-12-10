@@ -7,6 +7,7 @@ import com.inase.android.gocci.utils.map.HeatmapLog;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.SocketTimeoutException;
@@ -34,28 +35,32 @@ public class HeatmapRepositoryImpl implements HeatmapRepository {
 
     @Override
     public void getHeatmap(final Const.APICategory api, final String url, final HeatmapRepositoryCallback cb) {
-        API3.Util.GlobalCode globalCode = mAPI3.check_global_error();
+        API3.Util.GlobalCode globalCode = mAPI3.CheckGlobalCode();
         if (globalCode == API3.Util.GlobalCode.SUCCESS) {
             try {
                 Application_Gocci.getJsonSync(url, new JsonHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        mAPI3.get_heatmap_response(response, new API3.GetHeatmapResponseCallback() {
+                        mAPI3.GetHeatmapResponse(response, new API3.PayloadResponseCallback() {
 
                             @Override
-                            public void onSuccess(ArrayList<HeatmapLog> list) {
-//                                final ArrayList<HeatmapLog> mListData = new ArrayList<>();
-//
-//                                JSONArray payload = jsonObject.getJSONArray("payload");
-//                                for (int i = 0; i < payload.length(); i++) {
-//                                    JSONObject listData = payload.getJSONObject(i);
-//                                    String rest_id = listData.getString("post_rest_id");
-//                                    String restname = listData.getString("restname");
-//                                    double lat = listData.getDouble("lat");
-//                                    double lon = listData.getDouble("lon");
-//                                    mListData.add(new HeatmapLog(rest_id, restname, lat, lon));
-//                                }
-                                cb.onSuccess(api, list);
+                            public void onSuccess(JSONObject jsonObject) {
+                                try {
+                                    final ArrayList<HeatmapLog> mListData = new ArrayList<>();
+
+                                    JSONArray payload = jsonObject.getJSONArray("payload");
+                                    for (int i = 0; i < payload.length(); i++) {
+                                        JSONObject listData = payload.getJSONObject(i);
+                                        String rest_id = listData.getString("post_rest_id");
+                                        String restname = listData.getString("restname");
+                                        double lat = listData.getDouble("lat");
+                                        double lon = listData.getDouble("lon");
+                                        mListData.add(new HeatmapLog(rest_id, restname, lat, lon));
+                                    }
+                                    cb.onSuccess(api, mListData);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
                             }
 
                             @Override

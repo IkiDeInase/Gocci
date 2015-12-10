@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
 import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * 便利メソッド群クラス
@@ -207,8 +208,8 @@ public class Util {
         return file;
     }
 
-    public static final String getDateTimeString() {
-        final GregorianCalendar now = new GregorianCalendar();
+    public static String getDateTimeString() {
+        final GregorianCalendar now = new GregorianCalendar(TimeZone.getTimeZone("UTC"), Locale.US);
         final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss", Locale.US);
         return dateTimeFormat.format(now.getTime());
     }

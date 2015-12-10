@@ -1,315 +1,158 @@
 package com.inase.android.gocci.datasource.api;
 
 import com.inase.android.gocci.Application_Gocci;
-import com.inase.android.gocci.domain.model.HeaderData;
-import com.inase.android.gocci.domain.model.ListGetData;
-import com.inase.android.gocci.domain.model.PostData;
-import com.inase.android.gocci.domain.model.TwoCellData;
-import com.inase.android.gocci.utils.SavedData;
-import com.inase.android.gocci.utils.map.HeatmapLog;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * Created by kinagafuji on 15/11/06.
- */
 public interface API3 {
-    Util.AuthLoginLocalCode auth_login_parameter_regex(String identity_id);
+    Util.GlobalCode CheckGlobalCode();
 
-    Util.AuthLoginLocalCode auth_login_response_regex(String user_id, String username, String profile_img, String badge_num, String cognito_token);
+    Util.AuthLoginLocalCode AuthLoginParameterRegex(String identity_id);
 
-    Util.AuthSignupLocalCode auth_signup_parameter_regex(String username);
+    void AuthLoginResponse(JSONObject jsonObject, PayloadResponseCallback cb);
 
-    Util.AuthSignupLocalCode auth_signup_response_regex(String identity_id);
+    Util.AuthSignupLocalCode AuthSignupParameterRegex(String username);
 
-    Util.AuthPassLoginLocalCode auth_pass_login_parameter_regex(String username, String password);
+    void AuthSignupResponse(JSONObject jsonObject, PayloadResponseCallback cb);
 
-    Util.AuthPassLoginLocalCode auth_pass_login_response_regex(String identity_id);
+    Util.AuthPasswordLocalCode AuthPasswordParameterRegex(String username, String password);
 
-    Util.GetTimelineLocalCode get_nearline_parameter_regex(double lon, double lat);
+    void AuthPasswordResponse(JSONObject jsonObject, PayloadResponseCallback cb);
 
-    Util.GetTimelineLocalCode get_nearline_response_regex();
+    Util.SetFeedbackLocalCode SetFeedbackParameterRegex(String feedback);
 
-    Util.GetTimelineLocalCode get_followline_parameter_regex();
+    void SetFeedbackResponse(JSONObject jsonObject, PayloadResponseCallback cb);
 
-    Util.GetTimelineLocalCode get_followline_response_regex();
+    Util.SetPasswordLocalCode SetPasswordParameterRegex(String password);
 
-    Util.GetTimelineLocalCode get_timeline_parameter_regex();
+    void SetPasswordResponse(JSONObject jsonObject, PayloadResponseCallback cb);
 
-    Util.GetTimelineLocalCode get_timeline_response_regex();
+    Util.SetUsernameLocalCode SetUsernameParameterRegex(String username);
 
-    Util.GetUserLocalCode get_user_parameter_regex(String user_id);
+    void SetUsernameResponse(JSONObject jsonObject, PayloadResponseCallback cb);
 
-    Util.GetUserLocalCode get_user_response_regex();
+    Util.SetCommentLocalCode SetCommentParameterRegex(String post_id, String comment, String re_user_id);
 
-    Util.GetRestLocalCode get_rest_parameter_regex(String rest_id);
+    void SetCommentResponse(JSONObject jsonObject, PayloadResponseCallback cb);
 
-    Util.GetRestLocalCode get_rest_response_regex();
+    Util.SetSns_LinkLocalCode SetSns_LinkParameterRegex(String provider, String sns_token);
 
-    Util.GetCommentLocalCode get_comment_parameter_regex(String post_id);
+    void SetSns_LinkResponse(JSONObject jsonObject, PayloadResponseCallback cb);
 
-    Util.GetCommentLocalCode get_comment_response_regex();
+    Util.SetPostLocalCode SetPostParameterRegex(String rest_id, String movie_name, String category_id, String value, String memo, String cheer_flag);
 
-    Util.GetFollowLocalCode get_follow_parameter_regex(String user_id);
+    void SetPostResponse(JSONObject jsonObject, PayloadResponseCallback cb);
 
-    Util.GetFollowLocalCode get_follow_response_regex();
+    Util.SetFollowLocalCode SetFollowParameterRegex(String user_id);
 
-    Util.GetFollowerLocalCode get_follower_parameter_regex(String user_id);
+    void SetFollowResponse(JSONObject jsonObject, PayloadResponseCallback cb);
 
-    Util.GetFollowerLocalCode get_follower_response_regex();
+    Util.SetGochiLocalCode SetGochiParameterRegex(String post_id);
 
-    Util.GetWantLocalCode get_want_parameter_regex(String user_id);
+    void SetGochiResponse(JSONObject jsonObject, PayloadResponseCallback cb);
 
-    Util.GetWantLocalCode get_want_response_regex();
+    Util.SetDeviceLocalCode SetDeviceParameterRegex(String device_token, String os, String ver, String model);
 
-    Util.GetUserCheerLocalCode get_user_cheer_parameter_regex(String user_id);
+    void SetDeviceResponse(JSONObject jsonObject, PayloadResponseCallback cb);
 
-    Util.GetUserCheerLocalCode get_user_cheer_response_regex();
+    Util.SetWantLocalCode SetWantParameterRegex(String rest_id);
 
-    Util.GetRestCheerLocalCode get_rest_cheer_parameter_regex(String rest_id);
+    void SetWantResponse(JSONObject jsonObject, PayloadResponseCallback cb);
 
-    Util.GetRestCheerLocalCode get_rest_cheer_response_regex();
+    Util.SetRestLocalCode SetRestParameterRegex(String restname, String lat, String lon);
 
-    Util.GetNoticeLocalCode get_notice_parameter_regex();
+    void SetRestResponse(JSONObject jsonObject, PayloadResponseCallback cb);
 
-    Util.GetNoticeLocalCode get_notice_response_regex();
+    Util.SetBlockLocalCode SetBlockParameterRegex(String post_id);
 
-    Util.GetNearLocalCode get_near_parameter_regex(double lon, double lat);
+    void SetBlockResponse(JSONObject jsonObject, PayloadResponseCallback cb);
 
-    Util.GetNearLocalCode get_near_response_regex();
+    Util.SetProfile_ImgLocalCode SetProfile_ImgParameterRegex(String profile_img);
 
-    Util.GetHeatmapLocalCode get_heatmap_parameter_regex();
+    void SetProfile_ImgResponse(JSONObject jsonObject, PayloadResponseCallback cb);
 
-    Util.GetHeatmapLocalCode get_heatmap_response_regex();
+    Util.GetHeatmapLocalCode GetHeatmapParameterRegex();
 
-    Util.PostRegisterDeviceTokenLocalCode post_register_device_token_parameter_regex(String device_token, String os, String ver, String model);
+    void GetHeatmapResponse(JSONObject jsonObject, PayloadResponseCallback cb);
 
-    Util.PostRegisterDeviceTokenLocalCode post_register_device_token_response_regex();
+    Util.GetFollowerLocalCode GetFollowerParameterRegex(String user_id);
 
-    Util.PostUnregisterDeviceTokenLocalCode post_unregister_device_token_parameter_regex(String device_token);
+    void GetFollowerResponse(JSONObject jsonObject, PayloadResponseCallback cb);
 
-    Util.PostUnregisterDeviceTokenLocalCode post_unregister_device_token_response_regex();
+    Util.GetNoticeLocalCode GetNoticeParameterRegex();
 
-    Util.PostSnsLinkLocalCode post_sns_link_parameter_regex(String provider, String token);
+    void GetNoticeResponse(JSONObject jsonObject, PayloadResponseCallback cb);
 
-    Util.PostSnsLinkLocalCode post_sns_link_response_regex();
+    Util.GetTimelineLocalCode GetTimelineParameterRegex();
 
-    Util.PostSnsUnlinkLocalCode post_sns_unlink_parameter_regex(String provider, String token);
+    void GetTimelineResponse(JSONObject jsonObject, PayloadResponseCallback cb);
 
-    Util.PostSnsUnlinkLocalCode post_sns_unlink_response_regex();
+    Util.GetCommentLocalCode GetCommentParameterRegex(String post_id);
 
-    Util.PostGochiLocalCode post_gochi_parameter_regex(String post_id);
+    void GetCommentResponse(JSONObject jsonObject, PayloadResponseCallback cb);
 
-    Util.PostGochiLocalCode post_gochi_response_regex();
+    Util.GetUser_CheerLocalCode GetUser_CheerParameterRegex(String user_id);
 
-    Util.PostDeleteLocalCode post_delete_parameter_regex(String post_id);
+    void GetUser_CheerResponse(JSONObject jsonObject, PayloadResponseCallback cb);
 
-    Util.PostDeleteLocalCode post_delete_response_regex();
+    Util.GetUserLocalCode GetUserParameterRegex(String user_id);
 
-    Util.PostBlockLocalCode post_block_parameter_regex(String post_id);
+    void GetUserResponse(JSONObject jsonObject, PayloadResponseCallback cb);
 
-    Util.PostBlockLocalCode post_block_response_regex();
+    Util.GetNearLocalCode GetNearParameterRegex(String lat, String lon);
 
-    Util.PostFollowLocalCode post_follow_parameter_regex(String user_id);
+    void GetNearResponse(JSONObject jsonObject, PayloadResponseCallback cb);
 
-    Util.PostFollowLocalCode post_follow_response_regex();
+    Util.GetFollowLocalCode GetFollowParameterRegex(String user_id);
 
-    Util.PostUnfollowLocalCode post_unFollow_parameter_regex(String user_id);
+    void GetFollowResponse(JSONObject jsonObject, PayloadResponseCallback cb);
 
-    Util.PostUnfollowLocalCode post_unFollow_response_regex();
+    Util.GetRest_CheerLocalCode GetRest_CheerParameterRegex(String rest_id);
 
-    Util.PostFeedbackLocalCode post_feedback_parameter_regex(String feedback);
+    void GetRest_CheerResponse(JSONObject jsonObject, PayloadResponseCallback cb);
 
-    Util.PostFeedbackLocalCode post_feedback_response_regex();
+    Util.GetFollowlineLocalCode GetFollowlineParameterRegex();
 
-    Util.PostPasswordLocalCode post_password_parameter_regex(String password);
+    void GetFollowlineResponse(JSONObject jsonObject, PayloadResponseCallback cb);
 
-    Util.PostPasswordLocalCode post_password_response_regex();
+    Util.GetWantLocalCode GetWantParameterRegex(String user_id);
 
-    Util.PostCommentLocalCode post_comment_parameter_regex(String post_id, String comment, String re_user_id);
+    void GetWantResponse(JSONObject jsonObject, PayloadResponseCallback cb);
 
-    Util.PostCommentLocalCode post_comment_response_regex();
+    Util.GetRestLocalCode GetRestParameterRegex(String rest_id);
 
-    Util.PostPostLocalCode post_post_parameter_regex(String rest_id, String movie_name, int category_id, String value, String memo, int cheer_flag);
+    void GetRestResponse(JSONObject jsonObject, PayloadResponseCallback cb);
 
-    Util.PostPostLocalCode post_post_response_regex();
+    Util.GetNearlineLocalCode GetNearlineParameterRegex(String lat, String lon);
 
-    Util.PostRestAddLocalCode post_restadd_parameter_regex(String restname, double lon, double lat);
+    void GetNearlineResponse(JSONObject jsonObject, PayloadResponseCallback cb);
 
-    Util.PostRestAddLocalCode post_restadd_response_regex();
+    Util.UnsetSns_LinkLocalCode UnsetSns_LinkParameterRegex(String provider, String sns_token);
 
-    Util.PostUsernameLocalCode post_username_parameter_regex(String username);
+    void UnsetSns_LinkResponse(JSONObject jsonObject, PayloadResponseCallback cb);
 
-    Util.PostUsernameLocalCode post_username_response_regex(String username);
+    Util.UnsetFollowLocalCode UnsetFollowParameterRegex(String user_id);
 
-    Util.PostProfileImgLocalCode post_profileImg_parameter_regex();
+    void UnsetFollowResponse(JSONObject jsonObject, PayloadResponseCallback cb);
 
-    Util.PostProfileImgLocalCode post_profileImg_response_regex(String profile_img);
+    Util.UnsetPostLocalCode UnsetPostParameterRegex(String post_id);
 
-    Util.GlobalCode check_global_error();
+    void UnsetPostResponse(JSONObject jsonObject, PayloadResponseCallback cb);
 
-    void auth_login_response(JSONObject jsonObject, LoginResponseCallback cb);
+    Util.UnsetDeviceLocalCode UnsetDeviceParameterRegex(String device_token);
 
-    void auth_signup_response(JSONObject jsonObject, AuthResponseCallback cb);
+    void UnsetDeviceResponse(JSONObject jsonObject, PayloadResponseCallback cb);
 
-    void auth_pass_login_response(JSONObject jsonObject, AuthResponseCallback cb);
+    Util.UnsetWantLocalCode UnsetWantParameterRegex(String rest_id);
 
-    void get_timeline_response(JSONObject jsonObject, GetPostdataResponseCallback cb);
+    void UnsetWantResponse(JSONObject jsonObject, PayloadResponseCallback cb);
 
-    void get_user_response(JSONObject jsonObject, GetUserAndRestResponseCallback cb);
-
-    void get_rest_response(JSONObject jsonObject, GetUserAndRestResponseCallback cb);
-
-    void get_comment_response(JSONObject jsonObject, GetCommentResponseCallback cb);
-
-    void get_follow_response(JSONObject jsonObject, GetListResponseCallback cb);
-
-    void get_follower_response(JSONObject jsonObject, GetListResponseCallback cb);
-
-    void get_want_response(JSONObject jsonObject, GetListResponseCallback cb);
-
-    void get_user_cheer_response(JSONObject jsonObject, GetListResponseCallback cb);
-
-    void get_rest_cheer_response(JSONObject jsonObject, GetListResponseCallback cb);
-
-    void get_notice_response(JSONObject jsonObject, GetNoticeResponseCallback cb);
-
-    void get_near_response(JSONObject jsonObject, GetNearResponseCallback cb);
-
-    void get_heatmap_response(JSONObject jsonObject, GetHeatmapResponseCallback cb);
-
-    void post_register_device_token_response(JSONObject jsonObject, PostResponseCallback cb);
-
-    void post_unregister_device_token_response(JSONObject jsonObject, PostResponseCallback cb);
-
-    void post_sns_response(JSONObject jsonObject, PostResponseCallback cb);
-
-    void post_sns_unlink_response(JSONObject jsonObject, PostResponseCallback cb);
-
-    void post_gochi_response(JSONObject jsonObject, PostResponseCallback cb);
-
-    void post_delete_response(JSONObject jsonObject, PostResponseCallback cb);
-
-    void post_block_response(JSONObject jsonObject, PostResponseCallback cb);
-
-    void post_follow_response(JSONObject jsonObject, PostResponseCallback cb);
-
-    void post_unFollow_response(JSONObject jsonObject, PostResponseCallback cb);
-
-    void post_feedback_response(JSONObject jsonObject, PostResponseCallback cb);
-
-    void post_password_response(JSONObject jsonObject, PostResponseCallback cb);
-
-    void post_comment_response(JSONObject jsonObject, PostResponseCallback cb);
-
-    void post_post_response(JSONObject jsonObject, PostResponseCallback cb);
-
-    void post_restadd_response(JSONObject jsonObject, PostRestAddResponseCallback cb);
-
-    void post_username_response(JSONObject jsonObject, PostResponseCallback cb);
-
-    void post_profileImg_response(JSONObject jsonObject, PostResponseCallback cb);
-
-    interface AuthResponseCallback {
-        void onSuccess(String identity_id);
-
-        void onGlobalError(Util.GlobalCode globalCode);
-
-        void onLocalError(String errorMessage);
-    }
-
-    interface LoginResponseCallback {
-        void onSuccess();
-
-        void onGlobalError(Util.GlobalCode globalCode);
-
-        void onLocalError(String errorMessage);
-    }
-
-    interface PostResponseCallback {
-        void onSuccess();
-
-        void onGlobalError(Util.GlobalCode globalCode);
-
-        void onLocalError(String errorMessage);
-    }
-
-    interface PostRestAddResponseCallback {
-        void onSuccess(String rest_id);
-
-        void onGlobalError(Util.GlobalCode globalCode);
-
-        void onLocalError(String errorMessage);
-    }
-
-    interface GetPostdataResponseCallback {
-        void onSuccess(ArrayList<TwoCellData> postData, ArrayList<String> post_ids);
-
-        void onEmpty();
-
-        void onGlobalError(Util.GlobalCode globalCode);
-
-        void onLocalError(String errorMessage);
-    }
-
-    interface GetUserAndRestResponseCallback {
-        void onSuccess(HeaderData headerData, ArrayList<PostData> postData, ArrayList<String> post_ids);
-
-        void onEmpty(HeaderData headerData);
-
-        void onGlobalError(Util.GlobalCode globalCode);
-
-        void onLocalError(String errorMessage);
-    }
-
-    interface GetCommentResponseCallback {
-        void onSuccess(HeaderData headerData, ArrayList<HeaderData> commentData);
-
-        void onEmpty(HeaderData headerData);
-
-        void onGlobalError(Util.GlobalCode globalCode);
-
-        void onLocalError(String errorMessage);
-    }
-
-    interface GetListResponseCallback {
-        void onSuccess(ArrayList<ListGetData> list);
-
-        void onEmpty();
-
-        void onGlobalError(Util.GlobalCode globalCode);
-
-        void onLocalError(String errorMessage);
-    }
-
-    interface GetNoticeResponseCallback {
-        void onSuccess(ArrayList<HeaderData> list);
-
-        void onEmpty();
-
-        void onGlobalError(Util.GlobalCode globalCode);
-
-        void onLocalError(String errorMessage);
-    }
-
-    interface GetHeatmapResponseCallback {
-        void onSuccess(ArrayList<HeatmapLog> list);
-
-        void onGlobalError(Util.GlobalCode globalCode);
-
-        void onLocalError(String errorMessage);
-    }
-
-    interface GetNearResponseCallback {
-        void onSuccess(String[] restnames, ArrayList<String> restIdArray, ArrayList<String> restnameArray);
-
-        void onEmpty();
+    interface PayloadResponseCallback {
+        void onSuccess(JSONObject jsonObject);
 
         void onGlobalError(Util.GlobalCode globalCode);
 
@@ -317,15 +160,16 @@ public interface API3 {
     }
 
     class Util {
-        private static final String baseurl = "http://mobile.api.gocci.me/v3";
-        private static final String testurl = "http://test.mobile.api.gocci.me/v3";
+        private static final String baseurl = "https://api.mobile.gocci.me/v3/";
+        private static final String testurl = "http://test.mobile.api.gocci.me/v3/";
 
-        public static final ConcurrentHashMap<GlobalCode, String> globalMap = new ConcurrentHashMap<>();
-        public static final ConcurrentHashMap<String, GlobalCode> globalReverseMap = new ConcurrentHashMap<>();
+        private static final ConcurrentHashMap<GlobalCode, String> GlobalCodeMap = new ConcurrentHashMap<>();
+        private static final ConcurrentHashMap<String, GlobalCode> GlobalCodeReverseMap = new ConcurrentHashMap<>();
 
         public enum GlobalCode {
             SUCCESS,
             ERROR_UNKNOWN_ERROR,
+            ERROR_PARAMETER_INVALID,
             ERROR_SESSION_EXPIRED,
             ERROR_CLIENT_OUTDATED,
             ERROR_NO_INTERNET_CONNECTION,
@@ -336,45 +180,47 @@ public interface API3 {
             ERROR_BASEFRAME_JSON_MALFORMED,
         }
 
-        public static GlobalCode globalErrorReverseLookupTable(String code) {
-            if (globalReverseMap.isEmpty()) {
-                globalReverseMap.put("SUCCESS", GlobalCode.SUCCESS);
-                globalReverseMap.put("ERROR_UNKNOWN_ERROR", GlobalCode.ERROR_UNKNOWN_ERROR);
-                globalReverseMap.put("ERROR_SESSION_EXPIRED", GlobalCode.ERROR_SESSION_EXPIRED);
-                globalReverseMap.put("ERROR_CLIENT_OUTDATED", GlobalCode.ERROR_CLIENT_OUTDATED);
-                globalReverseMap.put("ERROR_NO_INTERNET_CONNECTION", GlobalCode.ERROR_NO_INTERNET_CONNECTION);
-                globalReverseMap.put("ERROR_CONNECTION_FAILED", GlobalCode.ERROR_CONNECTION_FAILED);
-                globalReverseMap.put("ERROR_CONNECTION_TIMEOUT", GlobalCode.ERROR_CONNECTION_TIMEOUT);
-                globalReverseMap.put("ERROR_SERVER_SIDE_FAILURE", GlobalCode.ERROR_SERVER_SIDE_FAILURE);
-                globalReverseMap.put("ERROR_NO_DATA_RECIEVED", GlobalCode.ERROR_NO_DATA_RECIEVED);
-                globalReverseMap.put("ERROR_BASEFRAME_JSON_MALFORMED", GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
+        public static GlobalCode GlobalCodeReverseLookupTable(String message) {
+            if (GlobalCodeReverseMap.isEmpty()) {
+                GlobalCodeReverseMap.put("ERROR_NO_DATA_RECIEVED", GlobalCode.ERROR_NO_DATA_RECIEVED);
+                GlobalCodeReverseMap.put("ERROR_BASEFRAME_JSON_MALFORMED", GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
+                GlobalCodeReverseMap.put("ERROR_CONNECTION_TIMEOUT", GlobalCode.ERROR_CONNECTION_TIMEOUT);
+                GlobalCodeReverseMap.put("SUCCESS", GlobalCode.SUCCESS);
+                GlobalCodeReverseMap.put("ERROR_CONNECTION_FAILED", GlobalCode.ERROR_CONNECTION_FAILED);
+                GlobalCodeReverseMap.put("ERROR_SESSION_EXPIRED", GlobalCode.ERROR_SESSION_EXPIRED);
+                GlobalCodeReverseMap.put("ERROR_PARAMETER_INVALID", GlobalCode.ERROR_PARAMETER_INVALID);
+                GlobalCodeReverseMap.put("ERROR_UNKNOWN_ERROR", GlobalCode.ERROR_UNKNOWN_ERROR);
+                GlobalCodeReverseMap.put("ERROR_CLIENT_OUTDATED", GlobalCode.ERROR_CLIENT_OUTDATED);
+                GlobalCodeReverseMap.put("ERROR_NO_INTERNET_CONNECTION", GlobalCode.ERROR_NO_INTERNET_CONNECTION);
+                GlobalCodeReverseMap.put("ERROR_SERVER_SIDE_FAILURE", GlobalCode.ERROR_SERVER_SIDE_FAILURE);
             }
-            GlobalCode globalCode = null;
-            for (Map.Entry<String, GlobalCode> entry : globalReverseMap.entrySet()) {
-                if (entry.getKey().equals(code)) {
-                    globalCode = entry.getValue();
+            GlobalCode code = null;
+            for (Map.Entry<String, GlobalCode> entry : GlobalCodeReverseMap.entrySet()) {
+                if (entry.getKey().equals(message)) {
+                    code = entry.getValue();
                     break;
                 }
             }
-            return globalCode;
+            return code;
         }
 
-        public static String globalErrorMessageTable(GlobalCode globalCode) {
-            if (globalMap.isEmpty()) {
-                globalMap.put(GlobalCode.SUCCESS, "Successful API request");
-                globalMap.put(GlobalCode.ERROR_UNKNOWN_ERROR, "Unknown global error");
-                globalMap.put(GlobalCode.ERROR_SESSION_EXPIRED, "Session cookie is not valid anymore");
-                globalMap.put(GlobalCode.ERROR_CLIENT_OUTDATED, "The client version is too old for this API. Client update necessary");
-                globalMap.put(GlobalCode.ERROR_NO_INTERNET_CONNECTION, "The device appreas to be not connected to the internet");
-                globalMap.put(GlobalCode.ERROR_CONNECTION_FAILED, "Server connection failed");
-                globalMap.put(GlobalCode.ERROR_CONNECTION_TIMEOUT, "Timeout reached before request finished");
-                globalMap.put(GlobalCode.ERROR_SERVER_SIDE_FAILURE, "HTTP status differed from 200, indicationg failure on the server side");
-                globalMap.put(GlobalCode.ERROR_NO_DATA_RECIEVED, "Connection successful but no data recieved");
-                globalMap.put(GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED, "JSON response baseframe not parsable");
+        public static String GlobalCodeMessageTable(GlobalCode code) {
+            if (GlobalCodeMap.isEmpty()) {
+                GlobalCodeMap.put(GlobalCode.ERROR_NO_DATA_RECIEVED, "Connection successful but no data recieved");
+                GlobalCodeMap.put(GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED, "JSON response baseframe not parsable");
+                GlobalCodeMap.put(GlobalCode.ERROR_CONNECTION_TIMEOUT, "Timeout reached before request finished");
+                GlobalCodeMap.put(GlobalCode.SUCCESS, "Successful API request");
+                GlobalCodeMap.put(GlobalCode.ERROR_CONNECTION_FAILED, "Server connection failed");
+                GlobalCodeMap.put(GlobalCode.ERROR_SESSION_EXPIRED, "Session cookie is not valid anymore");
+                GlobalCodeMap.put(GlobalCode.ERROR_PARAMETER_INVALID, "Request parameter verification failed");
+                GlobalCodeMap.put(GlobalCode.ERROR_UNKNOWN_ERROR, "Unknown global error");
+                GlobalCodeMap.put(GlobalCode.ERROR_CLIENT_OUTDATED, "The client version is too old for this API. Client update necessary");
+                GlobalCodeMap.put(GlobalCode.ERROR_NO_INTERNET_CONNECTION, "The device appreas to be not connected to the internet");
+                GlobalCodeMap.put(GlobalCode.ERROR_SERVER_SIDE_FAILURE, "HTTP status differed from 200, indicationg failure on the server side");
             }
             String message = null;
-            for (Map.Entry<GlobalCode, String> entry : globalMap.entrySet()) {
-                if (entry.getKey().equals(globalCode)) {
+            for (Map.Entry<GlobalCode, String> entry : GlobalCodeMap.entrySet()) {
+                if (entry.getKey().equals(code)) {
                     message = entry.getValue();
                     break;
                 }
@@ -382,58 +228,12 @@ public interface API3 {
             return message;
         }
 
-        public static final ConcurrentHashMap<AuthSignupLocalCode, String> authSignupLocalMap = new ConcurrentHashMap<>();
-        public static final ConcurrentHashMap<String, AuthSignupLocalCode> authSignupLocalReverseMap = new ConcurrentHashMap<>();
+        private static final ConcurrentHashMap<AuthLoginLocalCode, String> AuthLoginLocalCodeMap = new ConcurrentHashMap<>();
+        private static final ConcurrentHashMap<String, AuthLoginLocalCode> AuthLoginLocalCodeReverseMap = new ConcurrentHashMap<>();
 
-        public enum AuthSignupLocalCode {
-            ERROR_USERNAME_ALREADY_REGISTERD,
-            ERROR_REGISTER_ID_ALREADY_REGISTERD,
-            ERROR_PARAMETER_USERNAME_MISSING,
-            ERROR_PARAMETER_USERNAME_MALFORMED,
-            ERROR_RESPONSE_IDENTITY_ID_MISSING,
-            ERROR_RESPONSE_IDENTITY_ID_MALFORMED,
+        public static String getAuthLoginAPI(String identity_id) {
+            return testurl + "/auth/login/" + "?identity_id=" + identity_id;
         }
-
-        public static AuthSignupLocalCode authSignupLocalErrorReverseLookupTable(String code) {
-            if (authSignupLocalReverseMap.isEmpty()) {
-                authSignupLocalReverseMap.put("ERROR_USERNAME_ALREADY_REGISTERD", AuthSignupLocalCode.ERROR_USERNAME_ALREADY_REGISTERD);
-                authSignupLocalReverseMap.put("ERROR_REGISTER_ID_ALREADY_REGISTERD", AuthSignupLocalCode.ERROR_REGISTER_ID_ALREADY_REGISTERD);
-                authSignupLocalReverseMap.put("ERROR_PARAMETER_USERNAME_MISSING", AuthSignupLocalCode.ERROR_PARAMETER_USERNAME_MISSING);
-                authSignupLocalReverseMap.put("ERROR_PARAMETER_USERNAME_MALFORMED", AuthSignupLocalCode.ERROR_PARAMETER_USERNAME_MALFORMED);
-                authSignupLocalReverseMap.put("ERROR_RESPONSE_IDENTITY_ID_MISSING", AuthSignupLocalCode.ERROR_RESPONSE_IDENTITY_ID_MISSING);
-                authSignupLocalReverseMap.put("ERROR_RESPONSE_IDENTITY_ID_MALFORMED", AuthSignupLocalCode.ERROR_RESPONSE_IDENTITY_ID_MALFORMED);
-            }
-            AuthSignupLocalCode localCode = null;
-            for (Map.Entry<String, AuthSignupLocalCode> entry : authSignupLocalReverseMap.entrySet()) {
-                if (entry.getKey().equals(code)) {
-                    localCode = entry.getValue();
-                    break;
-                }
-            }
-            return localCode;
-        }
-
-        public static String authSignupLocalErrorMessageTable(AuthSignupLocalCode localCode) {
-            if (authSignupLocalMap.isEmpty()) {
-                authSignupLocalMap.put(AuthSignupLocalCode.ERROR_USERNAME_ALREADY_REGISTERD, "The provided username was already registerd by another user");
-                authSignupLocalMap.put(AuthSignupLocalCode.ERROR_REGISTER_ID_ALREADY_REGISTERD, "This deviced already has an registerd account");
-                authSignupLocalMap.put(AuthSignupLocalCode.ERROR_PARAMETER_USERNAME_MISSING, "Parameter 'username' does not exist.");
-                authSignupLocalMap.put(AuthSignupLocalCode.ERROR_PARAMETER_USERNAME_MALFORMED, "Parameter 'username' is malformed. Should correspond to '^\\w{4,20}$'");
-                authSignupLocalMap.put(AuthSignupLocalCode.ERROR_RESPONSE_IDENTITY_ID_MISSING, "Response 'identity_id' was not received");
-                authSignupLocalMap.put(AuthSignupLocalCode.ERROR_RESPONSE_IDENTITY_ID_MALFORMED, "Response 'identity_id' is malformed. Should correspond to '^us-east-1:[a-f0-9]{8}(-[a-f0-9]{4}){3}-[a-f0-9]{12}$'");
-            }
-            String message = null;
-            for (Map.Entry<AuthSignupLocalCode, String> entry : authSignupLocalMap.entrySet()) {
-                if (entry.getKey().equals(localCode)) {
-                    message = entry.getValue();
-                    break;
-                }
-            }
-            return message;
-        }
-
-        public static final ConcurrentHashMap<AuthLoginLocalCode, String> authLoginLocalMap = new ConcurrentHashMap<>();
-        public static final ConcurrentHashMap<String, AuthLoginLocalCode> authLoginLocalReverseMap = new ConcurrentHashMap<>();
 
         public enum AuthLoginLocalCode {
             ERROR_IDENTITY_ID_NOT_REGISTERD,
@@ -445,63 +245,31 @@ public interface API3 {
             ERROR_RESPONSE_USERNAME_MALFORMED,
             ERROR_RESPONSE_PROFILE_IMG_MISSING,
             ERROR_RESPONSE_PROFILE_IMG_MALFORMED,
-            ERROR_RESPONSE_IDENTITY_ID_MISSING,
-            ERROR_RESPONSE_IDENTITY_ID_MALFORMED,
             ERROR_RESPONSE_BADGE_NUM_MISSING,
             ERROR_RESPONSE_BADGE_NUM_MALFORMED,
-            ERROR_RESPONSE_TOKEN_MISSING,
-            ERROR_RESPONSE_TOKEN_MALFORMED
+            ERROR_RESPONSE_COGNITO_TOKEN_MISSING,
+            ERROR_RESPONSE_COGNITO_TOKEN_MALFORMED,
         }
 
-        public static AuthLoginLocalCode authLoginLocalErrorReverseLookupTable(String code) {
-            if (authLoginLocalReverseMap.isEmpty()) {
-                authLoginLocalReverseMap.put("ERROR_IDENTITY_ID_NOT_REGISTERD", AuthLoginLocalCode.ERROR_IDENTITY_ID_NOT_REGISTERD);
-                authLoginLocalReverseMap.put("ERROR_PARAMETER_IDENTITY_ID_MISSING", AuthLoginLocalCode.ERROR_PARAMETER_IDENTITY_ID_MISSING);
-                authLoginLocalReverseMap.put("ERROR_PARAMETER_IDENTITY_ID_MALFORMED", AuthLoginLocalCode.ERROR_PARAMETER_IDENTITY_ID_MISSING);
-                authLoginLocalReverseMap.put("ERROR_RESPONSE_USER_ID_MISSING", AuthLoginLocalCode.ERROR_RESPONSE_USER_ID_MISSING);
-                authLoginLocalReverseMap.put("ERROR_RESPONSE_USER_ID_MALFORMED", AuthLoginLocalCode.ERROR_RESPONSE_USER_ID_MALFORMED);
-                authLoginLocalReverseMap.put("ERROR_RESPONSE_USERNAME_MISSING", AuthLoginLocalCode.ERROR_RESPONSE_USERNAME_MISSING);
-                authLoginLocalReverseMap.put("ERROR_RESPONSE_USERNAME_MALFORMED", AuthLoginLocalCode.ERROR_RESPONSE_USERNAME_MALFORMED);
-                authLoginLocalReverseMap.put("ERROR_RESPONSE_PROFILE_IMG_MISSING", AuthLoginLocalCode.ERROR_RESPONSE_PROFILE_IMG_MISSING);
-                authLoginLocalReverseMap.put("ERROR_RESPONSE_PROFILE_IMG_MALFORMED", AuthLoginLocalCode.ERROR_RESPONSE_PROFILE_IMG_MALFORMED);
-                authLoginLocalReverseMap.put("ERROR_RESPONSE_IDENTITY_ID_MISSING", AuthLoginLocalCode.ERROR_RESPONSE_IDENTITY_ID_MISSING);
-                authLoginLocalReverseMap.put("ERROR_RESPONSE_IDENTITY_ID_MALFORMED", AuthLoginLocalCode.ERROR_RESPONSE_IDENTITY_ID_MALFORMED);
-                authLoginLocalReverseMap.put("ERROR_RESPONSE_BADGE_NUM_MISSING", AuthLoginLocalCode.ERROR_RESPONSE_BADGE_NUM_MISSING);
-                authLoginLocalReverseMap.put("ERROR_RESPONSE_BADGE_NUM_MALFORMED", AuthLoginLocalCode.ERROR_RESPONSE_BADGE_NUM_MALFORMED);
-                authLoginLocalReverseMap.put("ERROR_RESPONSE_TOKEN_MISSING", AuthLoginLocalCode.ERROR_RESPONSE_TOKEN_MISSING);
-                authLoginLocalReverseMap.put("ERROR_RESPONSE_TOKEN_MALFORMED", AuthLoginLocalCode.ERROR_RESPONSE_TOKEN_MALFORMED);
-            }
-            AuthLoginLocalCode localCode = null;
-            for (Map.Entry<String, AuthLoginLocalCode> entry : authLoginLocalReverseMap.entrySet()) {
-                if (entry.getKey().equals(code)) {
-                    localCode = entry.getValue();
-                    break;
-                }
-            }
-            return localCode;
-        }
-
-        public static String authLoginLocalErrorMessageTable(AuthLoginLocalCode localCode) {
-            if (authLoginLocalMap.isEmpty()) {
-                authLoginLocalMap.put(AuthLoginLocalCode.ERROR_IDENTITY_ID_NOT_REGISTERD, "This deviced already has an registerd account");
-                authLoginLocalMap.put(AuthLoginLocalCode.ERROR_PARAMETER_IDENTITY_ID_MISSING, "Parameter 'identity_id' does not exist.");
-                authLoginLocalMap.put(AuthLoginLocalCode.ERROR_PARAMETER_IDENTITY_ID_MALFORMED, "Parameter 'identity_id' is malformed. Should correspond to '^([a-f0-9]{64})|([a-zA-Z0-9:_-]{140,250})$'");
-                authLoginLocalMap.put(AuthLoginLocalCode.ERROR_RESPONSE_USER_ID_MISSING, "Response 'user_id' was not received");
-                authLoginLocalMap.put(AuthLoginLocalCode.ERROR_RESPONSE_USER_ID_MALFORMED, "Response 'user_id' is malformed. Should correspond to '^[0-9]+$'");
-                authLoginLocalMap.put(AuthLoginLocalCode.ERROR_RESPONSE_USERNAME_MISSING, "Response 'username' was not received");
-                authLoginLocalMap.put(AuthLoginLocalCode.ERROR_RESPONSE_USERNAME_MALFORMED, "Response 'username' is malformed. Should correspond to '^\\w{4,20}$'");
-                authLoginLocalMap.put(AuthLoginLocalCode.ERROR_RESPONSE_PROFILE_IMG_MISSING, "Response 'profile_img' was not received");
-                authLoginLocalMap.put(AuthLoginLocalCode.ERROR_RESPONSE_PROFILE_IMG_MALFORMED, "Response 'profile_img' is malformed. Should correspond to '^http\\S+$'");
-                authLoginLocalMap.put(AuthLoginLocalCode.ERROR_RESPONSE_IDENTITY_ID_MISSING, "Response 'identity_id' was not received");
-                authLoginLocalMap.put(AuthLoginLocalCode.ERROR_RESPONSE_IDENTITY_ID_MALFORMED, "Response 'identity_id' is malformed. Should correspond to '^us-east-1:[a-f0-9]{8}(-[a-f0-9]{4}){3}-[a-f0-9]{12}$'");
-                authLoginLocalMap.put(AuthLoginLocalCode.ERROR_RESPONSE_BADGE_NUM_MISSING, "Response 'badge_num' was not received");
-                authLoginLocalMap.put(AuthLoginLocalCode.ERROR_RESPONSE_BADGE_NUM_MALFORMED, "Response 'badge_num' is malformed. Should correspond to '^[0-9]+$'");
-                authLoginLocalMap.put(AuthLoginLocalCode.ERROR_RESPONSE_TOKEN_MISSING, "Response 'token' was not received");
-                authLoginLocalMap.put(AuthLoginLocalCode.ERROR_RESPONSE_TOKEN_MALFORMED, "Response 'token' is malformed. Should correspond to '^[a-zA-Z0-9.-_]{400,2200}$'");
+        public static String AuthLoginLocalCodeMessageTable(AuthLoginLocalCode code) {
+            if (AuthLoginLocalCodeMap.isEmpty()) {
+                AuthLoginLocalCodeMap.put(AuthLoginLocalCode.ERROR_RESPONSE_USER_ID_MALFORMED, "Response 'user_id' is malformed. Should correspond to '^[0-9]+$'");
+                AuthLoginLocalCodeMap.put(AuthLoginLocalCode.ERROR_RESPONSE_USER_ID_MISSING, "Response 'user_id' was not received");
+                AuthLoginLocalCodeMap.put(AuthLoginLocalCode.ERROR_PARAMETER_IDENTITY_ID_MISSING, "Parameter 'identity_id' does not exist.");
+                AuthLoginLocalCodeMap.put(AuthLoginLocalCode.ERROR_RESPONSE_COGNITO_TOKEN_MALFORMED, "Response 'cognito_token' is malformed. Should correspond to '^[a-zA-Z0-9_.-]{400,2200}$'");
+                AuthLoginLocalCodeMap.put(AuthLoginLocalCode.ERROR_RESPONSE_COGNITO_TOKEN_MISSING, "Response 'cognito_token' was not received");
+                AuthLoginLocalCodeMap.put(AuthLoginLocalCode.ERROR_IDENTITY_ID_NOT_REGISTERD, "The provided identity_id is not bound to any account");
+                AuthLoginLocalCodeMap.put(AuthLoginLocalCode.ERROR_RESPONSE_USERNAME_MALFORMED, "Response 'username' is malformed. Should correspond to '^\\S{2,20}$'");
+                AuthLoginLocalCodeMap.put(AuthLoginLocalCode.ERROR_RESPONSE_USERNAME_MISSING, "Response 'username' was not received");
+                AuthLoginLocalCodeMap.put(AuthLoginLocalCode.ERROR_PARAMETER_IDENTITY_ID_MALFORMED, "Parameter 'identity_id' is malformed. Should correspond to '^us-east-1:[a-f0-9]{8}(-[a-f0-9]{4}){3}-[a-f0-9]{12}$'");
+                AuthLoginLocalCodeMap.put(AuthLoginLocalCode.ERROR_RESPONSE_BADGE_NUM_MISSING, "Response 'badge_num' was not received");
+                AuthLoginLocalCodeMap.put(AuthLoginLocalCode.ERROR_RESPONSE_PROFILE_IMG_MALFORMED, "Response 'profile_img' is malformed. Should correspond to '^http\\S+$'");
+                AuthLoginLocalCodeMap.put(AuthLoginLocalCode.ERROR_RESPONSE_PROFILE_IMG_MISSING, "Response 'profile_img' was not received");
+                AuthLoginLocalCodeMap.put(AuthLoginLocalCode.ERROR_RESPONSE_BADGE_NUM_MALFORMED, "Response 'badge_num' is malformed. Should correspond to '^[0-9]+$'");
             }
             String message = null;
-            for (Map.Entry<AuthLoginLocalCode, String> entry : authLoginLocalMap.entrySet()) {
-                if (entry.getKey().equals(localCode)) {
+            for (Map.Entry<AuthLoginLocalCode, String> entry : AuthLoginLocalCodeMap.entrySet()) {
+                if (entry.getKey().equals(code)) {
                     message = entry.getValue();
                     break;
                 }
@@ -509,11 +277,91 @@ public interface API3 {
             return message;
         }
 
-        public static final ConcurrentHashMap<AuthPassLoginLocalCode, String> authPassLoginLocalMap = new ConcurrentHashMap<>();
-        public static final ConcurrentHashMap<String, AuthPassLoginLocalCode> authPassLoginLocalReverseMap = new ConcurrentHashMap<>();
+        public static AuthLoginLocalCode AuthLoginLocalCodeReverseLookupTable(String message) {
+            if (AuthLoginLocalCodeReverseMap.isEmpty()) {
+                AuthLoginLocalCodeReverseMap.put("ERROR_RESPONSE_USER_ID_MALFORMED", AuthLoginLocalCode.ERROR_RESPONSE_USER_ID_MALFORMED);
+                AuthLoginLocalCodeReverseMap.put("ERROR_RESPONSE_USER_ID_MISSING", AuthLoginLocalCode.ERROR_RESPONSE_USER_ID_MISSING);
+                AuthLoginLocalCodeReverseMap.put("ERROR_PARAMETER_IDENTITY_ID_MISSING", AuthLoginLocalCode.ERROR_PARAMETER_IDENTITY_ID_MISSING);
+                AuthLoginLocalCodeReverseMap.put("ERROR_RESPONSE_COGNITO_TOKEN_MALFORMED", AuthLoginLocalCode.ERROR_RESPONSE_COGNITO_TOKEN_MALFORMED);
+                AuthLoginLocalCodeReverseMap.put("ERROR_RESPONSE_COGNITO_TOKEN_MISSING", AuthLoginLocalCode.ERROR_RESPONSE_COGNITO_TOKEN_MISSING);
+                AuthLoginLocalCodeReverseMap.put("ERROR_IDENTITY_ID_NOT_REGISTERD", AuthLoginLocalCode.ERROR_IDENTITY_ID_NOT_REGISTERD);
+                AuthLoginLocalCodeReverseMap.put("ERROR_RESPONSE_USERNAME_MALFORMED", AuthLoginLocalCode.ERROR_RESPONSE_USERNAME_MALFORMED);
+                AuthLoginLocalCodeReverseMap.put("ERROR_RESPONSE_USERNAME_MISSING", AuthLoginLocalCode.ERROR_RESPONSE_USERNAME_MISSING);
+                AuthLoginLocalCodeReverseMap.put("ERROR_PARAMETER_IDENTITY_ID_MALFORMED", AuthLoginLocalCode.ERROR_PARAMETER_IDENTITY_ID_MALFORMED);
+                AuthLoginLocalCodeReverseMap.put("ERROR_RESPONSE_BADGE_NUM_MISSING", AuthLoginLocalCode.ERROR_RESPONSE_BADGE_NUM_MISSING);
+                AuthLoginLocalCodeReverseMap.put("ERROR_RESPONSE_PROFILE_IMG_MALFORMED", AuthLoginLocalCode.ERROR_RESPONSE_PROFILE_IMG_MALFORMED);
+                AuthLoginLocalCodeReverseMap.put("ERROR_RESPONSE_PROFILE_IMG_MISSING", AuthLoginLocalCode.ERROR_RESPONSE_PROFILE_IMG_MISSING);
+                AuthLoginLocalCodeReverseMap.put("ERROR_RESPONSE_BADGE_NUM_MALFORMED", AuthLoginLocalCode.ERROR_RESPONSE_BADGE_NUM_MALFORMED);
+            }
+            AuthLoginLocalCode code = null;
+            for (Map.Entry<String, AuthLoginLocalCode> entry : AuthLoginLocalCodeReverseMap.entrySet()) {
+                if (entry.getKey().equals(message)) {
+                    code = entry.getValue();
+                    break;
+                }
+            }
+            return code;
+        }
 
-        public enum AuthPassLoginLocalCode {
-            ERROR_REGISTER_ID_ALREADY_REGISTERD,
+        private static final ConcurrentHashMap<AuthSignupLocalCode, String> AuthSignupLocalCodeMap = new ConcurrentHashMap<>();
+        private static final ConcurrentHashMap<String, AuthSignupLocalCode> AuthSignupLocalCodeReverseMap = new ConcurrentHashMap<>();
+
+        public static String getAuthSignupAPI(String username) {
+            return testurl + "/auth/signup/" + "?username=" + username;
+        }
+
+        public enum AuthSignupLocalCode {
+            ERROR_USERNAME_ALREADY_REGISTERD,
+            ERROR_PARAMETER_USERNAME_MISSING,
+            ERROR_PARAMETER_USERNAME_MALFORMED,
+            ERROR_RESPONSE_IDENTITY_ID_MISSING,
+            ERROR_RESPONSE_IDENTITY_ID_MALFORMED,
+        }
+
+        public static String AuthSignupLocalCodeMessageTable(AuthSignupLocalCode code) {
+            if (AuthSignupLocalCodeMap.isEmpty()) {
+                AuthSignupLocalCodeMap.put(AuthSignupLocalCode.ERROR_PARAMETER_USERNAME_MISSING, "Parameter 'username' does not exist.");
+                AuthSignupLocalCodeMap.put(AuthSignupLocalCode.ERROR_RESPONSE_IDENTITY_ID_MALFORMED, "Response 'identity_id' is malformed. Should correspond to '^us-east-1:[a-f0-9]{8}(-[a-f0-9]{4}){3}-[a-f0-9]{12}$'");
+                AuthSignupLocalCodeMap.put(AuthSignupLocalCode.ERROR_RESPONSE_IDENTITY_ID_MISSING, "Response 'identity_id' was not received");
+                AuthSignupLocalCodeMap.put(AuthSignupLocalCode.ERROR_USERNAME_ALREADY_REGISTERD, "The provided username was already registerd by another user");
+                AuthSignupLocalCodeMap.put(AuthSignupLocalCode.ERROR_PARAMETER_USERNAME_MALFORMED, "Parameter 'username' is malformed. Should correspond to '^\\S{2,20}$'");
+            }
+            String message = null;
+            for (Map.Entry<AuthSignupLocalCode, String> entry : AuthSignupLocalCodeMap.entrySet()) {
+                if (entry.getKey().equals(code)) {
+                    message = entry.getValue();
+                    break;
+                }
+            }
+            return message;
+        }
+
+        public static AuthSignupLocalCode AuthSignupLocalCodeReverseLookupTable(String message) {
+            if (AuthSignupLocalCodeReverseMap.isEmpty()) {
+                AuthSignupLocalCodeReverseMap.put("ERROR_PARAMETER_USERNAME_MISSING", AuthSignupLocalCode.ERROR_PARAMETER_USERNAME_MISSING);
+                AuthSignupLocalCodeReverseMap.put("ERROR_RESPONSE_IDENTITY_ID_MALFORMED", AuthSignupLocalCode.ERROR_RESPONSE_IDENTITY_ID_MALFORMED);
+                AuthSignupLocalCodeReverseMap.put("ERROR_RESPONSE_IDENTITY_ID_MISSING", AuthSignupLocalCode.ERROR_RESPONSE_IDENTITY_ID_MISSING);
+                AuthSignupLocalCodeReverseMap.put("ERROR_USERNAME_ALREADY_REGISTERD", AuthSignupLocalCode.ERROR_USERNAME_ALREADY_REGISTERD);
+                AuthSignupLocalCodeReverseMap.put("ERROR_PARAMETER_USERNAME_MALFORMED", AuthSignupLocalCode.ERROR_PARAMETER_USERNAME_MALFORMED);
+            }
+            AuthSignupLocalCode code = null;
+            for (Map.Entry<String, AuthSignupLocalCode> entry : AuthSignupLocalCodeReverseMap.entrySet()) {
+                if (entry.getKey().equals(message)) {
+                    code = entry.getValue();
+                    break;
+                }
+            }
+            return code;
+        }
+
+        private static final ConcurrentHashMap<AuthPasswordLocalCode, String> AuthPasswordLocalCodeMap = new ConcurrentHashMap<>();
+        private static final ConcurrentHashMap<String, AuthPasswordLocalCode> AuthPasswordLocalCodeReverseMap = new ConcurrentHashMap<>();
+
+        public static String getAuthPasswordAPI(String username, String password) {
+            return testurl + "/auth/password/" + "?username=" + username + "&password=" + password;
+        }
+
+        public enum AuthPasswordLocalCode {
             ERROR_USERNAME_NOT_REGISTERD,
             ERROR_PASSWORD_NOT_REGISTERD,
             ERROR_PASSWORD_WRONG,
@@ -525,45 +373,21 @@ public interface API3 {
             ERROR_RESPONSE_IDENTITY_ID_MALFORMED,
         }
 
-        public static AuthPassLoginLocalCode authPassLoginLocalErrorReverseLookupTable(String code) {
-            if (authPassLoginLocalReverseMap.isEmpty()) {
-                authPassLoginLocalReverseMap.put("ERROR_REGISTER_ID_ALREADY_REGISTERD", AuthPassLoginLocalCode.ERROR_REGISTER_ID_ALREADY_REGISTERD);
-                authPassLoginLocalReverseMap.put("ERROR_USERNAME_NOT_REGISTERD", AuthPassLoginLocalCode.ERROR_USERNAME_NOT_REGISTERD);
-                authPassLoginLocalReverseMap.put("ERROR_PASSWORD_NOT_REGISTERD", AuthPassLoginLocalCode.ERROR_PASSWORD_NOT_REGISTERD);
-                authPassLoginLocalReverseMap.put("ERROR_PASSWODR_WRONG", AuthPassLoginLocalCode.ERROR_PASSWORD_WRONG);
-                authPassLoginLocalReverseMap.put("ERROR_PARAMETER_USERNAME_MISSING", AuthPassLoginLocalCode.ERROR_PARAMETER_USERNAME_MISSING);
-                authPassLoginLocalReverseMap.put("ERROR_PARAMETER_USERNAME_MALFORMED", AuthPassLoginLocalCode.ERROR_PARAMETER_USERNAME_MALFORMED);
-                authPassLoginLocalReverseMap.put("ERROR_PARAMETER_PASSWORD_MISSING", AuthPassLoginLocalCode.ERROR_PARAMETER_PASSWORD_MISSING);
-                authPassLoginLocalReverseMap.put("ERROR_PARAMETER_PASSWORD_MALFORMED", AuthPassLoginLocalCode.ERROR_PARAMETER_PASSWORD_MALFORMED);
-                authPassLoginLocalReverseMap.put("ERROR_RESPONSE_IDENTITY_ID_MISSING", AuthPassLoginLocalCode.ERROR_RESPONSE_IDENTITY_ID_MISSING);
-                authPassLoginLocalReverseMap.put("ERROR_RESPONSE_IDENTITY_ID_MALFORMED", AuthPassLoginLocalCode.ERROR_RESPONSE_IDENTITY_ID_MALFORMED);
-            }
-            AuthPassLoginLocalCode localCode = null;
-            for (Map.Entry<String, AuthPassLoginLocalCode> entry : authPassLoginLocalReverseMap.entrySet()) {
-                if (entry.getKey().equals(code)) {
-                    localCode = entry.getValue();
-                    break;
-                }
-            }
-            return localCode;
-        }
-
-        public static String authPassLoginLocalErrorMessageTable(AuthPassLoginLocalCode localCode) {
-            if (authPassLoginLocalMap.isEmpty()) {
-                authPassLoginLocalMap.put(AuthPassLoginLocalCode.ERROR_REGISTER_ID_ALREADY_REGISTERD, "This deviced already has an registerd account");
-                authPassLoginLocalMap.put(AuthPassLoginLocalCode.ERROR_USERNAME_NOT_REGISTERD, "username does not exist");
-                authPassLoginLocalMap.put(AuthPassLoginLocalCode.ERROR_PASSWORD_NOT_REGISTERD, "password does not exist");
-                authPassLoginLocalMap.put(AuthPassLoginLocalCode.ERROR_PASSWORD_WRONG, "password is wrong");
-                authPassLoginLocalMap.put(AuthPassLoginLocalCode.ERROR_PARAMETER_USERNAME_MISSING, "Parameter 'username' does not exist.");
-                authPassLoginLocalMap.put(AuthPassLoginLocalCode.ERROR_PARAMETER_USERNAME_MALFORMED, "Parameter 'username' is malformed. Should correspond to '^\\w{4,20}$'");
-                authPassLoginLocalMap.put(AuthPassLoginLocalCode.ERROR_PARAMETER_PASSWORD_MISSING, "Parameter 'password' does not exist.");
-                authPassLoginLocalMap.put(AuthPassLoginLocalCode.ERROR_PARAMETER_PASSWORD_MALFORMED, "Parameter 'password' is malformed. Should correspond to '^\\w{4,20}$'");
-                authPassLoginLocalMap.put(AuthPassLoginLocalCode.ERROR_RESPONSE_IDENTITY_ID_MISSING, "Response 'identity_id' was not received");
-                authPassLoginLocalMap.put(AuthPassLoginLocalCode.ERROR_RESPONSE_IDENTITY_ID_MALFORMED, "Response 'identity_id' is malformed. Should correspond to '^us-east-1:[a-f0-9]{8}(-[a-f0-9]{4}){3}-[a-f0-9]{12}$'");
+        public static String AuthPasswordLocalCodeMessageTable(AuthPasswordLocalCode code) {
+            if (AuthPasswordLocalCodeMap.isEmpty()) {
+                AuthPasswordLocalCodeMap.put(AuthPasswordLocalCode.ERROR_PARAMETER_USERNAME_MISSING, "Parameter 'username' does not exist.");
+                AuthPasswordLocalCodeMap.put(AuthPasswordLocalCode.ERROR_RESPONSE_IDENTITY_ID_MALFORMED, "Response 'identity_id' is malformed. Should correspond to '^us-east-1:[a-f0-9]{8}(-[a-f0-9]{4}){3}-[a-f0-9]{12}$'");
+                AuthPasswordLocalCodeMap.put(AuthPasswordLocalCode.ERROR_PASSWORD_NOT_REGISTERD, "The entered password does not exist");
+                AuthPasswordLocalCodeMap.put(AuthPasswordLocalCode.ERROR_RESPONSE_IDENTITY_ID_MISSING, "Response 'identity_id' was not received");
+                AuthPasswordLocalCodeMap.put(AuthPasswordLocalCode.ERROR_PARAMETER_USERNAME_MALFORMED, "Parameter 'username' is malformed. Should correspond to '^\\S{2,20}$'");
+                AuthPasswordLocalCodeMap.put(AuthPasswordLocalCode.ERROR_USERNAME_NOT_REGISTERD, "The entered username does not exist");
+                AuthPasswordLocalCodeMap.put(AuthPasswordLocalCode.ERROR_PASSWORD_WRONG, "Password wrong");
+                AuthPasswordLocalCodeMap.put(AuthPasswordLocalCode.ERROR_PARAMETER_PASSWORD_MISSING, "Parameter 'password' does not exist.");
+                AuthPasswordLocalCodeMap.put(AuthPasswordLocalCode.ERROR_PARAMETER_PASSWORD_MALFORMED, "Parameter 'password' is malformed. Should correspond to '^\\w{6,25}$'");
             }
             String message = null;
-            for (Map.Entry<AuthPassLoginLocalCode, String> entry : authPassLoginLocalMap.entrySet()) {
-                if (entry.getKey().equals(localCode)) {
+            for (Map.Entry<AuthPasswordLocalCode, String> entry : AuthPasswordLocalCodeMap.entrySet()) {
+                if (entry.getKey().equals(code)) {
                     message = entry.getValue();
                     break;
                 }
@@ -571,43 +395,48 @@ public interface API3 {
             return message;
         }
 
-        public static final ConcurrentHashMap<GetTimelineLocalCode, String> getTimelineLocalMap = new ConcurrentHashMap<>();
-        public static final ConcurrentHashMap<String, GetTimelineLocalCode> getTimelineLocalReverseMap = new ConcurrentHashMap<>();
-
-        public enum GetTimelineLocalCode {
-            ERROR_PARAMETER_LON_MISSING,
-            ERROR_PARAMETER_LON_MALFORMED,
-            ERROR_PARAMETER_LAT_MISSING,
-            ERROR_PARAMETER_LAT_MALFORMED,
-        }
-
-        public static GetTimelineLocalCode getTimelineLocalErrorReverseLookupTable(String code) {
-            if (getTimelineLocalReverseMap.isEmpty()) {
-                getTimelineLocalReverseMap.put("ERROR_PARAMETER_LON_MISSING", GetTimelineLocalCode.ERROR_PARAMETER_LON_MISSING);
-                getTimelineLocalReverseMap.put("ERROR_PARAMETER_LON_MALFORMED", GetTimelineLocalCode.ERROR_PARAMETER_LON_MALFORMED);
-                getTimelineLocalReverseMap.put("ERROR_PARAMETER_LAT_MISSING", GetTimelineLocalCode.ERROR_PARAMETER_LAT_MISSING);
-                getTimelineLocalReverseMap.put("ERROR_PARAMETER_LAT_MALFORMED", GetTimelineLocalCode.ERROR_PARAMETER_LAT_MALFORMED);
+        public static AuthPasswordLocalCode AuthPasswordLocalCodeReverseLookupTable(String message) {
+            if (AuthPasswordLocalCodeReverseMap.isEmpty()) {
+                AuthPasswordLocalCodeReverseMap.put("ERROR_PARAMETER_USERNAME_MISSING", AuthPasswordLocalCode.ERROR_PARAMETER_USERNAME_MISSING);
+                AuthPasswordLocalCodeReverseMap.put("ERROR_RESPONSE_IDENTITY_ID_MALFORMED", AuthPasswordLocalCode.ERROR_RESPONSE_IDENTITY_ID_MALFORMED);
+                AuthPasswordLocalCodeReverseMap.put("ERROR_PASSWORD_NOT_REGISTERD", AuthPasswordLocalCode.ERROR_PASSWORD_NOT_REGISTERD);
+                AuthPasswordLocalCodeReverseMap.put("ERROR_RESPONSE_IDENTITY_ID_MISSING", AuthPasswordLocalCode.ERROR_RESPONSE_IDENTITY_ID_MISSING);
+                AuthPasswordLocalCodeReverseMap.put("ERROR_PARAMETER_USERNAME_MALFORMED", AuthPasswordLocalCode.ERROR_PARAMETER_USERNAME_MALFORMED);
+                AuthPasswordLocalCodeReverseMap.put("ERROR_USERNAME_NOT_REGISTERD", AuthPasswordLocalCode.ERROR_USERNAME_NOT_REGISTERD);
+                AuthPasswordLocalCodeReverseMap.put("ERROR_PASSWORD_WRONG", AuthPasswordLocalCode.ERROR_PASSWORD_WRONG);
+                AuthPasswordLocalCodeReverseMap.put("ERROR_PARAMETER_PASSWORD_MISSING", AuthPasswordLocalCode.ERROR_PARAMETER_PASSWORD_MISSING);
+                AuthPasswordLocalCodeReverseMap.put("ERROR_PARAMETER_PASSWORD_MALFORMED", AuthPasswordLocalCode.ERROR_PARAMETER_PASSWORD_MALFORMED);
             }
-            GetTimelineLocalCode localCode = null;
-            for (Map.Entry<String, GetTimelineLocalCode> entry : getTimelineLocalReverseMap.entrySet()) {
-                if (entry.getKey().equals(code)) {
-                    localCode = entry.getValue();
+            AuthPasswordLocalCode code = null;
+            for (Map.Entry<String, AuthPasswordLocalCode> entry : AuthPasswordLocalCodeReverseMap.entrySet()) {
+                if (entry.getKey().equals(message)) {
+                    code = entry.getValue();
                     break;
                 }
             }
-            return localCode;
+            return code;
         }
 
-        public static String getTimelineLocalErrorMessageTable(GetTimelineLocalCode localCode) {
-            if (getTimelineLocalMap.isEmpty()) {
-                getTimelineLocalMap.put(GetTimelineLocalCode.ERROR_PARAMETER_LON_MISSING, "Parameter 'lon' does not exist.");
-                getTimelineLocalMap.put(GetTimelineLocalCode.ERROR_PARAMETER_LON_MALFORMED, "Parameter 'lon' is malformed. Should correspond to ''DOUBLE");
-                getTimelineLocalMap.put(GetTimelineLocalCode.ERROR_PARAMETER_LAT_MISSING, "Parameter 'lat' does not exist.");
-                getTimelineLocalMap.put(GetTimelineLocalCode.ERROR_PARAMETER_LAT_MALFORMED, "Parameter 'lat' is malformed. Should correspond to ''DOUBLE");
+        private static final ConcurrentHashMap<SetFeedbackLocalCode, String> SetFeedbackLocalCodeMap = new ConcurrentHashMap<>();
+        private static final ConcurrentHashMap<String, SetFeedbackLocalCode> SetFeedbackLocalCodeReverseMap = new ConcurrentHashMap<>();
+
+        public static String getSetFeedbackAPI(String feedback) {
+            return testurl + "/set/feedback/" + "?feedback=" + feedback;
+        }
+
+        public enum SetFeedbackLocalCode {
+            ERROR_PARAMETER_FEEDBACK_MISSING,
+            ERROR_PARAMETER_FEEDBACK_MALFORMED,
+        }
+
+        public static String SetFeedbackLocalCodeMessageTable(SetFeedbackLocalCode code) {
+            if (SetFeedbackLocalCodeMap.isEmpty()) {
+                SetFeedbackLocalCodeMap.put(SetFeedbackLocalCode.ERROR_PARAMETER_FEEDBACK_MALFORMED, "Parameter 'feedback' is malformed. Should correspond to '^[\\S\\s]{2,300}$'");
+                SetFeedbackLocalCodeMap.put(SetFeedbackLocalCode.ERROR_PARAMETER_FEEDBACK_MISSING, "Parameter 'feedback' does not exist.");
             }
             String message = null;
-            for (Map.Entry<GetTimelineLocalCode, String> entry : getTimelineLocalMap.entrySet()) {
-                if (entry.getKey().equals(localCode)) {
+            for (Map.Entry<SetFeedbackLocalCode, String> entry : SetFeedbackLocalCodeMap.entrySet()) {
+                if (entry.getKey().equals(code)) {
                     message = entry.getValue();
                     break;
                 }
@@ -615,37 +444,305 @@ public interface API3 {
             return message;
         }
 
-        public static final ConcurrentHashMap<GetUserLocalCode, String> getUserLocalMap = new ConcurrentHashMap<>();
-        public static final ConcurrentHashMap<String, GetUserLocalCode> getUserLocalReverseMap = new ConcurrentHashMap<>();
+        public static SetFeedbackLocalCode SetFeedbackLocalCodeReverseLookupTable(String message) {
+            if (SetFeedbackLocalCodeReverseMap.isEmpty()) {
+                SetFeedbackLocalCodeReverseMap.put("ERROR_PARAMETER_FEEDBACK_MALFORMED", SetFeedbackLocalCode.ERROR_PARAMETER_FEEDBACK_MALFORMED);
+                SetFeedbackLocalCodeReverseMap.put("ERROR_PARAMETER_FEEDBACK_MISSING", SetFeedbackLocalCode.ERROR_PARAMETER_FEEDBACK_MISSING);
+            }
+            SetFeedbackLocalCode code = null;
+            for (Map.Entry<String, SetFeedbackLocalCode> entry : SetFeedbackLocalCodeReverseMap.entrySet()) {
+                if (entry.getKey().equals(message)) {
+                    code = entry.getValue();
+                    break;
+                }
+            }
+            return code;
+        }
 
-        public enum GetUserLocalCode {
+        private static final ConcurrentHashMap<SetPasswordLocalCode, String> SetPasswordLocalCodeMap = new ConcurrentHashMap<>();
+        private static final ConcurrentHashMap<String, SetPasswordLocalCode> SetPasswordLocalCodeReverseMap = new ConcurrentHashMap<>();
+
+        public static String getSetPasswordAPI(String password) {
+            return testurl + "/set/password/" + "?password=" + password;
+        }
+
+        public enum SetPasswordLocalCode {
+            ERROR_PARAMETER_PASSWORD_MISSING,
+            ERROR_PARAMETER_PASSWORD_MALFORMED,
+        }
+
+        public static String SetPasswordLocalCodeMessageTable(SetPasswordLocalCode code) {
+            if (SetPasswordLocalCodeMap.isEmpty()) {
+                SetPasswordLocalCodeMap.put(SetPasswordLocalCode.ERROR_PARAMETER_PASSWORD_MALFORMED, "Parameter 'password' is malformed. Should correspond to '^\\w{6,25}$'");
+                SetPasswordLocalCodeMap.put(SetPasswordLocalCode.ERROR_PARAMETER_PASSWORD_MISSING, "Parameter 'password' does not exist.");
+            }
+            String message = null;
+            for (Map.Entry<SetPasswordLocalCode, String> entry : SetPasswordLocalCodeMap.entrySet()) {
+                if (entry.getKey().equals(code)) {
+                    message = entry.getValue();
+                    break;
+                }
+            }
+            return message;
+        }
+
+        public static SetPasswordLocalCode SetPasswordLocalCodeReverseLookupTable(String message) {
+            if (SetPasswordLocalCodeReverseMap.isEmpty()) {
+                SetPasswordLocalCodeReverseMap.put("ERROR_PARAMETER_PASSWORD_MALFORMED", SetPasswordLocalCode.ERROR_PARAMETER_PASSWORD_MALFORMED);
+                SetPasswordLocalCodeReverseMap.put("ERROR_PARAMETER_PASSWORD_MISSING", SetPasswordLocalCode.ERROR_PARAMETER_PASSWORD_MISSING);
+            }
+            SetPasswordLocalCode code = null;
+            for (Map.Entry<String, SetPasswordLocalCode> entry : SetPasswordLocalCodeReverseMap.entrySet()) {
+                if (entry.getKey().equals(message)) {
+                    code = entry.getValue();
+                    break;
+                }
+            }
+            return code;
+        }
+
+        private static final ConcurrentHashMap<SetUsernameLocalCode, String> SetUsernameLocalCodeMap = new ConcurrentHashMap<>();
+        private static final ConcurrentHashMap<String, SetUsernameLocalCode> SetUsernameLocalCodeReverseMap = new ConcurrentHashMap<>();
+
+        public static String getSetUsernameAPI(String username) {
+            return testurl + "/set/username/" + "?username=" + username;
+        }
+
+        public enum SetUsernameLocalCode {
+            ERROR_PARAMETER_USERNAME_MISSING,
+            ERROR_PARAMETER_USERNAME_MALFORMED,
+        }
+
+        public static String SetUsernameLocalCodeMessageTable(SetUsernameLocalCode code) {
+            if (SetUsernameLocalCodeMap.isEmpty()) {
+                SetUsernameLocalCodeMap.put(SetUsernameLocalCode.ERROR_PARAMETER_USERNAME_MISSING, "Parameter 'username' does not exist.");
+                SetUsernameLocalCodeMap.put(SetUsernameLocalCode.ERROR_PARAMETER_USERNAME_MALFORMED, "Parameter 'username' is malformed. Should correspond to '^[\\S]{2,20}$'");
+            }
+            String message = null;
+            for (Map.Entry<SetUsernameLocalCode, String> entry : SetUsernameLocalCodeMap.entrySet()) {
+                if (entry.getKey().equals(code)) {
+                    message = entry.getValue();
+                    break;
+                }
+            }
+            return message;
+        }
+
+        public static SetUsernameLocalCode SetUsernameLocalCodeReverseLookupTable(String message) {
+            if (SetUsernameLocalCodeReverseMap.isEmpty()) {
+                SetUsernameLocalCodeReverseMap.put("ERROR_PARAMETER_USERNAME_MISSING", SetUsernameLocalCode.ERROR_PARAMETER_USERNAME_MISSING);
+                SetUsernameLocalCodeReverseMap.put("ERROR_PARAMETER_USERNAME_MALFORMED", SetUsernameLocalCode.ERROR_PARAMETER_USERNAME_MALFORMED);
+            }
+            SetUsernameLocalCode code = null;
+            for (Map.Entry<String, SetUsernameLocalCode> entry : SetUsernameLocalCodeReverseMap.entrySet()) {
+                if (entry.getKey().equals(message)) {
+                    code = entry.getValue();
+                    break;
+                }
+            }
+            return code;
+        }
+
+        private static final ConcurrentHashMap<SetCommentLocalCode, String> SetCommentLocalCodeMap = new ConcurrentHashMap<>();
+        private static final ConcurrentHashMap<String, SetCommentLocalCode> SetCommentLocalCodeReverseMap = new ConcurrentHashMap<>();
+
+        public static String getSetCommentAPI(String post_id, String comment, String re_user_id) {
+            return testurl + "/set/comment/" + "?post_id=" + post_id + "&comment=" + comment + "&re_user_id=" + re_user_id;
+        }
+
+        public enum SetCommentLocalCode {
+            ERROR_PARAMETER_POST_ID_MISSING,
+            ERROR_PARAMETER_POST_ID_MALFORMED,
+            ERROR_PARAMETER_COMMENT_MISSING,
+            ERROR_PARAMETER_COMMENT_MALFORMED,
+            ERROR_PARAMETER_RE_USER_ID_MISSING,
+            ERROR_PARAMETER_RE_USER_ID_MALFORMED,
+        }
+
+        public static String SetCommentLocalCodeMessageTable(SetCommentLocalCode code) {
+            if (SetCommentLocalCodeMap.isEmpty()) {
+                SetCommentLocalCodeMap.put(SetCommentLocalCode.ERROR_PARAMETER_COMMENT_MALFORMED, "Parameter 'comment' is malformed. Should correspond to '^\\S{1,140}$'");
+                SetCommentLocalCodeMap.put(SetCommentLocalCode.ERROR_PARAMETER_POST_ID_MALFORMED, "Parameter 'post_id' is malformed. Should correspond to '^\\d+$'");
+                SetCommentLocalCodeMap.put(SetCommentLocalCode.ERROR_PARAMETER_COMMENT_MISSING, "Parameter 'comment' does not exist.");
+                SetCommentLocalCodeMap.put(SetCommentLocalCode.ERROR_PARAMETER_RE_USER_ID_MISSING, "Parameter 're_user_id' does not exist.");
+                SetCommentLocalCodeMap.put(SetCommentLocalCode.ERROR_PARAMETER_RE_USER_ID_MALFORMED, "Parameter 're_user_id' is malformed. Should correspond to '^\\d+$'");
+                SetCommentLocalCodeMap.put(SetCommentLocalCode.ERROR_PARAMETER_POST_ID_MISSING, "Parameter 'post_id' does not exist.");
+            }
+            String message = null;
+            for (Map.Entry<SetCommentLocalCode, String> entry : SetCommentLocalCodeMap.entrySet()) {
+                if (entry.getKey().equals(code)) {
+                    message = entry.getValue();
+                    break;
+                }
+            }
+            return message;
+        }
+
+        public static SetCommentLocalCode SetCommentLocalCodeReverseLookupTable(String message) {
+            if (SetCommentLocalCodeReverseMap.isEmpty()) {
+                SetCommentLocalCodeReverseMap.put("ERROR_PARAMETER_COMMENT_MALFORMED", SetCommentLocalCode.ERROR_PARAMETER_COMMENT_MALFORMED);
+                SetCommentLocalCodeReverseMap.put("ERROR_PARAMETER_POST_ID_MALFORMED", SetCommentLocalCode.ERROR_PARAMETER_POST_ID_MALFORMED);
+                SetCommentLocalCodeReverseMap.put("ERROR_PARAMETER_COMMENT_MISSING", SetCommentLocalCode.ERROR_PARAMETER_COMMENT_MISSING);
+                SetCommentLocalCodeReverseMap.put("ERROR_PARAMETER_RE_USER_ID_MISSING", SetCommentLocalCode.ERROR_PARAMETER_RE_USER_ID_MISSING);
+                SetCommentLocalCodeReverseMap.put("ERROR_PARAMETER_RE_USER_ID_MALFORMED", SetCommentLocalCode.ERROR_PARAMETER_RE_USER_ID_MALFORMED);
+                SetCommentLocalCodeReverseMap.put("ERROR_PARAMETER_POST_ID_MISSING", SetCommentLocalCode.ERROR_PARAMETER_POST_ID_MISSING);
+            }
+            SetCommentLocalCode code = null;
+            for (Map.Entry<String, SetCommentLocalCode> entry : SetCommentLocalCodeReverseMap.entrySet()) {
+                if (entry.getKey().equals(message)) {
+                    code = entry.getValue();
+                    break;
+                }
+            }
+            return code;
+        }
+
+        private static final ConcurrentHashMap<SetSns_LinkLocalCode, String> SetSns_LinkLocalCodeMap = new ConcurrentHashMap<>();
+        private static final ConcurrentHashMap<String, SetSns_LinkLocalCode> SetSns_LinkLocalCodeReverseMap = new ConcurrentHashMap<>();
+
+        public static String getSetSnsLinkAPI(String provider, String sns_token) {
+            return testurl + "/set/sns_link/" + "?provider=" + provider + "&sns_token=" + sns_token;
+        }
+
+        public enum SetSns_LinkLocalCode {
+            ERROR_SNS_PROVIDER_TOKEN_NOT_VALID,
+            ERROR_PROVIDER_UNREACHABLE,
+            ERROR_PARAMETER_PROVIDER_MISSING,
+            ERROR_PARAMETER_PROVIDER_MALFORMED,
+            ERROR_PARAMETER_SNS_TOKEN_MISSING,
+            ERROR_PARAMETER_SNS_TOKEN_MALFORMED,
+        }
+
+        public static String SetSns_LinkLocalCodeMessageTable(SetSns_LinkLocalCode code) {
+            if (SetSns_LinkLocalCodeMap.isEmpty()) {
+                SetSns_LinkLocalCodeMap.put(SetSns_LinkLocalCode.ERROR_PARAMETER_SNS_TOKEN_MISSING, "Parameter 'sns_token' does not exist.");
+                SetSns_LinkLocalCodeMap.put(SetSns_LinkLocalCode.ERROR_PROVIDER_UNREACHABLE, "The providers server infrastructure appears to be down");
+                SetSns_LinkLocalCodeMap.put(SetSns_LinkLocalCode.ERROR_PARAMETER_PROVIDER_MISSING, "Parameter 'provider' does not exist.");
+                SetSns_LinkLocalCodeMap.put(SetSns_LinkLocalCode.ERROR_PARAMETER_SNS_TOKEN_MALFORMED, "Parameter 'sns_token' is malformed. Should correspond to '^\\S{20,4000}$'");
+                SetSns_LinkLocalCodeMap.put(SetSns_LinkLocalCode.ERROR_SNS_PROVIDER_TOKEN_NOT_VALID, "The provided sns token is invalid or has expired");
+                SetSns_LinkLocalCodeMap.put(SetSns_LinkLocalCode.ERROR_PARAMETER_PROVIDER_MALFORMED, "Parameter 'provider' is malformed. Should correspond to '^(api.twitter.com)|(graph.facebook.com)$'");
+            }
+            String message = null;
+            for (Map.Entry<SetSns_LinkLocalCode, String> entry : SetSns_LinkLocalCodeMap.entrySet()) {
+                if (entry.getKey().equals(code)) {
+                    message = entry.getValue();
+                    break;
+                }
+            }
+            return message;
+        }
+
+        public static SetSns_LinkLocalCode SetSns_LinkLocalCodeReverseLookupTable(String message) {
+            if (SetSns_LinkLocalCodeReverseMap.isEmpty()) {
+                SetSns_LinkLocalCodeReverseMap.put("ERROR_PARAMETER_SNS_TOKEN_MISSING", SetSns_LinkLocalCode.ERROR_PARAMETER_SNS_TOKEN_MISSING);
+                SetSns_LinkLocalCodeReverseMap.put("ERROR_PROVIDER_UNREACHABLE", SetSns_LinkLocalCode.ERROR_PROVIDER_UNREACHABLE);
+                SetSns_LinkLocalCodeReverseMap.put("ERROR_PARAMETER_PROVIDER_MISSING", SetSns_LinkLocalCode.ERROR_PARAMETER_PROVIDER_MISSING);
+                SetSns_LinkLocalCodeReverseMap.put("ERROR_PARAMETER_SNS_TOKEN_MALFORMED", SetSns_LinkLocalCode.ERROR_PARAMETER_SNS_TOKEN_MALFORMED);
+                SetSns_LinkLocalCodeReverseMap.put("ERROR_SNS_PROVIDER_TOKEN_NOT_VALID", SetSns_LinkLocalCode.ERROR_SNS_PROVIDER_TOKEN_NOT_VALID);
+                SetSns_LinkLocalCodeReverseMap.put("ERROR_PARAMETER_PROVIDER_MALFORMED", SetSns_LinkLocalCode.ERROR_PARAMETER_PROVIDER_MALFORMED);
+            }
+            SetSns_LinkLocalCode code = null;
+            for (Map.Entry<String, SetSns_LinkLocalCode> entry : SetSns_LinkLocalCodeReverseMap.entrySet()) {
+                if (entry.getKey().equals(message)) {
+                    code = entry.getValue();
+                    break;
+                }
+            }
+            return code;
+        }
+
+        private static final ConcurrentHashMap<SetPostLocalCode, String> SetPostLocalCodeMap = new ConcurrentHashMap<>();
+        private static final ConcurrentHashMap<String, SetPostLocalCode> SetPostLocalCodeReverseMap = new ConcurrentHashMap<>();
+
+        public static String getSetPostAPI(String rest_id, String movie_name, String category_id, String value, String memo, String cheer_flag) {
+            return testurl + "/set/post/" + "?rest_id=" + rest_id + "&movie_name=" + movie_name + "&category_id=" + category_id + "&value=" + value + "&memo=" + memo + "&cheer_flag=" + cheer_flag;
+        }
+
+        public enum SetPostLocalCode {
+            ERROR_PARAMETER_REST_ID_MISSING,
+            ERROR_PARAMETER_REST_ID_MALFORMED,
+            ERROR_PARAMETER_MOVIE_NAME_MISSING,
+            ERROR_PARAMETER_MOVIE_NAME_MALFORMED,
+            ERROR_PARAMETER_CATEGORY_ID_MISSING,
+            ERROR_PARAMETER_CATEGORY_ID_MALFORMED,
+            ERROR_PARAMETER_VALUE_MISSING,
+            ERROR_PARAMETER_VALUE_MALFORMED,
+            ERROR_PARAMETER_MEMO_MISSING,
+            ERROR_PARAMETER_MEMO_MALFORMED,
+            ERROR_PARAMETER_CHEER_FLAG_MISSING,
+            ERROR_PARAMETER_CHEER_FLAG_MALFORMED,
+        }
+
+        public static String SetPostLocalCodeMessageTable(SetPostLocalCode code) {
+            if (SetPostLocalCodeMap.isEmpty()) {
+                SetPostLocalCodeMap.put(SetPostLocalCode.ERROR_PARAMETER_MOVIE_NAME_MALFORMED, "Parameter 'movie_name' is malformed. Should correspond to '^[0-9_-]+$'");
+                SetPostLocalCodeMap.put(SetPostLocalCode.ERROR_PARAMETER_MOVIE_NAME_MISSING, "Parameter 'movie_name' does not exist.");
+                SetPostLocalCodeMap.put(SetPostLocalCode.ERROR_PARAMETER_CHEER_FLAG_MISSING, "Parameter 'cheer_flag' does not exist.");
+                SetPostLocalCodeMap.put(SetPostLocalCode.ERROR_PARAMETER_MEMO_MISSING, "Parameter 'memo' does not exist.");
+                SetPostLocalCodeMap.put(SetPostLocalCode.ERROR_PARAMETER_VALUE_MISSING, "Parameter 'value' does not exist.");
+                SetPostLocalCodeMap.put(SetPostLocalCode.ERROR_PARAMETER_CATEGORY_ID_MISSING, "Parameter 'category_id' does not exist.");
+                SetPostLocalCodeMap.put(SetPostLocalCode.ERROR_PARAMETER_CHEER_FLAG_MALFORMED, "Parameter 'cheer_flag' is malformed. Should correspond to '^0$|^1$'");
+                SetPostLocalCodeMap.put(SetPostLocalCode.ERROR_PARAMETER_CATEGORY_ID_MALFORMED, "Parameter 'category_id' is malformed. Should correspond to '^\\d{1}$'");
+                SetPostLocalCodeMap.put(SetPostLocalCode.ERROR_PARAMETER_VALUE_MALFORMED, "Parameter 'value' is malformed. Should correspond to '^\\d{0,8}$'");
+                SetPostLocalCodeMap.put(SetPostLocalCode.ERROR_PARAMETER_REST_ID_MISSING, "Parameter 'rest_id' does not exist.");
+                SetPostLocalCodeMap.put(SetPostLocalCode.ERROR_PARAMETER_REST_ID_MALFORMED, "Parameter 'rest_id' is malformed. Should correspond to '^\\d+$'");
+                SetPostLocalCodeMap.put(SetPostLocalCode.ERROR_PARAMETER_MEMO_MALFORMED, "Parameter 'memo' is malformed. Should correspond to '^\\S{1,140}$'");
+            }
+            String message = null;
+            for (Map.Entry<SetPostLocalCode, String> entry : SetPostLocalCodeMap.entrySet()) {
+                if (entry.getKey().equals(code)) {
+                    message = entry.getValue();
+                    break;
+                }
+            }
+            return message;
+        }
+
+        public static SetPostLocalCode SetPostLocalCodeReverseLookupTable(String message) {
+            if (SetPostLocalCodeReverseMap.isEmpty()) {
+                SetPostLocalCodeReverseMap.put("ERROR_PARAMETER_MOVIE_NAME_MALFORMED", SetPostLocalCode.ERROR_PARAMETER_MOVIE_NAME_MALFORMED);
+                SetPostLocalCodeReverseMap.put("ERROR_PARAMETER_MOVIE_NAME_MISSING", SetPostLocalCode.ERROR_PARAMETER_MOVIE_NAME_MISSING);
+                SetPostLocalCodeReverseMap.put("ERROR_PARAMETER_CHEER_FLAG_MISSING", SetPostLocalCode.ERROR_PARAMETER_CHEER_FLAG_MISSING);
+                SetPostLocalCodeReverseMap.put("ERROR_PARAMETER_MEMO_MISSING", SetPostLocalCode.ERROR_PARAMETER_MEMO_MISSING);
+                SetPostLocalCodeReverseMap.put("ERROR_PARAMETER_VALUE_MISSING", SetPostLocalCode.ERROR_PARAMETER_VALUE_MISSING);
+                SetPostLocalCodeReverseMap.put("ERROR_PARAMETER_CATEGORY_ID_MISSING", SetPostLocalCode.ERROR_PARAMETER_CATEGORY_ID_MISSING);
+                SetPostLocalCodeReverseMap.put("ERROR_PARAMETER_CHEER_FLAG_MALFORMED", SetPostLocalCode.ERROR_PARAMETER_CHEER_FLAG_MALFORMED);
+                SetPostLocalCodeReverseMap.put("ERROR_PARAMETER_CATEGORY_ID_MALFORMED", SetPostLocalCode.ERROR_PARAMETER_CATEGORY_ID_MALFORMED);
+                SetPostLocalCodeReverseMap.put("ERROR_PARAMETER_VALUE_MALFORMED", SetPostLocalCode.ERROR_PARAMETER_VALUE_MALFORMED);
+                SetPostLocalCodeReverseMap.put("ERROR_PARAMETER_REST_ID_MISSING", SetPostLocalCode.ERROR_PARAMETER_REST_ID_MISSING);
+                SetPostLocalCodeReverseMap.put("ERROR_PARAMETER_REST_ID_MALFORMED", SetPostLocalCode.ERROR_PARAMETER_REST_ID_MALFORMED);
+                SetPostLocalCodeReverseMap.put("ERROR_PARAMETER_MEMO_MALFORMED", SetPostLocalCode.ERROR_PARAMETER_MEMO_MALFORMED);
+            }
+            SetPostLocalCode code = null;
+            for (Map.Entry<String, SetPostLocalCode> entry : SetPostLocalCodeReverseMap.entrySet()) {
+                if (entry.getKey().equals(message)) {
+                    code = entry.getValue();
+                    break;
+                }
+            }
+            return code;
+        }
+
+        private static final ConcurrentHashMap<SetFollowLocalCode, String> SetFollowLocalCodeMap = new ConcurrentHashMap<>();
+        private static final ConcurrentHashMap<String, SetFollowLocalCode> SetFollowLocalCodeReverseMap = new ConcurrentHashMap<>();
+
+        public static String getSetFollowAPI(String user_id) {
+            return testurl + "/set/follow/" + "?user_id=" + user_id;
+        }
+
+        public enum SetFollowLocalCode {
             ERROR_PARAMETER_USER_ID_MISSING,
             ERROR_PARAMETER_USER_ID_MALFORMED,
         }
 
-        public static GetUserLocalCode getUserLocalErrorReverseLookupTable(String code) {
-            if (getUserLocalReverseMap.isEmpty()) {
-                getUserLocalReverseMap.put("ERROR_PARAMETER_USER_ID_MISSING", GetUserLocalCode.ERROR_PARAMETER_USER_ID_MISSING);
-                getUserLocalReverseMap.put("ERROR_PARAMETER_USER_ID_MALFORMED", GetUserLocalCode.ERROR_PARAMETER_USER_ID_MALFORMED);
-            }
-            GetUserLocalCode localCode = null;
-            for (Map.Entry<String, GetUserLocalCode> entry : getUserLocalReverseMap.entrySet()) {
-                if (entry.getKey().equals(code)) {
-                    localCode = entry.getValue();
-                    break;
-                }
-            }
-            return localCode;
-        }
-
-        public static String getUserLocalErrorMessageTable(GetUserLocalCode localCode) {
-            if (getUserLocalMap.isEmpty()) {
-                getUserLocalMap.put(GetUserLocalCode.ERROR_PARAMETER_USER_ID_MISSING, "Parameter 'user_id' was not received");
-                getUserLocalMap.put(GetUserLocalCode.ERROR_PARAMETER_USER_ID_MALFORMED, "Parameter 'user_id' is malformed. Should correspond to '^[0-9]+$'");
+        public static String SetFollowLocalCodeMessageTable(SetFollowLocalCode code) {
+            if (SetFollowLocalCodeMap.isEmpty()) {
+                SetFollowLocalCodeMap.put(SetFollowLocalCode.ERROR_PARAMETER_USER_ID_MALFORMED, "Parameter 'user_id' is malformed. Should correspond to '^\\d+$'");
+                SetFollowLocalCodeMap.put(SetFollowLocalCode.ERROR_PARAMETER_USER_ID_MISSING, "Parameter 'user_id' does not exist.");
             }
             String message = null;
-            for (Map.Entry<GetUserLocalCode, String> entry : getUserLocalMap.entrySet()) {
-                if (entry.getKey().equals(localCode)) {
+            for (Map.Entry<SetFollowLocalCode, String> entry : SetFollowLocalCodeMap.entrySet()) {
+                if (entry.getKey().equals(code)) {
                     message = entry.getValue();
                     break;
                 }
@@ -653,75 +750,41 @@ public interface API3 {
             return message;
         }
 
-        public static final ConcurrentHashMap<GetRestLocalCode, String> getRestLocalMap = new ConcurrentHashMap<>();
-        public static final ConcurrentHashMap<String, GetRestLocalCode> getRestLocalReverseMap = new ConcurrentHashMap<>();
-
-        public enum GetRestLocalCode {
-            ERROR_PARAMETER_REST_ID_MISSING,
-            ERROR_PARAMETER_REST_ID_MALFORMED,
-        }
-
-        public static GetRestLocalCode getRestLocalErrorReverseLookupTable(String code) {
-            if (getRestLocalReverseMap.isEmpty()) {
-                getRestLocalReverseMap.put("ERROR_PARAMETER_REST_ID_MISSING", GetRestLocalCode.ERROR_PARAMETER_REST_ID_MISSING);
-                getRestLocalReverseMap.put("ERROR_PARAMETER_REST_ID_MALFORMED", GetRestLocalCode.ERROR_PARAMETER_REST_ID_MALFORMED);
+        public static SetFollowLocalCode SetFollowLocalCodeReverseLookupTable(String message) {
+            if (SetFollowLocalCodeReverseMap.isEmpty()) {
+                SetFollowLocalCodeReverseMap.put("ERROR_PARAMETER_USER_ID_MALFORMED", SetFollowLocalCode.ERROR_PARAMETER_USER_ID_MALFORMED);
+                SetFollowLocalCodeReverseMap.put("ERROR_PARAMETER_USER_ID_MISSING", SetFollowLocalCode.ERROR_PARAMETER_USER_ID_MISSING);
             }
-            GetRestLocalCode localCode = null;
-            for (Map.Entry<String, GetRestLocalCode> entry : getRestLocalReverseMap.entrySet()) {
-                if (entry.getKey().equals(code)) {
-                    localCode = entry.getValue();
+            SetFollowLocalCode code = null;
+            for (Map.Entry<String, SetFollowLocalCode> entry : SetFollowLocalCodeReverseMap.entrySet()) {
+                if (entry.getKey().equals(message)) {
+                    code = entry.getValue();
                     break;
                 }
             }
-            return localCode;
+            return code;
         }
 
-        public static String getRestLocalErrorMessageTable(GetRestLocalCode localCode) {
-            if (getRestLocalMap.isEmpty()) {
-                getRestLocalMap.put(GetRestLocalCode.ERROR_PARAMETER_REST_ID_MISSING, "Parameter 'rest_id' was not received");
-                getRestLocalMap.put(GetRestLocalCode.ERROR_PARAMETER_REST_ID_MALFORMED, "Parameter 'rest_id' is malformed. Should correspond to '^[0-9]+$'");
-            }
-            String message = null;
-            for (Map.Entry<GetRestLocalCode, String> entry : getRestLocalMap.entrySet()) {
-                if (entry.getKey().equals(localCode)) {
-                    message = entry.getValue();
-                    break;
-                }
-            }
-            return message;
+        private static final ConcurrentHashMap<SetGochiLocalCode, String> SetGochiLocalCodeMap = new ConcurrentHashMap<>();
+        private static final ConcurrentHashMap<String, SetGochiLocalCode> SetGochiLocalCodeReverseMap = new ConcurrentHashMap<>();
+
+        public static String getSetGochiAPI(String post_id) {
+            return testurl + "/set/gochi/" + "?post_id=" + post_id;
         }
 
-        public static final ConcurrentHashMap<GetCommentLocalCode, String> getCommentLocalMap = new ConcurrentHashMap<>();
-        public static final ConcurrentHashMap<String, GetCommentLocalCode> getCommentLocalReverseMap = new ConcurrentHashMap<>();
-
-        public enum GetCommentLocalCode {
+        public enum SetGochiLocalCode {
             ERROR_PARAMETER_POST_ID_MISSING,
             ERROR_PARAMETER_POST_ID_MALFORMED,
         }
 
-        public static GetCommentLocalCode getCommentLocalErrorReverseLookupTable(String code) {
-            if (getCommentLocalReverseMap.isEmpty()) {
-                getCommentLocalReverseMap.put("ERROR_PARAMETER_POST_ID_MISSING", GetCommentLocalCode.ERROR_PARAMETER_POST_ID_MISSING);
-                getCommentLocalReverseMap.put("ERROR_PARAMETER_POST_ID_MALFORMED", GetCommentLocalCode.ERROR_PARAMETER_POST_ID_MALFORMED);
-            }
-            GetCommentLocalCode localCode = null;
-            for (Map.Entry<String, GetCommentLocalCode> entry : getCommentLocalReverseMap.entrySet()) {
-                if (entry.getKey().equals(code)) {
-                    localCode = entry.getValue();
-                    break;
-                }
-            }
-            return localCode;
-        }
-
-        public static String getCommentLocalErrorMessageTable(GetCommentLocalCode localCode) {
-            if (getCommentLocalMap.isEmpty()) {
-                getCommentLocalMap.put(GetCommentLocalCode.ERROR_PARAMETER_POST_ID_MISSING, "Parameter 'post_id' was not received");
-                getCommentLocalMap.put(GetCommentLocalCode.ERROR_PARAMETER_POST_ID_MALFORMED, "Parameter 'post_id' is malformed. Should correspond to '^[0-9]+$'");
+        public static String SetGochiLocalCodeMessageTable(SetGochiLocalCode code) {
+            if (SetGochiLocalCodeMap.isEmpty()) {
+                SetGochiLocalCodeMap.put(SetGochiLocalCode.ERROR_PARAMETER_POST_ID_MALFORMED, "Parameter 'post_id' is malformed. Should correspond to '^\\d+$'");
+                SetGochiLocalCodeMap.put(SetGochiLocalCode.ERROR_PARAMETER_POST_ID_MISSING, "Parameter 'post_id' does not exist.");
             }
             String message = null;
-            for (Map.Entry<GetCommentLocalCode, String> entry : getCommentLocalMap.entrySet()) {
-                if (entry.getKey().equals(localCode)) {
+            for (Map.Entry<SetGochiLocalCode, String> entry : SetGochiLocalCodeMap.entrySet()) {
+                if (entry.getKey().equals(code)) {
                     message = entry.getValue();
                     break;
                 }
@@ -729,299 +792,29 @@ public interface API3 {
             return message;
         }
 
-        public static final ConcurrentHashMap<GetFollowLocalCode, String> getFollowLocalMap = new ConcurrentHashMap<>();
-        public static final ConcurrentHashMap<String, GetFollowLocalCode> getFollowLocalReverseMap = new ConcurrentHashMap<>();
-
-        public enum GetFollowLocalCode {
-            ERROR_PARAMETER_USER_ID_MISSING,
-            ERROR_PARAMETER_USER_ID_MALFORMED,
-        }
-
-        public static GetFollowLocalCode getFollowLocalErrorReverseLookupTable(String code) {
-            if (getFollowLocalReverseMap.isEmpty()) {
-                getFollowLocalReverseMap.put("ERROR_PARAMETER_USER_ID_MISSING", GetFollowLocalCode.ERROR_PARAMETER_USER_ID_MISSING);
-                getFollowLocalReverseMap.put("ERROR_PARAMETER_USER_ID_MALFORMED", GetFollowLocalCode.ERROR_PARAMETER_USER_ID_MALFORMED);
+        public static SetGochiLocalCode SetGochiLocalCodeReverseLookupTable(String message) {
+            if (SetGochiLocalCodeReverseMap.isEmpty()) {
+                SetGochiLocalCodeReverseMap.put("ERROR_PARAMETER_POST_ID_MALFORMED", SetGochiLocalCode.ERROR_PARAMETER_POST_ID_MALFORMED);
+                SetGochiLocalCodeReverseMap.put("ERROR_PARAMETER_POST_ID_MISSING", SetGochiLocalCode.ERROR_PARAMETER_POST_ID_MISSING);
             }
-            GetFollowLocalCode localCode = null;
-            for (Map.Entry<String, GetFollowLocalCode> entry : getFollowLocalReverseMap.entrySet()) {
-                if (entry.getKey().equals(code)) {
-                    localCode = entry.getValue();
+            SetGochiLocalCode code = null;
+            for (Map.Entry<String, SetGochiLocalCode> entry : SetGochiLocalCodeReverseMap.entrySet()) {
+                if (entry.getKey().equals(message)) {
+                    code = entry.getValue();
                     break;
                 }
             }
-            return localCode;
+            return code;
         }
 
-        public static String getFollowLocalErrorMessageTable(GetFollowLocalCode localCode) {
-            if (getFollowLocalMap.isEmpty()) {
-                getFollowLocalMap.put(GetFollowLocalCode.ERROR_PARAMETER_USER_ID_MISSING, "Parameter 'user_id' does not exist.");
-                getFollowLocalMap.put(GetFollowLocalCode.ERROR_PARAMETER_USER_ID_MALFORMED, "Parameter 'user_id' is malformed. Should correspond to '^([a-f0-9]{64})|([a-zA-Z0-9:_-]{140,250})$'");
-            }
-            String message = null;
-            for (Map.Entry<GetFollowLocalCode, String> entry : getFollowLocalMap.entrySet()) {
-                if (entry.getKey().equals(localCode)) {
-                    message = entry.getValue();
-                    break;
-                }
-            }
-            return message;
+        private static final ConcurrentHashMap<SetDeviceLocalCode, String> SetDeviceLocalCodeMap = new ConcurrentHashMap<>();
+        private static final ConcurrentHashMap<String, SetDeviceLocalCode> SetDeviceLocalCodeReverseMap = new ConcurrentHashMap<>();
+
+        public static String getSetDeviceAPI(String device_token, String os, String ver, String model) {
+            return testurl + "/set/device/" + "?device_token=" + device_token + "&os=" + os + "&ver=" + ver + "&model=" + model;
         }
 
-        public static final ConcurrentHashMap<GetFollowerLocalCode, String> getFollowerLocalMap = new ConcurrentHashMap<>();
-        public static final ConcurrentHashMap<String, GetFollowerLocalCode> getFollowerLocalReverseMap = new ConcurrentHashMap<>();
-
-        public enum GetFollowerLocalCode {
-            ERROR_PARAMETER_USER_ID_MISSING,
-            ERROR_PARAMETER_USER_ID_MALFORMED,
-        }
-
-        public static GetFollowerLocalCode getFollowerLocalErrorReverseLookupTable(String code) {
-            if (getFollowerLocalReverseMap.isEmpty()) {
-                getFollowerLocalReverseMap.put("ERROR_PARAMETER_USER_ID_MISSING", GetFollowerLocalCode.ERROR_PARAMETER_USER_ID_MISSING);
-                getFollowerLocalReverseMap.put("ERROR_PARAMETER_USER_ID_MALFORMED", GetFollowerLocalCode.ERROR_PARAMETER_USER_ID_MALFORMED);
-            }
-            GetFollowerLocalCode localCode = null;
-            for (Map.Entry<String, GetFollowerLocalCode> entry : getFollowerLocalReverseMap.entrySet()) {
-                if (entry.getKey().equals(code)) {
-                    localCode = entry.getValue();
-                    break;
-                }
-            }
-            return localCode;
-        }
-
-        public static String getFollowerLocalErrorMessageTable(GetFollowerLocalCode localCode) {
-            if (getFollowerLocalMap.isEmpty()) {
-                getFollowerLocalMap.put(GetFollowerLocalCode.ERROR_PARAMETER_USER_ID_MISSING, "Parameter 'user_id' does not exist.");
-                getFollowerLocalMap.put(GetFollowerLocalCode.ERROR_PARAMETER_USER_ID_MALFORMED, "Parameter 'user_id' is malformed. Should correspond to '^([a-f0-9]{64})|([a-zA-Z0-9:_-]{140,250})$'");
-            }
-            String message = null;
-            for (Map.Entry<GetFollowerLocalCode, String> entry : getFollowerLocalMap.entrySet()) {
-                if (entry.getKey().equals(localCode)) {
-                    message = entry.getValue();
-                    break;
-                }
-            }
-            return message;
-        }
-
-        public static final ConcurrentHashMap<GetWantLocalCode, String> getWantLocalMap = new ConcurrentHashMap<>();
-        public static final ConcurrentHashMap<String, GetWantLocalCode> getWantLocalReverseMap = new ConcurrentHashMap<>();
-
-        public enum GetWantLocalCode {
-            ERROR_PARAMETER_USER_ID_MISSING,
-            ERROR_PARAMETER_USER_ID_MALFORMED,
-        }
-
-        public static GetWantLocalCode getWantLocalErrorReverseLookupTable(String code) {
-            if (getWantLocalReverseMap.isEmpty()) {
-                getWantLocalReverseMap.put("ERROR_PARAMETER_USER_ID_MISSING", GetWantLocalCode.ERROR_PARAMETER_USER_ID_MISSING);
-                getWantLocalReverseMap.put("ERROR_PARAMETER_USER_ID_MALFORMED", GetWantLocalCode.ERROR_PARAMETER_USER_ID_MALFORMED);
-            }
-            GetWantLocalCode localCode = null;
-            for (Map.Entry<String, GetWantLocalCode> entry : getWantLocalReverseMap.entrySet()) {
-                if (entry.getKey().equals(code)) {
-                    localCode = entry.getValue();
-                    break;
-                }
-            }
-            return localCode;
-        }
-
-        public static String getWantLocalErrorMessageTable(GetWantLocalCode localCode) {
-            if (getWantLocalMap.isEmpty()) {
-                getWantLocalMap.put(GetWantLocalCode.ERROR_PARAMETER_USER_ID_MISSING, "Parameter 'user_id' does not exist.");
-                getWantLocalMap.put(GetWantLocalCode.ERROR_PARAMETER_USER_ID_MALFORMED, "Parameter 'user_id' is malformed. Should correspond to '^([a-f0-9]{64})|([a-zA-Z0-9:_-]{140,250})$'");
-            }
-            String message = null;
-            for (Map.Entry<GetWantLocalCode, String> entry : getWantLocalMap.entrySet()) {
-                if (entry.getKey().equals(localCode)) {
-                    message = entry.getValue();
-                    break;
-                }
-            }
-            return message;
-        }
-
-        public static final ConcurrentHashMap<GetUserCheerLocalCode, String> getUserCheerLocalMap = new ConcurrentHashMap<>();
-        public static final ConcurrentHashMap<String, GetUserCheerLocalCode> getUserCheerLocalReverseMap = new ConcurrentHashMap<>();
-
-        public enum GetUserCheerLocalCode {
-            ERROR_PARAMETER_USER_ID_MISSING,
-            ERROR_PARAMETER_USER_ID_MALFORMED,
-        }
-
-        public static GetUserCheerLocalCode getUserCheerLocalErrorReverseLookupTable(String code) {
-            if (getUserCheerLocalReverseMap.isEmpty()) {
-                getUserCheerLocalReverseMap.put("ERROR_PARAMETER_USER_ID_MISSING", GetUserCheerLocalCode.ERROR_PARAMETER_USER_ID_MISSING);
-                getUserCheerLocalReverseMap.put("ERROR_PARAMETER_USER_ID_MALFORMED", GetUserCheerLocalCode.ERROR_PARAMETER_USER_ID_MALFORMED);
-            }
-            GetUserCheerLocalCode localCode = null;
-            for (Map.Entry<String, GetUserCheerLocalCode> entry : getUserCheerLocalReverseMap.entrySet()) {
-                if (entry.getKey().equals(code)) {
-                    localCode = entry.getValue();
-                    break;
-                }
-            }
-            return localCode;
-        }
-
-        public static String getUserCheerLocalErrorMessageTable(GetUserCheerLocalCode localCode) {
-            if (getUserCheerLocalMap.isEmpty()) {
-                getUserCheerLocalMap.put(GetUserCheerLocalCode.ERROR_PARAMETER_USER_ID_MISSING, "Parameter 'user_id' does not exist.");
-                getUserCheerLocalMap.put(GetUserCheerLocalCode.ERROR_PARAMETER_USER_ID_MALFORMED, "Parameter 'user_id' is malformed. Should correspond to '^([a-f0-9]{64})|([a-zA-Z0-9:_-]{140,250})$'");
-            }
-            String message = null;
-            for (Map.Entry<GetUserCheerLocalCode, String> entry : getUserCheerLocalMap.entrySet()) {
-                if (entry.getKey().equals(localCode)) {
-                    message = entry.getValue();
-                    break;
-                }
-            }
-            return message;
-        }
-
-        public static final ConcurrentHashMap<GetRestCheerLocalCode, String> getRestCheerLocalMap = new ConcurrentHashMap<>();
-        public static final ConcurrentHashMap<String, GetRestCheerLocalCode> getRestCheerLocalReverseMap = new ConcurrentHashMap<>();
-
-        public enum GetRestCheerLocalCode {
-            ERROR_PARAMETER_REST_ID_MISSING,
-            ERROR_PARAMETER_REST_ID_MALFORMED,
-        }
-
-        public static GetRestCheerLocalCode getRestCheerLocalErrorReverseLookupTable(String code) {
-            if (getRestCheerLocalReverseMap.isEmpty()) {
-                getRestCheerLocalReverseMap.put("ERROR_PARAMETER_REST_ID_MISSING", GetRestCheerLocalCode.ERROR_PARAMETER_REST_ID_MISSING);
-                getRestCheerLocalReverseMap.put("ERROR_PARAMETER_REST_ID_MALFORMED", GetRestCheerLocalCode.ERROR_PARAMETER_REST_ID_MALFORMED);
-            }
-            GetRestCheerLocalCode localCode = null;
-            for (Map.Entry<String, GetRestCheerLocalCode> entry : getRestCheerLocalReverseMap.entrySet()) {
-                if (entry.getKey().equals(code)) {
-                    localCode = entry.getValue();
-                    break;
-                }
-            }
-            return localCode;
-        }
-
-        public static String getRestCheerLocalErrorMessageTable(GetRestCheerLocalCode localCode) {
-            if (getRestCheerLocalMap.isEmpty()) {
-                getRestCheerLocalMap.put(GetRestCheerLocalCode.ERROR_PARAMETER_REST_ID_MISSING, "Parameter 'rest_id' does not exist.");
-                getRestCheerLocalMap.put(GetRestCheerLocalCode.ERROR_PARAMETER_REST_ID_MALFORMED, "Parameter 'rest_id' is malformed. Should correspond to '^([a-f0-9]{64})|([a-zA-Z0-9:_-]{140,250})$'");
-            }
-            String message = null;
-            for (Map.Entry<GetRestCheerLocalCode, String> entry : getRestCheerLocalMap.entrySet()) {
-                if (entry.getKey().equals(localCode)) {
-                    message = entry.getValue();
-                    break;
-                }
-            }
-            return message;
-        }
-
-        public static final ConcurrentHashMap<GetNoticeLocalCode, String> getNoticeLocalMap = new ConcurrentHashMap<>();
-        public static final ConcurrentHashMap<String, GetNoticeLocalCode> getNoticeLocalReverseMap = new ConcurrentHashMap<>();
-
-        public enum GetNoticeLocalCode {
-
-        }
-
-        public static GetNoticeLocalCode getNoticeLocalErrorReverseLookupTable(String code) {
-            if (getNoticeLocalReverseMap.isEmpty()) {
-            }
-            GetNoticeLocalCode localCode = null;
-            for (Map.Entry<String, GetNoticeLocalCode> entry : getNoticeLocalReverseMap.entrySet()) {
-                if (entry.getKey().equals(code)) {
-                    localCode = entry.getValue();
-                    break;
-                }
-            }
-            return localCode;
-        }
-
-        public static String getNoticeLocalErrorMessageTable(GetNoticeLocalCode localCode) {
-            if (getNoticeLocalMap.isEmpty()) {
-            }
-            String message = null;
-            for (Map.Entry<GetNoticeLocalCode, String> entry : getNoticeLocalMap.entrySet()) {
-                if (entry.getKey().equals(localCode)) {
-                    message = entry.getValue();
-                    break;
-                }
-            }
-            return message;
-        }
-
-        public static final ConcurrentHashMap<GetNearLocalCode, String> getNearLocalMap = new ConcurrentHashMap<>();
-        public static final ConcurrentHashMap<String, GetNearLocalCode> getNearLocalReverseMap = new ConcurrentHashMap<>();
-
-        public enum GetNearLocalCode {
-
-        }
-
-        public static GetNearLocalCode getNearLocalErrorReverseLookupTable(String code) {
-            if (getNearLocalReverseMap.isEmpty()) {
-            }
-            GetNearLocalCode localCode = null;
-            for (Map.Entry<String, GetNearLocalCode> entry : getNearLocalReverseMap.entrySet()) {
-                if (entry.getKey().equals(code)) {
-                    localCode = entry.getValue();
-                    break;
-                }
-            }
-            return localCode;
-        }
-
-        public static String getNearLocalErrorMessageTable(GetNearLocalCode localCode) {
-            if (getNearLocalMap.isEmpty()) {
-            }
-            String message = null;
-            for (Map.Entry<GetNearLocalCode, String> entry : getNearLocalMap.entrySet()) {
-                if (entry.getKey().equals(localCode)) {
-                    message = entry.getValue();
-                    break;
-                }
-            }
-            return message;
-        }
-
-        public static final ConcurrentHashMap<GetHeatmapLocalCode, String> getHeatmapLocalMap = new ConcurrentHashMap<>();
-        public static final ConcurrentHashMap<String, GetHeatmapLocalCode> getHeatmapLocalReverseMap = new ConcurrentHashMap<>();
-
-        public enum GetHeatmapLocalCode {
-
-        }
-
-        public static GetHeatmapLocalCode getHeatmapLocalErrorReverseLookupTable(String code) {
-            if (getHeatmapLocalReverseMap.isEmpty()) {
-            }
-            GetHeatmapLocalCode localCode = null;
-            for (Map.Entry<String, GetHeatmapLocalCode> entry : getHeatmapLocalReverseMap.entrySet()) {
-                if (entry.getKey().equals(code)) {
-                    localCode = entry.getValue();
-                    break;
-                }
-            }
-            return localCode;
-        }
-
-        public static String getHeatmapLocalErrorMessageTable(GetHeatmapLocalCode localCode) {
-            if (getHeatmapLocalMap.isEmpty()) {
-            }
-            String message = null;
-            for (Map.Entry<GetHeatmapLocalCode, String> entry : getHeatmapLocalMap.entrySet()) {
-                if (entry.getKey().equals(localCode)) {
-                    message = entry.getValue();
-                    break;
-                }
-            }
-            return message;
-        }
-
-        public static final ConcurrentHashMap<PostRegisterDeviceTokenLocalCode, String> postRegisterDeviceTokenLocalMap = new ConcurrentHashMap<>();
-        public static final ConcurrentHashMap<String, PostRegisterDeviceTokenLocalCode> postRegisterDeviceTokenLocalReverseMap = new ConcurrentHashMap<>();
-
-        public enum PostRegisterDeviceTokenLocalCode {
+        public enum SetDeviceLocalCode {
             ERROR_PARAMETER_DEVICE_TOKEN_MISSING,
             ERROR_PARAMETER_DEVICE_TOKEN_MALFORMED,
             ERROR_PARAMETER_OS_MISSING,
@@ -1032,41 +825,20 @@ public interface API3 {
             ERROR_PARAMETER_MODEL_MALFORMED,
         }
 
-        public static PostRegisterDeviceTokenLocalCode postRegisterDeviceTokenLocalErrorReverseLookupTable(String code) {
-            if (postRegisterDeviceTokenLocalReverseMap.isEmpty()) {
-                postRegisterDeviceTokenLocalReverseMap.put("ERROR_PARAMETER_DEVICE_TOKEN_MISSING", PostRegisterDeviceTokenLocalCode.ERROR_PARAMETER_DEVICE_TOKEN_MISSING);
-                postRegisterDeviceTokenLocalReverseMap.put("ERROR_PARAMETER_DEVICE_TOKEN_MALFORMED", PostRegisterDeviceTokenLocalCode.ERROR_PARAMETER_DEVICE_TOKEN_MALFORMED);
-                postRegisterDeviceTokenLocalReverseMap.put("ERROR_PARAMETER_OS_MISSING", PostRegisterDeviceTokenLocalCode.ERROR_PARAMETER_OS_MISSING);
-                postRegisterDeviceTokenLocalReverseMap.put("ERROR_PARAMETER_OS_MALFORMED", PostRegisterDeviceTokenLocalCode.ERROR_PARAMETER_OS_MALFORMED);
-                postRegisterDeviceTokenLocalReverseMap.put("ERROR_PARAMETER_VER_MISSING", PostRegisterDeviceTokenLocalCode.ERROR_PARAMETER_VER_MISSING);
-                postRegisterDeviceTokenLocalReverseMap.put("ERROR_PARAMETER_VER_MALFORMED", PostRegisterDeviceTokenLocalCode.ERROR_PARAMETER_VER_MALFORMED);
-                postRegisterDeviceTokenLocalReverseMap.put("ERROR_PARAMETER_MODEL_MISSING", PostRegisterDeviceTokenLocalCode.ERROR_PARAMETER_MODEL_MISSING);
-                postRegisterDeviceTokenLocalReverseMap.put("ERROR_PARAMETER_MODEL_MALFORMED", PostRegisterDeviceTokenLocalCode.ERROR_PARAMETER_MODEL_MALFORMED);
-            }
-            PostRegisterDeviceTokenLocalCode localCode = null;
-            for (Map.Entry<String, PostRegisterDeviceTokenLocalCode> entry : postRegisterDeviceTokenLocalReverseMap.entrySet()) {
-                if (entry.getKey().equals(code)) {
-                    localCode = entry.getValue();
-                    break;
-                }
-            }
-            return localCode;
-        }
-
-        public static String postRegisterDeviceTokenLocalErrorMessageTable(PostRegisterDeviceTokenLocalCode localCode) {
-            if (postRegisterDeviceTokenLocalMap.isEmpty()) {
-                postRegisterDeviceTokenLocalMap.put(PostRegisterDeviceTokenLocalCode.ERROR_PARAMETER_DEVICE_TOKEN_MISSING, "The provided sns token is invalid or has expired");
-                postRegisterDeviceTokenLocalMap.put(PostRegisterDeviceTokenLocalCode.ERROR_PARAMETER_DEVICE_TOKEN_MALFORMED, "The provided link to the profile image cound not be downloaded");
-                postRegisterDeviceTokenLocalMap.put(PostRegisterDeviceTokenLocalCode.ERROR_PARAMETER_OS_MISSING, "The providers server infrastructure appears to be down");
-                postRegisterDeviceTokenLocalMap.put(PostRegisterDeviceTokenLocalCode.ERROR_PARAMETER_OS_MALFORMED, "Parameter 'provider' does not exist.");
-                postRegisterDeviceTokenLocalMap.put(PostRegisterDeviceTokenLocalCode.ERROR_PARAMETER_VER_MISSING, "Parameter 'provider' is malformed. Should correspond to '^\\w{4,20}$'");
-                postRegisterDeviceTokenLocalMap.put(PostRegisterDeviceTokenLocalCode.ERROR_PARAMETER_VER_MALFORMED, "Parameter 'token' does not exist.");
-                postRegisterDeviceTokenLocalMap.put(PostRegisterDeviceTokenLocalCode.ERROR_PARAMETER_MODEL_MISSING, "Parameter 'token' is malformed. Should correspond to '^\\w{4,20}$'");
-                postRegisterDeviceTokenLocalMap.put(PostRegisterDeviceTokenLocalCode.ERROR_PARAMETER_MODEL_MALFORMED, "Parameter 'token' does not exist.");
+        public static String SetDeviceLocalCodeMessageTable(SetDeviceLocalCode code) {
+            if (SetDeviceLocalCodeMap.isEmpty()) {
+                SetDeviceLocalCodeMap.put(SetDeviceLocalCode.ERROR_PARAMETER_DEVICE_TOKEN_MALFORMED, "Parameter 'device_token' is malformed. Should correspond to '^([a-f0-9]{64})|([a-zA-Z0-9:_-]{140,250})$'");
+                SetDeviceLocalCodeMap.put(SetDeviceLocalCode.ERROR_PARAMETER_VER_MISSING, "Parameter 'ver' does not exist.");
+                SetDeviceLocalCodeMap.put(SetDeviceLocalCode.ERROR_PARAMETER_OS_MALFORMED, "Parameter 'os' is malformed. Should correspond to '^android$|^iOS$'");
+                SetDeviceLocalCodeMap.put(SetDeviceLocalCode.ERROR_PARAMETER_VER_MALFORMED, "Parameter 'ver' is malformed. Should correspond to '^[0-9.]{1,6}$'");
+                SetDeviceLocalCodeMap.put(SetDeviceLocalCode.ERROR_PARAMETER_DEVICE_TOKEN_MISSING, "Parameter 'device_token' does not exist.");
+                SetDeviceLocalCodeMap.put(SetDeviceLocalCode.ERROR_PARAMETER_MODEL_MALFORMED, "Parameter 'model' is malformed. Should correspond to '^\\S{1,50}$'");
+                SetDeviceLocalCodeMap.put(SetDeviceLocalCode.ERROR_PARAMETER_OS_MISSING, "Parameter 'os' does not exist.");
+                SetDeviceLocalCodeMap.put(SetDeviceLocalCode.ERROR_PARAMETER_MODEL_MISSING, "Parameter 'model' does not exist.");
             }
             String message = null;
-            for (Map.Entry<PostRegisterDeviceTokenLocalCode, String> entry : postRegisterDeviceTokenLocalMap.entrySet()) {
-                if (entry.getKey().equals(localCode)) {
+            for (Map.Entry<SetDeviceLocalCode, String> entry : SetDeviceLocalCodeMap.entrySet()) {
+                if (entry.getKey().equals(code)) {
                     message = entry.getValue();
                     break;
                 }
@@ -1074,37 +846,47 @@ public interface API3 {
             return message;
         }
 
-        public static final ConcurrentHashMap<PostUnregisterDeviceTokenLocalCode, String> postUnregisterDeviceTokenLocalMap = new ConcurrentHashMap<>();
-        public static final ConcurrentHashMap<String, PostUnregisterDeviceTokenLocalCode> postUnregisterDeviceTokenLocalReverseMap = new ConcurrentHashMap<>();
-
-        public enum PostUnregisterDeviceTokenLocalCode {
-            ERROR_PARAMETER_DEVICE_TOKEN_MISSING,
-            ERROR_PARAMETER_DEVICE_TOKEN_MALFORMED,
-        }
-
-        public static PostUnregisterDeviceTokenLocalCode postUnregisterDeviceTokenLocalErrorReverseLookupTable(String code) {
-            if (postUnregisterDeviceTokenLocalReverseMap.isEmpty()) {
-                postUnregisterDeviceTokenLocalReverseMap.put("ERROR_PARAMETER_DEVICE_TOKEN_MISSING", PostUnregisterDeviceTokenLocalCode.ERROR_PARAMETER_DEVICE_TOKEN_MISSING);
-                postUnregisterDeviceTokenLocalReverseMap.put("ERROR_PARAMETER_DEVICE_TOKEN_MALFORMED", PostUnregisterDeviceTokenLocalCode.ERROR_PARAMETER_DEVICE_TOKEN_MALFORMED);
+        public static SetDeviceLocalCode SetDeviceLocalCodeReverseLookupTable(String message) {
+            if (SetDeviceLocalCodeReverseMap.isEmpty()) {
+                SetDeviceLocalCodeReverseMap.put("ERROR_PARAMETER_DEVICE_TOKEN_MALFORMED", SetDeviceLocalCode.ERROR_PARAMETER_DEVICE_TOKEN_MALFORMED);
+                SetDeviceLocalCodeReverseMap.put("ERROR_PARAMETER_VER_MISSING", SetDeviceLocalCode.ERROR_PARAMETER_VER_MISSING);
+                SetDeviceLocalCodeReverseMap.put("ERROR_PARAMETER_OS_MALFORMED", SetDeviceLocalCode.ERROR_PARAMETER_OS_MALFORMED);
+                SetDeviceLocalCodeReverseMap.put("ERROR_PARAMETER_VER_MALFORMED", SetDeviceLocalCode.ERROR_PARAMETER_VER_MALFORMED);
+                SetDeviceLocalCodeReverseMap.put("ERROR_PARAMETER_DEVICE_TOKEN_MISSING", SetDeviceLocalCode.ERROR_PARAMETER_DEVICE_TOKEN_MISSING);
+                SetDeviceLocalCodeReverseMap.put("ERROR_PARAMETER_MODEL_MALFORMED", SetDeviceLocalCode.ERROR_PARAMETER_MODEL_MALFORMED);
+                SetDeviceLocalCodeReverseMap.put("ERROR_PARAMETER_OS_MISSING", SetDeviceLocalCode.ERROR_PARAMETER_OS_MISSING);
+                SetDeviceLocalCodeReverseMap.put("ERROR_PARAMETER_MODEL_MISSING", SetDeviceLocalCode.ERROR_PARAMETER_MODEL_MISSING);
             }
-            PostUnregisterDeviceTokenLocalCode localCode = null;
-            for (Map.Entry<String, PostUnregisterDeviceTokenLocalCode> entry : postUnregisterDeviceTokenLocalReverseMap.entrySet()) {
-                if (entry.getKey().equals(code)) {
-                    localCode = entry.getValue();
+            SetDeviceLocalCode code = null;
+            for (Map.Entry<String, SetDeviceLocalCode> entry : SetDeviceLocalCodeReverseMap.entrySet()) {
+                if (entry.getKey().equals(message)) {
+                    code = entry.getValue();
                     break;
                 }
             }
-            return localCode;
+            return code;
         }
 
-        public static String postUnregisterDeviceTokenLocalErrorMessageTable(PostUnregisterDeviceTokenLocalCode localCode) {
-            if (postUnregisterDeviceTokenLocalMap.isEmpty()) {
-                postUnregisterDeviceTokenLocalMap.put(PostUnregisterDeviceTokenLocalCode.ERROR_PARAMETER_DEVICE_TOKEN_MISSING, "The provided sns token is invalid or has expired");
-                postUnregisterDeviceTokenLocalMap.put(PostUnregisterDeviceTokenLocalCode.ERROR_PARAMETER_DEVICE_TOKEN_MALFORMED, "The provided link to the profile image cound not be downloaded");
+        private static final ConcurrentHashMap<SetWantLocalCode, String> SetWantLocalCodeMap = new ConcurrentHashMap<>();
+        private static final ConcurrentHashMap<String, SetWantLocalCode> SetWantLocalCodeReverseMap = new ConcurrentHashMap<>();
+
+        public static String getSetWantAPI(String rest_id) {
+            return testurl + "/set/want/" + "?rest_id=" + rest_id;
+        }
+
+        public enum SetWantLocalCode {
+            ERROR_PARAMETER_REST_ID_MISSING,
+            ERROR_PARAMETER_REST_ID_MALFORMED,
+        }
+
+        public static String SetWantLocalCodeMessageTable(SetWantLocalCode code) {
+            if (SetWantLocalCodeMap.isEmpty()) {
+                SetWantLocalCodeMap.put(SetWantLocalCode.ERROR_PARAMETER_REST_ID_MALFORMED, "Parameter 'rest_id' is malformed. Should correspond to '^\\d+$'");
+                SetWantLocalCodeMap.put(SetWantLocalCode.ERROR_PARAMETER_REST_ID_MISSING, "Parameter 'rest_id' does not exist.");
             }
             String message = null;
-            for (Map.Entry<PostUnregisterDeviceTokenLocalCode, String> entry : postUnregisterDeviceTokenLocalMap.entrySet()) {
-                if (entry.getKey().equals(localCode)) {
+            for (Map.Entry<SetWantLocalCode, String> entry : SetWantLocalCodeMap.entrySet()) {
+                if (entry.getKey().equals(code)) {
                     message = entry.getValue();
                     break;
                 }
@@ -1112,52 +894,49 @@ public interface API3 {
             return message;
         }
 
-        public static final ConcurrentHashMap<PostSnsLinkLocalCode, String> postSnsLinkLocalMap = new ConcurrentHashMap<>();
-        public static final ConcurrentHashMap<String, PostSnsLinkLocalCode> postSnsLinkLocalReverseMap = new ConcurrentHashMap<>();
-
-        public enum PostSnsLinkLocalCode {
-            ERROR_SNS_PROVIDER_TOKEN_NOT_VALID,
-            ERROR_PROFILE_IMAGE_DOES_NOT_EXIST,
-            ERROR_PROVIDER_UNREACHABLE,
-            ERROR_PARAMETER_PROVIDER_MISSING,
-            ERROR_PARAMETER_PROVIDER_MALFORMED,
-            ERROR_PARAMETER_TOKEN_MISSING,
-            ERROR_PARAMETER_TOKEN_MALFORMED,
-        }
-
-        public static PostSnsLinkLocalCode postSnsLinkLocalErrorReverseLookupTable(String code) {
-            if (postSnsLinkLocalReverseMap.isEmpty()) {
-                postSnsLinkLocalReverseMap.put("ERROR_SNS_PROVIDER_TOKEN_NOT_VALID", PostSnsLinkLocalCode.ERROR_SNS_PROVIDER_TOKEN_NOT_VALID);
-                postSnsLinkLocalReverseMap.put("ERROR_PROFILE_IMAGE_DOES_NOT_EXIST", PostSnsLinkLocalCode.ERROR_PROFILE_IMAGE_DOES_NOT_EXIST);
-                postSnsLinkLocalReverseMap.put("ERROR_PROVIDER_UNREACHABLE", PostSnsLinkLocalCode.ERROR_PROVIDER_UNREACHABLE);
-                postSnsLinkLocalReverseMap.put("ERROR_PARAMETER_PROVIDER_MISSING", PostSnsLinkLocalCode.ERROR_PARAMETER_PROVIDER_MISSING);
-                postSnsLinkLocalReverseMap.put("ERROR_PARAMETER_PROVIDER_MALFORMED", PostSnsLinkLocalCode.ERROR_PARAMETER_PROVIDER_MALFORMED);
-                postSnsLinkLocalReverseMap.put("ERROR_PARAMETER_TOKEN_MISSING", PostSnsLinkLocalCode.ERROR_PARAMETER_TOKEN_MISSING);
-                postSnsLinkLocalReverseMap.put("ERROR_PARAMETER_TOKEN_MALFORMED", PostSnsLinkLocalCode.ERROR_PARAMETER_TOKEN_MALFORMED);
+        public static SetWantLocalCode SetWantLocalCodeReverseLookupTable(String message) {
+            if (SetWantLocalCodeReverseMap.isEmpty()) {
+                SetWantLocalCodeReverseMap.put("ERROR_PARAMETER_REST_ID_MALFORMED", SetWantLocalCode.ERROR_PARAMETER_REST_ID_MALFORMED);
+                SetWantLocalCodeReverseMap.put("ERROR_PARAMETER_REST_ID_MISSING", SetWantLocalCode.ERROR_PARAMETER_REST_ID_MISSING);
             }
-            PostSnsLinkLocalCode localCode = null;
-            for (Map.Entry<String, PostSnsLinkLocalCode> entry : postSnsLinkLocalReverseMap.entrySet()) {
-                if (entry.getKey().equals(code)) {
-                    localCode = entry.getValue();
+            SetWantLocalCode code = null;
+            for (Map.Entry<String, SetWantLocalCode> entry : SetWantLocalCodeReverseMap.entrySet()) {
+                if (entry.getKey().equals(message)) {
+                    code = entry.getValue();
                     break;
                 }
             }
-            return localCode;
+            return code;
         }
 
-        public static String postSnsLinkLocalErrorMessageTable(PostSnsLinkLocalCode localCode) {
-            if (postSnsLinkLocalMap.isEmpty()) {
-                postSnsLinkLocalMap.put(PostSnsLinkLocalCode.ERROR_SNS_PROVIDER_TOKEN_NOT_VALID, "The provided sns token is invalid or has expired");
-                postSnsLinkLocalMap.put(PostSnsLinkLocalCode.ERROR_PROFILE_IMAGE_DOES_NOT_EXIST, "The provided link to the profile image cound not be downloaded");
-                postSnsLinkLocalMap.put(PostSnsLinkLocalCode.ERROR_PROVIDER_UNREACHABLE, "The providers server infrastructure appears to be down");
-                postSnsLinkLocalMap.put(PostSnsLinkLocalCode.ERROR_PARAMETER_PROVIDER_MISSING, "Parameter 'provider' does not exist.");
-                postSnsLinkLocalMap.put(PostSnsLinkLocalCode.ERROR_PARAMETER_PROVIDER_MALFORMED, "Parameter 'provider' is malformed. Should correspond to '^\\w{4,20}$'");
-                postSnsLinkLocalMap.put(PostSnsLinkLocalCode.ERROR_PARAMETER_TOKEN_MISSING, "Parameter 'token' does not exist.");
-                postSnsLinkLocalMap.put(PostSnsLinkLocalCode.ERROR_PARAMETER_TOKEN_MALFORMED, "Parameter 'token' is malformed. Should correspond to '^\\w{4,20}$'");
+        private static final ConcurrentHashMap<SetRestLocalCode, String> SetRestLocalCodeMap = new ConcurrentHashMap<>();
+        private static final ConcurrentHashMap<String, SetRestLocalCode> SetRestLocalCodeReverseMap = new ConcurrentHashMap<>();
+
+        public static String getSetRestAPI(String restname, String lat, String lon) {
+            return testurl + "/set/rest/" + "?restname=" + restname + "&lat=" + lat + "&lon=" + lon;
+        }
+
+        public enum SetRestLocalCode {
+            ERROR_PARAMETER_RESTNAME_MISSING,
+            ERROR_PARAMETER_RESTNAME_MALFORMED,
+            ERROR_PARAMETER_LAT_MISSING,
+            ERROR_PARAMETER_LAT_MALFORMED,
+            ERROR_PARAMETER_LON_MISSING,
+            ERROR_PARAMETER_LON_MALFORMED,
+        }
+
+        public static String SetRestLocalCodeMessageTable(SetRestLocalCode code) {
+            if (SetRestLocalCodeMap.isEmpty()) {
+                SetRestLocalCodeMap.put(SetRestLocalCode.ERROR_PARAMETER_LON_MISSING, "Parameter 'lon' does not exist.");
+                SetRestLocalCodeMap.put(SetRestLocalCode.ERROR_PARAMETER_RESTNAME_MISSING, "Parameter 'restname' does not exist.");
+                SetRestLocalCodeMap.put(SetRestLocalCode.ERROR_PARAMETER_RESTNAME_MALFORMED, "Parameter 'restname' is malformed. Should correspond to '^\\S{2,30}$'");
+                SetRestLocalCodeMap.put(SetRestLocalCode.ERROR_PARAMETER_LAT_MISSING, "Parameter 'lat' does not exist.");
+                SetRestLocalCodeMap.put(SetRestLocalCode.ERROR_PARAMETER_LAT_MALFORMED, "Parameter 'lat' is malformed. Should correspond to '^\\d+.\\d+$'");
+                SetRestLocalCodeMap.put(SetRestLocalCode.ERROR_PARAMETER_LON_MALFORMED, "Parameter 'lon' is malformed. Should correspond to '^\\d+.\\d+$'");
             }
             String message = null;
-            for (Map.Entry<PostSnsLinkLocalCode, String> entry : postSnsLinkLocalMap.entrySet()) {
-                if (entry.getKey().equals(localCode)) {
+            for (Map.Entry<SetRestLocalCode, String> entry : SetRestLocalCodeMap.entrySet()) {
+                if (entry.getKey().equals(code)) {
                     message = entry.getValue();
                     break;
                 }
@@ -1165,87 +944,45 @@ public interface API3 {
             return message;
         }
 
-        public static final ConcurrentHashMap<PostSnsUnlinkLocalCode, String> postSnsUnlinkLocalMap = new ConcurrentHashMap<>();
-        public static final ConcurrentHashMap<String, PostSnsUnlinkLocalCode> postSnsUnlinkLocalReverseMap = new ConcurrentHashMap<>();
-
-        public enum PostSnsUnlinkLocalCode {
-            ERROR_SNS_PROVIDER_TOKEN_NOT_VALID,
-            ERROR_PROVIDER_UNREACHABLE,
-            ERROR_PARAMETER_PROVIDER_MISSING,
-            ERROR_PARAMETER_PROVIDER_MALFORMED,
-            ERROR_PARAMETER_TOKEN_MISSING,
-            ERROR_PARAMETER_TOKEN_MALFORMED,
-        }
-
-        public static PostSnsUnlinkLocalCode postSnsUnlinkLocalErrorReverseLookupTable(String code) {
-            if (postSnsUnlinkLocalReverseMap.isEmpty()) {
-                postSnsUnlinkLocalReverseMap.put("ERROR_SNS_PROVIDER_TOKEN_NOT_VALID", PostSnsUnlinkLocalCode.ERROR_SNS_PROVIDER_TOKEN_NOT_VALID);
-                postSnsUnlinkLocalReverseMap.put("ERROR_PROVIDER_UNREACHABLE", PostSnsUnlinkLocalCode.ERROR_PROVIDER_UNREACHABLE);
-                postSnsUnlinkLocalReverseMap.put("ERROR_PARAMETER_PROVIDER_MISSING", PostSnsUnlinkLocalCode.ERROR_PARAMETER_PROVIDER_MISSING);
-                postSnsUnlinkLocalReverseMap.put("ERROR_PARAMETER_PROVIDER_MALFORMED", PostSnsUnlinkLocalCode.ERROR_PARAMETER_PROVIDER_MALFORMED);
-                postSnsUnlinkLocalReverseMap.put("ERROR_PARAMETER_TOKEN_MISSING", PostSnsUnlinkLocalCode.ERROR_PARAMETER_TOKEN_MISSING);
-                postSnsUnlinkLocalReverseMap.put("ERROR_PARAMETER_TOKEN_MALFORMED", PostSnsUnlinkLocalCode.ERROR_PARAMETER_TOKEN_MALFORMED);
+        public static SetRestLocalCode SetRestLocalCodeReverseLookupTable(String message) {
+            if (SetRestLocalCodeReverseMap.isEmpty()) {
+                SetRestLocalCodeReverseMap.put("ERROR_PARAMETER_LON_MISSING", SetRestLocalCode.ERROR_PARAMETER_LON_MISSING);
+                SetRestLocalCodeReverseMap.put("ERROR_PARAMETER_RESTNAME_MISSING", SetRestLocalCode.ERROR_PARAMETER_RESTNAME_MISSING);
+                SetRestLocalCodeReverseMap.put("ERROR_PARAMETER_RESTNAME_MALFORMED", SetRestLocalCode.ERROR_PARAMETER_RESTNAME_MALFORMED);
+                SetRestLocalCodeReverseMap.put("ERROR_PARAMETER_LAT_MISSING", SetRestLocalCode.ERROR_PARAMETER_LAT_MISSING);
+                SetRestLocalCodeReverseMap.put("ERROR_PARAMETER_LAT_MALFORMED", SetRestLocalCode.ERROR_PARAMETER_LAT_MALFORMED);
+                SetRestLocalCodeReverseMap.put("ERROR_PARAMETER_LON_MALFORMED", SetRestLocalCode.ERROR_PARAMETER_LON_MALFORMED);
             }
-            PostSnsUnlinkLocalCode localCode = null;
-            for (Map.Entry<String, PostSnsUnlinkLocalCode> entry : postSnsUnlinkLocalReverseMap.entrySet()) {
-                if (entry.getKey().equals(code)) {
-                    localCode = entry.getValue();
+            SetRestLocalCode code = null;
+            for (Map.Entry<String, SetRestLocalCode> entry : SetRestLocalCodeReverseMap.entrySet()) {
+                if (entry.getKey().equals(message)) {
+                    code = entry.getValue();
                     break;
                 }
             }
-            return localCode;
+            return code;
         }
 
-        public static String postSnsUnlinkLocalErrorMessageTable(PostSnsUnlinkLocalCode localCode) {
-            if (postSnsUnlinkLocalMap.isEmpty()) {
-                postSnsUnlinkLocalMap.put(PostSnsUnlinkLocalCode.ERROR_SNS_PROVIDER_TOKEN_NOT_VALID, "The provided sns token is invalid or has expired");
-                postSnsUnlinkLocalMap.put(PostSnsUnlinkLocalCode.ERROR_PROVIDER_UNREACHABLE, "The providers server infrastructure appears to be down");
-                postSnsUnlinkLocalMap.put(PostSnsUnlinkLocalCode.ERROR_PARAMETER_PROVIDER_MISSING, "Parameter 'provider' does not exist.");
-                postSnsUnlinkLocalMap.put(PostSnsUnlinkLocalCode.ERROR_PARAMETER_PROVIDER_MALFORMED, "Parameter 'provider' is malformed. Should correspond to '^\\w{4,20}$'");
-                postSnsUnlinkLocalMap.put(PostSnsUnlinkLocalCode.ERROR_PARAMETER_TOKEN_MISSING, "Parameter 'token' does not exist.");
-                postSnsUnlinkLocalMap.put(PostSnsUnlinkLocalCode.ERROR_PARAMETER_TOKEN_MALFORMED, "Parameter 'token' is malformed. Should correspond to '^\\w{4,20}$'");
-            }
-            String message = null;
-            for (Map.Entry<PostSnsUnlinkLocalCode, String> entry : postSnsUnlinkLocalMap.entrySet()) {
-                if (entry.getKey().equals(localCode)) {
-                    message = entry.getValue();
-                    break;
-                }
-            }
-            return message;
+        private static final ConcurrentHashMap<SetBlockLocalCode, String> SetBlockLocalCodeMap = new ConcurrentHashMap<>();
+        private static final ConcurrentHashMap<String, SetBlockLocalCode> SetBlockLocalCodeReverseMap = new ConcurrentHashMap<>();
+
+        public static String getSetBlockAPI(String post_id) {
+            return testurl + "/set/block/" + "?post_id=" + post_id;
         }
 
-        public static final ConcurrentHashMap<PostGochiLocalCode, String> postGochiLocalMap = new ConcurrentHashMap<>();
-        public static final ConcurrentHashMap<String, PostGochiLocalCode> postGochiLocalReverseMap = new ConcurrentHashMap<>();
-
-        public enum PostGochiLocalCode {
+        public enum SetBlockLocalCode {
             ERROR_PARAMETER_POST_ID_MISSING,
             ERROR_PARAMETER_POST_ID_MALFORMED,
         }
 
-        public static PostGochiLocalCode postGochiLocalErrorReverseLookupTable(String code) {
-            if (postGochiLocalReverseMap.isEmpty()) {
-                postGochiLocalReverseMap.put("ERROR_PARAMETER_POST_ID_MISSING", PostGochiLocalCode.ERROR_PARAMETER_POST_ID_MISSING);
-                postGochiLocalReverseMap.put("ERROR_PARAMETER_POST_ID_MALFORMED", PostGochiLocalCode.ERROR_PARAMETER_POST_ID_MALFORMED);
-            }
-            PostGochiLocalCode localCode = null;
-            for (Map.Entry<String, PostGochiLocalCode> entry : postGochiLocalReverseMap.entrySet()) {
-                if (entry.getKey().equals(code)) {
-                    localCode = entry.getValue();
-                    break;
-                }
-            }
-            return localCode;
-        }
-
-        public static String postGochiLocalErrorMessageTable(PostGochiLocalCode localCode) {
-            if (postGochiLocalMap.isEmpty()) {
-                postGochiLocalMap.put(PostGochiLocalCode.ERROR_PARAMETER_POST_ID_MISSING, "Parameter 'post_id' was not received");
-                postGochiLocalMap.put(PostGochiLocalCode.ERROR_PARAMETER_POST_ID_MALFORMED, "Parameter 'post_id' is malformed. Should correspond to '^[0-9]+$'");
+        public static String SetBlockLocalCodeMessageTable(SetBlockLocalCode code) {
+            if (SetBlockLocalCodeMap.isEmpty()) {
+                SetBlockLocalCodeMap.put(SetBlockLocalCode.ERROR_PARAMETER_POST_ID_MALFORMED, "Parameter 'post_id' is malformed. Should correspond to '^\\d+$'");
+                SetBlockLocalCodeMap.put(SetBlockLocalCode.ERROR_PARAMETER_POST_ID_MISSING, "Parameter 'post_id' does not exist.");
             }
             String message = null;
-            for (Map.Entry<PostGochiLocalCode, String> entry : postGochiLocalMap.entrySet()) {
-                if (entry.getKey().equals(localCode)) {
+            for (Map.Entry<SetBlockLocalCode, String> entry : SetBlockLocalCodeMap.entrySet()) {
+                if (entry.getKey().equals(code)) {
                     message = entry.getValue();
                     break;
                 }
@@ -1253,459 +990,41 @@ public interface API3 {
             return message;
         }
 
-        public static final ConcurrentHashMap<PostDeleteLocalCode, String> postDeleteLocalMap = new ConcurrentHashMap<>();
-        public static final ConcurrentHashMap<String, PostDeleteLocalCode> postDeleteLocalReverseMap = new ConcurrentHashMap<>();
-
-        public enum PostDeleteLocalCode {
-            ERROR_PARAMETER_POST_ID_MISSING,
-            ERROR_PARAMETER_POST_ID_MALFORMED,
-        }
-
-        public static PostDeleteLocalCode postDeleteLocalErrorReverseLookupTable(String code) {
-            if (postDeleteLocalReverseMap.isEmpty()) {
-                postDeleteLocalReverseMap.put("ERROR_PARAMETER_POST_ID_MISSING", PostDeleteLocalCode.ERROR_PARAMETER_POST_ID_MISSING);
-                postDeleteLocalReverseMap.put("ERROR_PARAMETER_POST_ID_MALFORMED", PostDeleteLocalCode.ERROR_PARAMETER_POST_ID_MALFORMED);
+        public static SetBlockLocalCode SetBlockLocalCodeReverseLookupTable(String message) {
+            if (SetBlockLocalCodeReverseMap.isEmpty()) {
+                SetBlockLocalCodeReverseMap.put("ERROR_PARAMETER_POST_ID_MALFORMED", SetBlockLocalCode.ERROR_PARAMETER_POST_ID_MALFORMED);
+                SetBlockLocalCodeReverseMap.put("ERROR_PARAMETER_POST_ID_MISSING", SetBlockLocalCode.ERROR_PARAMETER_POST_ID_MISSING);
             }
-            PostDeleteLocalCode localCode = null;
-            for (Map.Entry<String, PostDeleteLocalCode> entry : postDeleteLocalReverseMap.entrySet()) {
-                if (entry.getKey().equals(code)) {
-                    localCode = entry.getValue();
+            SetBlockLocalCode code = null;
+            for (Map.Entry<String, SetBlockLocalCode> entry : SetBlockLocalCodeReverseMap.entrySet()) {
+                if (entry.getKey().equals(message)) {
+                    code = entry.getValue();
                     break;
                 }
             }
-            return localCode;
+            return code;
         }
 
-        public static String postDeleteLocalErrorMessageTable(PostDeleteLocalCode localCode) {
-            if (postDeleteLocalMap.isEmpty()) {
-                postDeleteLocalMap.put(PostDeleteLocalCode.ERROR_PARAMETER_POST_ID_MISSING, "Parameter 'post_id' was not received");
-                postDeleteLocalMap.put(PostDeleteLocalCode.ERROR_PARAMETER_POST_ID_MALFORMED, "Parameter 'post_id' is malformed. Should correspond to '^[0-9]+$'");
-            }
-            String message = null;
-            for (Map.Entry<PostDeleteLocalCode, String> entry : postDeleteLocalMap.entrySet()) {
-                if (entry.getKey().equals(localCode)) {
-                    message = entry.getValue();
-                    break;
-                }
-            }
-            return message;
+        private static final ConcurrentHashMap<SetProfile_ImgLocalCode, String> SetProfile_ImgLocalCodeMap = new ConcurrentHashMap<>();
+        private static final ConcurrentHashMap<String, SetProfile_ImgLocalCode> SetProfile_ImgLocalCodeReverseMap = new ConcurrentHashMap<>();
+
+        public static String getSetProfileImgAPI(String profile_img) {
+            return testurl + "/set/profile_img/" + "?profile_img=" + profile_img;
         }
 
-        public static final ConcurrentHashMap<PostBlockLocalCode, String> postBlockLocalMap = new ConcurrentHashMap<>();
-        public static final ConcurrentHashMap<String, PostBlockLocalCode> postBlockLocalReverseMap = new ConcurrentHashMap<>();
-
-        public enum PostBlockLocalCode {
-            ERROR_PARAMETER_POST_ID_MISSING,
-            ERROR_PARAMETER_POST_ID_MALFORMED,
-        }
-
-        public static PostBlockLocalCode postBlockLocalErrorReverseLookupTable(String code) {
-            if (postBlockLocalReverseMap.isEmpty()) {
-                postBlockLocalReverseMap.put("ERROR_PARAMETER_POST_ID_MISSING", PostBlockLocalCode.ERROR_PARAMETER_POST_ID_MISSING);
-                postBlockLocalReverseMap.put("ERROR_PARAMETER_POST_ID_MALFORMED", PostBlockLocalCode.ERROR_PARAMETER_POST_ID_MALFORMED);
-            }
-            PostBlockLocalCode localCode = null;
-            for (Map.Entry<String, PostBlockLocalCode> entry : postBlockLocalReverseMap.entrySet()) {
-                if (entry.getKey().equals(code)) {
-                    localCode = entry.getValue();
-                    break;
-                }
-            }
-            return localCode;
-        }
-
-        public static String postBlockLocalErrorMessageTable(PostBlockLocalCode localCode) {
-            if (postBlockLocalMap.isEmpty()) {
-                postBlockLocalMap.put(PostBlockLocalCode.ERROR_PARAMETER_POST_ID_MISSING, "Parameter 'post_id' was not received");
-                postBlockLocalMap.put(PostBlockLocalCode.ERROR_PARAMETER_POST_ID_MALFORMED, "Parameter 'post_id' is malformed. Should correspond to '^[0-9]+$'");
-            }
-            String message = null;
-            for (Map.Entry<PostBlockLocalCode, String> entry : postBlockLocalMap.entrySet()) {
-                if (entry.getKey().equals(localCode)) {
-                    message = entry.getValue();
-                    break;
-                }
-            }
-            return message;
-        }
-
-        public static final ConcurrentHashMap<PostFollowLocalCode, String> postFollowLocalMap = new ConcurrentHashMap<>();
-        public static final ConcurrentHashMap<String, PostFollowLocalCode> postFollowLocalReverseMap = new ConcurrentHashMap<>();
-
-        public enum PostFollowLocalCode {
-            ERROR_PARAMETER_USER_ID_MISSING,
-            ERROR_PARAMETER_USER_ID_MALFORMED,
-        }
-
-        public static PostFollowLocalCode postFollowLocalErrorReverseLookupTable(String code) {
-            if (postFollowLocalReverseMap.isEmpty()) {
-                postFollowLocalReverseMap.put("ERROR_PARAMETER_USER_ID_MISSING", PostFollowLocalCode.ERROR_PARAMETER_USER_ID_MISSING);
-                postFollowLocalReverseMap.put("ERROR_PARAMETER_USER_ID_MALFORMED", PostFollowLocalCode.ERROR_PARAMETER_USER_ID_MALFORMED);
-            }
-            PostFollowLocalCode localCode = null;
-            for (Map.Entry<String, PostFollowLocalCode> entry : postFollowLocalReverseMap.entrySet()) {
-                if (entry.getKey().equals(code)) {
-                    localCode = entry.getValue();
-                    break;
-                }
-            }
-            return localCode;
-        }
-
-        public static String postFollowLocalErrorMessageTable(PostFollowLocalCode localCode) {
-            if (postFollowLocalMap.isEmpty()) {
-                postFollowLocalMap.put(PostFollowLocalCode.ERROR_PARAMETER_USER_ID_MISSING, "Parameter 'user_id' was not received");
-                postFollowLocalMap.put(PostFollowLocalCode.ERROR_PARAMETER_USER_ID_MALFORMED, "Parameter 'user_id' is malformed. Should correspond to '^[0-9]+$'");
-            }
-            String message = null;
-            for (Map.Entry<PostFollowLocalCode, String> entry : postFollowLocalMap.entrySet()) {
-                if (entry.getKey().equals(localCode)) {
-                    message = entry.getValue();
-                    break;
-                }
-            }
-            return message;
-        }
-
-        public static final ConcurrentHashMap<PostUnfollowLocalCode, String> postUnfollowLocalMap = new ConcurrentHashMap<>();
-        public static final ConcurrentHashMap<String, PostUnfollowLocalCode> postUnfollowLocalReverseMap = new ConcurrentHashMap<>();
-
-        public enum PostUnfollowLocalCode {
-            ERROR_PARAMETER_USER_ID_MISSING,
-            ERROR_PARAMETER_USER_ID_MALFORMED,
-        }
-
-        public static PostUnfollowLocalCode postUnfollowLocalErrorReverseLookupTable(String code) {
-            if (postUnfollowLocalReverseMap.isEmpty()) {
-                postUnfollowLocalReverseMap.put("ERROR_PARAMETER_USER_ID_MISSING", PostUnfollowLocalCode.ERROR_PARAMETER_USER_ID_MISSING);
-                postUnfollowLocalReverseMap.put("ERROR_PARAMETER_USER_ID_MALFORMED", PostUnfollowLocalCode.ERROR_PARAMETER_USER_ID_MALFORMED);
-            }
-            PostUnfollowLocalCode localCode = null;
-            for (Map.Entry<String, PostUnfollowLocalCode> entry : postUnfollowLocalReverseMap.entrySet()) {
-                if (entry.getKey().equals(code)) {
-                    localCode = entry.getValue();
-                    break;
-                }
-            }
-            return localCode;
-        }
-
-        public static String postUnfollowLocalErrorMessageTable(PostUnfollowLocalCode localCode) {
-            if (postUnfollowLocalMap.isEmpty()) {
-                postUnfollowLocalMap.put(PostUnfollowLocalCode.ERROR_PARAMETER_USER_ID_MISSING, "Parameter 'user_id' was not received");
-                postUnfollowLocalMap.put(PostUnfollowLocalCode.ERROR_PARAMETER_USER_ID_MALFORMED, "Parameter 'user_id' is malformed. Should correspond to '^[0-9]+$'");
-            }
-            String message = null;
-            for (Map.Entry<PostUnfollowLocalCode, String> entry : postUnfollowLocalMap.entrySet()) {
-                if (entry.getKey().equals(localCode)) {
-                    message = entry.getValue();
-                    break;
-                }
-            }
-            return message;
-        }
-
-        public static final ConcurrentHashMap<PostFeedbackLocalCode, String> postFeedbackLocalMap = new ConcurrentHashMap<>();
-        public static final ConcurrentHashMap<String, PostFeedbackLocalCode> postFeedbackLocalReverseMap = new ConcurrentHashMap<>();
-
-        public enum PostFeedbackLocalCode {
-            ERROR_PARAMETER_FEEDBACK_MISSING,
-            ERROR_PARAMETER_FEEDBACK_MALFORMED,
-        }
-
-        public static PostFeedbackLocalCode postFeedbackLocalErrorReverseLookupTable(String code) {
-            if (postFeedbackLocalReverseMap.isEmpty()) {
-                postFeedbackLocalReverseMap.put("ERROR_PARAMETER_FEEDBACK_MISSING", PostFeedbackLocalCode.ERROR_PARAMETER_FEEDBACK_MISSING);
-                postFeedbackLocalReverseMap.put("ERROR_PARAMETER_FEEDBACK_MALFORMED", PostFeedbackLocalCode.ERROR_PARAMETER_FEEDBACK_MALFORMED);
-            }
-            PostFeedbackLocalCode localCode = null;
-            for (Map.Entry<String, PostFeedbackLocalCode> entry : postFeedbackLocalReverseMap.entrySet()) {
-                if (entry.getKey().equals(code)) {
-                    localCode = entry.getValue();
-                    break;
-                }
-            }
-            return localCode;
-        }
-
-        public static String postFeedbackLocalErrorMessageTable(PostFeedbackLocalCode localCode) {
-            if (postFeedbackLocalMap.isEmpty()) {
-                postFeedbackLocalMap.put(PostFeedbackLocalCode.ERROR_PARAMETER_FEEDBACK_MISSING, "Parameter 'feedback' was not received");
-                postFeedbackLocalMap.put(PostFeedbackLocalCode.ERROR_PARAMETER_FEEDBACK_MALFORMED, "Parameter 'feedback' is malformed. Should correspond to '^[0-9]+$'");
-            }
-            String message = null;
-            for (Map.Entry<PostFeedbackLocalCode, String> entry : postFeedbackLocalMap.entrySet()) {
-                if (entry.getKey().equals(localCode)) {
-                    message = entry.getValue();
-                    break;
-                }
-            }
-            return message;
-        }
-
-        public static final ConcurrentHashMap<PostPasswordLocalCode, String> postPasswordLocalMap = new ConcurrentHashMap<>();
-        public static final ConcurrentHashMap<String, PostPasswordLocalCode> postPasswordLocalReverseMap = new ConcurrentHashMap<>();
-
-        public enum PostPasswordLocalCode {
-            ERROR_PARAMETER_PASSWORD_MISSING,
-            ERROR_PARAMETER_PASSWORD_MALFORMED,
-        }
-
-        public static PostPasswordLocalCode postPasswordLocalErrorReverseLookupTable(String code) {
-            if (postPasswordLocalReverseMap.isEmpty()) {
-                postPasswordLocalReverseMap.put("ERROR_PARAMETER_PASSWORD_MISSING", PostPasswordLocalCode.ERROR_PARAMETER_PASSWORD_MISSING);
-                postPasswordLocalReverseMap.put("ERROR_PARAMETER_PASSWORD_MALFORMED", PostPasswordLocalCode.ERROR_PARAMETER_PASSWORD_MALFORMED);
-            }
-            PostPasswordLocalCode localCode = null;
-            for (Map.Entry<String, PostPasswordLocalCode> entry : postPasswordLocalReverseMap.entrySet()) {
-                if (entry.getKey().equals(code)) {
-                    localCode = entry.getValue();
-                    break;
-                }
-            }
-            return localCode;
-        }
-
-        public static String postPasswordLocalErrorMessageTable(PostPasswordLocalCode localCode) {
-            if (postPasswordLocalMap.isEmpty()) {
-                postPasswordLocalMap.put(PostPasswordLocalCode.ERROR_PARAMETER_PASSWORD_MISSING, "Parameter 'password' was not received");
-                postPasswordLocalMap.put(PostPasswordLocalCode.ERROR_PARAMETER_PASSWORD_MALFORMED, "Parameter 'password' is malformed. Should correspond to '^[0-9]+$'");
-            }
-            String message = null;
-            for (Map.Entry<PostPasswordLocalCode, String> entry : postPasswordLocalMap.entrySet()) {
-                if (entry.getKey().equals(localCode)) {
-                    message = entry.getValue();
-                    break;
-                }
-            }
-            return message;
-        }
-
-        public static final ConcurrentHashMap<PostCommentLocalCode, String> postCommentLocalMap = new ConcurrentHashMap<>();
-        public static final ConcurrentHashMap<String, PostCommentLocalCode> postCommentLocalReverseMap = new ConcurrentHashMap<>();
-
-        public enum PostCommentLocalCode {
-            ERROR_PARAMETER_POST_ID_MISSING,
-            ERROR_PARAMETER_POST_ID_MALFORMED,
-            ERROR_PARAMETER_COMMENT_MISSING,
-            ERROR_PARAMETER_COMMENT_MALFORMED,
-            ERROR_PARAMETER_RE_USER_ID_MISSING,
-            ERROR_PARAMETER_RE_USER_ID_MALFORMED,
-        }
-
-        public static PostCommentLocalCode postCommentLocalErrorReverseLookupTable(String code) {
-            if (postCommentLocalReverseMap.isEmpty()) {
-                postCommentLocalReverseMap.put("ERROR_PARAMETER_POST_ID_MISSING", PostCommentLocalCode.ERROR_PARAMETER_POST_ID_MISSING);
-                postCommentLocalReverseMap.put("ERROR_PARAMETER_POST_ID_MALFORMED", PostCommentLocalCode.ERROR_PARAMETER_POST_ID_MISSING);
-                postCommentLocalReverseMap.put("ERROR_PARAMETER_COMMENT_MISSING", PostCommentLocalCode.ERROR_PARAMETER_COMMENT_MISSING);
-                postCommentLocalReverseMap.put("ERROR_PARAMETER_COMMENT_MALFORMED", PostCommentLocalCode.ERROR_PARAMETER_COMMENT_MALFORMED);
-                postCommentLocalReverseMap.put("ERROR_PARAMETER_RE_USER_ID_MISSING", PostCommentLocalCode.ERROR_PARAMETER_RE_USER_ID_MISSING);
-                postCommentLocalReverseMap.put("ERROR_PARAMETER_RE_USER_ID_MALFORMED", PostCommentLocalCode.ERROR_PARAMETER_RE_USER_ID_MISSING);
-            }
-            PostCommentLocalCode localCode = null;
-            for (Map.Entry<String, PostCommentLocalCode> entry : postCommentLocalReverseMap.entrySet()) {
-                if (entry.getKey().equals(code)) {
-                    localCode = entry.getValue();
-                    break;
-                }
-            }
-            return localCode;
-        }
-
-        public static String postCommentLocalErrorMessageTable(PostCommentLocalCode localCode) {
-            if (postCommentLocalMap.isEmpty()) {
-                postCommentLocalMap.put(PostCommentLocalCode.ERROR_PARAMETER_POST_ID_MISSING, "Parameter 'post_id' was not received");
-                postCommentLocalMap.put(PostCommentLocalCode.ERROR_PARAMETER_POST_ID_MISSING, "Parameter 'post_id' is malformed. Should correspond to '^[0-9]+$'");
-                postCommentLocalMap.put(PostCommentLocalCode.ERROR_PARAMETER_COMMENT_MISSING, "Parameter 'comment' was not received");
-                postCommentLocalMap.put(PostCommentLocalCode.ERROR_PARAMETER_COMMENT_MALFORMED, "Parameter 'comment' is malformed. Should correspond to '^[0-9]+$'");
-                postCommentLocalMap.put(PostCommentLocalCode.ERROR_PARAMETER_RE_USER_ID_MISSING, "Parameter 're_user_id' was not received");
-                postCommentLocalMap.put(PostCommentLocalCode.ERROR_PARAMETER_RE_USER_ID_MISSING, "Parameter 're_user_id' is malformed. Should correspond to '^[0-9]+$'");
-            }
-            String message = null;
-            for (Map.Entry<PostCommentLocalCode, String> entry : postCommentLocalMap.entrySet()) {
-                if (entry.getKey().equals(localCode)) {
-                    message = entry.getValue();
-                    break;
-                }
-            }
-            return message;
-        }
-
-        public static final ConcurrentHashMap<PostPostLocalCode, String> postPostLocalMap = new ConcurrentHashMap<>();
-        public static final ConcurrentHashMap<String, PostPostLocalCode> postPostLocalReverseMap = new ConcurrentHashMap<>();
-
-        public enum PostPostLocalCode {
-
-        }
-
-        public static PostPostLocalCode postPostLocalErrorReverseLookupTable(String code) {
-            if (postPostLocalReverseMap.isEmpty()) {
-
-            }
-            PostPostLocalCode localCode = null;
-            for (Map.Entry<String, PostPostLocalCode> entry : postPostLocalReverseMap.entrySet()) {
-                if (entry.getKey().equals(code)) {
-                    localCode = entry.getValue();
-                    break;
-                }
-            }
-            return localCode;
-        }
-
-        public static String postPostLocalErrorMessageTable(PostPostLocalCode localCode) {
-            if (postPostLocalMap.isEmpty()) {
-
-            }
-            String message = null;
-            for (Map.Entry<PostPostLocalCode, String> entry : postPostLocalMap.entrySet()) {
-                if (entry.getKey().equals(localCode)) {
-                    message = entry.getValue();
-                    break;
-                }
-            }
-            return message;
-        }
-
-        public static final ConcurrentHashMap<PostRestAddLocalCode, String> postRestAddLocalMap = new ConcurrentHashMap<>();
-        public static final ConcurrentHashMap<String, PostRestAddLocalCode> postRestAddLocalReverseMap = new ConcurrentHashMap<>();
-
-        public enum PostRestAddLocalCode {
-
-        }
-
-        public static PostRestAddLocalCode postRestAddLocalErrorReverseLookupTable(String code) {
-            if (postRestAddLocalReverseMap.isEmpty()) {
-
-            }
-            PostRestAddLocalCode localCode = null;
-            for (Map.Entry<String, PostRestAddLocalCode> entry : postRestAddLocalReverseMap.entrySet()) {
-                if (entry.getKey().equals(code)) {
-                    localCode = entry.getValue();
-                    break;
-                }
-            }
-            return localCode;
-        }
-
-        public static String postRestAddLocalErrorMessageTable(PostRestAddLocalCode localCode) {
-            if (postRestAddLocalMap.isEmpty()) {
-
-            }
-            String message = null;
-            for (Map.Entry<PostRestAddLocalCode, String> entry : postRestAddLocalMap.entrySet()) {
-                if (entry.getKey().equals(localCode)) {
-                    message = entry.getValue();
-                    break;
-                }
-            }
-            return message;
-        }
-
-        public static final ConcurrentHashMap<PublicUpdateDeviceLocalCode, String> publicUpdateDeviceLocalMap = new ConcurrentHashMap<>();
-        public static final ConcurrentHashMap<String, PublicUpdateDeviceLocalCode> publicUpdateDeviceLocalReverseMap = new ConcurrentHashMap<>();
-
-        public enum PublicUpdateDeviceLocalCode {
-
-        }
-
-        public static PublicUpdateDeviceLocalCode publicUpdateDeviceLocalErrorReverseLookupTable(String code) {
-            if (publicUpdateDeviceLocalReverseMap.isEmpty()) {
-
-            }
-            PublicUpdateDeviceLocalCode localCode = null;
-            for (Map.Entry<String, PublicUpdateDeviceLocalCode> entry : publicUpdateDeviceLocalReverseMap.entrySet()) {
-                if (entry.getKey().equals(code)) {
-                    localCode = entry.getValue();
-                    break;
-                }
-            }
-            return localCode;
-        }
-
-        public static String publicUpdateDeviceErrorMessageTable(PublicUpdateDeviceLocalCode localCode) {
-            if (publicUpdateDeviceLocalMap.isEmpty()) {
-
-            }
-            String message = null;
-            for (Map.Entry<PublicUpdateDeviceLocalCode, String> entry : publicUpdateDeviceLocalMap.entrySet()) {
-                if (entry.getKey().equals(localCode)) {
-                    message = entry.getValue();
-                    break;
-                }
-            }
-            return message;
-        }
-
-        public static final ConcurrentHashMap<PostUsernameLocalCode, String> postUsernameLocalMap = new ConcurrentHashMap<>();
-        public static final ConcurrentHashMap<String, PostUsernameLocalCode> postUsernameLocalReverseMap = new ConcurrentHashMap<>();
-
-        public enum PostUsernameLocalCode {
-            ERROR_PARAMETER_USERNAME_MISSING,
-            ERROR_PARAMETER_USERNAME_MALFORMED
-        }
-
-        public static PostUsernameLocalCode postUsernameLocalErrorReverseLookupTable(String code) {
-            if (postUsernameLocalReverseMap.isEmpty()) {
-                postUsernameLocalReverseMap.put("ERROR_PARAMETER_USERNAME_MISSING", PostUsernameLocalCode.ERROR_PARAMETER_USERNAME_MISSING);
-                postUsernameLocalReverseMap.put("ERROR_PARAMETER_USERNAME_MALFORMED", PostUsernameLocalCode.ERROR_PARAMETER_USERNAME_MALFORMED);
-            }
-            PostUsernameLocalCode localCode = null;
-            for (Map.Entry<String, PostUsernameLocalCode> entry : postUsernameLocalReverseMap.entrySet()) {
-                if (entry.getKey().equals(code)) {
-                    localCode = entry.getValue();
-                    break;
-                }
-            }
-            return localCode;
-        }
-
-        public static String postUsernameLocalErrorMessageTable(PostUsernameLocalCode localCode) {
-            if (postUsernameLocalMap.isEmpty()) {
-                postUsernameLocalMap.put(PostUsernameLocalCode.ERROR_PARAMETER_USERNAME_MISSING, "Parameter 'username' does not exist.");
-                postUsernameLocalMap.put(PostUsernameLocalCode.ERROR_PARAMETER_USERNAME_MALFORMED, "Parameter 'username' is malformed. Should correspond to '^\\w{4,20}$'");
-            }
-            String message = null;
-            for (Map.Entry<PostUsernameLocalCode, String> entry : postUsernameLocalMap.entrySet()) {
-                if (entry.getKey().equals(localCode)) {
-                    message = entry.getValue();
-                    break;
-                }
-            }
-            return message;
-        }
-
-        public static final ConcurrentHashMap<PostProfileImgLocalCode, String> postProfileImgLocalMap = new ConcurrentHashMap<>();
-        public static final ConcurrentHashMap<String, PostProfileImgLocalCode> postProfileImgLocalReverseMap = new ConcurrentHashMap<>();
-
-        public enum PostProfileImgLocalCode {
+        public enum SetProfile_ImgLocalCode {
             ERROR_PARAMETER_PROFILE_IMG_MISSING,
-            ERROR_PARAMETER_PROFILE_IMG_MALFORMED;
+            ERROR_PARAMETER_PROFILE_IMG_MALFORMED,
         }
 
-        public static PostProfileImgLocalCode postProfileImgLocalErrorReverseLookupTable(String code) {
-            if (postProfileImgLocalReverseMap.isEmpty()) {
-                postProfileImgLocalReverseMap.put("ERROR_PARAMETER_PROFILE_IMG_MISSING", PostProfileImgLocalCode.ERROR_PARAMETER_PROFILE_IMG_MISSING);
-                postProfileImgLocalReverseMap.put("ERROR_PARAMETER_PROFILE_IMG_MALFORMED", PostProfileImgLocalCode.ERROR_PARAMETER_PROFILE_IMG_MALFORMED);
-
-            }
-            PostProfileImgLocalCode localCode = null;
-            for (Map.Entry<String, PostProfileImgLocalCode> entry : postProfileImgLocalReverseMap.entrySet()) {
-                if (entry.getKey().equals(code)) {
-                    localCode = entry.getValue();
-                    break;
-                }
-            }
-            return localCode;
-        }
-
-        public static String postProfileImgLocalErrorMessageTable(PostProfileImgLocalCode localCode) {
-            if (postProfileImgLocalMap.isEmpty()) {
-                postProfileImgLocalMap.put(PostProfileImgLocalCode.ERROR_PARAMETER_PROFILE_IMG_MISSING, "Parameter 'profile_img' was not received");
-                postProfileImgLocalMap.put(PostProfileImgLocalCode.ERROR_PARAMETER_PROFILE_IMG_MALFORMED, "Parameter 'profile_img' is malformed. Should correspond to '^http\\S+$'");
+        public static String SetProfile_ImgLocalCodeMessageTable(SetProfile_ImgLocalCode code) {
+            if (SetProfile_ImgLocalCodeMap.isEmpty()) {
+                SetProfile_ImgLocalCodeMap.put(SetProfile_ImgLocalCode.ERROR_PARAMETER_PROFILE_IMG_MISSING, "Parameter 'profile_img' does not exist.");
+                SetProfile_ImgLocalCodeMap.put(SetProfile_ImgLocalCode.ERROR_PARAMETER_PROFILE_IMG_MALFORMED, "Parameter 'profile_img' is malformed. Should correspond to '^[0-9_-]+$'");
             }
             String message = null;
-            for (Map.Entry<PostProfileImgLocalCode, String> entry : postProfileImgLocalMap.entrySet()) {
-                if (entry.getKey().equals(localCode)) {
+            for (Map.Entry<SetProfile_ImgLocalCode, String> entry : SetProfile_ImgLocalCodeMap.entrySet()) {
+                if (entry.getKey().equals(code)) {
                     message = entry.getValue();
                     break;
                 }
@@ -1713,47 +1032,242 @@ public interface API3 {
             return message;
         }
 
-        public static String getAuthLoginAPI(String identity_id) {
-            return testurl + "/auth/login/?identity_id=" + identity_id;
+        public static SetProfile_ImgLocalCode SetProfile_ImgLocalCodeReverseLookupTable(String message) {
+            if (SetProfile_ImgLocalCodeReverseMap.isEmpty()) {
+                SetProfile_ImgLocalCodeReverseMap.put("ERROR_PARAMETER_PROFILE_IMG_MISSING", SetProfile_ImgLocalCode.ERROR_PARAMETER_PROFILE_IMG_MISSING);
+                SetProfile_ImgLocalCodeReverseMap.put("ERROR_PARAMETER_PROFILE_IMG_MALFORMED", SetProfile_ImgLocalCode.ERROR_PARAMETER_PROFILE_IMG_MALFORMED);
+            }
+            SetProfile_ImgLocalCode code = null;
+            for (Map.Entry<String, SetProfile_ImgLocalCode> entry : SetProfile_ImgLocalCodeReverseMap.entrySet()) {
+                if (entry.getKey().equals(message)) {
+                    code = entry.getValue();
+                    break;
+                }
+            }
+            return code;
         }
 
-        public static String getAuthSignupAPI(String username) {
-            return testurl + "/auth/signup/?username=" + username;
+        private static final ConcurrentHashMap<GetHeatmapLocalCode, String> GetHeatmapLocalCodeMap = new ConcurrentHashMap<>();
+        private static final ConcurrentHashMap<String, GetHeatmapLocalCode> GetHeatmapLocalCodeReverseMap = new ConcurrentHashMap<>();
+
+        public static String getGetHeatmapAPI() {
+            return testurl + "/get/heatmap/";
         }
 
-        public static String getAuthUsernamePasswordAPI(String username, String password) {
-            return testurl + "/auth/pass_login/?username=" + username + "&password=" + password;
+        public enum GetHeatmapLocalCode {
+            ERROR_RESPONSE_HEATMAPDATA_MISSING,
+            ERROR_RESPONSE_HEATMAPDATA_POST_REST_ID_MISSING,
+            ERROR_RESPONSE_HEATMAPDATA_POST_REST_ID_MALFORMED,
+            ERROR_RESPONSE_HEATMAPDATA_RESTNAME_MISSING,
+            ERROR_RESPONSE_HEATMAPDATA_RESTNAME_MALFORMED,
+            ERROR_RESPONSE_HEATMAPDATA_LAT_MISSING,
+            ERROR_RESPONSE_HEATMAPDATA_LAT_MALFORMED,
+            ERROR_RESPONSE_HEATMAPDATA_LON_MISSING,
+            ERROR_RESPONSE_HEATMAPDATA_LON_MALFORMED,
         }
 
-        public static String getGetNearlineAPI(double lon, double lat) {
-            return testurl + "/get/nearline/?lon=" + lon + "&lat=" + lat;
+        public static String GetHeatmapLocalCodeMessageTable(GetHeatmapLocalCode code) {
+            if (GetHeatmapLocalCodeMap.isEmpty()) {
+                GetHeatmapLocalCodeMap.put(GetHeatmapLocalCode.ERROR_RESPONSE_HEATMAPDATA_POST_REST_ID_MALFORMED, "Response 'post_rest_id' is malformed. Should correspond to '^\\d+$'");
+                GetHeatmapLocalCodeMap.put(GetHeatmapLocalCode.ERROR_RESPONSE_HEATMAPDATA_POST_REST_ID_MISSING, "Response 'post_rest_id' was not received");
+                GetHeatmapLocalCodeMap.put(GetHeatmapLocalCode.ERROR_RESPONSE_HEATMAPDATA_LAT_MISSING, "Response 'lat' was not received");
+                GetHeatmapLocalCodeMap.put(GetHeatmapLocalCode.ERROR_RESPONSE_HEATMAPDATA_LON_MISSING, "Response 'lon' was not received");
+                GetHeatmapLocalCodeMap.put(GetHeatmapLocalCode.ERROR_RESPONSE_HEATMAPDATA_LON_MALFORMED, "Response 'lon' is malformed. Should correspond to '^\\d+.\\d+$'");
+                GetHeatmapLocalCodeMap.put(GetHeatmapLocalCode.ERROR_RESPONSE_HEATMAPDATA_RESTNAME_MISSING, "Response 'restname' was not received");
+                GetHeatmapLocalCodeMap.put(GetHeatmapLocalCode.ERROR_RESPONSE_HEATMAPDATA_LAT_MALFORMED, "Response 'lat' is malformed. Should correspond to '^\\d+.\\d+$'");
+                GetHeatmapLocalCodeMap.put(GetHeatmapLocalCode.ERROR_RESPONSE_HEATMAPDATA_MISSING, "Response 'heatmapdata' was not received");
+                GetHeatmapLocalCodeMap.put(GetHeatmapLocalCode.ERROR_RESPONSE_HEATMAPDATA_RESTNAME_MALFORMED, "Response 'restname' is malformed. Should correspond to '^\\S{2,30}$'");
+            }
+            String message = null;
+            for (Map.Entry<GetHeatmapLocalCode, String> entry : GetHeatmapLocalCodeMap.entrySet()) {
+                if (entry.getKey().equals(code)) {
+                    message = entry.getValue();
+                    break;
+                }
+            }
+            return message;
         }
 
-        public static String getGetNearlineCustomAPI(double lon, double lat, int page, int category_id, int value_id) {
-            StringBuilder url = null;
-            url = new StringBuilder(testurl + "/get/nearline/?lon=" + lon + "&lat=" + lat + "&page=" + page);
-            if (category_id != 0) url.append("&category_id=").append(category_id);
-            if (value_id != 0) url.append("&value_id=").append(value_id);
-            return new String(url);
+        public static GetHeatmapLocalCode GetHeatmapLocalCodeReverseLookupTable(String message) {
+            if (GetHeatmapLocalCodeReverseMap.isEmpty()) {
+                GetHeatmapLocalCodeReverseMap.put("ERROR_RESPONSE_HEATMAPDATA_POST_REST_ID_MALFORMED", GetHeatmapLocalCode.ERROR_RESPONSE_HEATMAPDATA_POST_REST_ID_MALFORMED);
+                GetHeatmapLocalCodeReverseMap.put("ERROR_RESPONSE_HEATMAPDATA_POST_REST_ID_MISSING", GetHeatmapLocalCode.ERROR_RESPONSE_HEATMAPDATA_POST_REST_ID_MISSING);
+                GetHeatmapLocalCodeReverseMap.put("ERROR_RESPONSE_HEATMAPDATA_LAT_MISSING", GetHeatmapLocalCode.ERROR_RESPONSE_HEATMAPDATA_LAT_MISSING);
+                GetHeatmapLocalCodeReverseMap.put("ERROR_RESPONSE_HEATMAPDATA_LON_MISSING", GetHeatmapLocalCode.ERROR_RESPONSE_HEATMAPDATA_LON_MISSING);
+                GetHeatmapLocalCodeReverseMap.put("ERROR_RESPONSE_HEATMAPDATA_LON_MALFORMED", GetHeatmapLocalCode.ERROR_RESPONSE_HEATMAPDATA_LON_MALFORMED);
+                GetHeatmapLocalCodeReverseMap.put("ERROR_RESPONSE_HEATMAPDATA_RESTNAME_MISSING", GetHeatmapLocalCode.ERROR_RESPONSE_HEATMAPDATA_RESTNAME_MISSING);
+                GetHeatmapLocalCodeReverseMap.put("ERROR_RESPONSE_HEATMAPDATA_LAT_MALFORMED", GetHeatmapLocalCode.ERROR_RESPONSE_HEATMAPDATA_LAT_MALFORMED);
+                GetHeatmapLocalCodeReverseMap.put("ERROR_RESPONSE_HEATMAPDATA_MISSING", GetHeatmapLocalCode.ERROR_RESPONSE_HEATMAPDATA_MISSING);
+                GetHeatmapLocalCodeReverseMap.put("ERROR_RESPONSE_HEATMAPDATA_RESTNAME_MALFORMED", GetHeatmapLocalCode.ERROR_RESPONSE_HEATMAPDATA_RESTNAME_MALFORMED);
+            }
+            GetHeatmapLocalCode code = null;
+            for (Map.Entry<String, GetHeatmapLocalCode> entry : GetHeatmapLocalCodeReverseMap.entrySet()) {
+                if (entry.getKey().equals(message)) {
+                    code = entry.getValue();
+                    break;
+                }
+            }
+            return code;
         }
 
-        public static String getGetFollowlineAPI() {
-            return testurl + "/get/followline";
+        private static final ConcurrentHashMap<GetFollowerLocalCode, String> GetFollowerLocalCodeMap = new ConcurrentHashMap<>();
+        private static final ConcurrentHashMap<String, GetFollowerLocalCode> GetFollowerLocalCodeReverseMap = new ConcurrentHashMap<>();
+
+        public static String getGetFollowerAPI(String user_id) {
+            return testurl + "/get/follower/" + "?user_id=" + user_id;
         }
 
-        public static String getGetFollowlineCustomAPI(int page, int category_id, int value_id) {
-            StringBuilder url = null;
-            url = new StringBuilder(testurl + "/get/followline/?page=" + page);
-            if (category_id != 0) url.append("&category_id=").append(category_id);
-            if (value_id != 0) url.append("&value_id=").append(value_id);
-            return new String(url);
+        public enum GetFollowerLocalCode {
+            ERROR_PARAMETER_USER_ID_MISSING,
+            ERROR_PARAMETER_USER_ID_MALFORMED,
+            ERROR_RESPONSE_FOLLOWERDATA_MISSING,
+            ERROR_RESPONSE_FOLLOWERDATA_FOLLOW_FLAG_MISSING,
+            ERROR_RESPONSE_FOLLOWERDATA_FOLLOW_FLAG_MALFORMED,
+            ERROR_RESPONSE_FOLLOWERDATA_PROFILE_IMG_MISSING,
+            ERROR_RESPONSE_FOLLOWERDATA_PROFILE_IMG_MALFORMED,
+            ERROR_RESPONSE_FOLLOWERDATA_USER_ID_MISSING,
+            ERROR_RESPONSE_FOLLOWERDATA_USER_ID_MALFORMED,
+            ERROR_RESPONSE_FOLLOWERDATA_USERNAME_MISSING,
+            ERROR_RESPONSE_FOLLOWERDATA_USERNAME_MALFORMED,
         }
+
+        public static String GetFollowerLocalCodeMessageTable(GetFollowerLocalCode code) {
+            if (GetFollowerLocalCodeMap.isEmpty()) {
+                GetFollowerLocalCodeMap.put(GetFollowerLocalCode.ERROR_RESPONSE_FOLLOWERDATA_MISSING, "Response 'followerdata' was not received");
+                GetFollowerLocalCodeMap.put(GetFollowerLocalCode.ERROR_RESPONSE_FOLLOWERDATA_FOLLOW_FLAG_MISSING, "Response 'follow_flag' was not received");
+                GetFollowerLocalCodeMap.put(GetFollowerLocalCode.ERROR_RESPONSE_FOLLOWERDATA_USERNAME_MALFORMED, "Response 'username' is malformed. Should correspond to '^[\\S]{2,20}$'");
+                GetFollowerLocalCodeMap.put(GetFollowerLocalCode.ERROR_RESPONSE_FOLLOWERDATA_USER_ID_MALFORMED, "Response 'user_id' is malformed. Should correspond to '^\\d+$'");
+                GetFollowerLocalCodeMap.put(GetFollowerLocalCode.ERROR_RESPONSE_FOLLOWERDATA_PROFILE_IMG_MALFORMED, "Response 'profile_img' is malformed. Should correspond to '^[0-9_-]+$'");
+                GetFollowerLocalCodeMap.put(GetFollowerLocalCode.ERROR_RESPONSE_FOLLOWERDATA_USER_ID_MISSING, "Response 'user_id' was not received");
+                GetFollowerLocalCodeMap.put(GetFollowerLocalCode.ERROR_PARAMETER_USER_ID_MALFORMED, "Parameter 'user_id' is malformed. Should correspond to '^\\d+$'");
+                GetFollowerLocalCodeMap.put(GetFollowerLocalCode.ERROR_RESPONSE_FOLLOWERDATA_FOLLOW_FLAG_MALFORMED, "Response 'follow_flag' is malformed. Should correspond to '^0$|^1$'");
+                GetFollowerLocalCodeMap.put(GetFollowerLocalCode.ERROR_PARAMETER_USER_ID_MISSING, "Parameter 'user_id' does not exist.");
+                GetFollowerLocalCodeMap.put(GetFollowerLocalCode.ERROR_RESPONSE_FOLLOWERDATA_USERNAME_MISSING, "Response 'username' was not received");
+                GetFollowerLocalCodeMap.put(GetFollowerLocalCode.ERROR_RESPONSE_FOLLOWERDATA_PROFILE_IMG_MISSING, "Response 'profile_img' was not received");
+            }
+            String message = null;
+            for (Map.Entry<GetFollowerLocalCode, String> entry : GetFollowerLocalCodeMap.entrySet()) {
+                if (entry.getKey().equals(code)) {
+                    message = entry.getValue();
+                    break;
+                }
+            }
+            return message;
+        }
+
+        public static GetFollowerLocalCode GetFollowerLocalCodeReverseLookupTable(String message) {
+            if (GetFollowerLocalCodeReverseMap.isEmpty()) {
+                GetFollowerLocalCodeReverseMap.put("ERROR_RESPONSE_FOLLOWERDATA_MISSING", GetFollowerLocalCode.ERROR_RESPONSE_FOLLOWERDATA_MISSING);
+                GetFollowerLocalCodeReverseMap.put("ERROR_RESPONSE_FOLLOWERDATA_FOLLOW_FLAG_MISSING", GetFollowerLocalCode.ERROR_RESPONSE_FOLLOWERDATA_FOLLOW_FLAG_MISSING);
+                GetFollowerLocalCodeReverseMap.put("ERROR_RESPONSE_FOLLOWERDATA_USERNAME_MALFORMED", GetFollowerLocalCode.ERROR_RESPONSE_FOLLOWERDATA_USERNAME_MALFORMED);
+                GetFollowerLocalCodeReverseMap.put("ERROR_RESPONSE_FOLLOWERDATA_USER_ID_MALFORMED", GetFollowerLocalCode.ERROR_RESPONSE_FOLLOWERDATA_USER_ID_MALFORMED);
+                GetFollowerLocalCodeReverseMap.put("ERROR_RESPONSE_FOLLOWERDATA_PROFILE_IMG_MALFORMED", GetFollowerLocalCode.ERROR_RESPONSE_FOLLOWERDATA_PROFILE_IMG_MALFORMED);
+                GetFollowerLocalCodeReverseMap.put("ERROR_RESPONSE_FOLLOWERDATA_USER_ID_MISSING", GetFollowerLocalCode.ERROR_RESPONSE_FOLLOWERDATA_USER_ID_MISSING);
+                GetFollowerLocalCodeReverseMap.put("ERROR_PARAMETER_USER_ID_MALFORMED", GetFollowerLocalCode.ERROR_PARAMETER_USER_ID_MALFORMED);
+                GetFollowerLocalCodeReverseMap.put("ERROR_RESPONSE_FOLLOWERDATA_FOLLOW_FLAG_MALFORMED", GetFollowerLocalCode.ERROR_RESPONSE_FOLLOWERDATA_FOLLOW_FLAG_MALFORMED);
+                GetFollowerLocalCodeReverseMap.put("ERROR_PARAMETER_USER_ID_MISSING", GetFollowerLocalCode.ERROR_PARAMETER_USER_ID_MISSING);
+                GetFollowerLocalCodeReverseMap.put("ERROR_RESPONSE_FOLLOWERDATA_USERNAME_MISSING", GetFollowerLocalCode.ERROR_RESPONSE_FOLLOWERDATA_USERNAME_MISSING);
+                GetFollowerLocalCodeReverseMap.put("ERROR_RESPONSE_FOLLOWERDATA_PROFILE_IMG_MISSING", GetFollowerLocalCode.ERROR_RESPONSE_FOLLOWERDATA_PROFILE_IMG_MISSING);
+            }
+            GetFollowerLocalCode code = null;
+            for (Map.Entry<String, GetFollowerLocalCode> entry : GetFollowerLocalCodeReverseMap.entrySet()) {
+                if (entry.getKey().equals(message)) {
+                    code = entry.getValue();
+                    break;
+                }
+            }
+            return code;
+        }
+
+        private static final ConcurrentHashMap<GetNoticeLocalCode, String> GetNoticeLocalCodeMap = new ConcurrentHashMap<>();
+        private static final ConcurrentHashMap<String, GetNoticeLocalCode> GetNoticeLocalCodeReverseMap = new ConcurrentHashMap<>();
+
+        public static String getGetNoticeAPI() {
+            return testurl + "/get/notice/";
+        }
+
+        public enum GetNoticeLocalCode {
+            ERROR_RESPONSE_NOTICEDATA_MISSING,
+            ERROR_RESPONSE_NOTICEDATA_NOTICE_MISSING,
+            ERROR_RESPONSE_NOTICEDATA_NOTICE_MALFORMED,
+            ERROR_RESPONSE_NOTICEDATA_NOTICE_DATE_MISSING,
+            ERROR_RESPONSE_NOTICEDATA_NOTICE_DATE_MALFORMED,
+            ERROR_RESPONSE_NOTICEDATA_NOTICE_ID_MISSING,
+            ERROR_RESPONSE_NOTICEDATA_NOTICE_ID_MALFORMED,
+            ERROR_RESPONSE_NOTICEDATA_NOTICE_POST_ID_MISSING,
+            ERROR_RESPONSE_NOTICEDATA_NOTICE_POST_ID_MALFORMED,
+            ERROR_RESPONSE_NOTICEDATA_PROFILE_IMG_MISSING,
+            ERROR_RESPONSE_NOTICEDATA_PROFILE_IMG_MALFORMED,
+            ERROR_RESPONSE_NOTICEDATA_USER_ID_MISSING,
+            ERROR_RESPONSE_NOTICEDATA_USER_ID_MALFORMED,
+            ERROR_RESPONSE_NOTICEDATA_USERNAME_MISSING,
+            ERROR_RESPONSE_NOTICEDATA_USERNAME_MALFORMED,
+        }
+
+        public static String GetNoticeLocalCodeMessageTable(GetNoticeLocalCode code) {
+            if (GetNoticeLocalCodeMap.isEmpty()) {
+                GetNoticeLocalCodeMap.put(GetNoticeLocalCode.ERROR_RESPONSE_NOTICEDATA_NOTICE_ID_MALFORMED, "Response 'notice_id' is malformed. Should correspond to '^\\d+$'");
+                GetNoticeLocalCodeMap.put(GetNoticeLocalCode.ERROR_RESPONSE_NOTICEDATA_MISSING, "Response 'noticedata' was not received");
+                GetNoticeLocalCodeMap.put(GetNoticeLocalCode.ERROR_RESPONSE_NOTICEDATA_NOTICE_POST_ID_MISSING, "Response 'notice_post_id' was not received");
+                GetNoticeLocalCodeMap.put(GetNoticeLocalCode.ERROR_RESPONSE_NOTICEDATA_USERNAME_MALFORMED, "Response 'username' is malformed. Should correspond to '^[\\S]{2,20}$'");
+                GetNoticeLocalCodeMap.put(GetNoticeLocalCode.ERROR_RESPONSE_NOTICEDATA_PROFILE_IMG_MISSING, "Response 'profile_img' was not received");
+                GetNoticeLocalCodeMap.put(GetNoticeLocalCode.ERROR_RESPONSE_NOTICEDATA_NOTICE_POST_ID_MALFORMED, "Response 'notice_post_id' is malformed. Should correspond to '^\\d+$'");
+                GetNoticeLocalCodeMap.put(GetNoticeLocalCode.ERROR_RESPONSE_NOTICEDATA_NOTICE_ID_MISSING, "Response 'notice_id' was not received");
+                GetNoticeLocalCodeMap.put(GetNoticeLocalCode.ERROR_RESPONSE_NOTICEDATA_USER_ID_MISSING, "Response 'user_id' was not received");
+                GetNoticeLocalCodeMap.put(GetNoticeLocalCode.ERROR_RESPONSE_NOTICEDATA_NOTICE_MALFORMED, "Response 'notice' is malformed. Should correspond to '???'");
+                GetNoticeLocalCodeMap.put(GetNoticeLocalCode.ERROR_RESPONSE_NOTICEDATA_NOTICE_DATE_MISSING, "Response 'notice_date' was not received");
+                GetNoticeLocalCodeMap.put(GetNoticeLocalCode.ERROR_RESPONSE_NOTICEDATA_NOTICE_MISSING, "Response 'notice' was not received");
+                GetNoticeLocalCodeMap.put(GetNoticeLocalCode.ERROR_RESPONSE_NOTICEDATA_NOTICE_DATE_MALFORMED, "Response 'notice_date' is malformed. Should correspond to '???'");
+                GetNoticeLocalCodeMap.put(GetNoticeLocalCode.ERROR_RESPONSE_NOTICEDATA_PROFILE_IMG_MALFORMED, "Response 'profile_img' is malformed. Should correspond to '^[0-9_-]+$'");
+                GetNoticeLocalCodeMap.put(GetNoticeLocalCode.ERROR_RESPONSE_NOTICEDATA_USER_ID_MALFORMED, "Response 'user_id' is malformed. Should correspond to '^\\d+$'");
+                GetNoticeLocalCodeMap.put(GetNoticeLocalCode.ERROR_RESPONSE_NOTICEDATA_USERNAME_MISSING, "Response 'username' was not received");
+            }
+            String message = null;
+            for (Map.Entry<GetNoticeLocalCode, String> entry : GetNoticeLocalCodeMap.entrySet()) {
+                if (entry.getKey().equals(code)) {
+                    message = entry.getValue();
+                    break;
+                }
+            }
+            return message;
+        }
+
+        public static GetNoticeLocalCode GetNoticeLocalCodeReverseLookupTable(String message) {
+            if (GetNoticeLocalCodeReverseMap.isEmpty()) {
+                GetNoticeLocalCodeReverseMap.put("ERROR_RESPONSE_NOTICEDATA_NOTICE_ID_MALFORMED", GetNoticeLocalCode.ERROR_RESPONSE_NOTICEDATA_NOTICE_ID_MALFORMED);
+                GetNoticeLocalCodeReverseMap.put("ERROR_RESPONSE_NOTICEDATA_MISSING", GetNoticeLocalCode.ERROR_RESPONSE_NOTICEDATA_MISSING);
+                GetNoticeLocalCodeReverseMap.put("ERROR_RESPONSE_NOTICEDATA_NOTICE_POST_ID_MISSING", GetNoticeLocalCode.ERROR_RESPONSE_NOTICEDATA_NOTICE_POST_ID_MISSING);
+                GetNoticeLocalCodeReverseMap.put("ERROR_RESPONSE_NOTICEDATA_USERNAME_MALFORMED", GetNoticeLocalCode.ERROR_RESPONSE_NOTICEDATA_USERNAME_MALFORMED);
+                GetNoticeLocalCodeReverseMap.put("ERROR_RESPONSE_NOTICEDATA_PROFILE_IMG_MISSING", GetNoticeLocalCode.ERROR_RESPONSE_NOTICEDATA_PROFILE_IMG_MISSING);
+                GetNoticeLocalCodeReverseMap.put("ERROR_RESPONSE_NOTICEDATA_NOTICE_POST_ID_MALFORMED", GetNoticeLocalCode.ERROR_RESPONSE_NOTICEDATA_NOTICE_POST_ID_MALFORMED);
+                GetNoticeLocalCodeReverseMap.put("ERROR_RESPONSE_NOTICEDATA_NOTICE_ID_MISSING", GetNoticeLocalCode.ERROR_RESPONSE_NOTICEDATA_NOTICE_ID_MISSING);
+                GetNoticeLocalCodeReverseMap.put("ERROR_RESPONSE_NOTICEDATA_USER_ID_MISSING", GetNoticeLocalCode.ERROR_RESPONSE_NOTICEDATA_USER_ID_MISSING);
+                GetNoticeLocalCodeReverseMap.put("ERROR_RESPONSE_NOTICEDATA_NOTICE_MALFORMED", GetNoticeLocalCode.ERROR_RESPONSE_NOTICEDATA_NOTICE_MALFORMED);
+                GetNoticeLocalCodeReverseMap.put("ERROR_RESPONSE_NOTICEDATA_NOTICE_DATE_MISSING", GetNoticeLocalCode.ERROR_RESPONSE_NOTICEDATA_NOTICE_DATE_MISSING);
+                GetNoticeLocalCodeReverseMap.put("ERROR_RESPONSE_NOTICEDATA_NOTICE_MISSING", GetNoticeLocalCode.ERROR_RESPONSE_NOTICEDATA_NOTICE_MISSING);
+                GetNoticeLocalCodeReverseMap.put("ERROR_RESPONSE_NOTICEDATA_NOTICE_DATE_MALFORMED", GetNoticeLocalCode.ERROR_RESPONSE_NOTICEDATA_NOTICE_DATE_MALFORMED);
+                GetNoticeLocalCodeReverseMap.put("ERROR_RESPONSE_NOTICEDATA_PROFILE_IMG_MALFORMED", GetNoticeLocalCode.ERROR_RESPONSE_NOTICEDATA_PROFILE_IMG_MALFORMED);
+                GetNoticeLocalCodeReverseMap.put("ERROR_RESPONSE_NOTICEDATA_USER_ID_MALFORMED", GetNoticeLocalCode.ERROR_RESPONSE_NOTICEDATA_USER_ID_MALFORMED);
+                GetNoticeLocalCodeReverseMap.put("ERROR_RESPONSE_NOTICEDATA_USERNAME_MISSING", GetNoticeLocalCode.ERROR_RESPONSE_NOTICEDATA_USERNAME_MISSING);
+            }
+            GetNoticeLocalCode code = null;
+            for (Map.Entry<String, GetNoticeLocalCode> entry : GetNoticeLocalCodeReverseMap.entrySet()) {
+                if (entry.getKey().equals(message)) {
+                    code = entry.getValue();
+                    break;
+                }
+            }
+            return code;
+        }
+
+        private static final ConcurrentHashMap<GetTimelineLocalCode, String> GetTimelineLocalCodeMap = new ConcurrentHashMap<>();
+        private static final ConcurrentHashMap<String, GetTimelineLocalCode> GetTimelineLocalCodeReverseMap = new ConcurrentHashMap<>();
 
         public static String getGetTimelineAPI() {
-            return testurl + "/get/timeline";
+            return testurl + "/get/timeline/";
         }
 
-        public static String getGetTimelineCustomAPI(int page, int category_id, int value_id) {
+        public static String getGetTimelineAPI(int page, int category_id, int value_id) {
             StringBuilder url = null;
             url = new StringBuilder(testurl + "/get/timeline/?page=" + page);
             if (category_id != 0) url.append("&category_id=").append(category_id);
@@ -1761,115 +1275,1371 @@ public interface API3 {
             return new String(url);
         }
 
-        public static String getGetUserAPI(String user_id) {
-            return testurl + "/get/user/?user_id=" + user_id;
+        public enum GetTimelineLocalCode {
+            ERROR_RESPONSE_TIMELINEDATA_MISSING,
+            ERROR_RESPONSE_TIMELINEDATA_CHEER_FLAG_MISSING,
+            ERROR_RESPONSE_TIMELINEDATA_CHEER_FLAG_MALFORMED,
+            ERROR_RESPONSE_TIMELINEDATA_GOCHI_FLAG_MISSING,
+            ERROR_RESPONSE_TIMELINEDATA_GOCHI_FLAG_MALFORMED,
+            ERROR_RESPONSE_TIMELINEDATA_POST_DATE_MISSING,
+            ERROR_RESPONSE_TIMELINEDATA_POST_DATE_MALFORMED,
+            ERROR_RESPONSE_TIMELINEDATA_POST_ID_MISSING,
+            ERROR_RESPONSE_TIMELINEDATA_POST_ID_MALFORMED,
+            ERROR_RESPONSE_TIMELINEDATA_REST_ID_MISSING,
+            ERROR_RESPONSE_TIMELINEDATA_REST_ID_MALFORMED,
+            ERROR_RESPONSE_TIMELINEDATA_RESTNAME_MISSING,
+            ERROR_RESPONSE_TIMELINEDATA_RESTNAME_MALFORMED,
+            ERROR_RESPONSE_TIMELINEDATA_THUMBNAIL_MISSING,
+            ERROR_RESPONSE_TIMELINEDATA_THUMBNAIL_MALFORMED,
+            ERROR_RESPONSE_TIMELINEDATA_USER_ID_MISSING,
+            ERROR_RESPONSE_TIMELINEDATA_USER_ID_MALFORMED,
+            ERROR_RESPONSE_TIMELINEDATA_USERNAME_MISSING,
+            ERROR_RESPONSE_TIMELINEDATA_USERNAME_MALFORMED,
+            ERROR_RESPONSE_TIMELINEDATA_VALUE_MISSING,
+            ERROR_RESPONSE_TIMELINEDATA_VALUE_MALFORMED,
         }
 
-        public static String getGetRestAPI(String rest_id) {
-            return testurl + "/get/rest/?rest_id=" + rest_id;
+        public static String GetTimelineLocalCodeMessageTable(GetTimelineLocalCode code) {
+            if (GetTimelineLocalCodeMap.isEmpty()) {
+                GetTimelineLocalCodeMap.put(GetTimelineLocalCode.ERROR_RESPONSE_TIMELINEDATA_USER_ID_MALFORMED, "Response 'user_id' is malformed. Should correspond to '^\\d+$'");
+                GetTimelineLocalCodeMap.put(GetTimelineLocalCode.ERROR_RESPONSE_TIMELINEDATA_RESTNAME_MISSING, "Response 'restname' was not received");
+                GetTimelineLocalCodeMap.put(GetTimelineLocalCode.ERROR_RESPONSE_TIMELINEDATA_RESTNAME_MALFORMED, "Response 'restname' is malformed. Should correspond to '^\\S{2,30}$'");
+                GetTimelineLocalCodeMap.put(GetTimelineLocalCode.ERROR_RESPONSE_TIMELINEDATA_USERNAME_MALFORMED, "Response 'username' is malformed. Should correspond to '^[\\S]{2,20}$'");
+                GetTimelineLocalCodeMap.put(GetTimelineLocalCode.ERROR_RESPONSE_TIMELINEDATA_VALUE_MISSING, "Response 'value' was not received");
+                GetTimelineLocalCodeMap.put(GetTimelineLocalCode.ERROR_RESPONSE_TIMELINEDATA_GOCHI_FLAG_MALFORMED, "Response 'gochi_flag' is malformed. Should correspond to '^0$|^1$'");
+                GetTimelineLocalCodeMap.put(GetTimelineLocalCode.ERROR_RESPONSE_TIMELINEDATA_POST_DATE_MISSING, "Response 'post_date' was not received");
+                GetTimelineLocalCodeMap.put(GetTimelineLocalCode.ERROR_RESPONSE_TIMELINEDATA_GOCHI_FLAG_MISSING, "Response 'gochi_flag' was not received");
+                GetTimelineLocalCodeMap.put(GetTimelineLocalCode.ERROR_RESPONSE_TIMELINEDATA_VALUE_MALFORMED, "Response 'value' is malformed. It is no a valid 'INTEGER'");
+                GetTimelineLocalCodeMap.put(GetTimelineLocalCode.ERROR_RESPONSE_TIMELINEDATA_POST_ID_MISSING, "Response 'post_id' was not received");
+                GetTimelineLocalCodeMap.put(GetTimelineLocalCode.ERROR_RESPONSE_TIMELINEDATA_REST_ID_MISSING, "Response 'rest_id' was not received");
+                GetTimelineLocalCodeMap.put(GetTimelineLocalCode.ERROR_RESPONSE_TIMELINEDATA_THUMBNAIL_MISSING, "Response 'thumbnail' was not received");
+                GetTimelineLocalCodeMap.put(GetTimelineLocalCode.ERROR_RESPONSE_TIMELINEDATA_MISSING, "Response 'timelinedata' was not received");
+                GetTimelineLocalCodeMap.put(GetTimelineLocalCode.ERROR_RESPONSE_TIMELINEDATA_THUMBNAIL_MALFORMED, "Response 'thumbnail' is malformed. Should correspond to '???'");
+                GetTimelineLocalCodeMap.put(GetTimelineLocalCode.ERROR_RESPONSE_TIMELINEDATA_CHEER_FLAG_MISSING, "Response 'cheer_flag' was not received");
+                GetTimelineLocalCodeMap.put(GetTimelineLocalCode.ERROR_RESPONSE_TIMELINEDATA_POST_DATE_MALFORMED, "Response 'post_date' is malformed. Should correspond to '???'");
+                GetTimelineLocalCodeMap.put(GetTimelineLocalCode.ERROR_RESPONSE_TIMELINEDATA_USER_ID_MISSING, "Response 'user_id' was not received");
+                GetTimelineLocalCodeMap.put(GetTimelineLocalCode.ERROR_RESPONSE_TIMELINEDATA_USERNAME_MISSING, "Response 'username' was not received");
+                GetTimelineLocalCodeMap.put(GetTimelineLocalCode.ERROR_RESPONSE_TIMELINEDATA_CHEER_FLAG_MALFORMED, "Response 'cheer_flag' is malformed. Should correspond to '^0$|^1$'");
+                GetTimelineLocalCodeMap.put(GetTimelineLocalCode.ERROR_RESPONSE_TIMELINEDATA_POST_ID_MALFORMED, "Response 'post_id' is malformed. Should correspond to '^\\d+$'");
+                GetTimelineLocalCodeMap.put(GetTimelineLocalCode.ERROR_RESPONSE_TIMELINEDATA_REST_ID_MALFORMED, "Response 'rest_id' is malformed. Should correspond to '^\\d+$'");
+            }
+            String message = null;
+            for (Map.Entry<GetTimelineLocalCode, String> entry : GetTimelineLocalCodeMap.entrySet()) {
+                if (entry.getKey().equals(code)) {
+                    message = entry.getValue();
+                    break;
+                }
+            }
+            return message;
         }
+
+        public static GetTimelineLocalCode GetTimelineLocalCodeReverseLookupTable(String message) {
+            if (GetTimelineLocalCodeReverseMap.isEmpty()) {
+                GetTimelineLocalCodeReverseMap.put("ERROR_RESPONSE_TIMELINEDATA_USER_ID_MALFORMED", GetTimelineLocalCode.ERROR_RESPONSE_TIMELINEDATA_USER_ID_MALFORMED);
+                GetTimelineLocalCodeReverseMap.put("ERROR_RESPONSE_TIMELINEDATA_RESTNAME_MISSING", GetTimelineLocalCode.ERROR_RESPONSE_TIMELINEDATA_RESTNAME_MISSING);
+                GetTimelineLocalCodeReverseMap.put("ERROR_RESPONSE_TIMELINEDATA_RESTNAME_MALFORMED", GetTimelineLocalCode.ERROR_RESPONSE_TIMELINEDATA_RESTNAME_MALFORMED);
+                GetTimelineLocalCodeReverseMap.put("ERROR_RESPONSE_TIMELINEDATA_USERNAME_MALFORMED", GetTimelineLocalCode.ERROR_RESPONSE_TIMELINEDATA_USERNAME_MALFORMED);
+                GetTimelineLocalCodeReverseMap.put("ERROR_RESPONSE_TIMELINEDATA_VALUE_MISSING", GetTimelineLocalCode.ERROR_RESPONSE_TIMELINEDATA_VALUE_MISSING);
+                GetTimelineLocalCodeReverseMap.put("ERROR_RESPONSE_TIMELINEDATA_GOCHI_FLAG_MALFORMED", GetTimelineLocalCode.ERROR_RESPONSE_TIMELINEDATA_GOCHI_FLAG_MALFORMED);
+                GetTimelineLocalCodeReverseMap.put("ERROR_RESPONSE_TIMELINEDATA_POST_DATE_MISSING", GetTimelineLocalCode.ERROR_RESPONSE_TIMELINEDATA_POST_DATE_MISSING);
+                GetTimelineLocalCodeReverseMap.put("ERROR_RESPONSE_TIMELINEDATA_GOCHI_FLAG_MISSING", GetTimelineLocalCode.ERROR_RESPONSE_TIMELINEDATA_GOCHI_FLAG_MISSING);
+                GetTimelineLocalCodeReverseMap.put("ERROR_RESPONSE_TIMELINEDATA_VALUE_MALFORMED", GetTimelineLocalCode.ERROR_RESPONSE_TIMELINEDATA_VALUE_MALFORMED);
+                GetTimelineLocalCodeReverseMap.put("ERROR_RESPONSE_TIMELINEDATA_POST_ID_MISSING", GetTimelineLocalCode.ERROR_RESPONSE_TIMELINEDATA_POST_ID_MISSING);
+                GetTimelineLocalCodeReverseMap.put("ERROR_RESPONSE_TIMELINEDATA_REST_ID_MISSING", GetTimelineLocalCode.ERROR_RESPONSE_TIMELINEDATA_REST_ID_MISSING);
+                GetTimelineLocalCodeReverseMap.put("ERROR_RESPONSE_TIMELINEDATA_THUMBNAIL_MISSING", GetTimelineLocalCode.ERROR_RESPONSE_TIMELINEDATA_THUMBNAIL_MISSING);
+                GetTimelineLocalCodeReverseMap.put("ERROR_RESPONSE_TIMELINEDATA_MISSING", GetTimelineLocalCode.ERROR_RESPONSE_TIMELINEDATA_MISSING);
+                GetTimelineLocalCodeReverseMap.put("ERROR_RESPONSE_TIMELINEDATA_THUMBNAIL_MALFORMED", GetTimelineLocalCode.ERROR_RESPONSE_TIMELINEDATA_THUMBNAIL_MALFORMED);
+                GetTimelineLocalCodeReverseMap.put("ERROR_RESPONSE_TIMELINEDATA_CHEER_FLAG_MISSING", GetTimelineLocalCode.ERROR_RESPONSE_TIMELINEDATA_CHEER_FLAG_MISSING);
+                GetTimelineLocalCodeReverseMap.put("ERROR_RESPONSE_TIMELINEDATA_POST_DATE_MALFORMED", GetTimelineLocalCode.ERROR_RESPONSE_TIMELINEDATA_POST_DATE_MALFORMED);
+                GetTimelineLocalCodeReverseMap.put("ERROR_RESPONSE_TIMELINEDATA_USER_ID_MISSING", GetTimelineLocalCode.ERROR_RESPONSE_TIMELINEDATA_USER_ID_MISSING);
+                GetTimelineLocalCodeReverseMap.put("ERROR_RESPONSE_TIMELINEDATA_USERNAME_MISSING", GetTimelineLocalCode.ERROR_RESPONSE_TIMELINEDATA_USERNAME_MISSING);
+                GetTimelineLocalCodeReverseMap.put("ERROR_RESPONSE_TIMELINEDATA_CHEER_FLAG_MALFORMED", GetTimelineLocalCode.ERROR_RESPONSE_TIMELINEDATA_CHEER_FLAG_MALFORMED);
+                GetTimelineLocalCodeReverseMap.put("ERROR_RESPONSE_TIMELINEDATA_POST_ID_MALFORMED", GetTimelineLocalCode.ERROR_RESPONSE_TIMELINEDATA_POST_ID_MALFORMED);
+                GetTimelineLocalCodeReverseMap.put("ERROR_RESPONSE_TIMELINEDATA_REST_ID_MALFORMED", GetTimelineLocalCode.ERROR_RESPONSE_TIMELINEDATA_REST_ID_MALFORMED);
+            }
+            GetTimelineLocalCode code = null;
+            for (Map.Entry<String, GetTimelineLocalCode> entry : GetTimelineLocalCodeReverseMap.entrySet()) {
+                if (entry.getKey().equals(message)) {
+                    code = entry.getValue();
+                    break;
+                }
+            }
+            return code;
+        }
+
+        private static final ConcurrentHashMap<GetCommentLocalCode, String> GetCommentLocalCodeMap = new ConcurrentHashMap<>();
+        private static final ConcurrentHashMap<String, GetCommentLocalCode> GetCommentLocalCodeReverseMap = new ConcurrentHashMap<>();
 
         public static String getGetCommentAPI(String post_id) {
-            return testurl + "/get/comment/?post_id=" + post_id;
+            return testurl + "/get/comment/" + "?post_id=" + post_id;
         }
 
-        public static String getGetFollowAPI(String user_id) {
-            return testurl + "/get/follow/?user_id=" + user_id;
+        public enum GetCommentLocalCode {
+            ERROR_PARAMETER_POST_ID_MISSING,
+            ERROR_PARAMETER_POST_ID_MALFORMED,
+            ERROR_RESPONSE_MEMODATA_MISSING,
+            ERROR_RESPONSE_MEMODATA_MEMO_MISSING,
+            ERROR_RESPONSE_MEMODATA_MEMO_MALFORMED,
+            ERROR_RESPONSE_MEMODATA_POST_DATE_MISSING,
+            ERROR_RESPONSE_MEMODATA_POST_DATE_MALFORMED,
+            ERROR_RESPONSE_MEMODATA_PROFILE_IMG_MISSING,
+            ERROR_RESPONSE_MEMODATA_PROFILE_IMG_MALFORMED,
+            ERROR_RESPONSE_MEMODATA_USER_ID_MISSING,
+            ERROR_RESPONSE_MEMODATA_USER_ID_MALFORMED,
+            ERROR_RESPONSE_MEMODATA_USERNAME_MISSING,
+            ERROR_RESPONSE_MEMODATA_USERNAME_MALFORMED,
+            ERROR_RESPONSE_COMMENTDATA_MISSING,
+            ERROR_RESPONSE_COMMENTDATA_COMMENT_MISSING,
+            ERROR_RESPONSE_COMMENTDATA_COMMENT_MALFORMED,
+            ERROR_RESPONSE_COMMENTDATA_COMMENT_DATE_MISSING,
+            ERROR_RESPONSE_COMMENTDATA_COMMENT_DATE_MALFORMED,
+            ERROR_RESPONSE_COMMENTDATA_COMMENT_ID_MISSING,
+            ERROR_RESPONSE_COMMENTDATA_COMMENT_ID_MALFORMED,
+            ERROR_RESPONSE_COMMENTDATA_COMMENT_USER_ID_MISSING,
+            ERROR_RESPONSE_COMMENTDATA_COMMENT_USER_ID_MALFORMED,
+            ERROR_RESPONSE_COMMENTDATA_PROFILE_IMG_MISSING,
+            ERROR_RESPONSE_COMMENTDATA_PROFILE_IMG_MALFORMED,
+            ERROR_RESPONSE_COMMENTDATA_RE_USER_ID_MISSING,
+            ERROR_RESPONSE_COMMENTDATA_RE_USER_ID_USER_ID_MISSING,
+            ERROR_RESPONSE_COMMENTDATA_RE_USER_ID_USER_ID_MALFORMED,
+            ERROR_RESPONSE_COMMENTDATA_RE_USER_ID_USERNAME_MISSING,
+            ERROR_RESPONSE_COMMENTDATA_RE_USER_ID_USERNAME_MALFORMED,
+            ERROR_RESPONSE_COMMENTDATA_USERNAME_MISSING,
+            ERROR_RESPONSE_COMMENTDATA_USERNAME_MALFORMED,
         }
 
-        public static String getGetFollowerAPI(String user_id) {
-            return testurl + "/get/follower/?user_id=" + user_id;
+        public static String GetCommentLocalCodeMessageTable(GetCommentLocalCode code) {
+            if (GetCommentLocalCodeMap.isEmpty()) {
+                GetCommentLocalCodeMap.put(GetCommentLocalCode.ERROR_RESPONSE_COMMENTDATA_RE_USER_ID_USERNAME_MISSING, "Response 'username' was not received");
+                GetCommentLocalCodeMap.put(GetCommentLocalCode.ERROR_RESPONSE_COMMENTDATA_COMMENT_USER_ID_MALFORMED, "Response 'comment_user_id' is malformed. Should correspond to '^\\d+$'");
+                GetCommentLocalCodeMap.put(GetCommentLocalCode.ERROR_RESPONSE_COMMENTDATA_USERNAME_MALFORMED, "Response 'username' is malformed. Should correspond to '^[\\S]{2,20}$'");
+                GetCommentLocalCodeMap.put(GetCommentLocalCode.ERROR_RESPONSE_COMMENTDATA_PROFILE_IMG_MALFORMED, "Response 'profile_img' is malformed. Should correspond to '^[0-9_-]+$'");
+                GetCommentLocalCodeMap.put(GetCommentLocalCode.ERROR_RESPONSE_COMMENTDATA_RE_USER_ID_USER_ID_MISSING, "Response 'user_id' was not received");
+                GetCommentLocalCodeMap.put(GetCommentLocalCode.ERROR_RESPONSE_MEMODATA_POST_DATE_MALFORMED, "Response 'post_date' is malformed. Should correspond to '???'");
+                GetCommentLocalCodeMap.put(GetCommentLocalCode.ERROR_RESPONSE_COMMENTDATA_COMMENT_ID_MISSING, "Response 'comment_id' was not received");
+                GetCommentLocalCodeMap.put(GetCommentLocalCode.ERROR_RESPONSE_COMMENTDATA_COMMENT_DATE_MISSING, "Response 'comment_date' was not received");
+                GetCommentLocalCodeMap.put(GetCommentLocalCode.ERROR_RESPONSE_MEMODATA_MEMO_MALFORMED, "Response 'memo' is malformed. Should correspond to '^\\S{1,140}$'");
+                GetCommentLocalCodeMap.put(GetCommentLocalCode.ERROR_RESPONSE_COMMENTDATA_RE_USER_ID_USERNAME_MALFORMED, "Response 'username' is malformed. Should correspond to '^[\\S]{2,20}$'");
+                GetCommentLocalCodeMap.put(GetCommentLocalCode.ERROR_RESPONSE_MEMODATA_USER_ID_MALFORMED, "Response 'user_id' is malformed. Should correspond to '^\\d+$'");
+                GetCommentLocalCodeMap.put(GetCommentLocalCode.ERROR_RESPONSE_COMMENTDATA_MISSING, "Response 'commentdata' was not received");
+                GetCommentLocalCodeMap.put(GetCommentLocalCode.ERROR_RESPONSE_MEMODATA_MISSING, "Response 'memodata' was not received");
+                GetCommentLocalCodeMap.put(GetCommentLocalCode.ERROR_RESPONSE_COMMENTDATA_RE_USER_ID_MISSING, "Response 're_user_id' was not received");
+                GetCommentLocalCodeMap.put(GetCommentLocalCode.ERROR_PARAMETER_POST_ID_MISSING, "Parameter 'post_id' does not exist.");
+                GetCommentLocalCodeMap.put(GetCommentLocalCode.ERROR_PARAMETER_POST_ID_MALFORMED, "Parameter 'post_id' is malformed. Should correspond to '^\\d+$'");
+                GetCommentLocalCodeMap.put(GetCommentLocalCode.ERROR_RESPONSE_MEMODATA_USERNAME_MALFORMED, "Response 'username' is malformed. Should correspond to '^[\\S]{2,20}$'");
+                GetCommentLocalCodeMap.put(GetCommentLocalCode.ERROR_RESPONSE_COMMENTDATA_COMMENT_MISSING, "Response 'comment' was not received");
+                GetCommentLocalCodeMap.put(GetCommentLocalCode.ERROR_RESPONSE_COMMENTDATA_RE_USER_ID_USER_ID_MALFORMED, "Response 'user_id' is malformed. Should correspond to '^\\d+$'");
+                GetCommentLocalCodeMap.put(GetCommentLocalCode.ERROR_RESPONSE_MEMODATA_PROFILE_IMG_MISSING, "Response 'profile_img' was not received");
+                GetCommentLocalCodeMap.put(GetCommentLocalCode.ERROR_RESPONSE_COMMENTDATA_COMMENT_ID_MALFORMED, "Response 'comment_id' is malformed. Should correspond to '^\\d+$'");
+                GetCommentLocalCodeMap.put(GetCommentLocalCode.ERROR_RESPONSE_MEMODATA_USER_ID_MISSING, "Response 'user_id' was not received");
+                GetCommentLocalCodeMap.put(GetCommentLocalCode.ERROR_RESPONSE_MEMODATA_MEMO_MISSING, "Response 'memo' was not received");
+                GetCommentLocalCodeMap.put(GetCommentLocalCode.ERROR_RESPONSE_COMMENTDATA_PROFILE_IMG_MISSING, "Response 'profile_img' was not received");
+                GetCommentLocalCodeMap.put(GetCommentLocalCode.ERROR_RESPONSE_COMMENTDATA_COMMENT_USER_ID_MISSING, "Response 'comment_user_id' was not received");
+                GetCommentLocalCodeMap.put(GetCommentLocalCode.ERROR_RESPONSE_MEMODATA_PROFILE_IMG_MALFORMED, "Response 'profile_img' is malformed. Should correspond to '^[0-9_-]+$'");
+                GetCommentLocalCodeMap.put(GetCommentLocalCode.ERROR_RESPONSE_MEMODATA_POST_DATE_MISSING, "Response 'post_date' was not received");
+                GetCommentLocalCodeMap.put(GetCommentLocalCode.ERROR_RESPONSE_MEMODATA_USERNAME_MISSING, "Response 'username' was not received");
+                GetCommentLocalCodeMap.put(GetCommentLocalCode.ERROR_RESPONSE_COMMENTDATA_COMMENT_DATE_MALFORMED, "Response 'comment_date' is malformed. Should correspond to '???'");
+                GetCommentLocalCodeMap.put(GetCommentLocalCode.ERROR_RESPONSE_COMMENTDATA_COMMENT_MALFORMED, "Response 'comment' is malformed. Should correspond to '^\\S{1,140}$'");
+                GetCommentLocalCodeMap.put(GetCommentLocalCode.ERROR_RESPONSE_COMMENTDATA_USERNAME_MISSING, "Response 'username' was not received");
+            }
+            String message = null;
+            for (Map.Entry<GetCommentLocalCode, String> entry : GetCommentLocalCodeMap.entrySet()) {
+                if (entry.getKey().equals(code)) {
+                    message = entry.getValue();
+                    break;
+                }
+            }
+            return message;
         }
 
-        public static String getGetWantAPI(String user_id) {
-            return testurl + "/get/want/?user_id=" + user_id;
+        public static GetCommentLocalCode GetCommentLocalCodeReverseLookupTable(String message) {
+            if (GetCommentLocalCodeReverseMap.isEmpty()) {
+                GetCommentLocalCodeReverseMap.put("ERROR_RESPONSE_COMMENTDATA_RE_USER_ID_USERNAME_MISSING", GetCommentLocalCode.ERROR_RESPONSE_COMMENTDATA_RE_USER_ID_USERNAME_MISSING);
+                GetCommentLocalCodeReverseMap.put("ERROR_RESPONSE_COMMENTDATA_COMMENT_USER_ID_MALFORMED", GetCommentLocalCode.ERROR_RESPONSE_COMMENTDATA_COMMENT_USER_ID_MALFORMED);
+                GetCommentLocalCodeReverseMap.put("ERROR_RESPONSE_COMMENTDATA_USERNAME_MALFORMED", GetCommentLocalCode.ERROR_RESPONSE_COMMENTDATA_USERNAME_MALFORMED);
+                GetCommentLocalCodeReverseMap.put("ERROR_RESPONSE_COMMENTDATA_PROFILE_IMG_MALFORMED", GetCommentLocalCode.ERROR_RESPONSE_COMMENTDATA_PROFILE_IMG_MALFORMED);
+                GetCommentLocalCodeReverseMap.put("ERROR_RESPONSE_COMMENTDATA_RE_USER_ID_USER_ID_MISSING", GetCommentLocalCode.ERROR_RESPONSE_COMMENTDATA_RE_USER_ID_USER_ID_MISSING);
+                GetCommentLocalCodeReverseMap.put("ERROR_RESPONSE_MEMODATA_POST_DATE_MALFORMED", GetCommentLocalCode.ERROR_RESPONSE_MEMODATA_POST_DATE_MALFORMED);
+                GetCommentLocalCodeReverseMap.put("ERROR_RESPONSE_COMMENTDATA_COMMENT_ID_MISSING", GetCommentLocalCode.ERROR_RESPONSE_COMMENTDATA_COMMENT_ID_MISSING);
+                GetCommentLocalCodeReverseMap.put("ERROR_RESPONSE_COMMENTDATA_COMMENT_DATE_MISSING", GetCommentLocalCode.ERROR_RESPONSE_COMMENTDATA_COMMENT_DATE_MISSING);
+                GetCommentLocalCodeReverseMap.put("ERROR_RESPONSE_MEMODATA_MEMO_MALFORMED", GetCommentLocalCode.ERROR_RESPONSE_MEMODATA_MEMO_MALFORMED);
+                GetCommentLocalCodeReverseMap.put("ERROR_RESPONSE_COMMENTDATA_RE_USER_ID_USERNAME_MALFORMED", GetCommentLocalCode.ERROR_RESPONSE_COMMENTDATA_RE_USER_ID_USERNAME_MALFORMED);
+                GetCommentLocalCodeReverseMap.put("ERROR_RESPONSE_MEMODATA_USER_ID_MALFORMED", GetCommentLocalCode.ERROR_RESPONSE_MEMODATA_USER_ID_MALFORMED);
+                GetCommentLocalCodeReverseMap.put("ERROR_RESPONSE_COMMENTDATA_MISSING", GetCommentLocalCode.ERROR_RESPONSE_COMMENTDATA_MISSING);
+                GetCommentLocalCodeReverseMap.put("ERROR_RESPONSE_MEMODATA_MISSING", GetCommentLocalCode.ERROR_RESPONSE_MEMODATA_MISSING);
+                GetCommentLocalCodeReverseMap.put("ERROR_RESPONSE_COMMENTDATA_RE_USER_ID_MISSING", GetCommentLocalCode.ERROR_RESPONSE_COMMENTDATA_RE_USER_ID_MISSING);
+                GetCommentLocalCodeReverseMap.put("ERROR_PARAMETER_POST_ID_MISSING", GetCommentLocalCode.ERROR_PARAMETER_POST_ID_MISSING);
+                GetCommentLocalCodeReverseMap.put("ERROR_PARAMETER_POST_ID_MALFORMED", GetCommentLocalCode.ERROR_PARAMETER_POST_ID_MALFORMED);
+                GetCommentLocalCodeReverseMap.put("ERROR_RESPONSE_MEMODATA_USERNAME_MALFORMED", GetCommentLocalCode.ERROR_RESPONSE_MEMODATA_USERNAME_MALFORMED);
+                GetCommentLocalCodeReverseMap.put("ERROR_RESPONSE_COMMENTDATA_COMMENT_MISSING", GetCommentLocalCode.ERROR_RESPONSE_COMMENTDATA_COMMENT_MISSING);
+                GetCommentLocalCodeReverseMap.put("ERROR_RESPONSE_COMMENTDATA_RE_USER_ID_USER_ID_MALFORMED", GetCommentLocalCode.ERROR_RESPONSE_COMMENTDATA_RE_USER_ID_USER_ID_MALFORMED);
+                GetCommentLocalCodeReverseMap.put("ERROR_RESPONSE_MEMODATA_PROFILE_IMG_MISSING", GetCommentLocalCode.ERROR_RESPONSE_MEMODATA_PROFILE_IMG_MISSING);
+                GetCommentLocalCodeReverseMap.put("ERROR_RESPONSE_COMMENTDATA_COMMENT_ID_MALFORMED", GetCommentLocalCode.ERROR_RESPONSE_COMMENTDATA_COMMENT_ID_MALFORMED);
+                GetCommentLocalCodeReverseMap.put("ERROR_RESPONSE_MEMODATA_USER_ID_MISSING", GetCommentLocalCode.ERROR_RESPONSE_MEMODATA_USER_ID_MISSING);
+                GetCommentLocalCodeReverseMap.put("ERROR_RESPONSE_MEMODATA_MEMO_MISSING", GetCommentLocalCode.ERROR_RESPONSE_MEMODATA_MEMO_MISSING);
+                GetCommentLocalCodeReverseMap.put("ERROR_RESPONSE_COMMENTDATA_PROFILE_IMG_MISSING", GetCommentLocalCode.ERROR_RESPONSE_COMMENTDATA_PROFILE_IMG_MISSING);
+                GetCommentLocalCodeReverseMap.put("ERROR_RESPONSE_COMMENTDATA_COMMENT_USER_ID_MISSING", GetCommentLocalCode.ERROR_RESPONSE_COMMENTDATA_COMMENT_USER_ID_MISSING);
+                GetCommentLocalCodeReverseMap.put("ERROR_RESPONSE_MEMODATA_PROFILE_IMG_MALFORMED", GetCommentLocalCode.ERROR_RESPONSE_MEMODATA_PROFILE_IMG_MALFORMED);
+                GetCommentLocalCodeReverseMap.put("ERROR_RESPONSE_MEMODATA_POST_DATE_MISSING", GetCommentLocalCode.ERROR_RESPONSE_MEMODATA_POST_DATE_MISSING);
+                GetCommentLocalCodeReverseMap.put("ERROR_RESPONSE_MEMODATA_USERNAME_MISSING", GetCommentLocalCode.ERROR_RESPONSE_MEMODATA_USERNAME_MISSING);
+                GetCommentLocalCodeReverseMap.put("ERROR_RESPONSE_COMMENTDATA_COMMENT_DATE_MALFORMED", GetCommentLocalCode.ERROR_RESPONSE_COMMENTDATA_COMMENT_DATE_MALFORMED);
+                GetCommentLocalCodeReverseMap.put("ERROR_RESPONSE_COMMENTDATA_COMMENT_MALFORMED", GetCommentLocalCode.ERROR_RESPONSE_COMMENTDATA_COMMENT_MALFORMED);
+                GetCommentLocalCodeReverseMap.put("ERROR_RESPONSE_COMMENTDATA_USERNAME_MISSING", GetCommentLocalCode.ERROR_RESPONSE_COMMENTDATA_USERNAME_MISSING);
+            }
+            GetCommentLocalCode code = null;
+            for (Map.Entry<String, GetCommentLocalCode> entry : GetCommentLocalCodeReverseMap.entrySet()) {
+                if (entry.getKey().equals(message)) {
+                    code = entry.getValue();
+                    break;
+                }
+            }
+            return code;
         }
+
+        private static final ConcurrentHashMap<GetUser_CheerLocalCode, String> GetUser_CheerLocalCodeMap = new ConcurrentHashMap<>();
+        private static final ConcurrentHashMap<String, GetUser_CheerLocalCode> GetUser_CheerLocalCodeReverseMap = new ConcurrentHashMap<>();
 
         public static String getGetUserCheerAPI(String user_id) {
-            return testurl + "/get/user_cheer/?user_id=" + user_id;
+            return testurl + "/get/user_cheer/" + "?user_id=" + user_id;
         }
+
+        public enum GetUser_CheerLocalCode {
+            ERROR_PARAMETER_USER_ID_MISSING,
+            ERROR_PARAMETER_USER_ID_MALFORMED,
+            ERROR_RESPONSE_USERCHEERDATA_MISSING,
+            ERROR_RESPONSE_USERCHEERDATA_LOCALITY_MISSING,
+            ERROR_RESPONSE_USERCHEERDATA_LOCALITY_MALFORMED,
+            ERROR_RESPONSE_USERCHEERDATA_REST_ID_MISSING,
+            ERROR_RESPONSE_USERCHEERDATA_REST_ID_MALFORMED,
+            ERROR_RESPONSE_USERCHEERDATA_RESTNAME_MISSING,
+            ERROR_RESPONSE_USERCHEERDATA_RESTNAME_MALFORMED,
+        }
+
+        public static String GetUser_CheerLocalCodeMessageTable(GetUser_CheerLocalCode code) {
+            if (GetUser_CheerLocalCodeMap.isEmpty()) {
+                GetUser_CheerLocalCodeMap.put(GetUser_CheerLocalCode.ERROR_RESPONSE_USERCHEERDATA_REST_ID_MISSING, "Response 'rest_id' was not received");
+                GetUser_CheerLocalCodeMap.put(GetUser_CheerLocalCode.ERROR_RESPONSE_USERCHEERDATA_LOCALITY_MALFORMED, "Response 'locality' is malformed. Should correspond to '???'");
+                GetUser_CheerLocalCodeMap.put(GetUser_CheerLocalCode.ERROR_RESPONSE_USERCHEERDATA_REST_ID_MALFORMED, "Response 'rest_id' is malformed. Should correspond to '^\\d+$'");
+                GetUser_CheerLocalCodeMap.put(GetUser_CheerLocalCode.ERROR_PARAMETER_USER_ID_MALFORMED, "Parameter 'user_id' is malformed. Should correspond to '^\\d+$'");
+                GetUser_CheerLocalCodeMap.put(GetUser_CheerLocalCode.ERROR_RESPONSE_USERCHEERDATA_RESTNAME_MALFORMED, "Response 'restname' is malformed. Should correspond to '^\\S{2,30}$'");
+                GetUser_CheerLocalCodeMap.put(GetUser_CheerLocalCode.ERROR_RESPONSE_USERCHEERDATA_RESTNAME_MISSING, "Response 'restname' was not received");
+                GetUser_CheerLocalCodeMap.put(GetUser_CheerLocalCode.ERROR_PARAMETER_USER_ID_MISSING, "Parameter 'user_id' does not exist.");
+                GetUser_CheerLocalCodeMap.put(GetUser_CheerLocalCode.ERROR_RESPONSE_USERCHEERDATA_MISSING, "Response 'usercheerdata' was not received");
+                GetUser_CheerLocalCodeMap.put(GetUser_CheerLocalCode.ERROR_RESPONSE_USERCHEERDATA_LOCALITY_MISSING, "Response 'locality' was not received");
+            }
+            String message = null;
+            for (Map.Entry<GetUser_CheerLocalCode, String> entry : GetUser_CheerLocalCodeMap.entrySet()) {
+                if (entry.getKey().equals(code)) {
+                    message = entry.getValue();
+                    break;
+                }
+            }
+            return message;
+        }
+
+        public static GetUser_CheerLocalCode GetUser_CheerLocalCodeReverseLookupTable(String message) {
+            if (GetUser_CheerLocalCodeReverseMap.isEmpty()) {
+                GetUser_CheerLocalCodeReverseMap.put("ERROR_RESPONSE_USERCHEERDATA_REST_ID_MISSING", GetUser_CheerLocalCode.ERROR_RESPONSE_USERCHEERDATA_REST_ID_MISSING);
+                GetUser_CheerLocalCodeReverseMap.put("ERROR_RESPONSE_USERCHEERDATA_LOCALITY_MALFORMED", GetUser_CheerLocalCode.ERROR_RESPONSE_USERCHEERDATA_LOCALITY_MALFORMED);
+                GetUser_CheerLocalCodeReverseMap.put("ERROR_RESPONSE_USERCHEERDATA_REST_ID_MALFORMED", GetUser_CheerLocalCode.ERROR_RESPONSE_USERCHEERDATA_REST_ID_MALFORMED);
+                GetUser_CheerLocalCodeReverseMap.put("ERROR_PARAMETER_USER_ID_MALFORMED", GetUser_CheerLocalCode.ERROR_PARAMETER_USER_ID_MALFORMED);
+                GetUser_CheerLocalCodeReverseMap.put("ERROR_RESPONSE_USERCHEERDATA_RESTNAME_MALFORMED", GetUser_CheerLocalCode.ERROR_RESPONSE_USERCHEERDATA_RESTNAME_MALFORMED);
+                GetUser_CheerLocalCodeReverseMap.put("ERROR_RESPONSE_USERCHEERDATA_RESTNAME_MISSING", GetUser_CheerLocalCode.ERROR_RESPONSE_USERCHEERDATA_RESTNAME_MISSING);
+                GetUser_CheerLocalCodeReverseMap.put("ERROR_PARAMETER_USER_ID_MISSING", GetUser_CheerLocalCode.ERROR_PARAMETER_USER_ID_MISSING);
+                GetUser_CheerLocalCodeReverseMap.put("ERROR_RESPONSE_USERCHEERDATA_MISSING", GetUser_CheerLocalCode.ERROR_RESPONSE_USERCHEERDATA_MISSING);
+                GetUser_CheerLocalCodeReverseMap.put("ERROR_RESPONSE_USERCHEERDATA_LOCALITY_MISSING", GetUser_CheerLocalCode.ERROR_RESPONSE_USERCHEERDATA_LOCALITY_MISSING);
+            }
+            GetUser_CheerLocalCode code = null;
+            for (Map.Entry<String, GetUser_CheerLocalCode> entry : GetUser_CheerLocalCodeReverseMap.entrySet()) {
+                if (entry.getKey().equals(message)) {
+                    code = entry.getValue();
+                    break;
+                }
+            }
+            return code;
+        }
+
+        private static final ConcurrentHashMap<GetUserLocalCode, String> GetUserLocalCodeMap = new ConcurrentHashMap<>();
+        private static final ConcurrentHashMap<String, GetUserLocalCode> GetUserLocalCodeReverseMap = new ConcurrentHashMap<>();
+
+        public static String getGetUserAPI(String user_id) {
+            return testurl + "/get/user/" + "?user_id=" + user_id;
+        }
+
+        public enum GetUserLocalCode {
+            ERROR_PARAMETER_USER_ID_MISSING,
+            ERROR_PARAMETER_USER_ID_MALFORMED,
+            ERROR_RESPONSE_USERDATA_MISSING,
+            ERROR_RESPONSE_USERDATA_CHEER_NUM_MISSING,
+            ERROR_RESPONSE_USERDATA_CHEER_NUM_MALFORMED,
+            ERROR_RESPONSE_USERDATA_FOLLOW_FLAG_MISSING,
+            ERROR_RESPONSE_USERDATA_FOLLOW_FLAG_MALFORMED,
+            ERROR_RESPONSE_USERDATA_FOLLOW_NUM_MISSING,
+            ERROR_RESPONSE_USERDATA_FOLLOW_NUM_MALFORMED,
+            ERROR_RESPONSE_USERDATA_FOLLOWER_NUM_MISSING,
+            ERROR_RESPONSE_USERDATA_FOLLOWER_NUM_MALFORMED,
+            ERROR_RESPONSE_USERDATA_PROFILE_IMG_MISSING,
+            ERROR_RESPONSE_USERDATA_PROFILE_IMG_MALFORMED,
+            ERROR_RESPONSE_USERDATA_USER_ID_MISSING,
+            ERROR_RESPONSE_USERDATA_USER_ID_MALFORMED,
+            ERROR_RESPONSE_USERDATA_USERNAME_MISSING,
+            ERROR_RESPONSE_USERDATA_USERNAME_MALFORMED,
+            ERROR_RESPONSE_USERDATA_WANT_NUM_MISSING,
+            ERROR_RESPONSE_USERDATA_WANT_NUM_MALFORMED,
+            ERROR_RESPONSE_POSTDATA_MISSING,
+            ERROR_RESPONSE_POSTDATA_CATEGORY_MISSING,
+            ERROR_RESPONSE_POSTDATA_CATEGORY_MALFORMED,
+            ERROR_RESPONSE_POSTDATA_CHEER_FLAG_MISSING,
+            ERROR_RESPONSE_POSTDATA_CHEER_FLAG_MALFORMED,
+            ERROR_RESPONSE_POSTDATA_COMMENT_NUM_MISSING,
+            ERROR_RESPONSE_POSTDATA_COMMENT_NUM_MALFORMED,
+            ERROR_RESPONSE_POSTDATA_GOCHI_FLAG_MISSING,
+            ERROR_RESPONSE_POSTDATA_GOCHI_FLAG_MALFORMED,
+            ERROR_RESPONSE_POSTDATA_GOCHI_NUM_MISSING,
+            ERROR_RESPONSE_POSTDATA_GOCHI_NUM_MALFORMED,
+            ERROR_RESPONSE_POSTDATA_LAT_MISSING,
+            ERROR_RESPONSE_POSTDATA_LAT_MALFORMED,
+            ERROR_RESPONSE_POSTDATA_LON_MISSING,
+            ERROR_RESPONSE_POSTDATA_LON_MALFORMED,
+            ERROR_RESPONSE_POSTDATA_MEMO_MISSING,
+            ERROR_RESPONSE_POSTDATA_MEMO_MALFORMED,
+            ERROR_RESPONSE_POSTDATA_POST_DATE_MISSING,
+            ERROR_RESPONSE_POSTDATA_POST_DATE_MALFORMED,
+            ERROR_RESPONSE_POSTDATA_POST_ID_MISSING,
+            ERROR_RESPONSE_POSTDATA_POST_ID_MALFORMED,
+            ERROR_RESPONSE_POSTDATA_REST_ID_MISSING,
+            ERROR_RESPONSE_POSTDATA_REST_ID_MALFORMED,
+            ERROR_RESPONSE_POSTDATA_RESTNAME_MISSING,
+            ERROR_RESPONSE_POSTDATA_RESTNAME_MALFORMED,
+            ERROR_RESPONSE_POSTDATA_THUMBNAIL_MISSING,
+            ERROR_RESPONSE_POSTDATA_THUMBNAIL_MALFORMED,
+            ERROR_RESPONSE_POSTDATA_VALUE_MISSING,
+            ERROR_RESPONSE_POSTDATA_VALUE_MALFORMED,
+        }
+
+        public static String GetUserLocalCodeMessageTable(GetUserLocalCode code) {
+            if (GetUserLocalCodeMap.isEmpty()) {
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_RESPONSE_POSTDATA_LON_MISSING, "Response 'lon' was not received");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_RESPONSE_POSTDATA_REST_ID_MISSING, "Response 'rest_id' was not received");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_RESPONSE_USERDATA_CHEER_NUM_MALFORMED, "Response 'cheer_num' is malformed. It is no a valid 'INTEGER'");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_RESPONSE_POSTDATA_LON_MALFORMED, "Response 'lon' is malformed. It is no a valid 'FLOAT'");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_RESPONSE_POSTDATA_LAT_MALFORMED, "Response 'lat' is malformed. It is no a valid 'FLOAT'");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_RESPONSE_USERDATA_FOLLOW_FLAG_MALFORMED, "Response 'follow_flag' is malformed. Should correspond to '^0$|^1$'");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_RESPONSE_POSTDATA_VALUE_MISSING, "Response 'value' was not received");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_RESPONSE_USERDATA_FOLLOW_NUM_MISSING, "Response 'follow_num' was not received");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_RESPONSE_USERDATA_USERNAME_MISSING, "Response 'username' was not received");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_RESPONSE_USERDATA_PROFILE_IMG_MISSING, "Response 'profile_img' was not received");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_RESPONSE_POSTDATA_MEMO_MISSING, "Response 'memo' was not received");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_RESPONSE_POSTDATA_POST_ID_MISSING, "Response 'post_id' was not received");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_RESPONSE_USERDATA_PROFILE_IMG_MALFORMED, "Response 'profile_img' is malformed. Should correspond to '^[0-9_-]+$'");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_RESPONSE_USERDATA_USER_ID_MALFORMED, "Response 'user_id' is malformed. Should correspond to '^\\d+$'");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_RESPONSE_POSTDATA_POST_DATE_MALFORMED, "Response 'post_date' is malformed. Should correspond to '???'");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_RESPONSE_USERDATA_CHEER_NUM_MISSING, "Response 'cheer_num' was not received");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_RESPONSE_USERDATA_WANT_NUM_MISSING, "Response 'want_num' was not received");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_PARAMETER_USER_ID_MISSING, "Parameter 'user_id' does not exist.");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_RESPONSE_USERDATA_USER_ID_MISSING, "Response 'user_id' was not received");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_RESPONSE_POSTDATA_RESTNAME_MISSING, "Response 'restname' was not received");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_RESPONSE_POSTDATA_GOCHI_NUM_MALFORMED, "Response 'gochi_num' is malformed. It is no a valid 'INTEGER'");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_RESPONSE_POSTDATA_RESTNAME_MALFORMED, "Response 'restname' is malformed. Should correspond to '^\\S{2,30}$'");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_RESPONSE_POSTDATA_POST_DATE_MISSING, "Response 'post_date' was not received");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_PARAMETER_USER_ID_MALFORMED, "Parameter 'user_id' is malformed. Should correspond to '^\\d+$'");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_RESPONSE_USERDATA_FOLLOWER_NUM_MISSING, "Response 'follower_num' was not received");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_RESPONSE_POSTDATA_VALUE_MALFORMED, "Response 'value' is malformed. It is no a valid 'INTEGER'");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_RESPONSE_USERDATA_FOLLOWER_NUM_MALFORMED, "Response 'follower_num' is malformed. It is no a valid 'INTEGER'");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_RESPONSE_POSTDATA_THUMBNAIL_MALFORMED, "Response 'thumbnail' is malformed. Should correspond to '???'");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_RESPONSE_USERDATA_USERNAME_MALFORMED, "Response 'username' is malformed. Should correspond to '^[\\S]{2,20}$'");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_RESPONSE_POSTDATA_MEMO_MALFORMED, "Response 'memo' is malformed. Should correspond to '^\\S{1,140}$'");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_RESPONSE_USERDATA_FOLLOW_FLAG_MISSING, "Response 'follow_flag' was not received");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_RESPONSE_POSTDATA_THUMBNAIL_MISSING, "Response 'thumbnail' was not received");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_RESPONSE_POSTDATA_CATEGORY_MALFORMED, "Response 'category' is malformed. Should correspond to '???'");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_RESPONSE_USERDATA_MISSING, "Response 'userdata' was not received");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_RESPONSE_POSTDATA_REST_ID_MALFORMED, "Response 'rest_id' is malformed. Should correspond to '^\\d+$'");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_RESPONSE_POSTDATA_GOCHI_NUM_MISSING, "Response 'gochi_num' was not received");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_RESPONSE_POSTDATA_CHEER_FLAG_MISSING, "Response 'cheer_flag' was not received");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_RESPONSE_POSTDATA_CHEER_FLAG_MALFORMED, "Response 'cheer_flag' is malformed. Should correspond to '^0$|^1$'");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_RESPONSE_USERDATA_WANT_NUM_MALFORMED, "Response 'want_num' is malformed. It is no a valid 'INTEGER'");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_RESPONSE_POSTDATA_LAT_MISSING, "Response 'lat' was not received");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_RESPONSE_USERDATA_FOLLOW_NUM_MALFORMED, "Response 'follow_num' is malformed. It is no a valid 'INTEGER'");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_RESPONSE_POSTDATA_COMMENT_NUM_MALFORMED, "Response 'comment_num' is malformed. It is no a valid 'INTEGER'");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_RESPONSE_POSTDATA_CATEGORY_MISSING, "Response 'category' was not received");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_RESPONSE_POSTDATA_GOCHI_FLAG_MALFORMED, "Response 'gochi_flag' is malformed. Should correspond to '^0$|^1$'");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_RESPONSE_POSTDATA_POST_ID_MALFORMED, "Response 'post_id' is malformed. Should correspond to '^\\d+$'");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_RESPONSE_POSTDATA_COMMENT_NUM_MISSING, "Response 'comment_num' was not received");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_RESPONSE_POSTDATA_GOCHI_FLAG_MISSING, "Response 'gochi_flag' was not received");
+                GetUserLocalCodeMap.put(GetUserLocalCode.ERROR_RESPONSE_POSTDATA_MISSING, "Response 'postdata' was not received");
+            }
+            String message = null;
+            for (Map.Entry<GetUserLocalCode, String> entry : GetUserLocalCodeMap.entrySet()) {
+                if (entry.getKey().equals(code)) {
+                    message = entry.getValue();
+                    break;
+                }
+            }
+            return message;
+        }
+
+        public static GetUserLocalCode GetUserLocalCodeReverseLookupTable(String message) {
+            if (GetUserLocalCodeReverseMap.isEmpty()) {
+                GetUserLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_LON_MISSING", GetUserLocalCode.ERROR_RESPONSE_POSTDATA_LON_MISSING);
+                GetUserLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_REST_ID_MISSING", GetUserLocalCode.ERROR_RESPONSE_POSTDATA_REST_ID_MISSING);
+                GetUserLocalCodeReverseMap.put("ERROR_RESPONSE_USERDATA_CHEER_NUM_MALFORMED", GetUserLocalCode.ERROR_RESPONSE_USERDATA_CHEER_NUM_MALFORMED);
+                GetUserLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_LON_MALFORMED", GetUserLocalCode.ERROR_RESPONSE_POSTDATA_LON_MALFORMED);
+                GetUserLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_LAT_MALFORMED", GetUserLocalCode.ERROR_RESPONSE_POSTDATA_LAT_MALFORMED);
+                GetUserLocalCodeReverseMap.put("ERROR_RESPONSE_USERDATA_FOLLOW_FLAG_MALFORMED", GetUserLocalCode.ERROR_RESPONSE_USERDATA_FOLLOW_FLAG_MALFORMED);
+                GetUserLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_VALUE_MISSING", GetUserLocalCode.ERROR_RESPONSE_POSTDATA_VALUE_MISSING);
+                GetUserLocalCodeReverseMap.put("ERROR_RESPONSE_USERDATA_FOLLOW_NUM_MISSING", GetUserLocalCode.ERROR_RESPONSE_USERDATA_FOLLOW_NUM_MISSING);
+                GetUserLocalCodeReverseMap.put("ERROR_RESPONSE_USERDATA_USERNAME_MISSING", GetUserLocalCode.ERROR_RESPONSE_USERDATA_USERNAME_MISSING);
+                GetUserLocalCodeReverseMap.put("ERROR_RESPONSE_USERDATA_PROFILE_IMG_MISSING", GetUserLocalCode.ERROR_RESPONSE_USERDATA_PROFILE_IMG_MISSING);
+                GetUserLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_MEMO_MISSING", GetUserLocalCode.ERROR_RESPONSE_POSTDATA_MEMO_MISSING);
+                GetUserLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_POST_ID_MISSING", GetUserLocalCode.ERROR_RESPONSE_POSTDATA_POST_ID_MISSING);
+                GetUserLocalCodeReverseMap.put("ERROR_RESPONSE_USERDATA_PROFILE_IMG_MALFORMED", GetUserLocalCode.ERROR_RESPONSE_USERDATA_PROFILE_IMG_MALFORMED);
+                GetUserLocalCodeReverseMap.put("ERROR_RESPONSE_USERDATA_USER_ID_MALFORMED", GetUserLocalCode.ERROR_RESPONSE_USERDATA_USER_ID_MALFORMED);
+                GetUserLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_POST_DATE_MALFORMED", GetUserLocalCode.ERROR_RESPONSE_POSTDATA_POST_DATE_MALFORMED);
+                GetUserLocalCodeReverseMap.put("ERROR_RESPONSE_USERDATA_CHEER_NUM_MISSING", GetUserLocalCode.ERROR_RESPONSE_USERDATA_CHEER_NUM_MISSING);
+                GetUserLocalCodeReverseMap.put("ERROR_RESPONSE_USERDATA_WANT_NUM_MISSING", GetUserLocalCode.ERROR_RESPONSE_USERDATA_WANT_NUM_MISSING);
+                GetUserLocalCodeReverseMap.put("ERROR_PARAMETER_USER_ID_MISSING", GetUserLocalCode.ERROR_PARAMETER_USER_ID_MISSING);
+                GetUserLocalCodeReverseMap.put("ERROR_RESPONSE_USERDATA_USER_ID_MISSING", GetUserLocalCode.ERROR_RESPONSE_USERDATA_USER_ID_MISSING);
+                GetUserLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_RESTNAME_MISSING", GetUserLocalCode.ERROR_RESPONSE_POSTDATA_RESTNAME_MISSING);
+                GetUserLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_GOCHI_NUM_MALFORMED", GetUserLocalCode.ERROR_RESPONSE_POSTDATA_GOCHI_NUM_MALFORMED);
+                GetUserLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_RESTNAME_MALFORMED", GetUserLocalCode.ERROR_RESPONSE_POSTDATA_RESTNAME_MALFORMED);
+                GetUserLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_POST_DATE_MISSING", GetUserLocalCode.ERROR_RESPONSE_POSTDATA_POST_DATE_MISSING);
+                GetUserLocalCodeReverseMap.put("ERROR_PARAMETER_USER_ID_MALFORMED", GetUserLocalCode.ERROR_PARAMETER_USER_ID_MALFORMED);
+                GetUserLocalCodeReverseMap.put("ERROR_RESPONSE_USERDATA_FOLLOWER_NUM_MISSING", GetUserLocalCode.ERROR_RESPONSE_USERDATA_FOLLOWER_NUM_MISSING);
+                GetUserLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_VALUE_MALFORMED", GetUserLocalCode.ERROR_RESPONSE_POSTDATA_VALUE_MALFORMED);
+                GetUserLocalCodeReverseMap.put("ERROR_RESPONSE_USERDATA_FOLLOWER_NUM_MALFORMED", GetUserLocalCode.ERROR_RESPONSE_USERDATA_FOLLOWER_NUM_MALFORMED);
+                GetUserLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_THUMBNAIL_MALFORMED", GetUserLocalCode.ERROR_RESPONSE_POSTDATA_THUMBNAIL_MALFORMED);
+                GetUserLocalCodeReverseMap.put("ERROR_RESPONSE_USERDATA_USERNAME_MALFORMED", GetUserLocalCode.ERROR_RESPONSE_USERDATA_USERNAME_MALFORMED);
+                GetUserLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_MEMO_MALFORMED", GetUserLocalCode.ERROR_RESPONSE_POSTDATA_MEMO_MALFORMED);
+                GetUserLocalCodeReverseMap.put("ERROR_RESPONSE_USERDATA_FOLLOW_FLAG_MISSING", GetUserLocalCode.ERROR_RESPONSE_USERDATA_FOLLOW_FLAG_MISSING);
+                GetUserLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_THUMBNAIL_MISSING", GetUserLocalCode.ERROR_RESPONSE_POSTDATA_THUMBNAIL_MISSING);
+                GetUserLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_CATEGORY_MALFORMED", GetUserLocalCode.ERROR_RESPONSE_POSTDATA_CATEGORY_MALFORMED);
+                GetUserLocalCodeReverseMap.put("ERROR_RESPONSE_USERDATA_MISSING", GetUserLocalCode.ERROR_RESPONSE_USERDATA_MISSING);
+                GetUserLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_REST_ID_MALFORMED", GetUserLocalCode.ERROR_RESPONSE_POSTDATA_REST_ID_MALFORMED);
+                GetUserLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_GOCHI_NUM_MISSING", GetUserLocalCode.ERROR_RESPONSE_POSTDATA_GOCHI_NUM_MISSING);
+                GetUserLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_CHEER_FLAG_MISSING", GetUserLocalCode.ERROR_RESPONSE_POSTDATA_CHEER_FLAG_MISSING);
+                GetUserLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_CHEER_FLAG_MALFORMED", GetUserLocalCode.ERROR_RESPONSE_POSTDATA_CHEER_FLAG_MALFORMED);
+                GetUserLocalCodeReverseMap.put("ERROR_RESPONSE_USERDATA_WANT_NUM_MALFORMED", GetUserLocalCode.ERROR_RESPONSE_USERDATA_WANT_NUM_MALFORMED);
+                GetUserLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_LAT_MISSING", GetUserLocalCode.ERROR_RESPONSE_POSTDATA_LAT_MISSING);
+                GetUserLocalCodeReverseMap.put("ERROR_RESPONSE_USERDATA_FOLLOW_NUM_MALFORMED", GetUserLocalCode.ERROR_RESPONSE_USERDATA_FOLLOW_NUM_MALFORMED);
+                GetUserLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_COMMENT_NUM_MALFORMED", GetUserLocalCode.ERROR_RESPONSE_POSTDATA_COMMENT_NUM_MALFORMED);
+                GetUserLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_CATEGORY_MISSING", GetUserLocalCode.ERROR_RESPONSE_POSTDATA_CATEGORY_MISSING);
+                GetUserLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_GOCHI_FLAG_MALFORMED", GetUserLocalCode.ERROR_RESPONSE_POSTDATA_GOCHI_FLAG_MALFORMED);
+                GetUserLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_POST_ID_MALFORMED", GetUserLocalCode.ERROR_RESPONSE_POSTDATA_POST_ID_MALFORMED);
+                GetUserLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_COMMENT_NUM_MISSING", GetUserLocalCode.ERROR_RESPONSE_POSTDATA_COMMENT_NUM_MISSING);
+                GetUserLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_GOCHI_FLAG_MISSING", GetUserLocalCode.ERROR_RESPONSE_POSTDATA_GOCHI_FLAG_MISSING);
+                GetUserLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_MISSING", GetUserLocalCode.ERROR_RESPONSE_POSTDATA_MISSING);
+            }
+            GetUserLocalCode code = null;
+            for (Map.Entry<String, GetUserLocalCode> entry : GetUserLocalCodeReverseMap.entrySet()) {
+                if (entry.getKey().equals(message)) {
+                    code = entry.getValue();
+                    break;
+                }
+            }
+            return code;
+        }
+
+        private static final ConcurrentHashMap<GetNearLocalCode, String> GetNearLocalCodeMap = new ConcurrentHashMap<>();
+        private static final ConcurrentHashMap<String, GetNearLocalCode> GetNearLocalCodeReverseMap = new ConcurrentHashMap<>();
+
+        public static String getGetNearAPI(String lat, String lon) {
+            return testurl + "/get/near/" + "?lat=" + lat + "&lon=" + lon;
+        }
+
+        public enum GetNearLocalCode {
+            ERROR_PARAMETER_LAT_MISSING,
+            ERROR_PARAMETER_LAT_MALFORMED,
+            ERROR_PARAMETER_LON_MISSING,
+            ERROR_PARAMETER_LON_MALFORMED,
+            ERROR_RESPONSE_NEARDATA_MISSING,
+            ERROR_RESPONSE_NEARDATA_REST_ID_MISSING,
+            ERROR_RESPONSE_NEARDATA_REST_ID_MALFORMED,
+            ERROR_RESPONSE_NEARDATA_RESTNAME_MISSING,
+            ERROR_RESPONSE_NEARDATA_RESTNAME_MALFORMED,
+        }
+
+        public static String GetNearLocalCodeMessageTable(GetNearLocalCode code) {
+            if (GetNearLocalCodeMap.isEmpty()) {
+                GetNearLocalCodeMap.put(GetNearLocalCode.ERROR_PARAMETER_LON_MISSING, "Parameter 'lon' does not exist.");
+                GetNearLocalCodeMap.put(GetNearLocalCode.ERROR_PARAMETER_LON_MALFORMED, "Parameter 'lon' is malformed. Should correspond to '^\\d+.\\d+$'");
+                GetNearLocalCodeMap.put(GetNearLocalCode.ERROR_PARAMETER_LAT_MISSING, "Parameter 'lat' does not exist.");
+                GetNearLocalCodeMap.put(GetNearLocalCode.ERROR_RESPONSE_NEARDATA_REST_ID_MALFORMED, "Response 'rest_id' is malformed. Should correspond to '^\\d+$'");
+                GetNearLocalCodeMap.put(GetNearLocalCode.ERROR_RESPONSE_NEARDATA_REST_ID_MISSING, "Response 'rest_id' was not received");
+                GetNearLocalCodeMap.put(GetNearLocalCode.ERROR_RESPONSE_NEARDATA_MISSING, "Response 'neardata' was not received");
+                GetNearLocalCodeMap.put(GetNearLocalCode.ERROR_RESPONSE_NEARDATA_RESTNAME_MALFORMED, "Response 'restname' is malformed. Should correspond to '^\\S{2,30}$'");
+                GetNearLocalCodeMap.put(GetNearLocalCode.ERROR_PARAMETER_LAT_MALFORMED, "Parameter 'lat' is malformed. Should correspond to '^\\d+.\\d+$'");
+                GetNearLocalCodeMap.put(GetNearLocalCode.ERROR_RESPONSE_NEARDATA_RESTNAME_MISSING, "Response 'restname' was not received");
+            }
+            String message = null;
+            for (Map.Entry<GetNearLocalCode, String> entry : GetNearLocalCodeMap.entrySet()) {
+                if (entry.getKey().equals(code)) {
+                    message = entry.getValue();
+                    break;
+                }
+            }
+            return message;
+        }
+
+        public static GetNearLocalCode GetNearLocalCodeReverseLookupTable(String message) {
+            if (GetNearLocalCodeReverseMap.isEmpty()) {
+                GetNearLocalCodeReverseMap.put("ERROR_PARAMETER_LON_MISSING", GetNearLocalCode.ERROR_PARAMETER_LON_MISSING);
+                GetNearLocalCodeReverseMap.put("ERROR_PARAMETER_LON_MALFORMED", GetNearLocalCode.ERROR_PARAMETER_LON_MALFORMED);
+                GetNearLocalCodeReverseMap.put("ERROR_PARAMETER_LAT_MISSING", GetNearLocalCode.ERROR_PARAMETER_LAT_MISSING);
+                GetNearLocalCodeReverseMap.put("ERROR_RESPONSE_NEARDATA_REST_ID_MALFORMED", GetNearLocalCode.ERROR_RESPONSE_NEARDATA_REST_ID_MALFORMED);
+                GetNearLocalCodeReverseMap.put("ERROR_RESPONSE_NEARDATA_REST_ID_MISSING", GetNearLocalCode.ERROR_RESPONSE_NEARDATA_REST_ID_MISSING);
+                GetNearLocalCodeReverseMap.put("ERROR_RESPONSE_NEARDATA_MISSING", GetNearLocalCode.ERROR_RESPONSE_NEARDATA_MISSING);
+                GetNearLocalCodeReverseMap.put("ERROR_RESPONSE_NEARDATA_RESTNAME_MALFORMED", GetNearLocalCode.ERROR_RESPONSE_NEARDATA_RESTNAME_MALFORMED);
+                GetNearLocalCodeReverseMap.put("ERROR_PARAMETER_LAT_MALFORMED", GetNearLocalCode.ERROR_PARAMETER_LAT_MALFORMED);
+                GetNearLocalCodeReverseMap.put("ERROR_RESPONSE_NEARDATA_RESTNAME_MISSING", GetNearLocalCode.ERROR_RESPONSE_NEARDATA_RESTNAME_MISSING);
+            }
+            GetNearLocalCode code = null;
+            for (Map.Entry<String, GetNearLocalCode> entry : GetNearLocalCodeReverseMap.entrySet()) {
+                if (entry.getKey().equals(message)) {
+                    code = entry.getValue();
+                    break;
+                }
+            }
+            return code;
+        }
+
+        private static final ConcurrentHashMap<GetFollowLocalCode, String> GetFollowLocalCodeMap = new ConcurrentHashMap<>();
+        private static final ConcurrentHashMap<String, GetFollowLocalCode> GetFollowLocalCodeReverseMap = new ConcurrentHashMap<>();
+
+        public static String getGetFollowAPI(String user_id) {
+            return testurl + "/get/follow/" + "?user_id=" + user_id;
+        }
+
+        public enum GetFollowLocalCode {
+            ERROR_PARAMETER_USER_ID_MISSING,
+            ERROR_PARAMETER_USER_ID_MALFORMED,
+            ERROR_RESPONSE_FOLLOWDATA_MISSING,
+            ERROR_RESPONSE_FOLLOWDATA_FOLLOW_FLAG_MISSING,
+            ERROR_RESPONSE_FOLLOWDATA_FOLLOW_FLAG_MALFORMED,
+            ERROR_RESPONSE_FOLLOWDATA_PROFILE_IMG_MISSING,
+            ERROR_RESPONSE_FOLLOWDATA_PROFILE_IMG_MALFORMED,
+            ERROR_RESPONSE_FOLLOWDATA_USER_ID_MISSING,
+            ERROR_RESPONSE_FOLLOWDATA_USER_ID_MALFORMED,
+            ERROR_RESPONSE_FOLLOWDATA_USERNAME_MISSING,
+            ERROR_RESPONSE_FOLLOWDATA_USERNAME_MALFORMED,
+        }
+
+        public static String GetFollowLocalCodeMessageTable(GetFollowLocalCode code) {
+            if (GetFollowLocalCodeMap.isEmpty()) {
+                GetFollowLocalCodeMap.put(GetFollowLocalCode.ERROR_RESPONSE_FOLLOWDATA_FOLLOW_FLAG_MALFORMED, "Response 'follow_flag' is malformed. Should correspond to '^0$|^1$'");
+                GetFollowLocalCodeMap.put(GetFollowLocalCode.ERROR_RESPONSE_FOLLOWDATA_USER_ID_MISSING, "Response 'user_id' was not received");
+                GetFollowLocalCodeMap.put(GetFollowLocalCode.ERROR_RESPONSE_FOLLOWDATA_PROFILE_IMG_MALFORMED, "Response 'profile_img' is malformed. Should correspond to '^[0-9_-]+$'");
+                GetFollowLocalCodeMap.put(GetFollowLocalCode.ERROR_RESPONSE_FOLLOWDATA_USERNAME_MISSING, "Response 'username' was not received");
+                GetFollowLocalCodeMap.put(GetFollowLocalCode.ERROR_RESPONSE_FOLLOWDATA_PROFILE_IMG_MISSING, "Response 'profile_img' was not received");
+                GetFollowLocalCodeMap.put(GetFollowLocalCode.ERROR_PARAMETER_USER_ID_MALFORMED, "Parameter 'user_id' is malformed. Should correspond to '^\\d+$'");
+                GetFollowLocalCodeMap.put(GetFollowLocalCode.ERROR_RESPONSE_FOLLOWDATA_FOLLOW_FLAG_MISSING, "Response 'follow_flag' was not received");
+                GetFollowLocalCodeMap.put(GetFollowLocalCode.ERROR_PARAMETER_USER_ID_MISSING, "Parameter 'user_id' does not exist.");
+                GetFollowLocalCodeMap.put(GetFollowLocalCode.ERROR_RESPONSE_FOLLOWDATA_USER_ID_MALFORMED, "Response 'user_id' is malformed. Should correspond to '^\\d+$'");
+                GetFollowLocalCodeMap.put(GetFollowLocalCode.ERROR_RESPONSE_FOLLOWDATA_USERNAME_MALFORMED, "Response 'username' is malformed. Should correspond to '^[\\S]{2,20}$'");
+                GetFollowLocalCodeMap.put(GetFollowLocalCode.ERROR_RESPONSE_FOLLOWDATA_MISSING, "Response 'followdata' was not received");
+            }
+            String message = null;
+            for (Map.Entry<GetFollowLocalCode, String> entry : GetFollowLocalCodeMap.entrySet()) {
+                if (entry.getKey().equals(code)) {
+                    message = entry.getValue();
+                    break;
+                }
+            }
+            return message;
+        }
+
+        public static GetFollowLocalCode GetFollowLocalCodeReverseLookupTable(String message) {
+            if (GetFollowLocalCodeReverseMap.isEmpty()) {
+                GetFollowLocalCodeReverseMap.put("ERROR_RESPONSE_FOLLOWDATA_FOLLOW_FLAG_MALFORMED", GetFollowLocalCode.ERROR_RESPONSE_FOLLOWDATA_FOLLOW_FLAG_MALFORMED);
+                GetFollowLocalCodeReverseMap.put("ERROR_RESPONSE_FOLLOWDATA_USER_ID_MISSING", GetFollowLocalCode.ERROR_RESPONSE_FOLLOWDATA_USER_ID_MISSING);
+                GetFollowLocalCodeReverseMap.put("ERROR_RESPONSE_FOLLOWDATA_PROFILE_IMG_MALFORMED", GetFollowLocalCode.ERROR_RESPONSE_FOLLOWDATA_PROFILE_IMG_MALFORMED);
+                GetFollowLocalCodeReverseMap.put("ERROR_RESPONSE_FOLLOWDATA_USERNAME_MISSING", GetFollowLocalCode.ERROR_RESPONSE_FOLLOWDATA_USERNAME_MISSING);
+                GetFollowLocalCodeReverseMap.put("ERROR_RESPONSE_FOLLOWDATA_PROFILE_IMG_MISSING", GetFollowLocalCode.ERROR_RESPONSE_FOLLOWDATA_PROFILE_IMG_MISSING);
+                GetFollowLocalCodeReverseMap.put("ERROR_PARAMETER_USER_ID_MALFORMED", GetFollowLocalCode.ERROR_PARAMETER_USER_ID_MALFORMED);
+                GetFollowLocalCodeReverseMap.put("ERROR_RESPONSE_FOLLOWDATA_FOLLOW_FLAG_MISSING", GetFollowLocalCode.ERROR_RESPONSE_FOLLOWDATA_FOLLOW_FLAG_MISSING);
+                GetFollowLocalCodeReverseMap.put("ERROR_PARAMETER_USER_ID_MISSING", GetFollowLocalCode.ERROR_PARAMETER_USER_ID_MISSING);
+                GetFollowLocalCodeReverseMap.put("ERROR_RESPONSE_FOLLOWDATA_USER_ID_MALFORMED", GetFollowLocalCode.ERROR_RESPONSE_FOLLOWDATA_USER_ID_MALFORMED);
+                GetFollowLocalCodeReverseMap.put("ERROR_RESPONSE_FOLLOWDATA_USERNAME_MALFORMED", GetFollowLocalCode.ERROR_RESPONSE_FOLLOWDATA_USERNAME_MALFORMED);
+                GetFollowLocalCodeReverseMap.put("ERROR_RESPONSE_FOLLOWDATA_MISSING", GetFollowLocalCode.ERROR_RESPONSE_FOLLOWDATA_MISSING);
+            }
+            GetFollowLocalCode code = null;
+            for (Map.Entry<String, GetFollowLocalCode> entry : GetFollowLocalCodeReverseMap.entrySet()) {
+                if (entry.getKey().equals(message)) {
+                    code = entry.getValue();
+                    break;
+                }
+            }
+            return code;
+        }
+
+        private static final ConcurrentHashMap<GetRest_CheerLocalCode, String> GetRest_CheerLocalCodeMap = new ConcurrentHashMap<>();
+        private static final ConcurrentHashMap<String, GetRest_CheerLocalCode> GetRest_CheerLocalCodeReverseMap = new ConcurrentHashMap<>();
 
         public static String getGetRestCheerAPI(String rest_id) {
-            return testurl + "/get/rest_cheer/?rest_id=" + rest_id;
+            return testurl + "/get/rest_cheer/" + "?rest_id=" + rest_id;
         }
 
-        public static String getGetNoticeAPI() {
-            return testurl + "/get/notice";
+        public enum GetRest_CheerLocalCode {
+            ERROR_PARAMETER_REST_ID_MISSING,
+            ERROR_PARAMETER_REST_ID_MALFORMED,
+            ERROR_RESPONSE_RESTCHEERDATA_MISSING,
+            ERROR_RESPONSE_RESTCHEERDATA_LOCALITY_MISSING,
+            ERROR_RESPONSE_RESTCHEERDATA_LOCALITY_MALFORMED,
+            ERROR_RESPONSE_RESTCHEERDATA_REST_ID_MISSING,
+            ERROR_RESPONSE_RESTCHEERDATA_REST_ID_MALFORMED,
+            ERROR_RESPONSE_RESTCHEERDATA_RESTNAME_MISSING,
+            ERROR_RESPONSE_RESTCHEERDATA_RESTNAME_MALFORMED,
         }
 
-        public static String getGetNearAPI(double lon, double lat) {
-            return testurl + "/get/near/?lon=" + lon + "&lat=" + lat;
+        public static String GetRest_CheerLocalCodeMessageTable(GetRest_CheerLocalCode code) {
+            if (GetRest_CheerLocalCodeMap.isEmpty()) {
+                GetRest_CheerLocalCodeMap.put(GetRest_CheerLocalCode.ERROR_RESPONSE_RESTCHEERDATA_REST_ID_MISSING, "Response 'rest_id' was not received");
+                GetRest_CheerLocalCodeMap.put(GetRest_CheerLocalCode.ERROR_RESPONSE_RESTCHEERDATA_REST_ID_MALFORMED, "Response 'rest_id' is malformed. Should correspond to '^\\d+$'");
+                GetRest_CheerLocalCodeMap.put(GetRest_CheerLocalCode.ERROR_RESPONSE_RESTCHEERDATA_RESTNAME_MISSING, "Response 'restname' was not received");
+                GetRest_CheerLocalCodeMap.put(GetRest_CheerLocalCode.ERROR_PARAMETER_REST_ID_MISSING, "Parameter 'rest_id' does not exist.");
+                GetRest_CheerLocalCodeMap.put(GetRest_CheerLocalCode.ERROR_RESPONSE_RESTCHEERDATA_LOCALITY_MISSING, "Response 'locality' was not received");
+                GetRest_CheerLocalCodeMap.put(GetRest_CheerLocalCode.ERROR_RESPONSE_RESTCHEERDATA_MISSING, "Response 'restcheerdata' was not received");
+                GetRest_CheerLocalCodeMap.put(GetRest_CheerLocalCode.ERROR_RESPONSE_RESTCHEERDATA_LOCALITY_MALFORMED, "Response 'locality' is malformed. Should correspond to '???'");
+                GetRest_CheerLocalCodeMap.put(GetRest_CheerLocalCode.ERROR_PARAMETER_REST_ID_MALFORMED, "Parameter 'rest_id' is malformed. Should correspond to '^\\d+$'");
+                GetRest_CheerLocalCodeMap.put(GetRest_CheerLocalCode.ERROR_RESPONSE_RESTCHEERDATA_RESTNAME_MALFORMED, "Response 'restname' is malformed. Should correspond to '^\\S{2,30}$'");
+            }
+            String message = null;
+            for (Map.Entry<GetRest_CheerLocalCode, String> entry : GetRest_CheerLocalCodeMap.entrySet()) {
+                if (entry.getKey().equals(code)) {
+                    message = entry.getValue();
+                    break;
+                }
+            }
+            return message;
         }
 
-        public static String getGetHeatmapAPI() {
-            return testurl + "/get/heatmap";
+        public static GetRest_CheerLocalCode GetRest_CheerLocalCodeReverseLookupTable(String message) {
+            if (GetRest_CheerLocalCodeReverseMap.isEmpty()) {
+                GetRest_CheerLocalCodeReverseMap.put("ERROR_RESPONSE_RESTCHEERDATA_REST_ID_MISSING", GetRest_CheerLocalCode.ERROR_RESPONSE_RESTCHEERDATA_REST_ID_MISSING);
+                GetRest_CheerLocalCodeReverseMap.put("ERROR_RESPONSE_RESTCHEERDATA_REST_ID_MALFORMED", GetRest_CheerLocalCode.ERROR_RESPONSE_RESTCHEERDATA_REST_ID_MALFORMED);
+                GetRest_CheerLocalCodeReverseMap.put("ERROR_RESPONSE_RESTCHEERDATA_RESTNAME_MISSING", GetRest_CheerLocalCode.ERROR_RESPONSE_RESTCHEERDATA_RESTNAME_MISSING);
+                GetRest_CheerLocalCodeReverseMap.put("ERROR_PARAMETER_REST_ID_MISSING", GetRest_CheerLocalCode.ERROR_PARAMETER_REST_ID_MISSING);
+                GetRest_CheerLocalCodeReverseMap.put("ERROR_RESPONSE_RESTCHEERDATA_LOCALITY_MISSING", GetRest_CheerLocalCode.ERROR_RESPONSE_RESTCHEERDATA_LOCALITY_MISSING);
+                GetRest_CheerLocalCodeReverseMap.put("ERROR_RESPONSE_RESTCHEERDATA_MISSING", GetRest_CheerLocalCode.ERROR_RESPONSE_RESTCHEERDATA_MISSING);
+                GetRest_CheerLocalCodeReverseMap.put("ERROR_RESPONSE_RESTCHEERDATA_LOCALITY_MALFORMED", GetRest_CheerLocalCode.ERROR_RESPONSE_RESTCHEERDATA_LOCALITY_MALFORMED);
+                GetRest_CheerLocalCodeReverseMap.put("ERROR_PARAMETER_REST_ID_MALFORMED", GetRest_CheerLocalCode.ERROR_PARAMETER_REST_ID_MALFORMED);
+                GetRest_CheerLocalCodeReverseMap.put("ERROR_RESPONSE_RESTCHEERDATA_RESTNAME_MALFORMED", GetRest_CheerLocalCode.ERROR_RESPONSE_RESTCHEERDATA_RESTNAME_MALFORMED);
+            }
+            GetRest_CheerLocalCode code = null;
+            for (Map.Entry<String, GetRest_CheerLocalCode> entry : GetRest_CheerLocalCodeReverseMap.entrySet()) {
+                if (entry.getKey().equals(message)) {
+                    code = entry.getValue();
+                    break;
+                }
+            }
+            return code;
         }
 
-        public static String getPostRegisterDeviceTokenAPI(String device_token, String os, String ver, String model) {
-            return testurl + "/set/device/?device_token=" + device_token + "&os=" + os + "&ver=" + ver + "&model=" + model;
+        private static final ConcurrentHashMap<GetFollowlineLocalCode, String> GetFollowlineLocalCodeMap = new ConcurrentHashMap<>();
+        private static final ConcurrentHashMap<String, GetFollowlineLocalCode> GetFollowlineLocalCodeReverseMap = new ConcurrentHashMap<>();
+
+        public static String getGetFollowlineAPI() {
+            return testurl + "/get/followline/";
         }
 
-        public static String getPostUnregisterDeviceTokenAPI(String device_token) {
-            return testurl + "/set/unregister_device_token/?device_token=" + device_token;
+        public static String getGetFollowlineAPI(int page, int category_id, int value_id) {
+            StringBuilder url = null;
+            url = new StringBuilder(testurl + "/get/followline/?page=" + page);
+            if (category_id != 0) url.append("&category_id=").append(category_id);
+            if (value_id != 0) url.append("&value_id=").append(value_id);
+            return new String(url);
         }
 
-        public static String getPostSnsLinkAPI(String provider, String token) {
-            return testurl + "/set/sns_link/?provider=" + provider + "&sns_token=" + token;
+        public enum GetFollowlineLocalCode {
+            ERROR_RESPONSE_FOLLOWLINEDATA_MISSING,
+            ERROR_RESPONSE_FOLLOWLINEDATA_CHEER_FLAG_MISSING,
+            ERROR_RESPONSE_FOLLOWLINEDATA_CHEER_FLAG_MALFORMED,
+            ERROR_RESPONSE_FOLLOWLINEDATA_GOCHI_FLAG_MISSING,
+            ERROR_RESPONSE_FOLLOWLINEDATA_GOCHI_FLAG_MALFORMED,
+            ERROR_RESPONSE_FOLLOWLINEDATA_POST_DATE_MISSING,
+            ERROR_RESPONSE_FOLLOWLINEDATA_POST_DATE_MALFORMED,
+            ERROR_RESPONSE_FOLLOWLINEDATA_POST_ID_MISSING,
+            ERROR_RESPONSE_FOLLOWLINEDATA_POST_ID_MALFORMED,
+            ERROR_RESPONSE_FOLLOWLINEDATA_REST_ID_MISSING,
+            ERROR_RESPONSE_FOLLOWLINEDATA_REST_ID_MALFORMED,
+            ERROR_RESPONSE_FOLLOWLINEDATA_RESTNAME_MISSING,
+            ERROR_RESPONSE_FOLLOWLINEDATA_RESTNAME_MALFORMED,
+            ERROR_RESPONSE_FOLLOWLINEDATA_THUMBNAIL_MISSING,
+            ERROR_RESPONSE_FOLLOWLINEDATA_THUMBNAIL_MALFORMED,
+            ERROR_RESPONSE_FOLLOWLINEDATA_USER_ID_MISSING,
+            ERROR_RESPONSE_FOLLOWLINEDATA_USER_ID_MALFORMED,
+            ERROR_RESPONSE_FOLLOWLINEDATA_USERNAME_MISSING,
+            ERROR_RESPONSE_FOLLOWLINEDATA_USERNAME_MALFORMED,
+            ERROR_RESPONSE_FOLLOWLINEDATA_VALUE_MISSING,
+            ERROR_RESPONSE_FOLLOWLINEDATA_VALUE_MALFORMED,
         }
 
-        public static String getPostSnsUnlinkAPI(String provider, String token) {
-            return testurl + "/set/sns_unlink/?provider=" + provider + "&sns_token=" + token;
+        public static String GetFollowlineLocalCodeMessageTable(GetFollowlineLocalCode code) {
+            if (GetFollowlineLocalCodeMap.isEmpty()) {
+                GetFollowlineLocalCodeMap.put(GetFollowlineLocalCode.ERROR_RESPONSE_FOLLOWLINEDATA_VALUE_MISSING, "Response 'value' was not received");
+                GetFollowlineLocalCodeMap.put(GetFollowlineLocalCode.ERROR_RESPONSE_FOLLOWLINEDATA_RESTNAME_MISSING, "Response 'restname' was not received");
+                GetFollowlineLocalCodeMap.put(GetFollowlineLocalCode.ERROR_RESPONSE_FOLLOWLINEDATA_USERNAME_MISSING, "Response 'username' was not received");
+                GetFollowlineLocalCodeMap.put(GetFollowlineLocalCode.ERROR_RESPONSE_FOLLOWLINEDATA_GOCHI_FLAG_MALFORMED, "Response 'gochi_flag' is malformed. Should correspond to '^0$|^1$'");
+                GetFollowlineLocalCodeMap.put(GetFollowlineLocalCode.ERROR_RESPONSE_FOLLOWLINEDATA_USER_ID_MISSING, "Response 'user_id' was not received");
+                GetFollowlineLocalCodeMap.put(GetFollowlineLocalCode.ERROR_RESPONSE_FOLLOWLINEDATA_RESTNAME_MALFORMED, "Response 'restname' is malformed. Should correspond to '^\\S{2,30}$'");
+                GetFollowlineLocalCodeMap.put(GetFollowlineLocalCode.ERROR_RESPONSE_FOLLOWLINEDATA_MISSING, "Response 'followlinedata' was not received");
+                GetFollowlineLocalCodeMap.put(GetFollowlineLocalCode.ERROR_RESPONSE_FOLLOWLINEDATA_REST_ID_MALFORMED, "Response 'rest_id' is malformed. Should correspond to '^\\d+$'");
+                GetFollowlineLocalCodeMap.put(GetFollowlineLocalCode.ERROR_RESPONSE_FOLLOWLINEDATA_USERNAME_MALFORMED, "Response 'username' is malformed. Should correspond to '^[\\S]{2,20}$'");
+                GetFollowlineLocalCodeMap.put(GetFollowlineLocalCode.ERROR_RESPONSE_FOLLOWLINEDATA_POST_ID_MISSING, "Response 'post_id' was not received");
+                GetFollowlineLocalCodeMap.put(GetFollowlineLocalCode.ERROR_RESPONSE_FOLLOWLINEDATA_POST_ID_MALFORMED, "Response 'post_id' is malformed. Should correspond to '^\\d+$'");
+                GetFollowlineLocalCodeMap.put(GetFollowlineLocalCode.ERROR_RESPONSE_FOLLOWLINEDATA_USER_ID_MALFORMED, "Response 'user_id' is malformed. Should correspond to '^\\d+$'");
+                GetFollowlineLocalCodeMap.put(GetFollowlineLocalCode.ERROR_RESPONSE_FOLLOWLINEDATA_POST_DATE_MALFORMED, "Response 'post_date' is malformed. Should correspond to '???'");
+                GetFollowlineLocalCodeMap.put(GetFollowlineLocalCode.ERROR_RESPONSE_FOLLOWLINEDATA_CHEER_FLAG_MALFORMED, "Response 'cheer_flag' is malformed. Should correspond to '^0$|^1$'");
+                GetFollowlineLocalCodeMap.put(GetFollowlineLocalCode.ERROR_RESPONSE_FOLLOWLINEDATA_POST_DATE_MISSING, "Response 'post_date' was not received");
+                GetFollowlineLocalCodeMap.put(GetFollowlineLocalCode.ERROR_RESPONSE_FOLLOWLINEDATA_THUMBNAIL_MALFORMED, "Response 'thumbnail' is malformed. Should correspond to '???'");
+                GetFollowlineLocalCodeMap.put(GetFollowlineLocalCode.ERROR_RESPONSE_FOLLOWLINEDATA_CHEER_FLAG_MISSING, "Response 'cheer_flag' was not received");
+                GetFollowlineLocalCodeMap.put(GetFollowlineLocalCode.ERROR_RESPONSE_FOLLOWLINEDATA_GOCHI_FLAG_MISSING, "Response 'gochi_flag' was not received");
+                GetFollowlineLocalCodeMap.put(GetFollowlineLocalCode.ERROR_RESPONSE_FOLLOWLINEDATA_REST_ID_MISSING, "Response 'rest_id' was not received");
+                GetFollowlineLocalCodeMap.put(GetFollowlineLocalCode.ERROR_RESPONSE_FOLLOWLINEDATA_THUMBNAIL_MISSING, "Response 'thumbnail' was not received");
+                GetFollowlineLocalCodeMap.put(GetFollowlineLocalCode.ERROR_RESPONSE_FOLLOWLINEDATA_VALUE_MALFORMED, "Response 'value' is malformed. It is no a valid 'INTEGER'");
+            }
+            String message = null;
+            for (Map.Entry<GetFollowlineLocalCode, String> entry : GetFollowlineLocalCodeMap.entrySet()) {
+                if (entry.getKey().equals(code)) {
+                    message = entry.getValue();
+                    break;
+                }
+            }
+            return message;
         }
 
-        public static String getPostGochiAPI(String post_id) {
-            return testurl + "/set/gochi/?post_id=" + post_id;
+        public static GetFollowlineLocalCode GetFollowlineLocalCodeReverseLookupTable(String message) {
+            if (GetFollowlineLocalCodeReverseMap.isEmpty()) {
+                GetFollowlineLocalCodeReverseMap.put("ERROR_RESPONSE_FOLLOWLINEDATA_VALUE_MISSING", GetFollowlineLocalCode.ERROR_RESPONSE_FOLLOWLINEDATA_VALUE_MISSING);
+                GetFollowlineLocalCodeReverseMap.put("ERROR_RESPONSE_FOLLOWLINEDATA_RESTNAME_MISSING", GetFollowlineLocalCode.ERROR_RESPONSE_FOLLOWLINEDATA_RESTNAME_MISSING);
+                GetFollowlineLocalCodeReverseMap.put("ERROR_RESPONSE_FOLLOWLINEDATA_USERNAME_MISSING", GetFollowlineLocalCode.ERROR_RESPONSE_FOLLOWLINEDATA_USERNAME_MISSING);
+                GetFollowlineLocalCodeReverseMap.put("ERROR_RESPONSE_FOLLOWLINEDATA_GOCHI_FLAG_MALFORMED", GetFollowlineLocalCode.ERROR_RESPONSE_FOLLOWLINEDATA_GOCHI_FLAG_MALFORMED);
+                GetFollowlineLocalCodeReverseMap.put("ERROR_RESPONSE_FOLLOWLINEDATA_USER_ID_MISSING", GetFollowlineLocalCode.ERROR_RESPONSE_FOLLOWLINEDATA_USER_ID_MISSING);
+                GetFollowlineLocalCodeReverseMap.put("ERROR_RESPONSE_FOLLOWLINEDATA_RESTNAME_MALFORMED", GetFollowlineLocalCode.ERROR_RESPONSE_FOLLOWLINEDATA_RESTNAME_MALFORMED);
+                GetFollowlineLocalCodeReverseMap.put("ERROR_RESPONSE_FOLLOWLINEDATA_MISSING", GetFollowlineLocalCode.ERROR_RESPONSE_FOLLOWLINEDATA_MISSING);
+                GetFollowlineLocalCodeReverseMap.put("ERROR_RESPONSE_FOLLOWLINEDATA_REST_ID_MALFORMED", GetFollowlineLocalCode.ERROR_RESPONSE_FOLLOWLINEDATA_REST_ID_MALFORMED);
+                GetFollowlineLocalCodeReverseMap.put("ERROR_RESPONSE_FOLLOWLINEDATA_USERNAME_MALFORMED", GetFollowlineLocalCode.ERROR_RESPONSE_FOLLOWLINEDATA_USERNAME_MALFORMED);
+                GetFollowlineLocalCodeReverseMap.put("ERROR_RESPONSE_FOLLOWLINEDATA_POST_ID_MISSING", GetFollowlineLocalCode.ERROR_RESPONSE_FOLLOWLINEDATA_POST_ID_MISSING);
+                GetFollowlineLocalCodeReverseMap.put("ERROR_RESPONSE_FOLLOWLINEDATA_POST_ID_MALFORMED", GetFollowlineLocalCode.ERROR_RESPONSE_FOLLOWLINEDATA_POST_ID_MALFORMED);
+                GetFollowlineLocalCodeReverseMap.put("ERROR_RESPONSE_FOLLOWLINEDATA_USER_ID_MALFORMED", GetFollowlineLocalCode.ERROR_RESPONSE_FOLLOWLINEDATA_USER_ID_MALFORMED);
+                GetFollowlineLocalCodeReverseMap.put("ERROR_RESPONSE_FOLLOWLINEDATA_POST_DATE_MALFORMED", GetFollowlineLocalCode.ERROR_RESPONSE_FOLLOWLINEDATA_POST_DATE_MALFORMED);
+                GetFollowlineLocalCodeReverseMap.put("ERROR_RESPONSE_FOLLOWLINEDATA_CHEER_FLAG_MALFORMED", GetFollowlineLocalCode.ERROR_RESPONSE_FOLLOWLINEDATA_CHEER_FLAG_MALFORMED);
+                GetFollowlineLocalCodeReverseMap.put("ERROR_RESPONSE_FOLLOWLINEDATA_POST_DATE_MISSING", GetFollowlineLocalCode.ERROR_RESPONSE_FOLLOWLINEDATA_POST_DATE_MISSING);
+                GetFollowlineLocalCodeReverseMap.put("ERROR_RESPONSE_FOLLOWLINEDATA_THUMBNAIL_MALFORMED", GetFollowlineLocalCode.ERROR_RESPONSE_FOLLOWLINEDATA_THUMBNAIL_MALFORMED);
+                GetFollowlineLocalCodeReverseMap.put("ERROR_RESPONSE_FOLLOWLINEDATA_CHEER_FLAG_MISSING", GetFollowlineLocalCode.ERROR_RESPONSE_FOLLOWLINEDATA_CHEER_FLAG_MISSING);
+                GetFollowlineLocalCodeReverseMap.put("ERROR_RESPONSE_FOLLOWLINEDATA_GOCHI_FLAG_MISSING", GetFollowlineLocalCode.ERROR_RESPONSE_FOLLOWLINEDATA_GOCHI_FLAG_MISSING);
+                GetFollowlineLocalCodeReverseMap.put("ERROR_RESPONSE_FOLLOWLINEDATA_REST_ID_MISSING", GetFollowlineLocalCode.ERROR_RESPONSE_FOLLOWLINEDATA_REST_ID_MISSING);
+                GetFollowlineLocalCodeReverseMap.put("ERROR_RESPONSE_FOLLOWLINEDATA_THUMBNAIL_MISSING", GetFollowlineLocalCode.ERROR_RESPONSE_FOLLOWLINEDATA_THUMBNAIL_MISSING);
+                GetFollowlineLocalCodeReverseMap.put("ERROR_RESPONSE_FOLLOWLINEDATA_VALUE_MALFORMED", GetFollowlineLocalCode.ERROR_RESPONSE_FOLLOWLINEDATA_VALUE_MALFORMED);
+            }
+            GetFollowlineLocalCode code = null;
+            for (Map.Entry<String, GetFollowlineLocalCode> entry : GetFollowlineLocalCodeReverseMap.entrySet()) {
+                if (entry.getKey().equals(message)) {
+                    code = entry.getValue();
+                    break;
+                }
+            }
+            return code;
         }
 
-        public static String getPostDeleteAPI(String post_id) {
-            return testurl + "/set/post_delete/?post_id=" + post_id;
+        private static final ConcurrentHashMap<GetWantLocalCode, String> GetWantLocalCodeMap = new ConcurrentHashMap<>();
+        private static final ConcurrentHashMap<String, GetWantLocalCode> GetWantLocalCodeReverseMap = new ConcurrentHashMap<>();
+
+        public static String getGetWantAPI(String user_id) {
+            return testurl + "/get/want/" + "?user_id=" + user_id;
         }
 
-        public static String getPostBlockAPI(String post_id) {
-            return testurl + "/set/post_block/?post_id=" + post_id;
+        public enum GetWantLocalCode {
+            ERROR_PARAMETER_USER_ID_MISSING,
+            ERROR_PARAMETER_USER_ID_MALFORMED,
+            ERROR_RESPONSE_WANTDATA_MISSING,
+            ERROR_RESPONSE_WANTDATA_LOCALITY_MISSING,
+            ERROR_RESPONSE_WANTDATA_LOCALITY_MALFORMED,
+            ERROR_RESPONSE_WANTDATA_REST_ID_MISSING,
+            ERROR_RESPONSE_WANTDATA_REST_ID_MALFORMED,
+            ERROR_RESPONSE_WANTDATA_RESTNAME_MISSING,
+            ERROR_RESPONSE_WANTDATA_RESTNAME_MALFORMED,
         }
 
-        public static String getPostFollowAPI(String user_id) {
-            return testurl + "/set/follow/?user_id=" + user_id;
+        public static String GetWantLocalCodeMessageTable(GetWantLocalCode code) {
+            if (GetWantLocalCodeMap.isEmpty()) {
+                GetWantLocalCodeMap.put(GetWantLocalCode.ERROR_RESPONSE_WANTDATA_LOCALITY_MALFORMED, "Response 'locality' is malformed. Should correspond to '???'");
+                GetWantLocalCodeMap.put(GetWantLocalCode.ERROR_RESPONSE_WANTDATA_RESTNAME_MALFORMED, "Response 'restname' is malformed. Should correspond to '^\\S{2,30}$'");
+                GetWantLocalCodeMap.put(GetWantLocalCode.ERROR_RESPONSE_WANTDATA_LOCALITY_MISSING, "Response 'locality' was not received");
+                GetWantLocalCodeMap.put(GetWantLocalCode.ERROR_PARAMETER_USER_ID_MALFORMED, "Parameter 'user_id' is malformed. Should correspond to '^\\d+$'");
+                GetWantLocalCodeMap.put(GetWantLocalCode.ERROR_RESPONSE_WANTDATA_RESTNAME_MISSING, "Response 'restname' was not received");
+                GetWantLocalCodeMap.put(GetWantLocalCode.ERROR_PARAMETER_USER_ID_MISSING, "Parameter 'user_id' does not exist.");
+                GetWantLocalCodeMap.put(GetWantLocalCode.ERROR_RESPONSE_WANTDATA_MISSING, "Response 'wantdata' was not received");
+                GetWantLocalCodeMap.put(GetWantLocalCode.ERROR_RESPONSE_WANTDATA_REST_ID_MISSING, "Response 'rest_id' was not received");
+                GetWantLocalCodeMap.put(GetWantLocalCode.ERROR_RESPONSE_WANTDATA_REST_ID_MALFORMED, "Response 'rest_id' is malformed. Should correspond to '^\\d+$'");
+            }
+            String message = null;
+            for (Map.Entry<GetWantLocalCode, String> entry : GetWantLocalCodeMap.entrySet()) {
+                if (entry.getKey().equals(code)) {
+                    message = entry.getValue();
+                    break;
+                }
+            }
+            return message;
         }
 
-        public static String getPostUnfollowAPI(String user_id) {
-            return testurl + "/set/unfollow/?user_id=" + user_id;
+        public static GetWantLocalCode GetWantLocalCodeReverseLookupTable(String message) {
+            if (GetWantLocalCodeReverseMap.isEmpty()) {
+                GetWantLocalCodeReverseMap.put("ERROR_RESPONSE_WANTDATA_LOCALITY_MALFORMED", GetWantLocalCode.ERROR_RESPONSE_WANTDATA_LOCALITY_MALFORMED);
+                GetWantLocalCodeReverseMap.put("ERROR_RESPONSE_WANTDATA_RESTNAME_MALFORMED", GetWantLocalCode.ERROR_RESPONSE_WANTDATA_RESTNAME_MALFORMED);
+                GetWantLocalCodeReverseMap.put("ERROR_RESPONSE_WANTDATA_LOCALITY_MISSING", GetWantLocalCode.ERROR_RESPONSE_WANTDATA_LOCALITY_MISSING);
+                GetWantLocalCodeReverseMap.put("ERROR_PARAMETER_USER_ID_MALFORMED", GetWantLocalCode.ERROR_PARAMETER_USER_ID_MALFORMED);
+                GetWantLocalCodeReverseMap.put("ERROR_RESPONSE_WANTDATA_RESTNAME_MISSING", GetWantLocalCode.ERROR_RESPONSE_WANTDATA_RESTNAME_MISSING);
+                GetWantLocalCodeReverseMap.put("ERROR_PARAMETER_USER_ID_MISSING", GetWantLocalCode.ERROR_PARAMETER_USER_ID_MISSING);
+                GetWantLocalCodeReverseMap.put("ERROR_RESPONSE_WANTDATA_MISSING", GetWantLocalCode.ERROR_RESPONSE_WANTDATA_MISSING);
+                GetWantLocalCodeReverseMap.put("ERROR_RESPONSE_WANTDATA_REST_ID_MISSING", GetWantLocalCode.ERROR_RESPONSE_WANTDATA_REST_ID_MISSING);
+                GetWantLocalCodeReverseMap.put("ERROR_RESPONSE_WANTDATA_REST_ID_MALFORMED", GetWantLocalCode.ERROR_RESPONSE_WANTDATA_REST_ID_MALFORMED);
+            }
+            GetWantLocalCode code = null;
+            for (Map.Entry<String, GetWantLocalCode> entry : GetWantLocalCodeReverseMap.entrySet()) {
+                if (entry.getKey().equals(message)) {
+                    code = entry.getValue();
+                    break;
+                }
+            }
+            return code;
         }
 
-        public static String getPostFeedbackAPI(String feedback) {
-            return testurl + "/set/feedback/?feedback=" + feedback;
+        private static final ConcurrentHashMap<GetRestLocalCode, String> GetRestLocalCodeMap = new ConcurrentHashMap<>();
+        private static final ConcurrentHashMap<String, GetRestLocalCode> GetRestLocalCodeReverseMap = new ConcurrentHashMap<>();
+
+        public static String getGetRestAPI(String rest_id) {
+            return testurl + "/get/rest/" + "?rest_id=" + rest_id;
         }
 
-        public static String getPostPasswordAPI(String password) {
-            return testurl + "/set/password/?password=" + password;
+        public enum GetRestLocalCode {
+            ERROR_PARAMETER_REST_ID_MISSING,
+            ERROR_PARAMETER_REST_ID_MALFORMED,
+            ERROR_RESPONSE_RESTDATA_MISSING,
+            ERROR_RESPONSE_RESTDATA_HOMEPAGE_MISSING,
+            ERROR_RESPONSE_RESTDATA_HOMEPAGE_MALFORMED,
+            ERROR_RESPONSE_RESTDATA_LAT_MISSING,
+            ERROR_RESPONSE_RESTDATA_LAT_MALFORMED,
+            ERROR_RESPONSE_RESTDATA_LOCALITY_MISSING,
+            ERROR_RESPONSE_RESTDATA_LOCALITY_MALFORMED,
+            ERROR_RESPONSE_RESTDATA_LON_MISSING,
+            ERROR_RESPONSE_RESTDATA_LON_MALFORMED,
+            ERROR_RESPONSE_RESTDATA_REST_CATEGORY_MISSING,
+            ERROR_RESPONSE_RESTDATA_REST_CATEGORY_MALFORMED,
+            ERROR_RESPONSE_RESTDATA_REST_ID_MISSING,
+            ERROR_RESPONSE_RESTDATA_REST_ID_MALFORMED,
+            ERROR_RESPONSE_RESTDATA_RESTNAME_MISSING,
+            ERROR_RESPONSE_RESTDATA_RESTNAME_MALFORMED,
+            ERROR_RESPONSE_RESTDATA_TELL_MISSING,
+            ERROR_RESPONSE_RESTDATA_TELL_MALFORMED,
+            ERROR_RESPONSE_RESTDATA_WANT_FLAG_MISSING,
+            ERROR_RESPONSE_RESTDATA_WANT_FLAG_MALFORMED,
+            ERROR_RESPONSE_POSTDATA_MISSING,
+            ERROR_RESPONSE_POSTDATA_CATEGORY_MISSING,
+            ERROR_RESPONSE_POSTDATA_CATEGORY_MALFORMED,
+            ERROR_RESPONSE_POSTDATA_CHEER_FLAG_MISSING,
+            ERROR_RESPONSE_POSTDATA_CHEER_FLAG_MALFORMED,
+            ERROR_RESPONSE_POSTDATA_COMMENT_NUM_MISSING,
+            ERROR_RESPONSE_POSTDATA_COMMENT_NUM_MALFORMED,
+            ERROR_RESPONSE_POSTDATA_GOCHI_FLAG_MISSING,
+            ERROR_RESPONSE_POSTDATA_GOCHI_FLAG_MALFORMED,
+            ERROR_RESPONSE_POSTDATA_GOCHI_NUM_MISSING,
+            ERROR_RESPONSE_POSTDATA_GOCHI_NUM_MALFORMED,
+            ERROR_RESPONSE_POSTDATA_MEMO_MISSING,
+            ERROR_RESPONSE_POSTDATA_MEMO_MALFORMED,
+            ERROR_RESPONSE_POSTDATA_POST_DATE_MISSING,
+            ERROR_RESPONSE_POSTDATA_POST_DATE_MALFORMED,
+            ERROR_RESPONSE_POSTDATA_POST_ID_MISSING,
+            ERROR_RESPONSE_POSTDATA_POST_ID_MALFORMED,
+            ERROR_RESPONSE_POSTDATA_POST_REST_ID_MISSING,
+            ERROR_RESPONSE_POSTDATA_POST_REST_ID_MALFORMED,
+            ERROR_RESPONSE_POSTDATA_PROFILE_IMG_MISSING,
+            ERROR_RESPONSE_POSTDATA_PROFILE_IMG_MALFORMED,
+            ERROR_RESPONSE_POSTDATA_THUMBNAIL_MISSING,
+            ERROR_RESPONSE_POSTDATA_THUMBNAIL_MALFORMED,
+            ERROR_RESPONSE_POSTDATA_USER_ID_MISSING,
+            ERROR_RESPONSE_POSTDATA_USER_ID_MALFORMED,
+            ERROR_RESPONSE_POSTDATA_USERNAME_MISSING,
+            ERROR_RESPONSE_POSTDATA_USERNAME_MALFORMED,
+            ERROR_RESPONSE_POSTDATA_VALUE_MISSING,
+            ERROR_RESPONSE_POSTDATA_VALUE_MALFORMED,
         }
 
-        public static String getPostCommentAPI(String post_id, String comment, String re_user_id) {
-            return testurl + "/set/comment/?post_id=" + post_id + "&comment=" + comment + "&re_user_id=" + re_user_id;
+        public static String GetRestLocalCodeMessageTable(GetRestLocalCode code) {
+            if (GetRestLocalCodeMap.isEmpty()) {
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_RESTDATA_REST_ID_MALFORMED, "Response 'rest_id' is malformed. Should correspond to '^\\d+$'");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_PARAMETER_REST_ID_MISSING, "Parameter 'rest_id' does not exist.");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_POSTDATA_PROFILE_IMG_MALFORMED, "Response 'profile_img' is malformed. Should correspond to '^[0-9_-]+$'");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_POSTDATA_USER_ID_MALFORMED, "Response 'user_id' is malformed. Should correspond to '^\\d+$'");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_RESTDATA_LAT_MALFORMED, "Response 'lat' is malformed. It is no a valid 'FLOAT'");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_POSTDATA_USERNAME_MALFORMED, "Response 'username' is malformed. Should correspond to '^[\\S]{2,20}$'");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_POSTDATA_POST_REST_ID_MISSING, "Response 'post_rest_id' was not received");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_PARAMETER_REST_ID_MALFORMED, "Parameter 'rest_id' is malformed. Should correspond to '^\\d+$'");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_POSTDATA_MEMO_MISSING, "Response 'memo' was not received");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_POSTDATA_POST_REST_ID_MALFORMED, "Response 'post_rest_id' is malformed. Should correspond to '^\\d+$'");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_POSTDATA_POST_ID_MISSING, "Response 'post_id' was not received");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_POSTDATA_VALUE_MISSING, "Response 'value' was not received");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_POSTDATA_POST_DATE_MALFORMED, "Response 'post_date' is malformed. Should correspond to '???'");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_POSTDATA_GOCHI_FLAG_MISSING, "Response 'gochi_flag' was not received");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_RESTDATA_TELL_MALFORMED, "Response 'tell' is malformed. Should correspond to '???'");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_POSTDATA_THUMBNAIL_MALFORMED, "Response 'thumbnail' is malformed. Should correspond to '???'");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_POSTDATA_GOCHI_NUM_MALFORMED, "Response 'gochi_num' is malformed. It is no a valid 'INTEGER'");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_RESTDATA_MISSING, "Response 'restdata' was not received");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_POSTDATA_USERNAME_MISSING, "Response 'username' was not received");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_RESTDATA_LON_MISSING, "Response 'lon' was not received");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_RESTDATA_LOCALITY_MALFORMED, "Response 'locality' is malformed. Should correspond to '???'");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_POSTDATA_POST_DATE_MISSING, "Response 'post_date' was not received");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_RESTDATA_HOMEPAGE_MISSING, "Response 'homepage' was not received");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_POSTDATA_VALUE_MALFORMED, "Response 'value' is malformed. It is no a valid 'INTEGER'");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_RESTDATA_LOCALITY_MISSING, "Response 'locality' was not received");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_RESTDATA_LON_MALFORMED, "Response 'lon' is malformed. It is no a valid 'FLOAT'");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_RESTDATA_RESTNAME_MALFORMED, "Response 'restname' is malformed. Should correspond to '^\\S{2,30}$'");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_RESTDATA_TELL_MISSING, "Response 'tell' was not received");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_RESTDATA_HOMEPAGE_MALFORMED, "Response 'homepage' is malformed. Should correspond to '???'");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_RESTDATA_REST_CATEGORY_MISSING, "Response 'rest_category' was not received");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_POSTDATA_MEMO_MALFORMED, "Response 'memo' is malformed. Should correspond to '^\\S{1,140}$'");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_RESTDATA_WANT_FLAG_MISSING, "Response 'want_flag' was not received");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_POSTDATA_THUMBNAIL_MISSING, "Response 'thumbnail' was not received");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_POSTDATA_CATEGORY_MALFORMED, "Response 'category' is malformed. Should correspond to '???'");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_RESTDATA_RESTNAME_MISSING, "Response 'restname' was not received");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_POSTDATA_GOCHI_NUM_MISSING, "Response 'gochi_num' was not received");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_POSTDATA_USER_ID_MISSING, "Response 'user_id' was not received");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_POSTDATA_CHEER_FLAG_MISSING, "Response 'cheer_flag' was not received");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_RESTDATA_REST_CATEGORY_MALFORMED, "Response 'rest_category' is malformed. Should correspond to '???'");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_POSTDATA_CHEER_FLAG_MALFORMED, "Response 'cheer_flag' is malformed. Should correspond to '^0$|^1$'");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_POSTDATA_COMMENT_NUM_MALFORMED, "Response 'comment_num' is malformed. It is no a valid 'INTEGER'");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_RESTDATA_REST_ID_MISSING, "Response 'rest_id' was not received");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_POSTDATA_CATEGORY_MISSING, "Response 'category' was not received");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_POSTDATA_GOCHI_FLAG_MALFORMED, "Response 'gochi_flag' is malformed. Should correspond to '^0$|^1$'");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_POSTDATA_PROFILE_IMG_MISSING, "Response 'profile_img' was not received");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_RESTDATA_WANT_FLAG_MALFORMED, "Response 'want_flag' is malformed. Should correspond to '^0$|^1$'");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_POSTDATA_POST_ID_MALFORMED, "Response 'post_id' is malformed. Should correspond to '^\\d+$'");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_POSTDATA_COMMENT_NUM_MISSING, "Response 'comment_num' was not received");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_RESTDATA_LAT_MISSING, "Response 'lat' was not received");
+                GetRestLocalCodeMap.put(GetRestLocalCode.ERROR_RESPONSE_POSTDATA_MISSING, "Response 'postdata' was not received");
+            }
+            String message = null;
+            for (Map.Entry<GetRestLocalCode, String> entry : GetRestLocalCodeMap.entrySet()) {
+                if (entry.getKey().equals(code)) {
+                    message = entry.getValue();
+                    break;
+                }
+            }
+            return message;
         }
 
-        public static String getPostMovieAPI(String rest_id, String movie_name, int category_id, String value, String memo, int cheer_flag) {
-            return testurl + "/set/post/?rest_id=" + rest_id + "&movie_name=" + movie_name +
-                    "&category_id=" + category_id + "&value=" + value + "&memo=" + memo + "&cheer_flag=" + cheer_flag;
+        public static GetRestLocalCode GetRestLocalCodeReverseLookupTable(String message) {
+            if (GetRestLocalCodeReverseMap.isEmpty()) {
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_RESTDATA_REST_ID_MALFORMED", GetRestLocalCode.ERROR_RESPONSE_RESTDATA_REST_ID_MALFORMED);
+                GetRestLocalCodeReverseMap.put("ERROR_PARAMETER_REST_ID_MISSING", GetRestLocalCode.ERROR_PARAMETER_REST_ID_MISSING);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_PROFILE_IMG_MALFORMED", GetRestLocalCode.ERROR_RESPONSE_POSTDATA_PROFILE_IMG_MALFORMED);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_USER_ID_MALFORMED", GetRestLocalCode.ERROR_RESPONSE_POSTDATA_USER_ID_MALFORMED);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_RESTDATA_LAT_MALFORMED", GetRestLocalCode.ERROR_RESPONSE_RESTDATA_LAT_MALFORMED);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_USERNAME_MALFORMED", GetRestLocalCode.ERROR_RESPONSE_POSTDATA_USERNAME_MALFORMED);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_POST_REST_ID_MISSING", GetRestLocalCode.ERROR_RESPONSE_POSTDATA_POST_REST_ID_MISSING);
+                GetRestLocalCodeReverseMap.put("ERROR_PARAMETER_REST_ID_MALFORMED", GetRestLocalCode.ERROR_PARAMETER_REST_ID_MALFORMED);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_MEMO_MISSING", GetRestLocalCode.ERROR_RESPONSE_POSTDATA_MEMO_MISSING);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_POST_REST_ID_MALFORMED", GetRestLocalCode.ERROR_RESPONSE_POSTDATA_POST_REST_ID_MALFORMED);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_POST_ID_MISSING", GetRestLocalCode.ERROR_RESPONSE_POSTDATA_POST_ID_MISSING);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_VALUE_MISSING", GetRestLocalCode.ERROR_RESPONSE_POSTDATA_VALUE_MISSING);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_POST_DATE_MALFORMED", GetRestLocalCode.ERROR_RESPONSE_POSTDATA_POST_DATE_MALFORMED);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_GOCHI_FLAG_MISSING", GetRestLocalCode.ERROR_RESPONSE_POSTDATA_GOCHI_FLAG_MISSING);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_RESTDATA_TELL_MALFORMED", GetRestLocalCode.ERROR_RESPONSE_RESTDATA_TELL_MALFORMED);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_THUMBNAIL_MALFORMED", GetRestLocalCode.ERROR_RESPONSE_POSTDATA_THUMBNAIL_MALFORMED);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_GOCHI_NUM_MALFORMED", GetRestLocalCode.ERROR_RESPONSE_POSTDATA_GOCHI_NUM_MALFORMED);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_RESTDATA_MISSING", GetRestLocalCode.ERROR_RESPONSE_RESTDATA_MISSING);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_USERNAME_MISSING", GetRestLocalCode.ERROR_RESPONSE_POSTDATA_USERNAME_MISSING);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_RESTDATA_LON_MISSING", GetRestLocalCode.ERROR_RESPONSE_RESTDATA_LON_MISSING);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_RESTDATA_LOCALITY_MALFORMED", GetRestLocalCode.ERROR_RESPONSE_RESTDATA_LOCALITY_MALFORMED);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_POST_DATE_MISSING", GetRestLocalCode.ERROR_RESPONSE_POSTDATA_POST_DATE_MISSING);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_RESTDATA_HOMEPAGE_MISSING", GetRestLocalCode.ERROR_RESPONSE_RESTDATA_HOMEPAGE_MISSING);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_VALUE_MALFORMED", GetRestLocalCode.ERROR_RESPONSE_POSTDATA_VALUE_MALFORMED);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_RESTDATA_LOCALITY_MISSING", GetRestLocalCode.ERROR_RESPONSE_RESTDATA_LOCALITY_MISSING);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_RESTDATA_LON_MALFORMED", GetRestLocalCode.ERROR_RESPONSE_RESTDATA_LON_MALFORMED);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_RESTDATA_RESTNAME_MALFORMED", GetRestLocalCode.ERROR_RESPONSE_RESTDATA_RESTNAME_MALFORMED);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_RESTDATA_TELL_MISSING", GetRestLocalCode.ERROR_RESPONSE_RESTDATA_TELL_MISSING);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_RESTDATA_HOMEPAGE_MALFORMED", GetRestLocalCode.ERROR_RESPONSE_RESTDATA_HOMEPAGE_MALFORMED);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_RESTDATA_REST_CATEGORY_MISSING", GetRestLocalCode.ERROR_RESPONSE_RESTDATA_REST_CATEGORY_MISSING);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_MEMO_MALFORMED", GetRestLocalCode.ERROR_RESPONSE_POSTDATA_MEMO_MALFORMED);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_RESTDATA_WANT_FLAG_MISSING", GetRestLocalCode.ERROR_RESPONSE_RESTDATA_WANT_FLAG_MISSING);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_THUMBNAIL_MISSING", GetRestLocalCode.ERROR_RESPONSE_POSTDATA_THUMBNAIL_MISSING);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_CATEGORY_MALFORMED", GetRestLocalCode.ERROR_RESPONSE_POSTDATA_CATEGORY_MALFORMED);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_RESTDATA_RESTNAME_MISSING", GetRestLocalCode.ERROR_RESPONSE_RESTDATA_RESTNAME_MISSING);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_GOCHI_NUM_MISSING", GetRestLocalCode.ERROR_RESPONSE_POSTDATA_GOCHI_NUM_MISSING);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_USER_ID_MISSING", GetRestLocalCode.ERROR_RESPONSE_POSTDATA_USER_ID_MISSING);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_CHEER_FLAG_MISSING", GetRestLocalCode.ERROR_RESPONSE_POSTDATA_CHEER_FLAG_MISSING);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_RESTDATA_REST_CATEGORY_MALFORMED", GetRestLocalCode.ERROR_RESPONSE_RESTDATA_REST_CATEGORY_MALFORMED);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_CHEER_FLAG_MALFORMED", GetRestLocalCode.ERROR_RESPONSE_POSTDATA_CHEER_FLAG_MALFORMED);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_COMMENT_NUM_MALFORMED", GetRestLocalCode.ERROR_RESPONSE_POSTDATA_COMMENT_NUM_MALFORMED);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_RESTDATA_REST_ID_MISSING", GetRestLocalCode.ERROR_RESPONSE_RESTDATA_REST_ID_MISSING);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_CATEGORY_MISSING", GetRestLocalCode.ERROR_RESPONSE_POSTDATA_CATEGORY_MISSING);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_GOCHI_FLAG_MALFORMED", GetRestLocalCode.ERROR_RESPONSE_POSTDATA_GOCHI_FLAG_MALFORMED);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_PROFILE_IMG_MISSING", GetRestLocalCode.ERROR_RESPONSE_POSTDATA_PROFILE_IMG_MISSING);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_RESTDATA_WANT_FLAG_MALFORMED", GetRestLocalCode.ERROR_RESPONSE_RESTDATA_WANT_FLAG_MALFORMED);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_POST_ID_MALFORMED", GetRestLocalCode.ERROR_RESPONSE_POSTDATA_POST_ID_MALFORMED);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_COMMENT_NUM_MISSING", GetRestLocalCode.ERROR_RESPONSE_POSTDATA_COMMENT_NUM_MISSING);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_RESTDATA_LAT_MISSING", GetRestLocalCode.ERROR_RESPONSE_RESTDATA_LAT_MISSING);
+                GetRestLocalCodeReverseMap.put("ERROR_RESPONSE_POSTDATA_MISSING", GetRestLocalCode.ERROR_RESPONSE_POSTDATA_MISSING);
+            }
+            GetRestLocalCode code = null;
+            for (Map.Entry<String, GetRestLocalCode> entry : GetRestLocalCodeReverseMap.entrySet()) {
+                if (entry.getKey().equals(message)) {
+                    code = entry.getValue();
+                    break;
+                }
+            }
+            return code;
         }
 
-        public static String getPostRestAddAPI(String restname, double lon, double lat) {
-            return testurl + "/set/rest/?restname=" + restname +
-                    "&lon=" + lon + "&lat=" + lat;
+        private static final ConcurrentHashMap<GetNearlineLocalCode, String> GetNearlineLocalCodeMap = new ConcurrentHashMap<>();
+        private static final ConcurrentHashMap<String, GetNearlineLocalCode> GetNearlineLocalCodeReverseMap = new ConcurrentHashMap<>();
+
+        public static String getGetNearlineAPI(String lat, String lon) {
+            return testurl + "/get/nearline/" + "?lat=" + lat + "&lon=" + lon;
         }
 
-        public static String getPostUsernameAPI(String username) {
-            return testurl + "/set/username/?username=" + username;
+        public static String getGetNearlineAPI(String lat, String lon, int page, int category_id, int value_id) {
+            StringBuilder url = null;
+            url = new StringBuilder(testurl + "/get/nearline/?lon=" + lon + "&lat=" + lat + "&page=" + page);
+            if (category_id != 0) url.append("&category_id=").append(category_id);
+            if (value_id != 0) url.append("&value_id=").append(value_id);
+            return new String(url);
         }
 
-        public static String getPostProfileImg(String profile_img) {
-            return testurl + "/set/profile_img/?profile_img=" + profile_img;
+        public enum GetNearlineLocalCode {
+            ERROR_PARAMETER_LAT_MISSING,
+            ERROR_PARAMETER_LAT_MALFORMED,
+            ERROR_PARAMETER_LON_MISSING,
+            ERROR_PARAMETER_LON_MALFORMED,
+            ERROR_RESPONSE_NEARLINEDATA_MISSING,
+            ERROR_RESPONSE_NEARLINEDATA_CHEER_FLAG_MISSING,
+            ERROR_RESPONSE_NEARLINEDATA_CHEER_FLAG_MALFORMED,
+            ERROR_RESPONSE_NEARLINEDATA_DISTANCE_MISSING,
+            ERROR_RESPONSE_NEARLINEDATA_DISTANCE_MALFORMED,
+            ERROR_RESPONSE_NEARLINEDATA_GOCHI_FLAG_MISSING,
+            ERROR_RESPONSE_NEARLINEDATA_GOCHI_FLAG_MALFORMED,
+            ERROR_RESPONSE_NEARLINEDATA_POST_DATE_MISSING,
+            ERROR_RESPONSE_NEARLINEDATA_POST_DATE_MALFORMED,
+            ERROR_RESPONSE_NEARLINEDATA_POST_ID_MISSING,
+            ERROR_RESPONSE_NEARLINEDATA_POST_ID_MALFORMED,
+            ERROR_RESPONSE_NEARLINEDATA_REST_ID_MISSING,
+            ERROR_RESPONSE_NEARLINEDATA_REST_ID_MALFORMED,
+            ERROR_RESPONSE_NEARLINEDATA_RESTNAME_MISSING,
+            ERROR_RESPONSE_NEARLINEDATA_RESTNAME_MALFORMED,
+            ERROR_RESPONSE_NEARLINEDATA_THUMBNAIL_MISSING,
+            ERROR_RESPONSE_NEARLINEDATA_THUMBNAIL_MALFORMED,
+            ERROR_RESPONSE_NEARLINEDATA_USER_ID_MISSING,
+            ERROR_RESPONSE_NEARLINEDATA_USER_ID_MALFORMED,
+            ERROR_RESPONSE_NEARLINEDATA_USERNAME_MISSING,
+            ERROR_RESPONSE_NEARLINEDATA_USERNAME_MALFORMED,
+            ERROR_RESPONSE_NEARLINEDATA_VALUE_MISSING,
+            ERROR_RESPONSE_NEARLINEDATA_VALUE_MALFORMED,
         }
+
+        public static String GetNearlineLocalCodeMessageTable(GetNearlineLocalCode code) {
+            if (GetNearlineLocalCodeMap.isEmpty()) {
+                GetNearlineLocalCodeMap.put(GetNearlineLocalCode.ERROR_PARAMETER_LON_MALFORMED, "Parameter 'lon' is malformed. Should correspond to '^\\d+.\\d+$'");
+                GetNearlineLocalCodeMap.put(GetNearlineLocalCode.ERROR_RESPONSE_NEARLINEDATA_USER_ID_MISSING, "Response 'user_id' was not received");
+                GetNearlineLocalCodeMap.put(GetNearlineLocalCode.ERROR_PARAMETER_LAT_MISSING, "Parameter 'lat' does not exist.");
+                GetNearlineLocalCodeMap.put(GetNearlineLocalCode.ERROR_RESPONSE_NEARLINEDATA_DISTANCE_MALFORMED, "Response 'distance' is malformed. It is no a valid 'INTEGER'");
+                GetNearlineLocalCodeMap.put(GetNearlineLocalCode.ERROR_PARAMETER_LON_MISSING, "Parameter 'lon' does not exist.");
+                GetNearlineLocalCodeMap.put(GetNearlineLocalCode.ERROR_RESPONSE_NEARLINEDATA_POST_ID_MISSING, "Response 'post_id' was not received");
+                GetNearlineLocalCodeMap.put(GetNearlineLocalCode.ERROR_RESPONSE_NEARLINEDATA_USERNAME_MALFORMED, "Response 'username' is malformed. Should correspond to '^[\\S]{2,20}$'");
+                GetNearlineLocalCodeMap.put(GetNearlineLocalCode.ERROR_RESPONSE_NEARLINEDATA_THUMBNAIL_MISSING, "Response 'thumbnail' was not received");
+                GetNearlineLocalCodeMap.put(GetNearlineLocalCode.ERROR_RESPONSE_NEARLINEDATA_THUMBNAIL_MALFORMED, "Response 'thumbnail' is malformed. Should correspond to '???'");
+                GetNearlineLocalCodeMap.put(GetNearlineLocalCode.ERROR_RESPONSE_NEARLINEDATA_USER_ID_MALFORMED, "Response 'user_id' is malformed. Should correspond to '^\\d+$'");
+                GetNearlineLocalCodeMap.put(GetNearlineLocalCode.ERROR_RESPONSE_NEARLINEDATA_GOCHI_FLAG_MISSING, "Response 'gochi_flag' was not received");
+                GetNearlineLocalCodeMap.put(GetNearlineLocalCode.ERROR_RESPONSE_NEARLINEDATA_POST_DATE_MALFORMED, "Response 'post_date' is malformed. Should correspond to '???'");
+                GetNearlineLocalCodeMap.put(GetNearlineLocalCode.ERROR_RESPONSE_NEARLINEDATA_RESTNAME_MISSING, "Response 'restname' was not received");
+                GetNearlineLocalCodeMap.put(GetNearlineLocalCode.ERROR_PARAMETER_LAT_MALFORMED, "Parameter 'lat' is malformed. Should correspond to '^\\d+.\\d+$'");
+                GetNearlineLocalCodeMap.put(GetNearlineLocalCode.ERROR_RESPONSE_NEARLINEDATA_GOCHI_FLAG_MALFORMED, "Response 'gochi_flag' is malformed. Should correspond to '^0$|^1$'");
+                GetNearlineLocalCodeMap.put(GetNearlineLocalCode.ERROR_RESPONSE_NEARLINEDATA_DISTANCE_MISSING, "Response 'distance' was not received");
+                GetNearlineLocalCodeMap.put(GetNearlineLocalCode.ERROR_RESPONSE_NEARLINEDATA_VALUE_MALFORMED, "Response 'value' is malformed. It is no a valid 'INTEGER'");
+                GetNearlineLocalCodeMap.put(GetNearlineLocalCode.ERROR_RESPONSE_NEARLINEDATA_USERNAME_MISSING, "Response 'username' was not received");
+                GetNearlineLocalCodeMap.put(GetNearlineLocalCode.ERROR_RESPONSE_NEARLINEDATA_REST_ID_MALFORMED, "Response 'rest_id' is malformed. Should correspond to '^\\d+$'");
+                GetNearlineLocalCodeMap.put(GetNearlineLocalCode.ERROR_RESPONSE_NEARLINEDATA_CHEER_FLAG_MISSING, "Response 'cheer_flag' was not received");
+                GetNearlineLocalCodeMap.put(GetNearlineLocalCode.ERROR_RESPONSE_NEARLINEDATA_VALUE_MISSING, "Response 'value' was not received");
+                GetNearlineLocalCodeMap.put(GetNearlineLocalCode.ERROR_RESPONSE_NEARLINEDATA_CHEER_FLAG_MALFORMED, "Response 'cheer_flag' is malformed. Should correspond to '^0$|^1$'");
+                GetNearlineLocalCodeMap.put(GetNearlineLocalCode.ERROR_RESPONSE_NEARLINEDATA_POST_DATE_MISSING, "Response 'post_date' was not received");
+                GetNearlineLocalCodeMap.put(GetNearlineLocalCode.ERROR_RESPONSE_NEARLINEDATA_REST_ID_MISSING, "Response 'rest_id' was not received");
+                GetNearlineLocalCodeMap.put(GetNearlineLocalCode.ERROR_RESPONSE_NEARLINEDATA_MISSING, "Response 'nearlinedata' was not received");
+                GetNearlineLocalCodeMap.put(GetNearlineLocalCode.ERROR_RESPONSE_NEARLINEDATA_RESTNAME_MALFORMED, "Response 'restname' is malformed. Should correspond to '^\\S{2,30}$'");
+                GetNearlineLocalCodeMap.put(GetNearlineLocalCode.ERROR_RESPONSE_NEARLINEDATA_POST_ID_MALFORMED, "Response 'post_id' is malformed. Should correspond to '^\\d+$'");
+            }
+            String message = null;
+            for (Map.Entry<GetNearlineLocalCode, String> entry : GetNearlineLocalCodeMap.entrySet()) {
+                if (entry.getKey().equals(code)) {
+                    message = entry.getValue();
+                    break;
+                }
+            }
+            return message;
+        }
+
+        public static GetNearlineLocalCode GetNearlineLocalCodeReverseLookupTable(String message) {
+            if (GetNearlineLocalCodeReverseMap.isEmpty()) {
+                GetNearlineLocalCodeReverseMap.put("ERROR_PARAMETER_LON_MALFORMED", GetNearlineLocalCode.ERROR_PARAMETER_LON_MALFORMED);
+                GetNearlineLocalCodeReverseMap.put("ERROR_RESPONSE_NEARLINEDATA_USER_ID_MISSING", GetNearlineLocalCode.ERROR_RESPONSE_NEARLINEDATA_USER_ID_MISSING);
+                GetNearlineLocalCodeReverseMap.put("ERROR_PARAMETER_LAT_MISSING", GetNearlineLocalCode.ERROR_PARAMETER_LAT_MISSING);
+                GetNearlineLocalCodeReverseMap.put("ERROR_RESPONSE_NEARLINEDATA_DISTANCE_MALFORMED", GetNearlineLocalCode.ERROR_RESPONSE_NEARLINEDATA_DISTANCE_MALFORMED);
+                GetNearlineLocalCodeReverseMap.put("ERROR_PARAMETER_LON_MISSING", GetNearlineLocalCode.ERROR_PARAMETER_LON_MISSING);
+                GetNearlineLocalCodeReverseMap.put("ERROR_RESPONSE_NEARLINEDATA_POST_ID_MISSING", GetNearlineLocalCode.ERROR_RESPONSE_NEARLINEDATA_POST_ID_MISSING);
+                GetNearlineLocalCodeReverseMap.put("ERROR_RESPONSE_NEARLINEDATA_USERNAME_MALFORMED", GetNearlineLocalCode.ERROR_RESPONSE_NEARLINEDATA_USERNAME_MALFORMED);
+                GetNearlineLocalCodeReverseMap.put("ERROR_RESPONSE_NEARLINEDATA_THUMBNAIL_MISSING", GetNearlineLocalCode.ERROR_RESPONSE_NEARLINEDATA_THUMBNAIL_MISSING);
+                GetNearlineLocalCodeReverseMap.put("ERROR_RESPONSE_NEARLINEDATA_THUMBNAIL_MALFORMED", GetNearlineLocalCode.ERROR_RESPONSE_NEARLINEDATA_THUMBNAIL_MALFORMED);
+                GetNearlineLocalCodeReverseMap.put("ERROR_RESPONSE_NEARLINEDATA_USER_ID_MALFORMED", GetNearlineLocalCode.ERROR_RESPONSE_NEARLINEDATA_USER_ID_MALFORMED);
+                GetNearlineLocalCodeReverseMap.put("ERROR_RESPONSE_NEARLINEDATA_GOCHI_FLAG_MISSING", GetNearlineLocalCode.ERROR_RESPONSE_NEARLINEDATA_GOCHI_FLAG_MISSING);
+                GetNearlineLocalCodeReverseMap.put("ERROR_RESPONSE_NEARLINEDATA_POST_DATE_MALFORMED", GetNearlineLocalCode.ERROR_RESPONSE_NEARLINEDATA_POST_DATE_MALFORMED);
+                GetNearlineLocalCodeReverseMap.put("ERROR_RESPONSE_NEARLINEDATA_RESTNAME_MISSING", GetNearlineLocalCode.ERROR_RESPONSE_NEARLINEDATA_RESTNAME_MISSING);
+                GetNearlineLocalCodeReverseMap.put("ERROR_PARAMETER_LAT_MALFORMED", GetNearlineLocalCode.ERROR_PARAMETER_LAT_MALFORMED);
+                GetNearlineLocalCodeReverseMap.put("ERROR_RESPONSE_NEARLINEDATA_GOCHI_FLAG_MALFORMED", GetNearlineLocalCode.ERROR_RESPONSE_NEARLINEDATA_GOCHI_FLAG_MALFORMED);
+                GetNearlineLocalCodeReverseMap.put("ERROR_RESPONSE_NEARLINEDATA_DISTANCE_MISSING", GetNearlineLocalCode.ERROR_RESPONSE_NEARLINEDATA_DISTANCE_MISSING);
+                GetNearlineLocalCodeReverseMap.put("ERROR_RESPONSE_NEARLINEDATA_VALUE_MALFORMED", GetNearlineLocalCode.ERROR_RESPONSE_NEARLINEDATA_VALUE_MALFORMED);
+                GetNearlineLocalCodeReverseMap.put("ERROR_RESPONSE_NEARLINEDATA_USERNAME_MISSING", GetNearlineLocalCode.ERROR_RESPONSE_NEARLINEDATA_USERNAME_MISSING);
+                GetNearlineLocalCodeReverseMap.put("ERROR_RESPONSE_NEARLINEDATA_REST_ID_MALFORMED", GetNearlineLocalCode.ERROR_RESPONSE_NEARLINEDATA_REST_ID_MALFORMED);
+                GetNearlineLocalCodeReverseMap.put("ERROR_RESPONSE_NEARLINEDATA_CHEER_FLAG_MISSING", GetNearlineLocalCode.ERROR_RESPONSE_NEARLINEDATA_CHEER_FLAG_MISSING);
+                GetNearlineLocalCodeReverseMap.put("ERROR_RESPONSE_NEARLINEDATA_VALUE_MISSING", GetNearlineLocalCode.ERROR_RESPONSE_NEARLINEDATA_VALUE_MISSING);
+                GetNearlineLocalCodeReverseMap.put("ERROR_RESPONSE_NEARLINEDATA_CHEER_FLAG_MALFORMED", GetNearlineLocalCode.ERROR_RESPONSE_NEARLINEDATA_CHEER_FLAG_MALFORMED);
+                GetNearlineLocalCodeReverseMap.put("ERROR_RESPONSE_NEARLINEDATA_POST_DATE_MISSING", GetNearlineLocalCode.ERROR_RESPONSE_NEARLINEDATA_POST_DATE_MISSING);
+                GetNearlineLocalCodeReverseMap.put("ERROR_RESPONSE_NEARLINEDATA_REST_ID_MISSING", GetNearlineLocalCode.ERROR_RESPONSE_NEARLINEDATA_REST_ID_MISSING);
+                GetNearlineLocalCodeReverseMap.put("ERROR_RESPONSE_NEARLINEDATA_MISSING", GetNearlineLocalCode.ERROR_RESPONSE_NEARLINEDATA_MISSING);
+                GetNearlineLocalCodeReverseMap.put("ERROR_RESPONSE_NEARLINEDATA_RESTNAME_MALFORMED", GetNearlineLocalCode.ERROR_RESPONSE_NEARLINEDATA_RESTNAME_MALFORMED);
+                GetNearlineLocalCodeReverseMap.put("ERROR_RESPONSE_NEARLINEDATA_POST_ID_MALFORMED", GetNearlineLocalCode.ERROR_RESPONSE_NEARLINEDATA_POST_ID_MALFORMED);
+            }
+            GetNearlineLocalCode code = null;
+            for (Map.Entry<String, GetNearlineLocalCode> entry : GetNearlineLocalCodeReverseMap.entrySet()) {
+                if (entry.getKey().equals(message)) {
+                    code = entry.getValue();
+                    break;
+                }
+            }
+            return code;
+        }
+
+        private static final ConcurrentHashMap<UnsetSns_LinkLocalCode, String> UnsetSns_LinkLocalCodeMap = new ConcurrentHashMap<>();
+        private static final ConcurrentHashMap<String, UnsetSns_LinkLocalCode> UnsetSns_LinkLocalCodeReverseMap = new ConcurrentHashMap<>();
+
+        public static String getUnsetSnsLinkAPI(String provider, String sns_token) {
+            return testurl + "/unset/sns_link/" + "?provider=" + provider + "&sns_token=" + sns_token;
+        }
+
+        public enum UnsetSns_LinkLocalCode {
+            ERROR_SNS_PROVIDER_TOKEN_NOT_VALID,
+            ERROR_PROVIDER_UNREACHABLE,
+            ERROR_PARAMETER_PROVIDER_MISSING,
+            ERROR_PARAMETER_PROVIDER_MALFORMED,
+            ERROR_PARAMETER_SNS_TOKEN_MISSING,
+            ERROR_PARAMETER_SNS_TOKEN_MALFORMED,
+        }
+
+        public static String UnsetSns_LinkLocalCodeMessageTable(UnsetSns_LinkLocalCode code) {
+            if (UnsetSns_LinkLocalCodeMap.isEmpty()) {
+                UnsetSns_LinkLocalCodeMap.put(UnsetSns_LinkLocalCode.ERROR_PARAMETER_SNS_TOKEN_MISSING, "Parameter 'sns_token' does not exist.");
+                UnsetSns_LinkLocalCodeMap.put(UnsetSns_LinkLocalCode.ERROR_PROVIDER_UNREACHABLE, "The providers server infrastructure appears to be down");
+                UnsetSns_LinkLocalCodeMap.put(UnsetSns_LinkLocalCode.ERROR_PARAMETER_PROVIDER_MISSING, "Parameter 'provider' does not exist.");
+                UnsetSns_LinkLocalCodeMap.put(UnsetSns_LinkLocalCode.ERROR_PARAMETER_SNS_TOKEN_MALFORMED, "Parameter 'sns_token' is malformed. Should correspond to '^[\\S]{20,4000}$'");
+                UnsetSns_LinkLocalCodeMap.put(UnsetSns_LinkLocalCode.ERROR_SNS_PROVIDER_TOKEN_NOT_VALID, "The provided sns token is invalid or has expired");
+                UnsetSns_LinkLocalCodeMap.put(UnsetSns_LinkLocalCode.ERROR_PARAMETER_PROVIDER_MALFORMED, "Parameter 'provider' is malformed. Should correspond to '^(api.twitter.com)|(graph.facebook.com)$'");
+            }
+            String message = null;
+            for (Map.Entry<UnsetSns_LinkLocalCode, String> entry : UnsetSns_LinkLocalCodeMap.entrySet()) {
+                if (entry.getKey().equals(code)) {
+                    message = entry.getValue();
+                    break;
+                }
+            }
+            return message;
+        }
+
+        public static UnsetSns_LinkLocalCode UnsetSns_LinkLocalCodeReverseLookupTable(String message) {
+            if (UnsetSns_LinkLocalCodeReverseMap.isEmpty()) {
+                UnsetSns_LinkLocalCodeReverseMap.put("ERROR_PARAMETER_SNS_TOKEN_MISSING", UnsetSns_LinkLocalCode.ERROR_PARAMETER_SNS_TOKEN_MISSING);
+                UnsetSns_LinkLocalCodeReverseMap.put("ERROR_PROVIDER_UNREACHABLE", UnsetSns_LinkLocalCode.ERROR_PROVIDER_UNREACHABLE);
+                UnsetSns_LinkLocalCodeReverseMap.put("ERROR_PARAMETER_PROVIDER_MISSING", UnsetSns_LinkLocalCode.ERROR_PARAMETER_PROVIDER_MISSING);
+                UnsetSns_LinkLocalCodeReverseMap.put("ERROR_PARAMETER_SNS_TOKEN_MALFORMED", UnsetSns_LinkLocalCode.ERROR_PARAMETER_SNS_TOKEN_MALFORMED);
+                UnsetSns_LinkLocalCodeReverseMap.put("ERROR_SNS_PROVIDER_TOKEN_NOT_VALID", UnsetSns_LinkLocalCode.ERROR_SNS_PROVIDER_TOKEN_NOT_VALID);
+                UnsetSns_LinkLocalCodeReverseMap.put("ERROR_PARAMETER_PROVIDER_MALFORMED", UnsetSns_LinkLocalCode.ERROR_PARAMETER_PROVIDER_MALFORMED);
+            }
+            UnsetSns_LinkLocalCode code = null;
+            for (Map.Entry<String, UnsetSns_LinkLocalCode> entry : UnsetSns_LinkLocalCodeReverseMap.entrySet()) {
+                if (entry.getKey().equals(message)) {
+                    code = entry.getValue();
+                    break;
+                }
+            }
+            return code;
+        }
+
+        private static final ConcurrentHashMap<UnsetFollowLocalCode, String> UnsetFollowLocalCodeMap = new ConcurrentHashMap<>();
+        private static final ConcurrentHashMap<String, UnsetFollowLocalCode> UnsetFollowLocalCodeReverseMap = new ConcurrentHashMap<>();
+
+        public static String getUnsetFollowAPI(String user_id) {
+            return testurl + "/unset/follow/" + "?user_id=" + user_id;
+        }
+
+        public enum UnsetFollowLocalCode {
+            ERROR_PARAMETER_USER_ID_MISSING,
+            ERROR_PARAMETER_USER_ID_MALFORMED,
+        }
+
+        public static String UnsetFollowLocalCodeMessageTable(UnsetFollowLocalCode code) {
+            if (UnsetFollowLocalCodeMap.isEmpty()) {
+                UnsetFollowLocalCodeMap.put(UnsetFollowLocalCode.ERROR_PARAMETER_USER_ID_MALFORMED, "Parameter 'user_id' is malformed. Should correspond to '^\\d+$'");
+                UnsetFollowLocalCodeMap.put(UnsetFollowLocalCode.ERROR_PARAMETER_USER_ID_MISSING, "Parameter 'user_id' does not exist.");
+            }
+            String message = null;
+            for (Map.Entry<UnsetFollowLocalCode, String> entry : UnsetFollowLocalCodeMap.entrySet()) {
+                if (entry.getKey().equals(code)) {
+                    message = entry.getValue();
+                    break;
+                }
+            }
+            return message;
+        }
+
+        public static UnsetFollowLocalCode UnsetFollowLocalCodeReverseLookupTable(String message) {
+            if (UnsetFollowLocalCodeReverseMap.isEmpty()) {
+                UnsetFollowLocalCodeReverseMap.put("ERROR_PARAMETER_USER_ID_MALFORMED", UnsetFollowLocalCode.ERROR_PARAMETER_USER_ID_MALFORMED);
+                UnsetFollowLocalCodeReverseMap.put("ERROR_PARAMETER_USER_ID_MISSING", UnsetFollowLocalCode.ERROR_PARAMETER_USER_ID_MISSING);
+            }
+            UnsetFollowLocalCode code = null;
+            for (Map.Entry<String, UnsetFollowLocalCode> entry : UnsetFollowLocalCodeReverseMap.entrySet()) {
+                if (entry.getKey().equals(message)) {
+                    code = entry.getValue();
+                    break;
+                }
+            }
+            return code;
+        }
+
+        private static final ConcurrentHashMap<UnsetPostLocalCode, String> UnsetPostLocalCodeMap = new ConcurrentHashMap<>();
+        private static final ConcurrentHashMap<String, UnsetPostLocalCode> UnsetPostLocalCodeReverseMap = new ConcurrentHashMap<>();
+
+        public static String getUnsetPostAPI(String post_id) {
+            return testurl + "/unset/post/" + "?post_id=" + post_id;
+        }
+
+        public enum UnsetPostLocalCode {
+            ERROR_SNS_PROVIDER_TOKEN_NOT_VALID,
+            ERROR_PARAMETER_POST_ID_MISSING,
+            ERROR_PARAMETER_POST_ID_MALFORMED,
+        }
+
+        public static String UnsetPostLocalCodeMessageTable(UnsetPostLocalCode code) {
+            if (UnsetPostLocalCodeMap.isEmpty()) {
+                UnsetPostLocalCodeMap.put(UnsetPostLocalCode.ERROR_PARAMETER_POST_ID_MALFORMED, "Parameter 'post_id' is malformed. Should correspond to '^\\d+$'");
+                UnsetPostLocalCodeMap.put(UnsetPostLocalCode.ERROR_PARAMETER_POST_ID_MISSING, "Parameter 'post_id' does not exist.");
+                UnsetPostLocalCodeMap.put(UnsetPostLocalCode.ERROR_SNS_PROVIDER_TOKEN_NOT_VALID, "?");
+            }
+            String message = null;
+            for (Map.Entry<UnsetPostLocalCode, String> entry : UnsetPostLocalCodeMap.entrySet()) {
+                if (entry.getKey().equals(code)) {
+                    message = entry.getValue();
+                    break;
+                }
+            }
+            return message;
+        }
+
+        public static UnsetPostLocalCode UnsetPostLocalCodeReverseLookupTable(String message) {
+            if (UnsetPostLocalCodeReverseMap.isEmpty()) {
+                UnsetPostLocalCodeReverseMap.put("ERROR_PARAMETER_POST_ID_MALFORMED", UnsetPostLocalCode.ERROR_PARAMETER_POST_ID_MALFORMED);
+                UnsetPostLocalCodeReverseMap.put("ERROR_PARAMETER_POST_ID_MISSING", UnsetPostLocalCode.ERROR_PARAMETER_POST_ID_MISSING);
+                UnsetPostLocalCodeReverseMap.put("ERROR_SNS_PROVIDER_TOKEN_NOT_VALID", UnsetPostLocalCode.ERROR_SNS_PROVIDER_TOKEN_NOT_VALID);
+            }
+            UnsetPostLocalCode code = null;
+            for (Map.Entry<String, UnsetPostLocalCode> entry : UnsetPostLocalCodeReverseMap.entrySet()) {
+                if (entry.getKey().equals(message)) {
+                    code = entry.getValue();
+                    break;
+                }
+            }
+            return code;
+        }
+
+        private static final ConcurrentHashMap<UnsetDeviceLocalCode, String> UnsetDeviceLocalCodeMap = new ConcurrentHashMap<>();
+        private static final ConcurrentHashMap<String, UnsetDeviceLocalCode> UnsetDeviceLocalCodeReverseMap = new ConcurrentHashMap<>();
+
+        public static String getUnsetDeviceAPI(String device_token) {
+            return testurl + "/unset/device/" + "?device_token=" + device_token;
+        }
+
+        public enum UnsetDeviceLocalCode {
+            ERROR_PARAMETER_DEVICE_TOKEN_MISSING,
+            ERROR_PARAMETER_DEVICE_TOKEN_MALFORMED,
+        }
+
+        public static String UnsetDeviceLocalCodeMessageTable(UnsetDeviceLocalCode code) {
+            if (UnsetDeviceLocalCodeMap.isEmpty()) {
+                UnsetDeviceLocalCodeMap.put(UnsetDeviceLocalCode.ERROR_PARAMETER_DEVICE_TOKEN_MISSING, "Parameter 'device_token' does not exist.");
+                UnsetDeviceLocalCodeMap.put(UnsetDeviceLocalCode.ERROR_PARAMETER_DEVICE_TOKEN_MALFORMED, "Parameter 'device_token' is malformed. Should correspond to '^([a-f0-9]{64})|([a-zA-Z0-9:_-]{140,250})$'");
+            }
+            String message = null;
+            for (Map.Entry<UnsetDeviceLocalCode, String> entry : UnsetDeviceLocalCodeMap.entrySet()) {
+                if (entry.getKey().equals(code)) {
+                    message = entry.getValue();
+                    break;
+                }
+            }
+            return message;
+        }
+
+        public static UnsetDeviceLocalCode UnsetDeviceLocalCodeReverseLookupTable(String message) {
+            if (UnsetDeviceLocalCodeReverseMap.isEmpty()) {
+                UnsetDeviceLocalCodeReverseMap.put("ERROR_PARAMETER_DEVICE_TOKEN_MISSING", UnsetDeviceLocalCode.ERROR_PARAMETER_DEVICE_TOKEN_MISSING);
+                UnsetDeviceLocalCodeReverseMap.put("ERROR_PARAMETER_DEVICE_TOKEN_MALFORMED", UnsetDeviceLocalCode.ERROR_PARAMETER_DEVICE_TOKEN_MALFORMED);
+            }
+            UnsetDeviceLocalCode code = null;
+            for (Map.Entry<String, UnsetDeviceLocalCode> entry : UnsetDeviceLocalCodeReverseMap.entrySet()) {
+                if (entry.getKey().equals(message)) {
+                    code = entry.getValue();
+                    break;
+                }
+            }
+            return code;
+        }
+
+        private static final ConcurrentHashMap<UnsetWantLocalCode, String> UnsetWantLocalCodeMap = new ConcurrentHashMap<>();
+        private static final ConcurrentHashMap<String, UnsetWantLocalCode> UnsetWantLocalCodeReverseMap = new ConcurrentHashMap<>();
+
+        public static String getUnsetWantAPI(String rest_id) {
+            return testurl + "/unset/want/" + "?rest_id=" + rest_id;
+        }
+
+        public enum UnsetWantLocalCode {
+            ERROR_PARAMETER_REST_ID_MISSING,
+            ERROR_PARAMETER_REST_ID_MALFORMED,
+        }
+
+        public static String UnsetWantLocalCodeMessageTable(UnsetWantLocalCode code) {
+            if (UnsetWantLocalCodeMap.isEmpty()) {
+                UnsetWantLocalCodeMap.put(UnsetWantLocalCode.ERROR_PARAMETER_REST_ID_MALFORMED, "Parameter 'rest_id' is malformed. Should correspond to '^\\d+$'");
+                UnsetWantLocalCodeMap.put(UnsetWantLocalCode.ERROR_PARAMETER_REST_ID_MISSING, "Parameter 'rest_id' does not exist.");
+            }
+            String message = null;
+            for (Map.Entry<UnsetWantLocalCode, String> entry : UnsetWantLocalCodeMap.entrySet()) {
+                if (entry.getKey().equals(code)) {
+                    message = entry.getValue();
+                    break;
+                }
+            }
+            return message;
+        }
+
+        public static UnsetWantLocalCode UnsetWantLocalCodeReverseLookupTable(String message) {
+            if (UnsetWantLocalCodeReverseMap.isEmpty()) {
+                UnsetWantLocalCodeReverseMap.put("ERROR_PARAMETER_REST_ID_MALFORMED", UnsetWantLocalCode.ERROR_PARAMETER_REST_ID_MALFORMED);
+                UnsetWantLocalCodeReverseMap.put("ERROR_PARAMETER_REST_ID_MISSING", UnsetWantLocalCode.ERROR_PARAMETER_REST_ID_MISSING);
+            }
+            UnsetWantLocalCode code = null;
+            for (Map.Entry<String, UnsetWantLocalCode> entry : UnsetWantLocalCodeReverseMap.entrySet()) {
+                if (entry.getKey().equals(message)) {
+                    code = entry.getValue();
+                    break;
+                }
+            }
+            return code;
+        }
+
     }
 
     class Impl implements API3 {
@@ -1886,7 +2656,7 @@ public interface API3 {
         }
 
         @Override
-        public Util.AuthLoginLocalCode auth_login_parameter_regex(String identity_id) {
+        public Util.AuthLoginLocalCode AuthLoginParameterRegex(String identity_id) {
             if (identity_id != null) {
                 if (!identity_id.matches("^us-east-1:[a-f0-9]{8}(-[a-f0-9]{4}){3}-[a-f0-9]{12}$")) {
                     return Util.AuthLoginLocalCode.ERROR_PARAMETER_IDENTITY_ID_MALFORMED;
@@ -1898,49 +2668,42 @@ public interface API3 {
         }
 
         @Override
-        public Util.AuthLoginLocalCode auth_login_response_regex(String user_id, String username, String profile_img, String badge_num, String token) {
-            if (user_id != null) {
-                if (!user_id.matches("^[0-9]+$")) {
-                    return Util.AuthLoginLocalCode.ERROR_RESPONSE_USER_ID_MALFORMED;
+        public void AuthLoginResponse(JSONObject jsonObject, PayloadResponseCallback cb) {
+            try {
+                String version = jsonObject.getString("version");
+                String uri = jsonObject.getString("uri");
+                String code = jsonObject.getString("code");
+                String message = jsonObject.getString("message");
+
+                Util.GlobalCode globalCode = Util.GlobalCodeReverseLookupTable(code);
+                if (globalCode != null) {
+                    if (globalCode == Util.GlobalCode.SUCCESS) {
+                        cb.onSuccess(jsonObject);
+                    } else {
+                        cb.onGlobalError(globalCode);
+                    }
+                } else {
+                    Util.AuthLoginLocalCode localCode = Util.AuthLoginLocalCodeReverseLookupTable(code);
+                    if (localCode != null) {
+                        String errorMessage = Util.AuthLoginLocalCodeMessageTable(localCode);
+                        if (message.equals(errorMessage)) {
+                            cb.onLocalError(message);
+                        } else {
+                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
+                        }
+                    } else {
+                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                    }
                 }
-            } else {
-                return Util.AuthLoginLocalCode.ERROR_RESPONSE_USER_ID_MISSING;
+            } catch (JSONException e) {
+                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
             }
-            if (username != null) {
-                if (!username.matches("^\\S{4,20}$")) {
-                    return Util.AuthLoginLocalCode.ERROR_RESPONSE_USERNAME_MALFORMED;
-                }
-            } else {
-                return Util.AuthLoginLocalCode.ERROR_RESPONSE_USERNAME_MISSING;
-            }
-            if (profile_img != null) {
-                if (!profile_img.matches("^http\\S+$")) {
-                    return Util.AuthLoginLocalCode.ERROR_RESPONSE_PROFILE_IMG_MALFORMED;
-                }
-            } else {
-                return Util.AuthLoginLocalCode.ERROR_RESPONSE_PROFILE_IMG_MISSING;
-            }
-            if (badge_num != null) {
-                if (!badge_num.matches("^[0-9]+$")) {
-                    return Util.AuthLoginLocalCode.ERROR_RESPONSE_BADGE_NUM_MALFORMED;
-                }
-            } else {
-                return Util.AuthLoginLocalCode.ERROR_RESPONSE_BADGE_NUM_MISSING;
-            }
-            if (token != null) {
-                if (!token.matches("^[a-zA-Z0-9_.-]{400,2200}$")) {
-                    return Util.AuthLoginLocalCode.ERROR_RESPONSE_TOKEN_MALFORMED;
-                }
-            } else {
-                return Util.AuthLoginLocalCode.ERROR_RESPONSE_TOKEN_MISSING;
-            }
-            return null;
         }
 
         @Override
-        public Util.AuthSignupLocalCode auth_signup_parameter_regex(String username) {
+        public Util.AuthSignupLocalCode AuthSignupParameterRegex(String username) {
             if (username != null) {
-                if (!username.matches("^\\S{4,20}$")) {
+                if (!username.matches("^\\S{2,20}$")) {
                     return Util.AuthSignupLocalCode.ERROR_PARAMETER_USERNAME_MALFORMED;
                 }
             } else {
@@ -1950,368 +2713,808 @@ public interface API3 {
         }
 
         @Override
-        public Util.AuthSignupLocalCode auth_signup_response_regex(String identity_id) {
-            if (identity_id != null) {
-                if (!identity_id.matches("^us-east-1:[a-f0-9]{8}(-[a-f0-9]{4}){3}-[a-f0-9]{12}$")) {
-                    return Util.AuthSignupLocalCode.ERROR_RESPONSE_IDENTITY_ID_MALFORMED;
+        public void AuthSignupResponse(JSONObject jsonObject, PayloadResponseCallback cb) {
+            try {
+                String version = jsonObject.getString("version");
+                String uri = jsonObject.getString("uri");
+                String code = jsonObject.getString("code");
+                String message = jsonObject.getString("message");
+
+                Util.GlobalCode globalCode = Util.GlobalCodeReverseLookupTable(code);
+                if (globalCode != null) {
+                    if (globalCode == Util.GlobalCode.SUCCESS) {
+                        cb.onSuccess(jsonObject);
+                    } else {
+                        cb.onGlobalError(globalCode);
+                    }
+                } else {
+                    Util.AuthSignupLocalCode localCode = Util.AuthSignupLocalCodeReverseLookupTable(code);
+                    if (localCode != null) {
+                        String errorMessage = Util.AuthSignupLocalCodeMessageTable(localCode);
+                        if (message.equals(errorMessage)) {
+                            cb.onLocalError(message);
+                        } else {
+                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
+                        }
+                    } else {
+                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                    }
                 }
-            } else {
-                return Util.AuthSignupLocalCode.ERROR_RESPONSE_IDENTITY_ID_MISSING;
+            } catch (JSONException e) {
+                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
             }
-            return null;
         }
 
         @Override
-        public Util.AuthPassLoginLocalCode auth_pass_login_parameter_regex(String username, String password) {
+        public Util.AuthPasswordLocalCode AuthPasswordParameterRegex(String username, String password) {
             if (username != null) {
-                if (!username.matches("^\\S{4,20}$")) {
-                    return Util.AuthPassLoginLocalCode.ERROR_PARAMETER_USERNAME_MALFORMED;
+                if (!username.matches("^\\S{2,20}$")) {
+                    return Util.AuthPasswordLocalCode.ERROR_PARAMETER_USERNAME_MALFORMED;
                 }
             } else {
-                return Util.AuthPassLoginLocalCode.ERROR_PARAMETER_USERNAME_MISSING;
+                return Util.AuthPasswordLocalCode.ERROR_PARAMETER_USERNAME_MISSING;
             }
             if (password != null) {
                 if (!password.matches("^\\w{6,25}$")) {
-                    return Util.AuthPassLoginLocalCode.ERROR_PARAMETER_PASSWORD_MALFORMED;
+                    return Util.AuthPasswordLocalCode.ERROR_PARAMETER_PASSWORD_MALFORMED;
                 }
             } else {
-                return Util.AuthPassLoginLocalCode.ERROR_PARAMETER_PASSWORD_MISSING;
+                return Util.AuthPasswordLocalCode.ERROR_PARAMETER_PASSWORD_MISSING;
             }
             return null;
         }
 
         @Override
-        public Util.AuthPassLoginLocalCode auth_pass_login_response_regex(String identity_id) {
-            if (identity_id != null) {
-                if (!identity_id.matches("^us-east-1:[a-f0-9]{8}(-[a-f0-9]{4}){3}-[a-f0-9]{12}$")) {
-                    return Util.AuthPassLoginLocalCode.ERROR_RESPONSE_IDENTITY_ID_MALFORMED;
+        public void AuthPasswordResponse(JSONObject jsonObject, PayloadResponseCallback cb) {
+            try {
+                String version = jsonObject.getString("version");
+                String uri = jsonObject.getString("uri");
+                String code = jsonObject.getString("code");
+                String message = jsonObject.getString("message");
+
+                Util.GlobalCode globalCode = Util.GlobalCodeReverseLookupTable(code);
+                if (globalCode != null) {
+                    if (globalCode == Util.GlobalCode.SUCCESS) {
+                        cb.onSuccess(jsonObject);
+                    } else {
+                        cb.onGlobalError(globalCode);
+                    }
+                } else {
+                    Util.AuthPasswordLocalCode localCode = Util.AuthPasswordLocalCodeReverseLookupTable(code);
+                    if (localCode != null) {
+                        String errorMessage = Util.AuthPasswordLocalCodeMessageTable(localCode);
+                        if (message.equals(errorMessage)) {
+                            cb.onLocalError(message);
+                        } else {
+                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
+                        }
+                    } else {
+                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                    }
+                }
+            } catch (JSONException e) {
+                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
+            }
+        }
+
+        @Override
+        public Util.SetFeedbackLocalCode SetFeedbackParameterRegex(String feedback) {
+            if (feedback != null) {
+                if (!feedback.matches("^[\\S\\s]{2,300}$")) {
+                    return Util.SetFeedbackLocalCode.ERROR_PARAMETER_FEEDBACK_MALFORMED;
                 }
             } else {
-                return Util.AuthPassLoginLocalCode.ERROR_RESPONSE_IDENTITY_ID_MISSING;
+                return Util.SetFeedbackLocalCode.ERROR_PARAMETER_FEEDBACK_MISSING;
             }
             return null;
         }
 
         @Override
-        public Util.PostSnsLinkLocalCode post_sns_link_parameter_regex(String provider, String token) {
-            if (provider != null) {
-                if (!provider.matches("^(api.twitter.com)|(graph.facebook.com)$")) {
-                    return Util.PostSnsLinkLocalCode.ERROR_PARAMETER_PROVIDER_MALFORMED;
+        public void SetFeedbackResponse(JSONObject jsonObject, PayloadResponseCallback cb) {
+            try {
+                String version = jsonObject.getString("version");
+                String uri = jsonObject.getString("uri");
+                String code = jsonObject.getString("code");
+                String message = jsonObject.getString("message");
+
+                Util.GlobalCode globalCode = Util.GlobalCodeReverseLookupTable(code);
+                if (globalCode != null) {
+                    if (globalCode == Util.GlobalCode.SUCCESS) {
+                        cb.onSuccess(jsonObject);
+                    } else {
+                        cb.onGlobalError(globalCode);
+                    }
+                } else {
+                    Util.SetFeedbackLocalCode localCode = Util.SetFeedbackLocalCodeReverseLookupTable(code);
+                    if (localCode != null) {
+                        String errorMessage = Util.SetFeedbackLocalCodeMessageTable(localCode);
+                        if (message.equals(errorMessage)) {
+                            cb.onLocalError(message);
+                        } else {
+                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
+                        }
+                    } else {
+                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                    }
                 }
-            } else {
-                return Util.PostSnsLinkLocalCode.ERROR_PARAMETER_PROVIDER_MISSING;
+            } catch (JSONException e) {
+                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
             }
-            if (token != null) {
-                if (!token.matches("^\\S{20,4000}$")) {
-                    return Util.PostSnsLinkLocalCode.ERROR_PARAMETER_TOKEN_MALFORMED;
-                }
-            } else {
-                return Util.PostSnsLinkLocalCode.ERROR_PARAMETER_TOKEN_MISSING;
-            }
-            return null;
         }
 
         @Override
-        public Util.PostSnsLinkLocalCode post_sns_link_response_regex() {
-            return null;
-        }
-
-        @Override
-        public Util.PostSnsUnlinkLocalCode post_sns_unlink_parameter_regex(String provider, String token) {
-            if (provider != null) {
-                if (!provider.matches("^(api.twitter.com)|(graph.facebook.com)$")) {
-                    return Util.PostSnsUnlinkLocalCode.ERROR_PARAMETER_PROVIDER_MALFORMED;
+        public Util.SetPasswordLocalCode SetPasswordParameterRegex(String password) {
+            if (password != null) {
+                if (!password.matches("^\\w{6,25}$")) {
+                    return Util.SetPasswordLocalCode.ERROR_PARAMETER_PASSWORD_MALFORMED;
                 }
             } else {
-                return Util.PostSnsUnlinkLocalCode.ERROR_PARAMETER_PROVIDER_MISSING;
-            }
-            if (token != null) {
-                if (!token.matches("^\\S{20,4000}$")) {
-                    return Util.PostSnsUnlinkLocalCode.ERROR_PARAMETER_TOKEN_MALFORMED;
-                }
-            } else {
-                return Util.PostSnsUnlinkLocalCode.ERROR_PARAMETER_TOKEN_MISSING;
-            }
-            return null;
-        }
-
-        @Override
-        public Util.PostSnsUnlinkLocalCode post_sns_unlink_response_regex() {
-            return null;
-        }
-
-        @Override
-        public Util.PostGochiLocalCode post_gochi_parameter_regex(String post_id) {
-            if (post_id != null) {
-                if (!post_id.matches("^[0-9]+$")) {
-                    return Util.PostGochiLocalCode.ERROR_PARAMETER_POST_ID_MALFORMED;
-                }
-            } else {
-                return Util.PostGochiLocalCode.ERROR_PARAMETER_POST_ID_MISSING;
+                return Util.SetPasswordLocalCode.ERROR_PARAMETER_PASSWORD_MISSING;
             }
             return null;
         }
 
         @Override
-        public Util.PostGochiLocalCode post_gochi_response_regex() {
-            return null;
-        }
+        public void SetPasswordResponse(JSONObject jsonObject, PayloadResponseCallback cb) {
+            try {
+                String version = jsonObject.getString("version");
+                String uri = jsonObject.getString("uri");
+                String code = jsonObject.getString("code");
+                String message = jsonObject.getString("message");
 
-        @Override
-        public Util.PostDeleteLocalCode post_delete_parameter_regex(String post_id) {
-            if (post_id != null) {
-                if (!post_id.matches("^[0-9]+$")) {
-                    return Util.PostDeleteLocalCode.ERROR_PARAMETER_POST_ID_MALFORMED;
+                Util.GlobalCode globalCode = Util.GlobalCodeReverseLookupTable(code);
+                if (globalCode != null) {
+                    if (globalCode == Util.GlobalCode.SUCCESS) {
+                        cb.onSuccess(jsonObject);
+                    } else {
+                        cb.onGlobalError(globalCode);
+                    }
+                } else {
+                    Util.SetPasswordLocalCode localCode = Util.SetPasswordLocalCodeReverseLookupTable(code);
+                    if (localCode != null) {
+                        String errorMessage = Util.SetPasswordLocalCodeMessageTable(localCode);
+                        if (message.equals(errorMessage)) {
+                            cb.onLocalError(message);
+                        } else {
+                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
+                        }
+                    } else {
+                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                    }
                 }
-            } else {
-                return Util.PostDeleteLocalCode.ERROR_PARAMETER_POST_ID_MISSING;
+            } catch (JSONException e) {
+                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
             }
-            return null;
         }
 
         @Override
-        public Util.PostDeleteLocalCode post_delete_response_regex() {
-            return null;
-        }
-
-        @Override
-        public Util.PostBlockLocalCode post_block_parameter_regex(String post_id) {
-            if (post_id != null) {
-                if (!post_id.matches("^[0-9]+$")) {
-                    return Util.PostBlockLocalCode.ERROR_PARAMETER_POST_ID_MALFORMED;
-                }
-            } else {
-                return Util.PostBlockLocalCode.ERROR_PARAMETER_POST_ID_MISSING;
-            }
-            return null;
-        }
-
-        @Override
-        public Util.PostBlockLocalCode post_block_response_regex() {
-            return null;
-        }
-
-        @Override
-        public Util.PostFollowLocalCode post_follow_parameter_regex(String user_id) {
-            if (user_id != null) {
-                if (!user_id.matches("^[0-9]+$")) {
-                    return Util.PostFollowLocalCode.ERROR_PARAMETER_USER_ID_MALFORMED;
-                }
-            } else {
-                return Util.PostFollowLocalCode.ERROR_PARAMETER_USER_ID_MISSING;
-            }
-            return null;
-        }
-
-        @Override
-        public Util.PostFollowLocalCode post_follow_response_regex() {
-            return null;
-        }
-
-        @Override
-        public Util.PostUnfollowLocalCode post_unFollow_parameter_regex(String user_id) {
-            if (user_id != null) {
-                if (!user_id.matches("^[0-9]+$")) {
-                    return Util.PostUnfollowLocalCode.ERROR_PARAMETER_USER_ID_MALFORMED;
-                }
-            } else {
-                return Util.PostUnfollowLocalCode.ERROR_PARAMETER_USER_ID_MISSING;
-            }
-            return null;
-        }
-
-        @Override
-        public Util.PostUnfollowLocalCode post_unFollow_response_regex() {
-            return null;
-        }
-
-        @Override
-        public Util.PostFeedbackLocalCode post_feedback_parameter_regex(String feedback) {
-            return null;
-        }
-
-        @Override
-        public Util.PostFeedbackLocalCode post_feedback_response_regex() {
-            return null;
-        }
-
-        @Override
-        public Util.PostPasswordLocalCode post_password_parameter_regex(String password) {
-            return null;
-        }
-
-        @Override
-        public Util.PostPasswordLocalCode post_password_response_regex() {
-            return null;
-        }
-
-        @Override
-        public Util.PostCommentLocalCode post_comment_parameter_regex(String post_id, String comment, String re_user_id) {
-            if (post_id != null) {
-                if (!post_id.matches("^[0-9]+$")) {
-                    return Util.PostCommentLocalCode.ERROR_PARAMETER_POST_ID_MALFORMED;
-                }
-            } else {
-                return Util.PostCommentLocalCode.ERROR_PARAMETER_POST_ID_MISSING;
-            }
-            return null;
-        }
-
-        @Override
-        public Util.PostCommentLocalCode post_comment_response_regex() {
-            return null;
-        }
-
-        @Override
-        public Util.PostPostLocalCode post_post_parameter_regex(String rest_id, String movie_name, int category_id, String value, String memo, int cheer_flag) {
-            return null;
-        }
-
-        @Override
-        public Util.PostPostLocalCode post_post_response_regex() {
-            return null;
-        }
-
-        @Override
-        public Util.PostRestAddLocalCode post_restadd_parameter_regex(String restname, double lon, double lat) {
-            return null;
-        }
-
-        @Override
-        public Util.PostRestAddLocalCode post_restadd_response_regex() {
-            return null;
-        }
-
-        @Override
-        public Util.PostUsernameLocalCode post_username_parameter_regex(String username) {
+        public Util.SetUsernameLocalCode SetUsernameParameterRegex(String username) {
             if (username != null) {
-                if (!username.matches("^\\S{4,20}$")) {
-                    return Util.PostUsernameLocalCode.ERROR_PARAMETER_USERNAME_MALFORMED;
+                if (!username.matches("^[\\S]{2,20}$")) {
+                    return Util.SetUsernameLocalCode.ERROR_PARAMETER_USERNAME_MALFORMED;
                 }
             } else {
-                return Util.PostUsernameLocalCode.ERROR_PARAMETER_USERNAME_MISSING;
+                return Util.SetUsernameLocalCode.ERROR_PARAMETER_USERNAME_MISSING;
             }
             return null;
         }
 
         @Override
-        public Util.PostUsernameLocalCode post_username_response_regex(String username) {
-            return null;
-        }
+        public void SetUsernameResponse(JSONObject jsonObject, PayloadResponseCallback cb) {
+            try {
+                String version = jsonObject.getString("version");
+                String uri = jsonObject.getString("uri");
+                String code = jsonObject.getString("code");
+                String message = jsonObject.getString("message");
 
-        @Override
-        public Util.PostProfileImgLocalCode post_profileImg_parameter_regex() {
-
-            return null;
-        }
-
-        @Override
-        public Util.PostProfileImgLocalCode post_profileImg_response_regex(String profile_img) {
-            return null;
-        }
-
-        @Override
-        public Util.GetTimelineLocalCode get_nearline_parameter_regex(double lon, double lat) {
-            return null;
-        }
-
-        @Override
-        public Util.GetTimelineLocalCode get_nearline_response_regex() {
-            return null;
-        }
-
-        @Override
-        public Util.GetTimelineLocalCode get_followline_parameter_regex() {
-            return null;
-        }
-
-        @Override
-        public Util.GetTimelineLocalCode get_followline_response_regex() {
-            return null;
-        }
-
-        @Override
-        public Util.GetTimelineLocalCode get_timeline_parameter_regex() {
-            return null;
-        }
-
-        @Override
-        public Util.GetTimelineLocalCode get_timeline_response_regex() {
-            return null;
-        }
-
-        @Override
-        public Util.GetUserLocalCode get_user_parameter_regex(String user_id) {
-            if (user_id != null) {
-                if (!user_id.matches("^[0-9]+$")) {
-                    return Util.GetUserLocalCode.ERROR_PARAMETER_USER_ID_MALFORMED;
+                Util.GlobalCode globalCode = Util.GlobalCodeReverseLookupTable(code);
+                if (globalCode != null) {
+                    if (globalCode == Util.GlobalCode.SUCCESS) {
+                        cb.onSuccess(jsonObject);
+                    } else {
+                        cb.onGlobalError(globalCode);
+                    }
+                } else {
+                    Util.SetUsernameLocalCode localCode = Util.SetUsernameLocalCodeReverseLookupTable(code);
+                    if (localCode != null) {
+                        String errorMessage = Util.SetUsernameLocalCodeMessageTable(localCode);
+                        if (message.equals(errorMessage)) {
+                            cb.onLocalError(message);
+                        } else {
+                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
+                        }
+                    } else {
+                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                    }
                 }
-            } else {
-                return Util.GetUserLocalCode.ERROR_PARAMETER_USER_ID_MISSING;
+            } catch (JSONException e) {
+                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
             }
-            return null;
         }
 
         @Override
-        public Util.GetUserLocalCode get_user_response_regex() {
-            return null;
-        }
-
-        @Override
-        public Util.GetRestLocalCode get_rest_parameter_regex(String rest_id) {
-            if (rest_id != null) {
-                if (!rest_id.matches("^[0-9]+$")) {
-                    return Util.GetRestLocalCode.ERROR_PARAMETER_REST_ID_MALFORMED;
-                }
-            } else {
-                return Util.GetRestLocalCode.ERROR_PARAMETER_REST_ID_MISSING;
-            }
-            return null;
-        }
-
-        @Override
-        public Util.GetRestLocalCode get_rest_response_regex() {
-            return null;
-        }
-
-        @Override
-        public Util.GetCommentLocalCode get_comment_parameter_regex(String post_id) {
+        public Util.SetCommentLocalCode SetCommentParameterRegex(String post_id, String comment, String re_user_id) {
             if (post_id != null) {
-                if (!post_id.matches("^[0-9]+$")) {
-                    return Util.GetCommentLocalCode.ERROR_PARAMETER_POST_ID_MALFORMED;
+                if (!post_id.matches("^\\d+$")) {
+                    return Util.SetCommentLocalCode.ERROR_PARAMETER_POST_ID_MALFORMED;
                 }
             } else {
-                return Util.GetCommentLocalCode.ERROR_PARAMETER_POST_ID_MISSING;
+                return Util.SetCommentLocalCode.ERROR_PARAMETER_POST_ID_MISSING;
+            }
+            if (comment != null) {
+                if (!comment.matches("^\\S{1,140}$")) {
+                    return Util.SetCommentLocalCode.ERROR_PARAMETER_COMMENT_MALFORMED;
+                }
+            } else {
+                return Util.SetCommentLocalCode.ERROR_PARAMETER_COMMENT_MISSING;
+            }
+            if (re_user_id != null) {
+                if (!re_user_id.matches("^\\d+$")) {
+                    return Util.SetCommentLocalCode.ERROR_PARAMETER_RE_USER_ID_MALFORMED;
+                }
+            } else {
+                return Util.SetCommentLocalCode.ERROR_PARAMETER_RE_USER_ID_MISSING;
             }
             return null;
         }
 
         @Override
-        public Util.GetCommentLocalCode get_comment_response_regex() {
-            return null;
+        public void SetCommentResponse(JSONObject jsonObject, PayloadResponseCallback cb) {
+            try {
+                String version = jsonObject.getString("version");
+                String uri = jsonObject.getString("uri");
+                String code = jsonObject.getString("code");
+                String message = jsonObject.getString("message");
+
+                Util.GlobalCode globalCode = Util.GlobalCodeReverseLookupTable(code);
+                if (globalCode != null) {
+                    if (globalCode == Util.GlobalCode.SUCCESS) {
+                        cb.onSuccess(jsonObject);
+                    } else {
+                        cb.onGlobalError(globalCode);
+                    }
+                } else {
+                    Util.SetCommentLocalCode localCode = Util.SetCommentLocalCodeReverseLookupTable(code);
+                    if (localCode != null) {
+                        String errorMessage = Util.SetCommentLocalCodeMessageTable(localCode);
+                        if (message.equals(errorMessage)) {
+                            cb.onLocalError(message);
+                        } else {
+                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
+                        }
+                    } else {
+                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                    }
+                }
+            } catch (JSONException e) {
+                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
+            }
         }
 
         @Override
-        public Util.GetFollowLocalCode get_follow_parameter_regex(String user_id) {
-            if (user_id != null) {
-                if (!user_id.matches("^[0-9]+$")) {
-                    return Util.GetFollowLocalCode.ERROR_PARAMETER_USER_ID_MALFORMED;
+        public Util.SetSns_LinkLocalCode SetSns_LinkParameterRegex(String provider, String sns_token) {
+            if (provider != null) {
+                if (!provider.matches("^(api.twitter.com)|(graph.facebook.com)$")) {
+                    return Util.SetSns_LinkLocalCode.ERROR_PARAMETER_PROVIDER_MALFORMED;
                 }
             } else {
-                return Util.GetFollowLocalCode.ERROR_PARAMETER_USER_ID_MISSING;
+                return Util.SetSns_LinkLocalCode.ERROR_PARAMETER_PROVIDER_MISSING;
+            }
+            if (sns_token != null) {
+                if (!sns_token.matches("^\\S{20,4000}$")) {
+                    return Util.SetSns_LinkLocalCode.ERROR_PARAMETER_SNS_TOKEN_MALFORMED;
+                }
+            } else {
+                return Util.SetSns_LinkLocalCode.ERROR_PARAMETER_SNS_TOKEN_MISSING;
             }
             return null;
         }
 
         @Override
-        public Util.GetFollowLocalCode get_follow_response_regex() {
+        public void SetSns_LinkResponse(JSONObject jsonObject, PayloadResponseCallback cb) {
+            try {
+                String version = jsonObject.getString("version");
+                String uri = jsonObject.getString("uri");
+                String code = jsonObject.getString("code");
+                String message = jsonObject.getString("message");
+
+                Util.GlobalCode globalCode = Util.GlobalCodeReverseLookupTable(code);
+                if (globalCode != null) {
+                    if (globalCode == Util.GlobalCode.SUCCESS) {
+                        cb.onSuccess(jsonObject);
+                    } else {
+                        cb.onGlobalError(globalCode);
+                    }
+                } else {
+                    Util.SetSns_LinkLocalCode localCode = Util.SetSns_LinkLocalCodeReverseLookupTable(code);
+                    if (localCode != null) {
+                        String errorMessage = Util.SetSns_LinkLocalCodeMessageTable(localCode);
+                        if (message.equals(errorMessage)) {
+                            cb.onLocalError(message);
+                        } else {
+                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
+                        }
+                    } else {
+                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                    }
+                }
+            } catch (JSONException e) {
+                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
+            }
+        }
+
+        @Override
+        public Util.SetPostLocalCode SetPostParameterRegex(String rest_id, String movie_name, String category_id, String value, String memo, String cheer_flag) {
+            if (rest_id != null) {
+                if (!rest_id.matches("^\\d+$")) {
+                    return Util.SetPostLocalCode.ERROR_PARAMETER_REST_ID_MALFORMED;
+                }
+            } else {
+                return Util.SetPostLocalCode.ERROR_PARAMETER_REST_ID_MISSING;
+            }
+            if (movie_name != null) {
+                if (!movie_name.matches("^[0-9_-]+$")) {
+                    return Util.SetPostLocalCode.ERROR_PARAMETER_MOVIE_NAME_MALFORMED;
+                }
+            } else {
+                return Util.SetPostLocalCode.ERROR_PARAMETER_MOVIE_NAME_MISSING;
+            }
+            if (category_id != null) {
+                if (!category_id.matches("^\\d{1}$")) {
+                    return Util.SetPostLocalCode.ERROR_PARAMETER_CATEGORY_ID_MALFORMED;
+                }
+            } else {
+                return Util.SetPostLocalCode.ERROR_PARAMETER_CATEGORY_ID_MISSING;
+            }
+            if (value != null) {
+                if (!value.matches("^\\d{0,8}$")) {
+                    return Util.SetPostLocalCode.ERROR_PARAMETER_VALUE_MALFORMED;
+                }
+            } else {
+                return Util.SetPostLocalCode.ERROR_PARAMETER_VALUE_MISSING;
+            }
+            if (memo != null) {
+                if (!memo.matches("^\\S{1,140}$")) {
+                    return Util.SetPostLocalCode.ERROR_PARAMETER_MEMO_MALFORMED;
+                }
+            } else {
+                return Util.SetPostLocalCode.ERROR_PARAMETER_MEMO_MISSING;
+            }
+            if (cheer_flag != null) {
+                if (!cheer_flag.matches("^0$|^1$")) {
+                    return Util.SetPostLocalCode.ERROR_PARAMETER_CHEER_FLAG_MALFORMED;
+                }
+            } else {
+                return Util.SetPostLocalCode.ERROR_PARAMETER_CHEER_FLAG_MISSING;
+            }
             return null;
         }
 
         @Override
-        public Util.GetFollowerLocalCode get_follower_parameter_regex(String user_id) {
+        public void SetPostResponse(JSONObject jsonObject, PayloadResponseCallback cb) {
+            try {
+                String version = jsonObject.getString("version");
+                String uri = jsonObject.getString("uri");
+                String code = jsonObject.getString("code");
+                String message = jsonObject.getString("message");
+
+                Util.GlobalCode globalCode = Util.GlobalCodeReverseLookupTable(code);
+                if (globalCode != null) {
+                    if (globalCode == Util.GlobalCode.SUCCESS) {
+                        cb.onSuccess(jsonObject);
+                    } else {
+                        cb.onGlobalError(globalCode);
+                    }
+                } else {
+                    Util.SetPostLocalCode localCode = Util.SetPostLocalCodeReverseLookupTable(code);
+                    if (localCode != null) {
+                        String errorMessage = Util.SetPostLocalCodeMessageTable(localCode);
+                        if (message.equals(errorMessage)) {
+                            cb.onLocalError(message);
+                        } else {
+                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
+                        }
+                    } else {
+                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                    }
+                }
+            } catch (JSONException e) {
+                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
+            }
+        }
+
+        @Override
+        public Util.SetFollowLocalCode SetFollowParameterRegex(String user_id) {
             if (user_id != null) {
-                if (!user_id.matches("^[0-9]+$")) {
+                if (!user_id.matches("^\\d+$")) {
+                    return Util.SetFollowLocalCode.ERROR_PARAMETER_USER_ID_MALFORMED;
+                }
+            } else {
+                return Util.SetFollowLocalCode.ERROR_PARAMETER_USER_ID_MISSING;
+            }
+            return null;
+        }
+
+        @Override
+        public void SetFollowResponse(JSONObject jsonObject, PayloadResponseCallback cb) {
+            try {
+                String version = jsonObject.getString("version");
+                String uri = jsonObject.getString("uri");
+                String code = jsonObject.getString("code");
+                String message = jsonObject.getString("message");
+
+                Util.GlobalCode globalCode = Util.GlobalCodeReverseLookupTable(code);
+                if (globalCode != null) {
+                    if (globalCode == Util.GlobalCode.SUCCESS) {
+                        cb.onSuccess(jsonObject);
+                    } else {
+                        cb.onGlobalError(globalCode);
+                    }
+                } else {
+                    Util.SetFollowLocalCode localCode = Util.SetFollowLocalCodeReverseLookupTable(code);
+                    if (localCode != null) {
+                        String errorMessage = Util.SetFollowLocalCodeMessageTable(localCode);
+                        if (message.equals(errorMessage)) {
+                            cb.onLocalError(message);
+                        } else {
+                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
+                        }
+                    } else {
+                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                    }
+                }
+            } catch (JSONException e) {
+                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
+            }
+        }
+
+        @Override
+        public Util.SetGochiLocalCode SetGochiParameterRegex(String post_id) {
+            if (post_id != null) {
+                if (!post_id.matches("^\\d+$")) {
+                    return Util.SetGochiLocalCode.ERROR_PARAMETER_POST_ID_MALFORMED;
+                }
+            } else {
+                return Util.SetGochiLocalCode.ERROR_PARAMETER_POST_ID_MISSING;
+            }
+            return null;
+        }
+
+        @Override
+        public void SetGochiResponse(JSONObject jsonObject, PayloadResponseCallback cb) {
+            try {
+                String version = jsonObject.getString("version");
+                String uri = jsonObject.getString("uri");
+                String code = jsonObject.getString("code");
+                String message = jsonObject.getString("message");
+
+                Util.GlobalCode globalCode = Util.GlobalCodeReverseLookupTable(code);
+                if (globalCode != null) {
+                    if (globalCode == Util.GlobalCode.SUCCESS) {
+                        cb.onSuccess(jsonObject);
+                    } else {
+                        cb.onGlobalError(globalCode);
+                    }
+                } else {
+                    Util.SetGochiLocalCode localCode = Util.SetGochiLocalCodeReverseLookupTable(code);
+                    if (localCode != null) {
+                        String errorMessage = Util.SetGochiLocalCodeMessageTable(localCode);
+                        if (message.equals(errorMessage)) {
+                            cb.onLocalError(message);
+                        } else {
+                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
+                        }
+                    } else {
+                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                    }
+                }
+            } catch (JSONException e) {
+                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
+            }
+        }
+
+        @Override
+        public Util.SetDeviceLocalCode SetDeviceParameterRegex(String device_token, String os, String ver, String model) {
+            if (device_token != null) {
+                if (!device_token.matches("^([a-f0-9]{64})|([a-zA-Z0-9:_-]{140,250})$")) {
+                    return Util.SetDeviceLocalCode.ERROR_PARAMETER_DEVICE_TOKEN_MALFORMED;
+                }
+            } else {
+                return Util.SetDeviceLocalCode.ERROR_PARAMETER_DEVICE_TOKEN_MISSING;
+            }
+            if (os != null) {
+                if (!os.matches("^android$|^iOS$")) {
+                    return Util.SetDeviceLocalCode.ERROR_PARAMETER_OS_MALFORMED;
+                }
+            } else {
+                return Util.SetDeviceLocalCode.ERROR_PARAMETER_OS_MISSING;
+            }
+            if (ver != null) {
+                if (!ver.matches("^[0-9.]{1,6}$")) {
+                    return Util.SetDeviceLocalCode.ERROR_PARAMETER_VER_MALFORMED;
+                }
+            } else {
+                return Util.SetDeviceLocalCode.ERROR_PARAMETER_VER_MISSING;
+            }
+            if (model != null) {
+                if (!model.matches("^\\S{1,50}$")) {
+                    return Util.SetDeviceLocalCode.ERROR_PARAMETER_MODEL_MALFORMED;
+                }
+            } else {
+                return Util.SetDeviceLocalCode.ERROR_PARAMETER_MODEL_MISSING;
+            }
+            return null;
+        }
+
+        @Override
+        public void SetDeviceResponse(JSONObject jsonObject, PayloadResponseCallback cb) {
+            try {
+                String version = jsonObject.getString("version");
+                String uri = jsonObject.getString("uri");
+                String code = jsonObject.getString("code");
+                String message = jsonObject.getString("message");
+
+                Util.GlobalCode globalCode = Util.GlobalCodeReverseLookupTable(code);
+                if (globalCode != null) {
+                    if (globalCode == Util.GlobalCode.SUCCESS) {
+                        cb.onSuccess(jsonObject);
+                    } else {
+                        cb.onGlobalError(globalCode);
+                    }
+                } else {
+                    Util.SetDeviceLocalCode localCode = Util.SetDeviceLocalCodeReverseLookupTable(code);
+                    if (localCode != null) {
+                        String errorMessage = Util.SetDeviceLocalCodeMessageTable(localCode);
+                        if (message.equals(errorMessage)) {
+                            cb.onLocalError(message);
+                        } else {
+                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
+                        }
+                    } else {
+                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                    }
+                }
+            } catch (JSONException e) {
+                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
+            }
+        }
+
+        @Override
+        public Util.SetWantLocalCode SetWantParameterRegex(String rest_id) {
+            if (rest_id != null) {
+                if (!rest_id.matches("^\\d+$")) {
+                    return Util.SetWantLocalCode.ERROR_PARAMETER_REST_ID_MALFORMED;
+                }
+            } else {
+                return Util.SetWantLocalCode.ERROR_PARAMETER_REST_ID_MISSING;
+            }
+            return null;
+        }
+
+        @Override
+        public void SetWantResponse(JSONObject jsonObject, PayloadResponseCallback cb) {
+            try {
+                String version = jsonObject.getString("version");
+                String uri = jsonObject.getString("uri");
+                String code = jsonObject.getString("code");
+                String message = jsonObject.getString("message");
+
+                Util.GlobalCode globalCode = Util.GlobalCodeReverseLookupTable(code);
+                if (globalCode != null) {
+                    if (globalCode == Util.GlobalCode.SUCCESS) {
+                        cb.onSuccess(jsonObject);
+                    } else {
+                        cb.onGlobalError(globalCode);
+                    }
+                } else {
+                    Util.SetWantLocalCode localCode = Util.SetWantLocalCodeReverseLookupTable(code);
+                    if (localCode != null) {
+                        String errorMessage = Util.SetWantLocalCodeMessageTable(localCode);
+                        if (message.equals(errorMessage)) {
+                            cb.onLocalError(message);
+                        } else {
+                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
+                        }
+                    } else {
+                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                    }
+                }
+            } catch (JSONException e) {
+                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
+            }
+        }
+
+        @Override
+        public Util.SetRestLocalCode SetRestParameterRegex(String restname, String lat, String lon) {
+            if (restname != null) {
+                if (!restname.matches("^\\S{2,30}$")) {
+                    return Util.SetRestLocalCode.ERROR_PARAMETER_RESTNAME_MALFORMED;
+                }
+            } else {
+                return Util.SetRestLocalCode.ERROR_PARAMETER_RESTNAME_MISSING;
+            }
+            if (lat != null) {
+                if (!lat.matches("^\\d+.\\d+$")) {
+                    return Util.SetRestLocalCode.ERROR_PARAMETER_LAT_MALFORMED;
+                }
+            } else {
+                return Util.SetRestLocalCode.ERROR_PARAMETER_LAT_MISSING;
+            }
+            if (lon != null) {
+                if (!lon.matches("^\\d+.\\d+$")) {
+                    return Util.SetRestLocalCode.ERROR_PARAMETER_LON_MALFORMED;
+                }
+            } else {
+                return Util.SetRestLocalCode.ERROR_PARAMETER_LON_MISSING;
+            }
+            return null;
+        }
+
+        @Override
+        public void SetRestResponse(JSONObject jsonObject, PayloadResponseCallback cb) {
+            try {
+                String version = jsonObject.getString("version");
+                String uri = jsonObject.getString("uri");
+                String code = jsonObject.getString("code");
+                String message = jsonObject.getString("message");
+
+                Util.GlobalCode globalCode = Util.GlobalCodeReverseLookupTable(code);
+                if (globalCode != null) {
+                    if (globalCode == Util.GlobalCode.SUCCESS) {
+                        cb.onSuccess(jsonObject);
+                    } else {
+                        cb.onGlobalError(globalCode);
+                    }
+                } else {
+                    Util.SetRestLocalCode localCode = Util.SetRestLocalCodeReverseLookupTable(code);
+                    if (localCode != null) {
+                        String errorMessage = Util.SetRestLocalCodeMessageTable(localCode);
+                        if (message.equals(errorMessage)) {
+                            cb.onLocalError(message);
+                        } else {
+                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
+                        }
+                    } else {
+                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                    }
+                }
+            } catch (JSONException e) {
+                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
+            }
+        }
+
+        @Override
+        public Util.SetBlockLocalCode SetBlockParameterRegex(String post_id) {
+            if (post_id != null) {
+                if (!post_id.matches("^\\d+$")) {
+                    return Util.SetBlockLocalCode.ERROR_PARAMETER_POST_ID_MALFORMED;
+                }
+            } else {
+                return Util.SetBlockLocalCode.ERROR_PARAMETER_POST_ID_MISSING;
+            }
+            return null;
+        }
+
+        @Override
+        public void SetBlockResponse(JSONObject jsonObject, PayloadResponseCallback cb) {
+            try {
+                String version = jsonObject.getString("version");
+                String uri = jsonObject.getString("uri");
+                String code = jsonObject.getString("code");
+                String message = jsonObject.getString("message");
+
+                Util.GlobalCode globalCode = Util.GlobalCodeReverseLookupTable(code);
+                if (globalCode != null) {
+                    if (globalCode == Util.GlobalCode.SUCCESS) {
+                        cb.onSuccess(jsonObject);
+                    } else {
+                        cb.onGlobalError(globalCode);
+                    }
+                } else {
+                    Util.SetBlockLocalCode localCode = Util.SetBlockLocalCodeReverseLookupTable(code);
+                    if (localCode != null) {
+                        String errorMessage = Util.SetBlockLocalCodeMessageTable(localCode);
+                        if (message.equals(errorMessage)) {
+                            cb.onLocalError(message);
+                        } else {
+                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
+                        }
+                    } else {
+                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                    }
+                }
+            } catch (JSONException e) {
+                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
+            }
+        }
+
+        @Override
+        public Util.SetProfile_ImgLocalCode SetProfile_ImgParameterRegex(String profile_img) {
+            if (profile_img != null) {
+                if (!profile_img.matches("^[0-9_-]+$")) {
+                    return Util.SetProfile_ImgLocalCode.ERROR_PARAMETER_PROFILE_IMG_MALFORMED;
+                }
+            } else {
+                return Util.SetProfile_ImgLocalCode.ERROR_PARAMETER_PROFILE_IMG_MISSING;
+            }
+            return null;
+        }
+
+        @Override
+        public void SetProfile_ImgResponse(JSONObject jsonObject, PayloadResponseCallback cb) {
+            try {
+                String version = jsonObject.getString("version");
+                String uri = jsonObject.getString("uri");
+                String code = jsonObject.getString("code");
+                String message = jsonObject.getString("message");
+
+                Util.GlobalCode globalCode = Util.GlobalCodeReverseLookupTable(code);
+                if (globalCode != null) {
+                    if (globalCode == Util.GlobalCode.SUCCESS) {
+                        cb.onSuccess(jsonObject);
+                    } else {
+                        cb.onGlobalError(globalCode);
+                    }
+                } else {
+                    Util.SetProfile_ImgLocalCode localCode = Util.SetProfile_ImgLocalCodeReverseLookupTable(code);
+                    if (localCode != null) {
+                        String errorMessage = Util.SetProfile_ImgLocalCodeMessageTable(localCode);
+                        if (message.equals(errorMessage)) {
+                            cb.onLocalError(message);
+                        } else {
+                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
+                        }
+                    } else {
+                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                    }
+                }
+            } catch (JSONException e) {
+                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
+            }
+        }
+
+        @Override
+        public Util.GetHeatmapLocalCode GetHeatmapParameterRegex() {
+            return null;
+        }
+
+        @Override
+        public void GetHeatmapResponse(JSONObject jsonObject, PayloadResponseCallback cb) {
+            try {
+                String version = jsonObject.getString("version");
+                String uri = jsonObject.getString("uri");
+                String code = jsonObject.getString("code");
+                String message = jsonObject.getString("message");
+
+                Util.GlobalCode globalCode = Util.GlobalCodeReverseLookupTable(code);
+                if (globalCode != null) {
+                    if (globalCode == Util.GlobalCode.SUCCESS) {
+                        cb.onSuccess(jsonObject);
+                    } else {
+                        cb.onGlobalError(globalCode);
+                    }
+                } else {
+                    Util.GetHeatmapLocalCode localCode = Util.GetHeatmapLocalCodeReverseLookupTable(code);
+                    if (localCode != null) {
+                        String errorMessage = Util.GetHeatmapLocalCodeMessageTable(localCode);
+                        if (message.equals(errorMessage)) {
+                            cb.onLocalError(message);
+                        } else {
+                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
+                        }
+                    } else {
+                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                    }
+                }
+            } catch (JSONException e) {
+                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
+            }
+        }
+
+        @Override
+        public Util.GetFollowerLocalCode GetFollowerParameterRegex(String user_id) {
+            if (user_id != null) {
+                if (!user_id.matches("^\\d+$")) {
                     return Util.GetFollowerLocalCode.ERROR_PARAMETER_USER_ID_MALFORMED;
                 }
             } else {
@@ -2321,14 +3524,433 @@ public interface API3 {
         }
 
         @Override
-        public Util.GetFollowerLocalCode get_follower_response_regex() {
+        public void GetFollowerResponse(JSONObject jsonObject, PayloadResponseCallback cb) {
+            try {
+                String version = jsonObject.getString("version");
+                String uri = jsonObject.getString("uri");
+                String code = jsonObject.getString("code");
+                String message = jsonObject.getString("message");
+
+                Util.GlobalCode globalCode = Util.GlobalCodeReverseLookupTable(code);
+                if (globalCode != null) {
+                    if (globalCode == Util.GlobalCode.SUCCESS) {
+                        cb.onSuccess(jsonObject);
+                    } else {
+                        cb.onGlobalError(globalCode);
+                    }
+                } else {
+                    Util.GetFollowerLocalCode localCode = Util.GetFollowerLocalCodeReverseLookupTable(code);
+                    if (localCode != null) {
+                        String errorMessage = Util.GetFollowerLocalCodeMessageTable(localCode);
+                        if (message.equals(errorMessage)) {
+                            cb.onLocalError(message);
+                        } else {
+                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
+                        }
+                    } else {
+                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                    }
+                }
+            } catch (JSONException e) {
+                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
+            }
+        }
+
+        @Override
+        public Util.GetNoticeLocalCode GetNoticeParameterRegex() {
             return null;
         }
 
         @Override
-        public Util.GetWantLocalCode get_want_parameter_regex(String user_id) {
+        public void GetNoticeResponse(JSONObject jsonObject, PayloadResponseCallback cb) {
+            try {
+                String version = jsonObject.getString("version");
+                String uri = jsonObject.getString("uri");
+                String code = jsonObject.getString("code");
+                String message = jsonObject.getString("message");
+
+                Util.GlobalCode globalCode = Util.GlobalCodeReverseLookupTable(code);
+                if (globalCode != null) {
+                    if (globalCode == Util.GlobalCode.SUCCESS) {
+                        cb.onSuccess(jsonObject);
+                    } else {
+                        cb.onGlobalError(globalCode);
+                    }
+                } else {
+                    Util.GetNoticeLocalCode localCode = Util.GetNoticeLocalCodeReverseLookupTable(code);
+                    if (localCode != null) {
+                        String errorMessage = Util.GetNoticeLocalCodeMessageTable(localCode);
+                        if (message.equals(errorMessage)) {
+                            cb.onLocalError(message);
+                        } else {
+                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
+                        }
+                    } else {
+                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                    }
+                }
+            } catch (JSONException e) {
+                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
+            }
+        }
+
+        @Override
+        public Util.GetTimelineLocalCode GetTimelineParameterRegex() {
+            return null;
+        }
+
+        @Override
+        public void GetTimelineResponse(JSONObject jsonObject, PayloadResponseCallback cb) {
+            try {
+                String version = jsonObject.getString("version");
+                String uri = jsonObject.getString("uri");
+                String code = jsonObject.getString("code");
+                String message = jsonObject.getString("message");
+
+                Util.GlobalCode globalCode = Util.GlobalCodeReverseLookupTable(code);
+                if (globalCode != null) {
+                    if (globalCode == Util.GlobalCode.SUCCESS) {
+                        cb.onSuccess(jsonObject);
+                    } else {
+                        cb.onGlobalError(globalCode);
+                    }
+                } else {
+                    Util.GetTimelineLocalCode localCode = Util.GetTimelineLocalCodeReverseLookupTable(code);
+                    if (localCode != null) {
+                        String errorMessage = Util.GetTimelineLocalCodeMessageTable(localCode);
+                        if (message.equals(errorMessage)) {
+                            cb.onLocalError(message);
+                        } else {
+                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
+                        }
+                    } else {
+                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                    }
+                }
+            } catch (JSONException e) {
+                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
+            }
+        }
+
+        @Override
+        public Util.GetCommentLocalCode GetCommentParameterRegex(String post_id) {
+            if (post_id != null) {
+                if (!post_id.matches("^\\d+$")) {
+                    return Util.GetCommentLocalCode.ERROR_PARAMETER_POST_ID_MALFORMED;
+                }
+            } else {
+                return Util.GetCommentLocalCode.ERROR_PARAMETER_POST_ID_MISSING;
+            }
+            return null;
+        }
+
+        @Override
+        public void GetCommentResponse(JSONObject jsonObject, PayloadResponseCallback cb) {
+            try {
+                String version = jsonObject.getString("version");
+                String uri = jsonObject.getString("uri");
+                String code = jsonObject.getString("code");
+                String message = jsonObject.getString("message");
+
+                Util.GlobalCode globalCode = Util.GlobalCodeReverseLookupTable(code);
+                if (globalCode != null) {
+                    if (globalCode == Util.GlobalCode.SUCCESS) {
+                        cb.onSuccess(jsonObject);
+                    } else {
+                        cb.onGlobalError(globalCode);
+                    }
+                } else {
+                    Util.GetCommentLocalCode localCode = Util.GetCommentLocalCodeReverseLookupTable(code);
+                    if (localCode != null) {
+                        String errorMessage = Util.GetCommentLocalCodeMessageTable(localCode);
+                        if (message.equals(errorMessage)) {
+                            cb.onLocalError(message);
+                        } else {
+                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
+                        }
+                    } else {
+                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                    }
+                }
+            } catch (JSONException e) {
+                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
+            }
+        }
+
+        @Override
+        public Util.GetUser_CheerLocalCode GetUser_CheerParameterRegex(String user_id) {
             if (user_id != null) {
-                if (!user_id.matches("^[0-9]+$")) {
+                if (!user_id.matches("^\\d+$")) {
+                    return Util.GetUser_CheerLocalCode.ERROR_PARAMETER_USER_ID_MALFORMED;
+                }
+            } else {
+                return Util.GetUser_CheerLocalCode.ERROR_PARAMETER_USER_ID_MISSING;
+            }
+            return null;
+        }
+
+        @Override
+        public void GetUser_CheerResponse(JSONObject jsonObject, PayloadResponseCallback cb) {
+            try {
+                String version = jsonObject.getString("version");
+                String uri = jsonObject.getString("uri");
+                String code = jsonObject.getString("code");
+                String message = jsonObject.getString("message");
+
+                Util.GlobalCode globalCode = Util.GlobalCodeReverseLookupTable(code);
+                if (globalCode != null) {
+                    if (globalCode == Util.GlobalCode.SUCCESS) {
+                        cb.onSuccess(jsonObject);
+                    } else {
+                        cb.onGlobalError(globalCode);
+                    }
+                } else {
+                    Util.GetUser_CheerLocalCode localCode = Util.GetUser_CheerLocalCodeReverseLookupTable(code);
+                    if (localCode != null) {
+                        String errorMessage = Util.GetUser_CheerLocalCodeMessageTable(localCode);
+                        if (message.equals(errorMessage)) {
+                            cb.onLocalError(message);
+                        } else {
+                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
+                        }
+                    } else {
+                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                    }
+                }
+            } catch (JSONException e) {
+                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
+            }
+        }
+
+        @Override
+        public Util.GetUserLocalCode GetUserParameterRegex(String user_id) {
+            if (user_id != null) {
+                if (!user_id.matches("^\\d+$")) {
+                    return Util.GetUserLocalCode.ERROR_PARAMETER_USER_ID_MALFORMED;
+                }
+            } else {
+                return Util.GetUserLocalCode.ERROR_PARAMETER_USER_ID_MISSING;
+            }
+            return null;
+        }
+
+        @Override
+        public void GetUserResponse(JSONObject jsonObject, PayloadResponseCallback cb) {
+            try {
+                String version = jsonObject.getString("version");
+                String uri = jsonObject.getString("uri");
+                String code = jsonObject.getString("code");
+                String message = jsonObject.getString("message");
+
+                Util.GlobalCode globalCode = Util.GlobalCodeReverseLookupTable(code);
+                if (globalCode != null) {
+                    if (globalCode == Util.GlobalCode.SUCCESS) {
+                        cb.onSuccess(jsonObject);
+                    } else {
+                        cb.onGlobalError(globalCode);
+                    }
+                } else {
+                    Util.GetUserLocalCode localCode = Util.GetUserLocalCodeReverseLookupTable(code);
+                    if (localCode != null) {
+                        String errorMessage = Util.GetUserLocalCodeMessageTable(localCode);
+                        if (message.equals(errorMessage)) {
+                            cb.onLocalError(message);
+                        } else {
+                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
+                        }
+                    } else {
+                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                    }
+                }
+            } catch (JSONException e) {
+                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
+            }
+        }
+
+        @Override
+        public Util.GetNearLocalCode GetNearParameterRegex(String lat, String lon) {
+            if (lat != null) {
+                if (!lat.matches("^\\d+.\\d+$")) {
+                    return Util.GetNearLocalCode.ERROR_PARAMETER_LAT_MALFORMED;
+                }
+            } else {
+                return Util.GetNearLocalCode.ERROR_PARAMETER_LAT_MISSING;
+            }
+            if (lon != null) {
+                if (!lon.matches("^\\d+.\\d+$")) {
+                    return Util.GetNearLocalCode.ERROR_PARAMETER_LON_MALFORMED;
+                }
+            } else {
+                return Util.GetNearLocalCode.ERROR_PARAMETER_LON_MISSING;
+            }
+            return null;
+        }
+
+        @Override
+        public void GetNearResponse(JSONObject jsonObject, PayloadResponseCallback cb) {
+            try {
+                String version = jsonObject.getString("version");
+                String uri = jsonObject.getString("uri");
+                String code = jsonObject.getString("code");
+                String message = jsonObject.getString("message");
+
+                Util.GlobalCode globalCode = Util.GlobalCodeReverseLookupTable(code);
+                if (globalCode != null) {
+                    if (globalCode == Util.GlobalCode.SUCCESS) {
+                        cb.onSuccess(jsonObject);
+                    } else {
+                        cb.onGlobalError(globalCode);
+                    }
+                } else {
+                    Util.GetNearLocalCode localCode = Util.GetNearLocalCodeReverseLookupTable(code);
+                    if (localCode != null) {
+                        String errorMessage = Util.GetNearLocalCodeMessageTable(localCode);
+                        if (message.equals(errorMessage)) {
+                            cb.onLocalError(message);
+                        } else {
+                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
+                        }
+                    } else {
+                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                    }
+                }
+            } catch (JSONException e) {
+                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
+            }
+        }
+
+        @Override
+        public Util.GetFollowLocalCode GetFollowParameterRegex(String user_id) {
+            if (user_id != null) {
+                if (!user_id.matches("^\\d+$")) {
+                    return Util.GetFollowLocalCode.ERROR_PARAMETER_USER_ID_MALFORMED;
+                }
+            } else {
+                return Util.GetFollowLocalCode.ERROR_PARAMETER_USER_ID_MISSING;
+            }
+            return null;
+        }
+
+        @Override
+        public void GetFollowResponse(JSONObject jsonObject, PayloadResponseCallback cb) {
+            try {
+                String version = jsonObject.getString("version");
+                String uri = jsonObject.getString("uri");
+                String code = jsonObject.getString("code");
+                String message = jsonObject.getString("message");
+
+                Util.GlobalCode globalCode = Util.GlobalCodeReverseLookupTable(code);
+                if (globalCode != null) {
+                    if (globalCode == Util.GlobalCode.SUCCESS) {
+                        cb.onSuccess(jsonObject);
+                    } else {
+                        cb.onGlobalError(globalCode);
+                    }
+                } else {
+                    Util.GetFollowLocalCode localCode = Util.GetFollowLocalCodeReverseLookupTable(code);
+                    if (localCode != null) {
+                        String errorMessage = Util.GetFollowLocalCodeMessageTable(localCode);
+                        if (message.equals(errorMessage)) {
+                            cb.onLocalError(message);
+                        } else {
+                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
+                        }
+                    } else {
+                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                    }
+                }
+            } catch (JSONException e) {
+                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
+            }
+        }
+
+        @Override
+        public Util.GetRest_CheerLocalCode GetRest_CheerParameterRegex(String rest_id) {
+            if (rest_id != null) {
+                if (!rest_id.matches("^\\d+$")) {
+                    return Util.GetRest_CheerLocalCode.ERROR_PARAMETER_REST_ID_MALFORMED;
+                }
+            } else {
+                return Util.GetRest_CheerLocalCode.ERROR_PARAMETER_REST_ID_MISSING;
+            }
+            return null;
+        }
+
+        @Override
+        public void GetRest_CheerResponse(JSONObject jsonObject, PayloadResponseCallback cb) {
+            try {
+                String version = jsonObject.getString("version");
+                String uri = jsonObject.getString("uri");
+                String code = jsonObject.getString("code");
+                String message = jsonObject.getString("message");
+
+                Util.GlobalCode globalCode = Util.GlobalCodeReverseLookupTable(code);
+                if (globalCode != null) {
+                    if (globalCode == Util.GlobalCode.SUCCESS) {
+                        cb.onSuccess(jsonObject);
+                    } else {
+                        cb.onGlobalError(globalCode);
+                    }
+                } else {
+                    Util.GetRest_CheerLocalCode localCode = Util.GetRest_CheerLocalCodeReverseLookupTable(code);
+                    if (localCode != null) {
+                        String errorMessage = Util.GetRest_CheerLocalCodeMessageTable(localCode);
+                        if (message.equals(errorMessage)) {
+                            cb.onLocalError(message);
+                        } else {
+                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
+                        }
+                    } else {
+                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                    }
+                }
+            } catch (JSONException e) {
+                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
+            }
+        }
+
+        @Override
+        public Util.GetFollowlineLocalCode GetFollowlineParameterRegex() {
+            return null;
+        }
+
+        @Override
+        public void GetFollowlineResponse(JSONObject jsonObject, PayloadResponseCallback cb) {
+            try {
+                String version = jsonObject.getString("version");
+                String uri = jsonObject.getString("uri");
+                String code = jsonObject.getString("code");
+                String message = jsonObject.getString("message");
+
+                Util.GlobalCode globalCode = Util.GlobalCodeReverseLookupTable(code);
+                if (globalCode != null) {
+                    if (globalCode == Util.GlobalCode.SUCCESS) {
+                        cb.onSuccess(jsonObject);
+                    } else {
+                        cb.onGlobalError(globalCode);
+                    }
+                } else {
+                    Util.GetFollowlineLocalCode localCode = Util.GetFollowlineLocalCodeReverseLookupTable(code);
+                    if (localCode != null) {
+                        String errorMessage = Util.GetFollowlineLocalCodeMessageTable(localCode);
+                        if (message.equals(errorMessage)) {
+                            cb.onLocalError(message);
+                        } else {
+                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
+                        }
+                    } else {
+                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                    }
+                }
+            } catch (JSONException e) {
+                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
+            }
+        }
+
+        @Override
+        public Util.GetWantLocalCode GetWantParameterRegex(String user_id) {
+            if (user_id != null) {
+                if (!user_id.matches("^\\d+$")) {
                     return Util.GetWantLocalCode.ERROR_PARAMETER_USER_ID_MALFORMED;
                 }
             } else {
@@ -2338,1451 +3960,373 @@ public interface API3 {
         }
 
         @Override
-        public Util.GetWantLocalCode get_want_response_regex() {
-            return null;
-        }
+        public void GetWantResponse(JSONObject jsonObject, PayloadResponseCallback cb) {
+            try {
+                String version = jsonObject.getString("version");
+                String uri = jsonObject.getString("uri");
+                String code = jsonObject.getString("code");
+                String message = jsonObject.getString("message");
 
-        @Override
-        public Util.GetUserCheerLocalCode get_user_cheer_parameter_regex(String user_id) {
-            if (user_id != null) {
-                if (!user_id.matches("^[0-9]+$")) {
-                    return Util.GetUserCheerLocalCode.ERROR_PARAMETER_USER_ID_MALFORMED;
+                Util.GlobalCode globalCode = Util.GlobalCodeReverseLookupTable(code);
+                if (globalCode != null) {
+                    if (globalCode == Util.GlobalCode.SUCCESS) {
+                        cb.onSuccess(jsonObject);
+                    } else {
+                        cb.onGlobalError(globalCode);
+                    }
+                } else {
+                    Util.GetWantLocalCode localCode = Util.GetWantLocalCodeReverseLookupTable(code);
+                    if (localCode != null) {
+                        String errorMessage = Util.GetWantLocalCodeMessageTable(localCode);
+                        if (message.equals(errorMessage)) {
+                            cb.onLocalError(message);
+                        } else {
+                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
+                        }
+                    } else {
+                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                    }
                 }
-            } else {
-                return Util.GetUserCheerLocalCode.ERROR_PARAMETER_USER_ID_MISSING;
+            } catch (JSONException e) {
+                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
             }
-            return null;
         }
 
         @Override
-        public Util.GetUserCheerLocalCode get_user_cheer_response_regex() {
-            return null;
-        }
-
-        @Override
-        public Util.GetRestCheerLocalCode get_rest_cheer_parameter_regex(String rest_id) {
+        public Util.GetRestLocalCode GetRestParameterRegex(String rest_id) {
             if (rest_id != null) {
-                if (!rest_id.matches("^[0-9]+$")) {
-                    return Util.GetRestCheerLocalCode.ERROR_PARAMETER_REST_ID_MALFORMED;
+                if (!rest_id.matches("^\\d+$")) {
+                    return Util.GetRestLocalCode.ERROR_PARAMETER_REST_ID_MALFORMED;
                 }
             } else {
-                return Util.GetRestCheerLocalCode.ERROR_PARAMETER_REST_ID_MISSING;
+                return Util.GetRestLocalCode.ERROR_PARAMETER_REST_ID_MISSING;
             }
             return null;
         }
 
         @Override
-        public Util.GetRestCheerLocalCode get_rest_cheer_response_regex() {
+        public void GetRestResponse(JSONObject jsonObject, PayloadResponseCallback cb) {
+            try {
+                String version = jsonObject.getString("version");
+                String uri = jsonObject.getString("uri");
+                String code = jsonObject.getString("code");
+                String message = jsonObject.getString("message");
+
+                Util.GlobalCode globalCode = Util.GlobalCodeReverseLookupTable(code);
+                if (globalCode != null) {
+                    if (globalCode == Util.GlobalCode.SUCCESS) {
+                        cb.onSuccess(jsonObject);
+                    } else {
+                        cb.onGlobalError(globalCode);
+                    }
+                } else {
+                    Util.GetRestLocalCode localCode = Util.GetRestLocalCodeReverseLookupTable(code);
+                    if (localCode != null) {
+                        String errorMessage = Util.GetRestLocalCodeMessageTable(localCode);
+                        if (message.equals(errorMessage)) {
+                            cb.onLocalError(message);
+                        } else {
+                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
+                        }
+                    } else {
+                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                    }
+                }
+            } catch (JSONException e) {
+                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
+            }
+        }
+
+        @Override
+        public Util.GetNearlineLocalCode GetNearlineParameterRegex(String lat, String lon) {
+            if (lat != null) {
+                if (!lat.matches("^\\d+.\\d+$")) {
+                    return Util.GetNearlineLocalCode.ERROR_PARAMETER_LAT_MALFORMED;
+                }
+            } else {
+                return Util.GetNearlineLocalCode.ERROR_PARAMETER_LAT_MISSING;
+            }
+            if (lon != null) {
+                if (!lon.matches("^\\d+.\\d+$")) {
+                    return Util.GetNearlineLocalCode.ERROR_PARAMETER_LON_MALFORMED;
+                }
+            } else {
+                return Util.GetNearlineLocalCode.ERROR_PARAMETER_LON_MISSING;
+            }
             return null;
         }
 
         @Override
-        public Util.GetNoticeLocalCode get_notice_parameter_regex() {
+        public void GetNearlineResponse(JSONObject jsonObject, PayloadResponseCallback cb) {
+            try {
+                String version = jsonObject.getString("version");
+                String uri = jsonObject.getString("uri");
+                String code = jsonObject.getString("code");
+                String message = jsonObject.getString("message");
+
+                Util.GlobalCode globalCode = Util.GlobalCodeReverseLookupTable(code);
+                if (globalCode != null) {
+                    if (globalCode == Util.GlobalCode.SUCCESS) {
+                        cb.onSuccess(jsonObject);
+                    } else {
+                        cb.onGlobalError(globalCode);
+                    }
+                } else {
+                    Util.GetNearlineLocalCode localCode = Util.GetNearlineLocalCodeReverseLookupTable(code);
+                    if (localCode != null) {
+                        String errorMessage = Util.GetNearlineLocalCodeMessageTable(localCode);
+                        if (message.equals(errorMessage)) {
+                            cb.onLocalError(message);
+                        } else {
+                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
+                        }
+                    } else {
+                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                    }
+                }
+            } catch (JSONException e) {
+                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
+            }
+        }
+
+        @Override
+        public Util.UnsetSns_LinkLocalCode UnsetSns_LinkParameterRegex(String provider, String sns_token) {
+            if (provider != null) {
+                if (!provider.matches("^(api.twitter.com)|(graph.facebook.com)$")) {
+                    return Util.UnsetSns_LinkLocalCode.ERROR_PARAMETER_PROVIDER_MALFORMED;
+                }
+            } else {
+                return Util.UnsetSns_LinkLocalCode.ERROR_PARAMETER_PROVIDER_MISSING;
+            }
+            if (sns_token != null) {
+                if (!sns_token.matches("^[\\S]{20,4000}$")) {
+                    return Util.UnsetSns_LinkLocalCode.ERROR_PARAMETER_SNS_TOKEN_MALFORMED;
+                }
+            } else {
+                return Util.UnsetSns_LinkLocalCode.ERROR_PARAMETER_SNS_TOKEN_MISSING;
+            }
             return null;
         }
 
         @Override
-        public Util.GetNoticeLocalCode get_notice_response_regex() {
+        public void UnsetSns_LinkResponse(JSONObject jsonObject, PayloadResponseCallback cb) {
+            try {
+                String version = jsonObject.getString("version");
+                String uri = jsonObject.getString("uri");
+                String code = jsonObject.getString("code");
+                String message = jsonObject.getString("message");
+
+                Util.GlobalCode globalCode = Util.GlobalCodeReverseLookupTable(code);
+                if (globalCode != null) {
+                    if (globalCode == Util.GlobalCode.SUCCESS) {
+                        cb.onSuccess(jsonObject);
+                    } else {
+                        cb.onGlobalError(globalCode);
+                    }
+                } else {
+                    Util.UnsetSns_LinkLocalCode localCode = Util.UnsetSns_LinkLocalCodeReverseLookupTable(code);
+                    if (localCode != null) {
+                        String errorMessage = Util.UnsetSns_LinkLocalCodeMessageTable(localCode);
+                        if (message.equals(errorMessage)) {
+                            cb.onLocalError(message);
+                        } else {
+                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
+                        }
+                    } else {
+                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                    }
+                }
+            } catch (JSONException e) {
+                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
+            }
+        }
+
+        @Override
+        public Util.UnsetFollowLocalCode UnsetFollowParameterRegex(String user_id) {
+            if (user_id != null) {
+                if (!user_id.matches("^\\d+$")) {
+                    return Util.UnsetFollowLocalCode.ERROR_PARAMETER_USER_ID_MALFORMED;
+                }
+            } else {
+                return Util.UnsetFollowLocalCode.ERROR_PARAMETER_USER_ID_MISSING;
+            }
             return null;
         }
 
         @Override
-        public Util.GetNearLocalCode get_near_parameter_regex(double lon, double lat) {
+        public void UnsetFollowResponse(JSONObject jsonObject, PayloadResponseCallback cb) {
+            try {
+                String version = jsonObject.getString("version");
+                String uri = jsonObject.getString("uri");
+                String code = jsonObject.getString("code");
+                String message = jsonObject.getString("message");
+
+                Util.GlobalCode globalCode = Util.GlobalCodeReverseLookupTable(code);
+                if (globalCode != null) {
+                    if (globalCode == Util.GlobalCode.SUCCESS) {
+                        cb.onSuccess(jsonObject);
+                    } else {
+                        cb.onGlobalError(globalCode);
+                    }
+                } else {
+                    Util.UnsetFollowLocalCode localCode = Util.UnsetFollowLocalCodeReverseLookupTable(code);
+                    if (localCode != null) {
+                        String errorMessage = Util.UnsetFollowLocalCodeMessageTable(localCode);
+                        if (message.equals(errorMessage)) {
+                            cb.onLocalError(message);
+                        } else {
+                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
+                        }
+                    } else {
+                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                    }
+                }
+            } catch (JSONException e) {
+                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
+            }
+        }
+
+        @Override
+        public Util.UnsetPostLocalCode UnsetPostParameterRegex(String post_id) {
+            if (post_id != null) {
+                if (!post_id.matches("^\\d+$")) {
+                    return Util.UnsetPostLocalCode.ERROR_PARAMETER_POST_ID_MALFORMED;
+                }
+            } else {
+                return Util.UnsetPostLocalCode.ERROR_PARAMETER_POST_ID_MISSING;
+            }
             return null;
         }
 
         @Override
-        public Util.GetNearLocalCode get_near_response_regex() {
+        public void UnsetPostResponse(JSONObject jsonObject, PayloadResponseCallback cb) {
+            try {
+                String version = jsonObject.getString("version");
+                String uri = jsonObject.getString("uri");
+                String code = jsonObject.getString("code");
+                String message = jsonObject.getString("message");
+
+                Util.GlobalCode globalCode = Util.GlobalCodeReverseLookupTable(code);
+                if (globalCode != null) {
+                    if (globalCode == Util.GlobalCode.SUCCESS) {
+                        cb.onSuccess(jsonObject);
+                    } else {
+                        cb.onGlobalError(globalCode);
+                    }
+                } else {
+                    Util.UnsetPostLocalCode localCode = Util.UnsetPostLocalCodeReverseLookupTable(code);
+                    if (localCode != null) {
+                        String errorMessage = Util.UnsetPostLocalCodeMessageTable(localCode);
+                        if (message.equals(errorMessage)) {
+                            cb.onLocalError(message);
+                        } else {
+                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
+                        }
+                    } else {
+                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                    }
+                }
+            } catch (JSONException e) {
+                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
+            }
+        }
+
+        @Override
+        public Util.UnsetDeviceLocalCode UnsetDeviceParameterRegex(String device_token) {
+            if (device_token != null) {
+                if (!device_token.matches("^([a-f0-9]{64})|([a-zA-Z0-9:_-]{140,250})$")) {
+                    return Util.UnsetDeviceLocalCode.ERROR_PARAMETER_DEVICE_TOKEN_MALFORMED;
+                }
+            } else {
+                return Util.UnsetDeviceLocalCode.ERROR_PARAMETER_DEVICE_TOKEN_MISSING;
+            }
             return null;
         }
 
         @Override
-        public Util.GetHeatmapLocalCode get_heatmap_parameter_regex() {
+        public void UnsetDeviceResponse(JSONObject jsonObject, PayloadResponseCallback cb) {
+            try {
+                String version = jsonObject.getString("version");
+                String uri = jsonObject.getString("uri");
+                String code = jsonObject.getString("code");
+                String message = jsonObject.getString("message");
+
+                Util.GlobalCode globalCode = Util.GlobalCodeReverseLookupTable(code);
+                if (globalCode != null) {
+                    if (globalCode == Util.GlobalCode.SUCCESS) {
+                        cb.onSuccess(jsonObject);
+                    } else {
+                        cb.onGlobalError(globalCode);
+                    }
+                } else {
+                    Util.UnsetDeviceLocalCode localCode = Util.UnsetDeviceLocalCodeReverseLookupTable(code);
+                    if (localCode != null) {
+                        String errorMessage = Util.UnsetDeviceLocalCodeMessageTable(localCode);
+                        if (message.equals(errorMessage)) {
+                            cb.onLocalError(message);
+                        } else {
+                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
+                        }
+                    } else {
+                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                    }
+                }
+            } catch (JSONException e) {
+                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
+            }
+        }
+
+        @Override
+        public Util.UnsetWantLocalCode UnsetWantParameterRegex(String rest_id) {
+            if (rest_id != null) {
+                if (!rest_id.matches("^\\d+$")) {
+                    return Util.UnsetWantLocalCode.ERROR_PARAMETER_REST_ID_MALFORMED;
+                }
+            } else {
+                return Util.UnsetWantLocalCode.ERROR_PARAMETER_REST_ID_MISSING;
+            }
             return null;
         }
 
         @Override
-        public Util.GetHeatmapLocalCode get_heatmap_response_regex() {
-            return null;
+        public void UnsetWantResponse(JSONObject jsonObject, PayloadResponseCallback cb) {
+            try {
+                String version = jsonObject.getString("version");
+                String uri = jsonObject.getString("uri");
+                String code = jsonObject.getString("code");
+                String message = jsonObject.getString("message");
+
+                Util.GlobalCode globalCode = Util.GlobalCodeReverseLookupTable(code);
+                if (globalCode != null) {
+                    if (globalCode == Util.GlobalCode.SUCCESS) {
+                        cb.onSuccess(jsonObject);
+                    } else {
+                        cb.onGlobalError(globalCode);
+                    }
+                } else {
+                    Util.UnsetWantLocalCode localCode = Util.UnsetWantLocalCodeReverseLookupTable(code);
+                    if (localCode != null) {
+                        String errorMessage = Util.UnsetWantLocalCodeMessageTable(localCode);
+                        if (message.equals(errorMessage)) {
+                            cb.onLocalError(message);
+                        } else {
+                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
+                        }
+                    } else {
+                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                    }
+                }
+            } catch (JSONException e) {
+                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
+            }
         }
 
         @Override
-        public Util.PostRegisterDeviceTokenLocalCode post_register_device_token_parameter_regex(String device_token, String os, String ver, String model) {
-            return null;
-        }
-
-        @Override
-        public Util.PostRegisterDeviceTokenLocalCode post_register_device_token_response_regex() {
-            return null;
-        }
-
-        @Override
-        public Util.PostUnregisterDeviceTokenLocalCode post_unregister_device_token_parameter_regex(String device_token) {
-            return null;
-        }
-
-        @Override
-        public Util.PostUnregisterDeviceTokenLocalCode post_unregister_device_token_response_regex() {
-            return null;
-        }
-
-        @Override
-        public Util.GlobalCode check_global_error() {
+        public Util.GlobalCode CheckGlobalCode() {
             if (com.inase.android.gocci.utils.Util.getConnectedState(Application_Gocci.getInstance().getApplicationContext()) == com.inase.android.gocci.utils.Util.NetworkStatus.OFF) {
                 return Util.GlobalCode.ERROR_NO_INTERNET_CONNECTION;
             }
             return Util.GlobalCode.SUCCESS;
-        }
-
-        @Override
-        public void auth_login_response(JSONObject jsonObject, LoginResponseCallback cb) {
-            try {
-                String version = jsonObject.getString("version");
-                String uri = jsonObject.getString("uri");
-                String code = jsonObject.getString("code");
-                String message = jsonObject.getString("message");
-
-                Util.GlobalCode globalCode = Util.globalErrorReverseLookupTable(code);
-                if (globalCode != null) {
-                    //GlobalCodeにヒット && LocalCodeではない
-                    if (globalCode == Util.GlobalCode.SUCCESS) {
-                        //成功
-                        JSONObject payload = jsonObject.getJSONObject("payload");
-                        String user_id = payload.getString("user_id");
-                        String username = payload.getString("username");
-                        String profile_img = payload.getString("profile_img");
-                        String badge_num = payload.getString("badge_num");
-                        String cognito_token = payload.getString("cognito_token");
-
-                        Util.AuthLoginLocalCode localCode = auth_login_response_regex(user_id, username, profile_img, badge_num, cognito_token);
-                        if (localCode == null) {
-                            //エラーなし
-                            Application_Gocci.GuestInit(Application_Gocci.getInstance().getApplicationContext(), SavedData.getIdentityId(Application_Gocci.getInstance().getApplicationContext()), cognito_token, user_id);
-                            SavedData.setWelcome(Application_Gocci.getInstance().getApplicationContext(), username, profile_img, user_id, Integer.parseInt(badge_num));
-                            cb.onSuccess();
-                        } else {
-                            //LocalCodeエラー
-                            String errorMessage = Util.authLoginLocalErrorMessageTable(localCode);
-                            cb.onLocalError(errorMessage);
-                        }
-                    } else {
-                        cb.onGlobalError(globalCode);
-                    }
-                } else {
-                    Util.AuthLoginLocalCode localCode = Util.authLoginLocalErrorReverseLookupTable(code);
-                    if (localCode != null) {
-                        String errorMessage = Util.authLoginLocalErrorMessageTable(localCode);
-                        if (message.equals(errorMessage)) {
-                            cb.onLocalError(message);
-                        } else {
-                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
-                        }
-                    } else {
-                        //ハンドリング不可　致命的バグ
-                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                    }
-                }
-            } catch (JSONException e) {
-                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
-            }
-        }
-
-        @Override
-        public void auth_signup_response(JSONObject jsonObject, AuthResponseCallback cb) {
-            try {
-                String version = jsonObject.getString("version");
-                String uri = jsonObject.getString("uri");
-                String code = jsonObject.getString("code");
-                String message = jsonObject.getString("message");
-
-                Util.GlobalCode globalCode = Util.globalErrorReverseLookupTable(code);
-                if (globalCode != null) {
-                    //GlobalCodeにヒット && LocalCodeではない
-                    if (globalCode == Util.GlobalCode.SUCCESS) {
-                        //成功
-                        JSONObject payload = jsonObject.getJSONObject("payload");
-                        String identity_id = payload.getString("identity_id");
-
-                        Util.AuthSignupLocalCode localCode = auth_signup_response_regex(identity_id);
-                        if (localCode == null) {
-                            //エラーなし
-                            cb.onSuccess(identity_id);
-                        } else {
-                            //LocalCodeエラー
-                            String errorMessage = Util.authSignupLocalErrorMessageTable(localCode);
-                            cb.onLocalError(errorMessage);
-                        }
-                    } else {
-                        cb.onGlobalError(globalCode);
-                    }
-                } else {
-                    Util.AuthSignupLocalCode localCode = Util.authSignupLocalErrorReverseLookupTable(code);
-                    if (localCode != null) {
-                        String errorMessage = Util.authSignupLocalErrorMessageTable(localCode);
-                        if (message.equals(errorMessage)) {
-                            cb.onLocalError(message);
-                        } else {
-                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
-                        }
-                    } else {
-                        //ハンドリング不可　致命的バグ
-                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                    }
-                }
-            } catch (JSONException e) {
-                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
-            }
-        }
-
-        @Override
-        public void auth_pass_login_response(JSONObject jsonObject, AuthResponseCallback cb) {
-            try {
-                String version = jsonObject.getString("version");
-                String uri = jsonObject.getString("uri");
-                String code = jsonObject.getString("code");
-                String message = jsonObject.getString("message");
-
-                Util.GlobalCode globalCode = Util.globalErrorReverseLookupTable(code);
-                if (globalCode != null) {
-                    //GlobalCodeにヒット && LocalCodeではない
-                    if (globalCode == Util.GlobalCode.SUCCESS) {
-                        //成功
-                        JSONObject payload = jsonObject.getJSONObject("payload");
-                        String identity_id = payload.getString("identity_id");
-
-                        Util.AuthPassLoginLocalCode localCode = auth_pass_login_response_regex(identity_id);
-                        if (localCode == null) {
-                            //エラーなし
-                            cb.onSuccess(identity_id);
-                        } else {
-                            //LocalCodeエラー
-                            String errorMessage = Util.authPassLoginLocalErrorMessageTable(localCode);
-                            cb.onLocalError(errorMessage);
-                        }
-                    } else {
-                        cb.onGlobalError(globalCode);
-                    }
-                } else {
-                    Util.AuthPassLoginLocalCode localCode = Util.authPassLoginLocalErrorReverseLookupTable(code);
-                    if (localCode != null) {
-                        String errorMessage = Util.authPassLoginLocalErrorMessageTable(localCode);
-                        if (message.equals(errorMessage)) {
-                            cb.onLocalError(message);
-                        } else {
-                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
-                        }
-                    } else {
-                        //ハンドリング不可　致命的バグ
-                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                    }
-                }
-            } catch (JSONException e) {
-                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
-            }
-        }
-
-        @Override
-        public void post_sns_response(JSONObject jsonObject, PostResponseCallback cb) {
-            try {
-                String version = jsonObject.getString("version");
-                String uri = jsonObject.getString("uri");
-                String code = jsonObject.getString("code");
-                String message = jsonObject.getString("message");
-
-                Util.GlobalCode globalCode = Util.globalErrorReverseLookupTable(code);
-                if (globalCode != null) {
-                    //GlobalCodeにヒット && LocalCodeではない
-                    if (globalCode == Util.GlobalCode.SUCCESS) {
-                        //成功
-                        cb.onSuccess();
-                    } else {
-                        cb.onGlobalError(globalCode);
-                    }
-                } else {
-                    Util.PostSnsLinkLocalCode localCode = Util.postSnsLinkLocalErrorReverseLookupTable(code);
-                    if (localCode != null) {
-                        String errorMessage = Util.postSnsLinkLocalErrorMessageTable(localCode);
-                        if (message.equals(errorMessage)) {
-                            cb.onLocalError(message);
-                        } else {
-                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
-                        }
-                    } else {
-                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                    }
-                }
-            } catch (JSONException e) {
-                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
-            }
-        }
-
-        @Override
-        public void post_sns_unlink_response(JSONObject jsonObject, PostResponseCallback cb) {
-            try {
-                String version = jsonObject.getString("version");
-                String uri = jsonObject.getString("uri");
-                String code = jsonObject.getString("code");
-                String message = jsonObject.getString("message");
-
-                Util.GlobalCode globalCode = Util.globalErrorReverseLookupTable(code);
-                if (globalCode != null) {
-                    //GlobalCodeにヒット && LocalCodeではない
-                    if (globalCode == Util.GlobalCode.SUCCESS) {
-                        //成功
-                        cb.onSuccess();
-                    } else {
-                        cb.onGlobalError(globalCode);
-                    }
-                } else {
-                    Util.PostSnsUnlinkLocalCode localCode = Util.postSnsUnlinkLocalErrorReverseLookupTable(code);
-                    if (localCode != null) {
-                        String errorMessage = Util.postSnsUnlinkLocalErrorMessageTable(localCode);
-                        if (message.equals(errorMessage)) {
-                            cb.onLocalError(message);
-                        } else {
-                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
-                        }
-                    } else {
-                        //ハンドリング不可　致命的バグ
-                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                    }
-                }
-            } catch (JSONException e) {
-                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
-            }
-        }
-
-        @Override
-        public void post_gochi_response(JSONObject jsonObject, PostResponseCallback cb) {
-            try {
-                String version = jsonObject.getString("version");
-                String uri = jsonObject.getString("uri");
-                String code = jsonObject.getString("code");
-                String message = jsonObject.getString("message");
-
-                Util.GlobalCode globalCode = Util.globalErrorReverseLookupTable(code);
-                if (globalCode != null) {
-                    //GlobalCodeにヒット && LocalCodeではない
-                    if (globalCode == Util.GlobalCode.SUCCESS) {
-                        //成功
-                        cb.onSuccess();
-                    } else {
-                        cb.onGlobalError(globalCode);
-                    }
-                } else {
-                    Util.PostGochiLocalCode localCode = Util.postGochiLocalErrorReverseLookupTable(code);
-                    if (localCode != null) {
-                        String errorMessage = Util.postGochiLocalErrorMessageTable(localCode);
-                        if (message.equals(errorMessage)) {
-                            cb.onLocalError(message);
-                        } else {
-                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
-                        }
-                    } else {
-                        //ハンドリング不可　致命的バグ
-                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                    }
-                }
-            } catch (JSONException e) {
-                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
-            }
-        }
-
-        @Override
-        public void post_delete_response(JSONObject jsonObject, PostResponseCallback cb) {
-            try {
-                String version = jsonObject.getString("version");
-                String uri = jsonObject.getString("uri");
-                String code = jsonObject.getString("code");
-                String message = jsonObject.getString("message");
-
-                Util.GlobalCode globalCode = Util.globalErrorReverseLookupTable(code);
-                if (globalCode != null) {
-                    //GlobalCodeにヒット && LocalCodeではない
-                    if (globalCode == Util.GlobalCode.SUCCESS) {
-                        //成功
-                        cb.onSuccess();
-                    } else {
-                        cb.onGlobalError(globalCode);
-                    }
-                } else {
-                    Util.PostDeleteLocalCode localCode = Util.postDeleteLocalErrorReverseLookupTable(code);
-                    if (localCode != null) {
-                        String errorMessage = Util.postDeleteLocalErrorMessageTable(localCode);
-                        if (message.equals(errorMessage)) {
-                            cb.onLocalError(message);
-                        } else {
-                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
-                        }
-                    } else {
-                        //ハンドリング不可　致命的バグ
-                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                    }
-                }
-            } catch (JSONException e) {
-                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
-            }
-        }
-
-        @Override
-        public void post_block_response(JSONObject jsonObject, PostResponseCallback cb) {
-            try {
-                String version = jsonObject.getString("version");
-                String uri = jsonObject.getString("uri");
-                String code = jsonObject.getString("code");
-                String message = jsonObject.getString("message");
-
-                Util.GlobalCode globalCode = Util.globalErrorReverseLookupTable(code);
-                if (globalCode != null) {
-                    //GlobalCodeにヒット && LocalCodeではない
-                    if (globalCode == Util.GlobalCode.SUCCESS) {
-                        //成功
-                        cb.onSuccess();
-                    } else {
-                        cb.onGlobalError(globalCode);
-                    }
-                } else {
-                    Util.PostBlockLocalCode localCode = Util.postBlockLocalErrorReverseLookupTable(code);
-                    if (localCode != null) {
-                        String errorMessage = Util.postBlockLocalErrorMessageTable(localCode);
-                        if (message.equals(errorMessage)) {
-                            cb.onLocalError(message);
-                        } else {
-                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
-                        }
-                    } else {
-                        //ハンドリング不可　致命的バグ
-                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                    }
-                }
-            } catch (JSONException e) {
-                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
-            }
-        }
-
-        @Override
-        public void post_follow_response(JSONObject jsonObject, PostResponseCallback cb) {
-            try {
-                String version = jsonObject.getString("version");
-                String uri = jsonObject.getString("uri");
-                String code = jsonObject.getString("code");
-                String message = jsonObject.getString("message");
-
-                Util.GlobalCode globalCode = Util.globalErrorReverseLookupTable(code);
-                if (globalCode != null) {
-                    //GlobalCodeにヒット && LocalCodeではない
-                    if (globalCode == Util.GlobalCode.SUCCESS) {
-                        //成功
-                        cb.onSuccess();
-                    } else {
-                        cb.onGlobalError(globalCode);
-                    }
-                } else {
-                    Util.PostFollowLocalCode localCode = Util.postFollowLocalErrorReverseLookupTable(code);
-                    if (localCode != null) {
-                        String errorMessage = Util.postFollowLocalErrorMessageTable(localCode);
-                        if (message.equals(errorMessage)) {
-                            cb.onLocalError(message);
-                        } else {
-                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
-                        }
-                    } else {
-                        //ハンドリング不可　致命的バグ
-                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                    }
-                }
-            } catch (JSONException e) {
-                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
-            }
-        }
-
-        @Override
-        public void post_unFollow_response(JSONObject jsonObject, PostResponseCallback cb) {
-            try {
-                String version = jsonObject.getString("version");
-                String uri = jsonObject.getString("uri");
-                String code = jsonObject.getString("code");
-                String message = jsonObject.getString("message");
-
-                Util.GlobalCode globalCode = Util.globalErrorReverseLookupTable(code);
-                if (globalCode != null) {
-                    //GlobalCodeにヒット && LocalCodeではない
-                    if (globalCode == Util.GlobalCode.SUCCESS) {
-                        //成功
-                        cb.onSuccess();
-                    } else {
-                        cb.onGlobalError(globalCode);
-                    }
-                } else {
-                    Util.PostUnfollowLocalCode localCode = Util.postUnfollowLocalErrorReverseLookupTable(code);
-                    if (localCode != null) {
-                        String errorMessage = Util.postUnfollowLocalErrorMessageTable(localCode);
-                        if (message.equals(errorMessage)) {
-                            cb.onLocalError(message);
-                        } else {
-                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
-                        }
-                    } else {
-                        //ハンドリング不可　致命的バグ
-                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                    }
-                }
-            } catch (JSONException e) {
-                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
-            }
-        }
-
-        @Override
-        public void post_feedback_response(JSONObject jsonObject, PostResponseCallback cb) {
-            try {
-                String version = jsonObject.getString("version");
-                String uri = jsonObject.getString("uri");
-                String code = jsonObject.getString("code");
-                String message = jsonObject.getString("message");
-
-                Util.GlobalCode globalCode = Util.globalErrorReverseLookupTable(code);
-                if (globalCode != null) {
-                    //GlobalCodeにヒット && LocalCodeではない
-                    if (globalCode == Util.GlobalCode.SUCCESS) {
-                        //成功
-                        cb.onSuccess();
-                    } else {
-                        cb.onGlobalError(globalCode);
-                    }
-                } else {
-                    Util.PostFeedbackLocalCode localCode = Util.postFeedbackLocalErrorReverseLookupTable(code);
-                    if (localCode != null) {
-                        String errorMessage = Util.postFeedbackLocalErrorMessageTable(localCode);
-                        if (message.equals(errorMessage)) {
-                            cb.onLocalError(message);
-                        } else {
-                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
-                        }
-                    } else {
-                        //ハンドリング不可　致命的バグ
-                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                    }
-                }
-            } catch (JSONException e) {
-                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
-            }
-        }
-
-        @Override
-        public void post_password_response(JSONObject jsonObject, PostResponseCallback cb) {
-            try {
-                String version = jsonObject.getString("version");
-                String uri = jsonObject.getString("uri");
-                String code = jsonObject.getString("code");
-                String message = jsonObject.getString("message");
-
-                Util.GlobalCode globalCode = Util.globalErrorReverseLookupTable(code);
-                if (globalCode != null) {
-                    //GlobalCodeにヒット && LocalCodeではない
-                    if (globalCode == Util.GlobalCode.SUCCESS) {
-                        //成功
-                        cb.onSuccess();
-                    } else {
-                        cb.onGlobalError(globalCode);
-                    }
-                } else {
-                    Util.PostPasswordLocalCode localCode = Util.postPasswordLocalErrorReverseLookupTable(code);
-                    if (localCode != null) {
-                        String errorMessage = Util.postPasswordLocalErrorMessageTable(localCode);
-                        if (message.equals(errorMessage)) {
-                            cb.onLocalError(message);
-                        } else {
-                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
-                        }
-                    } else {
-                        //ハンドリング不可　致命的バグ
-                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                    }
-                }
-            } catch (JSONException e) {
-                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
-            }
-        }
-
-        @Override
-        public void post_comment_response(JSONObject jsonObject, PostResponseCallback cb) {
-            try {
-                String version = jsonObject.getString("version");
-                String uri = jsonObject.getString("uri");
-                String code = jsonObject.getString("code");
-                String message = jsonObject.getString("message");
-
-                Util.GlobalCode globalCode = Util.globalErrorReverseLookupTable(code);
-                if (globalCode != null) {
-                    //GlobalCodeにヒット && LocalCodeではない
-                    if (globalCode == Util.GlobalCode.SUCCESS) {
-                        //成功
-                        cb.onSuccess();
-                    } else {
-                        cb.onGlobalError(globalCode);
-                    }
-                } else {
-                    Util.PostCommentLocalCode localCode = Util.postCommentLocalErrorReverseLookupTable(code);
-                    if (localCode != null) {
-                        String errorMessage = Util.postCommentLocalErrorMessageTable(localCode);
-                        if (message.equals(errorMessage)) {
-                            cb.onLocalError(message);
-                        } else {
-                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
-                        }
-                    } else {
-                        //ハンドリング不可　致命的バグ
-                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                    }
-                }
-            } catch (JSONException e) {
-                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
-            }
-        }
-
-        @Override
-        public void post_post_response(JSONObject jsonObject, PostResponseCallback cb) {
-            try {
-                String version = jsonObject.getString("version");
-                String uri = jsonObject.getString("uri");
-                String code = jsonObject.getString("code");
-                String message = jsonObject.getString("message");
-
-                Util.GlobalCode globalCode = Util.globalErrorReverseLookupTable(code);
-                if (globalCode != null) {
-                    //GlobalCodeにヒット && LocalCodeではない
-                    if (globalCode == Util.GlobalCode.SUCCESS) {
-                        //成功
-                        cb.onSuccess();
-                    } else {
-                        cb.onGlobalError(globalCode);
-                    }
-                } else {
-                    Util.PostPostLocalCode localCode = Util.postPostLocalErrorReverseLookupTable(code);
-                    if (localCode != null) {
-                        String errorMessage = Util.postPostLocalErrorMessageTable(localCode);
-                        if (message.equals(errorMessage)) {
-                            cb.onLocalError(message);
-                        } else {
-                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
-                        }
-                    } else {
-                        //ハンドリング不可　致命的バグ
-                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                    }
-                }
-            } catch (JSONException e) {
-                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
-            }
-        }
-
-        @Override
-        public void post_restadd_response(JSONObject jsonObject, PostRestAddResponseCallback cb) {
-            try {
-                String version = jsonObject.getString("version");
-                String uri = jsonObject.getString("uri");
-                String code = jsonObject.getString("code");
-                String message = jsonObject.getString("message");
-
-                Util.GlobalCode globalCode = Util.globalErrorReverseLookupTable(code);
-                if (globalCode != null) {
-                    //GlobalCodeにヒット && LocalCodeではない
-                    if (globalCode == Util.GlobalCode.SUCCESS) {
-                        //成功
-                        JSONObject payload = jsonObject.getJSONObject("payload");
-                        String rest_id = payload.getString("rest_id");
-
-                        Util.PostRestAddLocalCode localCode = post_restadd_response_regex();
-                        if (localCode == null) {
-                            //エラーなし
-                            cb.onSuccess(rest_id);
-                        } else {
-                            //LocalCodeエラー
-                            String errorMessage = Util.postRestAddLocalErrorMessageTable(localCode);
-                            cb.onLocalError(errorMessage);
-                        }
-                    } else {
-                        cb.onGlobalError(globalCode);
-                    }
-                } else {
-                    Util.PostRestAddLocalCode localCode = Util.postRestAddLocalErrorReverseLookupTable(code);
-                    if (localCode != null) {
-                        String errorMessage = Util.postRestAddLocalErrorMessageTable(localCode);
-                        if (message.equals(errorMessage)) {
-                            cb.onLocalError(message);
-                        } else {
-                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
-                        }
-                    } else {
-                        //ハンドリング不可　致命的バグ
-                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                    }
-                }
-            } catch (JSONException e) {
-                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
-            }
-        }
-
-        @Override
-        public void post_username_response(JSONObject jsonObject, PostResponseCallback cb) {
-            try {
-                String version = jsonObject.getString("version");
-                String uri = jsonObject.getString("uri");
-                String code = jsonObject.getString("code");
-                String message = jsonObject.getString("message");
-
-                Util.GlobalCode globalCode = Util.globalErrorReverseLookupTable(code);
-                if (globalCode != null) {
-                    //GlobalCodeにヒット && LocalCodeではない
-                    if (globalCode == Util.GlobalCode.SUCCESS) {
-                        //成功
-                        JSONObject payload = jsonObject.getJSONObject("payload");
-                        String username = payload.getString("username");
-
-                        Util.PostUsernameLocalCode localCode = post_username_response_regex(username);
-                        if (localCode == null) {
-                            //エラーなし
-                            SavedData.setServerName(Application_Gocci.getInstance().getApplicationContext(), username);
-                            cb.onSuccess();
-                        } else {
-                            //LocalCodeエラー
-                            String errorMessage = Util.postUsernameLocalErrorMessageTable(localCode);
-                            cb.onLocalError(errorMessage);
-                        }
-                    } else {
-                        cb.onGlobalError(globalCode);
-                    }
-                } else {
-                    Util.PostUsernameLocalCode localCode = Util.postUsernameLocalErrorReverseLookupTable(code);
-                    if (localCode != null) {
-                        String errorMessage = Util.postUsernameLocalErrorMessageTable(localCode);
-                        if (message.equals(errorMessage)) {
-                            cb.onLocalError(message);
-                        } else {
-                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
-                        }
-                    } else {
-                        //ハンドリング不可　致命的バグ
-                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                    }
-                }
-            } catch (JSONException e) {
-                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
-            }
-        }
-
-        @Override
-        public void post_profileImg_response(JSONObject jsonObject, PostResponseCallback cb) {
-            try {
-                String version = jsonObject.getString("version");
-                String uri = jsonObject.getString("uri");
-                String code = jsonObject.getString("code");
-                String message = jsonObject.getString("message");
-
-                Util.GlobalCode globalCode = Util.globalErrorReverseLookupTable(code);
-                if (globalCode != null) {
-                    //GlobalCodeにヒット && LocalCodeではない
-                    if (globalCode == Util.GlobalCode.SUCCESS) {
-                        //成功
-                        JSONObject payload = jsonObject.getJSONObject("payload");
-                        String profile_img = payload.getString("profile_img");
-
-                        Util.PostProfileImgLocalCode localCode = post_profileImg_parameter_regex();
-                        if (localCode == null) {
-                            //エラーなし
-                            SavedData.setServerPicture(Application_Gocci.getInstance().getApplicationContext(), profile_img);
-                            cb.onSuccess();
-                        } else {
-                            //LocalCodeエラー
-                            String errorMessage = Util.postProfileImgLocalErrorMessageTable(localCode);
-                            cb.onLocalError(errorMessage);
-                        }
-                    } else {
-                        cb.onGlobalError(globalCode);
-                    }
-                } else {
-                    Util.PostProfileImgLocalCode localCode = Util.postProfileImgLocalErrorReverseLookupTable(code);
-                    if (localCode != null) {
-                        String errorMessage = Util.postProfileImgLocalErrorMessageTable(localCode);
-                        if (message.equals(errorMessage)) {
-                            cb.onLocalError(message);
-                        } else {
-                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
-                        }
-                    } else {
-                        //ハンドリング不可　致命的バグ
-                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                    }
-                }
-            } catch (JSONException e) {
-                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
-            }
-        }
-
-        @Override
-        public void get_timeline_response(JSONObject jsonObject, GetPostdataResponseCallback cb) {
-            try {
-                String version = jsonObject.getString("version");
-                String uri = jsonObject.getString("uri");
-                String code = jsonObject.getString("code");
-                String message = jsonObject.getString("message");
-
-                Util.GlobalCode globalCode = Util.globalErrorReverseLookupTable(code);
-                if (globalCode != null) {
-                    //GlobalCodeにヒット && LocalCodeではない
-                    if (globalCode == Util.GlobalCode.SUCCESS) {
-                        //成功
-                        final ArrayList<TwoCellData> mPostData = new ArrayList<>();
-                        final ArrayList<String> mPost_Ids = new ArrayList<>();
-
-                        JSONArray payload = jsonObject.getJSONArray("payload");
-                        if (payload.length() != 0) {
-                            for (int i = 0; i < payload.length(); i++) {
-                                JSONObject postdata = payload.getJSONObject(i);
-                                mPostData.add(TwoCellData.createPostData(postdata));
-                                mPost_Ids.add(postdata.getString("post_id"));
-                            }
-                            cb.onSuccess(mPostData, mPost_Ids);
-                        } else {
-                            cb.onEmpty();
-                        }
-                    } else {
-                        cb.onGlobalError(globalCode);
-                    }
-                } else {
-                    Util.GetTimelineLocalCode localCode = Util.getTimelineLocalErrorReverseLookupTable(code);
-                    if (localCode != null) {
-                        String errorMessage = Util.getTimelineLocalErrorMessageTable(localCode);
-                        if (message.equals(errorMessage)) {
-                            cb.onLocalError(message);
-                        } else {
-                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
-                        }
-                    } else {
-                        //ハンドリング不可　致命的バグ
-                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                    }
-                }
-            } catch (JSONException e) {
-                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
-            }
-        }
-
-        @Override
-        public void get_user_response(JSONObject jsonObject, GetUserAndRestResponseCallback cb) {
-            try {
-                String version = jsonObject.getString("version");
-                String uri = jsonObject.getString("uri");
-                String code = jsonObject.getString("code");
-                String message = jsonObject.getString("message");
-
-                Util.GlobalCode globalCode = Util.globalErrorReverseLookupTable(code);
-                if (globalCode != null) {
-                    //GlobalCodeにヒット && LocalCodeではない
-                    if (globalCode == Util.GlobalCode.SUCCESS) {
-                        //成功
-                        final ArrayList<PostData> mPostData = new ArrayList<>();
-                        final ArrayList<String> mPost_Ids = new ArrayList<>();
-
-                        JSONObject payload = jsonObject.getJSONObject("payload");
-                        JSONObject user = payload.getJSONObject("user");
-
-                        HeaderData headerData = HeaderData.createUserHeaderData(user);
-
-                        JSONArray posts = payload.getJSONArray("posts");
-                        if (posts.length() != 0) {
-                            for (int i = 0; i < posts.length(); i++) {
-                                JSONObject postdata = posts.getJSONObject(i);
-                                mPostData.add(PostData.createUserPostData(postdata));
-                                mPost_Ids.add(postdata.getString("post_id"));
-                            }
-                            cb.onSuccess(headerData, mPostData, mPost_Ids);
-                        } else {
-                            cb.onEmpty(headerData);
-                        }
-                    } else {
-                        cb.onGlobalError(globalCode);
-                    }
-                } else {
-                    Util.GetUserLocalCode localCode = Util.getUserLocalErrorReverseLookupTable(code);
-                    if (localCode != null) {
-                        String errorMessage = Util.getUserLocalErrorMessageTable(localCode);
-                        if (message.equals(errorMessage)) {
-                            cb.onLocalError(message);
-                        } else {
-                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
-                        }
-                    } else {
-                        //ハンドリング不可　致命的バグ
-                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                    }
-                }
-            } catch (JSONException e) {
-                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
-            }
-        }
-
-        @Override
-        public void get_rest_response(JSONObject jsonObject, GetUserAndRestResponseCallback cb) {
-            try {
-                String version = jsonObject.getString("version");
-                String uri = jsonObject.getString("uri");
-                String code = jsonObject.getString("code");
-                String message = jsonObject.getString("message");
-
-                Util.GlobalCode globalCode = Util.globalErrorReverseLookupTable(code);
-                if (globalCode != null) {
-                    //GlobalCodeにヒット && LocalCodeではない
-                    if (globalCode == Util.GlobalCode.SUCCESS) {
-                        //成功
-                        final ArrayList<PostData> mPostData = new ArrayList<>();
-                        final ArrayList<String> mPost_Ids = new ArrayList<>();
-
-                        JSONObject payload = jsonObject.getJSONObject("payload");
-                        JSONObject user = payload.getJSONObject("rest");
-
-                        HeaderData headerData = HeaderData.createTenpoHeaderData(user);
-
-                        JSONArray posts = payload.getJSONArray("posts");
-                        if (posts.length() != 0) {
-                            for (int i = 0; i < posts.length(); i++) {
-                                JSONObject postdata = posts.getJSONObject(i);
-                                mPostData.add(PostData.createRestPostData(postdata));
-                                mPost_Ids.add(postdata.getString("post_id"));
-                            }
-                            cb.onSuccess(headerData, mPostData, mPost_Ids);
-                        } else {
-                            cb.onEmpty(headerData);
-                        }
-                    } else {
-                        cb.onGlobalError(globalCode);
-                    }
-                } else {
-                    Util.GetRestLocalCode localCode = Util.getRestLocalErrorReverseLookupTable(code);
-                    if (localCode != null) {
-                        String errorMessage = Util.getRestLocalErrorMessageTable(localCode);
-                        if (message.equals(errorMessage)) {
-                            cb.onLocalError(message);
-                        } else {
-                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
-                        }
-                    } else {
-                        //ハンドリング不可　致命的バグ
-                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                    }
-                }
-            } catch (JSONException e) {
-                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
-            }
-        }
-
-        @Override
-        public void get_comment_response(JSONObject jsonObject, GetCommentResponseCallback cb) {
-            try {
-                String version = jsonObject.getString("version");
-                String uri = jsonObject.getString("uri");
-                String code = jsonObject.getString("code");
-                String message = jsonObject.getString("message");
-
-                Util.GlobalCode globalCode = Util.globalErrorReverseLookupTable(code);
-                if (globalCode != null) {
-                    //GlobalCodeにヒット && LocalCodeではない
-                    if (globalCode == Util.GlobalCode.SUCCESS) {
-                        //成功
-                        final ArrayList<HeaderData> mCommentData = new ArrayList<>();
-
-                        JSONObject payload = jsonObject.getJSONObject("payload");
-                        JSONObject memo = payload.getJSONObject("memo");
-
-                        HeaderData headerData = HeaderData.createMemoData(memo);
-
-                        JSONArray comments = payload.getJSONArray("comments");
-                        if (comments.length() != 0) {
-                            for (int i = 0; i < comments.length(); i++) {
-                                JSONObject commentData = comments.getJSONObject(i);
-                                mCommentData.add(HeaderData.createCommentData(commentData));
-                            }
-                            cb.onSuccess(headerData, mCommentData);
-                        } else {
-                            cb.onEmpty(headerData);
-                        }
-                    } else {
-                        cb.onGlobalError(globalCode);
-                    }
-                } else {
-                    Util.GetCommentLocalCode localCode = Util.getCommentLocalErrorReverseLookupTable(code);
-                    if (localCode != null) {
-                        String errorMessage = Util.getCommentLocalErrorMessageTable(localCode);
-                        if (message.equals(errorMessage)) {
-                            cb.onLocalError(message);
-                        } else {
-                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
-                        }
-                    } else {
-                        //ハンドリング不可　致命的バグ
-                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                    }
-                }
-            } catch (JSONException e) {
-                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
-            }
-        }
-
-        @Override
-        public void get_follow_response(JSONObject jsonObject, GetListResponseCallback cb) {
-            try {
-                String version = jsonObject.getString("version");
-                String uri = jsonObject.getString("uri");
-                String code = jsonObject.getString("code");
-                String message = jsonObject.getString("message");
-
-                Util.GlobalCode globalCode = Util.globalErrorReverseLookupTable(code);
-                if (globalCode != null) {
-                    //GlobalCodeにヒット && LocalCodeではない
-                    if (globalCode == Util.GlobalCode.SUCCESS) {
-                        //成功
-                        final ArrayList<ListGetData> mListData = new ArrayList<>();
-
-                        JSONArray payload = jsonObject.getJSONArray("payload");
-                        if (payload.length() != 0) {
-                            for (int i = 0; i < payload.length(); i++) {
-                                JSONObject listData = payload.getJSONObject(i);
-                                mListData.add(ListGetData.createUserData(listData));
-                            }
-                            cb.onSuccess(mListData);
-                        } else {
-                            cb.onEmpty();
-                        }
-                    } else {
-                        cb.onGlobalError(globalCode);
-                    }
-                } else {
-                    Util.GetFollowLocalCode localCode = Util.getFollowLocalErrorReverseLookupTable(code);
-                    if (localCode != null) {
-                        String errorMessage = Util.getFollowLocalErrorMessageTable(localCode);
-                        if (message.equals(errorMessage)) {
-                            cb.onLocalError(message);
-                        } else {
-                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
-                        }
-                    } else {
-                        //ハンドリング不可　致命的バグ
-                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                    }
-                }
-            } catch (JSONException e) {
-                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
-            }
-        }
-
-        @Override
-        public void get_follower_response(JSONObject jsonObject, GetListResponseCallback cb) {
-            try {
-                String version = jsonObject.getString("version");
-                String uri = jsonObject.getString("uri");
-                String code = jsonObject.getString("code");
-                String message = jsonObject.getString("message");
-
-                Util.GlobalCode globalCode = Util.globalErrorReverseLookupTable(code);
-                if (globalCode != null) {
-                    //GlobalCodeにヒット && LocalCodeではない
-                    if (globalCode == Util.GlobalCode.SUCCESS) {
-                        //成功
-                        final ArrayList<ListGetData> mListData = new ArrayList<>();
-
-                        JSONArray payload = jsonObject.getJSONArray("payload");
-                        if (payload.length() != 0) {
-                            for (int i = 0; i < payload.length(); i++) {
-                                JSONObject listData = payload.getJSONObject(i);
-                                mListData.add(ListGetData.createUserData(listData));
-                            }
-                            cb.onSuccess(mListData);
-                        } else {
-                            cb.onEmpty();
-                        }
-                    } else {
-                        cb.onGlobalError(globalCode);
-                    }
-                } else {
-                    Util.GetFollowerLocalCode localCode = Util.getFollowerLocalErrorReverseLookupTable(code);
-                    if (localCode != null) {
-                        String errorMessage = Util.getFollowerLocalErrorMessageTable(localCode);
-                        if (message.equals(errorMessage)) {
-                            cb.onLocalError(message);
-                        } else {
-                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
-                        }
-                    } else {
-                        //ハンドリング不可　致命的バグ
-                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                    }
-                }
-            } catch (JSONException e) {
-                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
-            }
-        }
-
-        @Override
-        public void get_want_response(JSONObject jsonObject, GetListResponseCallback cb) {
-            try {
-                String version = jsonObject.getString("version");
-                String uri = jsonObject.getString("uri");
-                String code = jsonObject.getString("code");
-                String message = jsonObject.getString("message");
-
-                Util.GlobalCode globalCode = Util.globalErrorReverseLookupTable(code);
-                if (globalCode != null) {
-                    //GlobalCodeにヒット && LocalCodeではない
-                    if (globalCode == Util.GlobalCode.SUCCESS) {
-                        //成功
-                        final ArrayList<ListGetData> mListData = new ArrayList<>();
-
-                        JSONArray payload = jsonObject.getJSONArray("payload");
-                        if (payload.length() != 0) {
-                            for (int i = 0; i < payload.length(); i++) {
-                                JSONObject listData = payload.getJSONObject(i);
-                                mListData.add(ListGetData.createRestData(listData));
-                            }
-                            cb.onSuccess(mListData);
-                        } else {
-                            cb.onEmpty();
-                        }
-                    } else {
-                        cb.onGlobalError(globalCode);
-                    }
-                } else {
-                    Util.GetWantLocalCode localCode = Util.getWantLocalErrorReverseLookupTable(code);
-                    if (localCode != null) {
-                        String errorMessage = Util.getWantLocalErrorMessageTable(localCode);
-                        if (message.equals(errorMessage)) {
-                            cb.onLocalError(message);
-                        } else {
-                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
-                        }
-                    } else {
-                        //ハンドリング不可　致命的バグ
-                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                    }
-                }
-            } catch (JSONException e) {
-                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
-            }
-        }
-
-        @Override
-        public void get_user_cheer_response(JSONObject jsonObject, GetListResponseCallback cb) {
-            try {
-                String version = jsonObject.getString("version");
-                String uri = jsonObject.getString("uri");
-                String code = jsonObject.getString("code");
-                String message = jsonObject.getString("message");
-
-                Util.GlobalCode globalCode = Util.globalErrorReverseLookupTable(code);
-                if (globalCode != null) {
-                    //GlobalCodeにヒット && LocalCodeではない
-                    if (globalCode == Util.GlobalCode.SUCCESS) {
-                        //成功
-                        final ArrayList<ListGetData> mListData = new ArrayList<>();
-
-                        JSONArray payload = jsonObject.getJSONArray("payload");
-                        if (payload.length() != 0) {
-                            for (int i = 0; i < payload.length(); i++) {
-                                JSONObject listData = payload.getJSONObject(i);
-                                mListData.add(ListGetData.createRestData(listData));
-                            }
-                            cb.onSuccess(mListData);
-                        } else {
-                            cb.onEmpty();
-                        }
-                    } else {
-                        cb.onGlobalError(globalCode);
-                    }
-                } else {
-                    Util.GetUserCheerLocalCode localCode = Util.getUserCheerLocalErrorReverseLookupTable(code);
-                    if (localCode != null) {
-                        String errorMessage = Util.getUserCheerLocalErrorMessageTable(localCode);
-                        if (message.equals(errorMessage)) {
-                            cb.onLocalError(message);
-                        } else {
-                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
-                        }
-                    } else {
-                        //ハンドリング不可　致命的バグ
-                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                    }
-                }
-            } catch (JSONException e) {
-                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
-            }
-        }
-
-        @Override
-        public void get_rest_cheer_response(JSONObject jsonObject, GetListResponseCallback cb) {
-            try {
-                String version = jsonObject.getString("version");
-                String uri = jsonObject.getString("uri");
-                String code = jsonObject.getString("code");
-                String message = jsonObject.getString("message");
-
-                Util.GlobalCode globalCode = Util.globalErrorReverseLookupTable(code);
-                if (globalCode != null) {
-                    //GlobalCodeにヒット && LocalCodeではない
-                    if (globalCode == Util.GlobalCode.SUCCESS) {
-                        //成功
-                        final ArrayList<ListGetData> mListData = new ArrayList<>();
-
-                        JSONArray payload = jsonObject.getJSONArray("payload");
-                        if (payload.length() != 0) {
-                            for (int i = 0; i < payload.length(); i++) {
-                                JSONObject listData = payload.getJSONObject(i);
-                                mListData.add(ListGetData.createUserData(listData));
-                            }
-                            cb.onSuccess(mListData);
-                        } else {
-                            cb.onEmpty();
-                        }
-                    } else {
-                        cb.onGlobalError(globalCode);
-                    }
-                } else {
-                    Util.GetRestCheerLocalCode localCode = Util.getRestCheerLocalErrorReverseLookupTable(code);
-                    if (localCode != null) {
-                        String errorMessage = Util.getRestCheerLocalErrorMessageTable(localCode);
-                        if (message.equals(errorMessage)) {
-                            cb.onLocalError(message);
-                        } else {
-                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
-                        }
-                    } else {
-                        //ハンドリング不可　致命的バグ
-                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                    }
-                }
-            } catch (JSONException e) {
-                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
-            }
-        }
-
-        @Override
-        public void get_notice_response(JSONObject jsonObject, GetNoticeResponseCallback cb) {
-            try {
-                String version = jsonObject.getString("version");
-                String uri = jsonObject.getString("uri");
-                String code = jsonObject.getString("code");
-                String message = jsonObject.getString("message");
-
-                Util.GlobalCode globalCode = Util.globalErrorReverseLookupTable(code);
-                if (globalCode != null) {
-                    //GlobalCodeにヒット && LocalCodeではない
-                    if (globalCode == Util.GlobalCode.SUCCESS) {
-                        //成功
-                        final ArrayList<HeaderData> mListData = new ArrayList<>();
-
-                        JSONArray payload = jsonObject.getJSONArray("payload");
-                        if (payload.length() != 0) {
-                            for (int i = 0; i < payload.length(); i++) {
-                                JSONObject listData = payload.getJSONObject(i);
-                                mListData.add(HeaderData.createNoticeHeaderData(listData));
-                            }
-                            cb.onSuccess(mListData);
-                        } else {
-                            cb.onEmpty();
-                        }
-                    } else {
-                        cb.onGlobalError(globalCode);
-                    }
-                } else {
-                    Util.GetNoticeLocalCode localCode = Util.getNoticeLocalErrorReverseLookupTable(code);
-                    if (localCode != null) {
-                        String errorMessage = Util.getNoticeLocalErrorMessageTable(localCode);
-                        if (message.equals(errorMessage)) {
-                            cb.onLocalError(message);
-                        } else {
-                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
-                        }
-                    } else {
-                        //ハンドリング不可　致命的バグ
-                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                    }
-                }
-            } catch (JSONException e) {
-                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
-            }
-        }
-
-        @Override
-        public void get_near_response(JSONObject jsonObject, GetNearResponseCallback cb) {
-            try {
-                String version = jsonObject.getString("version");
-                String uri = jsonObject.getString("uri");
-                String code = jsonObject.getString("code");
-                String message = jsonObject.getString("message");
-
-                Util.GlobalCode globalCode = Util.globalErrorReverseLookupTable(code);
-                if (globalCode != null) {
-                    //GlobalCodeにヒット && LocalCodeではない
-                    if (globalCode == Util.GlobalCode.SUCCESS) {
-                        //成功
-                        String[] restnames = new String[30];
-                        final ArrayList<String> restIdArray = new ArrayList<>();
-                        final ArrayList<String> restnameArray = new ArrayList<>();
-
-                        JSONArray payload = jsonObject.getJSONArray("payload");
-                        if (payload.length() != 0) {
-                            for (int i = 0; i < payload.length(); i++) {
-                                JSONObject listData = payload.getJSONObject(i);
-                                final String rest_name = listData.getString("restname");
-                                String rest_id = listData.getString("rest_id");
-
-                                restnames[i] = rest_name;
-                                restIdArray.add(rest_id);
-                                restnameArray.add(rest_name);
-                            }
-                            cb.onSuccess(restnames, restIdArray, restnameArray);
-                        } else {
-                            cb.onEmpty();
-                        }
-                    } else {
-                        cb.onGlobalError(globalCode);
-                    }
-                } else {
-                    Util.GetNearLocalCode localCode = Util.getNearLocalErrorReverseLookupTable(code);
-                    if (localCode != null) {
-                        String errorMessage = Util.getNearLocalErrorMessageTable(localCode);
-                        if (message.equals(errorMessage)) {
-                            cb.onLocalError(message);
-                        } else {
-                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
-                        }
-                    } else {
-                        //ハンドリング不可　致命的バグ
-                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                    }
-                }
-            } catch (JSONException e) {
-                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
-            }
-        }
-
-        @Override
-        public void get_heatmap_response(JSONObject jsonObject, GetHeatmapResponseCallback cb) {
-            try {
-                String version = jsonObject.getString("version");
-                String uri = jsonObject.getString("uri");
-                String code = jsonObject.getString("code");
-                String message = jsonObject.getString("message");
-
-                Util.GlobalCode globalCode = Util.globalErrorReverseLookupTable(code);
-                if (globalCode != null) {
-                    //GlobalCodeにヒット && LocalCodeではない
-                    if (globalCode == Util.GlobalCode.SUCCESS) {
-                        //成功
-                        final ArrayList<HeatmapLog> mListData = new ArrayList<>();
-
-                        JSONArray payload = jsonObject.getJSONArray("payload");
-                        for (int i = 0; i < payload.length(); i++) {
-                            JSONObject listData = payload.getJSONObject(i);
-                            String rest_id = listData.getString("post_rest_id");
-                            String restname = listData.getString("restname");
-                            double lat = listData.getDouble("lat");
-                            double lon = listData.getDouble("lon");
-                            mListData.add(new HeatmapLog(rest_id, restname, lat, lon));
-                        }
-                        cb.onSuccess(mListData);
-                    } else {
-                        cb.onGlobalError(globalCode);
-                    }
-                } else {
-                    Util.GetHeatmapLocalCode localCode = Util.getHeatmapLocalErrorReverseLookupTable(code);
-                    if (localCode != null) {
-                        String errorMessage = Util.getHeatmapLocalErrorMessageTable(localCode);
-                        if (message.equals(errorMessage)) {
-                            cb.onLocalError(message);
-                        } else {
-                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
-                        }
-                    } else {
-                        //ハンドリング不可　致命的バグ
-                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                    }
-                }
-            } catch (JSONException e) {
-                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
-            }
-        }
-
-        @Override
-        public void post_register_device_token_response(JSONObject jsonObject, PostResponseCallback cb) {
-            try {
-                String version = jsonObject.getString("version");
-                String uri = jsonObject.getString("uri");
-                String code = jsonObject.getString("code");
-                String message = jsonObject.getString("message");
-
-                Util.GlobalCode globalCode = Util.globalErrorReverseLookupTable(code);
-                if (globalCode != null) {
-                    //GlobalCodeにヒット && LocalCodeではない
-                    if (globalCode == Util.GlobalCode.SUCCESS) {
-                        //成功
-                        //SavedData.setRegId(Application_Gocci.getInstance().getApplicationContext(), register_id);
-                        cb.onSuccess();
-                    } else {
-                        cb.onGlobalError(globalCode);
-                    }
-                } else {
-                    Util.PostRegisterDeviceTokenLocalCode localCode = Util.postRegisterDeviceTokenLocalErrorReverseLookupTable(code);
-                    if (localCode != null) {
-                        String errorMessage = Util.postRegisterDeviceTokenLocalErrorMessageTable(localCode);
-                        if (message.equals(errorMessage)) {
-                            cb.onLocalError(message);
-                        } else {
-                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
-                        }
-                    } else {
-                        //ハンドリング不可　致命的バグ
-                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                    }
-                }
-            } catch (JSONException e) {
-                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
-            }
-        }
-
-        @Override
-        public void post_unregister_device_token_response(JSONObject jsonObject, PostResponseCallback cb) {
-            try {
-                String version = jsonObject.getString("version");
-                String uri = jsonObject.getString("uri");
-                String code = jsonObject.getString("code");
-                String message = jsonObject.getString("message");
-
-                Util.GlobalCode globalCode = Util.globalErrorReverseLookupTable(code);
-                if (globalCode != null) {
-                    //GlobalCodeにヒット && LocalCodeではない
-                    if (globalCode == Util.GlobalCode.SUCCESS) {
-                        //成功
-                        //SavedData.setRegId(Application_Gocci.getInstance().getApplicationContext(), register_id);
-                        cb.onSuccess();
-                    } else {
-                        cb.onGlobalError(globalCode);
-                    }
-                } else {
-                    Util.PostUnregisterDeviceTokenLocalCode localCode = Util.postUnregisterDeviceTokenLocalErrorReverseLookupTable(code);
-                    if (localCode != null) {
-                        String errorMessage = Util.postUnregisterDeviceTokenLocalErrorMessageTable(localCode);
-                        if (message.equals(errorMessage)) {
-                            cb.onLocalError(message);
-                        } else {
-                            cb.onGlobalError(Util.GlobalCode.ERROR_SERVER_SIDE_FAILURE);
-                        }
-                    } else {
-                        //ハンドリング不可　致命的バグ
-                        cb.onGlobalError(Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                    }
-                }
-            } catch (JSONException e) {
-                cb.onGlobalError(Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
-            }
         }
     }
 }

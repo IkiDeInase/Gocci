@@ -7,6 +7,7 @@ import com.inase.android.gocci.domain.model.TwoCellData;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.SocketTimeoutException;
@@ -34,52 +35,143 @@ public class PostDataRepositoryImpl implements PostDataRepository {
 
     @Override
     public void getPostDataList(final Const.APICategory api, String url, final PostDataRepositoryCallback cb) {
-        API3.Util.GlobalCode globalCode = mAPI3.check_global_error();
+        API3.Util.GlobalCode globalCode = mAPI3.CheckGlobalCode();
         if (globalCode == API3.Util.GlobalCode.SUCCESS) {
             try {
                 Application_Gocci.getJsonSync(url, new JsonHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        mAPI3.get_timeline_response(response, new API3.GetPostdataResponseCallback() {
+                        switch (api) {
+                            case GET_NEARLINE_FIRST:
+                            case GET_NEARLINE_REFRESH:
+                            case GET_NEARLINE_FILTER:
+                            case GET_NEARLINE_ADD:
+                                mAPI3.GetNearlineResponse(response, new API3.PayloadResponseCallback() {
 
-                            @Override
-                            public void onSuccess(ArrayList<TwoCellData> postData, ArrayList<String> post_ids) {
-//                                final ArrayList<TwoCellData> mPostData = new ArrayList<>();
-//                                final ArrayList<String> mPost_Ids = new ArrayList<>();
-//
-//                                JSONArray payload = jsonObject.getJSONArray("payload");
-//                                if (payload.length() != 0) {
-//                                    for (int i = 0; i < payload.length(); i++) {
-//                                        JSONObject postdata = payload.getJSONObject(i);
-//                                        mPostData.add(TwoCellData.createPostData(postdata));
-//                                        mPost_Ids.add(postdata.getString("post_id"));
-//                                    }
-//                                    cb.onSuccess(mPostData, mPost_Ids);
-//                                } else {
-//                                    cb.onEmpty();
-//                                }
-                                cb.onPostDataLoaded(api, postData, post_ids);
-                            }
+                                    @Override
+                                    public void onSuccess(JSONObject jsonObject) {
+                                        try {
+                                            final ArrayList<TwoCellData> mPostData = new ArrayList<>();
+                                            final ArrayList<String> mPost_Ids = new ArrayList<>();
 
-                            @Override
-                            public void onEmpty() {
-                                if (api == Const.APICategory.GET_TIMELINE_ADD) {
-                                    cb.onPostDataLoaded(api, new ArrayList<TwoCellData>(), new ArrayList<String>());
-                                } else {
-                                    cb.onPostDataEmpty(api);
-                                }
-                            }
+                                            JSONArray payload = jsonObject.getJSONArray("payload");
+                                            if (payload.length() != 0) {
+                                                for (int i = 0; i < payload.length(); i++) {
+                                                    JSONObject postdata = payload.getJSONObject(i);
+                                                    mPostData.add(TwoCellData.createPostData(postdata));
+                                                    mPost_Ids.add(postdata.getString("post_id"));
+                                                }
+                                                cb.onPostDataLoaded(api, mPostData, mPost_Ids);
+                                            } else {
+                                                if (api == Const.APICategory.GET_NEARLINE_ADD) {
+                                                    cb.onPostDataLoaded(api, new ArrayList<TwoCellData>(), new ArrayList<String>());
+                                                } else {
+                                                    cb.onPostDataEmpty(api);
+                                                }
+                                            }
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
 
-                            @Override
-                            public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                cb.onCausedByGlobalError(api, globalCode);
-                            }
+                                    @Override
+                                    public void onGlobalError(API3.Util.GlobalCode globalCode) {
+                                        cb.onCausedByGlobalError(api, globalCode);
+                                    }
 
-                            @Override
-                            public void onLocalError(String errorMessage) {
-                                cb.onCausedByLocalError(api, errorMessage);
-                            }
-                        });
+                                    @Override
+                                    public void onLocalError(String errorMessage) {
+                                        cb.onCausedByLocalError(api, errorMessage);
+                                    }
+                                });
+                                break;
+                            case GET_FOLLOWLINE_FIRST:
+                            case GET_FOLLOWLINE_REFRESH:
+                            case GET_FOLLOWLINE_FILTER:
+                            case GET_FOLLOWLINE_ADD:
+                                mAPI3.GetFollowlineResponse(response, new API3.PayloadResponseCallback() {
+
+                                    @Override
+                                    public void onSuccess(JSONObject jsonObject) {
+                                        try {
+                                            final ArrayList<TwoCellData> mPostData = new ArrayList<>();
+                                            final ArrayList<String> mPost_Ids = new ArrayList<>();
+
+                                            JSONArray payload = jsonObject.getJSONArray("payload");
+                                            if (payload.length() != 0) {
+                                                for (int i = 0; i < payload.length(); i++) {
+                                                    JSONObject postdata = payload.getJSONObject(i);
+                                                    mPostData.add(TwoCellData.createPostData(postdata));
+                                                    mPost_Ids.add(postdata.getString("post_id"));
+                                                }
+                                                cb.onPostDataLoaded(api, mPostData, mPost_Ids);
+                                            } else {
+                                                if (api == Const.APICategory.GET_FOLLOWLINE_ADD) {
+                                                    cb.onPostDataLoaded(api, new ArrayList<TwoCellData>(), new ArrayList<String>());
+                                                } else {
+                                                    cb.onPostDataEmpty(api);
+                                                }
+                                            }
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onGlobalError(API3.Util.GlobalCode globalCode) {
+                                        cb.onCausedByGlobalError(api, globalCode);
+                                    }
+
+                                    @Override
+                                    public void onLocalError(String errorMessage) {
+                                        cb.onCausedByLocalError(api, errorMessage);
+                                    }
+                                });
+                                break;
+                            case GET_TIMELINE_FIRST:
+                            case GET_TIMELINE_REFRESH:
+                            case GET_TIMELINE_FILTER:
+                            case GET_TIMELINE_ADD:
+                                mAPI3.GetTimelineResponse(response, new API3.PayloadResponseCallback() {
+
+                                    @Override
+                                    public void onSuccess(JSONObject jsonObject) {
+                                        try {
+                                            final ArrayList<TwoCellData> mPostData = new ArrayList<>();
+                                            final ArrayList<String> mPost_Ids = new ArrayList<>();
+
+                                            JSONArray payload = jsonObject.getJSONArray("payload");
+                                            if (payload.length() != 0) {
+                                                for (int i = 0; i < payload.length(); i++) {
+                                                    JSONObject postdata = payload.getJSONObject(i);
+                                                    mPostData.add(TwoCellData.createPostData(postdata));
+                                                    mPost_Ids.add(postdata.getString("post_id"));
+                                                }
+                                                cb.onPostDataLoaded(api, mPostData, mPost_Ids);
+                                            } else {
+                                                if (api == Const.APICategory.GET_TIMELINE_ADD) {
+                                                    cb.onPostDataLoaded(api, new ArrayList<TwoCellData>(), new ArrayList<String>());
+                                                } else {
+                                                    cb.onPostDataEmpty(api);
+                                                }
+                                            }
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onGlobalError(API3.Util.GlobalCode globalCode) {
+                                        cb.onCausedByGlobalError(api, globalCode);
+                                    }
+
+                                    @Override
+                                    public void onLocalError(String errorMessage) {
+                                        cb.onCausedByLocalError(api, errorMessage);
+                                    }
+                                });
+                                break;
+                        }
                     }
 
                     @Override

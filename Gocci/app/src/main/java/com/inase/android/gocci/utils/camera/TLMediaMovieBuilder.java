@@ -10,13 +10,12 @@ import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.inase.android.gocci.utils.Util;
+
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.text.SimpleDateFormat;
-import java.util.GregorianCalendar;
-import java.util.Locale;
 
 /**
  * Builder class to build actual mp4 file from intermediate files made by TLMediaEncoder and it's inheritor
@@ -69,7 +68,7 @@ public class TLMediaMovieBuilder {
      */
     public TLMediaMovieBuilder(final Context context, final String movie_name) throws IOException {
         mBaseDir = new File(context.getExternalFilesDir(Environment.DIRECTORY_MOVIES), movie_name);
-        mAwsPostName = getDateTimeString();
+        mAwsPostName = Util.getDateTimeString();
         mOutputPath = getCaptureFile(Environment.DIRECTORY_MOVIES, mAwsPostName, ".mp4").toString();
     }
 
@@ -138,11 +137,6 @@ public class TLMediaMovieBuilder {
      *
      * @return
      */
-    private static final String getDateTimeString() {
-        final GregorianCalendar now = new GregorianCalendar();
-        final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss", Locale.US);
-        return dateTimeFormat.format(now.getTime());
-    }
 
     /**
      * building task executing on private thread

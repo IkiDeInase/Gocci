@@ -61,12 +61,12 @@ public class LoginCreateUserNameFragment extends Fragment implements FABProgress
     public void fab() {
         if (mUsernameTextInput.getEditText().getText().length() != 0) {
             mUsernameTextInput.setError("");
-            API3.Util.AuthSignupLocalCode localCode = API3.Impl.getRepository().auth_signup_parameter_regex(mUsernameTextInput.getEditText().getText().toString());
+            API3.Util.AuthSignupLocalCode localCode = API3.Impl.getRepository().AuthSignupParameterRegex(mUsernameTextInput.getEditText().getText().toString());
             if (localCode == null) {
                 mPresenter.loginUser(Const.APICategory.AUTH_SIGNUP,
                         API3.Util.getAuthSignupAPI(mUsernameTextInput.getEditText().getText().toString()));
             } else {
-                Toast.makeText(getActivity(), API3.Util.authSignupLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), API3.Util.AuthSignupLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
             }
         } else {
             Toast.makeText(getActivity(), getString(R.string.please_input_username), Toast.LENGTH_SHORT).show();
@@ -185,7 +185,7 @@ public class LoginCreateUserNameFragment extends Fragment implements FABProgress
     public void showNoResultCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
         mFab.setClickable(true);
         mFabProgressCircle.hide();
-        mUsernameTextInput.setError(API3.Util.globalErrorMessageTable(globalCode));
+        mUsernameTextInput.setError(API3.Util.GlobalCodeMessageTable(globalCode));
         Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
     }
 

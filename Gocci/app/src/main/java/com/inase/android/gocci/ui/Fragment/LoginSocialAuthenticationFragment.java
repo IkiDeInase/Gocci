@@ -76,7 +76,7 @@ public class LoginSocialAuthenticationFragment extends Fragment {
                     }).show();
         } else {
             Toast.makeText(getActivity(), getString(R.string.please_input_username), Toast.LENGTH_SHORT).show();
-            TutorialActivity activity = (TutorialActivity)getActivity();
+            TutorialActivity activity = (TutorialActivity) getActivity();
             activity.backSlide();
         }
     }
@@ -101,7 +101,7 @@ public class LoginSocialAuthenticationFragment extends Fragment {
                     }).show();
         } else {
             Toast.makeText(getActivity(), getString(R.string.please_input_username), Toast.LENGTH_SHORT).show();
-            TutorialActivity activity = (TutorialActivity)getActivity();
+            TutorialActivity activity = (TutorialActivity) getActivity();
             activity.backSlide();
         }
     }
@@ -185,7 +185,7 @@ public class LoginSocialAuthenticationFragment extends Fragment {
                             .show();
                 } else {
                     Toast.makeText(getActivity(), getString(R.string.please_input_username), Toast.LENGTH_SHORT).show();
-                    TutorialActivity activity = (TutorialActivity)getActivity();
+                    TutorialActivity activity = (TutorialActivity) getActivity();
                     activity.backSlide();
                 }
             }
@@ -198,7 +198,7 @@ public class LoginSocialAuthenticationFragment extends Fragment {
                     goTimeline();
                 } else {
                     Toast.makeText(getActivity(), getString(R.string.please_input_username), Toast.LENGTH_SHORT).show();
-                    TutorialActivity activity = (TutorialActivity)getActivity();
+                    TutorialActivity activity = (TutorialActivity) getActivity();
                     activity.backSlide();
                 }
             }

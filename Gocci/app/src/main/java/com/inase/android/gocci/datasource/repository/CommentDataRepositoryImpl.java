@@ -7,6 +7,7 @@ import com.inase.android.gocci.domain.model.HeaderData;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.SocketTimeoutException;
@@ -34,39 +35,36 @@ public class CommentDataRepositoryImpl implements CommentDataRepository {
 
     @Override
     public void getCommentDataList(final Const.APICategory api, String url, final CommentDataRepositoryCallback cb) {
-        API3.Util.GlobalCode globalCode = mAPI3.check_global_error();
+        API3.Util.GlobalCode globalCode = mAPI3.CheckGlobalCode();
         if (globalCode == API3.Util.GlobalCode.SUCCESS) {
             try {
                 Application_Gocci.getJsonSync(url, new JsonHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        mAPI3.get_comment_response(response, new API3.GetCommentResponseCallback() {
+                        mAPI3.GetCommentResponse(response, new API3.PayloadResponseCallback() {
 
                             @Override
-                            public void onSuccess(HeaderData headerData, ArrayList<HeaderData> commentData) {
-//                                final ArrayList<HeaderData> mCommentData = new ArrayList<>();
-//
-//                                JSONObject payload = jsonObject.getJSONObject("payload");
-//                                JSONObject memo = payload.getJSONObject("memo");
-//
-//                                HeaderData headerData = HeaderData.createMemoData(memo);
-//
-//                                JSONArray comments = payload.getJSONArray("comments");
-//                                if (comments.length() != 0) {
-//                                    for (int i = 0; i < comments.length(); i++) {
-//                                        JSONObject commentData = comments.getJSONObject(i);
-//                                        mCommentData.add(HeaderData.createCommentData(commentData));
-//                                    }
-//                                    cb.onSuccess(headerData, mCommentData);
-//                                } else {
-//                                    cb.onEmpty(headerData);
-//                                }
-                                cb.onCommentDataLoaded(api, headerData, commentData);
-                            }
+                            public void onSuccess(JSONObject jsonObject) {
+                                try {
+                                    JSONObject payload = jsonObject.getJSONObject("payload");
+                                    JSONObject memo = payload.getJSONObject("memo");
 
-                            @Override
-                            public void onEmpty(HeaderData headerData) {
-                                cb.onCommentDataEmpty(api, headerData);
+                                    final ArrayList<HeaderData> mCommentData = new ArrayList<>();
+                                    HeaderData headerData = HeaderData.createMemoData(memo);
+
+                                    JSONArray comments = payload.getJSONArray("comments");
+                                    if (comments.length() != 0) {
+                                        for (int i = 0; i < comments.length(); i++) {
+                                            JSONObject commentData = comments.getJSONObject(i);
+                                            mCommentData.add(HeaderData.createCommentData(commentData));
+                                        }
+                                        cb.onCommentDataLoaded(api, headerData, mCommentData);
+                                    } else {
+                                        cb.onCommentDataEmpty(api, headerData);
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
                             }
 
                             @Override

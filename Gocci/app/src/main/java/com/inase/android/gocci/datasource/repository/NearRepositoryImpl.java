@@ -6,6 +6,7 @@ import com.inase.android.gocci.datasource.api.API3;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.SocketTimeoutException;
@@ -33,41 +34,39 @@ public class NearRepositoryImpl implements NearRepository {
 
     @Override
     public void getNear(final Const.APICategory api, final String url, final NearRepositoryCallback cb) {
-        API3.Util.GlobalCode globalCode = mAPI3.check_global_error();
+        API3.Util.GlobalCode globalCode = mAPI3.CheckGlobalCode();
         if (globalCode == API3.Util.GlobalCode.SUCCESS) {
             try {
                 Application_Gocci.getJsonSync(url, new JsonHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        mAPI3.get_near_response(response, new API3.GetNearResponseCallback() {
+                        mAPI3.GetNearResponse(response, new API3.PayloadResponseCallback() {
 
                             @Override
-                            public void onSuccess(String[] restnames, ArrayList<String> restIdArray, ArrayList<String> restnameArray) {
-//                                String[] restnames = new String[30];
-//                                final ArrayList<String> restIdArray = new ArrayList<>();
-//                                final ArrayList<String> restnameArray = new ArrayList<>();
-//
-//                                JSONArray payload = jsonObject.getJSONArray("payload");
-//                                if (payload.length() != 0) {
-//                                    for (int i = 0; i < payload.length(); i++) {
-//                                        JSONObject listData = payload.getJSONObject(i);
-//                                        final String rest_name = listData.getString("restname");
-//                                        String rest_id = listData.getString("rest_id");
-//
-//                                        restnames[i] = rest_name;
-//                                        restIdArray.add(rest_id);
-//                                        restnameArray.add(rest_name);
-//                                    }
-//                                    cb.onSuccess(restnames, restIdArray, restnameArray);
-//                                } else {
-//                                    cb.onEmpty();
-//                                }
-                                cb.onSuccess(api, restnames, restIdArray, restnameArray);
-                            }
+                            public void onSuccess(JSONObject jsonObject) {
+                                try {
+                                    String[] restnames = new String[30];
+                                    final ArrayList<String> restIdArray = new ArrayList<>();
+                                    final ArrayList<String> restnameArray = new ArrayList<>();
 
-                            @Override
-                            public void onEmpty() {
-                                cb.onEmpty(api);
+                                    JSONArray payload = jsonObject.getJSONArray("payload");
+                                    if (payload.length() != 0) {
+                                        for (int i = 0; i < payload.length(); i++) {
+                                            JSONObject listData = payload.getJSONObject(i);
+                                            final String rest_name = listData.getString("restname");
+                                            String rest_id = listData.getString("rest_id");
+
+                                            restnames[i] = rest_name;
+                                            restIdArray.add(rest_id);
+                                            restnameArray.add(rest_name);
+                                        }
+                                        cb.onSuccess(api, restnames, restIdArray, restnameArray);
+                                    } else {
+                                        cb.onEmpty(api);
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
                             }
 
                             @Override

@@ -31,15 +31,15 @@ public class GochiRepositoryImpl implements GochiRepository {
 
     @Override
     public void postGochi(final Const.APICategory api, String url, final String post_id, final GochiRepositoryCallback cb) {
-        API3.Util.GlobalCode globalCode = mAPI3.check_global_error();
+        API3.Util.GlobalCode globalCode = mAPI3.CheckGlobalCode();
         if (globalCode == API3.Util.GlobalCode.SUCCESS) {
             try {
                 Application_Gocci.getJsonSync(url, new JsonHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        mAPI3.post_gochi_response(response, new API3.PostResponseCallback() {
+                        mAPI3.SetGochiResponse(response, new API3.PayloadResponseCallback() {
                             @Override
-                            public void onSuccess() {
+                            public void onSuccess(JSONObject jsonObject) {
                                 cb.onSuccess(api, post_id);
                             }
 

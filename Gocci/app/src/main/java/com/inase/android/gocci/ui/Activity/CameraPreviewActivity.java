@@ -234,11 +234,11 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
     private String mAwsPostName;
     private String mValue;
     private String mMemo;
-    private String mTwitterMemo;
-    private String mFacebookMemo;
+    private String mTwitterMemo = "";
+    private String mFacebookMemo = "";
     private boolean mIsnewRestname;
-    private double mLatitude;
-    private double mLongitude;
+    private String mLatitude;
+    private String mLongitude;
 
     private File mVideoFile;
 
@@ -290,23 +290,23 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
         mMemo = intent.getStringExtra("memo");
         mValue = intent.getStringExtra("value");
         mIsnewRestname = intent.getBooleanExtra("isNewRestname", false);
-        mLatitude = intent.getDoubleExtra("lat", 0.0);
-        mLongitude = intent.getDoubleExtra("lon", 0.0);
+        mLatitude = intent.getStringExtra("lat");
+        mLongitude = intent.getStringExtra("lon");
 
         SavedData.setPostVideoPreview(this, mRestname, mRest_id, mVideoUrl, mAwsPostName, mCategory_id, mMemo, mValue, mIsnewRestname, mLongitude, mLatitude);
 
-        if (mLatitude == 0.0 && mLongitude == 0.0) {
+        if (mLatitude.isEmpty() && mLongitude.isEmpty()) {
             //もう一度位置取る？
             SmartLocation.with(this).location().oneFix().start(new OnLocationUpdatedListener() {
                 @Override
                 public void onLocationUpdated(Location location) {
-                    mLatitude = location.getLatitude();
-                    mLongitude = location.getLongitude();
-                    API3.Util.GetNearLocalCode localCode = API3.Impl.getRepository().get_near_parameter_regex(mLongitude, mLatitude);
+                    mLatitude = String.valueOf(location.getLatitude());
+                    mLongitude = String.valueOf(location.getLongitude());
+                    API3.Util.GetNearLocalCode localCode = API3.Impl.getRepository().GetNearParameterRegex(mLatitude, mLongitude);
                     if (localCode == null) {
-                        mPresenter.getNearData(Const.APICategory.GET_NEAR_FIRST, API3.Util.getGetNearAPI(mLongitude, mLatitude));
+                        mPresenter.getNearData(Const.APICategory.GET_NEAR_FIRST, API3.Util.getGetNearAPI(mLatitude, mLongitude));
                     } else {
-                        Toast.makeText(CameraPreviewActivity.this, API3.Util.getNearLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(CameraPreviewActivity.this, API3.Util.GetNearLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
                     }
                     SavedData.setLat(CameraPreviewActivity.this, mLatitude);
                     SavedData.setLon(CameraPreviewActivity.this, mLongitude);
@@ -336,7 +336,7 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
             }
         });
 
-        if (mIsnewRestname || !mRestname.equals("")) {
+        if (mIsnewRestname || !mRestname.isEmpty()) {
             mAddRestText.setVisibility(View.GONE);
         }
 
@@ -418,7 +418,7 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
                             }
                         }
                         mProgressWheel.setVisibility(View.VISIBLE);
-                        API3PostUtil.postMovieAsync(CameraPreviewActivity.this, Const.ActivityCategory.CAMERA_PREVIEW, mRest_id, mAwsPostName, mCategory_id, mValue, mMemo, mCheer_flag);
+                        API3PostUtil.postMovieAsync(CameraPreviewActivity.this, Const.ActivityCategory.CAMERA_PREVIEW, mRest_id, mAwsPostName, String.valueOf(mCategory_id), mValue, mMemo, String.valueOf(mCheer_flag));
                         Application_Gocci.postingVideoToS3(CameraPreviewActivity.this, mAwsPostName, mVideoFile);
                     } else {
                         Toast.makeText(CameraPreviewActivity.this, getString(R.string.please_input_restname), Toast.LENGTH_SHORT).show();

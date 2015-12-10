@@ -158,12 +158,12 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
                 if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
                     loading = false;
                     if (!isEndScrioll) {
-                        API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().get_timeline_parameter_regex();
+                        API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().GetTimelineParameterRegex();
                         if (localCode == null) {
-                            mPresenter.getLatestTimelinePostData(Const.APICategory.GET_TIMELINE_ADD, API3.Util.getGetTimelineCustomAPI(
+                            mPresenter.getLatestTimelinePostData(Const.APICategory.GET_TIMELINE_ADD, API3.Util.getGetTimelineAPI(
                                     mNextCount, TimelineActivity.mLatestCategory_id, TimelineActivity.mLatestValue_id));
                         } else {
-                            Toast.makeText(getActivity(), API3.Util.getTimelineLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), API3.Util.GetTimelineLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
@@ -226,11 +226,11 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
         mTimelineRecyclerView.addOnScrollListener(scrollListener);
         mTimelineRecyclerView.setScrollViewCallbacks(this);
 
-        API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().get_timeline_parameter_regex();
+        API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().GetTimelineParameterRegex();
         if (localCode == null) {
             mPresenter.getLatestTimelinePostData(Const.APICategory.GET_TIMELINE_FIRST, API3.Util.getGetTimelineAPI());
         } else {
-            Toast.makeText(getActivity(), API3.Util.getTimelineLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), API3.Util.GetTimelineLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
         }
 
         mSwipeContainer.setColorSchemeResources(R.color.gocci_1, R.color.gocci_2, R.color.gocci_3, R.color.gocci_4);
@@ -323,12 +323,12 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
     @Subscribe
     public void subscribe(FilterTimelineEvent event) {
         if (event.currentPage == 2) {
-            API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().get_timeline_parameter_regex();
+            API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().GetTimelineParameterRegex();
             if (localCode == null) {
                 mTimelineRecyclerView.scrollVerticallyToPosition(0);
                 mPresenter.getLatestTimelinePostData(Const.APICategory.GET_TIMELINE_FILTER, event.filterUrl);
             } else {
-                Toast.makeText(getActivity(), API3.Util.getTimelineLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), API3.Util.GetTimelineLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -458,17 +458,17 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
         SmartLocation.with(context).location().oneFix().start(new OnLocationUpdatedListener() {
             @Override
             public void onLocationUpdated(Location location) {
-                TimelineActivity.mLongitude = location.getLongitude();
-                TimelineActivity.mLatitude = location.getLatitude();
+                TimelineActivity.mLongitude = String.valueOf(location.getLongitude());
+                TimelineActivity.mLatitude = String.valueOf(location.getLatitude());
                 TimelineActivity.mLatestCategory_id = 0;
                 TimelineActivity.mLatestValue_id = 0;
 
-                API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().get_timeline_parameter_regex();
+                API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().GetTimelineParameterRegex();
                 if (localCode == null) {
-                    mPresenter.getLatestTimelinePostData(Const.APICategory.GET_TIMELINE_REFRESH, API3.Util.getGetTimelineCustomAPI(
+                    mPresenter.getLatestTimelinePostData(Const.APICategory.GET_TIMELINE_REFRESH, API3.Util.getGetTimelineAPI(
                             0, TimelineActivity.mLatestCategory_id, TimelineActivity.mLatestValue_id));
                 } else {
-                    Toast.makeText(getActivity(), API3.Util.getTimelineLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), API3.Util.GetTimelineLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -660,11 +660,11 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
 
     @Override
     public void onGochiClick(String post_id) {
-        API3.Util.PostGochiLocalCode postGochiLocalCode = API3.Impl.getRepository().post_gochi_parameter_regex(post_id);
+        API3.Util.SetGochiLocalCode postGochiLocalCode = API3.Impl.getRepository().SetGochiParameterRegex(post_id);
         if (postGochiLocalCode == null) {
-            mPresenter.postGochi(Const.APICategory.POST_GOCHI, API3.Util.getPostGochiAPI(post_id), post_id);
+            mPresenter.postGochi(Const.APICategory.POST_GOCHI, API3.Util.getSetGochiAPI(post_id), post_id);
         } else {
-            Toast.makeText(getActivity(), API3.Util.postGochiLocalErrorMessageTable(postGochiLocalCode), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), API3.Util.SetGochiLocalCodeMessageTable(postGochiLocalCode), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -698,11 +698,11 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
                 mPresenter.getLatestTimelinePostData(Const.APICategory.GET_TIMELINE_FIRST, API3.Util.getGetTimelineAPI());
                 break;
             case GET_TIMELINE_REFRESH:
-                mPresenter.getLatestTimelinePostData(Const.APICategory.GET_TIMELINE_REFRESH, API3.Util.getGetTimelineCustomAPI(
+                mPresenter.getLatestTimelinePostData(Const.APICategory.GET_TIMELINE_REFRESH, API3.Util.getGetTimelineAPI(
                         0, TimelineActivity.mLatestCategory_id, TimelineActivity.mLatestValue_id));
                 break;
             case GET_TIMELINE_ADD:
-                mPresenter.getLatestTimelinePostData(Const.APICategory.GET_TIMELINE_ADD, API3.Util.getGetTimelineCustomAPI(
+                mPresenter.getLatestTimelinePostData(Const.APICategory.GET_TIMELINE_ADD, API3.Util.getGetTimelineAPI(
                         mNextCount, TimelineActivity.mLatestCategory_id, TimelineActivity.mLatestValue_id));
                 break;
             case GET_TIMELINE_FILTER:

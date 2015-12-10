@@ -235,11 +235,11 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
     private String mAwsPostName;
     private String mValue;
     private String mMemo;
-    private String mTwitterMemo;
-    private String mFacebookMemo;
+    private String mTwitterMemo = "";
+    private String mFacebookMemo = "";
     private boolean mIsnewRestname;
-    private double mLatitude;
-    private double mLongitude;
+    private String mLatitude;
+    private String mLongitude;
 
     private ArrayList<String> rest_nameList = new ArrayList<>();
     private ArrayList<String> rest_idList = new ArrayList<>();
@@ -349,28 +349,28 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
         if (!mRestname.equals("")) {
             mRestnameSpinner.setClickable(false);
         } else {
-            if (mLatitude == 0.0 && mLongitude == 0.0) {
+            if (mLatitude.isEmpty() && mLongitude.isEmpty()) {
                 SmartLocation.with(this).location().oneFix().start(new OnLocationUpdatedListener() {
                     @Override
                     public void onLocationUpdated(Location location) {
-                        mLatitude = location.getLatitude();
-                        mLongitude = location.getLongitude();
-                        API3.Util.GetNearLocalCode localCode = API3.Impl.getRepository().get_near_parameter_regex(mLongitude, mLatitude);
+                        mLatitude = String.valueOf(location.getLatitude());
+                        mLongitude = String.valueOf(location.getLongitude());
+                        API3.Util.GetNearLocalCode localCode = API3.Impl.getRepository().GetNearParameterRegex(mLatitude, mLongitude);
                         if (localCode == null) {
-                            mPresenter.getNearData(Const.APICategory.GET_NEAR_FIRST, API3.Util.getGetNearAPI(mLongitude, mLatitude));
+                            mPresenter.getNearData(Const.APICategory.GET_NEAR_FIRST, API3.Util.getGetNearAPI(mLatitude, mLongitude));
                         } else {
-                            Toast.makeText(CameraPreviewAlreadyExistActivity.this, API3.Util.getNearLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CameraPreviewAlreadyExistActivity.this, API3.Util.GetNearLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
                         }
                         SavedData.setLat(CameraPreviewAlreadyExistActivity.this, mLatitude);
                         SavedData.setLon(CameraPreviewAlreadyExistActivity.this, mLongitude);
                     }
                 });
             } else {
-                API3.Util.GetNearLocalCode localCode = API3.Impl.getRepository().get_near_parameter_regex(mLongitude, mLatitude);
+                API3.Util.GetNearLocalCode localCode = API3.Impl.getRepository().GetNearParameterRegex(mLatitude, mLongitude);
                 if (localCode == null) {
-                    mPresenter.getNearData(Const.APICategory.GET_NEAR_FIRST, API3.Util.getGetNearAPI(mLongitude, mLatitude));
+                    mPresenter.getNearData(Const.APICategory.GET_NEAR_FIRST, API3.Util.getGetNearAPI(mLatitude, mLongitude));
                 } else {
-                    Toast.makeText(CameraPreviewAlreadyExistActivity.this, API3.Util.getNearLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CameraPreviewAlreadyExistActivity.this, API3.Util.GetNearLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
                 }
             }
         }
@@ -427,7 +427,7 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
                             }
                         }
                         mProgressWheel.setVisibility(View.VISIBLE);
-                        API3PostUtil.postMovieAsync(CameraPreviewAlreadyExistActivity.this, Const.ActivityCategory.CAMERA_PREVIEW_ALREADY, mRest_id, mAwsPostName, mCategory_id, mValue, mMemo, mCheer_flag);
+                        API3PostUtil.postMovieAsync(CameraPreviewAlreadyExistActivity.this, Const.ActivityCategory.CAMERA_PREVIEW_ALREADY, mRest_id, mAwsPostName, String.valueOf(mCategory_id), mValue, mMemo, String.valueOf(mCheer_flag));
                         Application_Gocci.postingVideoToS3(CameraPreviewAlreadyExistActivity.this, mAwsPostName, mVideoFile);
                     } else {
                         Toast.makeText(CameraPreviewAlreadyExistActivity.this, getString(R.string.please_input_restname), Toast.LENGTH_SHORT).show();

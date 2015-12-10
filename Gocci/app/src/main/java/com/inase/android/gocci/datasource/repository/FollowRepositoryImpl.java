@@ -31,16 +31,16 @@ public class FollowRepositoryImpl implements FollowRepository {
 
     @Override
     public void postFollow(final Const.APICategory api, String url, final String user_id, final FollowRepositoryCallback cb) {
-        API3.Util.GlobalCode globalCode = mAPI3.check_global_error();
+        API3.Util.GlobalCode globalCode = mAPI3.CheckGlobalCode();
         if (globalCode == API3.Util.GlobalCode.SUCCESS) {
             try {
                 Application_Gocci.getJsonSync(url, new JsonHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                         if (api == Const.APICategory.POST_FOLLOW) {
-                            mAPI3.post_follow_response(response, new API3.PostResponseCallback() {
+                            mAPI3.SetFollowResponse(response, new API3.PayloadResponseCallback() {
                                 @Override
-                                public void onSuccess() {
+                                public void onSuccess(JSONObject jsonObject) {
                                     cb.onSuccess(api, user_id);
                                 }
 
@@ -55,9 +55,9 @@ public class FollowRepositoryImpl implements FollowRepository {
                                 }
                             });
                         } else if (api == Const.APICategory.POST_UNFOLLOW) {
-                            mAPI3.post_unFollow_response(response, new API3.PostResponseCallback() {
+                            mAPI3.UnsetFollowResponse(response, new API3.PayloadResponseCallback() {
                                 @Override
-                                public void onSuccess() {
+                                public void onSuccess(JSONObject jsonObject) {
                                     cb.onSuccess(api, user_id);
                                 }
 

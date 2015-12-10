@@ -259,11 +259,11 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
         mTenpoRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
         mTenpoRecyclerView.setScrollViewCallbacks(this);
 
-        API3.Util.GetRestLocalCode localCode = api3Impl.get_rest_parameter_regex(mRest_id);
+        API3.Util.GetRestLocalCode localCode = api3Impl.GetRestParameterRegex(mRest_id);
         if (localCode == null) {
             mPresenter.getRestData(Const.APICategory.GET_REST_FIRST, API3.Util.getGetRestAPI(mRest_id));
         } else {
-            Toast.makeText(this, API3.Util.getRestLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, API3.Util.GetRestLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
         }
 
         result = new DrawerBuilder()
@@ -405,11 +405,11 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
             public void onRefresh() {
                 mSwipeContainer.setRefreshing(true);
                 if (Util.getConnectedState(TenpoActivity.this) != Util.NetworkStatus.OFF) {
-                    API3.Util.GetRestLocalCode localCode = api3Impl.get_rest_parameter_regex(mRest_id);
+                    API3.Util.GetRestLocalCode localCode = api3Impl.GetRestParameterRegex(mRest_id);
                     if (localCode == null) {
                         mPresenter.getRestData(Const.APICategory.GET_REST_REFRESH, API3.Util.getGetRestAPI(mRest_id));
                     } else {
-                        Toast.makeText(TenpoActivity.this, API3.Util.getRestLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(TenpoActivity.this, API3.Util.GetRestLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
                     }
                 } else {
                     Toast.makeText(TenpoActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
@@ -741,11 +741,11 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
 
     @Override
     public void onGochiClick(String post_id) {
-        API3.Util.PostGochiLocalCode postGochiLocalCode = API3.Impl.getRepository().post_gochi_parameter_regex(post_id);
+        API3.Util.SetGochiLocalCode postGochiLocalCode = API3.Impl.getRepository().SetGochiParameterRegex(post_id);
         if (postGochiLocalCode == null) {
-            mPresenter.postGochi(Const.APICategory.POST_GOCHI, API3.Util.getPostGochiAPI(post_id), post_id);
+            mPresenter.postGochi(Const.APICategory.POST_GOCHI, API3.Util.getSetGochiAPI(post_id), post_id);
         } else {
-            Toast.makeText(TenpoActivity.this, API3.Util.postGochiLocalErrorMessageTable(postGochiLocalCode), Toast.LENGTH_SHORT).show();
+            Toast.makeText(TenpoActivity.this, API3.Util.SetGochiLocalCodeMessageTable(postGochiLocalCode), Toast.LENGTH_SHORT).show();
         }
     }
 

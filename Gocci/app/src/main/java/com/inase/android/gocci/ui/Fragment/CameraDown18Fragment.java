@@ -71,6 +71,7 @@ import com.inase.android.gocci.presenter.ShowCameraPresenter;
 import com.inase.android.gocci.ui.activity.CameraActivity;
 import com.inase.android.gocci.ui.activity.CameraPreviewActivity;
 import com.inase.android.gocci.ui.view.MySurfaceView;
+import com.inase.android.gocci.utils.Util;
 import com.inase.android.gocci.utils.camera.CameraManager;
 import com.inase.android.gocci.utils.camera.RecorderManager;
 import com.pnikosis.materialishprogress.ProgressWheel;
@@ -81,13 +82,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 
 import at.grabner.circleprogress.CircleProgressView;
 import butterknife.Bind;
@@ -134,8 +132,8 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
     private String mMemo = "";
     private boolean mIsnewRestname = false;
 
-    private double latitude;
-    private double longitude;
+    private String latitude = "";
+    private String longitude = "";
 
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
 
@@ -164,13 +162,17 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
 
     private ShowCameraPresenter mPresenter;
 
+    private boolean isFinish = false;
+
     public CameraDown18Fragment() {
 
     }
 
     @Override
     public void onDestroyView() {
+        muteAll(false);
         super.onDestroyView();
+        recorderManager.reset();
         handler.removeCallbacks(progressRunnable);
         ButterKnife.unbind(this);
     }
@@ -410,10 +412,13 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
                 } else {
                     mProgressWheel.setVisibility(View.VISIBLE);
 
-                    mCircleProgress.setValue(100);
+                    if (!isFinish) {
+                        mCircleProgress.setValue(100);
+                        onFinishPressed();
+                        isFinish = true;
+                    }
                     // System.out.println("UnClickable");
                     // finishButton.setClickable(false);
-                    onFinishPressed();
                     // finishButton
                     // .setBackgroundResource(R.drawable.btn_capture_arrow_pressed);
                 }
@@ -552,13 +557,13 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
     }
 
     private void getLocation(Location location) {
-        latitude = location.getLatitude();
-        longitude = location.getLongitude();
-        API3.Util.GetNearLocalCode localCode = API3.Impl.getRepository().get_near_parameter_regex(longitude, latitude);
+        latitude = String.valueOf(location.getLatitude());
+        longitude = String.valueOf(location.getLongitude());
+        API3.Util.GetNearLocalCode localCode = API3.Impl.getRepository().GetNearParameterRegex(latitude, longitude);
         if (localCode == null) {
-            mPresenter.getNearData(Const.APICategory.GET_NEAR_FIRST, API3.Util.getGetNearAPI(longitude, latitude));
+            mPresenter.getNearData(Const.APICategory.GET_NEAR_FIRST, API3.Util.getGetNearAPI(latitude, longitude));
         } else {
-            Toast.makeText(getActivity(), API3.Util.getNearLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), API3.Util.GetNearLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -673,21 +678,8 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
     }
 
     public String getFinalVideoFileName() {
-        mAwsPostName = getDateTimeString();
+        mAwsPostName = Util.getDateTimeString();
         return recorderManager.getVideoParentpath() + "/" + mAwsPostName + ".mp4";
-    }
-
-    private static final String getDateTimeString() {
-        final GregorianCalendar now = new GregorianCalendar();
-        final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss", Locale.US);
-        return dateTimeFormat.format(now.getTime());
-    }
-
-    @Override
-    public void onDestroy() {
-        muteAll(false);
-        super.onDestroy();
-        recorderManager.reset();
     }
 
     private void createTenpo() {

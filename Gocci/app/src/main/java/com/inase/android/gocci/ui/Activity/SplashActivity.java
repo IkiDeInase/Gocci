@@ -77,11 +77,11 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
         String mIdentityId = SavedData.getIdentityId(this);
         if (!mIdentityId.equals("no identityId")) {
             //２回目
-            API3.Util.AuthLoginLocalCode localCode = API3.Impl.getRepository().auth_login_parameter_regex(mIdentityId);
+            API3.Util.AuthLoginLocalCode localCode = API3.Impl.getRepository().AuthLoginParameterRegex(mIdentityId);
             if (localCode == null) {
                 mPresenter.loginUser(Const.APICategory.AUTH_LOGIN, API3.Util.getAuthLoginAPI(mIdentityId));
             } else {
-                Toast.makeText(SplashActivity.this, API3.Util.authLoginLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                Toast.makeText(SplashActivity.this, API3.Util.AuthLoginLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
             }
         } else {
             if (checkPlayServices()) {

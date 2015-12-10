@@ -215,11 +215,11 @@ public class MapSearchActivity extends AppCompatActivity implements ShowHeatmapP
             mClusterManager.setOnClusterItemClickListener(MapSearchActivity.this);
             mClusterManager.setOnClusterItemInfoWindowClickListener(MapSearchActivity.this);
 
-            API3.Util.GetHeatmapLocalCode localCode = API3.Impl.getRepository().get_heatmap_parameter_regex();
+            API3.Util.GetHeatmapLocalCode localCode = API3.Impl.getRepository().GetHeatmapParameterRegex();
             if (localCode == null) {
                 mPresenter.getHeatmapData(Const.APICategory.GET_HEATMAP_FIRST, API3.Util.getGetHeatmapAPI());
             } else {
-                Toast.makeText(MapSearchActivity.this, API3.Util.getHeatmapLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                Toast.makeText(MapSearchActivity.this, API3.Util.GetHeatmapLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
             }
 
             //Google MapのMyLocationレイヤーを使用可能にする

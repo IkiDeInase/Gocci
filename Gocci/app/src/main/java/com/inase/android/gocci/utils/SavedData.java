@@ -219,7 +219,7 @@ public class SavedData {
     }
 
     public static void setPostVideoPreview(Context context, String restname, String rest_id, String video_url, String aws_post_name, int category_id,
-                                           String memo, String value, boolean isNewRestname, double lon, double lat) {
+                                           String memo, String value, boolean isNewRestname, String lon, String lat) {
         SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putString(KEY_RESTNAME, restname);
@@ -230,8 +230,8 @@ public class SavedData {
         editor.putString(KEY_MEMO, memo);
         editor.putString(KEY_VALUE, value);
         editor.putBoolean(KEY_ISNEWRESTNAME, isNewRestname);
-        editor.putLong(KEY_LON, Double.doubleToRawLongBits(lon));
-        editor.putLong(KEY_LAT, Double.doubleToRawLongBits(lat));
+        editor.putString(KEY_LON, lon);
+        editor.putString(KEY_LAT, lat);
         editor.apply();
     }
 
@@ -277,17 +277,17 @@ public class SavedData {
         editor.apply();
     }
 
-    public static void setLon(Context context, double longitude) {
+    public static void setLon(Context context, String longitude) {
         SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putLong(KEY_LON, Double.doubleToRawLongBits(longitude));
+        editor.putString(KEY_LON, longitude);
         editor.apply();
     }
 
-    public static void setLat(Context context, double latitude) {
+    public static void setLat(Context context, String latitude) {
         SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putLong(KEY_LAT, Double.doubleToRawLongBits(latitude));
+        editor.putString(KEY_LAT, latitude);
         editor.apply();
     }
 
@@ -331,20 +331,14 @@ public class SavedData {
         return prefs.getBoolean(KEY_ISNEWRESTNAME, false);
     }
 
-    public static double getLon(Context context) {
+    public static String getLon(Context context) {
         SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
-        if (!prefs.contains(KEY_LON))
-            return 0.0;
-
-        return Double.longBitsToDouble(prefs.getLong(KEY_LON, 0));
+        return prefs.getString(KEY_LON, "");
     }
 
-    public static double getLat(Context context) {
+    public static String getLat(Context context) {
         SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
-        if (!prefs.contains(KEY_LAT))
-            return 0.0;
-
-        return Double.longBitsToDouble(prefs.getLong(KEY_LAT, 0));
+        return prefs.getString(KEY_LAT, "");
     }
 
     public static PersistentCookieStore getCookieStore(Context context) {

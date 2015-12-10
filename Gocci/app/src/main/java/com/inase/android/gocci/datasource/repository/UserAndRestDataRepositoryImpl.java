@@ -8,6 +8,7 @@ import com.inase.android.gocci.domain.model.PostData;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.SocketTimeoutException;
@@ -35,41 +36,38 @@ public class UserAndRestDataRepositoryImpl implements UserAndRestDataRepository 
 
     @Override
     public void getUserDataList(final Const.APICategory api, String url, final UserAndRestDataRepository.UserAndRestDataRepositoryCallback cb) {
-        API3.Util.GlobalCode globalCode = mAPI3.check_global_error();
+        API3.Util.GlobalCode globalCode = mAPI3.CheckGlobalCode();
         if (globalCode == API3.Util.GlobalCode.SUCCESS) {
             try {
                 Application_Gocci.getJsonSync(url, new JsonHttpResponseHandler() {
 
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        mAPI3.get_user_response(response, new API3.GetUserAndRestResponseCallback() {
+                        mAPI3.GetUserResponse(response, new API3.PayloadResponseCallback() {
                             @Override
-                            public void onSuccess(HeaderData headerData, ArrayList<PostData> postData, ArrayList<String> post_ids) {
-//                                final ArrayList<PostData> mPostData = new ArrayList<>();
-//                                final ArrayList<String> mPost_Ids = new ArrayList<>();
-//
-//                                JSONObject payload = jsonObject.getJSONObject("payload");
-//                                JSONObject user = payload.getJSONObject("user");
-//
-//                                HeaderData headerData = HeaderData.createUserHeaderData(user);
-//
-//                                JSONArray posts = payload.getJSONArray("posts");
-//                                if (posts.length() != 0) {
-//                                    for (int i = 0; i < posts.length(); i++) {
-//                                        JSONObject postdata = posts.getJSONObject(i);
-//                                        mPostData.add(PostData.createUserPostData(postdata));
-//                                        mPost_Ids.add(postdata.getString("post_id"));
-//                                    }
-//                                    cb.onSuccess(headerData, mPostData, mPost_Ids);
-//                                } else {
-//                                    cb.onEmpty(headerData);
-//                                }
-                                cb.onUserAndRestDataLoaded(api, headerData, postData, post_ids);
-                            }
+                            public void onSuccess(JSONObject jsonObject) {
+                                try {
+                                    JSONObject payload = jsonObject.getJSONObject("payload");
+                                    JSONObject user = payload.getJSONObject("user");
 
-                            @Override
-                            public void onEmpty(HeaderData headerData) {
-                                cb.onUserAndRestDataEmpty(api, headerData);
+                                    final ArrayList<PostData> mPostData = new ArrayList<>();
+                                    final ArrayList<String> mPost_Ids = new ArrayList<>();
+                                    HeaderData headerData = HeaderData.createUserHeaderData(user);
+
+                                    JSONArray posts = payload.getJSONArray("posts");
+                                    if (posts.length() != 0) {
+                                        for (int i = 0; i < posts.length(); i++) {
+                                            JSONObject postdata = posts.getJSONObject(i);
+                                            mPostData.add(PostData.createUserPostData(postdata));
+                                            mPost_Ids.add(postdata.getString("post_id"));
+                                        }
+                                        cb.onUserAndRestDataLoaded(api, headerData, mPostData, mPost_Ids);
+                                    } else {
+                                        cb.onUserAndRestDataEmpty(api, headerData);
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
                             }
 
                             @Override
@@ -100,41 +98,38 @@ public class UserAndRestDataRepositoryImpl implements UserAndRestDataRepository 
 
     @Override
     public void getRestDataList(final Const.APICategory api, String url, final UserAndRestDataRepositoryCallback cb) {
-        API3.Util.GlobalCode globalCode = mAPI3.check_global_error();
+        API3.Util.GlobalCode globalCode = mAPI3.CheckGlobalCode();
         if (globalCode == API3.Util.GlobalCode.SUCCESS) {
             try {
                 Application_Gocci.getJsonSync(url, new JsonHttpResponseHandler() {
 
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        mAPI3.get_rest_response(response, new API3.GetUserAndRestResponseCallback() {
+                        mAPI3.GetRestResponse(response, new API3.PayloadResponseCallback() {
                             @Override
-                            public void onSuccess(HeaderData headerData, ArrayList<PostData> postData, ArrayList<String> post_ids) {
-//                                final ArrayList<PostData> mPostData = new ArrayList<>();
-//                                final ArrayList<String> mPost_Ids = new ArrayList<>();
-//
-//                                JSONObject payload = jsonObject.getJSONObject("payload");
-//                                JSONObject user = payload.getJSONObject("rest");
-//
-//                                HeaderData headerData = HeaderData.createTenpoHeaderData(user);
-//
-//                                JSONArray posts = payload.getJSONArray("posts");
-//                                if (posts.length() != 0) {
-//                                    for (int i = 0; i < posts.length(); i++) {
-//                                        JSONObject postdata = posts.getJSONObject(i);
-//                                        mPostData.add(PostData.createRestPostData(postdata));
-//                                        mPost_Ids.add(postdata.getString("post_id"));
-//                                    }
-//                                    cb.onSuccess(headerData, mPostData, mPost_Ids);
-//                                } else {
-//                                    cb.onEmpty(headerData);
-//                                }
-                                cb.onUserAndRestDataLoaded(api, headerData, postData, post_ids);
-                            }
+                            public void onSuccess(JSONObject jsonObject) {
+                                try {
+                                    JSONObject payload = jsonObject.getJSONObject("payload");
+                                    JSONObject user = payload.getJSONObject("rest");
 
-                            @Override
-                            public void onEmpty(HeaderData headerData) {
-                                cb.onUserAndRestDataEmpty(api, headerData);
+                                    final ArrayList<PostData> mPostData = new ArrayList<>();
+                                    final ArrayList<String> mPost_Ids = new ArrayList<>();
+                                    HeaderData headerData = HeaderData.createTenpoHeaderData(user);
+
+                                    JSONArray posts = payload.getJSONArray("posts");
+                                    if (posts.length() != 0) {
+                                        for (int i = 0; i < posts.length(); i++) {
+                                            JSONObject postdata = posts.getJSONObject(i);
+                                            mPostData.add(PostData.createRestPostData(postdata));
+                                            mPost_Ids.add(postdata.getString("post_id"));
+                                        }
+                                        cb.onUserAndRestDataLoaded(api, headerData, mPostData, mPost_Ids);
+                                    } else {
+                                        cb.onUserAndRestDataEmpty(api, headerData);
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
                             }
 
                             @Override

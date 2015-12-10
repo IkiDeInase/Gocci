@@ -161,7 +161,7 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
 
     @OnClick(R.id.location)
     public void onLocation() {
-        MapProfActivity.startProfMapActivity(TimelineActivity.mLongitude, TimelineActivity.mLatitude, mUsers, MyprofActivity.this);
+        MapProfActivity.startProfMapActivity(Double.parseDouble(TimelineActivity.mLongitude), Double.parseDouble(TimelineActivity.mLatitude), mUsers, MyprofActivity.this);
     }
 
     private Drawer result;
@@ -274,11 +274,11 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
             }
         });
 
-        API3.Util.GetUserLocalCode localCode = api3Impl.get_user_parameter_regex(SavedData.getServerUserId(this));
+        API3.Util.GetUserLocalCode localCode = api3Impl.GetUserParameterRegex(SavedData.getServerUserId(this));
         if (localCode == null) {
             mPresenter.getProfData(Const.APICategory.GET_USER_FIRST, API3.Util.getGetUserAPI(SavedData.getServerUserId(this)));
         } else {
-            Toast.makeText(MyprofActivity.this, API3.Util.getUserLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+            Toast.makeText(MyprofActivity.this, API3.Util.GetUserLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
         }
 
         mToolBar.setLogo(R.drawable.ic_gocci_moji_white45);
@@ -495,11 +495,11 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
     public void subscribe(NotificationNumberEvent event) {
         Snackbar.make(mCoordinatorLayout, event.mMessage, Snackbar.LENGTH_SHORT).show();
         if (event.mMessage.equals(getString(R.string.videoposting_complete))) {
-            API3.Util.GetUserLocalCode localCode = API3.Impl.getRepository().get_user_parameter_regex(SavedData.getServerUserId(this));
+            API3.Util.GetUserLocalCode localCode = API3.Impl.getRepository().GetUserParameterRegex(SavedData.getServerUserId(this));
             if (localCode == null) {
                 mPresenter.getProfData(Const.APICategory.GET_USER_REFRESH, API3.Util.getGetUserAPI(SavedData.getServerUserId(this)));
             } else {
-                Toast.makeText(MyprofActivity.this, API3.Util.getUserLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                Toast.makeText(MyprofActivity.this, API3.Util.GetUserLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
             }
         } else {
             mNotificationNumber.setVisibility(View.VISIBLE);
@@ -874,7 +874,7 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
     }
 
     private void goCamera() {
-        if (SavedData.getVideoUrl(MyprofActivity.this).equals("") || SavedData.getLat(MyprofActivity.this) == 0.0) {
+        if (SavedData.getVideoUrl(MyprofActivity.this).equals("") || SavedData.getLat(MyprofActivity.this).isEmpty()) {
             startActivity(new Intent(MyprofActivity.this, CameraActivity.class));
         } else {
             new MaterialDialog.Builder(MyprofActivity.this)
@@ -947,11 +947,11 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
     }
 
     public void refreshJson() {
-        API3.Util.GetUserLocalCode localCode = API3.Impl.getRepository().get_user_parameter_regex(SavedData.getServerUserId(this));
+        API3.Util.GetUserLocalCode localCode = API3.Impl.getRepository().GetUserParameterRegex(SavedData.getServerUserId(this));
         if (localCode == null) {
             mPresenter.getProfData(Const.APICategory.GET_USER_REFRESH, API3.Util.getGetUserAPI(SavedData.getServerUserId(this)));
         } else {
-            Toast.makeText(MyprofActivity.this, API3.Util.getUserLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+            Toast.makeText(MyprofActivity.this, API3.Util.GetUserLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -1080,11 +1080,11 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
     }
 
     public void postGochi(String post_id) {
-        API3.Util.PostGochiLocalCode postGochiLocalCode = API3.Impl.getRepository().post_gochi_parameter_regex(post_id);
+        API3.Util.SetGochiLocalCode postGochiLocalCode = API3.Impl.getRepository().SetGochiParameterRegex(post_id);
         if (postGochiLocalCode == null) {
-            mPresenter.postGochi(Const.APICategory.POST_GOCHI, API3.Util.getPostGochiAPI(post_id), post_id);
+            mPresenter.postGochi(Const.APICategory.POST_GOCHI, API3.Util.getSetGochiAPI(post_id), post_id);
         } else {
-            Toast.makeText(this, API3.Util.postGochiLocalErrorMessageTable(postGochiLocalCode), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, API3.Util.SetGochiLocalCodeMessageTable(postGochiLocalCode), Toast.LENGTH_SHORT).show();
         }
     }
 

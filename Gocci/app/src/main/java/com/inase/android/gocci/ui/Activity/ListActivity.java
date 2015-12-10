@@ -142,43 +142,43 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 if (Util.getConnectedState(ListActivity.this) != Util.NetworkStatus.OFF) {
                     switch (mCategory) {
                         case FOLLOW:
-                            API3.Util.GetFollowLocalCode getFollowLocalCode = api3Impl.get_follow_parameter_regex(mId);
+                            API3.Util.GetFollowLocalCode getFollowLocalCode = api3Impl.GetFollowParameterRegex(mId);
                             if (getFollowLocalCode == null) {
                                 mPresenter.getListData(Const.APICategory.GET_FOLLOW_REFRESH, API3.Util.getGetFollowAPI(mId));
                             } else {
-                                Toast.makeText(ListActivity.this, API3.Util.getFollowLocalErrorMessageTable(getFollowLocalCode), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(ListActivity.this, API3.Util.GetFollowLocalCodeMessageTable(getFollowLocalCode), Toast.LENGTH_SHORT).show();
                             }
                             break;
                         case FOLLOWER:
-                            API3.Util.GetFollowerLocalCode getFollowerLocalCode = api3Impl.get_follower_parameter_regex(mId);
+                            API3.Util.GetFollowerLocalCode getFollowerLocalCode = api3Impl.GetFollowerParameterRegex(mId);
                             if (getFollowerLocalCode == null) {
                                 mPresenter.getListData(Const.APICategory.GET_FOLLOWER_REFRESH, API3.Util.getGetFollowerAPI(mId));
                             } else {
-                                Toast.makeText(ListActivity.this, API3.Util.getFollowerLocalErrorMessageTable(getFollowerLocalCode), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(ListActivity.this, API3.Util.GetFollowerLocalCodeMessageTable(getFollowerLocalCode), Toast.LENGTH_SHORT).show();
                             }
                             break;
                         case USER_CHEER:
-                            API3.Util.GetUserCheerLocalCode getUserCheerLocalCode = api3Impl.get_user_cheer_parameter_regex(mId);
+                            API3.Util.GetUser_CheerLocalCode getUserCheerLocalCode = api3Impl.GetUser_CheerParameterRegex(mId);
                             if (getUserCheerLocalCode == null) {
                                 mPresenter.getListData(Const.APICategory.GET_USER_CHEER_REFRESH, API3.Util.getGetUserCheerAPI(mId));
                             } else {
-                                Toast.makeText(ListActivity.this, API3.Util.getUserCheerLocalErrorMessageTable(getUserCheerLocalCode), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(ListActivity.this, API3.Util.GetUser_CheerLocalCodeMessageTable(getUserCheerLocalCode), Toast.LENGTH_SHORT).show();
                             }
                             break;
                         case WANT:
-                            API3.Util.GetWantLocalCode getWantLocalCode = api3Impl.get_want_parameter_regex(mId);
+                            API3.Util.GetWantLocalCode getWantLocalCode = api3Impl.GetWantParameterRegex(mId);
                             if (getWantLocalCode == null) {
                                 mPresenter.getListData(Const.APICategory.GET_WANT_REFRESH, API3.Util.getGetWantAPI(mId));
                             } else {
-                                Toast.makeText(ListActivity.this, API3.Util.getWantLocalErrorMessageTable(getWantLocalCode), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(ListActivity.this, API3.Util.GetWantLocalCodeMessageTable(getWantLocalCode), Toast.LENGTH_SHORT).show();
                             }
                             break;
                         case REST_CHEER:
-                            API3.Util.GetRestCheerLocalCode getRestCheerLocalCode = api3Impl.get_rest_cheer_parameter_regex(mId);
+                            API3.Util.GetRest_CheerLocalCode getRestCheerLocalCode = api3Impl.GetRest_CheerParameterRegex(mId);
                             if (getRestCheerLocalCode == null) {
                                 mPresenter.getListData(Const.APICategory.GET_REST_CHEER_REFRESH, API3.Util.getGetRestCheerAPI(mId));
                             } else {
-                                Toast.makeText(ListActivity.this, API3.Util.getRestCheerLocalErrorMessageTable(getRestCheerLocalCode), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(ListActivity.this, API3.Util.GetRest_CheerLocalCodeMessageTable(getRestCheerLocalCode), Toast.LENGTH_SHORT).show();
                             }
                             break;
                     }
@@ -269,51 +269,51 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
             case FOLLOW:
                 getSupportActionBar().setTitle(getString(R.string.follow_list));
                 mEmptyText.setText(getString(R.string.follow_empty_text));
-                API3.Util.GetFollowLocalCode getFollowLocalCode = api3Impl.get_follow_parameter_regex(mId);
+                API3.Util.GetFollowLocalCode getFollowLocalCode = api3Impl.GetFollowParameterRegex(mId);
                 if (getFollowLocalCode == null) {
                     mPresenter.getListData(Const.APICategory.GET_FOLLOW_FIRST, API3.Util.getGetFollowAPI(mId));
                 } else {
-                    Toast.makeText(ListActivity.this, API3.Util.getFollowLocalErrorMessageTable(getFollowLocalCode), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ListActivity.this, API3.Util.GetFollowLocalCodeMessageTable(getFollowLocalCode), Toast.LENGTH_SHORT).show();
                 }
                 break;
             case FOLLOWER:
                 getSupportActionBar().setTitle(getString(R.string.follower_list));
                 mEmptyText.setText(getString(R.string.follower_empty_text));
-                API3.Util.GetFollowerLocalCode getFollowerLocalCode = api3Impl.get_follower_parameter_regex(mId);
+                API3.Util.GetFollowerLocalCode getFollowerLocalCode = api3Impl.GetFollowerParameterRegex(mId);
                 if (getFollowerLocalCode == null) {
                     mPresenter.getListData(Const.APICategory.GET_FOLLOWER_FIRST, API3.Util.getGetFollowerAPI(mId));
                 } else {
-                    Toast.makeText(ListActivity.this, API3.Util.getFollowerLocalErrorMessageTable(getFollowerLocalCode), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ListActivity.this, API3.Util.GetFollowerLocalCodeMessageTable(getFollowerLocalCode), Toast.LENGTH_SHORT).show();
                 }
                 break;
             case USER_CHEER:
                 getSupportActionBar().setTitle(getString(R.string.cheer_list));
                 mEmptyText.setText(getString(R.string.cheer_empty_text));
-                API3.Util.GetUserCheerLocalCode getUserCheerLocalCode = api3Impl.get_user_cheer_parameter_regex(mId);
+                API3.Util.GetUser_CheerLocalCode getUserCheerLocalCode = api3Impl.GetUser_CheerParameterRegex(mId);
                 if (getUserCheerLocalCode == null) {
                     mPresenter.getListData(Const.APICategory.GET_USER_CHEER_FIRST, API3.Util.getGetUserCheerAPI(mId));
                 } else {
-                    Toast.makeText(ListActivity.this, API3.Util.getUserCheerLocalErrorMessageTable(getUserCheerLocalCode), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ListActivity.this, API3.Util.GetUser_CheerLocalCodeMessageTable(getUserCheerLocalCode), Toast.LENGTH_SHORT).show();
                 }
                 break;
             case WANT:
                 getSupportActionBar().setTitle(getString(R.string.want_list));
                 mEmptyText.setText(getString(R.string.want_empty_text));
-                API3.Util.GetWantLocalCode getWantLocalCode = api3Impl.get_want_parameter_regex(mId);
+                API3.Util.GetWantLocalCode getWantLocalCode = api3Impl.GetWantParameterRegex(mId);
                 if (getWantLocalCode == null) {
                     mPresenter.getListData(Const.APICategory.GET_WANT_FIRST, API3.Util.getGetWantAPI(mId));
                 } else {
-                    Toast.makeText(ListActivity.this, API3.Util.getWantLocalErrorMessageTable(getWantLocalCode), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ListActivity.this, API3.Util.GetWantLocalCodeMessageTable(getWantLocalCode), Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REST_CHEER:
                 getSupportActionBar().setTitle(getString(R.string.cheer_user_list));
                 mEmptyText.setText(getString(R.string.usercheer_empty_text));
-                API3.Util.GetRestCheerLocalCode getRestCheerLocalCode = api3Impl.get_rest_cheer_parameter_regex(mId);
+                API3.Util.GetRest_CheerLocalCode getRestCheerLocalCode = api3Impl.GetRest_CheerParameterRegex(mId);
                 if (getRestCheerLocalCode == null) {
                     mPresenter.getListData(Const.APICategory.GET_REST_CHEER_FIRST, API3.Util.getGetRestCheerAPI(mId));
                 } else {
-                    Toast.makeText(ListActivity.this, API3.Util.getRestCheerLocalErrorMessageTable(getRestCheerLocalCode), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ListActivity.this, API3.Util.GetRest_CheerLocalCodeMessageTable(getRestCheerLocalCode), Toast.LENGTH_SHORT).show();
                 }
                 break;
         }
@@ -393,18 +393,18 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
     @Override
     public void onFollowClick(Const.APICategory api, String user_id) {
         if (api == Const.APICategory.POST_FOLLOW) {
-            API3.Util.PostFollowLocalCode postFollowLocalCode = API3.Impl.getRepository().post_follow_parameter_regex(user_id);
+            API3.Util.SetFollowLocalCode postFollowLocalCode = API3.Impl.getRepository().SetFollowParameterRegex(user_id);
             if (postFollowLocalCode == null) {
-                mPresenter.postFollow(api, API3.Util.getPostFollowAPI(user_id), user_id);
+                mPresenter.postFollow(api, API3.Util.getSetFollowAPI(user_id), user_id);
             } else {
-                Toast.makeText(ListActivity.this, API3.Util.postFollowLocalErrorMessageTable(postFollowLocalCode), Toast.LENGTH_SHORT).show();
+                Toast.makeText(ListActivity.this, API3.Util.SetFollowLocalCodeMessageTable(postFollowLocalCode), Toast.LENGTH_SHORT).show();
             }
         } else if (api == Const.APICategory.POST_UNFOLLOW) {
-            API3.Util.PostUnfollowLocalCode postUnfollowLocalCode = API3.Impl.getRepository().post_unFollow_parameter_regex(user_id);
+            API3.Util.UnsetFollowLocalCode postUnfollowLocalCode = API3.Impl.getRepository().UnsetFollowParameterRegex(user_id);
             if (postUnfollowLocalCode == null) {
-                mPresenter.postFollow(api, API3.Util.getPostUnfollowAPI(user_id), user_id);
+                mPresenter.postFollow(api, API3.Util.getUnsetFollowAPI(user_id), user_id);
             } else {
-                Toast.makeText(ListActivity.this, API3.Util.postUnfollowLocalErrorMessageTable(postUnfollowLocalCode), Toast.LENGTH_SHORT).show();
+                Toast.makeText(ListActivity.this, API3.Util.UnsetFollowLocalCodeMessageTable(postUnfollowLocalCode), Toast.LENGTH_SHORT).show();
             }
         }
     }

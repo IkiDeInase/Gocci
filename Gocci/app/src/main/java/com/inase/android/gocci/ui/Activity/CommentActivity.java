@@ -94,14 +94,19 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
             comment = mCommentEdit.getText().toString();
         }
         if (!comment.isEmpty()) {
-            button.setFocusable(true);
-            button.setFocusableInTouchMode(true);
-            button.requestFocus();
-            mProgress.setVisibility(View.VISIBLE);
-            if (isNotice) {
-                mPresenter.postComment(Const.APICategory.POST_COMMENT, API3.Util.getPostCommentAPI(mPost_id, comment, mNoticeUser_id), API3.Util.getGetCommentAPI(mPost_id));
+            API3.Util.SetCommentLocalCode localCode = API3.Impl.getRepository().SetCommentParameterRegex(mPost_id, comment, mNoticeUser_id);
+            if (localCode == null) {
+                button.setFocusable(true);
+                button.setFocusableInTouchMode(true);
+                button.requestFocus();
+                mProgress.setVisibility(View.VISIBLE);
+                if (isNotice) {
+                    mPresenter.postComment(Const.APICategory.POST_COMMENT, API3.Util.getSetCommentAPI(mPost_id, comment, mNoticeUser_id), API3.Util.getGetCommentAPI(mPost_id));
+                } else {
+                    mPresenter.postComment(Const.APICategory.POST_COMMENT, API3.Util.getSetCommentAPI(mPost_id, comment, ""), API3.Util.getGetCommentAPI(mPost_id));
+                }
             } else {
-                mPresenter.postComment(Const.APICategory.POST_COMMENT, API3.Util.getPostCommentAPI(mPost_id, comment, ""), API3.Util.getGetCommentAPI(mPost_id));
+                Toast.makeText(CommentActivity.this, API3.Util.SetCommentLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -220,12 +225,12 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
             public void onRefresh() {
                 mSwipeRefresh.setRefreshing(true);
                 if (Util.getConnectedState(CommentActivity.this) != Util.NetworkStatus.OFF) {
-                    API3.Util.GetCommentLocalCode localCode = api3Impl.get_comment_parameter_regex(mPost_id);
+                    API3.Util.GetCommentLocalCode localCode = api3Impl.GetCommentParameterRegex(mPost_id);
                     if (localCode == null) {
                         mPresenter.getCommentData(Const.APICategory.GET_COMMENT_REFRESH, API3.Util.getGetCommentAPI(mPost_id));
                     } else {
                         mSwipeRefresh.setRefreshing(false);
-                        Toast.makeText(CommentActivity.this, API3.Util.getCommentLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(CommentActivity.this, API3.Util.GetCommentLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
                     }
                 } else {
                     Toast.makeText(CommentActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
@@ -234,11 +239,11 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
             }
         });
 
-        API3.Util.GetCommentLocalCode localCode = api3Impl.get_comment_parameter_regex(mPost_id);
+        API3.Util.GetCommentLocalCode localCode = api3Impl.GetCommentParameterRegex(mPost_id);
         if (localCode == null) {
             mPresenter.getCommentData(Const.APICategory.GET_COMMENT_FIRST, API3.Util.getGetCommentAPI(mPost_id));
         } else {
-            Toast.makeText(CommentActivity.this, API3.Util.getCommentLocalErrorMessageTable(localCode), Toast.LENGTH_SHORT).show();
+            Toast.makeText(CommentActivity.this, API3.Util.GetCommentLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
         }
 
         mCommentRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {

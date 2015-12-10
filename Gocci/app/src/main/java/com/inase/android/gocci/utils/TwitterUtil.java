@@ -2,7 +2,6 @@ package com.inase.android.gocci.utils;
 
 import android.content.Context;
 import android.util.Base64;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.inase.android.gocci.Application_Gocci;

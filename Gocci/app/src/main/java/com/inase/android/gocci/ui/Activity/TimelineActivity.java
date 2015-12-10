@@ -116,8 +116,8 @@ public class TimelineActivity extends AppCompatActivity {
             SmartLocation.with(TimelineActivity.this).location().oneFix().start(new OnLocationUpdatedListener() {
                 @Override
                 public void onLocationUpdated(Location location) {
-                    mLongitude = location.getLongitude();
-                    mLatitude = location.getLatitude();
+                    mLongitude = String.valueOf(location.getLongitude());
+                    mLatitude = String.valueOf(location.getLatitude());
                 }
             });
         } else {
@@ -145,8 +145,8 @@ public class TimelineActivity extends AppCompatActivity {
     public static int mLatestCategory_id = 0;
     public static int mLatestValue_id = 0;
 
-    public static double mLongitude = 139.745433;
-    public static double mLatitude = 35.658581;
+    public static String mLongitude = "139.745433";
+    public static String mLatitude = "35.658581";
 
     private String mTitle = "現在地";
 
@@ -185,7 +185,7 @@ public class TimelineActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (mShowPosition == 0) {
-                    MapSearchActivity.startMapSearchActivity(123, mLongitude, mLatitude, TimelineActivity.this);
+                    MapSearchActivity.startMapSearchActivity(123, Double.parseDouble(mLongitude), Double.parseDouble(mLatitude), TimelineActivity.this);
                 }
             }
         });
@@ -384,15 +384,15 @@ public class TimelineActivity extends AppCompatActivity {
                 //Otto currentpageと絞り込みurl
                 switch (mShowPosition) {
                     case 0:
-                        BusHolder.get().post(new FilterTimelineEvent(mShowPosition, API3.Util.getGetNearlineCustomAPI(
+                        BusHolder.get().post(new FilterTimelineEvent(mShowPosition, API3.Util.getGetNearlineAPI(
                                 mLongitude, mLatitude, 0, mNearCategory_id, mNearValue_id)));
                         break;
                     case 1:
-                        BusHolder.get().post(new FilterTimelineEvent(mShowPosition, API3.Util.getGetFollowlineCustomAPI(
+                        BusHolder.get().post(new FilterTimelineEvent(mShowPosition, API3.Util.getGetFollowlineAPI(
                                 0, mFollowCategory_id, mFollowValue_id)));
                         break;
                     case 2:
-                        BusHolder.get().post(new FilterTimelineEvent(mShowPosition, API3.Util.getGetTimelineCustomAPI(
+                        BusHolder.get().post(new FilterTimelineEvent(mShowPosition, API3.Util.getGetTimelineAPI(
                                 0, mLatestCategory_id, mLatestValue_id)));
                         break;
                 }
@@ -688,7 +688,7 @@ public class TimelineActivity extends AppCompatActivity {
     }
 
     private void goCamera() {
-        if (SavedData.getVideoUrl(TimelineActivity.this).equals("") || SavedData.getLat(TimelineActivity.this) == 0.0) {
+        if (SavedData.getVideoUrl(TimelineActivity.this).equals("") || SavedData.getLat(TimelineActivity.this).isEmpty()) {
             startActivity(new Intent(TimelineActivity.this, CameraActivity.class));
         } else {
             new MaterialDialog.Builder(TimelineActivity.this)

@@ -7,6 +7,7 @@ import com.inase.android.gocci.domain.model.ListGetData;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.SocketTimeoutException;
@@ -34,7 +35,7 @@ public class ListRepositoryImpl implements ListRepository {
 
     @Override
     public void getList(final Const.APICategory api, String url, final ListRepositoryCallback cb) {
-        API3.Util.GlobalCode globalCode = mAPI3.check_global_error();
+        API3.Util.GlobalCode globalCode = mAPI3.CheckGlobalCode();
         if (globalCode == API3.Util.GlobalCode.SUCCESS) {
             try {
                 Application_Gocci.getJsonSync(url, new JsonHttpResponseHandler() {
@@ -43,28 +44,26 @@ public class ListRepositoryImpl implements ListRepository {
                         switch (api) {
                             case GET_FOLLOW_FIRST:
                             case GET_FOLLOW_REFRESH:
-                                mAPI3.get_follow_response(response, new API3.GetListResponseCallback() {
+                                mAPI3.GetFollowResponse(response, new API3.PayloadResponseCallback() {
 
                                     @Override
-                                    public void onSuccess(ArrayList<ListGetData> list) {
-//                                        final ArrayList<ListGetData> mListData = new ArrayList<>();
-//
-//                                        JSONArray payload = jsonObject.getJSONArray("payload");
-//                                        if (payload.length() != 0) {
-//                                            for (int i = 0; i < payload.length(); i++) {
-//                                                JSONObject listData = payload.getJSONObject(i);
-//                                                mListData.add(ListGetData.createUserData(listData));
-//                                            }
-//                                            cb.onSuccess(mListData);
-//                                        } else {
-//                                            cb.onEmpty();
-//                                        }
-                                        cb.onSuccess(api, list);
-                                    }
+                                    public void onSuccess(JSONObject jsonObject) {
+                                        try {
+                                            final ArrayList<ListGetData> mListData = new ArrayList<>();
 
-                                    @Override
-                                    public void onEmpty() {
-                                        cb.onEmpty(api);
+                                            JSONArray payload = jsonObject.getJSONArray("payload");
+                                            if (payload.length() != 0) {
+                                                for (int i = 0; i < payload.length(); i++) {
+                                                    JSONObject listData = payload.getJSONObject(i);
+                                                    mListData.add(ListGetData.createUserData(listData));
+                                                }
+                                                cb.onSuccess(api, mListData);
+                                            } else {
+                                                cb.onEmpty(api);
+                                            }
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
                                     }
 
                                     @Override
@@ -80,27 +79,25 @@ public class ListRepositoryImpl implements ListRepository {
                                 break;
                             case GET_FOLLOWER_FIRST:
                             case GET_FOLLOWER_REFRESH:
-                                mAPI3.get_follower_response(response, new API3.GetListResponseCallback() {
+                                mAPI3.GetFollowerResponse(response, new API3.PayloadResponseCallback() {
 
                                     @Override
-                                    public void onSuccess(ArrayList<ListGetData> list) {
-//                                        final ArrayList<ListGetData> mListData = new ArrayList<>();
-//                                        JSONArray payload = jsonObject.getJSONArray("payload");
-//                                        if (payload.length() != 0) {
-//                                            for (int i = 0; i < payload.length(); i++) {
-//                                                JSONObject listData = payload.getJSONObject(i);
-//                                                mListData.add(ListGetData.createUserData(listData));
-//                                            }
-//                                            cb.onSuccess(mListData);
-//                                        } else {
-//                                            cb.onEmpty();
-//                                        }
-                                        cb.onSuccess(api, list);
-                                    }
-
-                                    @Override
-                                    public void onEmpty() {
-                                        cb.onEmpty(api);
+                                    public void onSuccess(JSONObject jsonObject) {
+                                        try {
+                                            final ArrayList<ListGetData> mListData = new ArrayList<>();
+                                            JSONArray payload = jsonObject.getJSONArray("payload");
+                                            if (payload.length() != 0) {
+                                                for (int i = 0; i < payload.length(); i++) {
+                                                    JSONObject listData = payload.getJSONObject(i);
+                                                    mListData.add(ListGetData.createUserData(listData));
+                                                }
+                                                cb.onSuccess(api, mListData);
+                                            } else {
+                                                cb.onEmpty(api);
+                                            }
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
                                     }
 
                                     @Override
@@ -116,28 +113,26 @@ public class ListRepositoryImpl implements ListRepository {
                                 break;
                             case GET_WANT_FIRST:
                             case GET_WANT_REFRESH:
-                                mAPI3.get_want_response(response, new API3.GetListResponseCallback() {
+                                mAPI3.GetWantResponse(response, new API3.PayloadResponseCallback() {
 
                                     @Override
-                                    public void onSuccess(ArrayList<ListGetData> list) {
-//                                        final ArrayList<ListGetData> mListData = new ArrayList<>();
-//
-//                                        JSONArray payload = jsonObject.getJSONArray("payload");
-//                                        if (payload.length() != 0) {
-//                                            for (int i = 0; i < payload.length(); i++) {
-//                                                JSONObject listData = payload.getJSONObject(i);
-//                                                mListData.add(ListGetData.createRestData(listData));
-//                                            }
-//                                            cb.onSuccess(mListData);
-//                                        } else {
-//                                            cb.onEmpty();
-//                                        }
-                                        cb.onSuccess(api, list);
-                                    }
+                                    public void onSuccess(JSONObject jsonObject) {
+                                        try {
+                                            final ArrayList<ListGetData> mListData = new ArrayList<>();
 
-                                    @Override
-                                    public void onEmpty() {
-                                        cb.onEmpty(api);
+                                            JSONArray payload = jsonObject.getJSONArray("payload");
+                                            if (payload.length() != 0) {
+                                                for (int i = 0; i < payload.length(); i++) {
+                                                    JSONObject listData = payload.getJSONObject(i);
+                                                    mListData.add(ListGetData.createRestData(listData));
+                                                }
+                                                cb.onSuccess(api, mListData);
+                                            } else {
+                                                cb.onEmpty(api);
+                                            }
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
                                     }
 
                                     @Override
@@ -153,28 +148,26 @@ public class ListRepositoryImpl implements ListRepository {
                                 break;
                             case GET_USER_CHEER_FIRST:
                             case GET_USER_CHEER_REFRESH:
-                                mAPI3.get_user_cheer_response(response, new API3.GetListResponseCallback() {
+                                mAPI3.GetUser_CheerResponse(response, new API3.PayloadResponseCallback() {
 
                                     @Override
-                                    public void onSuccess(ArrayList<ListGetData> list) {
-//                                        final ArrayList<ListGetData> mListData = new ArrayList<>();
-//
-//                                        JSONArray payload = jsonObject.getJSONArray("payload");
-//                                        if (payload.length() != 0) {
-//                                            for (int i = 0; i < payload.length(); i++) {
-//                                                JSONObject listData = payload.getJSONObject(i);
-//                                                mListData.add(ListGetData.createRestData(listData));
-//                                            }
-//                                            cb.onSuccess(mListData);
-//                                        } else {
-//                                            cb.onEmpty();
-//                                        }
-                                        cb.onSuccess(api, list);
-                                    }
+                                    public void onSuccess(JSONObject jsonObject) {
+                                        try {
+                                            final ArrayList<ListGetData> mListData = new ArrayList<>();
 
-                                    @Override
-                                    public void onEmpty() {
-                                        cb.onEmpty(api);
+                                            JSONArray payload = jsonObject.getJSONArray("payload");
+                                            if (payload.length() != 0) {
+                                                for (int i = 0; i < payload.length(); i++) {
+                                                    JSONObject listData = payload.getJSONObject(i);
+                                                    mListData.add(ListGetData.createRestData(listData));
+                                                }
+                                                cb.onSuccess(api, mListData);
+                                            } else {
+                                                cb.onEmpty(api);
+                                            }
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
                                     }
 
                                     @Override
@@ -190,28 +183,26 @@ public class ListRepositoryImpl implements ListRepository {
                                 break;
                             case GET_REST_CHEER_FIRST:
                             case GET_REST_CHEER_REFRESH:
-                                mAPI3.get_rest_cheer_response(response, new API3.GetListResponseCallback() {
+                                mAPI3.GetRest_CheerResponse(response, new API3.PayloadResponseCallback() {
 
                                     @Override
-                                    public void onSuccess(ArrayList<ListGetData> list) {
-//                                        final ArrayList<ListGetData> mListData = new ArrayList<>();
-//
-//                                        JSONArray payload = jsonObject.getJSONArray("payload");
-//                                        if (payload.length() != 0) {
-//                                            for (int i = 0; i < payload.length(); i++) {
-//                                                JSONObject listData = payload.getJSONObject(i);
-//                                                mListData.add(ListGetData.createUserData(listData));
-//                                            }
-//                                            cb.onSuccess(mListData);
-//                                        } else {
-//                                            cb.onEmpty();
-//                                        }
-                                        cb.onSuccess(api, list);
-                                    }
+                                    public void onSuccess(JSONObject jsonObject) {
+                                        try {
+                                            final ArrayList<ListGetData> mListData = new ArrayList<>();
 
-                                    @Override
-                                    public void onEmpty() {
-                                        cb.onEmpty(api);
+                                            JSONArray payload = jsonObject.getJSONArray("payload");
+                                            if (payload.length() != 0) {
+                                                for (int i = 0; i < payload.length(); i++) {
+                                                    JSONObject listData = payload.getJSONObject(i);
+                                                    mListData.add(ListGetData.createUserData(listData));
+                                                }
+                                                cb.onSuccess(api, mListData);
+                                            } else {
+                                                cb.onEmpty(api);
+                                            }
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
                                     }
 
                                     @Override
