@@ -35,6 +35,7 @@ import com.inase.android.gocci.datasource.repository.HeatmapRepositoryImpl;
 import com.inase.android.gocci.domain.executor.UIThread;
 import com.inase.android.gocci.domain.usecase.HeatmapUseCase;
 import com.inase.android.gocci.domain.usecase.HeatmapUseCaseImpl;
+import com.inase.android.gocci.event.AddressNameEvent;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.RetryApiEvent;
 import com.inase.android.gocci.presenter.ShowHeatmapPresenter;
@@ -68,7 +69,7 @@ public class MapSearchActivity extends AppCompatActivity implements ShowHeatmapP
 
     private ClusterManager<HeatmapLog> mClusterManager;
 
-    private String mPlace;
+    private String mPlace = "位置特定中";
     private double mLat;
     private double mLon;
 
@@ -99,6 +100,7 @@ public class MapSearchActivity extends AppCompatActivity implements ShowHeatmapP
                 mSnack.dismiss();
             }
             Toast.makeText(MapSearchActivity.this, "位置を特定しています", Toast.LENGTH_SHORT).show();
+            toolBar.setTitle(mPlace);
             getRevGeo(mLat, mLon);
         } else {
             backNearline();
@@ -225,6 +227,11 @@ public class MapSearchActivity extends AppCompatActivity implements ShowHeatmapP
         }
     }
 
+    @Subscribe
+    public void subscribe(AddressNameEvent event) {
+        toolBar.setTitle(event.mPlace.isEmpty() ? "場所不明" : event.mPlace);
+    }
+
     OnMapReadyCallback readyCallback = new OnMapReadyCallback() {
         @Override
         public void onMapReady(GoogleMap googleMap) {
@@ -321,7 +328,7 @@ public class MapSearchActivity extends AppCompatActivity implements ShowHeatmapP
 
             @Override
             protected void onPostExecute(String result) {
-                toolBar.setTitle(mPlace.isEmpty() ? "場所不明" : mPlace);
+                BusHolder.get().post(new AddressNameEvent(mPlace));
             }
         }.execute();
     }

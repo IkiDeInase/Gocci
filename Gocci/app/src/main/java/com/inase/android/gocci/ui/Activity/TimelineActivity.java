@@ -40,6 +40,7 @@ import com.andexert.library.RippleView;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3;
+import com.inase.android.gocci.event.AddressNameEvent;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.FilterTimelineEvent;
 import com.inase.android.gocci.event.NotificationNumberEvent;
@@ -105,6 +106,8 @@ public class TimelineActivity extends AppCompatActivity {
 
     private float pointX;
     private float pointY;
+
+    protected static final int REQUEST_CHECK_SETTINGS = 0x1;
 
     @OnClick(R.id.fab)
     public void click() {
@@ -177,6 +180,7 @@ public class TimelineActivity extends AppCompatActivity {
         setContentView(R.layout.activity_timeline);
         ButterKnife.bind(this);
 
+        mShowPosition = 0;
         mToolBar.setTitle(mTitle);
         mToolBar.setSubtitle("エリアを変更する");
         mToolBar.setTitleTextAppearance(TimelineActivity.this, R.style.Toolbar_TitleText);
@@ -448,6 +452,9 @@ public class TimelineActivity extends AppCompatActivity {
                     adapter.getPage(0).onActivityResult(requestCode, resultCode, data);
                 }
                 break;
+            case REQUEST_CHECK_SETTINGS:
+                adapter.getPage(0).onActivityResult(requestCode, resultCode, data);
+                break;
             default:
                 break;
         }
@@ -460,6 +467,14 @@ public class TimelineActivity extends AppCompatActivity {
         if (!event.mMessage.equals(getString(R.string.videoposting_complete))) {
             mNotificationNumber.setVisibility(View.VISIBLE);
             mNotificationNumber.setText(String.valueOf(event.mNotificationNumber));
+        }
+    }
+
+    @Subscribe
+    public void subscribe(AddressNameEvent event) {
+        mTitle = event.mPlace;
+        if (mShowPosition == 0) {
+            mToolBar.setTitle(mTitle.isEmpty() ? "場所不明" : mTitle);
         }
     }
 
