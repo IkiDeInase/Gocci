@@ -446,7 +446,7 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
                     // ...sharing failed, handle error
                     Toast.makeText(CameraPreviewActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
                 }
-                API3PostUtil.postSnsLinkAsync(CameraPreviewActivity.this, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), Const.ActivityCategory.CAMERA_PREVIEW, Const.APICategory.POST_FACEBOOK);
+                API3PostUtil.postSnsLinkAsync(CameraPreviewActivity.this, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), Const.ActivityCategory.CAMERA_PREVIEW, Const.APICategory.SET_FACEBOOK_LINK);
                 Profile profile = Profile.getCurrentProfile();
                 String profile_img = "https://graph.facebook.com/" + profile.getId() + "/picture";
                 String post_date = SavedData.getServerUserId(CameraPreviewActivity.this) + "_" + Util.getDateTimeString();
@@ -473,7 +473,7 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
                 mTwitterEdit.show(true);
                 mCheckTwitter.setChecked(true);
                 TwitterAuthToken authToken = result.data.getAuthToken();
-                API3PostUtil.postSnsLinkAsync(CameraPreviewActivity.this, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, Const.ActivityCategory.CAMERA_PREVIEW, Const.APICategory.POST_TWITTER);
+                API3PostUtil.postSnsLinkAsync(CameraPreviewActivity.this, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, Const.ActivityCategory.CAMERA_PREVIEW, Const.APICategory.SET_TWITTER_LINK);
                 String username = result.data.getUserName();
                 String profile_img = "http://www.paper-glasses.com/api/twipi/" + username;
                 String post_date = SavedData.getServerUserId(CameraPreviewActivity.this) + "_" + Util.getDateTimeString();
@@ -513,7 +513,7 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
     @Subscribe
     public void subscribe(PostCallbackEvent event) {
         if (event.activityCategory == Const.ActivityCategory.CAMERA_PREVIEW) {
-            if (event.apiCategory == Const.APICategory.POST_RESTADD) {
+            if (event.apiCategory == Const.APICategory.SET_RESTADD) {
                 mIsnewRestname = true;
                 mRestnameSpinner.setText(mRestname);
                 mRest_id = event.id;
@@ -521,7 +521,7 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
                 SavedData.setIsNewRestname(CameraPreviewActivity.this, mIsnewRestname);
                 SavedData.setRestname(CameraPreviewActivity.this, mRestname);
                 SavedData.setRest_id(CameraPreviewActivity.this, mRest_id);
-            } else if (event.apiCategory == Const.APICategory.POST_POST) {
+            } else if (event.apiCategory == Const.APICategory.SET_POST) {
                 mProgressWheel.setVisibility(View.GONE);
                 switch (event.callback) {
                     case SUCCESS:

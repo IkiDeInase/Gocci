@@ -101,9 +101,9 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
                 button.requestFocus();
                 mProgress.setVisibility(View.VISIBLE);
                 if (isNotice) {
-                    mPresenter.postComment(Const.APICategory.POST_COMMENT, API3.Util.getSetCommentAPI(mPost_id, comment, mNoticeUser_id), API3.Util.getGetCommentAPI(mPost_id));
+                    mPresenter.postComment(Const.APICategory.SET_COMMENT, API3.Util.getSetCommentAPI(mPost_id, comment, mNoticeUser_id), API3.Util.getGetCommentAPI(mPost_id));
                 } else {
-                    mPresenter.postComment(Const.APICategory.POST_COMMENT, API3.Util.getSetCommentAPI(mPost_id, comment, ""), API3.Util.getGetCommentAPI(mPost_id));
+                    mPresenter.postComment(Const.APICategory.SET_COMMENT, API3.Util.getSetCommentAPI(mPost_id, comment, ""), API3.Util.getGetCommentAPI(mPost_id));
                 }
             } else {
                 Toast.makeText(CommentActivity.this, API3.Util.SetCommentLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();

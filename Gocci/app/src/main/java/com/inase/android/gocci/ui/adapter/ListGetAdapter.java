@@ -117,11 +117,11 @@ public class ListGetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 if (holder.mDeleteFollowButton.isShown()) {
                     holder.mDeleteFollowButton.setVisibility(View.INVISIBLE);
                     holder.mAddFollowButton.setVisibility(View.VISIBLE);
-                    mCallback.onFollowClick(Const.APICategory.POST_UNFOLLOW, data.getUser_id());
+                    mCallback.onFollowClick(Const.APICategory.UNSET_FOLLOW, data.getUser_id());
                 } else {
                     holder.mDeleteFollowButton.setVisibility(View.VISIBLE);
                     holder.mAddFollowButton.setVisibility(View.INVISIBLE);
-                    mCallback.onFollowClick(Const.APICategory.POST_FOLLOW, data.getUser_id());
+                    mCallback.onFollowClick(Const.APICategory.SET_FOLLOW, data.getUser_id());
                 }
             }
         });
@@ -231,11 +231,11 @@ public class ListGetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 if (holder.mAddFollowButton.isShown()) {
                     holder.mAddFollowButton.setVisibility(View.INVISIBLE);
                     holder.mDeleteFollowButton.setVisibility(View.VISIBLE);
-                    mCallback.onFollowClick(Const.APICategory.POST_FOLLOW, data.getUser_id());
+                    mCallback.onFollowClick(Const.APICategory.SET_FOLLOW, data.getUser_id());
                 } else {
                     holder.mAddFollowButton.setVisibility(View.VISIBLE);
                     holder.mDeleteFollowButton.setVisibility(View.INVISIBLE);
-                    mCallback.onFollowClick(Const.APICategory.POST_UNFOLLOW, data.getUser_id());
+                    mCallback.onFollowClick(Const.APICategory.UNSET_FOLLOW, data.getUser_id());
                 }
             }
         });

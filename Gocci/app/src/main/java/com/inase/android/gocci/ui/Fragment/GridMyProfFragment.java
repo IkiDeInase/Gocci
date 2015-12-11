@@ -219,7 +219,7 @@ public class GridMyProfFragment extends Fragment implements AppBarLayout.OnOffse
     @Subscribe
     public void subscribe(PostCallbackEvent event) {
         if (event.activityCategory == Const.ActivityCategory.MY_PAGE) {
-            if (event.apiCategory == Const.APICategory.POST_GOCHI) {
+            if (event.apiCategory == Const.APICategory.SET_GOCHI) {
                 mGridProfAdapter.setData();
             }
         }

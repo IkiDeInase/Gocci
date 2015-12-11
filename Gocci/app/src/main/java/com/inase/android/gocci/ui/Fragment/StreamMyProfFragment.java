@@ -239,7 +239,7 @@ public class StreamMyProfFragment extends Fragment implements AppBarLayout.OnOff
     @Subscribe
     public void subscribe(PostCallbackEvent event) {
         if (event.activityCategory == Const.ActivityCategory.MY_PAGE) {
-            if (event.apiCategory == Const.APICategory.POST_GOCHI) {
+            if (event.apiCategory == Const.APICategory.SET_GOCHI) {
                 mStreamMyProfAdapter.setData();
             }
         }

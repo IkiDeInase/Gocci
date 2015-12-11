@@ -482,7 +482,7 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
                     case "フォローする":
                         API3.Util.SetFollowLocalCode postFollowLocalCode = API3.Impl.getRepository().SetFollowParameterRegex(mUser_id);
                         if (postFollowLocalCode == null) {
-                            mPresenter.postFollow(Const.APICategory.POST_FOLLOW, API3.Util.getSetFollowAPI(mUser_id), mUser_id);
+                            mPresenter.postFollow(Const.APICategory.SET_FOLLOW, API3.Util.getSetFollowAPI(mUser_id), mUser_id);
                             mFollowText.setText(getString(R.string.do_unfollow));
                             headerUserData.setFollow_flag(1);
                         } else {
@@ -492,7 +492,7 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
                     case "フォロー解除する":
                         API3.Util.UnsetFollowLocalCode postUnfollowLocalCode = API3.Impl.getRepository().UnsetFollowParameterRegex(mUser_id);
                         if (postUnfollowLocalCode == null) {
-                            mPresenter.postFollow(Const.APICategory.POST_UNFOLLOW, API3.Util.getUnsetFollowAPI(mUser_id), mUser_id);
+                            mPresenter.postFollow(Const.APICategory.UNSET_FOLLOW, API3.Util.getUnsetFollowAPI(mUser_id), mUser_id);
                             mFollowText.setText(getString(R.string.do_follow));
                             headerUserData.setFollow_flag(0);
                         } else {
@@ -535,10 +535,10 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
     @Override
     public void followFailureCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode, String user_id) {
         Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
-        if (api == Const.APICategory.POST_FOLLOW) {
+        if (api == Const.APICategory.SET_FOLLOW) {
             mFollowText.setText(getString(R.string.do_follow));
             headerUserData.setFollow_flag(0);
-        } else if (api == Const.APICategory.POST_UNFOLLOW) {
+        } else if (api == Const.APICategory.UNSET_FOLLOW) {
             mFollowText.setText(getString(R.string.do_unfollow));
             headerUserData.setFollow_flag(1);
         }
@@ -547,10 +547,10 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
     @Override
     public void followFailureCausedByLocalError(Const.APICategory api, String errorMessage, String user_id) {
         Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
-        if (api == Const.APICategory.POST_FOLLOW) {
+        if (api == Const.APICategory.SET_FOLLOW) {
             mFollowText.setText(getString(R.string.do_follow));
             headerUserData.setFollow_flag(0);
-        } else if (api == Const.APICategory.POST_UNFOLLOW) {
+        } else if (api == Const.APICategory.UNSET_FOLLOW) {
             mFollowText.setText(getString(R.string.do_unfollow));
             headerUserData.setFollow_flag(1);
         }
@@ -587,7 +587,7 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
                     case "フォローする":
                         API3.Util.SetFollowLocalCode postFollowLocalCode = API3.Impl.getRepository().SetFollowParameterRegex(mUser_id);
                         if (postFollowLocalCode == null) {
-                            mPresenter.postFollow(Const.APICategory.POST_FOLLOW, API3.Util.getSetFollowAPI(mUser_id), mUser_id);
+                            mPresenter.postFollow(Const.APICategory.SET_FOLLOW, API3.Util.getSetFollowAPI(mUser_id), mUser_id);
                             mFollowText.setText(getString(R.string.do_unfollow));
                             headerUserData.setFollow_flag(1);
                         } else {
@@ -597,7 +597,7 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
                     case "フォロー解除する":
                         API3.Util.UnsetFollowLocalCode postUnfollowLocalCode = API3.Impl.getRepository().UnsetFollowParameterRegex(mUser_id);
                         if (postUnfollowLocalCode == null) {
-                            mPresenter.postFollow(Const.APICategory.POST_UNFOLLOW, API3.Util.getUnsetFollowAPI(mUser_id), mUser_id);
+                            mPresenter.postFollow(Const.APICategory.UNSET_FOLLOW, API3.Util.getUnsetFollowAPI(mUser_id), mUser_id);
                             mFollowText.setText(getString(R.string.do_follow));
                             headerUserData.setFollow_flag(0);
                         } else {
@@ -626,7 +626,7 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
     @Override
     public void gochiFailureCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode, String post_id) {
         PostData data = mUsers.get(mPost_ids.indexOf(post_id));
-        if (api == Const.APICategory.POST_GOCHI) {
+        if (api == Const.APICategory.SET_GOCHI) {
             data.setGochi_flag(0);
             data.setGochi_num(data.getGochi_num() - 1);
         }
@@ -637,7 +637,7 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
     @Override
     public void gochiFailureCausedByLocalError(Const.APICategory api, String errorMessage, String post_id) {
         PostData data = mUsers.get(mPost_ids.indexOf(post_id));
-        if (api == Const.APICategory.POST_GOCHI) {
+        if (api == Const.APICategory.SET_GOCHI) {
             data.setGochi_flag(0);
             data.setGochi_num(data.getGochi_num() - 1);
         }
@@ -667,7 +667,7 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
     public void postGochi(String post_id) {
         API3.Util.SetGochiLocalCode postGochiLocalCode = API3.Impl.getRepository().SetGochiParameterRegex(post_id);
         if (postGochiLocalCode == null) {
-            mPresenter.postGochi(Const.APICategory.POST_GOCHI, API3.Util.getSetGochiAPI(post_id), post_id);
+            mPresenter.postGochi(Const.APICategory.SET_GOCHI, API3.Util.getSetGochiAPI(post_id), post_id);
         } else {
             Toast.makeText(this, API3.Util.SetGochiLocalCodeMessageTable(postGochiLocalCode), Toast.LENGTH_SHORT).show();
         }

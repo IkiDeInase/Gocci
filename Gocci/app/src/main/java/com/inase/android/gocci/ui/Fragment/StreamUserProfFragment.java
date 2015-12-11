@@ -206,7 +206,7 @@ public class StreamUserProfFragment extends Fragment implements AppBarLayout.OnO
     @Subscribe
     public void subscribe(PostCallbackEvent event) {
         if (event.activityCategory == Const.ActivityCategory.USER_PAGE) {
-            if (event.apiCategory == Const.APICategory.POST_GOCHI) {
+            if (event.apiCategory == Const.APICategory.SET_GOCHI) {
                 mStreamUserProfAdapter.setData();
             }
         }

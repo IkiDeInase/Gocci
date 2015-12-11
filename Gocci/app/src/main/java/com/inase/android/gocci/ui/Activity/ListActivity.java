@@ -392,14 +392,14 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
     @Override
     public void onFollowClick(Const.APICategory api, String user_id) {
-        if (api == Const.APICategory.POST_FOLLOW) {
+        if (api == Const.APICategory.SET_FOLLOW) {
             API3.Util.SetFollowLocalCode postFollowLocalCode = API3.Impl.getRepository().SetFollowParameterRegex(user_id);
             if (postFollowLocalCode == null) {
                 mPresenter.postFollow(api, API3.Util.getSetFollowAPI(user_id), user_id);
             } else {
                 Toast.makeText(ListActivity.this, API3.Util.SetFollowLocalCodeMessageTable(postFollowLocalCode), Toast.LENGTH_SHORT).show();
             }
-        } else if (api == Const.APICategory.POST_UNFOLLOW) {
+        } else if (api == Const.APICategory.UNSET_FOLLOW) {
             API3.Util.UnsetFollowLocalCode postUnfollowLocalCode = API3.Impl.getRepository().UnsetFollowParameterRegex(user_id);
             if (postUnfollowLocalCode == null) {
                 mPresenter.postFollow(api, API3.Util.getUnsetFollowAPI(user_id), user_id);
@@ -494,9 +494,9 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
     @Override
     public void followFailureCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode, String user_id) {
         Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
-        if (api == Const.APICategory.POST_FOLLOW) {
+        if (api == Const.APICategory.SET_FOLLOW) {
             mList.get(mUser_idList.indexOf(user_id)).setFollow_flag(0);
-        } else if (api == Const.APICategory.POST_UNFOLLOW) {
+        } else if (api == Const.APICategory.UNSET_FOLLOW) {
             mList.get(mUser_idList.indexOf(user_id)).setFollow_flag(1);
         }
         mListGetAdapter.notifyItemChanged(mUser_idList.indexOf(user_id));
@@ -505,9 +505,9 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
     @Override
     public void followFailureCausedByLocalError(Const.APICategory api, String errorMessage, String user_id) {
         Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
-        if (api == Const.APICategory.POST_FOLLOW) {
+        if (api == Const.APICategory.SET_FOLLOW) {
             mList.get(mUser_idList.indexOf(user_id)).setFollow_flag(0);
-        } else if (api == Const.APICategory.POST_UNFOLLOW) {
+        } else if (api == Const.APICategory.UNSET_FOLLOW) {
             mList.get(mUser_idList.indexOf(user_id)).setFollow_flag(1);
         }
         mListGetAdapter.notifyItemChanged(mUser_idList.indexOf(user_id));

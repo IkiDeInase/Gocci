@@ -51,7 +51,7 @@ public class API3PostUtil {
 
                                 @Override
                                 public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_FEEDBACK, globalCode);
+                                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_FEEDBACK, globalCode);
                                 }
 
                                 @Override
@@ -63,14 +63,14 @@ public class API3PostUtil {
 
                         @Override
                         public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                            Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_FEEDBACK, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED);
+                            Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_FEEDBACK, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED);
                         }
                     });
                 } catch (SocketTimeoutException e) {
-                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_FEEDBACK, API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT);
+                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_FEEDBACK, API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT);
                 }
             } else {
-                Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_FEEDBACK, globalCode);
+                Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_FEEDBACK, globalCode);
             }
         } else {
             Toast.makeText(context, API3.Util.SetFeedbackLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
@@ -95,7 +95,7 @@ public class API3PostUtil {
 
                                 @Override
                                 public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_BLOCK, globalCode);
+                                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_BLOCK, globalCode);
                                 }
 
                                 @Override
@@ -107,14 +107,14 @@ public class API3PostUtil {
 
                         @Override
                         public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                            Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_BLOCK, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED);
+                            Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_BLOCK, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED);
                         }
                     });
                 } catch (SocketTimeoutException e) {
-                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_BLOCK, API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT);
+                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_BLOCK, API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT);
                 }
             } else {
-                Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_BLOCK, globalCode);
+                Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_BLOCK, globalCode);
             }
         } else {
             Toast.makeText(context, API3.Util.SetBlockLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
@@ -134,12 +134,12 @@ public class API3PostUtil {
                             API3.Impl.getRepository().UnsetPostResponse(response, new API3.PayloadResponseCallback() {
                                 @Override
                                 public void onSuccess(JSONObject jsonObject) {
-                                    BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, activityCategory, Const.APICategory.POST_DELETE, post_id));
+                                    BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, activityCategory, Const.APICategory.UNSET_POST, post_id));
                                 }
 
                                 @Override
                                 public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_DELETE, globalCode);
+                                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.UNSET_POST, globalCode);
                                 }
 
                                 @Override
@@ -151,14 +151,14 @@ public class API3PostUtil {
 
                         @Override
                         public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                            Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_DELETE, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED);
+                            Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.UNSET_POST, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED);
                         }
                     });
                 } catch (SocketTimeoutException e) {
-                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_DELETE, API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT);
+                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.UNSET_POST, API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT);
                 }
             } else {
-                Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_DELETE, globalCode);
+                Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.UNSET_POST, globalCode);
             }
         } else {
             Toast.makeText(context, API3.Util.UnsetPostLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
@@ -183,7 +183,7 @@ public class API3PostUtil {
 
                                 @Override
                                 public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_PASSWORD, globalCode);
+                                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_PASSWORD, globalCode);
                                 }
 
                                 @Override
@@ -195,14 +195,14 @@ public class API3PostUtil {
 
                         @Override
                         public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                            Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_PASSWORD, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED);
+                            Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_PASSWORD, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED);
                         }
                     });
                 } catch (SocketTimeoutException e) {
-                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_PASSWORD, API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT);
+                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_PASSWORD, API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT);
                 }
             } else {
-                Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_PASSWORD, globalCode);
+                Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_PASSWORD, globalCode);
             }
         } else {
             Toast.makeText(context, API3.Util.SetPasswordLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
@@ -225,15 +225,15 @@ public class API3PostUtil {
                                     try {
                                         JSONObject payload = jsonObject.getJSONObject("payload");
                                         String rest_id = payload.getString("rest_id");
-                                        BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, activityCategory, Const.APICategory.POST_RESTADD, rest_id));
+                                        BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, activityCategory, Const.APICategory.SET_RESTADD, rest_id));
                                     } catch (JSONException e) {
-                                        Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_RESTADD, API3.Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
+                                        Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_RESTADD, API3.Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
                                     }
                                 }
 
                                 @Override
                                 public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_RESTADD, globalCode);
+                                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_RESTADD, globalCode);
                                 }
 
                                 @Override
@@ -245,14 +245,14 @@ public class API3PostUtil {
 
                         @Override
                         public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                            Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_RESTADD, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED);
+                            Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_RESTADD, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED);
                         }
                     });
                 } catch (SocketTimeoutException e) {
-                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_RESTADD, API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT);
+                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_RESTADD, API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT);
                 }
             } else {
-                Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_RESTADD, globalCode);
+                Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_RESTADD, globalCode);
             }
         } else {
             Toast.makeText(context, API3.Util.SetRestLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
@@ -365,7 +365,7 @@ public class API3PostUtil {
 
                                 @Override
                                 public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_REGISTER_DEVICE_TOKEN, globalCode);
+                                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_DEVICE, globalCode);
                                 }
 
                                 @Override
@@ -377,14 +377,14 @@ public class API3PostUtil {
 
                         @Override
                         public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                            Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_REGISTER_DEVICE_TOKEN, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED);
+                            Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_DEVICE, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED);
                         }
                     });
                 } catch (SocketTimeoutException e) {
-                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_REGISTER_DEVICE_TOKEN, API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT);
+                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_DEVICE, API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT);
                 }
             } else {
-                Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_REGISTER_DEVICE_TOKEN, globalCode);
+                Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_DEVICE, globalCode);
             }
         } else {
             Toast.makeText(context, API3.Util.SetDeviceLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
@@ -409,7 +409,7 @@ public class API3PostUtil {
 
                                 @Override
                                 public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_UNREGISTER_DEVICE_TOKEN, globalCode);
+                                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.UNSET_DEVICE, globalCode);
                                 }
 
                                 @Override
@@ -421,14 +421,14 @@ public class API3PostUtil {
 
                         @Override
                         public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                            Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_UNREGISTER_DEVICE_TOKEN, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED);
+                            Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.UNSET_DEVICE, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED);
                         }
                     });
                 } catch (SocketTimeoutException e) {
-                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_UNREGISTER_DEVICE_TOKEN, API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT);
+                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.UNSET_DEVICE, API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT);
                 }
             } else {
-                Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_UNREGISTER_DEVICE_TOKEN, globalCode);
+                Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.UNSET_DEVICE, globalCode);
             }
         } else {
             Toast.makeText(context, API3.Util.UnsetDeviceLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
@@ -452,15 +452,15 @@ public class API3PostUtil {
                                         JSONObject payload = jsonObject.getJSONObject("payload");
                                         String username = payload.getString("username");
                                         SavedData.setServerName(Application_Gocci.getInstance().getApplicationContext(), username);
-                                        BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, activityCategory, Const.APICategory.POST_USERNAME, username));
+                                        BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, activityCategory, Const.APICategory.SET_USERNAME, username));
                                     } catch (JSONException e) {
-                                        Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_USERNAME, API3.Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
+                                        Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_USERNAME, API3.Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
                                     }
                                 }
 
                                 @Override
                                 public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_USERNAME, globalCode);
+                                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_USERNAME, globalCode);
                                 }
 
                                 @Override
@@ -472,14 +472,14 @@ public class API3PostUtil {
 
                         @Override
                         public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                            Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_USERNAME, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED);
+                            Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_USERNAME, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED);
                         }
                     });
                 } catch (SocketTimeoutException e) {
-                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_USERNAME, API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT);
+                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_USERNAME, API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT);
                 }
             } else {
-                Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_USERNAME, globalCode);
+                Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_USERNAME, globalCode);
             }
         } else {
             Toast.makeText(context, API3.Util.SetUsernameLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
@@ -508,15 +508,15 @@ public class API3PostUtil {
                                                     JSONObject payload = jsonObject.getJSONObject("payload");
                                                     String profile_img = payload.getString("profile_img");
                                                     SavedData.setServerPicture(Application_Gocci.getInstance().getApplicationContext(), profile_img);
-                                                    BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, activityCategory, Const.APICategory.POST_PROFILEIMG, post_date));
+                                                    BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, activityCategory, Const.APICategory.SET_PROFILEIMG, post_date));
                                                 } catch (JSONException e) {
-                                                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_PROFILEIMG, API3.Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
+                                                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_PROFILEIMG, API3.Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
                                                 }
                                             }
 
                                             @Override
                                             public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                                Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_PROFILEIMG, globalCode);
+                                                Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_PROFILEIMG, globalCode);
                                             }
 
                                             @Override
@@ -528,14 +528,14 @@ public class API3PostUtil {
 
                                     @Override
                                     public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                                        Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_PROFILEIMG, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED);
+                                        Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_PROFILEIMG, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED);
                                     }
                                 });
                             } catch (SocketTimeoutException e) {
-                                Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_PROFILEIMG, API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT);
+                                Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_PROFILEIMG, API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT);
                             }
                         } else {
-                            Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_PROFILEIMG, globalCode);
+                            Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_PROFILEIMG, globalCode);
                         }
                     } else {
                         Toast.makeText(context, API3.Util.SetProfile_ImgLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
@@ -591,15 +591,15 @@ public class API3PostUtil {
                                                             JSONObject payload = jsonObject.getJSONObject("payload");
                                                             String profile_img = payload.getString("profile_img");
                                                             SavedData.setServerPicture(Application_Gocci.getInstance().getApplicationContext(), profile_img);
-                                                            BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, activityCategory, Const.APICategory.POST_PROFILEIMG, post_date));
+                                                            BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, activityCategory, Const.APICategory.SET_PROFILEIMG, post_date));
                                                         } catch (JSONException e) {
-                                                            Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_PROFILEIMG, API3.Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
+                                                            Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_PROFILEIMG, API3.Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
                                                         }
                                                     }
 
                                                     @Override
                                                     public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                                        Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_PROFILEIMG, globalCode);
+                                                        Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_PROFILEIMG, globalCode);
                                                     }
 
                                                     @Override
@@ -611,14 +611,14 @@ public class API3PostUtil {
 
                                             @Override
                                             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                                                Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_PROFILEIMG, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED);
+                                                Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_PROFILEIMG, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED);
                                             }
                                         });
                                     } catch (SocketTimeoutException e) {
-                                        Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_PROFILEIMG, API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT);
+                                        Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_PROFILEIMG, API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT);
                                     }
                                 } else {
-                                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_PROFILEIMG, globalCode);
+                                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_PROFILEIMG, globalCode);
                                 }
                             } else {
                                 Toast.makeText(context, API3.Util.SetProfile_ImgLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
@@ -663,40 +663,128 @@ public class API3PostUtil {
                             API3.Impl.getRepository().SetPostResponse(response, new API3.PayloadResponseCallback() {
                                 @Override
                                 public void onSuccess(JSONObject jsonObject) {
-                                    BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, activityCategory, Const.APICategory.POST_POST, memo));
+                                    BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, activityCategory, Const.APICategory.SET_POST, memo));
                                 }
 
                                 @Override
                                 public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_POST, globalCode);
-                                    BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.GLOBALERROR, activityCategory, Const.APICategory.POST_POST, memo));
+                                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_POST, globalCode);
+                                    BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.GLOBALERROR, activityCategory, Const.APICategory.SET_POST, memo));
                                 }
 
                                 @Override
                                 public void onLocalError(String errorMessage) {
                                     Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
-                                    BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.LOCALERROR, activityCategory, Const.APICategory.POST_POST, memo));
+                                    BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.LOCALERROR, activityCategory, Const.APICategory.SET_POST, memo));
                                 }
                             });
                         }
 
                         @Override
                         public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                            Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_POST, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED);
-                            BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.GLOBALERROR, activityCategory, Const.APICategory.POST_POST, memo));
+                            Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_POST, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED);
+                            BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.GLOBALERROR, activityCategory, Const.APICategory.SET_POST, memo));
                         }
                     });
                 } catch (SocketTimeoutException e) {
-                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_POST, API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT);
-                    BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.GLOBALERROR, activityCategory, Const.APICategory.POST_POST, memo));
+                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_POST, API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT);
+                    BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.GLOBALERROR, activityCategory, Const.APICategory.SET_POST, memo));
                 }
             } else {
-                Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_POST, globalCode);
-                BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.GLOBALERROR, activityCategory, Const.APICategory.POST_POST, memo));
+                Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_POST, globalCode);
+                BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.GLOBALERROR, activityCategory, Const.APICategory.SET_POST, memo));
             }
         } else {
             Toast.makeText(context, API3.Util.SetPostLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
-            BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.LOCALERROR, activityCategory, Const.APICategory.POST_POST, memo));
+            BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.LOCALERROR, activityCategory, Const.APICategory.SET_POST, memo));
+        }
+    }
+
+    public static void postWantAsync(final Context context, final String rest_id) {
+        API3.Util.SetWantLocalCode localCode = API3.Impl.getRepository().SetWantParameterRegex(rest_id);
+        if (localCode == null) {
+            API3.Util.GlobalCode globalCode = API3.Impl.getRepository().CheckGlobalCode();
+            if (globalCode == API3.Util.GlobalCode.SUCCESS) {
+                try {
+                    Application_Gocci.getJsonAsync(API3.Util.getSetWantAPI(rest_id), new JsonHttpResponseHandler() {
+
+                        @Override
+                        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                            API3.Impl.getRepository().SetWantResponse(response, new API3.PayloadResponseCallback() {
+                                @Override
+                                public void onSuccess(JSONObject jsonObject) {
+
+                                }
+
+                                @Override
+                                public void onGlobalError(API3.Util.GlobalCode globalCode) {
+                                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_WANT, globalCode);
+                                }
+
+                                @Override
+                                public void onLocalError(String errorMessage) {
+                                    Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                            Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_WANT, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED);
+                        }
+                    });
+                } catch (SocketTimeoutException e) {
+                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_WANT, API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT);
+                }
+            } else {
+                Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_WANT, globalCode);
+            }
+        } else {
+            Toast.makeText(context, API3.Util.SetWantLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public static void postUnWantAsync(final Context context, final String rest_id) {
+        API3.Util.UnsetWantLocalCode localCode = API3.Impl.getRepository().UnsetWantParameterRegex(rest_id);
+        if (localCode == null) {
+            API3.Util.GlobalCode globalCode = API3.Impl.getRepository().CheckGlobalCode();
+            if (globalCode == API3.Util.GlobalCode.SUCCESS) {
+                try {
+                    Application_Gocci.getJsonAsync(API3.Util.getUnsetWantAPI(rest_id), new JsonHttpResponseHandler() {
+
+                        @Override
+                        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                            API3.Impl.getRepository().UnsetWantResponse(response, new API3.PayloadResponseCallback() {
+                                @Override
+                                public void onSuccess(JSONObject jsonObject) {
+
+                                }
+
+                                @Override
+                                public void onGlobalError(API3.Util.GlobalCode globalCode) {
+                                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.UNSET_WANT, globalCode);
+                                }
+
+                                @Override
+                                public void onLocalError(String errorMessage) {
+                                    Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                            Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.UNSET_WANT, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED);
+                        }
+                    });
+                } catch (SocketTimeoutException e) {
+                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.UNSET_WANT, API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT);
+                }
+            } else {
+                Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.UNSET_WANT, globalCode);
+            }
+        } else {
+            Toast.makeText(context, API3.Util.UnsetWantLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
         }
     }
 }

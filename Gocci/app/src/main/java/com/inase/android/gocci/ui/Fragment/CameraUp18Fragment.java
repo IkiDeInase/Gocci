@@ -537,7 +537,7 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
     @Subscribe
     public void subscribe(PostCallbackEvent event) {
         if (event.activityCategory == Const.ActivityCategory.CAMERA) {
-            if (event.apiCategory == Const.APICategory.POST_RESTADD) {
+            if (event.apiCategory == Const.APICategory.SET_RESTADD) {
                 mIsnewRestname = true;
                 mRest_id = event.id;
                 mRestaurantAction.setLabelText(mRest_name);

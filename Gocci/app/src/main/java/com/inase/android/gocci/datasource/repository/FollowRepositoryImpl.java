@@ -37,7 +37,7 @@ public class FollowRepositoryImpl implements FollowRepository {
                 Application_Gocci.getJsonSync(url, new JsonHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        if (api == Const.APICategory.POST_FOLLOW) {
+                        if (api == Const.APICategory.SET_FOLLOW) {
                             mAPI3.SetFollowResponse(response, new API3.PayloadResponseCallback() {
                                 @Override
                                 public void onSuccess(JSONObject jsonObject) {
@@ -54,7 +54,7 @@ public class FollowRepositoryImpl implements FollowRepository {
                                     cb.onFailureCausedByLocalError(api, errorMessage, user_id);
                                 }
                             });
-                        } else if (api == Const.APICategory.POST_UNFOLLOW) {
+                        } else if (api == Const.APICategory.UNSET_FOLLOW) {
                             mAPI3.UnsetFollowResponse(response, new API3.PayloadResponseCallback() {
                                 @Override
                                 public void onSuccess(JSONObject jsonObject) {

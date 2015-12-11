@@ -25,6 +25,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.datasource.api.API3PostUtil;
 import com.inase.android.gocci.domain.model.HeaderData;
 import com.inase.android.gocci.domain.model.PostData;
 import com.inase.android.gocci.ui.view.RoundedTransformation;
@@ -124,13 +125,11 @@ public class RestPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 if (holder.mCheckText.getText().toString().equals(mContext.getString(R.string.add_want))) {
                     holder.mCheckImage.setImageResource(R.drawable.ic_favorite_white_24dp);
                     holder.mCheckText.setText(mContext.getString(R.string.remove_want));
-
-                    //Util.wantAsync(mContext, mRestData);
+                    API3PostUtil.postWantAsync(mContext, mRestData.getRest_id());
                 } else {
                     holder.mCheckImage.setImageResource(R.drawable.ic_favorite_outline_grey_600_24dp);
                     holder.mCheckText.setText(mContext.getString(R.string.add_want));
-
-                    //Util.unwantAsync(mContext, mRestData);
+                    API3PostUtil.postUnWantAsync(mContext, mRestData.getRest_id());
                 }
             }
         });

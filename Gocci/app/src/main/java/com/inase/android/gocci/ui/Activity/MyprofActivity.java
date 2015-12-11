@@ -1050,7 +1050,7 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
     @Override
     public void gochiFailureCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode, String post_id) {
         PostData data = mUsers.get(mPost_ids.indexOf(post_id));
-        if (api == Const.APICategory.POST_GOCHI) {
+        if (api == Const.APICategory.SET_GOCHI) {
             data.setGochi_flag(0);
             data.setGochi_num(data.getGochi_num() - 1);
         }
@@ -1061,7 +1061,7 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
     @Override
     public void gochiFailureCausedByLocalError(Const.APICategory api, String errorMessage, String post_id) {
         PostData data = mUsers.get(mPost_ids.indexOf(post_id));
-        if (api == Const.APICategory.POST_GOCHI) {
+        if (api == Const.APICategory.SET_GOCHI) {
             data.setGochi_flag(0);
             data.setGochi_num(data.getGochi_num() - 1);
         }
@@ -1082,7 +1082,7 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
     public void postGochi(String post_id) {
         API3.Util.SetGochiLocalCode postGochiLocalCode = API3.Impl.getRepository().SetGochiParameterRegex(post_id);
         if (postGochiLocalCode == null) {
-            mPresenter.postGochi(Const.APICategory.POST_GOCHI, API3.Util.getSetGochiAPI(post_id), post_id);
+            mPresenter.postGochi(Const.APICategory.SET_GOCHI, API3.Util.getSetGochiAPI(post_id), post_id);
         } else {
             Toast.makeText(this, API3.Util.SetGochiLocalCodeMessageTable(postGochiLocalCode), Toast.LENGTH_SHORT).show();
         }
@@ -1152,7 +1152,7 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
     public void subscribe(PostCallbackEvent event) {
         if (event.activityCategory == Const.ActivityCategory.MY_PAGE) {
             switch (event.apiCategory) {
-                case POST_DELETE:
+                case UNSET_POST:
                     int position = mPost_ids.indexOf(event.id);
                     mUsers.remove(position);
                     mPost_ids.remove(position);
@@ -1167,7 +1167,7 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
                         mEmptyText.setVisibility(View.GONE);
                     }
                     break;
-                case POST_USERNAME:
+                case SET_USERNAME:
                     if (isPicture) {
                         String post_date = SavedData.getServerUserId(MyprofActivity.this) + "_" + Util.getDateTimeString();
                         File update_file = Util.getLocalBitmapFile(mEditPicture, post_date);
@@ -1186,7 +1186,7 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
                         startActivity(intent);
                     }
                     break;
-                case POST_PROFILEIMG:
+                case SET_PROFILEIMG:
                     mProgressWheel.setVisibility(View.GONE);
 
                     Intent intent = getIntent();
