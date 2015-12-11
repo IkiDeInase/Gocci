@@ -572,6 +572,7 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
     }
 
     private void getLocation(Location location) {
+        CameraActivity.isLocationOnOff = true;
         latitude = String.valueOf(location.getLatitude());
         longitude = String.valueOf(location.getLongitude());
         API3.Util.GetNearLocalCode localCode = API3.Impl.getRepository().GetNearParameterRegex(latitude, longitude);
@@ -828,6 +829,7 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
         switch (status.getStatusCode()) {
             case LocationSettingsStatusCodes.SUCCESS:
                 //firstLocation();
+                CameraActivity.isLocationOnOff = true;
                 break;
             case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
                 try {
@@ -841,6 +843,7 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
             case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
                 Log.e("ログ", "Location settings are inadequate, and cannot be fixed here. Dialog " +
                         "not created.");
+                CameraActivity.isLocationOnOff = false;
                 Toast.makeText(getActivity(), getString(R.string.finish_causedby_location), Toast.LENGTH_LONG).show();
                 getActivity().finish();
                 break;
