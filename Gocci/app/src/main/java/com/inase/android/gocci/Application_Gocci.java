@@ -286,7 +286,7 @@ public class Application_Gocci extends Application {
                 break;
             case ERROR_SESSION_EXPIRED:
                 //ログインとコグニートリフレッシュ　→　リトライ
-                API3.Util.GlobalCode code = API3.Impl.getRepository().CheckGlobalCode();
+                final API3.Util.GlobalCode code = API3.Impl.getRepository().CheckGlobalCode();
                 if (code == API3.Util.GlobalCode.SUCCESS) {
                     try {
                         getJsonAsync(API3.Util.getAuthLoginAPI(SavedData.getIdentityId(getInstance().getApplicationContext())), new JsonHttpResponseHandler() {
@@ -296,7 +296,6 @@ public class Application_Gocci extends Application {
                                     @Override
                                     public void onSuccess(JSONObject jsonObject) {
                                         //リフレッシュ&リトライ
-                                        BusHolder.get().post(new RetryApiEvent(api));
                                         new AsyncTask<Void, Void, Void>() {
                                             @Override
                                             protected Void doInBackground(Void... params) {
@@ -304,6 +303,8 @@ public class Application_Gocci extends Application {
                                                 return null;
                                             }
                                         }.execute();
+                                        createS3(getInstance().getApplicationContext());
+                                        BusHolder.get().post(new RetryApiEvent(api));
                                     }
 
                                     @Override
@@ -327,7 +328,7 @@ public class Application_Gocci extends Application {
                         resolveOrHandleGlobalError(api, API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT);
                     }
                 } else {
-                    resolveOrHandleGlobalError(api, code);
+                    Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), API3.Util.GlobalCodeMessageTable(code), Toast.LENGTH_LONG).show();
                 }
                 break;
             case ERROR_CLIENT_OUTDATED:
