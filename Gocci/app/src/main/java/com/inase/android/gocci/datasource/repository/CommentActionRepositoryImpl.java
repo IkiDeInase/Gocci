@@ -101,7 +101,7 @@ public class CommentActionRepositoryImpl implements CommentActionRepository {
                                         cb.onPostEmpty(api, headerData);
                                     }
                                 } catch (JSONException e) {
-                                    e.printStackTrace();
+                                    cb.onPostFailureCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
                                 }
                             }
 

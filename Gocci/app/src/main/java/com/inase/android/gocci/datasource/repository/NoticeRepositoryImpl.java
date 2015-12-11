@@ -59,7 +59,7 @@ public class NoticeRepositoryImpl implements NoticeRepository {
                                         cb.onEmpty(api);
                                     }
                                 } catch (JSONException e) {
-                                    e.printStackTrace();
+                                    cb.onFailureCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
                                 }
                             }
 

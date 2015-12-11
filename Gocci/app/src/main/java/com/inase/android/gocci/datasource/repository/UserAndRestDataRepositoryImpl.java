@@ -66,7 +66,7 @@ public class UserAndRestDataRepositoryImpl implements UserAndRestDataRepository 
                                         cb.onUserAndRestDataEmpty(api, headerData);
                                     }
                                 } catch (JSONException e) {
-                                    e.printStackTrace();
+                                    cb.onCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
                                 }
                             }
 
@@ -128,7 +128,7 @@ public class UserAndRestDataRepositoryImpl implements UserAndRestDataRepository 
                                         cb.onUserAndRestDataEmpty(api, headerData);
                                     }
                                 } catch (JSONException e) {
-                                    e.printStackTrace();
+                                    cb.onCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
                                 }
                             }
 

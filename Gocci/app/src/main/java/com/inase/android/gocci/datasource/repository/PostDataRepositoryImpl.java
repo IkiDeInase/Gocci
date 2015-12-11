@@ -70,7 +70,7 @@ public class PostDataRepositoryImpl implements PostDataRepository {
                                                 }
                                             }
                                         } catch (JSONException e) {
-                                            e.printStackTrace();
+                                            cb.onCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
                                         }
                                     }
 
@@ -113,7 +113,7 @@ public class PostDataRepositoryImpl implements PostDataRepository {
                                                 }
                                             }
                                         } catch (JSONException e) {
-                                            e.printStackTrace();
+                                            cb.onCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
                                         }
                                     }
 
@@ -156,7 +156,7 @@ public class PostDataRepositoryImpl implements PostDataRepository {
                                                 }
                                             }
                                         } catch (JSONException e) {
-                                            e.printStackTrace();
+                                            cb.onCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
                                         }
                                     }
 

@@ -63,7 +63,7 @@ public class CommentDataRepositoryImpl implements CommentDataRepository {
                                         cb.onCommentDataEmpty(api, headerData);
                                     }
                                 } catch (JSONException e) {
-                                    e.printStackTrace();
+                                    cb.onGetByGlobalError(api, API3.Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
                                 }
                             }
 

@@ -227,7 +227,7 @@ public class API3PostUtil {
                                         String rest_id = payload.getString("rest_id");
                                         BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, activityCategory, Const.APICategory.POST_RESTADD, rest_id));
                                     } catch (JSONException e) {
-                                        e.printStackTrace();
+                                        Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_RESTADD, API3.Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
                                     }
                                 }
 
@@ -454,7 +454,7 @@ public class API3PostUtil {
                                         SavedData.setServerName(Application_Gocci.getInstance().getApplicationContext(), username);
                                         BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, activityCategory, Const.APICategory.POST_USERNAME, username));
                                     } catch (JSONException e) {
-                                        e.printStackTrace();
+                                        Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_USERNAME, API3.Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
                                     }
                                 }
 
@@ -510,7 +510,7 @@ public class API3PostUtil {
                                                     SavedData.setServerPicture(Application_Gocci.getInstance().getApplicationContext(), profile_img);
                                                     BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, activityCategory, Const.APICategory.POST_PROFILEIMG, post_date));
                                                 } catch (JSONException e) {
-                                                    e.printStackTrace();
+                                                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_PROFILEIMG, API3.Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
                                                 }
                                             }
 
@@ -587,7 +587,14 @@ public class API3PostUtil {
                                                 API3.Impl.getRepository().SetProfile_ImgResponse(response, new API3.PayloadResponseCallback() {
                                                     @Override
                                                     public void onSuccess(JSONObject jsonObject) {
-                                                        BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, activityCategory, Const.APICategory.POST_PROFILEIMG, post_date));
+                                                        try {
+                                                            JSONObject payload = jsonObject.getJSONObject("payload");
+                                                            String profile_img = payload.getString("profile_img");
+                                                            SavedData.setServerPicture(Application_Gocci.getInstance().getApplicationContext(), profile_img);
+                                                            BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, activityCategory, Const.APICategory.POST_PROFILEIMG, post_date));
+                                                        } catch (JSONException e) {
+                                                            Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.POST_PROFILEIMG, API3.Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
+                                                        }
                                                     }
 
                                                     @Override
