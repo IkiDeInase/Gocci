@@ -103,7 +103,7 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
                 if (isNotice) {
                     mPresenter.postComment(Const.APICategory.SET_COMMENT, API3.Util.getSetCommentAPI(mPost_id, comment, mNoticeUser_id), API3.Util.getGetCommentAPI(mPost_id));
                 } else {
-                    mPresenter.postComment(Const.APICategory.SET_COMMENT, API3.Util.getSetCommentAPI(mPost_id, comment, ""), API3.Util.getGetCommentAPI(mPost_id));
+                    mPresenter.postComment(Const.APICategory.SET_COMMENT, API3.Util.getSetCommentAPI(mPost_id, comment, "0"), API3.Util.getGetCommentAPI(mPost_id));
                 }
             } else {
                 Toast.makeText(CommentActivity.this, API3.Util.SetCommentLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
@@ -132,7 +132,7 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
     private boolean isNotice = false;
 
     private String mNoticeUser_name;
-    private String mNoticeUser_id;
+    private String mNoticeUser_id = "0";
 
     private static MobileAnalyticsManager analytics;
 
