@@ -35,9 +35,12 @@ import com.inase.android.gocci.datasource.repository.HeatmapRepositoryImpl;
 import com.inase.android.gocci.domain.executor.UIThread;
 import com.inase.android.gocci.domain.usecase.HeatmapUseCase;
 import com.inase.android.gocci.domain.usecase.HeatmapUseCaseImpl;
+import com.inase.android.gocci.event.BusHolder;
+import com.inase.android.gocci.event.RetryApiEvent;
 import com.inase.android.gocci.presenter.ShowHeatmapPresenter;
 import com.inase.android.gocci.utils.map.HeatmapLog;
 import com.pnikosis.materialishprogress.ProgressWheel;
+import com.squareup.otto.Subscribe;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -195,6 +198,31 @@ public class MapSearchActivity extends AppCompatActivity implements ShowHeatmapP
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         geo = new Geocoder(MapSearchActivity.this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        BusHolder.get().register(this);
+        mPresenter.resume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        BusHolder.get().unregister(this);
+        mPresenter.pause();
+    }
+
+    @Subscribe
+    public void subscribe(RetryApiEvent event) {
+        switch (event.api) {
+            case GET_HEATMAP_FIRST:
+                mPresenter.getHeatmapData(Const.APICategory.GET_HEATMAP_FIRST, API3.Util.getGetHeatmapAPI());
+                break;
+            default:
+                break;
+        }
     }
 
     OnMapReadyCallback readyCallback = new OnMapReadyCallback() {

@@ -67,6 +67,7 @@ import com.inase.android.gocci.domain.usecase.NearDataUseCase;
 import com.inase.android.gocci.domain.usecase.NearDataUseCaseImpl;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.PostCallbackEvent;
+import com.inase.android.gocci.event.RetryApiEvent;
 import com.inase.android.gocci.presenter.ShowCameraPresenter;
 import com.inase.android.gocci.ui.activity.CameraActivity;
 import com.inase.android.gocci.ui.activity.CameraPreviewActivity;
@@ -553,6 +554,20 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
                 mRest_id = event.id;
                 mRestaurantAction.setLabelText(mRest_name);
             }
+        }
+    }
+
+    @Subscribe
+    public void subscribe(RetryApiEvent event) {
+        switch (event.api) {
+            case SET_RESTADD:
+                API3PostUtil.postRestAddAsync(getActivity(), Const.ActivityCategory.CAMERA, mRest_name, longitude, latitude);
+                break;
+            case GET_NEAR_FIRST:
+                mPresenter.getNearData(Const.APICategory.GET_NEAR_FIRST, API3.Util.getGetNearAPI(latitude, longitude));
+                break;
+            default:
+                break;
         }
     }
 

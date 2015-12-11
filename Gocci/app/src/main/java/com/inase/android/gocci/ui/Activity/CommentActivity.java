@@ -500,6 +500,8 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
             case GET_COMMENT_REFRESH:
                 mPresenter.getCommentData(event.api, API3.Util.getGetCommentAPI(mPost_id));
                 break;
+            case SET_COMMENT:
+                mSendButton.performClick();
             default:
                 break;
         }

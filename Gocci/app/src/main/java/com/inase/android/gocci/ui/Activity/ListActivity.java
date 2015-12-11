@@ -37,6 +37,7 @@ import com.inase.android.gocci.domain.usecase.ListGetUseCase;
 import com.inase.android.gocci.domain.usecase.ListGetUseCaseImpl;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.NotificationNumberEvent;
+import com.inase.android.gocci.event.RetryApiEvent;
 import com.inase.android.gocci.presenter.ShowListPresenter;
 import com.inase.android.gocci.ui.adapter.ListGetAdapter;
 import com.inase.android.gocci.ui.view.DrawerProfHeader;
@@ -548,6 +549,29 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                         mUser_idList.add(i, mList.get(i).getUser_id());
                     }
                 }
+                break;
+        }
+    }
+
+    @Subscribe
+    public void subscribe(RetryApiEvent event) {
+        switch (mCategory) {
+            case FOLLOW:
+                mPresenter.getListData(event.api, API3.Util.getGetFollowAPI(mId));
+                break;
+            case FOLLOWER:
+                mPresenter.getListData(event.api, API3.Util.getGetFollowerAPI(mId));
+                break;
+            case USER_CHEER:
+                mPresenter.getListData(event.api, API3.Util.getGetUserCheerAPI(mId));
+                break;
+            case REST_CHEER:
+                mPresenter.getListData(event.api, API3.Util.getGetRestCheerAPI(mId));
+                break;
+            case WANT:
+                mPresenter.getListData(event.api, API3.Util.getGetWantAPI(mId));
+                break;
+            default:
                 break;
         }
     }

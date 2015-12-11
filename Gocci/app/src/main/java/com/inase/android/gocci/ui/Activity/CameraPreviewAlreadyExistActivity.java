@@ -49,6 +49,7 @@ import com.inase.android.gocci.domain.usecase.NearDataUseCase;
 import com.inase.android.gocci.domain.usecase.NearDataUseCaseImpl;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.PostCallbackEvent;
+import com.inase.android.gocci.event.RetryApiEvent;
 import com.inase.android.gocci.presenter.ShowCameraPresenter;
 import com.inase.android.gocci.ui.view.GocciTwitterLoginButton;
 import com.inase.android.gocci.ui.view.SquareVideoView;
@@ -633,5 +634,19 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
         rest_nameList.addAll(restnameArray);
         rest_idList.addAll(restIdArray);
         restAdapter.addAll(rest_nameList);
+    }
+
+    @Subscribe
+    public void subscribe(RetryApiEvent event) {
+        switch (event.api) {
+            case SET_POST:
+                API3PostUtil.postMovieAsync(CameraPreviewAlreadyExistActivity.this, Const.ActivityCategory.CAMERA_PREVIEW, mRest_id, mAwsPostName, String.valueOf(mCategory_id), mValue, mMemo, String.valueOf(mCheer_flag));
+                break;
+            case SET_RESTADD:
+                API3PostUtil.postRestAddAsync(CameraPreviewAlreadyExistActivity.this, Const.ActivityCategory.CAMERA_PREVIEW, mRestname, mLongitude, mLatitude);
+                break;
+            default:
+                break;
+        }
     }
 }
