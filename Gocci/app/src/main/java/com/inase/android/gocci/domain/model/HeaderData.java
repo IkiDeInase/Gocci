@@ -22,7 +22,7 @@ public class HeaderData {
     private static final String TAG_PROFILE_IMG = "profile_img";
     private static final String TAG_COMMENT = "comment";
     private static final String TAG_COMMENT_DATE = "comment_date";
-    private static final String TAG_RE_USER = "users";
+    private static final String TAG_RE_USER = "re_users";
 
     //追加店舗ページ
     private static final String TAG_REST_ID = "rest_id";
