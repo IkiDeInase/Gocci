@@ -1,9 +1,14 @@
 package com.inase.android.gocci.datasource.repository;
 
+import android.nfc.cardemulation.OffHostApduService;
+import android.widget.Toast;
+
 import com.inase.android.gocci.Application_Gocci;
+import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3;
 import com.inase.android.gocci.domain.model.HeaderData;
+import com.inase.android.gocci.utils.Util;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
@@ -34,32 +39,36 @@ public class CommentActionRepositoryImpl implements CommentActionRepository {
 
     @Override
     public void postComment(final Const.APICategory api, String postUrl, final String getUrl, final CommentActionRepositoryCallback cb) {
-        Application_Gocci.getJsonSync(postUrl, new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                mAPI3.SetCommentResponse(response, new API3.PayloadResponseCallback() {
-                    @Override
-                    public void onSuccess(JSONObject jsonObject) {
-                        getCommentJson(api, getUrl, cb);
-                    }
+        if (Util.getConnectedState(Application_Gocci.getInstance().getApplicationContext()) != Util.NetworkStatus.OFF) {
+            Application_Gocci.getJsonSync(postUrl, new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    mAPI3.SetCommentResponse(response, new API3.PayloadResponseCallback() {
+                        @Override
+                        public void onSuccess(JSONObject jsonObject) {
+                            getCommentJson(api, getUrl, cb);
+                        }
 
-                    @Override
-                    public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                        cb.onPostFailureCausedByGlobalError(api, globalCode);
-                    }
+                        @Override
+                        public void onGlobalError(API3.Util.GlobalCode globalCode) {
+                            cb.onPostFailureCausedByGlobalError(api, globalCode);
+                        }
 
-                    @Override
-                    public void onLocalError(String errorMessage) {
-                        cb.onPostFailureCausedByLocalError(api, errorMessage);
-                    }
-                });
-            }
+                        @Override
+                        public void onLocalError(String errorMessage) {
+                            cb.onPostFailureCausedByLocalError(api, errorMessage);
+                        }
+                    });
+                }
 
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
 
-            }
-        });
+                }
+            });
+        } else {
+            Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), Application_Gocci.getInstance().getApplicationContext().getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
+        }
     }
 
     private void getCommentJson(final Const.APICategory api, String getUrl, final CommentActionRepositoryCallback cb) {

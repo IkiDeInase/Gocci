@@ -1,9 +1,13 @@
 package com.inase.android.gocci.datasource.repository;
 
+import android.widget.Toast;
+
 import com.inase.android.gocci.Application_Gocci;
+import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3;
 import com.inase.android.gocci.domain.model.HeaderData;
+import com.inase.android.gocci.utils.Util;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
@@ -34,47 +38,51 @@ public class NoticeRepositoryImpl implements NoticeRepository {
 
     @Override
     public void getNotice(final Const.APICategory api, String url, final NoticeRepositoryCallback cb) {
-        Application_Gocci.getJsonSync(url, new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                mAPI3.GetNoticeResponse(response, new API3.PayloadResponseCallback() {
+        if (Util.getConnectedState(Application_Gocci.getInstance().getApplicationContext()) != Util.NetworkStatus.OFF) {
+            Application_Gocci.getJsonSync(url, new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    mAPI3.GetNoticeResponse(response, new API3.PayloadResponseCallback() {
 
-                    @Override
-                    public void onSuccess(JSONObject payload) {
-                        try {
-                            final ArrayList<HeaderData> mListData = new ArrayList<>();
+                        @Override
+                        public void onSuccess(JSONObject payload) {
+                            try {
+                                final ArrayList<HeaderData> mListData = new ArrayList<>();
 
-                            JSONArray notices = payload.getJSONArray("notices");
-                            if (notices.length() != 0) {
-                                for (int i = 0; i < notices.length(); i++) {
-                                    JSONObject listData = notices.getJSONObject(i);
-                                    mListData.add(HeaderData.createNoticeHeaderData(listData));
+                                JSONArray notices = payload.getJSONArray("notices");
+                                if (notices.length() != 0) {
+                                    for (int i = 0; i < notices.length(); i++) {
+                                        JSONObject listData = notices.getJSONObject(i);
+                                        mListData.add(HeaderData.createNoticeHeaderData(listData));
+                                    }
+                                    cb.onSuccess(api, mListData);
+                                } else {
+                                    cb.onEmpty(api);
                                 }
-                                cb.onSuccess(api, mListData);
-                            } else {
-                                cb.onEmpty(api);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
                         }
-                    }
 
-                    @Override
-                    public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                        cb.onFailureCausedByGlobalError(api, globalCode);
-                    }
+                        @Override
+                        public void onGlobalError(API3.Util.GlobalCode globalCode) {
+                            cb.onFailureCausedByGlobalError(api, globalCode);
+                        }
 
-                    @Override
-                    public void onLocalError(String errorMessage) {
-                        cb.onFailureCausedByLocalError(api, errorMessage);
-                    }
-                });
-            }
+                        @Override
+                        public void onLocalError(String errorMessage) {
+                            cb.onFailureCausedByLocalError(api, errorMessage);
+                        }
+                    });
+                }
 
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
 
-            }
-        });
+                }
+            });
+        } else {
+            Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), Application_Gocci.getInstance().getApplicationContext().getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
+        }
     }
 }

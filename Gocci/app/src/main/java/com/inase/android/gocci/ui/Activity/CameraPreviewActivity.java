@@ -298,21 +298,23 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
 
         if (mLatitude.isEmpty() && mLongitude.isEmpty()) {
             //もう一度位置取る？
-            SmartLocation.with(this).location().oneFix().start(new OnLocationUpdatedListener() {
-                @Override
-                public void onLocationUpdated(Location location) {
-                    mLatitude = String.valueOf(location.getLatitude());
-                    mLongitude = String.valueOf(location.getLongitude());
-                    API3.Util.GetNearLocalCode localCode = API3.Impl.getRepository().GetNearParameterRegex(mLatitude, mLongitude);
-                    if (localCode == null) {
-                        mPresenter.getNearData(Const.APICategory.GET_NEAR_FIRST, API3.Util.getGetNearAPI(mLatitude, mLongitude));
-                    } else {
-                        Toast.makeText(CameraPreviewActivity.this, API3.Util.GetNearLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+            if (Util.getConnectedState(this) != Util.NetworkStatus.OFF) {
+                SmartLocation.with(this).location().oneFix().start(new OnLocationUpdatedListener() {
+                    @Override
+                    public void onLocationUpdated(Location location) {
+                        mLatitude = String.valueOf(location.getLatitude());
+                        mLongitude = String.valueOf(location.getLongitude());
+                        API3.Util.GetNearLocalCode localCode = API3.Impl.getRepository().GetNearParameterRegex(mLatitude, mLongitude);
+                        if (localCode == null) {
+                            mPresenter.getNearData(Const.APICategory.GET_NEAR_FIRST, API3.Util.getGetNearAPI(mLatitude, mLongitude));
+                        } else {
+                            Toast.makeText(CameraPreviewActivity.this, API3.Util.GetNearLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                        }
+                        SavedData.setLat(CameraPreviewActivity.this, mLatitude);
+                        SavedData.setLon(CameraPreviewActivity.this, mLongitude);
                     }
-                    SavedData.setLat(CameraPreviewActivity.this, mLatitude);
-                    SavedData.setLon(CameraPreviewActivity.this, mLongitude);
-                }
-            });
+                });
+            }
         }
 
         mVideoFile = new File(mVideoUrl);

@@ -1,8 +1,12 @@
 package com.inase.android.gocci.datasource.repository;
 
+import android.widget.Toast;
+
 import com.inase.android.gocci.Application_Gocci;
+import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3;
+import com.inase.android.gocci.utils.Util;
 import com.inase.android.gocci.utils.map.HeatmapLog;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -34,48 +38,52 @@ public class HeatmapRepositoryImpl implements HeatmapRepository {
 
     @Override
     public void getHeatmap(final Const.APICategory api, final String url, final HeatmapRepositoryCallback cb) {
-        Application_Gocci.getJsonSync(url, new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                mAPI3.GetHeatmapResponse(response, new API3.PayloadResponseCallback() {
+        if (Util.getConnectedState(Application_Gocci.getInstance().getApplicationContext()) != Util.NetworkStatus.OFF) {
+            Application_Gocci.getJsonSync(url, new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    mAPI3.GetHeatmapResponse(response, new API3.PayloadResponseCallback() {
 
-                    @Override
-                    public void onSuccess(JSONObject payload) {
-                        try {
-                            JSONArray rests = payload.getJSONArray("rests");
+                        @Override
+                        public void onSuccess(JSONObject payload) {
+                            try {
+                                JSONArray rests = payload.getJSONArray("rests");
 
-                            final ArrayList<HeatmapLog> mListData = new ArrayList<>();
+                                final ArrayList<HeatmapLog> mListData = new ArrayList<>();
 
-                            for (int i = 0; i < rests.length(); i++) {
-                                JSONObject listData = rests.getJSONObject(i);
-                                String rest_id = listData.getString("post_rest_id");
-                                String restname = listData.getString("restname");
-                                double lat = listData.getDouble("lat");
-                                double lon = listData.getDouble("lon");
-                                mListData.add(new HeatmapLog(rest_id, restname, lat, lon));
+                                for (int i = 0; i < rests.length(); i++) {
+                                    JSONObject listData = rests.getJSONObject(i);
+                                    String rest_id = listData.getString("post_rest_id");
+                                    String restname = listData.getString("restname");
+                                    double lat = listData.getDouble("lat");
+                                    double lon = listData.getDouble("lon");
+                                    mListData.add(new HeatmapLog(rest_id, restname, lat, lon));
+                                }
+                                cb.onSuccess(api, mListData);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
-                            cb.onSuccess(api, mListData);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
                         }
-                    }
 
-                    @Override
-                    public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                        cb.onFailureCausedByGlobalError(api, globalCode);
-                    }
+                        @Override
+                        public void onGlobalError(API3.Util.GlobalCode globalCode) {
+                            cb.onFailureCausedByGlobalError(api, globalCode);
+                        }
 
-                    @Override
-                    public void onLocalError(String errorMessage) {
-                        cb.onFailureCausedByLocalError(api, errorMessage);
-                    }
-                });
-            }
+                        @Override
+                        public void onLocalError(String errorMessage) {
+                            cb.onFailureCausedByLocalError(api, errorMessage);
+                        }
+                    });
+                }
 
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
 
-            }
-        });
+                }
+            });
+        } else {
+            Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), Application_Gocci.getInstance().getApplicationContext().getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
+        }
     }
 }

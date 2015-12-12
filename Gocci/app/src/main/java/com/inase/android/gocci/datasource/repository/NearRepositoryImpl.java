@@ -1,8 +1,12 @@
 package com.inase.android.gocci.datasource.repository;
 
+import android.widget.Toast;
+
 import com.inase.android.gocci.Application_Gocci;
+import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3;
+import com.inase.android.gocci.utils.Util;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
@@ -33,54 +37,58 @@ public class NearRepositoryImpl implements NearRepository {
 
     @Override
     public void getNear(final Const.APICategory api, final String url, final NearRepositoryCallback cb) {
-        Application_Gocci.getJsonSync(url, new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                mAPI3.GetNearResponse(response, new API3.PayloadResponseCallback() {
+        if (Util.getConnectedState(Application_Gocci.getInstance().getApplicationContext()) != Util.NetworkStatus.OFF) {
+            Application_Gocci.getJsonSync(url, new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    mAPI3.GetNearResponse(response, new API3.PayloadResponseCallback() {
 
-                    @Override
-                    public void onSuccess(JSONObject payload) {
-                        try {
-                            String[] restnames = new String[30];
-                            final ArrayList<String> restIdArray = new ArrayList<>();
-                            final ArrayList<String> restnameArray = new ArrayList<>();
+                        @Override
+                        public void onSuccess(JSONObject payload) {
+                            try {
+                                String[] restnames = new String[30];
+                                final ArrayList<String> restIdArray = new ArrayList<>();
+                                final ArrayList<String> restnameArray = new ArrayList<>();
 
-                            JSONArray rests = payload.getJSONArray("rests");
-                            if (rests.length() != 0) {
-                                for (int i = 0; i < rests.length(); i++) {
-                                    JSONObject listData = rests.getJSONObject(i);
-                                    final String rest_name = listData.getString("restname");
-                                    String rest_id = listData.getString("rest_id");
+                                JSONArray rests = payload.getJSONArray("rests");
+                                if (rests.length() != 0) {
+                                    for (int i = 0; i < rests.length(); i++) {
+                                        JSONObject listData = rests.getJSONObject(i);
+                                        final String rest_name = listData.getString("restname");
+                                        String rest_id = listData.getString("rest_id");
 
-                                    restnames[i] = rest_name;
-                                    restIdArray.add(rest_id);
-                                    restnameArray.add(rest_name);
+                                        restnames[i] = rest_name;
+                                        restIdArray.add(rest_id);
+                                        restnameArray.add(rest_name);
+                                    }
+                                    cb.onSuccess(api, restnames, restIdArray, restnameArray);
+                                } else {
+                                    cb.onEmpty(api);
                                 }
-                                cb.onSuccess(api, restnames, restIdArray, restnameArray);
-                            } else {
-                                cb.onEmpty(api);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
                         }
-                    }
 
-                    @Override
-                    public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                        cb.onFailureCausedByGlobalError(api, globalCode);
-                    }
+                        @Override
+                        public void onGlobalError(API3.Util.GlobalCode globalCode) {
+                            cb.onFailureCausedByGlobalError(api, globalCode);
+                        }
 
-                    @Override
-                    public void onLocalError(String errorMessage) {
-                        cb.onFailureCausedByLocalError(api, errorMessage);
-                    }
-                });
-            }
+                        @Override
+                        public void onLocalError(String errorMessage) {
+                            cb.onFailureCausedByLocalError(api, errorMessage);
+                        }
+                    });
+                }
 
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
 
-            }
-        });
+                }
+            });
+        } else {
+            Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), Application_Gocci.getInstance().getApplicationContext().getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
+        }
     }
 }
