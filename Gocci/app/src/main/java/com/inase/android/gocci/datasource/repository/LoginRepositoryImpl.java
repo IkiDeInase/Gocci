@@ -9,8 +9,6 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.SocketTimeoutException;
-
 import cz.msebera.android.httpclient.Header;
 
 /**
@@ -33,106 +31,96 @@ public class LoginRepositoryImpl implements LoginRepository {
 
     @Override
     public void userLogin(final Const.APICategory api, final String url, final LoginRepositoryCallback cb) {
-        API3.Util.GlobalCode globalCode = mAPI3.CheckGlobalCode();
-        if (globalCode == API3.Util.GlobalCode.SUCCESS) {
-            try {
-                Application_Gocci.getJsonSync(url, new JsonHttpResponseHandler() {
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        switch (api) {
-                            case AUTH_LOGIN:
-                            case AUTH_FACEBOOK_LOGIN:
-                            case AUTH_TWITTER_LOGIN:
-                                mAPI3.AuthLoginResponse(response, new API3.PayloadResponseCallback() {
-                                    @Override
-                                    public void onSuccess(JSONObject payload) {
-                                        try {
-                                            String user_id = payload.getString("user_id");
-                                            String username = payload.getString("username");
-                                            String profile_img = payload.getString("profile_img");
-                                            String badge_num = payload.getString("badge_num");
-                                            String cognito_token = payload.getString("cognito_token");
-                                            Application_Gocci.GuestInit(Application_Gocci.getInstance().getApplicationContext(), SavedData.getIdentityId(Application_Gocci.getInstance().getApplicationContext()), cognito_token, user_id);
-                                            SavedData.setWelcome(Application_Gocci.getInstance().getApplicationContext(), username, profile_img, user_id, Integer.parseInt(badge_num));
-                                            cb.onLogin(api);
-                                        } catch (JSONException e) {
-                                            cb.onNotLoginCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
-                                        }
-                                    }
+        Application_Gocci.getJsonSync(url, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                switch (api) {
+                    case AUTH_LOGIN:
+                    case AUTH_FACEBOOK_LOGIN:
+                    case AUTH_TWITTER_LOGIN:
+                        mAPI3.AuthLoginResponse(response, new API3.PayloadResponseCallback() {
+                            @Override
+                            public void onSuccess(JSONObject payload) {
+                                try {
+                                    String user_id = payload.getString("user_id");
+                                    String username = payload.getString("username");
+                                    String profile_img = payload.getString("profile_img");
+                                    String badge_num = payload.getString("badge_num");
+                                    String cognito_token = payload.getString("cognito_token");
+                                    Application_Gocci.GuestInit(Application_Gocci.getInstance().getApplicationContext(), SavedData.getIdentityId(Application_Gocci.getInstance().getApplicationContext()), cognito_token, user_id);
+                                    SavedData.setWelcome(Application_Gocci.getInstance().getApplicationContext(), username, profile_img, user_id, Integer.parseInt(badge_num));
+                                    cb.onLogin(api);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
 
-                                    @Override
-                                    public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                        cb.onNotLoginCausedByGlobalError(api, globalCode);
-                                    }
+                            @Override
+                            public void onGlobalError(API3.Util.GlobalCode globalCode) {
+                                cb.onNotLoginCausedByGlobalError(api, globalCode);
+                            }
 
-                                    @Override
-                                    public void onLocalError(String errorMessage) {
-                                        cb.onNotLoginCausedByLocalError(api, errorMessage);
-                                    }
-                                });
-                                break;
-                            case AUTH_PASS_LOGIN:
-                                mAPI3.AuthPasswordResponse(response, new API3.PayloadResponseCallback() {
-                                    @Override
-                                    public void onSuccess(JSONObject payload) {
-                                        try {
-                                            String identity_id = payload.getString("identity_id");
-                                            SavedData.setIdentityId(Application_Gocci.getInstance().getApplicationContext(), identity_id);
-                                            userLogin(Const.APICategory.AUTH_LOGIN, API3.Util.getAuthLoginAPI(identity_id), cb);
-                                        } catch (JSONException e) {
-                                            cb.onNotLoginCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
-                                        }
-                                    }
+                            @Override
+                            public void onLocalError(String errorMessage) {
+                                cb.onNotLoginCausedByLocalError(api, errorMessage);
+                            }
+                        });
+                        break;
+                    case AUTH_PASS_LOGIN:
+                        mAPI3.AuthPasswordResponse(response, new API3.PayloadResponseCallback() {
+                            @Override
+                            public void onSuccess(JSONObject payload) {
+                                try {
+                                    String identity_id = payload.getString("identity_id");
+                                    SavedData.setIdentityId(Application_Gocci.getInstance().getApplicationContext(), identity_id);
+                                    userLogin(Const.APICategory.AUTH_LOGIN, API3.Util.getAuthLoginAPI(identity_id), cb);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
 
-                                    @Override
-                                    public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                        cb.onNotLoginCausedByGlobalError(api, globalCode);
-                                    }
+                            @Override
+                            public void onGlobalError(API3.Util.GlobalCode globalCode) {
+                                cb.onNotLoginCausedByGlobalError(api, globalCode);
+                            }
 
-                                    @Override
-                                    public void onLocalError(String errorMessage) {
-                                        cb.onNotLoginCausedByLocalError(api, errorMessage);
-                                    }
-                                });
-                                break;
-                            case AUTH_SIGNUP:
-                                mAPI3.AuthSignupResponse(response, new API3.PayloadResponseCallback() {
-                                    @Override
-                                    public void onSuccess(JSONObject payload) {
-                                        try {
-                                            String identity_id = payload.getString("identity_id");
-                                            SavedData.setIdentityId(Application_Gocci.getInstance().getApplicationContext(), identity_id);
-                                            userLogin(Const.APICategory.AUTH_LOGIN, API3.Util.getAuthLoginAPI(identity_id), cb);
-                                        } catch (JSONException e) {
-                                            cb.onNotLoginCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
-                                        }
-                                    }
+                            @Override
+                            public void onLocalError(String errorMessage) {
+                                cb.onNotLoginCausedByLocalError(api, errorMessage);
+                            }
+                        });
+                        break;
+                    case AUTH_SIGNUP:
+                        mAPI3.AuthSignupResponse(response, new API3.PayloadResponseCallback() {
+                            @Override
+                            public void onSuccess(JSONObject payload) {
+                                try {
+                                    String identity_id = payload.getString("identity_id");
+                                    SavedData.setIdentityId(Application_Gocci.getInstance().getApplicationContext(), identity_id);
+                                    userLogin(Const.APICategory.AUTH_LOGIN, API3.Util.getAuthLoginAPI(identity_id), cb);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
 
-                                    @Override
-                                    public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                        cb.onNotLoginCausedByGlobalError(api, globalCode);
-                                    }
+                            @Override
+                            public void onGlobalError(API3.Util.GlobalCode globalCode) {
+                                cb.onNotLoginCausedByGlobalError(api, globalCode);
+                            }
 
-                                    @Override
-                                    public void onLocalError(String errorMessage) {
-                                        cb.onNotLoginCausedByLocalError(api, errorMessage);
-                                    }
-                                });
-                                break;
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                        cb.onNotLoginCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED);
-                    }
-                });
-            } catch (SocketTimeoutException e) {
-                cb.onNotLoginCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT);
+                            @Override
+                            public void onLocalError(String errorMessage) {
+                                cb.onNotLoginCausedByLocalError(api, errorMessage);
+                            }
+                        });
+                        break;
+                }
             }
-        } else {
-            //グローバルエラー発生
-            cb.onNotLoginCausedByGlobalError(api, globalCode);
-        }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+
+            }
+        });
     }
 }

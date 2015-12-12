@@ -10,7 +10,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.Header;
@@ -35,56 +34,47 @@ public class NoticeRepositoryImpl implements NoticeRepository {
 
     @Override
     public void getNotice(final Const.APICategory api, String url, final NoticeRepositoryCallback cb) {
-        API3.Util.GlobalCode globalCode = mAPI3.CheckGlobalCode();
-        if (globalCode == API3.Util.GlobalCode.SUCCESS) {
-            try {
-                Application_Gocci.getJsonSync(url, new JsonHttpResponseHandler() {
+        Application_Gocci.getJsonSync(url, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                mAPI3.GetNoticeResponse(response, new API3.PayloadResponseCallback() {
+
                     @Override
-                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        mAPI3.GetNoticeResponse(response, new API3.PayloadResponseCallback() {
+                    public void onSuccess(JSONObject payload) {
+                        try {
+                            final ArrayList<HeaderData> mListData = new ArrayList<>();
 
-                            @Override
-                            public void onSuccess(JSONObject payload) {
-                                try {
-                                    final ArrayList<HeaderData> mListData = new ArrayList<>();
-
-                                    JSONArray notices = payload.getJSONArray("notices");
-                                    if (notices.length() != 0) {
-                                        for (int i = 0; i < notices.length(); i++) {
-                                            JSONObject listData = notices.getJSONObject(i);
-                                            mListData.add(HeaderData.createNoticeHeaderData(listData));
-                                        }
-                                        cb.onSuccess(api, mListData);
-                                    } else {
-                                        cb.onEmpty(api);
-                                    }
-                                } catch (JSONException e) {
-                                    cb.onFailureCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
+                            JSONArray notices = payload.getJSONArray("notices");
+                            if (notices.length() != 0) {
+                                for (int i = 0; i < notices.length(); i++) {
+                                    JSONObject listData = notices.getJSONObject(i);
+                                    mListData.add(HeaderData.createNoticeHeaderData(listData));
                                 }
+                                cb.onSuccess(api, mListData);
+                            } else {
+                                cb.onEmpty(api);
                             }
-
-                            @Override
-                            public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                cb.onFailureCausedByGlobalError(api, globalCode);
-                            }
-
-                            @Override
-                            public void onLocalError(String errorMessage) {
-                                cb.onFailureCausedByLocalError(api, errorMessage);
-                            }
-                        });
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
 
                     @Override
-                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                        cb.onFailureCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED);
+                    public void onGlobalError(API3.Util.GlobalCode globalCode) {
+                        cb.onFailureCausedByGlobalError(api, globalCode);
+                    }
+
+                    @Override
+                    public void onLocalError(String errorMessage) {
+                        cb.onFailureCausedByLocalError(api, errorMessage);
                     }
                 });
-            } catch (SocketTimeoutException e) {
-                cb.onFailureCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT);
             }
-        } else {
-            cb.onFailureCausedByGlobalError(api, globalCode);
-        }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+
+            }
+        });
     }
 }

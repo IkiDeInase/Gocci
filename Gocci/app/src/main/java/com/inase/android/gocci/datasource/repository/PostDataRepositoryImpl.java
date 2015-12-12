@@ -10,7 +10,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.Header;
@@ -35,159 +34,149 @@ public class PostDataRepositoryImpl implements PostDataRepository {
 
     @Override
     public void getPostDataList(final Const.APICategory api, String url, final PostDataRepositoryCallback cb) {
-        API3.Util.GlobalCode globalCode = mAPI3.CheckGlobalCode();
-        if (globalCode == API3.Util.GlobalCode.SUCCESS) {
-            try {
-                Application_Gocci.getJsonSync(url, new JsonHttpResponseHandler() {
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        switch (api) {
-                            case GET_NEARLINE_FIRST:
-                            case GET_NEARLINE_REFRESH:
-                            case GET_NEARLINE_FILTER:
-                            case GET_NEARLINE_ADD:
-                                mAPI3.GetNearlineResponse(response, new API3.PayloadResponseCallback() {
+        Application_Gocci.getJsonSync(url, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                switch (api) {
+                    case GET_NEARLINE_FIRST:
+                    case GET_NEARLINE_REFRESH:
+                    case GET_NEARLINE_FILTER:
+                    case GET_NEARLINE_ADD:
+                        mAPI3.GetNearlineResponse(response, new API3.PayloadResponseCallback() {
 
-                                    @Override
-                                    public void onSuccess(JSONObject payload) {
-                                        try {
-                                            JSONArray posts = payload.getJSONArray("posts");
+                            @Override
+                            public void onSuccess(JSONObject payload) {
+                                try {
+                                    JSONArray posts = payload.getJSONArray("posts");
 
-                                            final ArrayList<TwoCellData> mPostData = new ArrayList<>();
-                                            final ArrayList<String> mPost_Ids = new ArrayList<>();
+                                    final ArrayList<TwoCellData> mPostData = new ArrayList<>();
+                                    final ArrayList<String> mPost_Ids = new ArrayList<>();
 
-                                            if (posts.length() != 0) {
-                                                for (int i = 0; i < posts.length(); i++) {
-                                                    JSONObject postdata = posts.getJSONObject(i);
-                                                    mPostData.add(TwoCellData.createPostData(postdata));
-                                                    mPost_Ids.add(postdata.getString("post_id"));
-                                                }
-                                                cb.onPostDataLoaded(api, mPostData, mPost_Ids);
-                                            } else {
-                                                if (api == Const.APICategory.GET_NEARLINE_ADD) {
-                                                    cb.onPostDataLoaded(api, new ArrayList<TwoCellData>(), new ArrayList<String>());
-                                                } else {
-                                                    cb.onPostDataEmpty(api);
-                                                }
-                                            }
-                                        } catch (JSONException e) {
-                                            cb.onCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
+                                    if (posts.length() != 0) {
+                                        for (int i = 0; i < posts.length(); i++) {
+                                            JSONObject postdata = posts.getJSONObject(i);
+                                            mPostData.add(TwoCellData.createPostData(postdata));
+                                            mPost_Ids.add(postdata.getString("post_id"));
+                                        }
+                                        cb.onPostDataLoaded(api, mPostData, mPost_Ids);
+                                    } else {
+                                        if (api == Const.APICategory.GET_NEARLINE_ADD) {
+                                            cb.onPostDataLoaded(api, new ArrayList<TwoCellData>(), new ArrayList<String>());
+                                        } else {
+                                            cb.onPostDataEmpty(api);
                                         }
                                     }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
 
-                                    @Override
-                                    public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                        cb.onCausedByGlobalError(api, globalCode);
-                                    }
+                            @Override
+                            public void onGlobalError(API3.Util.GlobalCode globalCode) {
+                                cb.onCausedByGlobalError(api, globalCode);
+                            }
 
-                                    @Override
-                                    public void onLocalError(String errorMessage) {
-                                        cb.onCausedByLocalError(api, errorMessage);
-                                    }
-                                });
-                                break;
-                            case GET_FOLLOWLINE_FIRST:
-                            case GET_FOLLOWLINE_REFRESH:
-                            case GET_FOLLOWLINE_FILTER:
-                            case GET_FOLLOWLINE_ADD:
-                                mAPI3.GetFollowlineResponse(response, new API3.PayloadResponseCallback() {
+                            @Override
+                            public void onLocalError(String errorMessage) {
+                                cb.onCausedByLocalError(api, errorMessage);
+                            }
+                        });
+                        break;
+                    case GET_FOLLOWLINE_FIRST:
+                    case GET_FOLLOWLINE_REFRESH:
+                    case GET_FOLLOWLINE_FILTER:
+                    case GET_FOLLOWLINE_ADD:
+                        mAPI3.GetFollowlineResponse(response, new API3.PayloadResponseCallback() {
 
-                                    @Override
-                                    public void onSuccess(JSONObject payload) {
-                                        try {
-                                            JSONArray posts = payload.getJSONArray("posts");
+                            @Override
+                            public void onSuccess(JSONObject payload) {
+                                try {
+                                    JSONArray posts = payload.getJSONArray("posts");
 
-                                            final ArrayList<TwoCellData> mPostData = new ArrayList<>();
-                                            final ArrayList<String> mPost_Ids = new ArrayList<>();
+                                    final ArrayList<TwoCellData> mPostData = new ArrayList<>();
+                                    final ArrayList<String> mPost_Ids = new ArrayList<>();
 
-                                            if (posts.length() != 0) {
-                                                for (int i = 0; i < posts.length(); i++) {
-                                                    JSONObject postdata = posts.getJSONObject(i);
-                                                    mPostData.add(TwoCellData.createPostData(postdata));
-                                                    mPost_Ids.add(postdata.getString("post_id"));
-                                                }
-                                                cb.onPostDataLoaded(api, mPostData, mPost_Ids);
-                                            } else {
-                                                if (api == Const.APICategory.GET_FOLLOWLINE_ADD) {
-                                                    cb.onPostDataLoaded(api, new ArrayList<TwoCellData>(), new ArrayList<String>());
-                                                } else {
-                                                    cb.onPostDataEmpty(api);
-                                                }
-                                            }
-                                        } catch (JSONException e) {
-                                            cb.onCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
+                                    if (posts.length() != 0) {
+                                        for (int i = 0; i < posts.length(); i++) {
+                                            JSONObject postdata = posts.getJSONObject(i);
+                                            mPostData.add(TwoCellData.createPostData(postdata));
+                                            mPost_Ids.add(postdata.getString("post_id"));
+                                        }
+                                        cb.onPostDataLoaded(api, mPostData, mPost_Ids);
+                                    } else {
+                                        if (api == Const.APICategory.GET_FOLLOWLINE_ADD) {
+                                            cb.onPostDataLoaded(api, new ArrayList<TwoCellData>(), new ArrayList<String>());
+                                        } else {
+                                            cb.onPostDataEmpty(api);
                                         }
                                     }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
 
-                                    @Override
-                                    public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                        cb.onCausedByGlobalError(api, globalCode);
-                                    }
+                            @Override
+                            public void onGlobalError(API3.Util.GlobalCode globalCode) {
+                                cb.onCausedByGlobalError(api, globalCode);
+                            }
 
-                                    @Override
-                                    public void onLocalError(String errorMessage) {
-                                        cb.onCausedByLocalError(api, errorMessage);
-                                    }
-                                });
-                                break;
-                            case GET_TIMELINE_FIRST:
-                            case GET_TIMELINE_REFRESH:
-                            case GET_TIMELINE_FILTER:
-                            case GET_TIMELINE_ADD:
-                                mAPI3.GetTimelineResponse(response, new API3.PayloadResponseCallback() {
+                            @Override
+                            public void onLocalError(String errorMessage) {
+                                cb.onCausedByLocalError(api, errorMessage);
+                            }
+                        });
+                        break;
+                    case GET_TIMELINE_FIRST:
+                    case GET_TIMELINE_REFRESH:
+                    case GET_TIMELINE_FILTER:
+                    case GET_TIMELINE_ADD:
+                        mAPI3.GetTimelineResponse(response, new API3.PayloadResponseCallback() {
 
-                                    @Override
-                                    public void onSuccess(JSONObject payload) {
-                                        try {
-                                            JSONArray posts = payload.getJSONArray("posts");
+                            @Override
+                            public void onSuccess(JSONObject payload) {
+                                try {
+                                    JSONArray posts = payload.getJSONArray("posts");
 
-                                            final ArrayList<TwoCellData> mPostData = new ArrayList<>();
-                                            final ArrayList<String> mPost_Ids = new ArrayList<>();
+                                    final ArrayList<TwoCellData> mPostData = new ArrayList<>();
+                                    final ArrayList<String> mPost_Ids = new ArrayList<>();
 
-                                            if (posts.length() != 0) {
-                                                for (int i = 0; i < posts.length(); i++) {
-                                                    JSONObject postdata = posts.getJSONObject(i);
-                                                    mPostData.add(TwoCellData.createPostData(postdata));
-                                                    mPost_Ids.add(postdata.getString("post_id"));
-                                                }
-                                                cb.onPostDataLoaded(api, mPostData, mPost_Ids);
-                                            } else {
-                                                if (api == Const.APICategory.GET_TIMELINE_ADD) {
-                                                    cb.onPostDataLoaded(api, new ArrayList<TwoCellData>(), new ArrayList<String>());
-                                                } else {
-                                                    cb.onPostDataEmpty(api);
-                                                }
-                                            }
-                                        } catch (JSONException e) {
-                                            cb.onCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
+                                    if (posts.length() != 0) {
+                                        for (int i = 0; i < posts.length(); i++) {
+                                            JSONObject postdata = posts.getJSONObject(i);
+                                            mPostData.add(TwoCellData.createPostData(postdata));
+                                            mPost_Ids.add(postdata.getString("post_id"));
+                                        }
+                                        cb.onPostDataLoaded(api, mPostData, mPost_Ids);
+                                    } else {
+                                        if (api == Const.APICategory.GET_TIMELINE_ADD) {
+                                            cb.onPostDataLoaded(api, new ArrayList<TwoCellData>(), new ArrayList<String>());
+                                        } else {
+                                            cb.onPostDataEmpty(api);
                                         }
                                     }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
 
-                                    @Override
-                                    public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                        cb.onCausedByGlobalError(api, globalCode);
-                                    }
+                            @Override
+                            public void onGlobalError(API3.Util.GlobalCode globalCode) {
+                                cb.onCausedByGlobalError(api, globalCode);
+                            }
 
-                                    @Override
-                                    public void onLocalError(String errorMessage) {
-                                        cb.onCausedByLocalError(api, errorMessage);
-                                    }
-                                });
-                                break;
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                        cb.onCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED);
-                    }
-                });
-            } catch (SocketTimeoutException e) {
-                cb.onCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT);
+                            @Override
+                            public void onLocalError(String errorMessage) {
+                                cb.onCausedByLocalError(api, errorMessage);
+                            }
+                        });
+                        break;
+                }
             }
-        } else {
-            //グローバルエラー発生
-            cb.onCausedByGlobalError(api, globalCode);
-        }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+
+            }
+        });
     }
 }

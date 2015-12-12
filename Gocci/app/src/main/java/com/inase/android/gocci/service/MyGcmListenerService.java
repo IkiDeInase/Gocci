@@ -84,7 +84,7 @@ public class MyGcmListenerService extends GcmListenerService {
             }
         }
     }
-    
+
     private void sendNotification(String msg) {
         Intent intent = new Intent(this, SplashActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

@@ -10,7 +10,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.Header;
@@ -35,57 +34,48 @@ public class HeatmapRepositoryImpl implements HeatmapRepository {
 
     @Override
     public void getHeatmap(final Const.APICategory api, final String url, final HeatmapRepositoryCallback cb) {
-        API3.Util.GlobalCode globalCode = mAPI3.CheckGlobalCode();
-        if (globalCode == API3.Util.GlobalCode.SUCCESS) {
-            try {
-                Application_Gocci.getJsonSync(url, new JsonHttpResponseHandler() {
+        Application_Gocci.getJsonSync(url, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                mAPI3.GetHeatmapResponse(response, new API3.PayloadResponseCallback() {
+
                     @Override
-                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        mAPI3.GetHeatmapResponse(response, new API3.PayloadResponseCallback() {
+                    public void onSuccess(JSONObject payload) {
+                        try {
+                            JSONArray rests = payload.getJSONArray("rests");
 
-                            @Override
-                            public void onSuccess(JSONObject payload) {
-                                try {
-                                    JSONArray rests = payload.getJSONArray("rests");
+                            final ArrayList<HeatmapLog> mListData = new ArrayList<>();
 
-                                    final ArrayList<HeatmapLog> mListData = new ArrayList<>();
-
-                                    for (int i = 0; i < rests.length(); i++) {
-                                        JSONObject listData = rests.getJSONObject(i);
-                                        String rest_id = listData.getString("post_rest_id");
-                                        String restname = listData.getString("restname");
-                                        double lat = listData.getDouble("lat");
-                                        double lon = listData.getDouble("lon");
-                                        mListData.add(new HeatmapLog(rest_id, restname, lat, lon));
-                                    }
-                                    cb.onSuccess(api, mListData);
-                                } catch (JSONException e) {
-                                    cb.onFailureCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
-                                }
+                            for (int i = 0; i < rests.length(); i++) {
+                                JSONObject listData = rests.getJSONObject(i);
+                                String rest_id = listData.getString("post_rest_id");
+                                String restname = listData.getString("restname");
+                                double lat = listData.getDouble("lat");
+                                double lon = listData.getDouble("lon");
+                                mListData.add(new HeatmapLog(rest_id, restname, lat, lon));
                             }
-
-                            @Override
-                            public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                cb.onFailureCausedByGlobalError(api, globalCode);
-                            }
-
-                            @Override
-                            public void onLocalError(String errorMessage) {
-                                cb.onFailureCausedByLocalError(api, errorMessage);
-                            }
-                        });
+                            cb.onSuccess(api, mListData);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
 
                     @Override
-                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                        cb.onFailureCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED);
+                    public void onGlobalError(API3.Util.GlobalCode globalCode) {
+                        cb.onFailureCausedByGlobalError(api, globalCode);
+                    }
+
+                    @Override
+                    public void onLocalError(String errorMessage) {
+                        cb.onFailureCausedByLocalError(api, errorMessage);
                     }
                 });
-            } catch (SocketTimeoutException e) {
-                cb.onFailureCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT);
             }
-        } else {
-            cb.onFailureCausedByGlobalError(api, globalCode);
-        }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+
+            }
+        });
     }
 }

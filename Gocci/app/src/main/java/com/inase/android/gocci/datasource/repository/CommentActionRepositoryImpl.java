@@ -10,7 +10,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.Header;
@@ -35,98 +34,79 @@ public class CommentActionRepositoryImpl implements CommentActionRepository {
 
     @Override
     public void postComment(final Const.APICategory api, String postUrl, final String getUrl, final CommentActionRepositoryCallback cb) {
-        API3.Util.GlobalCode globalCode = mAPI3.CheckGlobalCode();
-        if (globalCode == API3.Util.GlobalCode.SUCCESS) {
-            try {
-                Application_Gocci.getJsonSync(postUrl, new JsonHttpResponseHandler() {
+        Application_Gocci.getJsonSync(postUrl, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                mAPI3.SetCommentResponse(response, new API3.PayloadResponseCallback() {
                     @Override
-                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        mAPI3.SetCommentResponse(response, new API3.PayloadResponseCallback() {
-                            @Override
-                            public void onSuccess(JSONObject jsonObject) {
-                                getCommentJson(api, getUrl, cb);
-                            }
-
-                            @Override
-                            public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                cb.onPostFailureCausedByGlobalError(api, globalCode);
-                            }
-
-                            @Override
-                            public void onLocalError(String errorMessage) {
-                                cb.onPostFailureCausedByLocalError(api, errorMessage);
-                            }
-                        });
+                    public void onSuccess(JSONObject jsonObject) {
+                        getCommentJson(api, getUrl, cb);
                     }
 
                     @Override
-                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                        cb.onPostFailureCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED);
+                    public void onGlobalError(API3.Util.GlobalCode globalCode) {
+                        cb.onPostFailureCausedByGlobalError(api, globalCode);
+                    }
+
+                    @Override
+                    public void onLocalError(String errorMessage) {
+                        cb.onPostFailureCausedByLocalError(api, errorMessage);
                     }
                 });
-            } catch (SocketTimeoutException e) {
-                cb.onPostFailureCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT);
             }
-        } else {
-            cb.onPostFailureCausedByGlobalError(api, globalCode);
-        }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+
+            }
+        });
     }
 
     private void getCommentJson(final Const.APICategory api, String getUrl, final CommentActionRepositoryCallback cb) {
-        API3.Util.GlobalCode globalCode = mAPI3.CheckGlobalCode();
-        if (globalCode == API3.Util.GlobalCode.SUCCESS) {
-            try {
-                Application_Gocci.getJsonSync(getUrl, new JsonHttpResponseHandler() {
+        Application_Gocci.getJsonSync(getUrl, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                mAPI3.GetCommentResponse(response, new API3.PayloadResponseCallback() {
+
                     @Override
-                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        mAPI3.GetCommentResponse(response, new API3.PayloadResponseCallback() {
+                    public void onSuccess(JSONObject payload) {
+                        try {
+                            JSONObject memo = payload.getJSONObject("memo");
+                            JSONArray comments = payload.getJSONArray("comments");
 
-                            @Override
-                            public void onSuccess(JSONObject payload) {
-                                try {
-                                    JSONObject memo = payload.getJSONObject("memo");
-                                    JSONArray comments = payload.getJSONArray("comments");
+                            final ArrayList<HeaderData> mCommentData = new ArrayList<>();
+                            HeaderData headerData = HeaderData.createMemoData(memo);
 
-                                    final ArrayList<HeaderData> mCommentData = new ArrayList<>();
-                                    HeaderData headerData = HeaderData.createMemoData(memo);
-
-                                    if (comments.length() != 0) {
-                                        for (int i = 0; i < comments.length(); i++) {
-                                            JSONObject commentData = comments.getJSONObject(i);
-                                            mCommentData.add(HeaderData.createCommentData(commentData));
-                                        }
-                                        cb.onPostCommented(api, headerData, mCommentData);
-                                    } else {
-                                        cb.onPostEmpty(api, headerData);
-                                    }
-                                } catch (JSONException e) {
-                                    cb.onPostFailureCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_BASEFRAME_JSON_MALFORMED);
+                            if (comments.length() != 0) {
+                                for (int i = 0; i < comments.length(); i++) {
+                                    JSONObject commentData = comments.getJSONObject(i);
+                                    mCommentData.add(HeaderData.createCommentData(commentData));
                                 }
+                                cb.onPostCommented(api, headerData, mCommentData);
+                            } else {
+                                cb.onPostEmpty(api, headerData);
                             }
-
-                            @Override
-                            public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                cb.onPostFailureCausedByGlobalError(api, globalCode);
-                            }
-
-                            @Override
-                            public void onLocalError(String errorMessage) {
-                                cb.onPostFailureCausedByLocalError(api, errorMessage);
-                            }
-                        });
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
 
                     @Override
-                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                        cb.onPostFailureCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED);
+                    public void onGlobalError(API3.Util.GlobalCode globalCode) {
+                        cb.onPostFailureCausedByGlobalError(api, globalCode);
+                    }
+
+                    @Override
+                    public void onLocalError(String errorMessage) {
+                        cb.onPostFailureCausedByLocalError(api, errorMessage);
                     }
                 });
-            } catch (SocketTimeoutException e) {
-                cb.onPostFailureCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT);
             }
-        } else {
-            //グローバルエラー発生
-            cb.onPostFailureCausedByGlobalError(api, globalCode);
-        }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+
+            }
+        });
     }
 }

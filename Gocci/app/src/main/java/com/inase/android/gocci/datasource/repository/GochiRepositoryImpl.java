@@ -7,8 +7,6 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONObject;
 
-import java.net.SocketTimeoutException;
-
 import cz.msebera.android.httpclient.Header;
 
 /**
@@ -31,40 +29,31 @@ public class GochiRepositoryImpl implements GochiRepository {
 
     @Override
     public void postGochi(final Const.APICategory api, String url, final String post_id, final GochiRepositoryCallback cb) {
-        API3.Util.GlobalCode globalCode = mAPI3.CheckGlobalCode();
-        if (globalCode == API3.Util.GlobalCode.SUCCESS) {
-            try {
-                Application_Gocci.getJsonSync(url, new JsonHttpResponseHandler() {
+        Application_Gocci.getJsonSync(url, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                mAPI3.SetGochiResponse(response, new API3.PayloadResponseCallback() {
                     @Override
-                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        mAPI3.SetGochiResponse(response, new API3.PayloadResponseCallback() {
-                            @Override
-                            public void onSuccess(JSONObject payload) {
-                                cb.onSuccess(api, post_id);
-                            }
-
-                            @Override
-                            public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                cb.onFailureCausedByGlobalError(api, globalCode, post_id);
-                            }
-
-                            @Override
-                            public void onLocalError(String errorMessage) {
-                                cb.onFailureCausedByLocalError(api, errorMessage, post_id);
-                            }
-                        });
+                    public void onSuccess(JSONObject payload) {
+                        cb.onSuccess(api, post_id);
                     }
 
                     @Override
-                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                        cb.onFailureCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED, post_id);
+                    public void onGlobalError(API3.Util.GlobalCode globalCode) {
+                        cb.onFailureCausedByGlobalError(api, globalCode, post_id);
+                    }
+
+                    @Override
+                    public void onLocalError(String errorMessage) {
+                        cb.onFailureCausedByLocalError(api, errorMessage, post_id);
                     }
                 });
-            } catch (SocketTimeoutException e) {
-                cb.onFailureCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT, post_id);
             }
-        } else {
-            cb.onFailureCausedByGlobalError(api, globalCode, post_id);
-        }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+
+            }
+        });
     }
 }

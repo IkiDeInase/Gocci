@@ -58,12 +58,12 @@ public class Application_Gocci extends Application {
     private static final SyncHttpClient sSyncHttpClient = new SyncHttpClient();
     private static final AsyncHttpClient sAsyncHttpClient = new AsyncHttpClient();
 
-    public static void getJsonSync(String url, JsonHttpResponseHandler responseHandler) throws SocketTimeoutException {
+    public static void getJsonSync(String url, JsonHttpResponseHandler responseHandler) {
         sSyncHttpClient.setCookieStore(SavedData.getCookieStore(getInstance().getApplicationContext()));
         sSyncHttpClient.get(url, responseHandler);
     }
 
-    public static void getJsonAsync(String url, JsonHttpResponseHandler responseHandler) throws SocketTimeoutException {
+    public static void getJsonAsync(String url, JsonHttpResponseHandler responseHandler) {
         sAsyncHttpClient.setCookieStore(SavedData.getCookieStore(getInstance().getApplicationContext()));
         sAsyncHttpClient.get(url, responseHandler);
     }
@@ -280,15 +280,8 @@ public class Application_Gocci extends Application {
 
     public static void resolveOrHandleGlobalError(final Const.APICategory api, API3.Util.GlobalCode globalCode) {
         switch (globalCode) {
-            case ERROR_UNKNOWN_ERROR:
-                //サーバに送る
-                Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), API3.Util.GlobalCodeMessageTable(globalCode), Toast.LENGTH_LONG).show();
-                break;
             case ERROR_SESSION_EXPIRED:
                 //ログインとコグニートリフレッシュ　→　リトライ
-                final API3.Util.GlobalCode code = API3.Impl.getRepository().CheckGlobalCode();
-                if (code == API3.Util.GlobalCode.SUCCESS) {
-                    try {
                         getJsonAsync(API3.Util.getAuthLoginAPI(SavedData.getIdentityId(getInstance().getApplicationContext())), new JsonHttpResponseHandler() {
                             @Override
                             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -318,45 +311,10 @@ public class Application_Gocci extends Application {
                                     }
                                 });
                             }
-
-                            @Override
-                            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                                resolveOrHandleGlobalError(api, API3.Util.GlobalCode.ERROR_NO_DATA_RECIEVED);
-                            }
                         });
-                    } catch (SocketTimeoutException e) {
-                        resolveOrHandleGlobalError(api, API3.Util.GlobalCode.ERROR_CONNECTION_TIMEOUT);
-                    }
-                } else {
-                    Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), API3.Util.GlobalCodeMessageTable(code), Toast.LENGTH_LONG).show();
-                }
                 break;
             case ERROR_CLIENT_OUTDATED:
                 //アップデートダイアログ
-                break;
-            case ERROR_NO_INTERNET_CONNECTION:
-                //リトライ
-                Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), API3.Util.GlobalCodeMessageTable(globalCode), Toast.LENGTH_LONG).show();
-                break;
-            case ERROR_CONNECTION_FAILED:
-                Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), API3.Util.GlobalCodeMessageTable(globalCode), Toast.LENGTH_LONG).show();
-                //何かする？
-                break;
-            case ERROR_CONNECTION_TIMEOUT:
-                Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), API3.Util.GlobalCodeMessageTable(globalCode), Toast.LENGTH_LONG).show();
-                //リトライ？
-                break;
-            case ERROR_SERVER_SIDE_FAILURE:
-                Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), API3.Util.GlobalCodeMessageTable(globalCode), Toast.LENGTH_LONG).show();
-                //サーバーに送る
-                break;
-            case ERROR_NO_DATA_RECIEVED:
-                Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), API3.Util.GlobalCodeMessageTable(globalCode), Toast.LENGTH_LONG).show();
-                //サーバーに送る
-                break;
-            case ERROR_BASEFRAME_JSON_MALFORMED:
-                Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), API3.Util.GlobalCodeMessageTable(globalCode), Toast.LENGTH_LONG).show();
-                //サーバーに送る
                 break;
         }
     }
