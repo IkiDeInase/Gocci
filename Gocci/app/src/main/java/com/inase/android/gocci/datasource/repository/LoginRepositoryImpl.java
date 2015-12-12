@@ -45,9 +45,8 @@ public class LoginRepositoryImpl implements LoginRepository {
                             case AUTH_TWITTER_LOGIN:
                                 mAPI3.AuthLoginResponse(response, new API3.PayloadResponseCallback() {
                                     @Override
-                                    public void onSuccess(JSONObject jsonObject) {
+                                    public void onSuccess(JSONObject payload) {
                                         try {
-                                            JSONObject payload = jsonObject.getJSONObject("payload");
                                             String user_id = payload.getString("user_id");
                                             String username = payload.getString("username");
                                             String profile_img = payload.getString("profile_img");
@@ -75,9 +74,8 @@ public class LoginRepositoryImpl implements LoginRepository {
                             case AUTH_PASS_LOGIN:
                                 mAPI3.AuthPasswordResponse(response, new API3.PayloadResponseCallback() {
                                     @Override
-                                    public void onSuccess(JSONObject jsonObject) {
+                                    public void onSuccess(JSONObject payload) {
                                         try {
-                                            JSONObject payload = jsonObject.getJSONObject("payload");
                                             String identity_id = payload.getString("identity_id");
                                             SavedData.setIdentityId(Application_Gocci.getInstance().getApplicationContext(), identity_id);
                                             userLogin(Const.APICategory.AUTH_LOGIN, API3.Util.getAuthLoginAPI(identity_id), cb);
@@ -100,9 +98,8 @@ public class LoginRepositoryImpl implements LoginRepository {
                             case AUTH_SIGNUP:
                                 mAPI3.AuthSignupResponse(response, new API3.PayloadResponseCallback() {
                                     @Override
-                                    public void onSuccess(JSONObject jsonObject) {
+                                    public void onSuccess(JSONObject payload) {
                                         try {
-                                            JSONObject payload = jsonObject.getJSONObject("payload");
                                             String identity_id = payload.getString("identity_id");
                                             SavedData.setIdentityId(Application_Gocci.getInstance().getApplicationContext(), identity_id);
                                             userLogin(Const.APICategory.AUTH_LOGIN, API3.Util.getAuthLoginAPI(identity_id), cb);

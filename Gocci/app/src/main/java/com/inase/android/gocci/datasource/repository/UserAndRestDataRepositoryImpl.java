@@ -45,16 +45,15 @@ public class UserAndRestDataRepositoryImpl implements UserAndRestDataRepository 
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                         mAPI3.GetUserResponse(response, new API3.PayloadResponseCallback() {
                             @Override
-                            public void onSuccess(JSONObject jsonObject) {
+                            public void onSuccess(JSONObject payload) {
                                 try {
-                                    JSONObject payload = jsonObject.getJSONObject("payload");
                                     JSONObject user = payload.getJSONObject("user");
+                                    JSONArray posts = payload.getJSONArray("posts");
 
                                     final ArrayList<PostData> mPostData = new ArrayList<>();
                                     final ArrayList<String> mPost_Ids = new ArrayList<>();
                                     HeaderData headerData = HeaderData.createUserHeaderData(user);
 
-                                    JSONArray posts = payload.getJSONArray("posts");
                                     if (posts.length() != 0) {
                                         for (int i = 0; i < posts.length(); i++) {
                                             JSONObject postdata = posts.getJSONObject(i);
@@ -107,16 +106,15 @@ public class UserAndRestDataRepositoryImpl implements UserAndRestDataRepository 
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                         mAPI3.GetRestResponse(response, new API3.PayloadResponseCallback() {
                             @Override
-                            public void onSuccess(JSONObject jsonObject) {
+                            public void onSuccess(JSONObject payload) {
                                 try {
-                                    JSONObject payload = jsonObject.getJSONObject("payload");
-                                    JSONObject user = payload.getJSONObject("rest");
+                                    JSONObject rest = payload.getJSONObject("rest");
+                                    JSONArray posts = payload.getJSONArray("posts");
 
                                     final ArrayList<PostData> mPostData = new ArrayList<>();
                                     final ArrayList<String> mPost_Ids = new ArrayList<>();
-                                    HeaderData headerData = HeaderData.createTenpoHeaderData(user);
+                                    HeaderData headerData = HeaderData.createTenpoHeaderData(rest);
 
-                                    JSONArray posts = payload.getJSONArray("posts");
                                     if (posts.length() != 0) {
                                         for (int i = 0; i < posts.length(); i++) {
                                             JSONObject postdata = posts.getJSONObject(i);

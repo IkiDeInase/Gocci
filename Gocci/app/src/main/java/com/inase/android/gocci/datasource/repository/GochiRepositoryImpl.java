@@ -39,7 +39,7 @@ public class GochiRepositoryImpl implements GochiRepository {
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                         mAPI3.SetGochiResponse(response, new API3.PayloadResponseCallback() {
                             @Override
-                            public void onSuccess(JSONObject jsonObject) {
+                            public void onSuccess(JSONObject payload) {
                                 cb.onSuccess(api, post_id);
                             }
 

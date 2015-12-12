@@ -43,16 +43,16 @@ public class NearRepositoryImpl implements NearRepository {
                         mAPI3.GetNearResponse(response, new API3.PayloadResponseCallback() {
 
                             @Override
-                            public void onSuccess(JSONObject jsonObject) {
+                            public void onSuccess(JSONObject payload) {
                                 try {
                                     String[] restnames = new String[30];
                                     final ArrayList<String> restIdArray = new ArrayList<>();
                                     final ArrayList<String> restnameArray = new ArrayList<>();
 
-                                    JSONArray payload = jsonObject.getJSONArray("payload");
-                                    if (payload.length() != 0) {
-                                        for (int i = 0; i < payload.length(); i++) {
-                                            JSONObject listData = payload.getJSONObject(i);
+                                    JSONArray rests = payload.getJSONArray("rests");
+                                    if (rests.length() != 0) {
+                                        for (int i = 0; i < rests.length(); i++) {
+                                            JSONObject listData = rests.getJSONObject(i);
                                             final String rest_name = listData.getString("restname");
                                             String rest_id = listData.getString("rest_id");
 

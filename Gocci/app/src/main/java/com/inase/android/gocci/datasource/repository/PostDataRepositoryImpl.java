@@ -49,15 +49,16 @@ public class PostDataRepositoryImpl implements PostDataRepository {
                                 mAPI3.GetNearlineResponse(response, new API3.PayloadResponseCallback() {
 
                                     @Override
-                                    public void onSuccess(JSONObject jsonObject) {
+                                    public void onSuccess(JSONObject payload) {
                                         try {
+                                            JSONArray posts = payload.getJSONArray("posts");
+
                                             final ArrayList<TwoCellData> mPostData = new ArrayList<>();
                                             final ArrayList<String> mPost_Ids = new ArrayList<>();
 
-                                            JSONArray payload = jsonObject.getJSONArray("payload");
-                                            if (payload.length() != 0) {
-                                                for (int i = 0; i < payload.length(); i++) {
-                                                    JSONObject postdata = payload.getJSONObject(i);
+                                            if (posts.length() != 0) {
+                                                for (int i = 0; i < posts.length(); i++) {
+                                                    JSONObject postdata = posts.getJSONObject(i);
                                                     mPostData.add(TwoCellData.createPostData(postdata));
                                                     mPost_Ids.add(postdata.getString("post_id"));
                                                 }
@@ -92,15 +93,16 @@ public class PostDataRepositoryImpl implements PostDataRepository {
                                 mAPI3.GetFollowlineResponse(response, new API3.PayloadResponseCallback() {
 
                                     @Override
-                                    public void onSuccess(JSONObject jsonObject) {
+                                    public void onSuccess(JSONObject payload) {
                                         try {
+                                            JSONArray posts = payload.getJSONArray("posts");
+
                                             final ArrayList<TwoCellData> mPostData = new ArrayList<>();
                                             final ArrayList<String> mPost_Ids = new ArrayList<>();
 
-                                            JSONArray payload = jsonObject.getJSONArray("payload");
-                                            if (payload.length() != 0) {
-                                                for (int i = 0; i < payload.length(); i++) {
-                                                    JSONObject postdata = payload.getJSONObject(i);
+                                            if (posts.length() != 0) {
+                                                for (int i = 0; i < posts.length(); i++) {
+                                                    JSONObject postdata = posts.getJSONObject(i);
                                                     mPostData.add(TwoCellData.createPostData(postdata));
                                                     mPost_Ids.add(postdata.getString("post_id"));
                                                 }
@@ -135,15 +137,16 @@ public class PostDataRepositoryImpl implements PostDataRepository {
                                 mAPI3.GetTimelineResponse(response, new API3.PayloadResponseCallback() {
 
                                     @Override
-                                    public void onSuccess(JSONObject jsonObject) {
+                                    public void onSuccess(JSONObject payload) {
                                         try {
+                                            JSONArray posts = payload.getJSONArray("posts");
+
                                             final ArrayList<TwoCellData> mPostData = new ArrayList<>();
                                             final ArrayList<String> mPost_Ids = new ArrayList<>();
 
-                                            JSONArray payload = jsonObject.getJSONArray("payload");
-                                            if (payload.length() != 0) {
-                                                for (int i = 0; i < payload.length(); i++) {
-                                                    JSONObject postdata = payload.getJSONObject(i);
+                                            if (posts.length() != 0) {
+                                                for (int i = 0; i < posts.length(); i++) {
+                                                    JSONObject postdata = posts.getJSONObject(i);
                                                     mPostData.add(TwoCellData.createPostData(postdata));
                                                     mPost_Ids.add(postdata.getString("post_id"));
                                                 }

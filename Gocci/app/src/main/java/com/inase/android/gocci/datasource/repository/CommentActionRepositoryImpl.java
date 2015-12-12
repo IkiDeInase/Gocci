@@ -82,15 +82,14 @@ public class CommentActionRepositoryImpl implements CommentActionRepository {
                         mAPI3.GetCommentResponse(response, new API3.PayloadResponseCallback() {
 
                             @Override
-                            public void onSuccess(JSONObject jsonObject) {
+                            public void onSuccess(JSONObject payload) {
                                 try {
-                                    JSONObject payload = jsonObject.getJSONObject("payload");
                                     JSONObject memo = payload.getJSONObject("memo");
+                                    JSONArray comments = payload.getJSONArray("comments");
 
                                     final ArrayList<HeaderData> mCommentData = new ArrayList<>();
                                     HeaderData headerData = HeaderData.createMemoData(memo);
 
-                                    JSONArray comments = payload.getJSONArray("comments");
                                     if (comments.length() != 0) {
                                         for (int i = 0; i < comments.length(); i++) {
                                             JSONObject commentData = comments.getJSONObject(i);

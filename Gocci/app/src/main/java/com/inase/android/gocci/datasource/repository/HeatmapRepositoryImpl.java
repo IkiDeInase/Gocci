@@ -44,13 +44,14 @@ public class HeatmapRepositoryImpl implements HeatmapRepository {
                         mAPI3.GetHeatmapResponse(response, new API3.PayloadResponseCallback() {
 
                             @Override
-                            public void onSuccess(JSONObject jsonObject) {
+                            public void onSuccess(JSONObject payload) {
                                 try {
+                                    JSONArray rests = payload.getJSONArray("rests");
+
                                     final ArrayList<HeatmapLog> mListData = new ArrayList<>();
 
-                                    JSONArray payload = jsonObject.getJSONArray("payload");
-                                    for (int i = 0; i < payload.length(); i++) {
-                                        JSONObject listData = payload.getJSONObject(i);
+                                    for (int i = 0; i < rests.length(); i++) {
+                                        JSONObject listData = rests.getJSONObject(i);
                                         String rest_id = listData.getString("post_rest_id");
                                         String restname = listData.getString("restname");
                                         double lat = listData.getDouble("lat");

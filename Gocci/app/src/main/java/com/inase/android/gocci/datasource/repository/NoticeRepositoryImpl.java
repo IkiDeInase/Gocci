@@ -44,14 +44,14 @@ public class NoticeRepositoryImpl implements NoticeRepository {
                         mAPI3.GetNoticeResponse(response, new API3.PayloadResponseCallback() {
 
                             @Override
-                            public void onSuccess(JSONObject jsonObject) {
+                            public void onSuccess(JSONObject payload) {
                                 try {
                                     final ArrayList<HeaderData> mListData = new ArrayList<>();
 
-                                    JSONArray payload = jsonObject.getJSONArray("payload");
-                                    if (payload.length() != 0) {
-                                        for (int i = 0; i < payload.length(); i++) {
-                                            JSONObject listData = payload.getJSONObject(i);
+                                    JSONArray notices = payload.getJSONArray("notices");
+                                    if (notices.length() != 0) {
+                                        for (int i = 0; i < notices.length(); i++) {
+                                            JSONObject listData = notices.getJSONObject(i);
                                             mListData.add(HeaderData.createNoticeHeaderData(listData));
                                         }
                                         cb.onSuccess(api, mListData);

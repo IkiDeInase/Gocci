@@ -40,7 +40,7 @@ public class FollowRepositoryImpl implements FollowRepository {
                         if (api == Const.APICategory.SET_FOLLOW) {
                             mAPI3.SetFollowResponse(response, new API3.PayloadResponseCallback() {
                                 @Override
-                                public void onSuccess(JSONObject jsonObject) {
+                                public void onSuccess(JSONObject payload) {
                                     cb.onSuccess(api, user_id);
                                 }
 
@@ -57,7 +57,7 @@ public class FollowRepositoryImpl implements FollowRepository {
                         } else if (api == Const.APICategory.UNSET_FOLLOW) {
                             mAPI3.UnsetFollowResponse(response, new API3.PayloadResponseCallback() {
                                 @Override
-                                public void onSuccess(JSONObject jsonObject) {
+                                public void onSuccess(JSONObject payload) {
                                     cb.onSuccess(api, user_id);
                                 }
 

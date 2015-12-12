@@ -45,7 +45,7 @@ public class API3PostUtil {
                         public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                             API3.Impl.getRepository().SetFeedbackResponse(response, new API3.PayloadResponseCallback() {
                                 @Override
-                                public void onSuccess(JSONObject jsonObject) {
+                                public void onSuccess(JSONObject payload) {
                                     Toast.makeText(context, "ご協力ありがとうございました！", Toast.LENGTH_SHORT).show();
                                 }
 
@@ -89,7 +89,7 @@ public class API3PostUtil {
                         public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                             API3.Impl.getRepository().SetBlockResponse(response, new API3.PayloadResponseCallback() {
                                 @Override
-                                public void onSuccess(JSONObject jsonObject) {
+                                public void onSuccess(JSONObject payload) {
                                     Toast.makeText(context, "この投稿を違反報告しました", Toast.LENGTH_SHORT).show();
                                 }
 
@@ -133,7 +133,7 @@ public class API3PostUtil {
                         public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                             API3.Impl.getRepository().UnsetPostResponse(response, new API3.PayloadResponseCallback() {
                                 @Override
-                                public void onSuccess(JSONObject jsonObject) {
+                                public void onSuccess(JSONObject payload) {
                                     BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, activityCategory, Const.APICategory.UNSET_POST, post_id));
                                 }
 
@@ -177,7 +177,7 @@ public class API3PostUtil {
                         public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                             API3.Impl.getRepository().SetPasswordResponse(response, new API3.PayloadResponseCallback() {
                                 @Override
-                                public void onSuccess(JSONObject jsonObject) {
+                                public void onSuccess(JSONObject payload) {
                                     Toast.makeText(context, "パスワードを設定しました", Toast.LENGTH_SHORT).show();
                                 }
 
@@ -221,9 +221,8 @@ public class API3PostUtil {
                         public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                             API3.Impl.getRepository().SetRestResponse(response, new API3.PayloadResponseCallback() {
                                 @Override
-                                public void onSuccess(JSONObject jsonObject) {
+                                public void onSuccess(JSONObject payload) {
                                     try {
-                                        JSONObject payload = jsonObject.getJSONObject("payload");
                                         String rest_id = payload.getString("rest_id");
                                         BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, activityCategory, Const.APICategory.SET_RESTADD, rest_id));
                                     } catch (JSONException e) {
@@ -271,7 +270,7 @@ public class API3PostUtil {
                         public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                             API3.Impl.getRepository().SetSns_LinkResponse(response, new API3.PayloadResponseCallback() {
                                 @Override
-                                public void onSuccess(JSONObject jsonObject) {
+                                public void onSuccess(JSONObject payload) {
                                     BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, activityCategory, api, sns_token));
                                 }
 
@@ -315,7 +314,7 @@ public class API3PostUtil {
                         public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                             API3.Impl.getRepository().UnsetSns_LinkResponse(response, new API3.PayloadResponseCallback() {
                                 @Override
-                                public void onSuccess(JSONObject jsonObject) {
+                                public void onSuccess(JSONObject payload) {
                                     BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, activityCategory, api, sns_token));
                                 }
 
@@ -359,7 +358,7 @@ public class API3PostUtil {
                         public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                             API3.Impl.getRepository().SetDeviceResponse(response, new API3.PayloadResponseCallback() {
                                 @Override
-                                public void onSuccess(JSONObject jsonObject) {
+                                public void onSuccess(JSONObject payload) {
 
                                 }
 
@@ -403,7 +402,7 @@ public class API3PostUtil {
                         public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                             API3.Impl.getRepository().UnsetDeviceResponse(response, new API3.PayloadResponseCallback() {
                                 @Override
-                                public void onSuccess(JSONObject jsonObject) {
+                                public void onSuccess(JSONObject payload) {
 
                                 }
 
@@ -447,9 +446,8 @@ public class API3PostUtil {
                         public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                             API3.Impl.getRepository().SetUsernameResponse(response, new API3.PayloadResponseCallback() {
                                 @Override
-                                public void onSuccess(JSONObject jsonObject) {
+                                public void onSuccess(JSONObject payload) {
                                     try {
-                                        JSONObject payload = jsonObject.getJSONObject("payload");
                                         String username = payload.getString("username");
                                         SavedData.setServerName(Application_Gocci.getInstance().getApplicationContext(), username);
                                         BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, activityCategory, Const.APICategory.SET_USERNAME, username));
@@ -503,9 +501,8 @@ public class API3PostUtil {
                                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                                         API3.Impl.getRepository().SetProfile_ImgResponse(response, new API3.PayloadResponseCallback() {
                                             @Override
-                                            public void onSuccess(JSONObject jsonObject) {
+                                            public void onSuccess(JSONObject payload) {
                                                 try {
-                                                    JSONObject payload = jsonObject.getJSONObject("payload");
                                                     String profile_img = payload.getString("profile_img");
                                                     SavedData.setServerPicture(Application_Gocci.getInstance().getApplicationContext(), profile_img);
                                                     BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, activityCategory, Const.APICategory.SET_PROFILEIMG, post_date));
@@ -586,9 +583,8 @@ public class API3PostUtil {
                                             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                                                 API3.Impl.getRepository().SetProfile_ImgResponse(response, new API3.PayloadResponseCallback() {
                                                     @Override
-                                                    public void onSuccess(JSONObject jsonObject) {
+                                                    public void onSuccess(JSONObject payload) {
                                                         try {
-                                                            JSONObject payload = jsonObject.getJSONObject("payload");
                                                             String profile_img = payload.getString("profile_img");
                                                             SavedData.setServerPicture(Application_Gocci.getInstance().getApplicationContext(), profile_img);
                                                             BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, activityCategory, Const.APICategory.SET_PROFILEIMG, post_date));
@@ -662,7 +658,7 @@ public class API3PostUtil {
                         public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                             API3.Impl.getRepository().SetPostResponse(response, new API3.PayloadResponseCallback() {
                                 @Override
-                                public void onSuccess(JSONObject jsonObject) {
+                                public void onSuccess(JSONObject payload) {
                                     BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, activityCategory, Const.APICategory.SET_POST, memo));
                                 }
 
@@ -712,7 +708,7 @@ public class API3PostUtil {
                         public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                             API3.Impl.getRepository().SetWantResponse(response, new API3.PayloadResponseCallback() {
                                 @Override
-                                public void onSuccess(JSONObject jsonObject) {
+                                public void onSuccess(JSONObject payload) {
 
                                 }
 
@@ -756,7 +752,7 @@ public class API3PostUtil {
                         public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                             API3.Impl.getRepository().UnsetWantResponse(response, new API3.PayloadResponseCallback() {
                                 @Override
-                                public void onSuccess(JSONObject jsonObject) {
+                                public void onSuccess(JSONObject payload) {
 
                                 }
 

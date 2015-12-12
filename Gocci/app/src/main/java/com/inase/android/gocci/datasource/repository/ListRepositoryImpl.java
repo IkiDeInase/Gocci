@@ -40,21 +40,22 @@ public class ListRepositoryImpl implements ListRepository {
             try {
                 Application_Gocci.getJsonSync(url, new JsonHttpResponseHandler() {
                     @Override
-                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    public void onSuccess(int statusCode, Header[] headers, final JSONObject response) {
                         switch (api) {
                             case GET_FOLLOW_FIRST:
                             case GET_FOLLOW_REFRESH:
                                 mAPI3.GetFollowResponse(response, new API3.PayloadResponseCallback() {
 
                                     @Override
-                                    public void onSuccess(JSONObject jsonObject) {
+                                    public void onSuccess(JSONObject payload) {
                                         try {
+                                            JSONArray users = payload.getJSONArray("users");
+
                                             final ArrayList<ListGetData> mListData = new ArrayList<>();
 
-                                            JSONArray payload = jsonObject.getJSONArray("payload");
-                                            if (payload.length() != 0) {
-                                                for (int i = 0; i < payload.length(); i++) {
-                                                    JSONObject listData = payload.getJSONObject(i);
+                                            if (users.length() != 0) {
+                                                for (int i = 0; i < users.length(); i++) {
+                                                    JSONObject listData = users.getJSONObject(i);
                                                     mListData.add(ListGetData.createUserData(listData));
                                                 }
                                                 cb.onSuccess(api, mListData);
@@ -82,13 +83,15 @@ public class ListRepositoryImpl implements ListRepository {
                                 mAPI3.GetFollowerResponse(response, new API3.PayloadResponseCallback() {
 
                                     @Override
-                                    public void onSuccess(JSONObject jsonObject) {
+                                    public void onSuccess(JSONObject payload) {
                                         try {
+                                            JSONArray users = payload.getJSONArray("users");
+
                                             final ArrayList<ListGetData> mListData = new ArrayList<>();
-                                            JSONArray payload = jsonObject.getJSONArray("payload");
-                                            if (payload.length() != 0) {
-                                                for (int i = 0; i < payload.length(); i++) {
-                                                    JSONObject listData = payload.getJSONObject(i);
+
+                                            if (users.length() != 0) {
+                                                for (int i = 0; i < users.length(); i++) {
+                                                    JSONObject listData = users.getJSONObject(i);
                                                     mListData.add(ListGetData.createUserData(listData));
                                                 }
                                                 cb.onSuccess(api, mListData);
@@ -116,14 +119,15 @@ public class ListRepositoryImpl implements ListRepository {
                                 mAPI3.GetWantResponse(response, new API3.PayloadResponseCallback() {
 
                                     @Override
-                                    public void onSuccess(JSONObject jsonObject) {
+                                    public void onSuccess(JSONObject payload) {
                                         try {
+                                            JSONArray rests = payload.getJSONArray("rests");
+
                                             final ArrayList<ListGetData> mListData = new ArrayList<>();
 
-                                            JSONArray payload = jsonObject.getJSONArray("payload");
-                                            if (payload.length() != 0) {
-                                                for (int i = 0; i < payload.length(); i++) {
-                                                    JSONObject listData = payload.getJSONObject(i);
+                                            if (rests.length() != 0) {
+                                                for (int i = 0; i < rests.length(); i++) {
+                                                    JSONObject listData = rests.getJSONObject(i);
                                                     mListData.add(ListGetData.createRestData(listData));
                                                 }
                                                 cb.onSuccess(api, mListData);
@@ -151,14 +155,15 @@ public class ListRepositoryImpl implements ListRepository {
                                 mAPI3.GetUser_CheerResponse(response, new API3.PayloadResponseCallback() {
 
                                     @Override
-                                    public void onSuccess(JSONObject jsonObject) {
+                                    public void onSuccess(JSONObject payload) {
                                         try {
+                                            JSONArray rests = payload.getJSONArray("rests");
+
                                             final ArrayList<ListGetData> mListData = new ArrayList<>();
 
-                                            JSONArray payload = jsonObject.getJSONArray("payload");
-                                            if (payload.length() != 0) {
-                                                for (int i = 0; i < payload.length(); i++) {
-                                                    JSONObject listData = payload.getJSONObject(i);
+                                            if (rests.length() != 0) {
+                                                for (int i = 0; i < rests.length(); i++) {
+                                                    JSONObject listData = rests.getJSONObject(i);
                                                     mListData.add(ListGetData.createRestData(listData));
                                                 }
                                                 cb.onSuccess(api, mListData);
@@ -186,14 +191,15 @@ public class ListRepositoryImpl implements ListRepository {
                                 mAPI3.GetRest_CheerResponse(response, new API3.PayloadResponseCallback() {
 
                                     @Override
-                                    public void onSuccess(JSONObject jsonObject) {
+                                    public void onSuccess(JSONObject payload) {
                                         try {
+                                            JSONArray users = payload.getJSONArray("users");
+
                                             final ArrayList<ListGetData> mListData = new ArrayList<>();
 
-                                            JSONArray payload = jsonObject.getJSONArray("payload");
-                                            if (payload.length() != 0) {
-                                                for (int i = 0; i < payload.length(); i++) {
-                                                    JSONObject listData = payload.getJSONObject(i);
+                                            if (users.length() != 0) {
+                                                for (int i = 0; i < users.length(); i++) {
+                                                    JSONObject listData = users.getJSONObject(i);
                                                     mListData.add(ListGetData.createUserData(listData));
                                                 }
                                                 cb.onSuccess(api, mListData);
