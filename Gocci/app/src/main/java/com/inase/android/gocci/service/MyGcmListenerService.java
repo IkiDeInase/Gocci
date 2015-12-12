@@ -8,7 +8,6 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
 import com.inase.android.gocci.R;
@@ -17,59 +16,75 @@ import com.inase.android.gocci.event.NotificationNumberEvent;
 import com.inase.android.gocci.ui.activity.SplashActivity;
 import com.inase.android.gocci.utils.SavedData;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.Arrays;
 
 /**
  * Created by kinagafuji on 15/08/12.
  */
 public class MyGcmListenerService extends GcmListenerService {
-    private static final String TAG = "MyGcmListenerService";
 
-    /**
-     * Called when message is received.
-     *
-     * @param from SenderID of the sender.
-     * @param data Data bundle containing message data as key/value pairs.
-     *             For Set of keys use data.keySet().
-     */
-    // [START receive_message]
     @Override
     public void onMessageReceived(String from, Bundle data) {
         String def = data.getString("default");
-        Log.e(TAG, "From: " + from);
-        Integer[] list = SavedData.getSettingNotifications(this);
         if (def != null) {
-            if (def.matches(".*" + getString(R.string.notice_from_gochi) + ".*")) {
-                if (Arrays.asList(list).contains(0)) {
-                    sendNotification(def);
-                }
-            } else if (def.matches(".*" + getString(R.string.notice_from_comment) + ".*")) {
-                if (Arrays.asList(list).contains(1)) {
-                    sendNotification(def);
-                }
-            } else if (def.matches(".*" + getString(R.string.notice_from_follow) + ".*")) {
-                if (Arrays.asList(list).contains(2)) {
-                    sendNotification(def);
-                }
-            }
+            try {
+                JSONObject jsonObject = new JSONObject(def);
+                String type = jsonObject.getString("type");
 
-            if (!def.equals(getString(R.string.videoposting_complete))) {
+                Integer[] list = SavedData.getSettingNotifications(this);
                 int badge_num = SavedData.getNotification(getApplicationContext());
-                BusHolder.get().post(new NotificationNumberEvent(badge_num + 1, def));
-                SavedData.setNotification(getApplicationContext(), badge_num + 1);
-            } else {
-                int badge_num = SavedData.getNotification(getApplicationContext());
-                BusHolder.get().post(new NotificationNumberEvent(badge_num, def));
+
+                String id = null;
+                String username = null;
+                switch (type) {
+                    case "follow":
+                        id = jsonObject.getString("id");
+                        username = jsonObject.getString("username");
+                        if (Arrays.asList(list).contains(2)) {
+                            sendNotification(username + getString(R.string.notice_from_follow));
+                        }
+                        BusHolder.get().post(new NotificationNumberEvent(badge_num + 1, def));
+                        SavedData.setNotification(getApplicationContext(), badge_num + 1);
+                        break;
+                    case "gochi":
+                        id = jsonObject.getString("id");
+                        username = jsonObject.getString("username");
+                        if (Arrays.asList(list).contains(0)) {
+                            sendNotification(username + getString(R.string.notice_from_gochi));
+                        }
+                        BusHolder.get().post(new NotificationNumberEvent(badge_num + 1, def));
+                        SavedData.setNotification(getApplicationContext(), badge_num + 1);
+                        break;
+                    case "comment":
+                        id = jsonObject.getString("id");
+                        username = jsonObject.getString("username");
+                        if (Arrays.asList(list).contains(1)) {
+                            sendNotification(username + getString(R.string.notice_from_comment));
+                        }
+                        BusHolder.get().post(new NotificationNumberEvent(badge_num + 1, def));
+                        SavedData.setNotification(getApplicationContext(), badge_num + 1);
+                        break;
+                    case "announce":
+                        String message = jsonObject.getString("message");
+                        if (Arrays.asList(list).contains(3)) {
+                            sendNotification(message);
+                        }
+                        BusHolder.get().post(new NotificationNumberEvent(badge_num + 1, def));
+                        SavedData.setNotification(getApplicationContext(), badge_num + 1);
+                        break;
+                    case "post_complete":
+                        BusHolder.get().post(new NotificationNumberEvent(badge_num, def));
+                        break;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
         }
     }
-    // [END receive_message]
-
-    /**
-     * Create and show a simple notification containing the received GCM message.
-     *
-     * @param msg GCM message received.
-     */
+    
     private void sendNotification(String msg) {
         Intent intent = new Intent(this, SplashActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
