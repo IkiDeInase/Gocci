@@ -59,6 +59,8 @@ public class VideoPlayer implements ExoPlayer.Listener, ChunkSampleSource.EventL
 
         void onAudioTrackWriteError(AudioTrack.WriteException e);
 
+        void onAudioTrackUnderrun(int bufferSize, long bufferSizeMs, long elapsedSinceLastFeedMs);
+
         void onDecoderInitializationError(MediaCodecTrackRenderer.DecoderInitializationException e);
 
         void onCryptoError(MediaCodec.CryptoException e);
@@ -99,9 +101,6 @@ public class VideoPlayer implements ExoPlayer.Listener, ChunkSampleSource.EventL
     public static final int STATE_ENDED = ExoPlayer.STATE_ENDED;
     public static final int TRACK_DISABLED = ExoPlayer.TRACK_DISABLED;
     public static final int TRACK_DEFAULT = ExoPlayer.TRACK_DEFAULT;
-
-    public static final int DISABLED_TRACK = -1;
-    public static final int PRIMARY_TRACK = 0;
 
     public static final int RENDERER_COUNT = 3;
     public static final int TYPE_VIDEO = 0;
@@ -195,9 +194,6 @@ public class VideoPlayer implements ExoPlayer.Listener, ChunkSampleSource.EventL
 
     public void setSelectedTrack(int type, int index) {
         player.setSelectedTrack(type, index);
-        if (type == TYPE_TEXT && index < 0) {
-
-        }
     }
 
     public boolean getBackgrounded() {
@@ -408,6 +404,13 @@ public class VideoPlayer implements ExoPlayer.Listener, ChunkSampleSource.EventL
     public void onAudioTrackWriteError(AudioTrack.WriteException e) {
         if (internalErrorListener != null) {
             internalErrorListener.onAudioTrackWriteError(e);
+        }
+    }
+
+    @Override
+    public void onAudioTrackUnderrun(int bufferSize, long bufferSizeMs, long elapsedSinceLastFeedMs) {
+        if (internalErrorListener != null) {
+            internalErrorListener.onAudioTrackUnderrun(bufferSize, bufferSizeMs, elapsedSinceLastFeedMs);
         }
     }
 
