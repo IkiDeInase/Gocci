@@ -315,6 +315,9 @@ public class Application_Gocci extends Application {
             case ERROR_CLIENT_OUTDATED:
                 //アップデートダイアログ
                 break;
+            case ERROR_UNKNOWN_ERROR:
+                Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), API3.Util.GlobalCodeMessageTable(globalCode), Toast.LENGTH_LONG).show();
+                break;
         }
     }
 
