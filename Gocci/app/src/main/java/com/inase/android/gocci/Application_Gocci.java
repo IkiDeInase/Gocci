@@ -4,6 +4,7 @@ package com.inase.android.gocci;
 import android.app.Application;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.support.multidex.MultiDex;
 import android.util.Log;
 import android.widget.Toast;
@@ -59,11 +60,13 @@ public class Application_Gocci extends Application {
 
     public static void getJsonSync(String url, JsonHttpResponseHandler responseHandler) {
         sSyncHttpClient.setCookieStore(SavedData.getCookieStore(getInstance().getApplicationContext()));
+        sSyncHttpClient.setUserAgent("GocciTest/" + Const.OS + "/" + BuildConfig.VERSION_NAME + " API/" + API3.Util.version + " (" + Build.MODEL + "/" + Build.VERSION.RELEASE + ")");
         sSyncHttpClient.get(url, responseHandler);
     }
 
     public static void getJsonAsync(String url, JsonHttpResponseHandler responseHandler) {
         sAsyncHttpClient.setCookieStore(SavedData.getCookieStore(getInstance().getApplicationContext()));
+        sAsyncHttpClient.setUserAgent("GocciTest/" + Const.OS + "/" + BuildConfig.VERSION_NAME + " API/" + API3.Util.version + " (" + Build.MODEL + "/" + Build.VERSION.RELEASE + ")");
         sAsyncHttpClient.get(url, responseHandler);
     }
 
