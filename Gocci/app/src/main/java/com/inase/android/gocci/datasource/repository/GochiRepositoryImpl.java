@@ -57,7 +57,7 @@ public class GochiRepositoryImpl implements GochiRepository {
 
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-
+                    cb.onFailureCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR, post_id);
                 }
             });
         } else {

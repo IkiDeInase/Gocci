@@ -390,10 +390,11 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
             }
         });
 
-        mToukouButtonRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
+        mToukouButtonRipple.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onComplete(RippleView rippleView) {
+            public void onClick(View view) {
                 if (Util.getConnectedState(CameraPreviewAlreadyExistActivity.this) != Util.NetworkStatus.OFF) {
+                    mProgressWheel.setVisibility(View.VISIBLE);
                     if (!mRest_id.equals("1")) {
                         if (mEditValue.getText().length() != 0) {
                             mValue = mEditValue.getText().toString();
@@ -427,7 +428,6 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
                                 }
                             }
                         }
-                        mProgressWheel.setVisibility(View.VISIBLE);
                         API3PostUtil.postMovieAsync(CameraPreviewAlreadyExistActivity.this, Const.ActivityCategory.CAMERA_PREVIEW_ALREADY, mRest_id, mAwsPostName, String.valueOf(mCategory_id), mValue, mMemo, String.valueOf(mCheer_flag));
                         Application_Gocci.postingVideoToS3(CameraPreviewAlreadyExistActivity.this, mAwsPostName, mVideoFile);
                     } else {

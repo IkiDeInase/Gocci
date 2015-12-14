@@ -324,7 +324,6 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
                         .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
                             public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
-                                mProgressWheel.setVisibility(View.VISIBLE);
 
                                 if (isName && isPicture) {
                                     //どっちも変更した
@@ -1174,8 +1173,6 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
                         API3PostUtil.postProfileImgAsync(MyprofActivity.this, post_date, update_file, Const.ActivityCategory.MY_PAGE);
                         isPicture = false;
                     } else {
-                        mProgressWheel.setVisibility(View.GONE);
-
                         Intent intent = getIntent();
                         overridePendingTransition(0, 0);
                         intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
@@ -1187,8 +1184,6 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
                     }
                     break;
                 case SET_PROFILEIMG:
-                    mProgressWheel.setVisibility(View.GONE);
-
                     Intent intent = getIntent();
                     overridePendingTransition(0, 0);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);

@@ -72,7 +72,7 @@ public class PostDataRepositoryImpl implements PostDataRepository {
                                             }
                                         }
                                     } catch (JSONException e) {
-                                        e.printStackTrace();
+                                        cb.onCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
                                     }
                                 }
 
@@ -116,7 +116,7 @@ public class PostDataRepositoryImpl implements PostDataRepository {
                                             }
                                         }
                                     } catch (JSONException e) {
-                                        e.printStackTrace();
+                                        cb.onCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
                                     }
                                 }
 
@@ -160,7 +160,7 @@ public class PostDataRepositoryImpl implements PostDataRepository {
                                             }
                                         }
                                     } catch (JSONException e) {
-                                        e.printStackTrace();
+                                        cb.onCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
                                     }
                                 }
 
@@ -180,7 +180,7 @@ public class PostDataRepositoryImpl implements PostDataRepository {
 
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-
+                    cb.onCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
                 }
             });
         } else {

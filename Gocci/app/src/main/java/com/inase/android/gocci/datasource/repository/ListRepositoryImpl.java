@@ -64,7 +64,7 @@ public class ListRepositoryImpl implements ListRepository {
                                             cb.onEmpty(api);
                                         }
                                     } catch (JSONException e) {
-                                        e.printStackTrace();
+                                        cb.onFailureCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
                                     }
                                 }
 
@@ -100,7 +100,7 @@ public class ListRepositoryImpl implements ListRepository {
                                             cb.onEmpty(api);
                                         }
                                     } catch (JSONException e) {
-                                        e.printStackTrace();
+                                        cb.onFailureCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
                                     }
                                 }
 
@@ -136,7 +136,7 @@ public class ListRepositoryImpl implements ListRepository {
                                             cb.onEmpty(api);
                                         }
                                     } catch (JSONException e) {
-                                        e.printStackTrace();
+                                        cb.onFailureCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
                                     }
                                 }
 
@@ -172,7 +172,7 @@ public class ListRepositoryImpl implements ListRepository {
                                             cb.onEmpty(api);
                                         }
                                     } catch (JSONException e) {
-                                        e.printStackTrace();
+                                        cb.onFailureCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
                                     }
                                 }
 
@@ -208,7 +208,7 @@ public class ListRepositoryImpl implements ListRepository {
                                             cb.onEmpty(api);
                                         }
                                     } catch (JSONException e) {
-                                        e.printStackTrace();
+                                        cb.onFailureCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
                                     }
                                 }
 
@@ -228,7 +228,7 @@ public class ListRepositoryImpl implements ListRepository {
 
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-
+                    cb.onFailureCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
                 }
             });
         } else {

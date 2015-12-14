@@ -383,10 +383,11 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
             }
         });
 
-        mToukouButtonRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
+        mToukouButtonRipple.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onComplete(RippleView rippleView) {
+            public void onClick(View v) {
                 if (Util.getConnectedState(CameraPreviewActivity.this) != Util.NetworkStatus.OFF) {
+                    mProgressWheel.setVisibility(View.VISIBLE);
                     if (!mRest_id.equals("1")) {
                         if (mEditValue.getText().length() != 0) {
                             mValue = mEditValue.getText().toString();
@@ -420,7 +421,6 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
                                 }
                             }
                         }
-                        mProgressWheel.setVisibility(View.VISIBLE);
                         API3PostUtil.postMovieAsync(CameraPreviewActivity.this, Const.ActivityCategory.CAMERA_PREVIEW, mRest_id, mAwsPostName, String.valueOf(mCategory_id), mValue, mMemo, String.valueOf(mCheer_flag));
                         Application_Gocci.postingVideoToS3(CameraPreviewActivity.this, mAwsPostName, mVideoFile);
                     } else {

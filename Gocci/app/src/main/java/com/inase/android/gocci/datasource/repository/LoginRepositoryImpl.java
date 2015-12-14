@@ -56,7 +56,7 @@ public class LoginRepositoryImpl implements LoginRepository {
                                         SavedData.setWelcome(Application_Gocci.getInstance().getApplicationContext(), username, profile_img, user_id, Integer.parseInt(badge_num));
                                         cb.onLogin(api);
                                     } catch (JSONException e) {
-                                        e.printStackTrace();
+                                        cb.onNotLoginCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
                                     }
                                 }
 
@@ -80,7 +80,7 @@ public class LoginRepositoryImpl implements LoginRepository {
                                         SavedData.setIdentityId(Application_Gocci.getInstance().getApplicationContext(), identity_id);
                                         userLogin(Const.APICategory.AUTH_LOGIN, API3.Util.getAuthLoginAPI(identity_id), cb);
                                     } catch (JSONException e) {
-                                        e.printStackTrace();
+                                        cb.onNotLoginCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
                                     }
                                 }
 
@@ -104,7 +104,7 @@ public class LoginRepositoryImpl implements LoginRepository {
                                         SavedData.setIdentityId(Application_Gocci.getInstance().getApplicationContext(), identity_id);
                                         userLogin(Const.APICategory.AUTH_LOGIN, API3.Util.getAuthLoginAPI(identity_id), cb);
                                     } catch (JSONException e) {
-                                        e.printStackTrace();
+                                        cb.onNotLoginCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
                                     }
                                 }
 
@@ -124,7 +124,7 @@ public class LoginRepositoryImpl implements LoginRepository {
 
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-
+                    cb.onNotLoginCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
                 }
             });
         } else {

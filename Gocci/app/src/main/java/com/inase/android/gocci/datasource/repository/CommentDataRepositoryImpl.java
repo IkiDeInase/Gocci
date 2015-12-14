@@ -63,7 +63,7 @@ public class CommentDataRepositoryImpl implements CommentDataRepository {
                                     cb.onCommentDataEmpty(api, headerData);
                                 }
                             } catch (JSONException e) {
-                                e.printStackTrace();
+                                cb.onGetByGlobalError(api, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
                             }
                         }
 
@@ -81,7 +81,7 @@ public class CommentDataRepositoryImpl implements CommentDataRepository {
 
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-
+                    cb.onGetByGlobalError(api, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
                 }
             });
         } else {

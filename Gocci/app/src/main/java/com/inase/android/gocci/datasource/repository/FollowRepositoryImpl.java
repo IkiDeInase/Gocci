@@ -76,7 +76,7 @@ public class FollowRepositoryImpl implements FollowRepository {
 
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-
+                    cb.onFailureCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR, user_id);
                 }
             });
         } else {

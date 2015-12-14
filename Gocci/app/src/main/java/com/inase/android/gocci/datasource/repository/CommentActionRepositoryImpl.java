@@ -1,6 +1,5 @@
 package com.inase.android.gocci.datasource.repository;
 
-import android.nfc.cardemulation.OffHostApduService;
 import android.widget.Toast;
 
 import com.inase.android.gocci.Application_Gocci;
@@ -63,7 +62,7 @@ public class CommentActionRepositoryImpl implements CommentActionRepository {
 
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-
+                    cb.onPostFailureCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
                 }
             });
         } else {
@@ -96,7 +95,7 @@ public class CommentActionRepositoryImpl implements CommentActionRepository {
                                 cb.onPostEmpty(api, headerData);
                             }
                         } catch (JSONException e) {
-                            e.printStackTrace();
+                            cb.onPostFailureCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
                         }
                     }
 
@@ -114,7 +113,7 @@ public class CommentActionRepositoryImpl implements CommentActionRepository {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-
+                cb.onPostFailureCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
             }
         });
     }

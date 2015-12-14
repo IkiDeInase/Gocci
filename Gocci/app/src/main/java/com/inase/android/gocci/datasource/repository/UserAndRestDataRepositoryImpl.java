@@ -66,7 +66,7 @@ public class UserAndRestDataRepositoryImpl implements UserAndRestDataRepository 
                                     cb.onUserAndRestDataEmpty(api, headerData);
                                 }
                             } catch (JSONException e) {
-                                e.printStackTrace();
+                                cb.onCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
                             }
                         }
 
@@ -84,7 +84,7 @@ public class UserAndRestDataRepositoryImpl implements UserAndRestDataRepository 
 
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-
+                    cb.onCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
                 }
             });
         } else {
@@ -121,7 +121,7 @@ public class UserAndRestDataRepositoryImpl implements UserAndRestDataRepository 
                                     cb.onUserAndRestDataEmpty(api, headerData);
                                 }
                             } catch (JSONException e) {
-                                e.printStackTrace();
+                                cb.onCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
                             }
                         }
 
@@ -139,7 +139,7 @@ public class UserAndRestDataRepositoryImpl implements UserAndRestDataRepository 
 
                 @Override
                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-
+                    cb.onCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
                 }
             });
         } else {

@@ -37,7 +37,6 @@ import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -282,36 +281,36 @@ public class Application_Gocci extends Application {
         switch (globalCode) {
             case ERROR_SESSION_EXPIRED:
                 //ログインとコグニートリフレッシュ　→　リトライ
-                        getJsonAsync(API3.Util.getAuthLoginAPI(SavedData.getIdentityId(getInstance().getApplicationContext())), new JsonHttpResponseHandler() {
+                getJsonAsync(API3.Util.getAuthLoginAPI(SavedData.getIdentityId(getInstance().getApplicationContext())), new JsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        API3.Impl.getRepository().AuthLoginResponse(response, new API3.PayloadResponseCallback() {
                             @Override
-                            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                                API3.Impl.getRepository().AuthLoginResponse(response, new API3.PayloadResponseCallback() {
+                            public void onSuccess(JSONObject jsonObject) {
+                                //リフレッシュ&リトライ
+                                new AsyncTask<Void, Void, Void>() {
                                     @Override
-                                    public void onSuccess(JSONObject jsonObject) {
-                                        //リフレッシュ&リトライ
-                                        new AsyncTask<Void, Void, Void>() {
-                                            @Override
-                                            protected Void doInBackground(Void... params) {
-                                                credentialsProvider.refresh();
-                                                return null;
-                                            }
-                                        }.execute();
-                                        createS3(getInstance().getApplicationContext());
-                                        BusHolder.get().post(new RetryApiEvent(api));
+                                    protected Void doInBackground(Void... params) {
+                                        credentialsProvider.refresh();
+                                        return null;
                                     }
+                                }.execute();
+                                createS3(getInstance().getApplicationContext());
+                                BusHolder.get().post(new RetryApiEvent(api));
+                            }
 
-                                    @Override
-                                    public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                        resolveOrHandleGlobalError(api, globalCode);
-                                    }
+                            @Override
+                            public void onGlobalError(API3.Util.GlobalCode globalCode) {
+                                resolveOrHandleGlobalError(api, globalCode);
+                            }
 
-                                    @Override
-                                    public void onLocalError(String errorMessage) {
-                                        Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), errorMessage, Toast.LENGTH_LONG).show();
-                                    }
-                                });
+                            @Override
+                            public void onLocalError(String errorMessage) {
+                                Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), errorMessage, Toast.LENGTH_LONG).show();
                             }
                         });
+                    }
+                });
                 break;
             case ERROR_CLIENT_OUTDATED:
                 //アップデートダイアログ
