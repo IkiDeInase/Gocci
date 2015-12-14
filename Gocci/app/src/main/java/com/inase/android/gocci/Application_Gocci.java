@@ -273,7 +273,7 @@ public class Application_Gocci extends Application {
 
             @Override
             public void onError(int id, Exception ex) {
-                Toast.makeText(context, context.getString(R.string.bad_internet_connection), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, ex.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }

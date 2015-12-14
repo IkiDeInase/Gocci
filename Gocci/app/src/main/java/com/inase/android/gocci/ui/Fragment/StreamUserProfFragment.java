@@ -366,6 +366,9 @@ public class StreamUserProfFragment extends Fragment implements AppBarLayout.OnO
 
     private void streamChangeMovie() {
         // TODO:実装
+        if (mStreamUserProfAdapter == null) {
+            return;
+        }
         final int position = mTimelineRecyclerView.getChildAdapterPosition(mTimelineRecyclerView.findChildViewUnder(mDisplaySize.x / 2, mDisplaySize.y / 2));
         if (mStreamUserProfAdapter.isEmpty()) {
             return;
