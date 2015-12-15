@@ -91,7 +91,7 @@ public class StreamMyProfAdapter extends RecyclerView.Adapter<Const.StreamViewHo
                     public void onClick(DialogInterface dialog, int which) {
                         switch (which) {
                             case R.id.delete:
-                                // Util.setBlockDialog(mContext, user.getPost_id());
+                                mCallback.onStreamDeleteClick(user.getPost_id());
                                 break;
                             case R.id.close:
                                 dialog.dismiss();
@@ -207,6 +207,8 @@ public class StreamMyProfAdapter extends RecyclerView.Adapter<Const.StreamViewHo
         void onStreamCommentClick(String post_id);
 
         void onStreamVideoFrameClick(PostData data);
+
+        void onStreamDeleteClick(String post_id);
 
         void onGochiTap();
 

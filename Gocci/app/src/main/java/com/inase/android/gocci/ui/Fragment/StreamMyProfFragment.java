@@ -478,6 +478,12 @@ public class StreamMyProfFragment extends Fragment implements AppBarLayout.OnOff
     }
 
     @Override
+    public void onStreamDeleteClick(String post_id) {
+        MyprofActivity activity = (MyprofActivity) getActivity();
+        activity.setDeleteDialog(post_id);
+    }
+
+    @Override
     public void onGochiTap() {
         if (activity != null) {
             activity.setGochiLayout();
