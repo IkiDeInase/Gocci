@@ -1009,7 +1009,7 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
 
     @Override
     public void causedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
-        Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
+        Application_Gocci.resolveOrHandleGlobalError(this, api, globalCode);
     }
 
     @Override
@@ -1054,7 +1054,7 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
             data.setGochi_num(data.getGochi_num() - 1);
         }
         BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.GLOBALERROR, Const.ActivityCategory.MY_PAGE, api, post_id));
-        Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
+        Application_Gocci.resolveOrHandleGlobalError(this, api, globalCode);
     }
 
     @Override

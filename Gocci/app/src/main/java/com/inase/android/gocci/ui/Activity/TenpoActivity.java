@@ -897,7 +897,7 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
 
     @Override
     public void causedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
-        Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
+        Application_Gocci.resolveOrHandleGlobalError(this, api, globalCode);
     }
 
     @Override
@@ -935,7 +935,7 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
     @Override
     public void gochiFailureCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode, String post_id) {
         BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.GLOBALERROR, Const.ActivityCategory.REST_PAGE, api, post_id));
-        Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
+        Application_Gocci.resolveOrHandleGlobalError(this, api, globalCode);
     }
 
     @Override

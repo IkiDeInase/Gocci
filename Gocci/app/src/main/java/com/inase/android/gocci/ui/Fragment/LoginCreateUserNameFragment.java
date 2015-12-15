@@ -186,7 +186,7 @@ public class LoginCreateUserNameFragment extends Fragment implements FABProgress
         mFab.setClickable(true);
         mFabProgressCircle.hide();
         mUsernameTextInput.setError(API3.Util.GlobalCodeMessageTable(globalCode));
-        Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
+        Application_Gocci.resolveOrHandleGlobalError(getActivity(), api, globalCode);
     }
 
     @Override

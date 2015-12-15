@@ -593,7 +593,7 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
 
     @Override
     public void causedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
-        Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
+        Application_Gocci.resolveOrHandleGlobalError(getActivity(), api, globalCode);
         mSwipeContainer.setRefreshing(false);
         if (api == Const.APICategory.GET_FOLLOWLINE_FIRST) {
             mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.FOLLOWLINE, mTimelineusers);
@@ -620,7 +620,7 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
 
     @Override
     public void gochiFailureCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode, String post_id) {
-        Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
+        Application_Gocci.resolveOrHandleGlobalError(getActivity(), api, globalCode);
         mTimelineusers.get(mPost_ids.indexOf(post_id)).setGochi_flag(0);
         mTimelineAdapter.notifyItemChanged(mPost_ids.indexOf(post_id));
     }

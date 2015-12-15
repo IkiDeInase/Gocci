@@ -455,7 +455,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
     @Override
     public void causedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
-        Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
+        Application_Gocci.resolveOrHandleGlobalError(this, api, globalCode);
         mProgress.setVisibility(View.INVISIBLE);
         switch (api) {
             case GET_FOLLOW_FIRST:
@@ -494,7 +494,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
     @Override
     public void followFailureCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode, String user_id) {
-        Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
+        Application_Gocci.resolveOrHandleGlobalError(this, api, globalCode);
         if (api == Const.APICategory.SET_FOLLOW) {
             mList.get(mUser_idList.indexOf(user_id)).setFollow_flag(0);
         } else if (api == Const.APICategory.UNSET_FOLLOW) {

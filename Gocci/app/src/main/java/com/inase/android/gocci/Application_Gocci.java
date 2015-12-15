@@ -3,12 +3,16 @@ package com.inase.android.gocci;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.support.multidex.MultiDex;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
@@ -57,6 +61,8 @@ public class Application_Gocci extends Application {
 
     private static final SyncHttpClient sSyncHttpClient = new SyncHttpClient();
     private static final AsyncHttpClient sAsyncHttpClient = new AsyncHttpClient();
+
+    private static boolean isDeny = false;
 
     public static void getJsonSync(String url, JsonHttpResponseHandler responseHandler) {
         sSyncHttpClient.setCookieStore(SavedData.getCookieStore(getInstance().getApplicationContext()));
@@ -280,11 +286,11 @@ public class Application_Gocci extends Application {
         });
     }
 
-    public static void resolveOrHandleGlobalError(final Const.APICategory api, API3.Util.GlobalCode globalCode) {
+    public static void resolveOrHandleGlobalError(final Context context, final Const.APICategory api, API3.Util.GlobalCode globalCode) {
         switch (globalCode) {
             case ERROR_SESSION_EXPIRED:
                 //ログインとコグニートリフレッシュ　→　リトライ
-                getJsonAsync(API3.Util.getAuthLoginAPI(SavedData.getIdentityId(getInstance().getApplicationContext())), new JsonHttpResponseHandler() {
+                getJsonAsync(API3.Util.getAuthLoginAPI(SavedData.getIdentityId(context)), new JsonHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                         API3.Impl.getRepository().AuthLoginResponse(response, new API3.PayloadResponseCallback() {
@@ -298,18 +304,18 @@ public class Application_Gocci extends Application {
                                         return null;
                                     }
                                 }.execute();
-                                createS3(getInstance().getApplicationContext());
+                                createS3(context);
                                 BusHolder.get().post(new RetryApiEvent(api));
                             }
 
                             @Override
                             public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                resolveOrHandleGlobalError(api, globalCode);
+                                resolveOrHandleGlobalError(context, api, globalCode);
                             }
 
                             @Override
                             public void onLocalError(String errorMessage) {
-                                Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), errorMessage, Toast.LENGTH_LONG).show();
+                                Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show();
                             }
                         });
                     }
@@ -317,9 +323,34 @@ public class Application_Gocci extends Application {
                 break;
             case ERROR_CLIENT_OUTDATED:
                 //アップデートダイアログ
+                if (!isDeny) {
+                    new MaterialDialog.Builder(context)
+                            .title("アップデートのお願い")
+                            .titleColorRes(R.color.namegrey)
+                            .content("新しいバージョンが出ました。\n\n"
+                                    + "アップデートを許可しますか？")
+                            .contentColorRes(R.color.nameblack)
+                            .cancelable(false)
+                            .positiveText("アップデートする").positiveColorRes(R.color.gocci_header)
+                            .negativeText("いいえ").negativeColorRes(R.color.gocci_header)
+                            .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                @Override
+                                public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + BuildConfig.APPLICATION_ID));
+                                    context.startActivity(intent);
+                                }
+                            })
+                            .onNegative(new MaterialDialog.SingleButtonCallback() {
+                                @Override
+                                public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                                    isDeny = true;
+                                    Toast.makeText(context, "Gocciのサービスが正常に使えなくなります", Toast.LENGTH_SHORT).show();
+                                }
+                            }).show();
+                }
                 break;
             case ERROR_UNKNOWN_ERROR:
-                Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), API3.Util.GlobalCodeMessageTable(globalCode), Toast.LENGTH_LONG).show();
+                Toast.makeText(context, "情報を取得できませんでした。", Toast.LENGTH_LONG).show();
                 break;
         }
     }

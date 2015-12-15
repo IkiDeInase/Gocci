@@ -295,7 +295,7 @@ public class MapSearchActivity extends AppCompatActivity implements ShowHeatmapP
 
     @Override
     public void showNoResultCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
-        Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
+        Application_Gocci.resolveOrHandleGlobalError(this, api, globalCode);
     }
 
     @Override

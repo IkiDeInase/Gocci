@@ -184,7 +184,7 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
 
     @Override
     public void showNoResultCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
-        Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
+        Application_Gocci.resolveOrHandleGlobalError(getActivity(), api, globalCode);
     }
 
     @Override

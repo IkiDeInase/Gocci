@@ -437,7 +437,7 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
 
     @Override
     public void causedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
-        Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
+        Application_Gocci.resolveOrHandleGlobalError(this, api, globalCode);
     }
 
     @Override
@@ -485,7 +485,7 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
 
     @Override
     public void postFailureCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
-        Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
+        Application_Gocci.resolveOrHandleGlobalError(this, api, globalCode);
     }
 
     @Override

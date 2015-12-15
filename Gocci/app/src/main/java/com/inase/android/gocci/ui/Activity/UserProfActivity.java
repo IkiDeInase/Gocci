@@ -520,7 +520,7 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
 
     @Override
     public void causedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
-        Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
+        Application_Gocci.resolveOrHandleGlobalError(this, api, globalCode);
     }
 
     @Override
@@ -535,7 +535,7 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
 
     @Override
     public void followFailureCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode, String user_id) {
-        Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
+        Application_Gocci.resolveOrHandleGlobalError(this, api, globalCode);
         if (api == Const.APICategory.SET_FOLLOW) {
             mFollowText.setText(getString(R.string.do_follow));
             headerUserData.setFollow_flag(0);
@@ -632,7 +632,7 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
             data.setGochi_num(data.getGochi_num() - 1);
         }
         BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.GLOBALERROR, Const.ActivityCategory.USER_PAGE, api, post_id));
-        Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
+        Application_Gocci.resolveOrHandleGlobalError(this, api, globalCode);
     }
 
     @Override

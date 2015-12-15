@@ -50,7 +50,7 @@ public class API3PostUtil {
 
                             @Override
                             public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_FEEDBACK, globalCode);
+                                Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_FEEDBACK, globalCode);
                             }
 
                             @Override
@@ -62,7 +62,7 @@ public class API3PostUtil {
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                        Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_FEEDBACK, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                        Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_FEEDBACK, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
                     }
                 });
             } else {
@@ -89,7 +89,7 @@ public class API3PostUtil {
 
                             @Override
                             public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_BLOCK, globalCode);
+                                Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_BLOCK, globalCode);
                             }
 
                             @Override
@@ -101,7 +101,7 @@ public class API3PostUtil {
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                        Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_BLOCK, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                        Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_BLOCK, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
                     }
                 });
             } else {
@@ -128,7 +128,7 @@ public class API3PostUtil {
 
                             @Override
                             public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.UNSET_POST, globalCode);
+                                Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.UNSET_POST, globalCode);
                             }
 
                             @Override
@@ -140,7 +140,7 @@ public class API3PostUtil {
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                        Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.UNSET_POST, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                        Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.UNSET_POST, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
                     }
                 });
             } else {
@@ -168,7 +168,7 @@ public class API3PostUtil {
 
                             @Override
                             public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_PASSWORD, globalCode);
+                                Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_PASSWORD, globalCode);
                             }
 
                             @Override
@@ -180,7 +180,7 @@ public class API3PostUtil {
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                        Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_PASSWORD, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                        Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_PASSWORD, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
                     }
                 });
             } else {
@@ -206,13 +206,13 @@ public class API3PostUtil {
                                     String rest_id = payload.getString("rest_id");
                                     BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, activityCategory, Const.APICategory.SET_RESTADD, rest_id));
                                 } catch (JSONException e) {
-                                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_RESTADD, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                                    Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_RESTADD, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
                                 }
                             }
 
                             @Override
                             public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_RESTADD, globalCode);
+                                Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_RESTADD, globalCode);
                             }
 
                             @Override
@@ -224,7 +224,7 @@ public class API3PostUtil {
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                        Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_RESTADD, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                        Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_RESTADD, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
                     }
                 });
             } else {
@@ -251,7 +251,7 @@ public class API3PostUtil {
 
                             @Override
                             public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
+                                Application_Gocci.resolveOrHandleGlobalError(context, api, globalCode);
                             }
 
                             @Override
@@ -263,7 +263,7 @@ public class API3PostUtil {
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                        Application_Gocci.resolveOrHandleGlobalError(api, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                        Application_Gocci.resolveOrHandleGlobalError(context, api, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
                     }
                 });
             } else {
@@ -290,7 +290,7 @@ public class API3PostUtil {
 
                             @Override
                             public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
+                                Application_Gocci.resolveOrHandleGlobalError(context, api, globalCode);
                             }
 
                             @Override
@@ -302,7 +302,7 @@ public class API3PostUtil {
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                        Application_Gocci.resolveOrHandleGlobalError(api, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                        Application_Gocci.resolveOrHandleGlobalError(context, api, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
                     }
                 });
             } else {
@@ -329,7 +329,7 @@ public class API3PostUtil {
 
                             @Override
                             public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_DEVICE, globalCode);
+                                Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_DEVICE, globalCode);
                             }
 
                             @Override
@@ -341,7 +341,7 @@ public class API3PostUtil {
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                        Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_DEVICE, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                        Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_DEVICE, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
                     }
                 });
             } else {
@@ -368,7 +368,7 @@ public class API3PostUtil {
 
                             @Override
                             public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.UNSET_DEVICE, globalCode);
+                                Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.UNSET_DEVICE, globalCode);
                             }
 
                             @Override
@@ -380,7 +380,7 @@ public class API3PostUtil {
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                        Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.UNSET_DEVICE, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                        Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.UNSET_DEVICE, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
                     }
                 });
             } else {
@@ -407,13 +407,13 @@ public class API3PostUtil {
                                     SavedData.setServerName(Application_Gocci.getInstance().getApplicationContext(), username);
                                     BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, activityCategory, Const.APICategory.SET_USERNAME, username));
                                 } catch (JSONException e) {
-                                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_USERNAME, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                                    Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_USERNAME, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
                                 }
                             }
 
                             @Override
                             public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_USERNAME, globalCode);
+                                Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_USERNAME, globalCode);
                             }
 
                             @Override
@@ -425,7 +425,7 @@ public class API3PostUtil {
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                        Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_USERNAME, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                        Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_USERNAME, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
                     }
                 });
             } else {
@@ -457,13 +457,13 @@ public class API3PostUtil {
                                                 SavedData.setServerPicture(Application_Gocci.getInstance().getApplicationContext(), profile_img);
                                                 BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, activityCategory, Const.APICategory.SET_PROFILEIMG, post_date));
                                             } catch (JSONException e) {
-                                                Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_PROFILEIMG, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                                                Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_PROFILEIMG, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
                                             }
                                         }
 
                                         @Override
                                         public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                            Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_PROFILEIMG, globalCode);
+                                            Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_PROFILEIMG, globalCode);
                                         }
 
                                         @Override
@@ -475,7 +475,7 @@ public class API3PostUtil {
 
                                 @Override
                                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_PROFILEIMG, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                                    Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_PROFILEIMG, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
                                 }
                             });
                         } else {
@@ -534,13 +534,13 @@ public class API3PostUtil {
                                                         SavedData.setServerPicture(Application_Gocci.getInstance().getApplicationContext(), profile_img);
                                                         BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, activityCategory, Const.APICategory.SET_PROFILEIMG, post_date));
                                                     } catch (JSONException e) {
-                                                        Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_PROFILEIMG, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                                                        Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_PROFILEIMG, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
                                                     }
                                                 }
 
                                                 @Override
                                                 public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                                    Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_PROFILEIMG, globalCode);
+                                                    Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_PROFILEIMG, globalCode);
                                                 }
 
                                                 @Override
@@ -552,7 +552,7 @@ public class API3PostUtil {
 
                                         @Override
                                         public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                                            Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_PROFILEIMG, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                                            Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_PROFILEIMG, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
                                         }
                                     });
                                 } else {
@@ -604,7 +604,7 @@ public class API3PostUtil {
 
                             @Override
                             public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_POST, globalCode);
+                                Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_POST, globalCode);
                                 BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.GLOBALERROR, activityCategory, Const.APICategory.SET_POST, memo));
                             }
 
@@ -618,7 +618,7 @@ public class API3PostUtil {
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                        Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_POST, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                        Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_POST, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
                         BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.GLOBALERROR, activityCategory, Const.APICategory.SET_POST, memo));
                     }
                 });
@@ -647,7 +647,7 @@ public class API3PostUtil {
 
                             @Override
                             public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_WANT, globalCode);
+                                Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_WANT, globalCode);
                             }
 
                             @Override
@@ -659,7 +659,7 @@ public class API3PostUtil {
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                        Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.SET_WANT, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                        Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_WANT, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
                     }
                 });
             } else {
@@ -686,7 +686,7 @@ public class API3PostUtil {
 
                             @Override
                             public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.UNSET_WANT, globalCode);
+                                Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.UNSET_WANT, globalCode);
                             }
 
                             @Override
@@ -698,7 +698,7 @@ public class API3PostUtil {
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                        Application_Gocci.resolveOrHandleGlobalError(Const.APICategory.UNSET_WANT, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                        Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.UNSET_WANT, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
                     }
                 });
             } else {

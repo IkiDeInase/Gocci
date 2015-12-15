@@ -965,7 +965,7 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
 
     @Override
     public void causedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
-        Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
+        Application_Gocci.resolveOrHandleGlobalError(getActivity(), api, globalCode);
         mSwipeContainer.setRefreshing(false);
         if (api == Const.APICategory.GET_NEARLINE_FIRST) {
             mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.NEARLINE, mTimelineusers);
@@ -992,7 +992,7 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
 
     @Override
     public void gochiFailureCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode, String post_id) {
-        Application_Gocci.resolveOrHandleGlobalError(api, globalCode);
+        Application_Gocci.resolveOrHandleGlobalError(getActivity(), api, globalCode);
         mTimelineusers.get(mPost_ids.indexOf(post_id)).setGochi_flag(0);
         mTimelineAdapter.notifyItemChanged(mPost_ids.indexOf(post_id));
     }
