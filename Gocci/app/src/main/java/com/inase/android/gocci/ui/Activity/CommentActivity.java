@@ -106,7 +106,7 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
                     mPresenter.postComment(Const.APICategory.SET_COMMENT, API3.Util.getSetCommentAPI(mPost_id, comment, "0"), API3.Util.getGetCommentAPI(mPost_id));
                 }
             } else {
-                Toast.makeText(CommentActivity.this, API3.Util.SetCommentLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -230,7 +230,7 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
                         mPresenter.getCommentData(Const.APICategory.GET_COMMENT_REFRESH, API3.Util.getGetCommentAPI(mPost_id));
                     } else {
                         mSwipeRefresh.setRefreshing(false);
-                        Toast.makeText(CommentActivity.this, API3.Util.GetCommentLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(CommentActivity.this, getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
                     }
                 } else {
                     Toast.makeText(CommentActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
@@ -243,7 +243,7 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
         if (localCode == null) {
             mPresenter.getCommentData(Const.APICategory.GET_COMMENT_FIRST, API3.Util.getGetCommentAPI(mPost_id));
         } else {
-            Toast.makeText(CommentActivity.this, API3.Util.GetCommentLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
         }
 
         mCommentRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {

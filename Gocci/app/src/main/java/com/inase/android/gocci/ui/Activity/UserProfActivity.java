@@ -83,6 +83,7 @@ import com.squareup.picasso.Picasso;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthToken;
 import com.twitter.sdk.android.core.TwitterSession;
+import com.twitter.sdk.android.core.models.User;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
 import java.util.ArrayList;
@@ -274,7 +275,7 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
         if (localCode == null) {
             mPresenter.getProfData(Const.APICategory.GET_USER_FIRST, API3.Util.getGetUserAPI(mUser_id));
         } else {
-            Toast.makeText(UserProfActivity.this, API3.Util.GetUserLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
         }
 
         mFollowRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
@@ -486,7 +487,7 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
                             mFollowText.setText(getString(R.string.do_unfollow));
                             headerUserData.setFollow_flag(1);
                         } else {
-                            Toast.makeText(UserProfActivity.this, API3.Util.SetFollowLocalCodeMessageTable(postFollowLocalCode), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(UserProfActivity.this, getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
                         }
                         break;
                     case "フォロー解除する":
@@ -496,7 +497,7 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
                             mFollowText.setText(getString(R.string.do_follow));
                             headerUserData.setFollow_flag(0);
                         } else {
-                            Toast.makeText(UserProfActivity.this, API3.Util.UnsetFollowLocalCodeMessageTable(postUnfollowLocalCode), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(UserProfActivity.this, getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
                         }
                         break;
                     case "これはあなたです":
@@ -591,7 +592,7 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
                             mFollowText.setText(getString(R.string.do_unfollow));
                             headerUserData.setFollow_flag(1);
                         } else {
-                            Toast.makeText(UserProfActivity.this, API3.Util.SetFollowLocalCodeMessageTable(postFollowLocalCode), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(UserProfActivity.this, getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
                         }
                         break;
                     case "フォロー解除する":
@@ -601,7 +602,7 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
                             mFollowText.setText(getString(R.string.do_follow));
                             headerUserData.setFollow_flag(0);
                         } else {
-                            Toast.makeText(UserProfActivity.this, API3.Util.UnsetFollowLocalCodeMessageTable(postUnfollowLocalCode), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(UserProfActivity.this, getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
                         }
                         break;
                     case "これはあなたです":
@@ -650,7 +651,7 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
         if (localCode == null) {
             mPresenter.getProfData(Const.APICategory.GET_USER_REFRESH, API3.Util.getGetUserAPI(mUser_id));
         } else {
-            Toast.makeText(UserProfActivity.this, API3.Util.GetUserLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -669,7 +670,7 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
         if (postGochiLocalCode == null) {
             mPresenter.postGochi(Const.APICategory.SET_GOCHI, API3.Util.getSetGochiAPI(post_id), post_id);
         } else {
-            Toast.makeText(this, API3.Util.SetGochiLocalCodeMessageTable(postGochiLocalCode), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
         }
     }
 

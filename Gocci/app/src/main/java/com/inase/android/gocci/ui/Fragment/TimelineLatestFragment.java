@@ -163,7 +163,7 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
                             mPresenter.getLatestTimelinePostData(Const.APICategory.GET_TIMELINE_ADD, API3.Util.getGetTimelineAPI(
                                     mNextCount, TimelineActivity.mLatestCategory_id, TimelineActivity.mLatestValue_id));
                         } else {
-                            Toast.makeText(getActivity(), API3.Util.GetTimelineLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
@@ -230,7 +230,7 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
         if (localCode == null) {
             mPresenter.getLatestTimelinePostData(Const.APICategory.GET_TIMELINE_FIRST, API3.Util.getGetTimelineAPI());
         } else {
-            Toast.makeText(getActivity(), API3.Util.GetTimelineLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
         }
 
         mSwipeContainer.setColorSchemeResources(R.color.gocci_1, R.color.gocci_2, R.color.gocci_3, R.color.gocci_4);
@@ -328,7 +328,7 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
                 mTimelineRecyclerView.scrollVerticallyToPosition(0);
                 mPresenter.getLatestTimelinePostData(Const.APICategory.GET_TIMELINE_FILTER, event.filterUrl);
             } else {
-                Toast.makeText(getActivity(), API3.Util.GetTimelineLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -468,7 +468,7 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
                     mPresenter.getLatestTimelinePostData(Const.APICategory.GET_TIMELINE_REFRESH, API3.Util.getGetTimelineAPI(
                             0, TimelineActivity.mLatestCategory_id, TimelineActivity.mLatestValue_id));
                 } else {
-                    Toast.makeText(getActivity(), API3.Util.GetTimelineLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -664,7 +664,7 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
         if (postGochiLocalCode == null) {
             mPresenter.postGochi(Const.APICategory.SET_GOCHI, API3.Util.getSetGochiAPI(post_id), post_id);
         } else {
-            Toast.makeText(getActivity(), API3.Util.SetGochiLocalCodeMessageTable(postGochiLocalCode), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
         }
     }
 

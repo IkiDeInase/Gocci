@@ -160,7 +160,7 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
                             mPresenter.getFollowTimelinePostData(Const.APICategory.GET_FOLLOWLINE_ADD, API3.Util.getGetFollowlineAPI(
                                     mNextCount, TimelineActivity.mFollowCategory_id, TimelineActivity.mFollowValue_id));
                         } else {
-                            Toast.makeText(getActivity(), API3.Util.GetFollowlineLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
@@ -227,7 +227,7 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
         if (localCode == null) {
             mPresenter.getFollowTimelinePostData(Const.APICategory.GET_FOLLOWLINE_FIRST, API3.Util.getGetFollowlineAPI());
         } else {
-            Toast.makeText(getActivity(), API3.Util.GetFollowlineLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
         }
 
         mSwipeContainer.setColorSchemeResources(R.color.gocci_1, R.color.gocci_2, R.color.gocci_3, R.color.gocci_4);
@@ -325,7 +325,7 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
                 mTimelineRecyclerView.scrollVerticallyToPosition(0);
                 mPresenter.getFollowTimelinePostData(Const.APICategory.GET_FOLLOWLINE_FILTER, event.filterUrl);
             } else {
-                Toast.makeText(getActivity(), API3.Util.GetFollowlineLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -429,7 +429,7 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
                     mPresenter.getFollowTimelinePostData(Const.APICategory.GET_FOLLOWLINE_REFRESH, API3.Util.getGetFollowlineAPI(
                             0, TimelineActivity.mFollowCategory_id, TimelineActivity.mFollowValue_id));
                 } else {
-                    Toast.makeText(getActivity(), API3.Util.GetFollowlineLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -662,7 +662,7 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
         if (postGochiLocalCode == null) {
             mPresenter.postGochi(Const.APICategory.SET_GOCHI, API3.Util.getSetGochiAPI(post_id), post_id);
         } else {
-            Toast.makeText(getActivity(), API3.Util.SetGochiLocalCodeMessageTable(postGochiLocalCode), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
         }
     }
 

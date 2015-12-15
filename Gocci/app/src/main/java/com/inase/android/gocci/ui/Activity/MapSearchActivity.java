@@ -254,7 +254,7 @@ public class MapSearchActivity extends AppCompatActivity implements ShowHeatmapP
             if (localCode == null) {
                 mPresenter.getHeatmapData(Const.APICategory.GET_HEATMAP_FIRST, API3.Util.getGetHeatmapAPI());
             } else {
-                Toast.makeText(MapSearchActivity.this, API3.Util.GetHeatmapLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                Toast.makeText(MapSearchActivity.this, getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
             }
 
             //Google MapのMyLocationレイヤーを使用可能にする

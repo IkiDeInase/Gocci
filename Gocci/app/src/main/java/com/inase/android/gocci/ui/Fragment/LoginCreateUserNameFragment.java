@@ -66,7 +66,7 @@ public class LoginCreateUserNameFragment extends Fragment implements FABProgress
                 mPresenter.loginUser(Const.APICategory.AUTH_SIGNUP,
                         API3.Util.getAuthSignupAPI(mUsernameTextInput.getEditText().getText().toString()));
             } else {
-                Toast.makeText(getActivity(), API3.Util.AuthSignupLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
             }
         } else {
             Toast.makeText(getActivity(), getString(R.string.please_input_username), Toast.LENGTH_SHORT).show();

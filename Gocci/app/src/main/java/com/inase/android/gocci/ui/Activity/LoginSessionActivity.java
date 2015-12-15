@@ -155,7 +155,7 @@ public class LoginSessionActivity extends AppCompatActivity implements ShowUserL
                             SavedData.setIdentityId(LoginSessionActivity.this, identity_id);
                             mPresenter.loginUser(Const.APICategory.AUTH_FACEBOOK_LOGIN, API3.Util.getAuthLoginAPI(identity_id));
                         } else {
-                            Toast.makeText(LoginSessionActivity.this, API3.Util.AuthLoginLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginSessionActivity.this, getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -191,7 +191,7 @@ public class LoginSessionActivity extends AppCompatActivity implements ShowUserL
                             SavedData.setIdentityId(LoginSessionActivity.this, identity_id);
                             mPresenter.loginUser(Const.APICategory.AUTH_TWITTER_LOGIN, API3.Util.getAuthLoginAPI(identity_id));
                         } else {
-                            Toast.makeText(LoginSessionActivity.this, API3.Util.AuthLoginLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginSessionActivity.this, getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -217,7 +217,7 @@ public class LoginSessionActivity extends AppCompatActivity implements ShowUserL
                     if (localCode == null) {
                         mPresenter.loginUser(Const.APICategory.AUTH_PASS_LOGIN, API3.Util.getAuthPasswordAPI(mSigninUsernameEdit.getEditText().getText().toString(), mSigninPassEdit.getEditText().getText().toString()));
                     } else {
-                        Toast.makeText(LoginSessionActivity.this, API3.Util.AuthPasswordLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginSessionActivity.this, getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
                     }
                 }
             }

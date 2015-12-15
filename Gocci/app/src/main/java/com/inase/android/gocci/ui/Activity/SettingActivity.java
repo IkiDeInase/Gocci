@@ -122,7 +122,7 @@ public class SettingActivity extends AppCompatActivity {
                     public void onInput(MaterialDialog materialDialog, CharSequence charSequence) {
                         String password = charSequence.toString();
                         if (!password.isEmpty()) {
-                            API3PostUtil.postPasswordAsync(SettingActivity.this, password);
+                            API3PostUtil.postPasswordAsync(SettingActivity.this, password, Const.ActivityCategory.SETTING, Const.APICategory.SET_PASSWORD);
                         } else {
                             Toast.makeText(SettingActivity.this, getString(R.string.cheat_input_password), Toast.LENGTH_SHORT).show();
                         }

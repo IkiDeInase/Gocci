@@ -147,7 +147,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                             if (getFollowLocalCode == null) {
                                 mPresenter.getListData(Const.APICategory.GET_FOLLOW_REFRESH, API3.Util.getGetFollowAPI(mId));
                             } else {
-                                Toast.makeText(ListActivity.this, API3.Util.GetFollowLocalCodeMessageTable(getFollowLocalCode), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(ListActivity.this, getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
                             }
                             break;
                         case FOLLOWER:
@@ -155,7 +155,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                             if (getFollowerLocalCode == null) {
                                 mPresenter.getListData(Const.APICategory.GET_FOLLOWER_REFRESH, API3.Util.getGetFollowerAPI(mId));
                             } else {
-                                Toast.makeText(ListActivity.this, API3.Util.GetFollowerLocalCodeMessageTable(getFollowerLocalCode), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(ListActivity.this, getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
                             }
                             break;
                         case USER_CHEER:
@@ -163,7 +163,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                             if (getUserCheerLocalCode == null) {
                                 mPresenter.getListData(Const.APICategory.GET_USER_CHEER_REFRESH, API3.Util.getGetUserCheerAPI(mId));
                             } else {
-                                Toast.makeText(ListActivity.this, API3.Util.GetUser_CheerLocalCodeMessageTable(getUserCheerLocalCode), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(ListActivity.this, getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
                             }
                             break;
                         case WANT:
@@ -171,7 +171,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                             if (getWantLocalCode == null) {
                                 mPresenter.getListData(Const.APICategory.GET_WANT_REFRESH, API3.Util.getGetWantAPI(mId));
                             } else {
-                                Toast.makeText(ListActivity.this, API3.Util.GetWantLocalCodeMessageTable(getWantLocalCode), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(ListActivity.this, getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
                             }
                             break;
                         case REST_CHEER:
@@ -179,7 +179,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                             if (getRestCheerLocalCode == null) {
                                 mPresenter.getListData(Const.APICategory.GET_REST_CHEER_REFRESH, API3.Util.getGetRestCheerAPI(mId));
                             } else {
-                                Toast.makeText(ListActivity.this, API3.Util.GetRest_CheerLocalCodeMessageTable(getRestCheerLocalCode), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(ListActivity.this, getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
                             }
                             break;
                     }
@@ -274,7 +274,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 if (getFollowLocalCode == null) {
                     mPresenter.getListData(Const.APICategory.GET_FOLLOW_FIRST, API3.Util.getGetFollowAPI(mId));
                 } else {
-                    Toast.makeText(ListActivity.this, API3.Util.GetFollowLocalCodeMessageTable(getFollowLocalCode), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
                 }
                 break;
             case FOLLOWER:
@@ -284,7 +284,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 if (getFollowerLocalCode == null) {
                     mPresenter.getListData(Const.APICategory.GET_FOLLOWER_FIRST, API3.Util.getGetFollowerAPI(mId));
                 } else {
-                    Toast.makeText(ListActivity.this, API3.Util.GetFollowerLocalCodeMessageTable(getFollowerLocalCode), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
                 }
                 break;
             case USER_CHEER:
@@ -294,7 +294,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 if (getUserCheerLocalCode == null) {
                     mPresenter.getListData(Const.APICategory.GET_USER_CHEER_FIRST, API3.Util.getGetUserCheerAPI(mId));
                 } else {
-                    Toast.makeText(ListActivity.this, API3.Util.GetUser_CheerLocalCodeMessageTable(getUserCheerLocalCode), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
                 }
                 break;
             case WANT:
@@ -304,7 +304,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 if (getWantLocalCode == null) {
                     mPresenter.getListData(Const.APICategory.GET_WANT_FIRST, API3.Util.getGetWantAPI(mId));
                 } else {
-                    Toast.makeText(ListActivity.this, API3.Util.GetWantLocalCodeMessageTable(getWantLocalCode), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
                 }
                 break;
             case REST_CHEER:
@@ -314,7 +314,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 if (getRestCheerLocalCode == null) {
                     mPresenter.getListData(Const.APICategory.GET_REST_CHEER_FIRST, API3.Util.getGetRestCheerAPI(mId));
                 } else {
-                    Toast.makeText(ListActivity.this, API3.Util.GetRest_CheerLocalCodeMessageTable(getRestCheerLocalCode), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
                 }
                 break;
         }
@@ -398,14 +398,14 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
             if (postFollowLocalCode == null) {
                 mPresenter.postFollow(api, API3.Util.getSetFollowAPI(user_id), user_id);
             } else {
-                Toast.makeText(ListActivity.this, API3.Util.SetFollowLocalCodeMessageTable(postFollowLocalCode), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
             }
         } else if (api == Const.APICategory.UNSET_FOLLOW) {
             API3.Util.UnsetFollowLocalCode postUnfollowLocalCode = API3.Impl.getRepository().UnsetFollowParameterRegex(user_id);
             if (postUnfollowLocalCode == null) {
                 mPresenter.postFollow(api, API3.Util.getUnsetFollowAPI(user_id), user_id);
             } else {
-                Toast.makeText(ListActivity.this, API3.Util.UnsetFollowLocalCodeMessageTable(postUnfollowLocalCode), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
             }
         }
     }

@@ -484,7 +484,7 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
     @Override
     public void onResume() {
         super.onResume();
-
+        mPresenter.resume();
         mScaleSpring.addListener(mSpringListener);
         checkPlayServices();
 
@@ -527,7 +527,7 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
     @Override
     public void onPause() {
         super.onPause();
-
+        mPresenter.pause();
         mScaleSpring.removeListener(mSpringListener);
         if (isLocationUpdating) {
             stopLocationUpdates();
@@ -579,7 +579,7 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
         if (localCode == null) {
             mPresenter.getNearData(Const.APICategory.GET_NEAR_FIRST, API3.Util.getGetNearAPI(latitude, longitude));
         } else {
-            Toast.makeText(getActivity(), API3.Util.GetNearLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
         }
     }
 

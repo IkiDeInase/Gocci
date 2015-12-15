@@ -433,7 +433,7 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
         if (localCode == null) {
             mPresenter.getNearData(Const.APICategory.GET_NEAR_FIRST, API3.Util.getGetNearAPI(latitude, longitude));
         } else {
-            Toast.makeText(getActivity(), API3.Util.GetNearLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -470,6 +470,7 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
     public void onResume() {
         super.onResume();
         if (DEBUG) Log.v(TAG, "onResume:");
+        mPresenter.resume();
         mCameraView.onResume();
 
         mScaleSpring.addListener(mSpringListener);
@@ -515,6 +516,7 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
     public void onPause() {
         if (DEBUG) Log.v(TAG, "onPause:");
         //stopRecording();
+        mPresenter.pause();
         mCameraView.onPause();
         super.onPause();
 

@@ -66,7 +66,7 @@ public class API3PostUtil {
                     }
                 });
             } else {
-                Toast.makeText(context, API3.Util.SetFeedbackLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, context.getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
             }
         } else {
             Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
@@ -105,7 +105,7 @@ public class API3PostUtil {
                     }
                 });
             } else {
-                Toast.makeText(context, API3.Util.SetBlockLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, context.getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
             }
         } else {
             Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
@@ -144,14 +144,14 @@ public class API3PostUtil {
                     }
                 });
             } else {
-                Toast.makeText(context, API3.Util.UnsetPostLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, context.getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
             }
         } else {
             Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
         }
     }
 
-    public static void postPasswordAsync(final Context context, final String password) {
+    public static void postPasswordAsync(final Context context, final String password, final Const.ActivityCategory activityCategory, final Const.APICategory api) {
         if (Util.getConnectedState(context) != Util.NetworkStatus.OFF) {
             API3.Util.SetPasswordLocalCode localCode = API3.Impl.getRepository().SetPasswordParameterRegex(password);
             if (localCode == null) {
@@ -163,6 +163,7 @@ public class API3PostUtil {
                             @Override
                             public void onSuccess(JSONObject payload) {
                                 Toast.makeText(context, "パスワードを設定しました", Toast.LENGTH_SHORT).show();
+                                BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, activityCategory, api, password));
                             }
 
                             @Override
@@ -183,7 +184,7 @@ public class API3PostUtil {
                     }
                 });
             } else {
-                Toast.makeText(context, API3.Util.SetPasswordLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, context.getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
             }
         } else {
             Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
@@ -227,7 +228,7 @@ public class API3PostUtil {
                     }
                 });
             } else {
-                Toast.makeText(context, API3.Util.SetRestLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, context.getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
             }
         } else {
             Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
@@ -266,7 +267,7 @@ public class API3PostUtil {
                     }
                 });
             } else {
-                Toast.makeText(context, API3.Util.SetSns_LinkLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, context.getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
             }
         } else {
             Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
@@ -305,7 +306,7 @@ public class API3PostUtil {
                     }
                 });
             } else {
-                Toast.makeText(context, API3.Util.UnsetSns_LinkLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, context.getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
             }
         } else {
             Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
@@ -344,7 +345,7 @@ public class API3PostUtil {
                     }
                 });
             } else {
-                Toast.makeText(context, API3.Util.SetDeviceLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, context.getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
             }
         } else {
             Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
@@ -383,7 +384,7 @@ public class API3PostUtil {
                     }
                 });
             } else {
-                Toast.makeText(context, API3.Util.UnsetDeviceLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, context.getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
             }
         } else {
             Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
@@ -428,7 +429,7 @@ public class API3PostUtil {
                     }
                 });
             } else {
-                Toast.makeText(context, API3.Util.SetUsernameLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, context.getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
             }
         } else {
             Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
@@ -478,7 +479,7 @@ public class API3PostUtil {
                                 }
                             });
                         } else {
-                            Toast.makeText(context, API3.Util.SetProfile_ImgLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, context.getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
@@ -555,7 +556,7 @@ public class API3PostUtil {
                                         }
                                     });
                                 } else {
-                                    Toast.makeText(context, API3.Util.SetProfile_ImgLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(context, context.getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
                                 }
                             }
                         }
@@ -622,7 +623,7 @@ public class API3PostUtil {
                     }
                 });
             } else {
-                Toast.makeText(context, API3.Util.SetPostLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, context.getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
                 BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.LOCALERROR, activityCategory, Const.APICategory.SET_POST, memo));
             }
         } else {
@@ -662,7 +663,7 @@ public class API3PostUtil {
                     }
                 });
             } else {
-                Toast.makeText(context, API3.Util.SetWantLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, context.getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
             }
         } else {
             Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
@@ -701,7 +702,7 @@ public class API3PostUtil {
                     }
                 });
             } else {
-                Toast.makeText(context, API3.Util.UnsetWantLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, context.getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
             }
         } else {
             Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();

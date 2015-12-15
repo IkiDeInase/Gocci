@@ -3,6 +3,7 @@ package com.inase.android.gocci.ui.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Camera;
 import android.location.Location;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -308,7 +309,7 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
                         if (localCode == null) {
                             mPresenter.getNearData(Const.APICategory.GET_NEAR_FIRST, API3.Util.getGetNearAPI(mLatitude, mLongitude));
                         } else {
-                            Toast.makeText(CameraPreviewActivity.this, API3.Util.GetNearLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CameraPreviewActivity.this, getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
                         }
                         SavedData.setLat(CameraPreviewActivity.this, mLatitude);
                         SavedData.setLon(CameraPreviewActivity.this, mLongitude);
@@ -499,7 +500,7 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
             analytics.getSessionClient().pauseSession();
             analytics.getEventClient().submitEvents();
         }
-
+        mPresenter.pause();
         BusHolder.get().unregister(this);
     }
 
@@ -509,7 +510,7 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
         if (analytics != null) {
             analytics.getSessionClient().resumeSession();
         }
-
+        mPresenter.resume();
         BusHolder.get().register(this);
     }
 

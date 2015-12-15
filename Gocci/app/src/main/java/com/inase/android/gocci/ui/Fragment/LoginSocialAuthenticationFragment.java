@@ -124,11 +124,11 @@ public class LoginSocialAuthenticationFragment extends Fragment {
         mFacebookLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                API3PostUtil.postSnsLinkAsync(getActivity(), Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), Const.ActivityCategory.SETTING, Const.APICategory.SET_FACEBOOK_LINK);
+                API3PostUtil.postSnsLinkAsync(getActivity(), Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), Const.ActivityCategory.TUTORIAL, Const.APICategory.SET_FACEBOOK_LINK);
                 Profile profile = Profile.getCurrentProfile();
                 String profile_img = "https://graph.facebook.com/" + profile.getId() + "/picture";
                 String post_date = SavedData.getServerUserId(getActivity()) + "_" + Util.getDateTimeString();
-                API3PostUtil.postProfileImgAsync(getActivity(), post_date, profile_img, Const.ActivityCategory.SETTING);
+                API3PostUtil.postProfileImgAsync(getActivity(), post_date, profile_img, Const.ActivityCategory.TUTORIAL);
             }
 
             @Override
@@ -146,11 +146,11 @@ public class LoginSocialAuthenticationFragment extends Fragment {
             @Override
             public void success(Result<TwitterSession> result) {
                 TwitterAuthToken authToken = result.data.getAuthToken();
-                API3PostUtil.postSnsLinkAsync(getActivity(), Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, Const.ActivityCategory.SETTING, Const.APICategory.SET_TWITTER_LINK);
+                API3PostUtil.postSnsLinkAsync(getActivity(), Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, Const.ActivityCategory.TUTORIAL, Const.APICategory.SET_TWITTER_LINK);
                 String username = result.data.getUserName();
                 String profile_img = "http://www.paper-glasses.com/api/twipi/" + username;
                 String post_date = SavedData.getServerUserId(getActivity()) + "_" + Util.getDateTimeString();
-                API3PostUtil.postProfileImgAsync(getActivity(), post_date, profile_img, Const.ActivityCategory.SETTING);
+                API3PostUtil.postProfileImgAsync(getActivity(), post_date, profile_img, Const.ActivityCategory.TUTORIAL);
             }
 
             @Override
@@ -173,7 +173,7 @@ public class LoginSocialAuthenticationFragment extends Fragment {
                                 public void onInput(MaterialDialog materialDialog, CharSequence charSequence) {
                                     String password = charSequence.toString();
                                     if (!password.isEmpty()) {
-                                        API3PostUtil.postPasswordAsync(getActivity(), password);
+                                        API3PostUtil.postPasswordAsync(getActivity(), password, Const.ActivityCategory.TUTORIAL, Const.APICategory.SET_PASSWORD);
                                     } else {
                                         Toast.makeText(getActivity(), getString(R.string.cheat_input_password), Toast.LENGTH_SHORT).show();
                                     }
@@ -241,7 +241,7 @@ public class LoginSocialAuthenticationFragment extends Fragment {
 
     @Subscribe
     public void subscribe(PostCallbackEvent event) {
-        if (event.activityCategory == Const.ActivityCategory.SETTING) {
+        if (event.activityCategory == Const.ActivityCategory.TUTORIAL) {
             switch (event.apiCategory) {
                 case SET_FACEBOOK_LINK:
                 case SET_TWITTER_LINK:
@@ -252,6 +252,9 @@ public class LoginSocialAuthenticationFragment extends Fragment {
                             return null;
                         }
                     }.execute();
+                    goTimeline();
+                    break;
+                case SET_PASSWORD:
                     goTimeline();
                     break;
             }
