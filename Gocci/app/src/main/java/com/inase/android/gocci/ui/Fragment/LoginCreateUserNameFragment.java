@@ -177,7 +177,7 @@ public class LoginCreateUserNameFragment extends Fragment implements FABProgress
 
     @Override
     public void showResult(Const.APICategory api) {
-        API3PostUtil.postDeviceAsync(getActivity(), SavedData.getRegId(getActivity()), Const.OS, Build.VERSION.RELEASE, Build.MODEL);
+        API3PostUtil.setDeviceAsync(getActivity(), SavedData.getRegId(getActivity()), Const.OS, Build.VERSION.RELEASE, Build.MODEL);
         mFabProgressCircle.beginFinalAnimation();
     }
 

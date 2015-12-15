@@ -246,7 +246,7 @@ public class Util {
                         String message = charSequence.toString();
 
                         if (!message.isEmpty()) {
-                            API3PostUtil.postFeedbackAsync(context, message);
+                            API3PostUtil.setFeedbackAsync(context, message);
                         } else {
                             Toast.makeText(context, context.getString(R.string.advice_alert), Toast.LENGTH_SHORT).show();
                         }
@@ -270,7 +270,7 @@ public class Util {
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
-                        API3PostUtil.postBlockAsync(context, post_id);
+                        API3PostUtil.setBlockAsync(context, post_id);
                     }
                 }).show();
     }

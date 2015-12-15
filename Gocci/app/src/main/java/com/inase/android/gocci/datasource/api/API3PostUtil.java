@@ -34,7 +34,7 @@ import cz.msebera.android.httpclient.Header;
  */
 public class API3PostUtil {
 
-    public static void postFeedbackAsync(final Context context, final String feedback) {
+    public static void setFeedbackAsync(final Context context, final String feedback) {
         if (Util.getConnectedState(context) != Util.NetworkStatus.OFF) {
             API3.Util.SetFeedbackLocalCode localCode = API3.Impl.getRepository().SetFeedbackParameterRegex(feedback);
             if (localCode == null) {
@@ -73,7 +73,7 @@ public class API3PostUtil {
         }
     }
 
-    public static void postBlockAsync(final Context context, final String post_id) {
+    public static void setBlockAsync(final Context context, final String post_id) {
         if (Util.getConnectedState(context) != Util.NetworkStatus.OFF) {
             API3.Util.SetBlockLocalCode localCode = API3.Impl.getRepository().SetBlockParameterRegex(post_id);
             if (localCode == null) {
@@ -112,7 +112,7 @@ public class API3PostUtil {
         }
     }
 
-    public static void postDeleteAsync(final Context context, final String post_id, final Const.ActivityCategory activityCategory) {
+    public static void unsetPostAsync(final Context context, final String post_id, final Const.ActivityCategory activityCategory) {
         if (Util.getConnectedState(context) != Util.NetworkStatus.OFF) {
             API3.Util.UnsetPostLocalCode localCode = API3.Impl.getRepository().UnsetPostParameterRegex(post_id);
             if (localCode == null) {
@@ -151,7 +151,7 @@ public class API3PostUtil {
         }
     }
 
-    public static void postPasswordAsync(final Context context, final String password, final Const.ActivityCategory activityCategory, final Const.APICategory api) {
+    public static void setPasswordAsync(final Context context, final String password, final Const.ActivityCategory activityCategory, final Const.APICategory api) {
         if (Util.getConnectedState(context) != Util.NetworkStatus.OFF) {
             API3.Util.SetPasswordLocalCode localCode = API3.Impl.getRepository().SetPasswordParameterRegex(password);
             if (localCode == null) {
@@ -191,7 +191,7 @@ public class API3PostUtil {
         }
     }
 
-    public static void postRestAddAsync(final Context context, final Const.ActivityCategory activityCategory, final String restname, String lon, String lat) {
+    public static void setRestAsync(final Context context, final Const.ActivityCategory activityCategory, final String restname, String lon, String lat) {
         if (Util.getConnectedState(context) != Util.NetworkStatus.OFF) {
             API3.Util.SetRestLocalCode localCode = API3.Impl.getRepository().SetRestParameterRegex(restname, lat, lon);
             if (localCode == null) {
@@ -235,7 +235,7 @@ public class API3PostUtil {
         }
     }
 
-    public static void postSnsLinkAsync(final Context context, final String provider, final String sns_token, final Const.ActivityCategory activityCategory, final Const.APICategory api) {
+    public static void setSnsLinkAsync(final Context context, final String provider, final String sns_token, final Const.ActivityCategory activityCategory, final Const.APICategory api) {
         if (Util.getConnectedState(context) != Util.NetworkStatus.OFF) {
             API3.Util.SetSns_LinkLocalCode localCode = API3.Impl.getRepository().SetSns_LinkParameterRegex(provider, sns_token);
             if (localCode == null) {
@@ -274,7 +274,7 @@ public class API3PostUtil {
         }
     }
 
-    public static void postSnsUnlinkAsync(final Context context, final String provider, final String sns_token, final Const.ActivityCategory activityCategory, final Const.APICategory api) {
+    public static void unsetSnsLinkAsync(final Context context, final String provider, final String sns_token, final Const.ActivityCategory activityCategory, final Const.APICategory api) {
         if (Util.getConnectedState(context) != Util.NetworkStatus.OFF) {
             API3.Util.UnsetSns_LinkLocalCode localCode = API3.Impl.getRepository().UnsetSns_LinkParameterRegex(provider, sns_token);
             if (localCode == null) {
@@ -313,7 +313,7 @@ public class API3PostUtil {
         }
     }
 
-    public static void postDeviceAsync(final Context context, final String regId, String os, String ver, String model) {
+    public static void setDeviceAsync(final Context context, final String regId, String os, String ver, String model) {
         if (Util.getConnectedState(context) != Util.NetworkStatus.OFF) {
             API3.Util.SetDeviceLocalCode localCode = API3.Impl.getRepository().SetDeviceParameterRegex(regId, os, ver, model);
             if (localCode == null) {
@@ -352,7 +352,7 @@ public class API3PostUtil {
         }
     }
 
-    public static void postUnDeviceAsync(final Context context, final String regId) {
+    public static void unsetDeviceAsync(final Context context, final String regId) {
         if (Util.getConnectedState(context) != Util.NetworkStatus.OFF) {
             API3.Util.UnsetDeviceLocalCode localCode = API3.Impl.getRepository().UnsetDeviceParameterRegex(regId);
             if (localCode == null) {
@@ -391,7 +391,7 @@ public class API3PostUtil {
         }
     }
 
-    public static void postUsernameAsync(final Context context, final String username, final Const.ActivityCategory activityCategory) {
+    public static void setUsernameAsync(final Context context, final String username, final Const.ActivityCategory activityCategory) {
         if (Util.getConnectedState(context) != Util.NetworkStatus.OFF) {
             API3.Util.SetUsernameLocalCode localCode = API3.Impl.getRepository().SetUsernameParameterRegex(username);
             if (localCode == null) {
@@ -436,7 +436,7 @@ public class API3PostUtil {
         }
     }
 
-    public static void postProfileImgAsync(final Context context, final String post_date, File file, final Const.ActivityCategory activityCategory) {
+    public static void setProfileImgAsync(final Context context, final String post_date, File file, final Const.ActivityCategory activityCategory) {
         if (Util.getConnectedState(context) != Util.NetworkStatus.OFF) {
             TransferObserver transferObserver = Application_Gocci.getShareTransfer().upload(Const.POST_PHOTO_BUCKET_NAME, post_date + ".png", file);
             transferObserver.setTransferListener(new TransferListener() {
@@ -499,7 +499,7 @@ public class API3PostUtil {
         }
     }
 
-    public static void postProfileImgAsync(final Context context, final String post_date, String url, final Const.ActivityCategory activityCategory) {
+    public static void setProfileImgAsync(final Context context, final String post_date, String url, final Const.ActivityCategory activityCategory) {
         if (Util.getConnectedState(context) != Util.NetworkStatus.OFF) {
             Picasso.with(context).load(url).into(new Target() {
                 @Override
@@ -588,7 +588,7 @@ public class API3PostUtil {
         }
     }
 
-    public static void postMovieAsync(final Context context, final Const.ActivityCategory activityCategory, final String rest_id, String movie_name, String category_id, String value, final String memo, String cheer_flag) {
+    public static void setPostAsync(final Context context, final Const.ActivityCategory activityCategory, final String rest_id, String movie_name, String category_id, String value, final String memo, String cheer_flag) {
         if (Util.getConnectedState(context) != Util.NetworkStatus.OFF) {
             API3.Util.SetPostLocalCode localCode = API3.Impl.getRepository().SetPostParameterRegex(rest_id, movie_name, category_id, value, memo, cheer_flag);
             if (localCode == null) {
@@ -631,7 +631,7 @@ public class API3PostUtil {
         }
     }
 
-    public static void postWantAsync(final Context context, final String rest_id) {
+    public static void setWantAsync(final Context context, final String rest_id) {
         if (Util.getConnectedState(context) != Util.NetworkStatus.OFF) {
             API3.Util.SetWantLocalCode localCode = API3.Impl.getRepository().SetWantParameterRegex(rest_id);
             if (localCode == null) {
@@ -670,7 +670,7 @@ public class API3PostUtil {
         }
     }
 
-    public static void postUnWantAsync(final Context context, final String rest_id) {
+    public static void unsetWantAsync(final Context context, final String rest_id) {
         if (Util.getConnectedState(context) != Util.NetworkStatus.OFF) {
             API3.Util.UnsetWantLocalCode localCode = API3.Impl.getRepository().UnsetWantParameterRegex(rest_id);
             if (localCode == null) {

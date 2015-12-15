@@ -281,7 +281,7 @@ public class LoginSessionActivity extends AppCompatActivity implements ShowUserL
 
     @Override
     public void showResult(Const.APICategory api) {
-        API3PostUtil.postDeviceAsync(this, SavedData.getRegId(this), Const.OS, Build.VERSION.RELEASE, Build.MODEL);
+        API3PostUtil.setDeviceAsync(this, SavedData.getRegId(this), Const.OS, Build.VERSION.RELEASE, Build.MODEL);
 
         Intent intent = new Intent(this, TimelineActivity.class);
         overridePendingTransition(0, 0);

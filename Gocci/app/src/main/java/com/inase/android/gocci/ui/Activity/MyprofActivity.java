@@ -327,17 +327,17 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
 
                                 if (isName && isPicture) {
                                     //どっちも変更した
-                                    API3PostUtil.postUsernameAsync(MyprofActivity.this, mEditUsername.getText().toString(), Const.ActivityCategory.MY_PAGE);
+                                    API3PostUtil.setUsernameAsync(MyprofActivity.this, mEditUsername.getText().toString(), Const.ActivityCategory.MY_PAGE);
                                     isName = false;
                                 } else if (isPicture) {
                                     //写真だけ変更
                                     String post_date = SavedData.getServerUserId(MyprofActivity.this) + "_" + Util.getDateTimeString();
                                     File update_file = Util.getLocalBitmapFile(mEditPicture, post_date);
-                                    API3PostUtil.postProfileImgAsync(MyprofActivity.this, post_date, update_file, Const.ActivityCategory.MY_PAGE);
+                                    API3PostUtil.setProfileImgAsync(MyprofActivity.this, post_date, update_file, Const.ActivityCategory.MY_PAGE);
                                     isPicture = false;
                                 } else if (isName) {
                                     //名前だけ
-                                    API3PostUtil.postUsernameAsync(MyprofActivity.this, mEditUsername.getText().toString(), Const.ActivityCategory.MY_PAGE);
+                                    API3PostUtil.setUsernameAsync(MyprofActivity.this, mEditUsername.getText().toString(), Const.ActivityCategory.MY_PAGE);
                                     isName = false;
                                 }
                             }
@@ -964,7 +964,7 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
-                        API3PostUtil.postDeleteAsync(MyprofActivity.this, post_id, Const.ActivityCategory.MY_PAGE);
+                        API3PostUtil.unsetPostAsync(MyprofActivity.this, post_id, Const.ActivityCategory.MY_PAGE);
                     }
                 }).show();
     }
@@ -1170,7 +1170,7 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
                     if (isPicture) {
                         String post_date = SavedData.getServerUserId(MyprofActivity.this) + "_" + Util.getDateTimeString();
                         File update_file = Util.getLocalBitmapFile(mEditPicture, post_date);
-                        API3PostUtil.postProfileImgAsync(MyprofActivity.this, post_date, update_file, Const.ActivityCategory.MY_PAGE);
+                        API3PostUtil.setProfileImgAsync(MyprofActivity.this, post_date, update_file, Const.ActivityCategory.MY_PAGE);
                         isPicture = false;
                     } else {
                         Intent intent = getIntent();

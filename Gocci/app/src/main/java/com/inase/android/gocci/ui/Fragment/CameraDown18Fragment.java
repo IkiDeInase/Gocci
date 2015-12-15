@@ -561,7 +561,7 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
     public void subscribe(RetryApiEvent event) {
         switch (event.api) {
             case SET_RESTADD:
-                API3PostUtil.postRestAddAsync(getActivity(), Const.ActivityCategory.CAMERA, mRest_name, longitude, latitude);
+                API3PostUtil.setRestAsync(getActivity(), Const.ActivityCategory.CAMERA, mRest_name, longitude, latitude);
                 break;
             case GET_NEAR_FIRST:
                 mPresenter.getNearData(Const.APICategory.GET_NEAR_FIRST, API3.Util.getGetNearAPI(latitude, longitude));
@@ -710,7 +710,7 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
                     @Override
                     public void onInput(MaterialDialog materialDialog, CharSequence charSequence) {
                         mRest_name = charSequence.toString();
-                        API3PostUtil.postRestAddAsync(getActivity(), Const.ActivityCategory.CAMERA, mRest_name, longitude, latitude);
+                        API3PostUtil.setRestAsync(getActivity(), Const.ActivityCategory.CAMERA, mRest_name, longitude, latitude);
                     }
                 }).show();
     }

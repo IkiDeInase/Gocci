@@ -428,7 +428,7 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
                                 }
                             }
                         }
-                        API3PostUtil.postMovieAsync(CameraPreviewAlreadyExistActivity.this, Const.ActivityCategory.CAMERA_PREVIEW_ALREADY, mRest_id, mAwsPostName, String.valueOf(mCategory_id), mValue, mMemo, String.valueOf(mCheer_flag));
+                        API3PostUtil.setPostAsync(CameraPreviewAlreadyExistActivity.this, Const.ActivityCategory.CAMERA_PREVIEW_ALREADY, mRest_id, mAwsPostName, String.valueOf(mCategory_id), mValue, mMemo, String.valueOf(mCheer_flag));
                         Application_Gocci.postingVideoToS3(CameraPreviewAlreadyExistActivity.this, mAwsPostName, mVideoFile);
                     } else {
                         Toast.makeText(CameraPreviewAlreadyExistActivity.this, getString(R.string.please_input_restname), Toast.LENGTH_SHORT).show();
@@ -460,11 +460,11 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
                     // ...sharing failed, handle error
                     Toast.makeText(CameraPreviewAlreadyExistActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
                 }
-                API3PostUtil.postSnsLinkAsync(CameraPreviewAlreadyExistActivity.this, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), Const.ActivityCategory.CAMERA_PREVIEW_ALREADY, Const.APICategory.SET_FACEBOOK_LINK);
+                API3PostUtil.setSnsLinkAsync(CameraPreviewAlreadyExistActivity.this, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), Const.ActivityCategory.CAMERA_PREVIEW_ALREADY, Const.APICategory.SET_FACEBOOK_LINK);
                 Profile profile = Profile.getCurrentProfile();
                 String profile_img = "https://graph.facebook.com/" + profile.getId() + "/picture";
                 String post_date = SavedData.getServerUserId(CameraPreviewAlreadyExistActivity.this) + "_" + Util.getDateTimeString();
-                API3PostUtil.postProfileImgAsync(CameraPreviewAlreadyExistActivity.this, post_date, profile_img, Const.ActivityCategory.CAMERA_PREVIEW_ALREADY);
+                API3PostUtil.setProfileImgAsync(CameraPreviewAlreadyExistActivity.this, post_date, profile_img, Const.ActivityCategory.CAMERA_PREVIEW_ALREADY);
             }
 
             @Override
@@ -487,11 +487,11 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
                 mTwitterEdit.show(true);
                 mCheckTwitter.setChecked(true);
                 TwitterAuthToken authToken = result.data.getAuthToken();
-                API3PostUtil.postSnsLinkAsync(CameraPreviewAlreadyExistActivity.this, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, Const.ActivityCategory.CAMERA_PREVIEW_ALREADY, Const.APICategory.SET_TWITTER_LINK);
+                API3PostUtil.setSnsLinkAsync(CameraPreviewAlreadyExistActivity.this, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, Const.ActivityCategory.CAMERA_PREVIEW_ALREADY, Const.APICategory.SET_TWITTER_LINK);
                 String username = result.data.getUserName();
                 String profile_img = "http://www.paper-glasses.com/api/twipi/" + username;
                 String post_date = SavedData.getServerUserId(CameraPreviewAlreadyExistActivity.this) + "_" + Util.getDateTimeString();
-                API3PostUtil.postProfileImgAsync(CameraPreviewAlreadyExistActivity.this, post_date, profile_img, Const.ActivityCategory.CAMERA_PREVIEW_ALREADY);
+                API3PostUtil.setProfileImgAsync(CameraPreviewAlreadyExistActivity.this, post_date, profile_img, Const.ActivityCategory.CAMERA_PREVIEW_ALREADY);
             }
 
             @Override
@@ -604,7 +604,7 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
                     @Override
                     public void onInput(MaterialDialog materialDialog, CharSequence charSequence) {
                         mRestname = charSequence.toString();
-                        API3PostUtil.postRestAddAsync(CameraPreviewAlreadyExistActivity.this, Const.ActivityCategory.CAMERA_PREVIEW_ALREADY, mRestname, mLongitude, mLatitude);
+                        API3PostUtil.setRestAsync(CameraPreviewAlreadyExistActivity.this, Const.ActivityCategory.CAMERA_PREVIEW_ALREADY, mRestname, mLongitude, mLatitude);
                     }
                 }).show();
     }
@@ -640,10 +640,10 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
     public void subscribe(RetryApiEvent event) {
         switch (event.api) {
             case SET_POST:
-                API3PostUtil.postMovieAsync(CameraPreviewAlreadyExistActivity.this, Const.ActivityCategory.CAMERA_PREVIEW, mRest_id, mAwsPostName, String.valueOf(mCategory_id), mValue, mMemo, String.valueOf(mCheer_flag));
+                API3PostUtil.setPostAsync(CameraPreviewAlreadyExistActivity.this, Const.ActivityCategory.CAMERA_PREVIEW, mRest_id, mAwsPostName, String.valueOf(mCategory_id), mValue, mMemo, String.valueOf(mCheer_flag));
                 break;
             case SET_RESTADD:
-                API3PostUtil.postRestAddAsync(CameraPreviewAlreadyExistActivity.this, Const.ActivityCategory.CAMERA_PREVIEW, mRestname, mLongitude, mLatitude);
+                API3PostUtil.setRestAsync(CameraPreviewAlreadyExistActivity.this, Const.ActivityCategory.CAMERA_PREVIEW, mRestname, mLongitude, mLatitude);
                 break;
             default:
                 break;

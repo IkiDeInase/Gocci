@@ -122,7 +122,7 @@ public class SettingActivity extends AppCompatActivity {
                     public void onInput(MaterialDialog materialDialog, CharSequence charSequence) {
                         String password = charSequence.toString();
                         if (!password.isEmpty()) {
-                            API3PostUtil.postPasswordAsync(SettingActivity.this, password, Const.ActivityCategory.SETTING, Const.APICategory.SET_PASSWORD);
+                            API3PostUtil.setPasswordAsync(SettingActivity.this, password, Const.ActivityCategory.SETTING, Const.APICategory.SET_PASSWORD);
                         } else {
                             Toast.makeText(SettingActivity.this, getString(R.string.cheat_input_password), Toast.LENGTH_SHORT).show();
                         }
@@ -195,7 +195,7 @@ public class SettingActivity extends AppCompatActivity {
                             TwitterSession session =
                                     Twitter.getSessionManager().getActiveSession();
                             TwitterAuthToken authToken = session.getAuthToken();
-                            API3PostUtil.postSnsUnlinkAsync(SettingActivity.this, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, Const.ActivityCategory.SETTING, Const.APICategory.UNSET_TWITTER_LINK);
+                            API3PostUtil.unsetSnsLinkAsync(SettingActivity.this, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, Const.ActivityCategory.SETTING, Const.APICategory.UNSET_TWITTER_LINK);
                         }
                     }).show();
         } else {
@@ -217,7 +217,7 @@ public class SettingActivity extends AppCompatActivity {
                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                         @Override
                         public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
-                            API3PostUtil.postSnsUnlinkAsync(SettingActivity.this, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), Const.ActivityCategory.SETTING, Const.APICategory.UNSET_FACEBOOK_LINK);
+                            API3PostUtil.unsetSnsLinkAsync(SettingActivity.this, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), Const.ActivityCategory.SETTING, Const.APICategory.UNSET_FACEBOOK_LINK);
                         }
                     }).show();
         } else {
@@ -383,11 +383,11 @@ public class SettingActivity extends AppCompatActivity {
         mFacebookLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                API3PostUtil.postSnsLinkAsync(SettingActivity.this, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), Const.ActivityCategory.SETTING, Const.APICategory.SET_FACEBOOK_LINK);
+                API3PostUtil.setSnsLinkAsync(SettingActivity.this, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), Const.ActivityCategory.SETTING, Const.APICategory.SET_FACEBOOK_LINK);
                 Profile profile = Profile.getCurrentProfile();
                 String profile_img = "https://graph.facebook.com/" + profile.getId() + "/picture";
                 String post_date = SavedData.getServerUserId(SettingActivity.this) + "_" + Util.getDateTimeString();
-                API3PostUtil.postProfileImgAsync(SettingActivity.this, post_date, profile_img, Const.ActivityCategory.SETTING);
+                API3PostUtil.setProfileImgAsync(SettingActivity.this, post_date, profile_img, Const.ActivityCategory.SETTING);
             }
 
             @Override
@@ -405,11 +405,11 @@ public class SettingActivity extends AppCompatActivity {
             @Override
             public void success(Result<TwitterSession> result) {
                 TwitterAuthToken authToken = result.data.getAuthToken();
-                API3PostUtil.postSnsLinkAsync(SettingActivity.this, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, Const.ActivityCategory.SETTING, Const.APICategory.SET_TWITTER_LINK);
+                API3PostUtil.setSnsLinkAsync(SettingActivity.this, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, Const.ActivityCategory.SETTING, Const.APICategory.SET_TWITTER_LINK);
                 String username = result.data.getUserName();
                 String profile_img = "http://www.paper-glasses.com/api/twipi/" + username;
                 String post_date = SavedData.getServerUserId(SettingActivity.this) + "_" + Util.getDateTimeString();
-                API3PostUtil.postProfileImgAsync(SettingActivity.this, post_date, profile_img, Const.ActivityCategory.SETTING);
+                API3PostUtil.setProfileImgAsync(SettingActivity.this, post_date, profile_img, Const.ActivityCategory.SETTING);
             }
 
             @Override
@@ -426,7 +426,7 @@ public class SettingActivity extends AppCompatActivity {
             mTwitterSetting.setText(session.getUserName());
             isTwitterSetting = true;
             if (Application_Gocci.getShareTransfer() != null) {
-                API3PostUtil.postSnsLinkAsync(SettingActivity.this, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, Const.ActivityCategory.SETTING, Const.APICategory.SET_TWITTER_LINK);
+                API3PostUtil.setSnsLinkAsync(SettingActivity.this, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, Const.ActivityCategory.SETTING, Const.APICategory.SET_TWITTER_LINK);
             }
         } else {
             isTwitterSetting = false;
@@ -437,7 +437,7 @@ public class SettingActivity extends AppCompatActivity {
             mFacebookSetting.setText(profile.getName());
             isFacebookSetting = true;
             if (Application_Gocci.getShareTransfer() != null) {
-                API3PostUtil.postSnsLinkAsync(SettingActivity.this, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), Const.ActivityCategory.SETTING, Const.APICategory.SET_FACEBOOK_LINK);
+                API3PostUtil.setSnsLinkAsync(SettingActivity.this, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), Const.ActivityCategory.SETTING, Const.APICategory.SET_FACEBOOK_LINK);
             }
         } else {
             isFacebookSetting = false;
@@ -590,11 +590,11 @@ public class SettingActivity extends AppCompatActivity {
             case SET_FACEBOOK_LINK:
                 Profile profile = Profile.getCurrentProfile();
                 if (profile != null) {
-                    API3PostUtil.postSnsLinkAsync(this, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), Const.ActivityCategory.SETTING, Const.APICategory.SET_FACEBOOK_LINK);
+                    API3PostUtil.setSnsLinkAsync(this, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), Const.ActivityCategory.SETTING, Const.APICategory.SET_FACEBOOK_LINK);
                 }
                 break;
             case UNSET_FACEBOOK_LINK:
-                API3PostUtil.postSnsUnlinkAsync(this, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), Const.ActivityCategory.SETTING, Const.APICategory.UNSET_FACEBOOK_LINK);
+                API3PostUtil.unsetSnsLinkAsync(this, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), Const.ActivityCategory.SETTING, Const.APICategory.UNSET_FACEBOOK_LINK);
                 break;
             case SET_TWITTER_LINK:
                 TwitterSession session =
@@ -602,14 +602,14 @@ public class SettingActivity extends AppCompatActivity {
                 if (session != null) {
                     TwitterAuthToken authToken = session.getAuthToken();
 
-                    API3PostUtil.postSnsLinkAsync(this, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, Const.ActivityCategory.SETTING, Const.APICategory.SET_TWITTER_LINK);
+                    API3PostUtil.setSnsLinkAsync(this, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, Const.ActivityCategory.SETTING, Const.APICategory.SET_TWITTER_LINK);
                 }
                 break;
             case UNSET_TWITTER_LINK:
                 TwitterSession unlinksession =
                         Twitter.getSessionManager().getActiveSession();
                 TwitterAuthToken authToken = unlinksession.getAuthToken();
-                API3PostUtil.postSnsUnlinkAsync(this, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, Const.ActivityCategory.SETTING, Const.APICategory.UNSET_TWITTER_LINK);
+                API3PostUtil.unsetSnsLinkAsync(this, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, Const.ActivityCategory.SETTING, Const.APICategory.UNSET_TWITTER_LINK);
                 break;
             default:
                 break;

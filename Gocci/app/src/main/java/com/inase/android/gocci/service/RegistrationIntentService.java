@@ -96,7 +96,7 @@ public class RegistrationIntentService extends IntentService {
             if (!regid.equals(token)) {
                 //サーバー送る
                 SavedData.setRegId(this, token);
-                API3PostUtil.postDeviceAsync(this, token, Const.OS, Build.VERSION.RELEASE, Build.MODEL);
+                API3PostUtil.setDeviceAsync(this, token, Const.OS, Build.VERSION.RELEASE, Build.MODEL);
             }
         }
     }

@@ -3,7 +3,6 @@ package com.inase.android.gocci.ui.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Camera;
 import android.location.Location;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -422,7 +421,7 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
                                 }
                             }
                         }
-                        API3PostUtil.postMovieAsync(CameraPreviewActivity.this, Const.ActivityCategory.CAMERA_PREVIEW, mRest_id, mAwsPostName, String.valueOf(mCategory_id), mValue, mMemo, String.valueOf(mCheer_flag));
+                        API3PostUtil.setPostAsync(CameraPreviewActivity.this, Const.ActivityCategory.CAMERA_PREVIEW, mRest_id, mAwsPostName, String.valueOf(mCategory_id), mValue, mMemo, String.valueOf(mCheer_flag));
                         Application_Gocci.postingVideoToS3(CameraPreviewActivity.this, mAwsPostName, mVideoFile);
                     } else {
                         Toast.makeText(CameraPreviewActivity.this, getString(R.string.please_input_restname), Toast.LENGTH_SHORT).show();
@@ -450,11 +449,11 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
                     // ...sharing failed, handle error
                     Toast.makeText(CameraPreviewActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
                 }
-                API3PostUtil.postSnsLinkAsync(CameraPreviewActivity.this, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), Const.ActivityCategory.CAMERA_PREVIEW, Const.APICategory.SET_FACEBOOK_LINK);
+                API3PostUtil.setSnsLinkAsync(CameraPreviewActivity.this, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), Const.ActivityCategory.CAMERA_PREVIEW, Const.APICategory.SET_FACEBOOK_LINK);
                 Profile profile = Profile.getCurrentProfile();
                 String profile_img = "https://graph.facebook.com/" + profile.getId() + "/picture";
                 String post_date = SavedData.getServerUserId(CameraPreviewActivity.this) + "_" + Util.getDateTimeString();
-                API3PostUtil.postProfileImgAsync(CameraPreviewActivity.this, post_date, profile_img, Const.ActivityCategory.CAMERA_PREVIEW);
+                API3PostUtil.setProfileImgAsync(CameraPreviewActivity.this, post_date, profile_img, Const.ActivityCategory.CAMERA_PREVIEW);
             }
 
             @Override
@@ -477,11 +476,11 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
                 mTwitterEdit.show(true);
                 mCheckTwitter.setChecked(true);
                 TwitterAuthToken authToken = result.data.getAuthToken();
-                API3PostUtil.postSnsLinkAsync(CameraPreviewActivity.this, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, Const.ActivityCategory.CAMERA_PREVIEW, Const.APICategory.SET_TWITTER_LINK);
+                API3PostUtil.setSnsLinkAsync(CameraPreviewActivity.this, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, Const.ActivityCategory.CAMERA_PREVIEW, Const.APICategory.SET_TWITTER_LINK);
                 String username = result.data.getUserName();
                 String profile_img = "http://www.paper-glasses.com/api/twipi/" + username;
                 String post_date = SavedData.getServerUserId(CameraPreviewActivity.this) + "_" + Util.getDateTimeString();
-                API3PostUtil.postProfileImgAsync(CameraPreviewActivity.this, post_date, profile_img, Const.ActivityCategory.CAMERA_PREVIEW);
+                API3PostUtil.setProfileImgAsync(CameraPreviewActivity.this, post_date, profile_img, Const.ActivityCategory.CAMERA_PREVIEW);
             }
 
             @Override
@@ -606,7 +605,7 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
                     @Override
                     public void onInput(MaterialDialog materialDialog, CharSequence charSequence) {
                         mRestname = charSequence.toString();
-                        API3PostUtil.postRestAddAsync(CameraPreviewActivity.this, Const.ActivityCategory.CAMERA_PREVIEW, mRestname, mLongitude, mLatitude);
+                        API3PostUtil.setRestAsync(CameraPreviewActivity.this, Const.ActivityCategory.CAMERA_PREVIEW, mRestname, mLongitude, mLatitude);
                     }
                 }).show();
     }
@@ -643,10 +642,10 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
     public void subscribe(RetryApiEvent event) {
         switch (event.api) {
             case SET_POST:
-                API3PostUtil.postMovieAsync(CameraPreviewActivity.this, Const.ActivityCategory.CAMERA_PREVIEW, mRest_id, mAwsPostName, String.valueOf(mCategory_id), mValue, mMemo, String.valueOf(mCheer_flag));
+                API3PostUtil.setPostAsync(CameraPreviewActivity.this, Const.ActivityCategory.CAMERA_PREVIEW, mRest_id, mAwsPostName, String.valueOf(mCategory_id), mValue, mMemo, String.valueOf(mCheer_flag));
                 break;
             case SET_RESTADD:
-                API3PostUtil.postRestAddAsync(CameraPreviewActivity.this, Const.ActivityCategory.CAMERA_PREVIEW, mRestname, mLongitude, mLatitude);
+                API3PostUtil.setRestAsync(CameraPreviewActivity.this, Const.ActivityCategory.CAMERA_PREVIEW, mRestname, mLongitude, mLatitude);
                 break;
             default:
                 break;

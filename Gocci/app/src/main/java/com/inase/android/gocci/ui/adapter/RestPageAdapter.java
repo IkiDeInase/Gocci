@@ -125,11 +125,11 @@ public class RestPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 if (holder.mCheckText.getText().toString().equals(mContext.getString(R.string.add_want))) {
                     holder.mCheckImage.setImageResource(R.drawable.ic_favorite_white_24dp);
                     holder.mCheckText.setText(mContext.getString(R.string.remove_want));
-                    API3PostUtil.postWantAsync(mContext, mRestData.getRest_id());
+                    API3PostUtil.setWantAsync(mContext, mRestData.getRest_id());
                 } else {
                     holder.mCheckImage.setImageResource(R.drawable.ic_favorite_outline_grey_600_24dp);
                     holder.mCheckText.setText(mContext.getString(R.string.add_want));
-                    API3PostUtil.postUnWantAsync(mContext, mRestData.getRest_id());
+                    API3PostUtil.unsetWantAsync(mContext, mRestData.getRest_id());
                 }
             }
         });
