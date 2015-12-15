@@ -649,10 +649,10 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
                 try {
                     Movie movie = MovieCreator.build(fileName);
                     for (Track t : movie.getTracks()) {
-                        if (t.getHandler().equals("soun")) {
+                        if ("soun".equals(t.getHandler())) {
                             audioTracks.add(t);
                         }
-                        if (t.getHandler().equals("vide")) {
+                        if ("vide".equals(t.getHandler())) {
                             videoTracks.add(t);
                         }
                     }

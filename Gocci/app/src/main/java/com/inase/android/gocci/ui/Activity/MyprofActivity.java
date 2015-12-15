@@ -873,7 +873,7 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
     }
 
     private void goCamera() {
-        if (SavedData.getVideoUrl(MyprofActivity.this).equals("") || SavedData.getLat(MyprofActivity.this).isEmpty()) {
+        if (SavedData.getVideoUrl(MyprofActivity.this).isEmpty() || SavedData.getLat(MyprofActivity.this).isEmpty()) {
             startActivity(new Intent(MyprofActivity.this, CameraActivity.class));
         } else {
             new MaterialDialog.Builder(MyprofActivity.this)

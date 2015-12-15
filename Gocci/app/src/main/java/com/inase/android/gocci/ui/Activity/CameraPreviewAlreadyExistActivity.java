@@ -347,7 +347,7 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
             }
         });
 
-        if (!mRestname.equals("")) {
+        if (!mRestname.isEmpty()) {
             mRestnameSpinner.setClickable(false);
         } else {
             if (mLatitude.isEmpty() && mLongitude.isEmpty()) {
@@ -439,7 +439,7 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
             }
         });
 
-        if (mIsnewRestname || !mRestname.equals("")) {
+        if (mIsnewRestname || !mRestname.isEmpty()) {
             mAddRestText.setVisibility(View.GONE);
         }
 

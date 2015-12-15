@@ -703,7 +703,7 @@ public class TimelineActivity extends AppCompatActivity {
     }
 
     private void goCamera() {
-        if (SavedData.getVideoUrl(TimelineActivity.this).equals("") || SavedData.getLat(TimelineActivity.this).isEmpty()) {
+        if (SavedData.getVideoUrl(TimelineActivity.this).isEmpty() || SavedData.getLat(TimelineActivity.this).isEmpty()) {
             startActivity(new Intent(TimelineActivity.this, CameraActivity.class));
         } else {
             new MaterialDialog.Builder(TimelineActivity.this)

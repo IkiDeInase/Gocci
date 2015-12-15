@@ -359,7 +359,7 @@ public class GridMyProfFragment extends Fragment implements AppBarLayout.OnOffse
                 oldViewHolder.mSquareImage.setVisibility(View.VISIBLE);
             }
 
-            if (mPlayingPostId.equals(postData.getPost_id())) {
+            if (postData.getPost_id().equals(mPlayingPostId)) {
                 return;
             }
         }
@@ -429,7 +429,7 @@ public class GridMyProfFragment extends Fragment implements AppBarLayout.OnOffse
 
     @Override
     public void onGridVideoFrameClick(PostData data) {
-        if (player != null && mPlayingPostId.equals(data.getPost_id())) {
+        if (player != null && data.getPost_id().equals(mPlayingPostId)) {
             if (player.getPlayerControl().isPlaying()) {
                 player.getPlayerControl().pause();
             } else {

@@ -426,7 +426,7 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
                 oldViewHolder.mSquareImage.setVisibility(View.VISIBLE);
             }
 
-            if (mPlayingPostId.equals(postData.getPost_id())) {
+            if (postData.getPost_id().equals(mPlayingPostId)) {
                 return;
             }
         }
@@ -675,7 +675,7 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
 
     @Override
     public void onVideoFrameClick(TwoCellData data) {
-        if (player != null && mPlayingPostId.equals(data.getPost_id())) {
+        if (player != null && data.getPost_id().equals(mPlayingPostId)) {
             if (player.getPlayerControl().isPlaying()) {
                 player.getPlayerControl().pause();
             } else {
