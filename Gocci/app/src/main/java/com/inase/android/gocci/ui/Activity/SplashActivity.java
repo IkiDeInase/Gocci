@@ -27,6 +27,7 @@ import com.inase.android.gocci.event.RetryApiEvent;
 import com.inase.android.gocci.presenter.ShowUserLoginPresenter;
 import com.inase.android.gocci.service.RegistrationIntentService;
 import com.inase.android.gocci.utils.SavedData;
+import com.inase.android.gocci.utils.Util;
 import com.squareup.otto.Subscribe;
 
 
@@ -74,22 +75,26 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
         BusHolder.get().register(this);
         mPresenter.resume();
 
-        String mIdentityId = SavedData.getIdentityId(this);
-        if (!mIdentityId.equals("no identityId")) {
-            //２回目
-            API3.Util.AuthLoginLocalCode localCode = API3.Impl.getRepository().AuthLoginParameterRegex(mIdentityId);
-            if (localCode == null) {
-                mPresenter.loginUser(Const.APICategory.AUTH_LOGIN, API3.Util.getAuthLoginAPI(mIdentityId));
+        if (Util.getConnectedState(this) != Util.NetworkStatus.OFF) {
+            String mIdentityId = SavedData.getIdentityId(this);
+            if (!mIdentityId.equals("no identityId")) {
+                //２回目
+                API3.Util.AuthLoginLocalCode localCode = API3.Impl.getRepository().AuthLoginParameterRegex(mIdentityId);
+                if (localCode == null) {
+                    mPresenter.loginUser(Const.APICategory.AUTH_LOGIN, API3.Util.getAuthLoginAPI(mIdentityId));
+                } else {
+                    Toast.makeText(this, getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
+                }
             } else {
-                Toast.makeText(this, getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
+                if (checkPlayServices()) {
+                    Intent intent = new Intent(this, RegistrationIntentService.class);
+                    startService(intent);
+                } else {
+                    Log.e(TAG, "No valid Google Play Services APK found.");
+                }
             }
         } else {
-            if (checkPlayServices()) {
-                Intent intent = new Intent(this, RegistrationIntentService.class);
-                startService(intent);
-            } else {
-                Log.e(TAG, "No valid Google Play Services APK found.");
-            }
+            Toast.makeText(this, getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
         }
     }
 

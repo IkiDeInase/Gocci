@@ -462,9 +462,9 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
                 }
                 API3PostUtil.setSnsLinkAsync(CameraPreviewAlreadyExistActivity.this, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), Const.ActivityCategory.CAMERA_PREVIEW_ALREADY, Const.APICategory.SET_FACEBOOK_LINK);
                 Profile profile = Profile.getCurrentProfile();
-                String profile_img = "https://graph.facebook.com/" + profile.getId() + "/picture";
-                String post_date = SavedData.getServerUserId(CameraPreviewAlreadyExistActivity.this) + "_" + Util.getDateTimeString();
-                API3PostUtil.setProfileImgAsync(CameraPreviewAlreadyExistActivity.this, post_date, profile_img, Const.ActivityCategory.CAMERA_PREVIEW_ALREADY);
+                //String profile_img = "https://graph.facebook.com/" + profile.getId() + "/picture";
+                //String post_date = SavedData.getServerUserId(CameraPreviewAlreadyExistActivity.this) + "_" + Util.getDateTimeString();
+                //API3PostUtil.setProfileImgAsync(CameraPreviewAlreadyExistActivity.this, post_date, profile_img, Const.ActivityCategory.CAMERA_PREVIEW_ALREADY);
             }
 
             @Override
@@ -489,9 +489,9 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
                 TwitterAuthToken authToken = result.data.getAuthToken();
                 API3PostUtil.setSnsLinkAsync(CameraPreviewAlreadyExistActivity.this, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, Const.ActivityCategory.CAMERA_PREVIEW_ALREADY, Const.APICategory.SET_TWITTER_LINK);
                 String username = result.data.getUserName();
-                String profile_img = "http://www.paper-glasses.com/api/twipi/" + username;
-                String post_date = SavedData.getServerUserId(CameraPreviewAlreadyExistActivity.this) + "_" + Util.getDateTimeString();
-                API3PostUtil.setProfileImgAsync(CameraPreviewAlreadyExistActivity.this, post_date, profile_img, Const.ActivityCategory.CAMERA_PREVIEW_ALREADY);
+                //String profile_img = "http://www.paper-glasses.com/api/twipi/" + username;
+                //String post_date = SavedData.getServerUserId(CameraPreviewAlreadyExistActivity.this) + "_" + Util.getDateTimeString();
+                //API3PostUtil.setProfileImgAsync(CameraPreviewAlreadyExistActivity.this, post_date, profile_img, Const.ActivityCategory.CAMERA_PREVIEW_ALREADY);
             }
 
             @Override

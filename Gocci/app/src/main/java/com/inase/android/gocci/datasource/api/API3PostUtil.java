@@ -433,14 +433,14 @@ public class API3PostUtil {
 
     public static void setProfileImgAsync(final Context context, final String post_date, File file, final Const.ActivityCategory activityCategory) {
         if (Util.getConnectedState(context) != Util.NetworkStatus.OFF) {
-            TransferObserver transferObserver = Application_Gocci.getShareTransfer().upload(Const.POST_PHOTO_BUCKET_NAME, post_date + ".png", file);
+            TransferObserver transferObserver = Application_Gocci.getShareTransfer().upload(Const.POST_PHOTO_BUCKET_NAME, post_date + "_img.png", file);
             transferObserver.setTransferListener(new TransferListener() {
                 @Override
                 public void onStateChanged(int id, TransferState state) {
                     if (state == TransferState.COMPLETED) {
-                        API3.Util.SetProfile_ImgLocalCode localCode = API3.Impl.getRepository().SetProfile_ImgParameterRegex(post_date + "png");
+                        API3.Util.SetProfile_ImgLocalCode localCode = API3.Impl.getRepository().SetProfile_ImgParameterRegex(post_date + "_img");
                         if (localCode == null) {
-                            Application_Gocci.getJsonAsync(API3.Util.getSetProfileImgAPI(post_date), new JsonHttpResponseHandler() {
+                            Application_Gocci.getJsonAsync(API3.Util.getSetProfileImgAPI(post_date + "_img"), new JsonHttpResponseHandler() {
 
                                 @Override
                                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -502,7 +502,7 @@ public class API3PostUtil {
                     File file = null;
                     try {
                         file = new File(Environment.getExternalStoragePublicDirectory(
-                                Environment.DIRECTORY_DOWNLOADS), post_date + ".png");
+                                Environment.DIRECTORY_DOWNLOADS), post_date + "_img.png");
                         file.getParentFile().mkdirs();
                         FileOutputStream out = new FileOutputStream(file);
                         bitmap.compress(Bitmap.CompressFormat.PNG, 90, out);
@@ -510,14 +510,14 @@ public class API3PostUtil {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    TransferObserver transferObserver = Application_Gocci.getShareTransfer().upload(Const.POST_PHOTO_BUCKET_NAME, post_date + ".png", file);
+                    TransferObserver transferObserver = Application_Gocci.getShareTransfer().upload(Const.POST_PHOTO_BUCKET_NAME, post_date + "_img.png", file);
                     transferObserver.setTransferListener(new TransferListener() {
                         @Override
                         public void onStateChanged(int id, TransferState state) {
                             if (state == TransferState.COMPLETED) {
-                                API3.Util.SetProfile_ImgLocalCode localCode = API3.Impl.getRepository().SetProfile_ImgParameterRegex(post_date + "png");
+                                API3.Util.SetProfile_ImgLocalCode localCode = API3.Impl.getRepository().SetProfile_ImgParameterRegex(post_date + "_img");
                                 if (localCode == null) {
-                                    Application_Gocci.getJsonAsync(API3.Util.getSetProfileImgAPI(post_date), new JsonHttpResponseHandler() {
+                                    Application_Gocci.getJsonAsync(API3.Util.getSetProfileImgAPI(post_date + "_img"), new JsonHttpResponseHandler() {
 
                                         @Override
                                         public void onSuccess(int statusCode, Header[] headers, JSONObject response) {

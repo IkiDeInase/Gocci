@@ -384,10 +384,10 @@ public class SettingActivity extends AppCompatActivity {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 API3PostUtil.setSnsLinkAsync(SettingActivity.this, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), Const.ActivityCategory.SETTING, Const.APICategory.SET_FACEBOOK_LINK);
-                Profile profile = Profile.getCurrentProfile();
-                String profile_img = "https://graph.facebook.com/" + profile.getId() + "/picture";
-                String post_date = SavedData.getServerUserId(SettingActivity.this) + "_" + Util.getDateTimeString();
-                API3PostUtil.setProfileImgAsync(SettingActivity.this, post_date, profile_img, Const.ActivityCategory.SETTING);
+                //Profile profile = Profile.getCurrentProfile();
+                //String profile_img = "https://graph.facebook.com/" + profile.getId() + "/picture";
+                //String post_date = SavedData.getServerUserId(SettingActivity.this) + "_" + Util.getDateTimeString();
+                //API3PostUtil.setProfileImgAsync(SettingActivity.this, post_date, profile_img, Const.ActivityCategory.SETTING);
             }
 
             @Override
@@ -406,10 +406,10 @@ public class SettingActivity extends AppCompatActivity {
             public void success(Result<TwitterSession> result) {
                 TwitterAuthToken authToken = result.data.getAuthToken();
                 API3PostUtil.setSnsLinkAsync(SettingActivity.this, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, Const.ActivityCategory.SETTING, Const.APICategory.SET_TWITTER_LINK);
-                String username = result.data.getUserName();
-                String profile_img = "http://www.paper-glasses.com/api/twipi/" + username;
-                String post_date = SavedData.getServerUserId(SettingActivity.this) + "_" + Util.getDateTimeString();
-                API3PostUtil.setProfileImgAsync(SettingActivity.this, post_date, profile_img, Const.ActivityCategory.SETTING);
+                //String username = result.data.getUserName();
+                //String profile_img = "http://www.paper-glasses.com/api/twipi/" + username;
+                //String post_date = SavedData.getServerUserId(SettingActivity.this) + "_" + Util.getDateTimeString();
+                //API3PostUtil.setProfileImgAsync(SettingActivity.this, post_date, profile_img, Const.ActivityCategory.SETTING);
             }
 
             @Override
