@@ -100,7 +100,7 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
     private ShareDialog shareDialog;
 
     private boolean loading = true;
-    private int pastVisibleItems, visibleItemCount, totalItemCount;
+    private int pastVisibleItems, visibleItemCount, totalItemCount, previousTotal;
     private int mNextCount = 1;
     private boolean isEndScrioll = false;
 
@@ -152,8 +152,15 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
             }
 
             if (loading) {
-                if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
+                if (totalItemCount > previousTotal) {
                     loading = false;
+                    previousTotal = totalItemCount;
+                }
+            }
+
+            if (!loading) {
+                if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
+                    loading = true;
                     if (!isEndScrioll) {
                         API3.Util.GetFollowlineLocalCode localCode = API3.Impl.getRepository().GetFollowlineParameterRegex();
                         if (localCode == null) {

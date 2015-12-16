@@ -129,7 +129,7 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
     private ShareDialog shareDialog;
 
     private boolean loading = true;
-    private int pastVisibleItems, visibleItemCount, totalItemCount;
+    private int pastVisibleItems, visibleItemCount, totalItemCount, previousTotal;
     private int mNextCount = 1;
     private boolean isEndScrioll = false;
 
@@ -195,8 +195,15 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
             }
 
             if (loading) {
-                if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
+                if (totalItemCount > previousTotal) {
                     loading = false;
+                    previousTotal = totalItemCount;
+                }
+            }
+
+            if (!loading) {
+                if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
+                    loading = true;
                     if (!isEndScrioll) {
                         API3.Util.GetNearlineLocalCode localCode = API3.Impl.getRepository().GetNearlineParameterRegex(TimelineActivity.mLatitude, TimelineActivity.mLongitude);
                         if (localCode == null) {

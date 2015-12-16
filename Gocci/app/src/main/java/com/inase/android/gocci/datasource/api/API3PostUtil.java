@@ -402,13 +402,8 @@ public class API3PostUtil {
                         API3.Impl.getRepository().SetUsernameResponse(response, new API3.PayloadResponseCallback() {
                             @Override
                             public void onSuccess(JSONObject payload) {
-                                try {
-                                    String username = payload.getString("username");
-                                    SavedData.setServerName(Application_Gocci.getInstance().getApplicationContext(), username);
-                                    BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, activityCategory, Const.APICategory.SET_USERNAME, username));
-                                } catch (JSONException e) {
-                                    Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_USERNAME, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                                }
+                                SavedData.setServerName(Application_Gocci.getInstance().getApplicationContext(), username);
+                                BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, activityCategory, Const.APICategory.SET_USERNAME, username));
                             }
 
                             @Override

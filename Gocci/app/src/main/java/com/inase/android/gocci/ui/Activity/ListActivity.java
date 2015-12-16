@@ -418,6 +418,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
     @Override
     public void hideLoading() {
         mProgress.setVisibility(View.INVISIBLE);
+        mSwipeRefresh.setRefreshing(false);
     }
 
     @Override
