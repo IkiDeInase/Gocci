@@ -149,6 +149,9 @@ public class Application_Gocci extends Application {
 
         @Override
         protected String doInBackground(Void... params) {
+            if (credentialsProvider != null) {
+                credentialsProvider.clear();
+            }
             credentialsProvider = new CognitoCachingCredentialsProvider(context, Const.IDENTITY_POOL_ID, Const.REGION);
 
             Map<String, String> logins = credentialsProvider.getLogins();
@@ -196,6 +199,9 @@ public class Application_Gocci extends Application {
 
         @Override
         protected String doInBackground(Void... params) {
+            if (credentialsProvider != null) {
+                credentialsProvider.clear();
+            }
             customProvider = new CustomProvider(identity_id, cognito_token);
             credentialsProvider = new CognitoCachingCredentialsProvider(context, customProvider, Const.REGION);
 

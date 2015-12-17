@@ -119,7 +119,6 @@ public class StreamUserProfAdapter extends RecyclerView.Adapter<Const.StreamView
         } else {
             holder.mCategory.setText("　　　　");
         }
-        holder.mMood.setText("　　　　");
         if (!user.getValue().equals("0")) {
             holder.mValue.setText(user.getValue() + "円");
         } else {

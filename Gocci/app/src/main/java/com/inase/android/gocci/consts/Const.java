@@ -176,8 +176,6 @@ public class Const {
         public TextView mCategory;
         @Bind(R.id.value)
         public TextView mValue;
-        @Bind(R.id.mood)
-        public TextView mMood;
         @Bind(R.id.comment)
         public TextView mComment;
         @Bind(R.id.likes_number)

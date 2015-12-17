@@ -75,13 +75,13 @@ public class API3PostUtil {
 
     public static void setBlockAsync(final Context context, final String post_id) {
         if (Util.getConnectedState(context) != Util.NetworkStatus.OFF) {
-            API3.Util.SetBlockLocalCode localCode = API3.Impl.getRepository().SetBlockParameterRegex(post_id);
+            API3.Util.SetPost_BlockLocalCode localCode = API3.Impl.getRepository().SetPost_BlockParameterRegex(post_id);
             if (localCode == null) {
-                Application_Gocci.getJsonAsync(API3.Util.getSetBlockAPI(post_id), new JsonHttpResponseHandler() {
+                Application_Gocci.getJsonAsync(API3.Util.getSetPostBlockAPI(post_id), new JsonHttpResponseHandler() {
 
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        API3.Impl.getRepository().SetBlockResponse(response, new API3.PayloadResponseCallback() {
+                        API3.Impl.getRepository().SetPost_BlockResponse(response, new API3.PayloadResponseCallback() {
                             @Override
                             public void onSuccess(JSONObject payload) {
                                 Toast.makeText(context, "この投稿を違反報告しました", Toast.LENGTH_SHORT).show();
