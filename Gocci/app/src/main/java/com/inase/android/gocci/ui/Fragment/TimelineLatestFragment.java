@@ -165,10 +165,12 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
                 if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
                     loading = true;
                     if (!isEndScrioll) {
-                        API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().GetTimelineParameterRegex();
+                        API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().GetTimelineParameterRegex(String.valueOf(mNextCount), String.valueOf(TimelineActivity.mLatestCategory_id), String.valueOf(TimelineActivity.mLatestValue_id));
                         if (localCode == null) {
                             mPresenter.getLatestTimelinePostData(Const.APICategory.GET_TIMELINE_ADD, API3.Util.getGetTimelineAPI(
-                                    mNextCount, TimelineActivity.mLatestCategory_id, TimelineActivity.mLatestValue_id));
+                                    String.valueOf(mNextCount),
+                                    TimelineActivity.mLatestCategory_id != 0 ? String.valueOf(TimelineActivity.mLatestCategory_id) : null,
+                                    TimelineActivity.mLatestValue_id != 0 ? String.valueOf(TimelineActivity.mLatestValue_id) : null));
                         } else {
                             Toast.makeText(getActivity(), getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
                         }
@@ -233,9 +235,10 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
         mTimelineRecyclerView.addOnScrollListener(scrollListener);
         mTimelineRecyclerView.setScrollViewCallbacks(this);
 
-        API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().GetTimelineParameterRegex();
+        API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().GetTimelineParameterRegex(null, null, null);
         if (localCode == null) {
-            mPresenter.getLatestTimelinePostData(Const.APICategory.GET_TIMELINE_FIRST, API3.Util.getGetTimelineAPI());
+            mPresenter.getLatestTimelinePostData(Const.APICategory.GET_TIMELINE_FIRST, API3.Util.getGetTimelineAPI(
+                    null, null, null));
         } else {
             Toast.makeText(getActivity(), getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
         }
@@ -330,7 +333,7 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
     @Subscribe
     public void subscribe(FilterTimelineEvent event) {
         if (event.currentPage == 2) {
-            API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().GetTimelineParameterRegex();
+            API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().GetTimelineParameterRegex(null, String.valueOf(TimelineActivity.mLatestCategory_id), String.valueOf(TimelineActivity.mLatestValue_id));
             if (localCode == null) {
                 mTimelineRecyclerView.scrollVerticallyToPosition(0);
                 mPresenter.getLatestTimelinePostData(Const.APICategory.GET_TIMELINE_FILTER, event.filterUrl);
@@ -470,10 +473,10 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
                 TimelineActivity.mLatestCategory_id = 0;
                 TimelineActivity.mLatestValue_id = 0;
 
-                API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().GetTimelineParameterRegex();
+                API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().GetTimelineParameterRegex(null, null, null);
                 if (localCode == null) {
                     mPresenter.getLatestTimelinePostData(Const.APICategory.GET_TIMELINE_REFRESH, API3.Util.getGetTimelineAPI(
-                            0, TimelineActivity.mLatestCategory_id, TimelineActivity.mLatestValue_id));
+                            null, null, null));
                 } else {
                     Toast.makeText(getActivity(), getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
                 }
@@ -702,15 +705,17 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
     public void subscribe(RetryApiEvent event) {
         switch (event.api) {
             case GET_TIMELINE_FIRST:
-                mPresenter.getLatestTimelinePostData(Const.APICategory.GET_TIMELINE_FIRST, API3.Util.getGetTimelineAPI());
+                mPresenter.getLatestTimelinePostData(Const.APICategory.GET_TIMELINE_FIRST, API3.Util.getGetTimelineAPI(null, null, null));
                 break;
             case GET_TIMELINE_REFRESH:
                 mPresenter.getLatestTimelinePostData(Const.APICategory.GET_TIMELINE_REFRESH, API3.Util.getGetTimelineAPI(
-                        0, TimelineActivity.mLatestCategory_id, TimelineActivity.mLatestValue_id));
+                        null, null, null));
                 break;
             case GET_TIMELINE_ADD:
                 mPresenter.getLatestTimelinePostData(Const.APICategory.GET_TIMELINE_ADD, API3.Util.getGetTimelineAPI(
-                        mNextCount, TimelineActivity.mLatestCategory_id, TimelineActivity.mLatestValue_id));
+                        String.valueOf(mNextCount),
+                        TimelineActivity.mLatestCategory_id != 0 ? String.valueOf(TimelineActivity.mLatestCategory_id) : null,
+                        TimelineActivity.mLatestValue_id != 0 ? String.valueOf(TimelineActivity.mLatestValue_id) : null));
                 break;
             case GET_TIMELINE_FILTER:
 

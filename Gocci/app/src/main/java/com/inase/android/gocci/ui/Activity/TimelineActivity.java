@@ -116,13 +116,15 @@ public class TimelineActivity extends AppCompatActivity {
             if (mFab.getVisibility() == View.VISIBLE) {
                 FabTransformation.with(mFab).setOverlay(mOverlay).transformTo(mSheet);
             }
-            SmartLocation.with(TimelineActivity.this).location().oneFix().start(new OnLocationUpdatedListener() {
-                @Override
-                public void onLocationUpdated(Location location) {
-                    mLongitude = String.valueOf(location.getLongitude());
-                    mLatitude = String.valueOf(location.getLatitude());
-                }
-            });
+            if ("現在地".equals(mToolBar.getTitle())) {
+                SmartLocation.with(TimelineActivity.this).location().oneFix().start(new OnLocationUpdatedListener() {
+                    @Override
+                    public void onLocationUpdated(Location location) {
+                        mLongitude = String.valueOf(location.getLongitude());
+                        mLatitude = String.valueOf(location.getLatitude());
+                    }
+                });
+            }
         } else {
             Toast.makeText(this, "位置情報の取得が許可されていません", Toast.LENGTH_SHORT).show();
         }
@@ -389,15 +391,15 @@ public class TimelineActivity extends AppCompatActivity {
                 switch (mShowPosition) {
                     case 0:
                         BusHolder.get().post(new FilterTimelineEvent(mShowPosition, API3.Util.getGetNearlineAPI(
-                                mLongitude, mLatitude, 0, mNearCategory_id, mNearValue_id)));
+                                mLatitude, mLongitude, null, mNearCategory_id != 0 ? String.valueOf(mNearCategory_id) : null, mNearValue_id != 0 ? String.valueOf(mNearValue_id) : null)));
                         break;
                     case 1:
-                        BusHolder.get().post(new FilterTimelineEvent(mShowPosition, API3.Util.getGetFollowlineAPI(
-                                0, mFollowCategory_id, mFollowValue_id)));
+                        BusHolder.get().post(new FilterTimelineEvent(mShowPosition, API3.Util.getGetFollowlineAPI(null,
+                                mFollowCategory_id != 0 ? String.valueOf(mFollowCategory_id) : null, mFollowValue_id != 0 ? String.valueOf(mFollowValue_id) : null)));
                         break;
                     case 2:
-                        BusHolder.get().post(new FilterTimelineEvent(mShowPosition, API3.Util.getGetTimelineAPI(
-                                0, mLatestCategory_id, mLatestValue_id)));
+                        BusHolder.get().post(new FilterTimelineEvent(mShowPosition, API3.Util.getGetTimelineAPI(null,
+                                mLatestCategory_id != 0 ? String.valueOf(mLatestCategory_id) : null, mLatestValue_id != 0 ? String.valueOf(mLatestValue_id) : null)));
                         break;
                 }
             }

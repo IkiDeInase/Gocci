@@ -352,11 +352,11 @@ public class API3PostUtil {
         }
     }
 
-    public static void unsetDeviceAsync(final Context context, final String regId) {
+    public static void unsetDeviceAsync(final Context context) {
         if (Util.getConnectedState(context) != Util.NetworkStatus.OFF) {
-            API3.Util.UnsetDeviceLocalCode localCode = API3.Impl.getRepository().UnsetDeviceParameterRegex(regId);
+            API3.Util.UnsetDeviceLocalCode localCode = API3.Impl.getRepository().UnsetDeviceParameterRegex();
             if (localCode == null) {
-                Application_Gocci.getJsonAsync(API3.Util.getUnsetDeviceAPI(regId), new JsonHttpResponseHandler() {
+                Application_Gocci.getJsonAsync(API3.Util.getUnsetDeviceAPI(), new JsonHttpResponseHandler() {
 
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -587,7 +587,7 @@ public class API3PostUtil {
         if (Util.getConnectedState(context) != Util.NetworkStatus.OFF) {
             API3.Util.SetPostLocalCode localCode = API3.Impl.getRepository().SetPostParameterRegex(rest_id, movie_name, category_id, value, memo, cheer_flag);
             if (localCode == null) {
-                Application_Gocci.getJsonAsync(API3.Util.getSetPostAPI(rest_id, movie_name, category_id, value, memo, cheer_flag), new JsonHttpResponseHandler() {
+                Application_Gocci.getJsonAsync(API3.Util.getSetPostAPI(rest_id, movie_name, category_id.isEmpty() ? null : category_id, value.isEmpty() ? null : value, memo.isEmpty() ? null : memo, cheer_flag), new JsonHttpResponseHandler() {
 
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {

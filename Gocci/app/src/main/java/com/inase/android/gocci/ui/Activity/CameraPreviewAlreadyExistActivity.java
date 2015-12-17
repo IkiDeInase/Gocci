@@ -399,14 +399,10 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
                         if (mEditValue.getText().length() != 0) {
                             mValue = mEditValue.getText().toString();
                             SavedData.setValue(CameraPreviewAlreadyExistActivity.this, mValue);
-                        } else {
-                            mValue = "0";
                         }
                         if (mEditComment.getText().length() != 0) {
                             mMemo = mEditComment.getText().toString();
                             SavedData.setMemo(CameraPreviewAlreadyExistActivity.this, mMemo);
-                        } else {
-                            mMemo = "none";
                         }
                         if (mCheckCheer.isChecked()) {
                             mCheer_flag = 1;

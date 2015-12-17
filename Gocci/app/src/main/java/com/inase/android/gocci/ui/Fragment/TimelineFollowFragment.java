@@ -162,10 +162,12 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
                 if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
                     loading = true;
                     if (!isEndScrioll) {
-                        API3.Util.GetFollowlineLocalCode localCode = API3.Impl.getRepository().GetFollowlineParameterRegex();
+                        API3.Util.GetFollowlineLocalCode localCode = API3.Impl.getRepository().GetFollowlineParameterRegex(String.valueOf(mNextCount), String.valueOf(TimelineActivity.mFollowCategory_id), String.valueOf(TimelineActivity.mFollowValue_id));
                         if (localCode == null) {
                             mPresenter.getFollowTimelinePostData(Const.APICategory.GET_FOLLOWLINE_ADD, API3.Util.getGetFollowlineAPI(
-                                    mNextCount, TimelineActivity.mFollowCategory_id, TimelineActivity.mFollowValue_id));
+                                    String.valueOf(mNextCount),
+                                    TimelineActivity.mFollowCategory_id != 0 ? String.valueOf(TimelineActivity.mFollowCategory_id) : null,
+                                    TimelineActivity.mFollowValue_id != 0 ? String.valueOf(TimelineActivity.mFollowValue_id) : null));
                         } else {
                             Toast.makeText(getActivity(), getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
                         }
@@ -230,9 +232,9 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
         fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
         appBarLayout = (AppBarLayout) getActivity().findViewById(R.id.app_bar);
 
-        API3.Util.GetFollowlineLocalCode localCode = API3.Impl.getRepository().GetFollowlineParameterRegex();
+        API3.Util.GetFollowlineLocalCode localCode = API3.Impl.getRepository().GetFollowlineParameterRegex(null, null, null);
         if (localCode == null) {
-            mPresenter.getFollowTimelinePostData(Const.APICategory.GET_FOLLOWLINE_FIRST, API3.Util.getGetFollowlineAPI());
+            mPresenter.getFollowTimelinePostData(Const.APICategory.GET_FOLLOWLINE_FIRST, API3.Util.getGetFollowlineAPI(null, null, null));
         } else {
             Toast.makeText(getActivity(), getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
         }
@@ -327,7 +329,7 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
     @Subscribe
     public void subscribe(FilterTimelineEvent event) {
         if (event.currentPage == 1) {
-            API3.Util.GetFollowlineLocalCode localCode = API3.Impl.getRepository().GetFollowlineParameterRegex();
+            API3.Util.GetFollowlineLocalCode localCode = API3.Impl.getRepository().GetFollowlineParameterRegex(null, String.valueOf(TimelineActivity.mFollowCategory_id), String.valueOf(TimelineActivity.mFollowValue_id));
             if (localCode == null) {
                 mTimelineRecyclerView.scrollVerticallyToPosition(0);
                 mPresenter.getFollowTimelinePostData(Const.APICategory.GET_FOLLOWLINE_FILTER, event.filterUrl);
@@ -431,10 +433,10 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
                 TimelineActivity.mFollowValue_id = 0;
                 TimelineActivity.mFollowCategory_id = 0;
 
-                API3.Util.GetFollowlineLocalCode localCode = API3.Impl.getRepository().GetFollowlineParameterRegex();
+                API3.Util.GetFollowlineLocalCode localCode = API3.Impl.getRepository().GetFollowlineParameterRegex(null, null, null);
                 if (localCode == null) {
                     mPresenter.getFollowTimelinePostData(Const.APICategory.GET_FOLLOWLINE_REFRESH, API3.Util.getGetFollowlineAPI(
-                            0, TimelineActivity.mFollowCategory_id, TimelineActivity.mFollowValue_id));
+                            null, null, null));
                 } else {
                     Toast.makeText(getActivity(), getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
                 }
@@ -700,15 +702,17 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
     public void subscribe(RetryApiEvent event) {
         switch (event.api) {
             case GET_FOLLOWLINE_FIRST:
-                mPresenter.getFollowTimelinePostData(Const.APICategory.GET_FOLLOWLINE_FIRST, API3.Util.getGetFollowlineAPI());
+                mPresenter.getFollowTimelinePostData(Const.APICategory.GET_FOLLOWLINE_FIRST, API3.Util.getGetFollowlineAPI(null, null, null));
                 break;
             case GET_FOLLOWLINE_REFRESH:
                 mPresenter.getFollowTimelinePostData(Const.APICategory.GET_FOLLOWLINE_REFRESH, API3.Util.getGetFollowlineAPI(
-                        0, TimelineActivity.mFollowCategory_id, TimelineActivity.mFollowValue_id));
+                        null, null, null));
                 break;
             case GET_FOLLOWLINE_ADD:
                 mPresenter.getFollowTimelinePostData(Const.APICategory.GET_FOLLOWLINE_ADD, API3.Util.getGetFollowlineAPI(
-                        mNextCount, TimelineActivity.mFollowCategory_id, TimelineActivity.mFollowValue_id));
+                        String.valueOf(mNextCount),
+                        TimelineActivity.mFollowCategory_id != 0 ? String.valueOf(TimelineActivity.mFollowCategory_id) : null,
+                        TimelineActivity.mFollowValue_id != 0 ? String.valueOf(TimelineActivity.mFollowValue_id) : null));
                 break;
             case GET_FOLLOWLINE_FILTER:
 
