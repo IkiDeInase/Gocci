@@ -86,6 +86,7 @@ import com.inase.android.gocci.utils.video.HlsRendererBuilder;
 import com.inase.android.gocci.utils.video.VideoPlayer;
 import com.squareup.otto.Subscribe;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -1077,8 +1078,10 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
             case GET_NEARLINE_REFRESH:
                 mPresenter.getNearTimelinePostData(Const.APICategory.GET_NEARLINE_REFRESH, API3.Util.getGetNearlineAPI(
                         TimelineActivity.mLatitude, TimelineActivity.mLongitude, null, null, null));
-                TimelineActivity activity = (TimelineActivity) getActivity();
-                activity.setNowLocationTitle();
+                if (TimelineActivity.mShowPosition == 0) {
+                    TimelineActivity activity = (TimelineActivity) getActivity();
+                    activity.setNowLocationTitle();
+                }
                 break;
             case GET_NEARLINE_ADD:
                 mPresenter.getNearTimelinePostData(Const.APICategory.GET_NEARLINE_ADD, API3.Util.getGetNearlineAPI(
@@ -1218,8 +1221,10 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
             if (localCode == null) {
                 mPresenter.getNearTimelinePostData(Const.APICategory.GET_NEARLINE_REFRESH, API3.Util.getGetNearlineAPI(
                         TimelineActivity.mLatitude, TimelineActivity.mLongitude, null, null, null));
-                TimelineActivity activity = (TimelineActivity) getActivity();
-                activity.setNowLocationTitle();
+                if (TimelineActivity.mShowPosition == 0) {
+                    TimelineActivity activity = (TimelineActivity) getActivity();
+                    activity.setNowLocationTitle();
+                }
             } else {
                 Toast.makeText(getActivity(), getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
             }
