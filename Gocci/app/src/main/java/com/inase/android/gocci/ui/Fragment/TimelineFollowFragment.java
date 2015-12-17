@@ -162,7 +162,8 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
                 if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
                     loading = true;
                     if (!isEndScrioll) {
-                        API3.Util.GetFollowlineLocalCode localCode = API3.Impl.getRepository().GetFollowlineParameterRegex(String.valueOf(mNextCount), String.valueOf(TimelineActivity.mFollowCategory_id), String.valueOf(TimelineActivity.mFollowValue_id));
+                        API3.Util.GetFollowlineLocalCode localCode = API3.Impl.getRepository().GetFollowlineParameterRegex(String.valueOf(mNextCount), TimelineActivity.mFollowCategory_id != 0 ? String.valueOf(TimelineActivity.mFollowCategory_id) : null,
+                                TimelineActivity.mFollowValue_id != 0 ? String.valueOf(TimelineActivity.mFollowValue_id) : null);
                         if (localCode == null) {
                             mPresenter.getFollowTimelinePostData(Const.APICategory.GET_FOLLOWLINE_ADD, API3.Util.getGetFollowlineAPI(
                                     String.valueOf(mNextCount),
@@ -329,7 +330,8 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
     @Subscribe
     public void subscribe(FilterTimelineEvent event) {
         if (event.currentPage == 1) {
-            API3.Util.GetFollowlineLocalCode localCode = API3.Impl.getRepository().GetFollowlineParameterRegex(null, String.valueOf(TimelineActivity.mFollowCategory_id), String.valueOf(TimelineActivity.mFollowValue_id));
+            API3.Util.GetFollowlineLocalCode localCode = API3.Impl.getRepository().GetFollowlineParameterRegex(null, TimelineActivity.mFollowCategory_id != 0 ? String.valueOf(TimelineActivity.mFollowCategory_id) : null,
+                    TimelineActivity.mFollowValue_id != 0 ? String.valueOf(TimelineActivity.mFollowValue_id) : null);
             if (localCode == null) {
                 mTimelineRecyclerView.scrollVerticallyToPosition(0);
                 mPresenter.getFollowTimelinePostData(Const.APICategory.GET_FOLLOWLINE_FILTER, event.filterUrl);

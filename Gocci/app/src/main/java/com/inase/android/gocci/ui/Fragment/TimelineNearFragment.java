@@ -206,7 +206,8 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
                 if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
                     loading = true;
                     if (!isEndScrioll) {
-                        API3.Util.GetNearlineLocalCode localCode = API3.Impl.getRepository().GetNearlineParameterRegex(TimelineActivity.mLatitude, TimelineActivity.mLongitude, String.valueOf(mNextCount), String.valueOf(TimelineActivity.mNearCategory_id), String.valueOf(TimelineActivity.mNearValue_id));
+                        API3.Util.GetNearlineLocalCode localCode = API3.Impl.getRepository().GetNearlineParameterRegex(TimelineActivity.mLatitude, TimelineActivity.mLongitude, String.valueOf(mNextCount), TimelineActivity.mNearCategory_id != 0 ? String.valueOf(TimelineActivity.mNearCategory_id) : null,
+                                TimelineActivity.mNearValue_id != 0 ? String.valueOf(TimelineActivity.mNearValue_id) : null);
                         if (localCode == null) {
                             mPresenter.getNearTimelinePostData(Const.APICategory.GET_NEARLINE_ADD, API3.Util.getGetNearlineAPI(
                                     TimelineActivity.mLatitude, TimelineActivity.mLongitude, String.valueOf(mNextCount),
@@ -474,7 +475,8 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
     @Subscribe
     public void subscribe(FilterTimelineEvent event) {
         if (event.currentPage == 0) {
-            API3.Util.GetNearlineLocalCode localCode = API3.Impl.getRepository().GetNearlineParameterRegex(TimelineActivity.mLatitude, TimelineActivity.mLongitude, null, String.valueOf(TimelineActivity.mNearCategory_id), String.valueOf(TimelineActivity.mNearValue_id));
+            API3.Util.GetNearlineLocalCode localCode = API3.Impl.getRepository().GetNearlineParameterRegex(TimelineActivity.mLatitude, TimelineActivity.mLongitude, null, TimelineActivity.mNearCategory_id != 0 ? String.valueOf(TimelineActivity.mNearCategory_id) : null,
+                    TimelineActivity.mNearValue_id != 0 ? String.valueOf(TimelineActivity.mNearValue_id) : null);
             if (localCode == null) {
                 mTimelineRecyclerView.scrollVerticallyToPosition(0);
                 mPresenter.getNearTimelinePostData(Const.APICategory.GET_NEARLINE_FILTER, event.filterUrl);

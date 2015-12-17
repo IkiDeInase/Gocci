@@ -417,7 +417,7 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
                                 }
                             }
                         }
-                        API3PostUtil.setPostAsync(CameraPreviewActivity.this, Const.ActivityCategory.CAMERA_PREVIEW, mRest_id, mAwsPostName, String.valueOf(mCategory_id), mValue, mMemo, String.valueOf(mCheer_flag));
+                        API3PostUtil.setPostAsync(CameraPreviewActivity.this, Const.ActivityCategory.CAMERA_PREVIEW, mRest_id, mAwsPostName, mCategory_id, mValue, mMemo, String.valueOf(mCheer_flag));
                         Application_Gocci.postingVideoToS3(CameraPreviewActivity.this, mAwsPostName, mVideoFile);
                     } else {
                         Toast.makeText(CameraPreviewActivity.this, getString(R.string.please_input_restname), Toast.LENGTH_SHORT).show();
@@ -638,7 +638,7 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
     public void subscribe(RetryApiEvent event) {
         switch (event.api) {
             case SET_POST:
-                API3PostUtil.setPostAsync(CameraPreviewActivity.this, Const.ActivityCategory.CAMERA_PREVIEW, mRest_id, mAwsPostName, String.valueOf(mCategory_id), mValue, mMemo, String.valueOf(mCheer_flag));
+                API3PostUtil.setPostAsync(CameraPreviewActivity.this, Const.ActivityCategory.CAMERA_PREVIEW, mRest_id, mAwsPostName, mCategory_id, mValue, mMemo, String.valueOf(mCheer_flag));
                 break;
             case SET_RESTADD:
                 API3PostUtil.setRestAsync(CameraPreviewActivity.this, Const.ActivityCategory.CAMERA_PREVIEW, mRestname, mLongitude, mLatitude);

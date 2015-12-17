@@ -583,11 +583,11 @@ public class API3PostUtil {
         }
     }
 
-    public static void setPostAsync(final Context context, final Const.ActivityCategory activityCategory, final String rest_id, String movie_name, String category_id, String value, final String memo, String cheer_flag) {
+    public static void setPostAsync(final Context context, final Const.ActivityCategory activityCategory, final String rest_id, String movie_name, int category_id, String value, final String memo, String cheer_flag) {
         if (Util.getConnectedState(context) != Util.NetworkStatus.OFF) {
-            API3.Util.SetPostLocalCode localCode = API3.Impl.getRepository().SetPostParameterRegex(rest_id, movie_name, category_id, value, memo, cheer_flag);
+            API3.Util.SetPostLocalCode localCode = API3.Impl.getRepository().SetPostParameterRegex(rest_id, movie_name, category_id == 1 ? null : String.valueOf(category_id), value.isEmpty() ? null : value, memo.isEmpty() ? null : memo, cheer_flag);
             if (localCode == null) {
-                Application_Gocci.getJsonAsync(API3.Util.getSetPostAPI(rest_id, movie_name, category_id.isEmpty() ? null : category_id, value.isEmpty() ? null : value, memo.isEmpty() ? null : memo, cheer_flag), new JsonHttpResponseHandler() {
+                Application_Gocci.getJsonAsync(API3.Util.getSetPostAPI(rest_id, movie_name, category_id == 1 ? null : String.valueOf(category_id), value.isEmpty() ? null : value, memo.isEmpty() ? null : memo, cheer_flag), new JsonHttpResponseHandler() {
 
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {

@@ -165,7 +165,8 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
                 if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
                     loading = true;
                     if (!isEndScrioll) {
-                        API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().GetTimelineParameterRegex(String.valueOf(mNextCount), String.valueOf(TimelineActivity.mLatestCategory_id), String.valueOf(TimelineActivity.mLatestValue_id));
+                        API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().GetTimelineParameterRegex(String.valueOf(mNextCount), TimelineActivity.mLatestCategory_id != 0 ? String.valueOf(TimelineActivity.mLatestCategory_id) : null,
+                                TimelineActivity.mLatestValue_id != 0 ? String.valueOf(TimelineActivity.mLatestValue_id) : null);
                         if (localCode == null) {
                             mPresenter.getLatestTimelinePostData(Const.APICategory.GET_TIMELINE_ADD, API3.Util.getGetTimelineAPI(
                                     String.valueOf(mNextCount),
@@ -333,7 +334,8 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
     @Subscribe
     public void subscribe(FilterTimelineEvent event) {
         if (event.currentPage == 2) {
-            API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().GetTimelineParameterRegex(null, String.valueOf(TimelineActivity.mLatestCategory_id), String.valueOf(TimelineActivity.mLatestValue_id));
+            API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().GetTimelineParameterRegex(null, TimelineActivity.mLatestCategory_id != 0 ? String.valueOf(TimelineActivity.mLatestCategory_id) : null,
+                    TimelineActivity.mLatestValue_id != 0 ? String.valueOf(TimelineActivity.mLatestValue_id) : null);
             if (localCode == null) {
                 mTimelineRecyclerView.scrollVerticallyToPosition(0);
                 mPresenter.getLatestTimelinePostData(Const.APICategory.GET_TIMELINE_FILTER, event.filterUrl);
