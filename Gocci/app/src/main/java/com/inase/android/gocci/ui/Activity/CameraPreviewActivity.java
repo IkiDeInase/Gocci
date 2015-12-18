@@ -383,9 +383,9 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
             }
         });
 
-        mToukouButtonRipple.setOnClickListener(new View.OnClickListener() {
+        mToukouButtonRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
             @Override
-            public void onClick(View v) {
+            public void onComplete(RippleView rippleView) {
                 if (Util.getConnectedState(CameraPreviewActivity.this) != Util.NetworkStatus.OFF) {
                     mProgressWheel.setVisibility(View.VISIBLE);
                     if (!mRest_id.equals("1")) {
@@ -524,6 +524,8 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
                 mProgressWheel.setVisibility(View.GONE);
                 switch (event.callback) {
                     case SUCCESS:
+                        Toast.makeText(this, getString(R.string.videoposting_message), Toast.LENGTH_LONG).show();
+
                         SharedPreferences prefs = getSharedPreferences("movie", Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = prefs.edit();
                         editor.clear();
@@ -534,6 +536,10 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
                         finish();
+                        break;
+                    case LOCALERROR:
+                    case GLOBALERROR:
+                        Toast.makeText(this, getString(R.string.videoposting_failure), Toast.LENGTH_LONG).show();
                         break;
                 }
             }

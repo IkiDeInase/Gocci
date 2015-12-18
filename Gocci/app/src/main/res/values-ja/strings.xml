@@ -114,7 +114,7 @@
 
     <string name="videoposting_failure">投稿に失敗しました</string>
     <string name="videoposting_success">投稿しました</string>
-    <string name="videoposting_message">投稿完了までは少し時間がかかります</string>
+    <string name="videoposting_message">投稿完了までは少し時間がかかります！</string>
 
     <string name="post_comment">送る</string>
 
@@ -216,9 +216,9 @@
     <string name="add_sns_yeah">連携する</string>
     <string name="add_sns_no">やめる</string>
 
-    <string name="notice_from_gochi">さんからgochi!されました</string>
-    <string name="notice_from_comment">さんからコメントされました</string>
-    <string name="notice_from_follow">さんからフォローされました</string>
+    <string name="notice_from_gochi">さんからgochi!されました！</string>
+    <string name="notice_from_comment">さんからコメントされました！</string>
+    <string name="notice_from_follow">さんからフォローされました！</string>
 
     <string name="login_username_and_password">ユーザー名とパスワードでログイン</string>
     <string name="login_sns">SNS でログイン</string>
