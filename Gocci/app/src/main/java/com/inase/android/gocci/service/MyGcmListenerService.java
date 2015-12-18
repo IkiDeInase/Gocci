@@ -46,16 +46,16 @@ public class MyGcmListenerService extends GcmListenerService {
                         if (Arrays.asList(list).contains(2)) {
                             sendNotification(username + getString(R.string.notice_from_follow));
                         }
-                        BusHolder.get().post(new NotificationNumberEvent(badge_num + 1, def));
+                        BusHolder.get().post(new NotificationNumberEvent(badge_num + 1, username + getString(R.string.notice_from_follow)));
                         SavedData.setNotification(getApplicationContext(), badge_num + 1);
                         break;
-                    case "gochi":
+                    case "like":
                         id = jsonObject.getString("id");
                         username = jsonObject.getString("username");
                         if (Arrays.asList(list).contains(0)) {
                             sendNotification(username + getString(R.string.notice_from_gochi));
                         }
-                        BusHolder.get().post(new NotificationNumberEvent(badge_num + 1, def));
+                        BusHolder.get().post(new NotificationNumberEvent(badge_num + 1, username + getString(R.string.notice_from_gochi)));
                         SavedData.setNotification(getApplicationContext(), badge_num + 1);
                         break;
                     case "comment":
@@ -64,7 +64,7 @@ public class MyGcmListenerService extends GcmListenerService {
                         if (Arrays.asList(list).contains(1)) {
                             sendNotification(username + getString(R.string.notice_from_comment));
                         }
-                        BusHolder.get().post(new NotificationNumberEvent(badge_num + 1, def));
+                        BusHolder.get().post(new NotificationNumberEvent(badge_num + 1, username + getString(R.string.notice_from_comment)));
                         SavedData.setNotification(getApplicationContext(), badge_num + 1);
                         break;
                     case "announce":
@@ -72,11 +72,11 @@ public class MyGcmListenerService extends GcmListenerService {
                         if (Arrays.asList(list).contains(3)) {
                             sendNotification(message);
                         }
-                        BusHolder.get().post(new NotificationNumberEvent(badge_num + 1, def));
+                        BusHolder.get().post(new NotificationNumberEvent(badge_num + 1, message));
                         SavedData.setNotification(getApplicationContext(), badge_num + 1);
                         break;
                     case "post_complete":
-                        BusHolder.get().post(new NotificationNumberEvent(badge_num, def));
+                        BusHolder.get().post(new NotificationNumberEvent(badge_num, getString(R.string.videoposting_complete)));
                         break;
                 }
             } catch (JSONException e) {

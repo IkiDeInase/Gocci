@@ -97,6 +97,8 @@ public class TimelineActivity extends AppCompatActivity {
     MaterialBetterSpinner mValueSpinner;
     @Bind(R.id.filter_ripple)
     RippleView mFilterRipple;
+    @Bind(R.id.reset_ripple)
+    RippleView mResetRipple;
     @Bind(R.id.sheet)
     CardView mSheet;
     @Bind(R.id.coordinator_layout)
@@ -382,6 +384,29 @@ public class TimelineActivity extends AppCompatActivity {
 
         mCategorySpinner.setAdapter(categoryAdapter);
         mValueSpinner.setAdapter(valueAdapter);
+
+        mResetRipple.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCategorySpinner.setText("");
+                mValueSpinner.setText("");
+                mResetRipple.requestFocus();
+                switch (mShowPosition) {
+                    case 0:
+                        mNearCategory_id = 0;
+                        mNearValue_id = 0;
+                        break;
+                    case 1:
+                        mFollowCategory_id = 0;
+                        mFollowValue_id = 0;
+                        break;
+                    case 2:
+                        mLatestCategory_id = 0;
+                        mLatestValue_id = 0;
+                        break;
+                }
+            }
+        });
 
         mFilterRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
             @Override
