@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
+import com.inase.android.gocci.datasource.api.API3PostUtil;
 import com.inase.android.gocci.domain.model.ListGetData;
 import com.inase.android.gocci.ui.view.RoundedTransformation;
 import com.squareup.picasso.Picasso;
@@ -160,11 +161,11 @@ public class ListGetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 if (holder.mDeleteWantButton.isShown()) {
                     holder.mDeleteWantButton.setVisibility(View.INVISIBLE);
                     holder.mAddWantButton.setVisibility(View.VISIBLE);
-                    //Util.(mContext, data);
+                    API3PostUtil.setWantAsync(mContext, data.getRest_id());
                 } else {
                     holder.mDeleteWantButton.setVisibility(View.VISIBLE);
                     holder.mAddWantButton.setVisibility(View.INVISIBLE);
-                    //Util.wantAsync(mContext, data);
+                    API3PostUtil.unsetWantAsync(mContext, data.getRest_id());
                 }
             }
         });

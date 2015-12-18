@@ -898,6 +898,7 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
             case GET_NEARLINE_REFRESH:
                 mTimelineusers.clear();
                 isEndScrioll = false;
+                previousTotal = 0;
                 mNextCount = 1;
                 mPlayingPostId = null;
                 mTimelineAdapter.setData();
@@ -905,6 +906,7 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
             case GET_NEARLINE_FILTER:
                 mTimelineusers.clear();
                 isEndScrioll = false;
+                previousTotal = 0;
                 mNextCount = 1;
                 mPlayingPostId = null;
                 mTimelineAdapter.setData();
@@ -936,6 +938,7 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
                 mPost_ids.clear();
                 mPost_ids.addAll(post_ids);
                 isEndScrioll = false;
+                previousTotal = 0;
                 mNextCount = 1;
                 mPlayingPostId = null;
                 mViewHolderHash.clear();
@@ -965,6 +968,7 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
                 mPost_ids.clear();
                 mPost_ids.addAll(post_ids);
                 isEndScrioll = false;
+                previousTotal = 0;
                 mNextCount = 1;
                 mPlayingPostId = null;
                 mViewHolderHash.clear();

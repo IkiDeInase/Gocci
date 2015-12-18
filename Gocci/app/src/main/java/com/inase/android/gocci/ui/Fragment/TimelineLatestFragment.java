@@ -530,6 +530,7 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
             case GET_TIMELINE_REFRESH:
                 mTimelineusers.clear();
                 isEndScrioll = false;
+                previousTotal = 0;
                 mNextCount = 1;
                 mPlayingPostId = null;
                 mTimelineAdapter.setData();
@@ -537,6 +538,7 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
             case GET_TIMELINE_FILTER:
                 mTimelineusers.clear();
                 isEndScrioll = false;
+                previousTotal = 0;
                 mNextCount = 1;
                 mPlayingPostId = null;
                 mTimelineAdapter.setData();
@@ -568,6 +570,7 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
                 mPost_ids.clear();
                 mPost_ids.addAll(post_ids);
                 isEndScrioll = false;
+                previousTotal = 0;
                 mNextCount = 1;
                 mPlayingPostId = null;
                 mViewHolderHash.clear();
@@ -597,6 +600,7 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
                 mPost_ids.clear();
                 mPost_ids.addAll(post_ids);
                 isEndScrioll = false;
+                previousTotal = 0;
                 mNextCount = 1;
                 mPlayingPostId = null;
                 mViewHolderHash.clear();
