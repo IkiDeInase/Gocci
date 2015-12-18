@@ -174,7 +174,6 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
         muteAll(false);
         super.onDestroyView();
         recorderManager.reset();
-        handler.removeCallbacks(progressRunnable);
         ButterKnife.unbind(this);
     }
 
@@ -436,7 +435,7 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
         };
 
         progressRunnable = new ProgressRunnable();
-        handler.post(progressRunnable);
+        //handler.post(progressRunnable);
 
         createCustomAnimation();
         return rootView;
@@ -488,6 +487,8 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
         mScaleSpring.addListener(mSpringListener);
         checkPlayServices();
 
+        if (handler != null && !isFinish) handler.post(progressRunnable);
+
         BusHolder.get().register(this);
 
         if (mGoogleApiClient != null) {
@@ -532,6 +533,7 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
         if (isLocationUpdating) {
             stopLocationUpdates();
         }
+        if (handler != null) handler.removeCallbacks(progressRunnable);
 
         BusHolder.get().unregister(this);
     }

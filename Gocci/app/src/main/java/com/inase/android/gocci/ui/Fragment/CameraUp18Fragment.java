@@ -168,7 +168,6 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
     public void onDestroyView() {
         super.onDestroyView();
         mCameraView.onFinish();
-        handler.removeCallbacks(progressRunnable);
         ButterKnife.unbind(this);
     }
 
@@ -388,7 +387,7 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
         };
 
         progressRunnable = new ProgressRunnable();
-        handler.post(progressRunnable);
+        //handler.post(progressRunnable);
 
         createCustomAnimation();
         return rootView;
@@ -473,6 +472,7 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
         mPresenter.resume();
         mCameraView.onResume();
 
+        if (handler != null && !isFinish) handler.post(progressRunnable);
         mScaleSpring.addListener(mSpringListener);
         checkPlayServices();
 
@@ -519,6 +519,8 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
         mPresenter.pause();
         mCameraView.onPause();
         super.onPause();
+
+        if (handler != null) handler.removeCallbacks(progressRunnable);
 
         mScaleSpring.removeListener(mSpringListener);
         if (isLocationUpdating) {
