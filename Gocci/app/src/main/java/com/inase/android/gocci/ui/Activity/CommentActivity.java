@@ -94,7 +94,7 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
             comment = mCommentEdit.getText().toString();
         }
         if (!comment.isEmpty()) {
-            API3.Util.SetCommentLocalCode localCode = API3.Impl.getRepository().SetCommentParameterRegex(mPost_id, comment, mNoticeUser_id);
+            API3.Util.SetCommentLocalCode localCode = API3.Impl.getRepository().SetCommentParameterRegex(mPost_id, comment, mNoticeUser_id.isEmpty() ? null : mNoticeUser_id);
             if (localCode == null) {
                 button.setFocusable(true);
                 button.setFocusableInTouchMode(true);
@@ -103,7 +103,7 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
                 if (isNotice) {
                     mPresenter.postComment(Const.APICategory.SET_COMMENT, API3.Util.getSetCommentAPI(mPost_id, comment, mNoticeUser_id), API3.Util.getGetCommentAPI(mPost_id));
                 } else {
-                    mPresenter.postComment(Const.APICategory.SET_COMMENT, API3.Util.getSetCommentAPI(mPost_id, comment, "0"), API3.Util.getGetCommentAPI(mPost_id));
+                    mPresenter.postComment(Const.APICategory.SET_COMMENT, API3.Util.getSetCommentAPI(mPost_id, comment, null), API3.Util.getGetCommentAPI(mPost_id));
                 }
             } else {
                 Toast.makeText(this, getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
@@ -132,7 +132,7 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
     private boolean isNotice = false;
 
     private String mNoticeUser_name;
-    private String mNoticeUser_id = "0";
+    private String mNoticeUser_id = "";
 
     private static MobileAnalyticsManager analytics;
 
