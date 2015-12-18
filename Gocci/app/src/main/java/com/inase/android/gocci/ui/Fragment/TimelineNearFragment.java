@@ -1162,6 +1162,10 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
                         mGoogleApiClient,
                         mLocationSettingsRequest
                 );
+        if (!mGoogleApiClient.isConnected() && !mGoogleApiClient.isConnecting()) {
+            mGoogleApiClient.connect();
+            Log.e("ログ", "コネクト");
+        }
         result.setResultCallback(this);
     }
 

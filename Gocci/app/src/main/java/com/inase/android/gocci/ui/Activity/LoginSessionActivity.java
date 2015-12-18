@@ -124,16 +124,16 @@ public class LoginSessionActivity extends AppCompatActivity implements ShowUserL
         mSigninUsernameEdit.setErrorEnabled(true);
         mSigninPassEdit.setErrorEnabled(true);
 
-        mTwitterRipple.setOnClickListener(new View.OnClickListener() {
+        mTwitterRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
             @Override
-            public void onClick(View v) {
+            public void onComplete(RippleView rippleView) {
                 onTwitterButtonClicked();
             }
         });
 
-        mFacebookRipple.setOnClickListener(new View.OnClickListener() {
+        mFacebookRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
             @Override
-            public void onClick(View v) {
+            public void onComplete(RippleView rippleView) {
                 onFacebookButtonClicked();
             }
         });
