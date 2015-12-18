@@ -309,7 +309,7 @@ public class RestPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                                     mCallback.onFacebookShare(user.getMovie());
                                     break;
                                 case R.id.twitter_share:
-                                    mCallback.onTwitterShare(user.getMovie(), user.getRestname());
+                                    mCallback.onTwitterShare(user.getMovie(), mRestData.getRestname());
                                     break;
                                 case R.id.other_share:
                                     Toast.makeText(mContext, mContext.getString(R.string.preparing_share), Toast.LENGTH_LONG).show();

@@ -285,6 +285,7 @@ public class TwitterUtil {
         httpParameters.put(OAUTH_SIGNATURE, createOAuthSignature("POST", POST_TWITTER, tokenSecret, httpParameters), true);
 
         Application_Gocci.getClient().addHeader(HTTP_AUTHORIZATION_HEADER, createOAuthSignatureHeaderEntry(httpParameters));
+        Application_Gocci.getClient().setTimeout(50000);
         Application_Gocci.getClient().post(context, POST_TWITTER, requestParams, new JsonHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
@@ -316,6 +317,7 @@ public class TwitterUtil {
         httpParameters.put(OAUTH_SIGNATURE, createOAuthSignature("POST", POST_TWITTER, tokenSecret, httpParameters), true);
 
         Application_Gocci.getClient().removeHeader(HTTP_AUTHORIZATION_HEADER);
+        Application_Gocci.getClient().setTimeout(50000);
         Application_Gocci.getClient().addHeader(HTTP_AUTHORIZATION_HEADER, createOAuthSignatureHeaderEntry(httpParameters));
         Application_Gocci.getClient().post(context, POST_TWITTER, requestParams, new JsonHttpResponseHandler() {
             @Override
@@ -346,6 +348,7 @@ public class TwitterUtil {
         httpParameters.put(OAUTH_SIGNATURE, createOAuthSignature("POST", POST_TWITTER, tokenSecret, httpParameters), true);
 
         Application_Gocci.getClient().removeHeader(HTTP_AUTHORIZATION_HEADER);
+        Application_Gocci.getClient().setTimeout(50000);
         Application_Gocci.getClient().addHeader(HTTP_AUTHORIZATION_HEADER, createOAuthSignatureHeaderEntry(httpParameters));
         Application_Gocci.getClient().post(context, POST_TWITTER, requestParams, new JsonHttpResponseHandler() {
             @Override
@@ -372,6 +375,7 @@ public class TwitterUtil {
         httpParameters.put(OAUTH_SIGNATURE, createOAuthSignature("POST", TWEET_TWITTER, tokenSecret, httpParameters), true);
 
         Application_Gocci.getClient().removeHeader(HTTP_AUTHORIZATION_HEADER);
+        Application_Gocci.getClient().setTimeout(50000);
         Application_Gocci.getClient().addHeader(HTTP_AUTHORIZATION_HEADER, createOAuthSignatureHeaderEntry(httpParameters));
         Application_Gocci.getClient().post(context, TWEET_TWITTER, requestParams, new JsonHttpResponseHandler() {
             @Override
@@ -399,6 +403,7 @@ public class TwitterUtil {
         httpParameters.put(OAUTH_SIGNATURE, createOAuthSignature("GET", GET_TWITTER, tokenSecret, httpParameters), true);
 
         Application_Gocci.getClient().removeHeader(HTTP_AUTHORIZATION_HEADER);
+        Application_Gocci.getClient().setTimeout(50000);
         Application_Gocci.getClient().addHeader(HTTP_AUTHORIZATION_HEADER, createOAuthSignatureHeaderEntry(httpParameters));
         Application_Gocci.getClient().get(context, url, new JsonHttpResponseHandler() {
             @Override
