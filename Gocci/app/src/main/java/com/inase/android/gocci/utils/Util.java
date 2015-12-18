@@ -333,27 +333,42 @@ public class Util {
         });
     }
 
-    public static void twitterShare(final Context context, final String message, String key, final TwitterAuthToken authToken) {
-        final File file = new File(Environment.getExternalStorageDirectory().toString() + "/" + key);
-        TransferObserver transferObserver = Application_Gocci.getTransfer(context).download(Const.GET_MOVIE_BUCKET_NAME, "mp4/" + key + ".mp4", file);
-        transferObserver.setTransferListener(new TransferListener() {
-            @Override
-            public void onStateChanged(int id, TransferState state) {
-                if (state == TransferState.COMPLETED) {
-                    TwitterUtil.performShare(context, authToken.token, authToken.secret, file, message);
-                }
-            }
+    public static void twitterShare(final Context context, final String message, final String key, final TwitterAuthToken authToken) {
+        new MaterialDialog.Builder(context)
+                .title("Twitterシェアの確認")
+                .titleColorRes(R.color.namegrey)
+                .content("Twitterシェアでは自動で動画がシェアされます。\nこの動画をシェアしますか？")
+                .contentColorRes(R.color.namegrey)
+                .positiveText("シェアする")
+                .positiveColorRes(R.color.gocci_header)
+                .negativeText("いいえ")
+                .negativeColorRes(R.color.gocci_header)
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                        final File file = new File(Environment.getExternalStorageDirectory().toString() + "/" + key);
+                        TransferObserver transferObserver = Application_Gocci.getTransfer(context).download(Const.GET_MOVIE_BUCKET_NAME, "mp4/" + key + ".mp4", file);
+                        transferObserver.setTransferListener(new TransferListener() {
+                            @Override
+                            public void onStateChanged(int id, TransferState state) {
+                                if (state == TransferState.COMPLETED) {
+                                    TwitterUtil.performShare(context, authToken.token, authToken.secret, file, message);
+                                }
+                            }
 
-            @Override
-            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                            @Override
+                            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
 
-            }
+                            }
 
-            @Override
-            public void onError(int id, Exception ex) {
-                Toast.makeText(context, context.getString(R.string.error_share), Toast.LENGTH_SHORT).show();
-            }
-        });
+                            @Override
+                            public void onError(int id, Exception ex) {
+                                Toast.makeText(context, context.getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                })
+                .show();
     }
 
     public static void instaVideoShare(final Context context, String key) {
