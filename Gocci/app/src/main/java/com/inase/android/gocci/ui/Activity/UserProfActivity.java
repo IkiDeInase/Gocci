@@ -83,7 +83,6 @@ import com.squareup.picasso.Picasso;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthToken;
 import com.twitter.sdk.android.core.TwitterSession;
-import com.twitter.sdk.android.core.models.User;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
 import java.util.ArrayList;

@@ -31,8 +31,6 @@ import com.inase.android.gocci.event.RetryApiEvent;
 import com.inase.android.gocci.ui.activity.TimelineActivity;
 import com.inase.android.gocci.ui.activity.TutorialActivity;
 import com.inase.android.gocci.ui.view.GocciTwitterLoginButton;
-import com.inase.android.gocci.utils.SavedData;
-import com.inase.android.gocci.utils.Util;
 import com.squareup.otto.Subscribe;
 import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.Callback;

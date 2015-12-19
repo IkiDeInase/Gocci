@@ -86,7 +86,6 @@ import com.inase.android.gocci.utils.video.HlsRendererBuilder;
 import com.inase.android.gocci.utils.video.VideoPlayer;
 import com.squareup.otto.Subscribe;
 
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

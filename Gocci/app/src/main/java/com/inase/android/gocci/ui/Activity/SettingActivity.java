@@ -601,7 +601,6 @@ public class SettingActivity extends AppCompatActivity {
                         Twitter.getSessionManager().getActiveSession();
                 if (session != null) {
                     TwitterAuthToken authToken = session.getAuthToken();
-
                     API3PostUtil.setSnsLinkAsync(this, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, Const.ActivityCategory.SETTING, Const.APICategory.SET_TWITTER_LINK);
                 }
                 break;
