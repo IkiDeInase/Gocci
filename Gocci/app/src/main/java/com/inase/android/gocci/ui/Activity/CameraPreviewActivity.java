@@ -446,7 +446,7 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
                     Toast.makeText(CameraPreviewActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
                 }
                 API3PostUtil.setSnsLinkAsync(CameraPreviewActivity.this, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), Const.ActivityCategory.CAMERA_PREVIEW, Const.APICategory.SET_FACEBOOK_LINK);
-                Profile profile = Profile.getCurrentProfile();
+                //Profile profile = Profile.getCurrentProfile();
                 //String profile_img = "https://graph.facebook.com/" + profile.getId() + "/picture";
                 //String post_date = SavedData.getServerUserId(CameraPreviewActivity.this) + "_" + Util.getDateTimeString();
                 //API3PostUtil.setProfileImgAsync(CameraPreviewActivity.this, post_date, profile_img, Const.ActivityCategory.CAMERA_PREVIEW);
@@ -473,7 +473,7 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
                 mCheckTwitter.setChecked(true);
                 TwitterAuthToken authToken = result.data.getAuthToken();
                 API3PostUtil.setSnsLinkAsync(CameraPreviewActivity.this, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, Const.ActivityCategory.CAMERA_PREVIEW, Const.APICategory.SET_TWITTER_LINK);
-                String username = result.data.getUserName();
+                //String username = result.data.getUserName();
                 //String profile_img = "http://www.paper-glasses.com/api/twipi/" + username;
                 //String post_date = SavedData.getServerUserId(CameraPreviewActivity.this) + "_" + Util.getDateTimeString();
                 //API3PostUtil.setProfileImgAsync(CameraPreviewActivity.this, post_date, profile_img, Const.ActivityCategory.CAMERA_PREVIEW);

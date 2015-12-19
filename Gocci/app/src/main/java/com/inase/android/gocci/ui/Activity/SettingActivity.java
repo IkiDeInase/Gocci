@@ -422,12 +422,12 @@ public class SettingActivity extends AppCompatActivity {
         TwitterSession session =
                 Twitter.getSessionManager().getActiveSession();
         if (session != null) {
-            TwitterAuthToken authToken = session.getAuthToken();
+            //TwitterAuthToken authToken = session.getAuthToken();
             mTwitterSetting.setText(session.getUserName());
             isTwitterSetting = true;
-            if (Application_Gocci.getShareTransfer() != null) {
-                API3PostUtil.setSnsLinkAsync(SettingActivity.this, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, Const.ActivityCategory.SETTING, Const.APICategory.SET_TWITTER_LINK);
-            }
+//            if (Application_Gocci.getShareTransfer() != null) {
+//                API3PostUtil.setSnsLinkAsync(SettingActivity.this, Const.ENDPOINT_TWITTER, authToken.token + ";" + authToken.secret, Const.ActivityCategory.SETTING, Const.APICategory.SET_TWITTER_LINK);
+//            }
         } else {
             isTwitterSetting = false;
         }
@@ -436,9 +436,9 @@ public class SettingActivity extends AppCompatActivity {
         if (profile != null) {
             mFacebookSetting.setText(profile.getName());
             isFacebookSetting = true;
-            if (Application_Gocci.getShareTransfer() != null) {
-                API3PostUtil.setSnsLinkAsync(SettingActivity.this, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), Const.ActivityCategory.SETTING, Const.APICategory.SET_FACEBOOK_LINK);
-            }
+//            if (Application_Gocci.getShareTransfer() != null) {
+//                API3PostUtil.setSnsLinkAsync(SettingActivity.this, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), Const.ActivityCategory.SETTING, Const.APICategory.SET_FACEBOOK_LINK);
+//            }
         } else {
             isFacebookSetting = false;
         }
