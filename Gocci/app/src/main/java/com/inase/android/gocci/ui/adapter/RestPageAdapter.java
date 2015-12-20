@@ -94,8 +94,8 @@ public class RestPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             final View view = LayoutInflater.from(mContext).inflate(R.layout.cell_tenpo_header, parent, false);
             return new TenpoHeaderViewHolder(view);
         } else {
-            final View view = LayoutInflater.from(mContext).inflate(R.layout.cell_stream_list, parent, false);
-            return new Const.StreamViewHolder(view);
+            final View view = LayoutInflater.from(mContext).inflate(R.layout.cell_stream_rest_list, parent, false);
+            return new Const.StreamRestViewHolder(view);
         }
     }
 
@@ -106,7 +106,7 @@ public class RestPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             bindHeader((TenpoHeaderViewHolder) holder);
         } else {
             PostData users = mPostData.get(position - 1);
-            bindPost((Const.StreamViewHolder) holder, users);
+            bindPost((Const.StreamRestViewHolder) holder, users);
         }
     }
 
@@ -187,7 +187,7 @@ public class RestPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         holder.mTenpoCategory.setText(mRestData.getRest_category());
     }
 
-    private void bindPost(final Const.StreamViewHolder holder, final PostData user) {
+    private void bindPost(final Const.StreamRestViewHolder holder, final PostData user) {
         holder.mName.setText(user.getUsername());
 
         holder.mTimeText.setText(user.getPost_date());
@@ -405,6 +405,6 @@ public class RestPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         void onInstaShare(String share);
 
-        void onHashHolder(Const.StreamViewHolder holder, String post_id);
+        void onHashHolder(Const.StreamRestViewHolder holder, String post_id);
     }
 }

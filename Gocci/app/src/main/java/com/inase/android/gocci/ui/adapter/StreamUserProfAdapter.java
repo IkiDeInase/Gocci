@@ -22,7 +22,7 @@ import java.util.ArrayList;
 /**
  * Created by kinagafuji on 15/09/29.
  */
-public class StreamUserProfAdapter extends RecyclerView.Adapter<Const.StreamViewHolder> {
+public class StreamUserProfAdapter extends RecyclerView.Adapter<Const.StreamUserViewHolder> {
 
     private Context mContext;
 
@@ -52,15 +52,16 @@ public class StreamUserProfAdapter extends RecyclerView.Adapter<Const.StreamView
     }
 
     @Override
-    public Const.StreamViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        final View view = LayoutInflater.from(mContext).inflate(R.layout.cell_stream_list, parent, false);
-        return new Const.StreamViewHolder(view);
+    public Const.StreamUserViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        final View view = LayoutInflater.from(mContext).inflate(R.layout.cell_stream_user_list, parent, false);
+        return new Const.StreamUserViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(final Const.StreamViewHolder holder, final int position) {
+    public void onBindViewHolder(final Const.StreamUserViewHolder holder, final int position) {
         final PostData user = mPostData.get(position);
         holder.mName.setText(user.getRestname());
+        holder.mLocality.setText(user.getLocality());
 
         holder.mTimeText.setText(user.getPost_date());
 
@@ -218,7 +219,7 @@ public class StreamUserProfAdapter extends RecyclerView.Adapter<Const.StreamView
 
         void onInstaShare(String share);
 
-        void onStreamHashHolder(Const.StreamViewHolder holder, String post_id);
+        void onStreamHashHolder(Const.StreamUserViewHolder holder, String post_id);
 
     }
 }

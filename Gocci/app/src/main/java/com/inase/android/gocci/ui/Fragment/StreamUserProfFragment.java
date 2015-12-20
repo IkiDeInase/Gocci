@@ -60,7 +60,7 @@ public class StreamUserProfFragment extends Fragment implements AppBarLayout.OnO
     private ArrayList<PostData> mUsers = new ArrayList<>();
     private ArrayList<String> mPost_ids = new ArrayList<>();
     private StreamUserProfAdapter mStreamUserProfAdapter;
-    private ConcurrentHashMap<Const.StreamViewHolder, String> mStreamViewHolderHash;
+    private ConcurrentHashMap<Const.StreamUserViewHolder, String> mStreamViewHolderHash;
 
     private Point mDisplaySize;
     private String mPlayingPostId;
@@ -297,7 +297,7 @@ public class StreamUserProfFragment extends Fragment implements AppBarLayout.OnO
         return userData.getHls_movie();
     }
 
-    private void streamPreparePlayer(final Const.StreamViewHolder viewHolder, String path) {
+    private void streamPreparePlayer(final Const.StreamUserViewHolder viewHolder, String path) {
         if (player == null) {
             player = new VideoPlayer(new HlsRendererBuilder(getActivity(), com.google.android.exoplayer.util.Util.getUserAgent(getActivity(), "Gocci"), path));
             player.addListener(new VideoPlayer.Listener() {
@@ -381,13 +381,13 @@ public class StreamUserProfFragment extends Fragment implements AppBarLayout.OnO
         if (!userData.getPost_id().equals(mPlayingPostId)) {
 
             // 前回の動画再生停止処理
-            final Const.StreamViewHolder oldViewHolder = getStreamPlayingViewHolder();
+            final Const.StreamUserViewHolder oldViewHolder = getStreamPlayingViewHolder();
             if (oldViewHolder != null) {
                 oldViewHolder.mVideoThumbnail.setVisibility(View.VISIBLE);
             }
 
             mPlayingPostId = userData.getPost_id();
-            final Const.StreamViewHolder currentViewHolder = getStreamPlayingViewHolder();
+            final Const.StreamUserViewHolder currentViewHolder = getStreamPlayingViewHolder();
             if (mPlayBlockFlag) {
                 return;
             }
@@ -400,10 +400,10 @@ public class StreamUserProfFragment extends Fragment implements AppBarLayout.OnO
         }
     }
 
-    private Const.StreamViewHolder getStreamPlayingViewHolder() {
-        Const.StreamViewHolder viewHolder = null;
+    private Const.StreamUserViewHolder getStreamPlayingViewHolder() {
+        Const.StreamUserViewHolder viewHolder = null;
         if (mPlayingPostId != null) {
-            for (Map.Entry<Const.StreamViewHolder, String> entry : mStreamViewHolderHash.entrySet()) {
+            for (Map.Entry<Const.StreamUserViewHolder, String> entry : mStreamViewHolderHash.entrySet()) {
                 if (entry.getValue().equals(mPlayingPostId)) {
                     viewHolder = entry.getKey();
                     break;
@@ -482,7 +482,7 @@ public class StreamUserProfFragment extends Fragment implements AppBarLayout.OnO
     }
 
     @Override
-    public void onStreamHashHolder(Const.StreamViewHolder holder, String post_id) {
+    public void onStreamHashHolder(Const.StreamUserViewHolder holder, String post_id) {
         mStreamViewHolderHash.put(holder, post_id);
     }
 }

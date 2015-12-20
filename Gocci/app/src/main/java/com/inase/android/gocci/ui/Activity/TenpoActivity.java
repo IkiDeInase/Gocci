@@ -134,7 +134,7 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
     private Point mDisplaySize;
     private String mPlayingPostId;
     private boolean mPlayBlockFlag;
-    private ConcurrentHashMap<Const.StreamViewHolder, String> mViewHolderHash;  // Value: PosterId
+    private ConcurrentHashMap<Const.StreamRestViewHolder, String> mViewHolderHash;  // Value: PosterId
 
     private boolean isExist = false;
     private boolean isSee = false;
@@ -562,7 +562,7 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
         return userData.getHls_movie();
     }
 
-    private void preparePlayer(final Const.StreamViewHolder viewHolder, String path) {
+    private void preparePlayer(final Const.StreamRestViewHolder viewHolder, String path) {
         if (player == null) {
             player = new VideoPlayer(new HlsRendererBuilder(this, com.google.android.exoplayer.util.Util.getUserAgent(this, "Gocci"), path));
             player.addListener(new VideoPlayer.Listener() {
@@ -644,13 +644,13 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
         if (!userData.getPost_id().equals(mPlayingPostId)) {
 
             // 前回の動画再生停止処理
-            final Const.StreamViewHolder oldViewHolder = getPlayingViewHolder();
+            final Const.StreamRestViewHolder oldViewHolder = getPlayingViewHolder();
             if (oldViewHolder != null) {
                 oldViewHolder.mVideoThumbnail.setVisibility(View.VISIBLE);
             }
 
             mPlayingPostId = userData.getPost_id();
-            final Const.StreamViewHolder currentViewHolder = getPlayingViewHolder();
+            final Const.StreamRestViewHolder currentViewHolder = getPlayingViewHolder();
             if (mPlayBlockFlag) {
                 return;
             }
@@ -668,10 +668,10 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
      *
      * @return
      */
-    private Const.StreamViewHolder getPlayingViewHolder() {
-        Const.StreamViewHolder viewHolder = null;
+    private Const.StreamRestViewHolder getPlayingViewHolder() {
+        Const.StreamRestViewHolder viewHolder = null;
         if (mPlayingPostId != null) {
-            for (Map.Entry<Const.StreamViewHolder, String> entry : mViewHolderHash.entrySet()) {
+            for (Map.Entry<Const.StreamRestViewHolder, String> entry : mViewHolderHash.entrySet()) {
                 if (entry.getValue().equals(mPlayingPostId)) {
                     viewHolder = entry.getKey();
                     break;
@@ -858,7 +858,7 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
     }
 
     @Override
-    public void onHashHolder(Const.StreamViewHolder holder, String post_id) {
+    public void onHashHolder(Const.StreamRestViewHolder holder, String post_id) {
         mViewHolderHash.put(holder, post_id);
     }
 

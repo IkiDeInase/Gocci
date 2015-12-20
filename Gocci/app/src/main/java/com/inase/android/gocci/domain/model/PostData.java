@@ -24,6 +24,7 @@ public class PostData {
 
     private static final String TAG_LON = "lon";
     private static final String TAG_LAT = "lat";
+    private static final String TAG_LOCALITY = "locality";
     private static final String TAG_MP4_MOVIE = "mp4_movie";
     private static final String TAG_HLS_MOVIE = "hls_movie";
     private static final String TAG_GOCHI_NUM = "gochi_num";
@@ -56,6 +57,8 @@ public class PostData {
     private int gochi_flag;
     private int comment_num;
 
+    private String locality;
+
     public PostData() {
     }
 
@@ -85,7 +88,7 @@ public class PostData {
     //ユーザー
     public PostData(String post_id, String movie, String thumbnail, String category,
                     String value, String memo, String post_date, int cheer_flag, String post_rest_id,
-                    String restname, double lon, double lat, String mp4_movie, String hls_movie,
+                    String restname, double lon, double lat, String locality, String mp4_movie, String hls_movie,
                     int gochi_num, int gochi_flag, int comment_num) {
         this.post_id = post_id;
         this.movie = movie;
@@ -99,6 +102,7 @@ public class PostData {
         this.restname = restname;
         this.lon = lon;
         this.lat = lat;
+        this.locality = locality;
         this.mp4_movie = mp4_movie;
         this.hls_movie = hls_movie;
         this.gochi_num = gochi_num;
@@ -120,6 +124,7 @@ public class PostData {
             String restname = jsonObject.getString(TAG_RESTNAME);
             double lon = jsonObject.getDouble(TAG_LON);
             double lat = jsonObject.getDouble(TAG_LAT);
+            String locality = jsonObject.getString(TAG_LOCALITY);
             String mp4_movie = jsonObject.getString(TAG_MP4_MOVIE);
             String hls_movie = jsonObject.getString(TAG_HLS_MOVIE);
             int gochi_num = jsonObject.getInt(TAG_GOCHI_NUM);
@@ -128,7 +133,7 @@ public class PostData {
 
             return new PostData(post_id, movie, thumbnail, category, value,
                     memo, post_date, cheer_flag, post_rest_id, restname, lon, lat,
-                    mp4_movie, hls_movie, gochi_num, gochi_flag, comment_num);
+                    locality, mp4_movie, hls_movie, gochi_num, gochi_flag, comment_num);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -323,5 +328,13 @@ public class PostData {
 
     public void setHls_movie(String hls_movie) {
         this.hls_movie = hls_movie;
+    }
+
+    public String getLocality() {
+        return locality;
+    }
+
+    public void setLocality(String locality) {
+        this.locality = locality;
     }
 }
