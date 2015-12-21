@@ -83,7 +83,7 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
                 if (localCode == null) {
                     mPresenter.loginUser(Const.APICategory.AUTH_LOGIN, API3.Util.getAuthLoginAPI(mIdentityId));
                 } else {
-                    Toast.makeText(this, getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, API3.Util.AuthLoginLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
                 }
             } else {
                 if (checkPlayServices()) {

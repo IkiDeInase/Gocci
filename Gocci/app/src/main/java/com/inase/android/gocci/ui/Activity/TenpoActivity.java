@@ -263,7 +263,7 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
         if (localCode == null) {
             mPresenter.getRestData(Const.APICategory.GET_REST_FIRST, API3.Util.getGetRestAPI(mRest_id));
         } else {
-            Toast.makeText(this, getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, API3.Util.GetRestLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
         }
 
         result = new DrawerBuilder()
@@ -409,7 +409,7 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
                     if (localCode == null) {
                         mPresenter.getRestData(Const.APICategory.GET_REST_REFRESH, API3.Util.getGetRestAPI(mRest_id));
                     } else {
-                        Toast.makeText(TenpoActivity.this, getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(TenpoActivity.this, API3.Util.GetRestLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
                     }
                 } else {
                     Toast.makeText(TenpoActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
@@ -745,7 +745,7 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
         if (postGochiLocalCode == null) {
             mPresenter.postGochi(Const.APICategory.SET_GOCHI, API3.Util.getSetGochiAPI(post_id), post_id);
         } else {
-            Toast.makeText(this, getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, API3.Util.SetGochiLocalCodeMessageTable(postGochiLocalCode), Toast.LENGTH_SHORT).show();
         }
     }
 

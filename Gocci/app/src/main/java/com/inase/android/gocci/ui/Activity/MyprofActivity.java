@@ -278,7 +278,7 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
         if (localCode == null) {
             mPresenter.getProfData(Const.APICategory.GET_USER_FIRST, API3.Util.getGetUserAPI(SavedData.getServerUserId(this)));
         } else {
-            Toast.makeText(this, getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, API3.Util.GetUserLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
         }
 
         mToolBar.setLogo(R.drawable.ic_gocci_moji_white45);
@@ -498,7 +498,7 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
             if (localCode == null) {
                 mPresenter.getProfData(Const.APICategory.GET_USER_REFRESH, API3.Util.getGetUserAPI(SavedData.getServerUserId(this)));
             } else {
-                Toast.makeText(this, getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, API3.Util.GetUserLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
             }
         } else {
             mNotificationNumber.setVisibility(View.VISIBLE);
@@ -950,7 +950,7 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
         if (localCode == null) {
             mPresenter.getProfData(Const.APICategory.GET_USER_REFRESH, API3.Util.getGetUserAPI(SavedData.getServerUserId(this)));
         } else {
-            Toast.makeText(this, getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, API3.Util.GetUserLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -1083,7 +1083,7 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
         if (postGochiLocalCode == null) {
             mPresenter.postGochi(Const.APICategory.SET_GOCHI, API3.Util.getSetGochiAPI(post_id), post_id);
         } else {
-            Toast.makeText(this, getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, API3.Util.SetGochiLocalCodeMessageTable(postGochiLocalCode), Toast.LENGTH_SHORT).show();
         }
     }
 

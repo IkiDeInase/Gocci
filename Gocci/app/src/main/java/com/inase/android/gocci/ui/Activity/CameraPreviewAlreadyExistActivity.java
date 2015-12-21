@@ -360,7 +360,7 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
                         if (localCode == null) {
                             mPresenter.getNearData(Const.APICategory.GET_NEAR_FIRST, API3.Util.getGetNearAPI(mLatitude, mLongitude));
                         } else {
-                            Toast.makeText(CameraPreviewAlreadyExistActivity.this, getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CameraPreviewAlreadyExistActivity.this, API3.Util.GetNearLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
                         }
                         SavedData.setLat(CameraPreviewAlreadyExistActivity.this, mLatitude);
                         SavedData.setLon(CameraPreviewAlreadyExistActivity.this, mLongitude);

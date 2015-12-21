@@ -89,7 +89,7 @@ public class NotificationListView extends RelativeLayout implements
         if (localCode == null) {
             mPresenter.getNoticeData(Const.APICategory.GET_NOTICE_FIRST, API3.Util.getGetNoticeAPI());
         } else {
-            Toast.makeText(context, context.getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, API3.Util.GetNoticeLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
         }
     }
 

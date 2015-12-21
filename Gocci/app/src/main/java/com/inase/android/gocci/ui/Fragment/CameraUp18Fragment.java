@@ -432,7 +432,7 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
         if (localCode == null) {
             mPresenter.getNearData(Const.APICategory.GET_NEAR_FIRST, API3.Util.getGetNearAPI(latitude, longitude));
         } else {
-            Toast.makeText(getActivity(), getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), API3.Util.GetNearLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
         }
     }
 

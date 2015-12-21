@@ -308,7 +308,7 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
                         if (localCode == null) {
                             mPresenter.getNearData(Const.APICategory.GET_NEAR_FIRST, API3.Util.getGetNearAPI(mLatitude, mLongitude));
                         } else {
-                            Toast.makeText(CameraPreviewActivity.this, getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CameraPreviewActivity.this, API3.Util.GetNearLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
                         }
                         SavedData.setLat(CameraPreviewActivity.this, mLatitude);
                         SavedData.setLon(CameraPreviewActivity.this, mLongitude);
