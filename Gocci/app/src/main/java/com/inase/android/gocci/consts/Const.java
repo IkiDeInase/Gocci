@@ -139,6 +139,8 @@ public class Const {
         public AspectRatioFrameLayout mAspectFrame;
         @Bind(R.id.overlay_footer)
         public ImageView mOverlay;
+        @Bind(R.id.circle_image)
+        public ImageView mCircleImage;
         @Bind(R.id.restname)
         public TextView mRestname;
         @Bind(R.id.distance)

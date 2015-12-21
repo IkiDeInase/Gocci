@@ -20,6 +20,7 @@ public class TwoCellData {
     private static final String TAG_POST_DATE = "post_date";
     private static final String TAG_MP4_MOVIE = "mp4_movie";
     private static final String TAG_HLS_MOVIE = "hls_movie";
+    private static final String TAG_PROFILE_IMG = "profile_img";
 
     private static final String TAG_DISTANCE = "distance";
 
@@ -35,6 +36,7 @@ public class TwoCellData {
     private String post_date;
     private String mp4_movie;
     private String hls_movie;
+    private String profile_img;
 
     private int distance;
 
@@ -43,7 +45,7 @@ public class TwoCellData {
 
     public TwoCellData(String post_id, String movie, String thumbnail, String post_rest_id, String restname,
                        String post_user_id, String username, int cheer_flag, int gochi_flag, String post_date, String mp4_movie, String hls_movie,
-                       int distance) {
+                       String profile_img, int distance) {
         this.post_id = post_id;
         this.movie = movie;
         this.thumbnail = thumbnail;
@@ -56,11 +58,12 @@ public class TwoCellData {
         this.post_date = post_date;
         this.mp4_movie = mp4_movie;
         this.hls_movie = hls_movie;
+        this.profile_img = profile_img;
         this.distance = distance;
     }
 
     public TwoCellData(String post_id, String movie, String thumbnail, String post_rest_id, String restname,
-                       String post_user_id, String username, int cheer_flag, int gochi_flag, String post_date, String mp4_movie, String hls_movie) {
+                       String post_user_id, String username, int cheer_flag, int gochi_flag, String post_date, String mp4_movie, String hls_movie, String profile_img) {
         this.post_id = post_id;
         this.movie = movie;
         this.thumbnail = thumbnail;
@@ -73,6 +76,7 @@ public class TwoCellData {
         this.post_date = post_date;
         this.mp4_movie = mp4_movie;
         this.hls_movie = hls_movie;
+        this.profile_img = profile_img;
     }
 
     public static TwoCellData createPostData(JSONObject jsonObject) {
@@ -89,14 +93,15 @@ public class TwoCellData {
             String post_date = jsonObject.getString(TAG_POST_DATE);
             String mp4_movie = jsonObject.getString(TAG_MP4_MOVIE);
             String hls_movie = jsonObject.getString(TAG_HLS_MOVIE);
+            String profile_img = jsonObject.getString(TAG_PROFILE_IMG);
 
             if (jsonObject.has(TAG_DISTANCE)) {
                 int distance = jsonObject.getInt(TAG_DISTANCE);
                 return new TwoCellData(post_id, movie, thumbnail, post_rest_id, restname,
-                        post_user_id, username, cheer_flag, gochi_flag, post_date, mp4_movie, hls_movie, distance);
+                        post_user_id, username, cheer_flag, gochi_flag, post_date, mp4_movie, hls_movie, profile_img, distance);
             } else {
                 return new TwoCellData(post_id, movie, thumbnail, post_rest_id, restname,
-                        post_user_id, username, cheer_flag, gochi_flag, post_date, mp4_movie, hls_movie);
+                        post_user_id, username, cheer_flag, gochi_flag, post_date, mp4_movie, hls_movie, profile_img);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -206,5 +211,13 @@ public class TwoCellData {
 
     public void setGochi_flag(int gochi_flag) {
         this.gochi_flag = gochi_flag;
+    }
+
+    public String getProfile_img() {
+        return profile_img;
+    }
+
+    public void setProfile_img(String profile_img) {
+        this.profile_img = profile_img;
     }
 }

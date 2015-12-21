@@ -12,6 +12,7 @@ import com.cocosw.bottomsheet.BottomSheet;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.domain.model.TwoCellData;
+import com.inase.android.gocci.ui.view.RoundedTransformation;
 import com.inase.android.gocci.utils.Util;
 import com.squareup.picasso.Picasso;
 
@@ -75,6 +76,12 @@ public class TimelineAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
                 .resize(mCellSize, mCellSize)
                 .centerCrop()
                 .into(holder.mSquareImage);
+
+        Picasso.with(mContext)
+                .load(user.getProfile_img())
+                .placeholder(R.drawable.ic_userpicture)
+                .transform(new RoundedTransformation())
+                .into(holder.mCircleImage);
 
         holder.mOverlay.setMinimumHeight(mCellSize / 3);
 

@@ -74,6 +74,8 @@ public class GridProfAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
                 .centerCrop()
                 .into(holder.mSquareImage);
 
+        holder.mCircleImage.setVisibility(View.GONE);
+
         holder.mOverlay.setMinimumHeight(mCellSize / 3);
 
         holder.mDistance.setText(user.getPost_date());
