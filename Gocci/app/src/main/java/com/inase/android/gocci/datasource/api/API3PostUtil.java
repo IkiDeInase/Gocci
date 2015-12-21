@@ -66,7 +66,7 @@ public class API3PostUtil {
                     }
                 });
             } else {
-                Toast.makeText(context, context.getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, API3.Util.SetFeedbackLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
             }
         } else {
             Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
@@ -105,7 +105,7 @@ public class API3PostUtil {
                     }
                 });
             } else {
-                Toast.makeText(context, context.getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, API3.Util.SetPost_BlockLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
             }
         } else {
             Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
@@ -144,7 +144,7 @@ public class API3PostUtil {
                     }
                 });
             } else {
-                Toast.makeText(context, context.getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, API3.Util.UnsetPostLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
             }
         } else {
             Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
@@ -184,7 +184,7 @@ public class API3PostUtil {
                     }
                 });
             } else {
-                Toast.makeText(context, context.getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, API3.Util.SetPasswordLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
             }
         } else {
             Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
@@ -228,7 +228,7 @@ public class API3PostUtil {
                     }
                 });
             } else {
-                Toast.makeText(context, context.getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, API3.Util.SetRestLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
             }
         } else {
             Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
@@ -267,7 +267,7 @@ public class API3PostUtil {
                     }
                 });
             } else {
-                Toast.makeText(context, context.getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, API3.Util.SetSns_LinkLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
             }
         } else {
             Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
@@ -306,7 +306,7 @@ public class API3PostUtil {
                     }
                 });
             } else {
-                Toast.makeText(context, context.getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, API3.Util.UnsetSns_LinkLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
             }
         } else {
             Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
@@ -345,7 +345,7 @@ public class API3PostUtil {
                     }
                 });
             } else {
-                Toast.makeText(context, context.getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, API3.Util.SetDeviceLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
             }
         } else {
             Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
@@ -384,7 +384,7 @@ public class API3PostUtil {
                     }
                 });
             } else {
-                Toast.makeText(context, context.getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, API3.Util.UnsetDeviceLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
             }
         } else {
             Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
@@ -424,7 +424,7 @@ public class API3PostUtil {
                     }
                 });
             } else {
-                Toast.makeText(context, context.getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, API3.Util.SetUsernameLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
             }
         } else {
             Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
@@ -474,7 +474,7 @@ public class API3PostUtil {
                                 }
                             });
                         } else {
-                            Toast.makeText(context, context.getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, API3.Util.SetProfile_ImgLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
@@ -551,7 +551,7 @@ public class API3PostUtil {
                                         }
                                     });
                                 } else {
-                                    Toast.makeText(context, context.getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(context, API3.Util.SetProfile_ImgLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
                                 }
                             }
                         }
@@ -618,7 +618,7 @@ public class API3PostUtil {
                     }
                 });
             } else {
-                Toast.makeText(context, context.getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, API3.Util.SetPostLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
                 BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.LOCALERROR, activityCategory, Const.APICategory.SET_POST, memo));
             }
         } else {
@@ -658,7 +658,7 @@ public class API3PostUtil {
                     }
                 });
             } else {
-                Toast.makeText(context, context.getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, API3.Util.SetWantLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
             }
         } else {
             Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
@@ -697,7 +697,7 @@ public class API3PostUtil {
                     }
                 });
             } else {
-                Toast.makeText(context, context.getString(R.string.cheat_input), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, API3.Util.UnsetWantLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
             }
         } else {
             Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
