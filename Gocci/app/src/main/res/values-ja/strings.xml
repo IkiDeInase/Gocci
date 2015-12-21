@@ -129,7 +129,7 @@
     <string name="nothing_etc">その他メニューはありません</string>
 
     <string name="do_follow">フォローする</string>
-    <string name="do_unfollow">フォロー解除する</string>
+    <string name="do_unfollow">フォローしています</string>
     <string name="do_yours">これはあなたです</string>
 
     <string name="do_post">投稿する</string>
