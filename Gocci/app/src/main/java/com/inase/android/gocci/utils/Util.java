@@ -33,6 +33,7 @@ import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3PostUtil;
+import com.inase.android.gocci.utils.share.TwitterUtil;
 import com.twitter.sdk.android.core.TwitterAuthToken;
 
 import java.io.File;

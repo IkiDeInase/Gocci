@@ -9,8 +9,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.inase.android.gocci.R;
-import com.inase.android.gocci.utils.AbstractPathAnimator;
-import com.inase.android.gocci.utils.PathAnimator;
+import com.inase.android.gocci.utils.animator.AbstractPathAnimator;
+import com.inase.android.gocci.utils.animator.PathAnimator;
 
 import java.util.Random;
 

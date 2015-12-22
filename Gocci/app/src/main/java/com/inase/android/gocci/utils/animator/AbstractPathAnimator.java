@@ -1,4 +1,4 @@
-package com.inase.android.gocci.utils;
+package com.inase.android.gocci.utils.animator;
 
 import android.content.res.Resources;
 import android.content.res.TypedArray;

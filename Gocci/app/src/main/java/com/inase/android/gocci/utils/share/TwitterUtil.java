@@ -1,4 +1,4 @@
-package com.inase.android.gocci.utils;
+package com.inase.android.gocci.utils.share;
 
 import android.content.Context;
 import android.util.Base64;

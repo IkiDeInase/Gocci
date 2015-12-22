@@ -1,6 +1,6 @@
 package com.inase.android.gocci.utils.encode;
 
-import com.inase.android.gocci.utils.TwitterUtil;
+import com.inase.android.gocci.utils.share.TwitterUtil;
 
 import java.io.Serializable;
 import java.util.Collection;

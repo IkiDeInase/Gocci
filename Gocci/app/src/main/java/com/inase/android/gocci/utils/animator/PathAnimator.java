@@ -1,4 +1,4 @@
-package com.inase.android.gocci.utils;
+package com.inase.android.gocci.utils.animator;
 
 import android.graphics.Matrix;
 import android.graphics.Path;
