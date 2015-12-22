@@ -620,7 +620,13 @@ public abstract class TLMediaEncoder {
     protected void encode(final ByteBuffer buffer, int length, long presentationTimeUs) {
         if (!mIsRunning || !isRecording()) return;
         while (mIsRunning) {
-            final int inputBufferIndex = mMediaCodec.dequeueInputBuffer(TIMEOUT_USEC);
+            final int inputBufferIndex;
+            try {
+                 inputBufferIndex = mMediaCodec.dequeueInputBuffer(TIMEOUT_USEC);
+            } catch (IllegalStateException e) {
+                e.printStackTrace();
+                break;
+            }
             if (inputBufferIndex >= 0) {
                 final ByteBuffer inputBuffer = encoderInputBuffers[inputBufferIndex];
                 inputBuffer.clear();
@@ -662,6 +668,7 @@ public abstract class TLMediaEncoder {
             try {
                 encoderStatus = mMediaCodec.dequeueOutputBuffer(mBufferInfo, TIMEOUT_USEC);
             } catch (IllegalStateException e) {
+                e.printStackTrace();
                 break;
             }
             if (encoderStatus == MediaCodec.INFO_TRY_AGAIN_LATER) {
@@ -789,6 +796,7 @@ public abstract class TLMediaEncoder {
                 }
         } catch (Exception e) {
             // ignore
+            e.printStackTrace();
         }
         mSequence = sequence;
         mConfigFormat = configFormat;
