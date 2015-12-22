@@ -247,6 +247,7 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
         recorderManager = new RecorderManager(getCameraManager(), mCameraView, getActivity());
 
         mCircleProgress.setValue(0);
+        mCircleProgress.setBarColor(getResources().getColor(R.color.gocci_1), getResources().getColor(R.color.gocci_2), getResources().getColor(R.color.gocci_3), getResources().getColor(R.color.gocci_4));
 
         mScaleSpring = mSpringSystem.createSpring();
 
@@ -404,12 +405,7 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
         handler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
-                if (msg.arg1 < 7000) {
-                    // System.out.println("Clickable");
-                    // finishButton.setClickable(true);
-                    // finishButton
-                    // .setBackgroundResource(R.drawable.btn_capture_arrow);
-                } else {
+                if (msg.arg1 >= 7000) {
                     mProgressWheel.setVisibility(View.VISIBLE);
 
                     if (!isFinish) {

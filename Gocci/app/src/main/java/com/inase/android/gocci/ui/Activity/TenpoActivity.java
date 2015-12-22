@@ -949,7 +949,7 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
         mGochi.post(new Runnable() {
             @Override
             public void run() {
-                mGochi.addGochi(R.drawable.ic_icon_beef_orange, pointX, y);
+                mGochi.addGochi(pointX, y);
             }
         });
     }

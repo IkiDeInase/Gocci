@@ -241,6 +241,7 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
         mCameraView.setVideoSize(480, 480);
 
         mCircleProgress.setValue(0);
+        mCircleProgress.setBarColor(getResources().getColor(R.color.gocci_1), getResources().getColor(R.color.gocci_2), getResources().getColor(R.color.gocci_3), getResources().getColor(R.color.gocci_4));
 
         mScaleSpring = mSpringSystem.createSpring();
 
@@ -361,9 +362,7 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
             @Override
             public void handleMessage(Message msg) {
 
-                if (msg.arg1 < 7000) {
-
-                } else {
+                if (msg.arg1 >= 7000) {
                     mProgressWheel.setVisibility(View.VISIBLE);
                     //onFinishPressed();
                     if (!isFinish) {

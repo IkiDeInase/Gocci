@@ -23,6 +23,8 @@ public class GochiLayout extends RelativeLayout {
     private AttributeSet attrs = null;
     private int defStyleAttr = 0;
 
+    private Random mRandom = new Random();
+
     public GochiLayout(Context context) {
         super(context);
     }
@@ -65,12 +67,32 @@ public class GochiLayout extends RelativeLayout {
         removeAllViews();
     }
 
-    public void addGochi(int ResourceId, float initX, float initY) {
+    public void addGochi(float initX, float initY) {
+        int ResourceId = getResourceId();
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), ResourceId);
 
         init(attrs, defStyleAttr, initX, initY, bitmap.getWidth(), bitmap.getWidth());
         ImageView imageView = new ImageView(getContext());
         imageView.setImageResource(ResourceId);
         mAnimator.start(imageView, this);
+    }
+
+    private int getResourceId() {
+        int resId = 0;
+        switch (mRandom.nextInt(4)) {
+            case 0:
+                resId = R.drawable.ic_icon_beef_orange;
+                break;
+            case 1:
+                resId = R.drawable.ic_icon_beef_orange2;
+                break;
+            case 2:
+                resId = R.drawable.ic_icon_beef_orange3;
+                break;
+            case 3:
+                resId = R.drawable.ic_icon_beef_orange4;
+                break;
+        }
+        return resId;
     }
 }
