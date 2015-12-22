@@ -64,6 +64,9 @@ public class Application_Gocci extends Application {
 
     private static boolean isDeny = false;
 
+    private static int sRetryCount = 0;
+    private static final int MAX_RETRY_COUNT = 4;
+
     public static void getJsonSync(String url, JsonHttpResponseHandler responseHandler) {
         sSyncHttpClient.setCookieStore(SavedData.getCookieStore(getInstance().getApplicationContext()));
         sSyncHttpClient.setUserAgent("GocciTest/" + Const.OS + "/" + BuildConfig.VERSION_NAME + " API/" + API3.Util.version + " (" + Build.MODEL + "/" + Build.VERSION.RELEASE + ")");
@@ -293,71 +296,79 @@ public class Application_Gocci extends Application {
     }
 
     public static void resolveOrHandleGlobalError(final Context context, final Const.APICategory api, API3.Util.GlobalCode globalCode) {
-        switch (globalCode) {
-            case ERROR_SESSION_EXPIRED:
-                //ログインとコグニートリフレッシュ　→　リトライ
-                getJsonAsync(API3.Util.getAuthLoginAPI(SavedData.getIdentityId(context)), new JsonHttpResponseHandler() {
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        API3.Impl.getRepository().AuthLoginResponse(response, new API3.PayloadResponseCallback() {
-                            @Override
-                            public void onSuccess(JSONObject jsonObject) {
-                                //リフレッシュ&リトライ
-                                new AsyncTask<Void, Void, Void>() {
+        if (sRetryCount < MAX_RETRY_COUNT) {
+            sRetryCount++;
+            switch (globalCode) {
+                case ERROR_SESSION_EXPIRED:
+                    //ログインとコグニートリフレッシュ　→　リトライ
+                    getJsonAsync(API3.Util.getAuthLoginAPI(SavedData.getIdentityId(context)), new JsonHttpResponseHandler() {
+                        @Override
+                        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                            API3.Impl.getRepository().AuthLoginResponse(response, new API3.PayloadResponseCallback() {
+                                @Override
+                                public void onSuccess(JSONObject jsonObject) {
+                                    //リフレッシュ&リトライ
+                                    new AsyncTask<Void, Void, Void>() {
+                                        @Override
+                                        protected Void doInBackground(Void... params) {
+                                            credentialsProvider.refresh();
+                                            return null;
+                                        }
+                                    }.execute();
+                                    createS3(context);
+                                    BusHolder.get().post(new RetryApiEvent(api));
+                                    sRetryCount = 0;
+                                }
+
+                                @Override
+                                public void onGlobalError(API3.Util.GlobalCode globalCode) {
+                                    resolveOrHandleGlobalError(context, api, globalCode);
+                                }
+
+                                @Override
+                                public void onLocalError(String errorMessage) {
+                                    Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
+                    });
+                    break;
+                case ERROR_CLIENT_OUTDATED:
+                    //アップデートダイアログ
+                    if (!isDeny) {
+                        new MaterialDialog.Builder(context)
+                                .title("アップデートのお願い")
+                                .titleColorRes(R.color.namegrey)
+                                .content("新しいバージョンが出ました。\n\n"
+                                        + "アップデートを許可しますか？")
+                                .contentColorRes(R.color.nameblack)
+                                .cancelable(false)
+                                .positiveText("アップデートする").positiveColorRes(R.color.gocci_header)
+                                .negativeText("いいえ").negativeColorRes(R.color.gocci_header)
+                                .onPositive(new MaterialDialog.SingleButtonCallback() {
                                     @Override
-                                    protected Void doInBackground(Void... params) {
-                                        credentialsProvider.refresh();
-                                        return null;
+                                    public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                                        sRetryCount = 0;
+                                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + BuildConfig.APPLICATION_ID));
+                                        context.startActivity(intent);
                                     }
-                                }.execute();
-                                createS3(context);
-                                BusHolder.get().post(new RetryApiEvent(api));
-                            }
-
-                            @Override
-                            public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                resolveOrHandleGlobalError(context, api, globalCode);
-                            }
-
-                            @Override
-                            public void onLocalError(String errorMessage) {
-                                Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show();
-                            }
-                        });
+                                })
+                                .onNegative(new MaterialDialog.SingleButtonCallback() {
+                                    @Override
+                                    public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                                        isDeny = true;
+                                        sRetryCount = 0;
+                                        Toast.makeText(context, "Gocciのサービスが正常に使えなくなります", Toast.LENGTH_SHORT).show();
+                                    }
+                                }).show();
                     }
-                });
-                break;
-            case ERROR_CLIENT_OUTDATED:
-                //アップデートダイアログ
-                if (!isDeny) {
-                    new MaterialDialog.Builder(context)
-                            .title("アップデートのお願い")
-                            .titleColorRes(R.color.namegrey)
-                            .content("新しいバージョンが出ました。\n\n"
-                                    + "アップデートを許可しますか？")
-                            .contentColorRes(R.color.nameblack)
-                            .cancelable(false)
-                            .positiveText("アップデートする").positiveColorRes(R.color.gocci_header)
-                            .negativeText("いいえ").negativeColorRes(R.color.gocci_header)
-                            .onPositive(new MaterialDialog.SingleButtonCallback() {
-                                @Override
-                                public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
-                                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + BuildConfig.APPLICATION_ID));
-                                    context.startActivity(intent);
-                                }
-                            })
-                            .onNegative(new MaterialDialog.SingleButtonCallback() {
-                                @Override
-                                public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
-                                    isDeny = true;
-                                    Toast.makeText(context, "Gocciのサービスが正常に使えなくなります", Toast.LENGTH_SHORT).show();
-                                }
-                            }).show();
-                }
-                break;
-            case ERROR_UNKNOWN_ERROR:
-                Toast.makeText(context, "情報を取得できませんでした。", Toast.LENGTH_LONG).show();
-                break;
+                    break;
+                case ERROR_UNKNOWN_ERROR:
+                    Toast.makeText(context, "情報を取得できませんでした。", Toast.LENGTH_LONG).show();
+                    break;
+            }
+        } else {
+            throw new IllegalStateException("サーバーでエラーが発生しました");
         }
     }
 
