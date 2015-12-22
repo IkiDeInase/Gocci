@@ -45,6 +45,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import at.grabner.circleprogress.CircleProgressView;
 import cz.msebera.android.httpclient.Header;
 import io.fabric.sdk.android.Fabric;
 
@@ -271,12 +272,12 @@ public class Application_Gocci extends Application {
         }.execute();
     }
 
-    public static void postingVideoToS3(final Context context, String mAwsPostName, File mVideoFile) {
+    public static void postingVideoToS3(final Context context, final String mAwsPostName, File mVideoFile, final CircleProgressView progressWheel, final Const.ActivityCategory activityCategory) {
         final TransferObserver transferObserver = getTransfer(context).upload(Const.POST_MOVIE_BUCKET_NAME, mAwsPostName + ".mp4", mVideoFile);
         transferObserver.setTransferListener(new TransferListener() {
             @Override
             public void onStateChanged(int id, TransferState state) {
-                if (state == TransferState.IN_PROGRESS) {
+                if (state == TransferState.FAILED || state == TransferState.CANCELED) {
                     SavedData.setPostingId(context, id);
                 } else if (state == TransferState.COMPLETED) {
                     SavedData.setPostingId(context, 0);
@@ -285,7 +286,8 @@ public class Application_Gocci extends Application {
 
             @Override
             public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
-
+                int progress = Math.round(100 * ((float) bytesCurrent / bytesTotal));
+                progressWheel.setValueAnimated(progress);
             }
 
             @Override

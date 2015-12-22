@@ -56,7 +56,6 @@ import com.inase.android.gocci.ui.view.SquareVideoView;
 import com.inase.android.gocci.utils.SavedData;
 import com.inase.android.gocci.utils.Util;
 import com.inase.android.gocci.utils.share.TwitterUtil;
-import com.pnikosis.materialishprogress.ProgressWheel;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.squareup.otto.Subscribe;
@@ -72,6 +71,7 @@ import com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner;
 import java.io.File;
 import java.util.ArrayList;
 
+import at.grabner.circleprogress.CircleProgressView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -96,7 +96,7 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
     @Bind(R.id.toukou_button_ripple)
     RippleView mToukouButtonRipple;
     @Bind(R.id.progress_wheel)
-    ProgressWheel mProgressWheel;
+    CircleProgressView mProgressWheel;
     @Bind(R.id.add_rest_text)
     TextView mAddRestText;
     @Bind(R.id.check_twitter)
@@ -299,6 +299,29 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
 
         mVideoFile = new File(mVideoUrl);
 
+        mProgressWheel.setValue(0);
+        mProgressWheel.setBarColor(getResources().getColor(R.color.gocci_1), getResources().getColor(R.color.gocci_2), getResources().getColor(R.color.gocci_3), getResources().getColor(R.color.gocci_4));
+        mProgressWheel.setOnProgressChangedListener(new CircleProgressView.OnProgressChangedListener() {
+            @Override
+            public void onProgressChanged(float value) {
+                if (value == 100.0) {
+                    mProgressWheel.setVisibility(View.INVISIBLE);
+                    Toast.makeText(CameraPreviewAlreadyExistActivity.this, getString(R.string.videoposting_message), Toast.LENGTH_LONG).show();
+
+                    SharedPreferences prefs = getSharedPreferences("movie", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.clear();
+                    editor.apply();
+
+                    Intent intent = new Intent(CameraPreviewAlreadyExistActivity.this, TimelineActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                    finish();
+                }
+            }
+        });
+
         FacebookSdk.sdkInitialize(getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
         shareDialog = new ShareDialog(this);
@@ -425,7 +448,6 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
                             }
                         }
                         API3PostUtil.setPostAsync(CameraPreviewAlreadyExistActivity.this, Const.ActivityCategory.CAMERA_PREVIEW_ALREADY, mRest_id, mAwsPostName, mCategory_id, mValue, mMemo, mCheer_flag);
-                        Application_Gocci.postingVideoToS3(CameraPreviewAlreadyExistActivity.this, mAwsPostName, mVideoFile);
                     } else {
                         Toast.makeText(CameraPreviewAlreadyExistActivity.this, getString(R.string.please_input_restname), Toast.LENGTH_SHORT).show();
                     }
@@ -532,21 +554,9 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
                 SavedData.setRestname(CameraPreviewAlreadyExistActivity.this, mRestname);
                 SavedData.setRest_id(CameraPreviewAlreadyExistActivity.this, mRest_id);
             } else if (event.apiCategory == Const.APICategory.SET_POST) {
-                mProgressWheel.setVisibility(View.GONE);
                 switch (event.callback) {
                     case SUCCESS:
-                        Toast.makeText(this, getString(R.string.videoposting_message), Toast.LENGTH_LONG).show();
-
-                        SharedPreferences prefs = getSharedPreferences("movie", Context.MODE_PRIVATE);
-                        SharedPreferences.Editor editor = prefs.edit();
-                        editor.clear();
-                        editor.apply();
-
-                        Intent intent = new Intent(this, TimelineActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivity(intent);
-                        finish();
+                        Application_Gocci.postingVideoToS3(CameraPreviewAlreadyExistActivity.this, mAwsPostName, mVideoFile, mProgressWheel, Const.ActivityCategory.CAMERA_PREVIEW_ALREADY);
                         break;
                     case LOCALERROR:
                     case GLOBALERROR:
