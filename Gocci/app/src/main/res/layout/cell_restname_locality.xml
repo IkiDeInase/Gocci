@@ -24,26 +24,27 @@
         android:layout_marginRight="8dp"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true">
-    <TextView
-        android:id="@+id/restname"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
-        android:singleLine="true"
-        android:textColor="@color/namegrey"
-        android:textSize="@dimen/normal_text"
-        android:text="Restname" />
 
-    <TextView
-        android:id="@+id/locality"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:singleLine="true"
-        android:textColor="@color/nameblack"
-        android:textSize="@dimen/small_text"
-        android:layout_below="@+id/restname"
-        android:text="Locality"
-        android:layout_marginLeft="12dp" />
+        <TextView
+            android:id="@+id/restname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:singleLine="true"
+            android:textColor="@color/namegrey"
+            android:textSize="@dimen/normal_text"
+            android:text="Restname" />
+
+        <TextView
+            android:id="@+id/locality"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:textColor="@color/nameblack"
+            android:textSize="@dimen/small_text"
+            android:layout_below="@+id/restname"
+            android:text="Locality"
+            android:layout_marginLeft="12dp" />
 
     </RelativeLayout>
 
