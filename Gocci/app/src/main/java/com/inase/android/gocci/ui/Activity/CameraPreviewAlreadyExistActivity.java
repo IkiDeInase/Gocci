@@ -71,6 +71,8 @@ import com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner;
 import java.io.File;
 import java.util.ArrayList;
 
+import at.grabner.circleprogress.AnimationState;
+import at.grabner.circleprogress.AnimationStateChangedListener;
 import at.grabner.circleprogress.CircleProgressView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -119,6 +121,8 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
     LoginButton mFacebookLoginButton;
     @Bind(R.id.twitter_login_button)
     GocciTwitterLoginButton mTwitterLoginButton;
+    @Bind(R.id.overlay)
+    View mOverlay;
 
     @OnClick(R.id.add_rest_text)
     public void restAdd() {
@@ -256,6 +260,8 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
 
     private ShowCameraPresenter mPresenter;
 
+    private boolean isMax = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -305,6 +311,15 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
             @Override
             public void onProgressChanged(float value) {
                 if (value == 100.0) {
+                    isMax = true;
+                }
+            }
+        });
+
+        mProgressWheel.setOnAnimationStateChangedListener(new AnimationStateChangedListener() {
+            @Override
+            public void onAnimationStateChanged(AnimationState _animationState) {
+                if (_animationState == AnimationState.IDLE && isMax) {
                     mProgressWheel.setVisibility(View.INVISIBLE);
                     Toast.makeText(CameraPreviewAlreadyExistActivity.this, getString(R.string.videoposting_message), Toast.LENGTH_LONG).show();
 
@@ -413,11 +428,12 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
             }
         });
 
-        mToukouButtonRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
+        mToukouButtonRipple.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onComplete(RippleView rippleView) {
+            public void onClick(View v) {
                 if (Util.getConnectedState(CameraPreviewAlreadyExistActivity.this) != Util.NetworkStatus.OFF) {
                     mProgressWheel.setVisibility(View.VISIBLE);
+                    mOverlay.setVisibility(View.VISIBLE);
                     if (!mRest_id.equals("1")) {
                         if (mEditValue.getText().length() != 0) {
                             mValue = mEditValue.getText().toString();

@@ -71,6 +71,8 @@ import com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner;
 import java.io.File;
 import java.util.ArrayList;
 
+import at.grabner.circleprogress.AnimationState;
+import at.grabner.circleprogress.AnimationStateChangedListener;
 import at.grabner.circleprogress.CircleProgressView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -118,6 +120,8 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
     LoginButton mFacebookLoginButton;
     @Bind(R.id.twitter_login_button)
     GocciTwitterLoginButton mTwitterLoginButton;
+    @Bind(R.id.overlay)
+    View mOverlay;
 
     @OnClick(R.id.add_rest_text)
     public void restAdd() {
@@ -252,6 +256,8 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
 
     private ShowCameraPresenter mPresenter;
 
+    private boolean isMax = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -319,12 +325,13 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
 
         mVideoFile = new File(mVideoUrl);
 
+        //getValueがendSpinningした時に100.0である時
         mProgressWheel.setValue(0);
         mProgressWheel.setBarColor(getResources().getColor(R.color.gocci_1), getResources().getColor(R.color.gocci_2), getResources().getColor(R.color.gocci_3), getResources().getColor(R.color.gocci_4));
-        mProgressWheel.setOnProgressChangedListener(new CircleProgressView.OnProgressChangedListener() {
+        mProgressWheel.setOnAnimationStateChangedListener(new AnimationStateChangedListener() {
             @Override
-            public void onProgressChanged(float value) {
-                if (value == 100.0) {
+            public void onAnimationStateChanged(AnimationState _animationState) {
+                if (_animationState == AnimationState.IDLE && isMax) {
                     mProgressWheel.setVisibility(View.INVISIBLE);
                     Toast.makeText(CameraPreviewActivity.this, getString(R.string.videoposting_message), Toast.LENGTH_LONG).show();
 
@@ -338,6 +345,15 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                     finish();
+                }
+            }
+        });
+
+        mProgressWheel.setOnProgressChangedListener(new CircleProgressView.OnProgressChangedListener() {
+            @Override
+            public void onProgressChanged(float value) {
+                if (value == 100.0) {
+                    isMax = true;
                 }
             }
         });
@@ -406,11 +422,12 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
             }
         });
 
-        mToukouButtonRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
+        mToukouButtonRipple.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onComplete(RippleView rippleView) {
+            public void onClick(View v) {
                 if (Util.getConnectedState(CameraPreviewActivity.this) != Util.NetworkStatus.OFF) {
                     mProgressWheel.setVisibility(View.VISIBLE);
+                    mOverlay.setVisibility(View.VISIBLE);
                     if (!mRest_id.equals("1")) {
                         if (mEditValue.getText().length() != 0) {
                             mValue = mEditValue.getText().toString();
