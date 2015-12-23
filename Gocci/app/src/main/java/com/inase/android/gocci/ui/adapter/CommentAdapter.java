@@ -194,12 +194,21 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 if (!users.getUsername().equals(SavedData.getServerName(mContext))) {
                     user_name.append("@" + users.getUsername() + " ");
                     user_id.append(users.getComment_user_id());
-                }
-                for (CommentUserData data : users.getComment_user_data()) {
-                    if (!data.getUserName().equals(SavedData.getServerName(mContext))) {
-                        user_name.append("@" + data.getUserName() + " ");
-                        user_id.append("," + data.getUser_id());
+
+                    for (CommentUserData data : users.getComment_user_data()) {
+                        if (!data.getUserName().equals(SavedData.getServerName(mContext))) {
+                            user_name.append("@" + data.getUserName() + " ");
+                            user_id.append("," + data.getUser_id());
+                        }
                     }
+                } else {
+                    for (CommentUserData data : users.getComment_user_data()) {
+                        if (!data.getUserName().equals(SavedData.getServerName(mContext))) {
+                            user_name.append("@" + data.getUserName() + " ");
+                            user_id.append("," + data.getUser_id());
+                        }
+                    }
+                    if (!user_id.toString().isEmpty()) user_id.deleteCharAt(0);
                 }
                 mCallback.onCommentClick(user_name.toString(), user_id.toString());
             }

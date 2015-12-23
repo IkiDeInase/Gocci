@@ -2,6 +2,7 @@ package com.inase.android.gocci.ui.activity;
 
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -16,6 +17,7 @@ import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3;
+import com.inase.android.gocci.datasource.api.API3PostUtil;
 import com.inase.android.gocci.datasource.repository.LoginRepository;
 import com.inase.android.gocci.datasource.repository.LoginRepositoryImpl;
 import com.inase.android.gocci.domain.executor.UIThread;
@@ -137,6 +139,7 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
 
     @Override
     public void showResult(Const.APICategory api) {
+        API3PostUtil.setDeviceAsync(this, SavedData.getRegId(this), Const.OS, Build.VERSION.RELEASE, Build.MODEL);
         Intent intent = new Intent(SplashActivity.this, TimelineActivity.class);
         if (!SplashActivity.this.isFinishing()) {
             SplashActivity.this.startActivity(intent);
