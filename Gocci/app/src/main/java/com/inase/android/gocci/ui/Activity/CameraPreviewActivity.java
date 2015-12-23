@@ -131,12 +131,12 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
     @OnClick(R.id.edit_twitter_fab)
     public void edit_twitter() {
         new MaterialDialog.Builder(this)
-                .content("Twitter編集")
+                .content(getString(R.string.edit_twitter))
                 .contentColorRes(R.color.nameblack)
                 .contentGravity(GravityEnum.CENTER)
                 .inputType(InputType.TYPE_CLASS_TEXT)
                 .widgetColorRes(R.color.twitter_background)
-                .positiveText("完了")
+                .positiveText(getString(R.string.complete))
                 .positiveColorRes(R.color.gocci_header)
                 .input("", getMessage(), false, new MaterialDialog.InputCallback() {
                     @Override
@@ -149,12 +149,12 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
     @OnClick(R.id.edit_facebook_fab)
     public void edit_facebook() {
         new MaterialDialog.Builder(this)
-                .content("Facebook編集")
+                .content(getString(R.string.edit_facebook))
                 .contentColorRes(R.color.nameblack)
                 .contentGravity(GravityEnum.CENTER)
                 .inputType(InputType.TYPE_CLASS_TEXT)
                 .widgetColorRes(R.color.facebook_background)
-                .positiveText("完了")
+                .positiveText(getString(R.string.complete))
                 .positiveColorRes(R.color.gocci_header)
                 .input("", getMessage(), false, new MaterialDialog.InputCallback() {
                     @Override
@@ -628,7 +628,7 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
                 .contentColorRes(R.color.nameblack)
                 .inputType(InputType.TYPE_CLASS_TEXT)
                 .widgetColorRes(R.color.nameblack)
-                .positiveText("送信")
+                .positiveText(getString(R.string.send))
                 .positiveColorRes(R.color.gocci_header)
                 .input("", "", false, new MaterialDialog.InputCallback() {
                     @Override

@@ -115,10 +115,10 @@
 
         <provider
             android:name="com.facebook.FacebookContentProvider"
-            android:authorities="com.facebook.app.FacebookContentProvider148392115499214"
+            android:authorities="com.facebook.app.FacebookContentProvider977612005613710"
             android:exported="true" />
         <!-- 673123156062598 -->
-        <!-- 148392115499214 -->
+        <!-- 977612005613710 -->
 
         <activity
             android:name=".ui.activity.TimelineActivity"
