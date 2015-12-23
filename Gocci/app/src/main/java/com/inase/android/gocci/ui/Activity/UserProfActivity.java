@@ -489,7 +489,7 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
                             Toast.makeText(UserProfActivity.this, API3.Util.SetFollowLocalCodeMessageTable(postFollowLocalCode), Toast.LENGTH_SHORT).show();
                         }
                         break;
-                    case "フォロー解除する":
+                    case "フォローしています":
                         API3.Util.UnsetFollowLocalCode postUnfollowLocalCode = API3.Impl.getRepository().UnsetFollowParameterRegex(mUser_id);
                         if (postUnfollowLocalCode == null) {
                             mPresenter.postFollow(Const.APICategory.UNSET_FOLLOW, API3.Util.getUnsetFollowAPI(mUser_id), mUser_id);
@@ -594,7 +594,7 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
                             Toast.makeText(UserProfActivity.this, API3.Util.SetFollowLocalCodeMessageTable(postFollowLocalCode), Toast.LENGTH_SHORT).show();
                         }
                         break;
-                    case "フォロー解除する":
+                    case "フォローしています":
                         API3.Util.UnsetFollowLocalCode postUnfollowLocalCode = API3.Impl.getRepository().UnsetFollowParameterRegex(mUser_id);
                         if (postUnfollowLocalCode == null) {
                             mPresenter.postFollow(Const.APICategory.UNSET_FOLLOW, API3.Util.getUnsetFollowAPI(mUser_id), mUser_id);
