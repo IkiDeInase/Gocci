@@ -622,7 +622,7 @@ public abstract class TLMediaEncoder {
         while (mIsRunning) {
             final int inputBufferIndex;
             try {
-                 inputBufferIndex = mMediaCodec.dequeueInputBuffer(TIMEOUT_USEC);
+                inputBufferIndex = mMediaCodec.dequeueInputBuffer(TIMEOUT_USEC);
             } catch (IllegalStateException e) {
                 e.printStackTrace();
                 break;

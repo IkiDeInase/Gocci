@@ -600,17 +600,12 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
 
     private void rationaleDialog(final String[] permissions, final int requestCode) {
         new MaterialDialog.Builder(this)
-                .title("権限許可のお願い")
+                .title(getString(R.string.permission_camera_title))
                 .titleColorRes(R.color.namegrey)
-                .content("カメラを起動するには以下のような権限が必要になります。\n\n"
-                        + "・カメラ(動画の撮影)\n\n"
-                        + "・録音(音声の録音)\n\n"
-                        + "・ストレージ(動画の作成)\n\n"
-                        + "・位置情報(店舗情報の取得)\n\n"
-                        + "権限を許可しますか？")
+                .content(getString(R.string.permission_camera_content))
                 .contentColorRes(R.color.nameblack)
-                .positiveText("許可する").positiveColorRes(R.color.gocci_header)
-                .negativeText("いいえ").negativeColorRes(R.color.gocci_header)
+                .positiveText(getString(R.string.permission_camera_positive)).positiveColorRes(R.color.gocci_header)
+                .negativeText(getString(R.string.permission_camera_negative)).negativeColorRes(R.color.gocci_header)
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
@@ -620,7 +615,7 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
                 .onNegative(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
-                        Toast.makeText(MyprofActivity.this, "カメラは起動できませんでした...", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MyprofActivity.this, getString(R.string.permission_camera_cancel), Toast.LENGTH_SHORT).show();
                     }
                 }).show();
     }
@@ -637,13 +632,13 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
                     } else {
                         if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                             new MaterialDialog.Builder(this)
-                                    .title("権限許可のお願い")
+                                    .title(getString(R.string.permission_storage_title))
                                     .titleColorRes(R.color.namegrey)
-                                    .content("シェアするには権限を許可する必要があるため、設定を変更する必要があります")
+                                    .content(getString(R.string.permission_storage_content))
                                     .contentColorRes(R.color.nameblack)
-                                    .positiveText("変更する")
+                                    .positiveText(getString(R.string.permission_storage_positive))
                                     .positiveColorRes(R.color.gocci_header)
-                                    .negativeText("いいえ")
+                                    .negativeText(getString(R.string.permission_storage_negative))
                                     .negativeColorRes(R.color.gocci_header)
                                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                                         @Override
@@ -681,18 +676,18 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
                             TwitterAuthToken authToken = session.getAuthToken();
                             Util.twitterShare(this, "#" + mShareRestname.replaceAll("\\s+", "") + " #Gocci", mShareShare, authToken);
                         } else {
-                            Toast.makeText(this, "設定ページでTwitter連携を行ってください", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, getString(R.string.alert_twitter_sharing), Toast.LENGTH_SHORT).show();
                         }
                     } else {
                         if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                             new MaterialDialog.Builder(this)
-                                    .title("権限許可のお願い")
+                                    .title(getString(R.string.permission_storage_title))
                                     .titleColorRes(R.color.namegrey)
-                                    .content("シェアするには権限を許可する必要があるため、設定を変更する必要があります")
+                                    .content(getString(R.string.permission_storage_content))
                                     .contentColorRes(R.color.nameblack)
-                                    .positiveText("変更する")
+                                    .positiveText(getString(R.string.permission_storage_positive))
                                     .positiveColorRes(R.color.gocci_header)
-                                    .negativeText("いいえ")
+                                    .negativeText(getString(R.string.permission_storage_negative))
                                     .negativeColorRes(R.color.gocci_header)
                                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                                         @Override
@@ -722,7 +717,7 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
                             TwitterAuthToken authToken = session.getAuthToken();
                             Util.twitterShare(this, "#" + mShareRestname.replaceAll("\\s+", "") + " #Gocci", mShareShare, authToken);
                         } else {
-                            Toast.makeText(this, "設定ページでTwitter連携を行ってください", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, getString(R.string.alert_twitter_sharing), Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
@@ -735,13 +730,13 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
                     } else {
                         if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                             new MaterialDialog.Builder(this)
-                                    .title("権限許可のお願い")
+                                    .title(getString(R.string.permission_storage_title))
                                     .titleColorRes(R.color.namegrey)
-                                    .content("シェアするには権限を許可する必要があるため、設定を変更する必要があります")
+                                    .content(getString(R.string.permission_storage_content))
                                     .contentColorRes(R.color.nameblack)
-                                    .positiveText("変更する")
+                                    .positiveText(getString(R.string.permission_storage_positive))
                                     .positiveColorRes(R.color.gocci_header)
-                                    .negativeText("いいえ")
+                                    .negativeText(R.string.permission_storage_negative)
                                     .negativeColorRes(R.color.gocci_header)
                                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                                         @Override
@@ -833,13 +828,13 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
                 !ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) ||
                 !ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
             new MaterialDialog.Builder(this)
-                    .title("権限許可のお願い")
+                    .title(getString(R.string.permission_camera_rationale_title))
                     .titleColorRes(R.color.namegrey)
-                    .content("カメラを起動するには権限を許可する必要があるため、設定を変更する必要があります")
+                    .content(getString(R.string.permission_camera_rationale_title))
                     .contentColorRes(R.color.nameblack)
-                    .positiveText("変更する")
+                    .positiveText(getString(R.string.permission_camera_rationale_positive))
                     .positiveColorRes(R.color.gocci_header)
-                    .negativeText("いいえ")
+                    .negativeText(getString(R.string.permission_camera_rationale_negative))
                     .negativeColorRes(R.color.gocci_header)
                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                         @Override
@@ -853,11 +848,11 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
                     .onNegative(new MaterialDialog.SingleButtonCallback() {
                         @Override
                         public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
-                            Toast.makeText(MyprofActivity.this, "カメラは起動できませんでした", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MyprofActivity.this, getString(R.string.permission_camera_cancel), Toast.LENGTH_SHORT).show();
                         }
                     }).show();
         } else {
-            Toast.makeText(MyprofActivity.this, "カメラは起動できませんでした", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MyprofActivity.this, getString(R.string.permission_camera_cancel), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -868,7 +863,7 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
                 PermissionChecker.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             goCamera();
         } else {
-            Toast.makeText(MyprofActivity.this, "カメラは起動できませんでした", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MyprofActivity.this, getString(R.string.permission_camera_cancel), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -1093,11 +1088,13 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
             mShareRestname = restname;
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 new MaterialDialog.Builder(this)
-                        .content("シェアをするにはストレージにアクセスする必要があります。権限を許可しますか？")
+                        .title(getString(R.string.permission_storage_title))
+                        .titleColorRes(R.color.namegrey)
+                        .content(getString(R.string.permission_storage_content))
                         .contentColorRes(R.color.nameblack)
-                        .positiveText("許可する")
+                        .positiveText(getString(R.string.permission_storage_positive))
                         .positiveColorRes(R.color.gocci_header)
-                        .negativeText("いいえ")
+                        .negativeText(getString(R.string.permission_storage_negative))
                         .negativeColorRes(R.color.gocci_header)
                         .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
@@ -1125,7 +1122,7 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
                         TwitterAuthToken authToken = session.getAuthToken();
                         Util.twitterShare(this, "#" + restname.replaceAll("\\s+", "") + " #Gocci", share, authToken);
                     } else {
-                        Toast.makeText(this, "設定ページでTwitter連携を行ってください", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, getString(R.string.alert_twitter_sharing), Toast.LENGTH_SHORT).show();
                     }
                     break;
                 case 27:

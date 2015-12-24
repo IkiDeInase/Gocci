@@ -332,9 +332,62 @@
     <string name="complete">OK</string>
     <string name="send">send</string>
 
-    <string name="detele_comment_content">このコメントを削除しますか？</string>
-    <string name="detele_comment_positive">削除する</string>
-    <string name="detele_comment_negative">いいえ</string>
+    <string name="delete_comment_content">Do you want delete this post?</string>
+    <string name="delete_comment_positive">Delete it</string>
+    <string name="delete_comment_negative">no</string>
+
+    <string name="block_comment_content">Do you want block this post?</string>
+    <string name="block_comment_positive">Block it</string>
+    <string name="block_comment_negative">no</string>
+
+    <string name="place_searching">Searching</string>
+    <string name="place_searching_alert">Searching place</string>
+
+    <string name="see_near_place">see near this place</string>
+
+    <string name="select_place">Select Place</string>
+    <string name="undefined_place">Undefined</string>
+
+    <string name="please_click_cluster">Please click some cluster</string>
+
+    <string name="permission_camera_title">Please Allow Camera</string>
+    <string name="permission_camera_content">If you want to use camera, Please allow camera permission.\n\n
+        ・Camera(To record)\n\n
+        ・Record(To record)\n\n
+        ・Storage(To create movie)\n\n
+        ・Location(To find Restaurant)\n\n
+        Do you want to allow camera permission？
+    </string>
+    <string name="permission_camera_positive">Yeah</string>
+    <string name="permission_camera_negative">No</string>
+    <string name="permission_camera_cancel">Could not open camera</string>
+
+    <string name="permission_storage_title">Please Allow Storage</string>
+    <string name="permission_storage_content">If you want to sharing video, Please allow storage permission.</string>
+    <string name="permission_storage_positive">Yeah</string>
+    <string name="permission_storage_negative">No</string>
+
+    <string name="permission_camera_rationale_title">Please Allow Camera</string>
+    <string name="permission_camera_rationale_content">If you want to record movie, Please allow camera permission.</string>
+    <string name="permission_camera_rationale_positive">Yeah</string>
+    <string name="permission_camera_rationale_negative">No</string>
+
+    <string name="permission_location_title">Please Allow Location</string>
+    <string name="permission_location_content">If you want to see nearline, Please allow location permission.</string>
+    <string name="permission_location_positive">Yeah</string>
+    <string name="permission_location_negative">No</string>
+    <string name="permission_location_cancel">You can not see Nearline</string>
+
+    <string name="alert_twitter_sharing">Please go Setting Screen and Set Link Twitter</string>
+
+    <string name="now_location">You are here</string>
+    <string name="change_location">Change area</string>
+    <string name="alert_location_violation">You do not allow location setting yet.</string>
+
+    <string name="no_comment">No Comment</string>
+
+    <string name="restaurant">Restaurant</string>
+    <string name="no_exist_restaurant">If no restaurant</string>
 
     <string name="GlobalCode_ERROR_SESSION_EXPIRED">Session cookie is not valid anymore</string>
     <string name="GlobalCode_SUCCESS">Successful API request</string>

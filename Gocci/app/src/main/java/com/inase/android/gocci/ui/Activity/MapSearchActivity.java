@@ -69,7 +69,7 @@ public class MapSearchActivity extends AppCompatActivity implements ShowHeatmapP
 
     private ClusterManager<HeatmapLog> mClusterManager;
 
-    private String mPlace = "位置特定中";
+    private String mPlace = "";
     private double mLat;
     private double mLon;
 
@@ -99,7 +99,8 @@ public class MapSearchActivity extends AppCompatActivity implements ShowHeatmapP
             if (mSnack.isShown()) {
                 mSnack.dismiss();
             }
-            Toast.makeText(MapSearchActivity.this, "位置を特定しています", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MapSearchActivity.this, getString(R.string.place_searching_alert), Toast.LENGTH_SHORT).show();
+            mPlace = getString(R.string.place_searching);
             toolBar.setTitle(mPlace);
             getRevGeo(mLat, mLon);
         } else {
@@ -159,7 +160,7 @@ public class MapSearchActivity extends AppCompatActivity implements ShowHeatmapP
             // Draw multiple people.
             // Note: this method runs on the UI thread. Don't spend too much time in here (like in this example).
             super.onBeforeClusterRendered(cluster, markerOptions);
-            markerOptions.title("この周辺の近い店を見る");
+            markerOptions.title(getString(R.string.see_near_place));
         }
 
         @Override
@@ -195,7 +196,7 @@ public class MapSearchActivity extends AppCompatActivity implements ShowHeatmapP
         mPresenter = new ShowHeatmapPresenter(heatmapUseCaseImpl);
         mPresenter.setHeatmapView(this);
 
-        toolBar.setTitle("場所を選択する");
+        toolBar.setTitle(getString(R.string.select_place));
         setSupportActionBar(toolBar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -229,7 +230,7 @@ public class MapSearchActivity extends AppCompatActivity implements ShowHeatmapP
 
     @Subscribe
     public void subscribe(AddressNameEvent event) {
-        toolBar.setTitle(event.mPlace.isEmpty() ? "場所不明" : event.mPlace);
+        toolBar.setTitle(event.mPlace.isEmpty() ? getString(R.string.undefined_place) : event.mPlace);
     }
 
     OnMapReadyCallback readyCallback = new OnMapReadyCallback() {
@@ -261,7 +262,7 @@ public class MapSearchActivity extends AppCompatActivity implements ShowHeatmapP
             mMap.setMyLocationEnabled(true);
             mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
-            mSnack = Snackbar.make(mapLayout, "検索したい位置のクラスターをタップしてみよう", Snackbar.LENGTH_INDEFINITE);
+            mSnack = Snackbar.make(mapLayout, getString(R.string.please_click_cluster), Snackbar.LENGTH_INDEFINITE);
             mSnack.show();
         }
     };

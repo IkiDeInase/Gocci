@@ -256,7 +256,7 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
                         .contentGravity(GravityEnum.CENTER)
                         .inputType(InputType.TYPE_CLASS_TEXT)
                         .widgetColorRes(R.color.nameblack)
-                        .positiveText("完了")
+                        .positiveText(getString(R.string.complete))
                         .positiveColorRes(R.color.gocci_header)
                         .input("", "", false, new MaterialDialog.InputCallback() {
                             @Override
@@ -276,7 +276,7 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
                         .contentColorRes(R.color.nameblack)
                         .inputType(InputType.TYPE_CLASS_NUMBER)
                         .widgetColorRes(R.color.nameblack)
-                        .positiveText("完了")
+                        .positiveText(getString(R.string.complete))
                         .positiveColorRes(R.color.gocci_header)
                         .input("", "", false, new MaterialDialog.InputCallback() {
                             @Override
@@ -310,10 +310,10 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
             @Override
             public void onClick(View v) {
                 new MaterialDialog.Builder(getActivity())
-                        .content("店舗")
+                        .content(getString(R.string.restaurant))
                         .contentGravity(GravityEnum.CENTER)
                         .contentColorRes(R.color.nameblack)
-                        .positiveText("店舗が無い場合はこちら")
+                        .positiveText(getString(R.string.no_exist_restaurant))
                         .positiveColorRes(R.color.nameblack)
                         .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
@@ -808,7 +808,7 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
                 .contentColorRes(R.color.nameblack)
                 .inputType(InputType.TYPE_CLASS_TEXT)
                 .widgetColorRes(R.color.nameblack)
-                .positiveText("送信")
+                .positiveText(getString(R.string.send))
                 .positiveColorRes(R.color.gocci_header)
                 .input("", "", false, new MaterialDialog.InputCallback() {
                     @Override

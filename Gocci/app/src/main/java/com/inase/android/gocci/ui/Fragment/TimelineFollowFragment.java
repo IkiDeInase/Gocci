@@ -304,12 +304,12 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
     @Subscribe
     public void subscribe(PageChangeVideoStopEvent event) {
         switch (event.position) {
-            case 1:
+            case 2:
                 mPlayBlockFlag = false;
                 releasePlayer();
                 break;
             case 0:
-            case 2:
+            case 1:
                 mPlayBlockFlag = true;
                 releasePlayer();
                 if (getPlayingViewHolder() != null) {
@@ -329,7 +329,7 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
 
     @Subscribe
     public void subscribe(FilterTimelineEvent event) {
-        if (event.currentPage == 1) {
+        if (event.currentPage == 2) {
             API3.Util.GetFollowlineLocalCode localCode = API3.Impl.getRepository().GetFollowlineParameterRegex(null, TimelineActivity.mFollowCategory_id != 0 ? String.valueOf(TimelineActivity.mFollowCategory_id) : null,
                     TimelineActivity.mFollowValue_id != 0 ? String.valueOf(TimelineActivity.mFollowValue_id) : null);
             if (localCode == null) {

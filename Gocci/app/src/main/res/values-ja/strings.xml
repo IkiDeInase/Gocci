@@ -332,9 +332,62 @@
     <string name="complete">完了</string>
     <string name="send">送信</string>
 
-    <string name="detele_comment_content">このコメントを削除しますか？</string>
-    <string name="detele_comment_positive">削除する</string>
-    <string name="detele_comment_negative">いいえ</string>
+    <string name="delete_comment_content">このコメントを削除しますか？</string>
+    <string name="delete_comment_positive">削除する</string>
+    <string name="delete_comment_negative">いいえ</string>
+
+    <string name="block_comment_content">このコメントを不適切なコメントとして報告しますか？</string>
+    <string name="block_comment_positive">報告する</string>
+    <string name="block_comment_negative">いいえ</string>
+
+    <string name="place_searching">位置特定中</string>
+    <string name="place_searching_alert">位置を特定しています</string>
+
+    <string name="see_near_place">この周辺の近い店を見る</string>
+
+    <string name="select_place">場所を選択する</string>
+    <string name="undefined_place">場所不明</string>
+
+    <string name="please_click_cluster">検索したい位置のクラスターをタップしてみよう</string>
+
+    <string name="permission_camera_title">権限許可のお願い</string>
+    <string name="permission_camera_content">カメラを起動するには以下のような権限が必要になります。\n\n
+        ・カメラ(動画の撮影)\n\n
+        ・録音(音声の録音)\n\n
+        ・ストレージ(動画の作成)\n\n
+        ・位置情報(店舗情報の取得)\n\n
+        権限を許可しますか？
+    </string>
+    <string name="permission_camera_positive">許可する</string>
+    <string name="permission_camera_negative">いいえ</string>
+    <string name="permission_camera_cancel">カメラは起動できませんでした</string>
+
+    <string name="permission_storage_title">権限許可のお願い</string>
+    <string name="permission_storage_content">シェアするには権限を許可する必要があるため、設定を変更する必要があります</string>
+    <string name="permission_storage_positive">変更する</string>
+    <string name="permission_storage_negative">いいえ</string>
+
+    <string name="permission_camera_rationale_title">権限許可のお願い</string>
+    <string name="permission_camera_rationale_content">カメラを起動するには権限を許可する必要があるため、設定を変更する必要があります</string>
+    <string name="permission_camera_rationale_positive">変更する</string>
+    <string name="permission_camera_rationale_negative">いいえ</string>
+
+    <string name="permission_location_title">権限許可のお願い</string>
+    <string name="permission_location_content">近い店を表示するには位置情報を取得する必要があります。位置情報を許可しますか？</string>
+    <string name="permission_location_positive">許可する</string>
+    <string name="permission_location_negative">いいえ</string>
+    <string name="permission_location_cancel">近くの店は表示できなくなります</string>
+
+    <string name="alert_twitter_sharing">設定ページでTwitter連携を行ってください</string>
+
+    <string name="now_location">現在地</string>
+    <string name="change_location">エリアを変更する</string>
+    <string name="alert_location_violation">位置情報の取得が許可されていません</string>
+
+    <string name="no_comment">ノーコメント</string>
+
+    <string name="restaurant">店舗</string>
+    <string name="no_exist_restaurant">店舗が無い場合はこちら</string>
 
     <string name="GlobalCode_ERROR_SESSION_EXPIRED">Session cookie is not valid anymore</string>
     <string name="GlobalCode_SUCCESS">Successful API request</string>

@@ -308,12 +308,12 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
     @Subscribe
     public void subscribe(PageChangeVideoStopEvent event) {
         switch (event.position) {
-            case 2:
+            case 0:
                 mPlayBlockFlag = false;
                 releasePlayer();
                 break;
-            case 0:
             case 1:
+            case 2:
                 mPlayBlockFlag = true;
                 releasePlayer();
                 if (getPlayingViewHolder() != null) {
@@ -333,7 +333,7 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
 
     @Subscribe
     public void subscribe(FilterTimelineEvent event) {
-        if (event.currentPage == 2) {
+        if (event.currentPage == 0) {
             API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().GetTimelineParameterRegex(null, TimelineActivity.mLatestCategory_id != 0 ? String.valueOf(TimelineActivity.mLatestCategory_id) : null,
                     TimelineActivity.mLatestValue_id != 0 ? String.valueOf(TimelineActivity.mLatestValue_id) : null);
             if (localCode == null) {

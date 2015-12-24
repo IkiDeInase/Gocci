@@ -373,11 +373,11 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
         if (user_id.equals(SavedData.getServerUserId(this)) || isMyPage) {
             //自分の投稿　削除
             new MaterialDialog.Builder(this)
-                    .content("このコメントを削除しますか？")
+                    .content(getString(R.string.delete_comment_content))
                     .contentColorRes(R.color.nameblack)
-                    .positiveText("削除する")
+                    .positiveText(getString(R.string.delete_comment_positive))
                     .positiveColorRes(R.color.gocci_header)
-                    .negativeText("いいえ")
+                    .negativeText(getString(R.string.delete_comment_negative))
                     .negativeColorRes(R.color.gocci_header)
                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                         @Override
@@ -388,11 +388,11 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
         } else {
             //他人の　不適切
             new MaterialDialog.Builder(this)
-                    .content("このコメントを不適切なコメントとして報告しますか？")
+                    .content(getString(R.string.block_comment_content))
                     .contentColorRes(R.color.nameblack)
-                    .positiveText("報告する")
+                    .positiveText(getString(R.string.block_comment_positive))
                     .positiveColorRes(R.color.gocci_header)
-                    .negativeText("いいえ")
+                    .negativeText(getString(R.string.block_comment_negative))
                     .negativeColorRes(R.color.gocci_header)
                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                         @Override

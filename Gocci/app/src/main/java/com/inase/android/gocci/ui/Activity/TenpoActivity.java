@@ -792,7 +792,7 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
                     TwitterAuthToken authToken = session.getAuthToken();
                     Util.twitterShare(this, "#" + rest_name.replaceAll("\\s+", "") + " #Gocci", share, authToken);
                 } else {
-                    Toast.makeText(this, "設定ページでTwitter連携を行ってください", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getString(R.string.alert_twitter_sharing), Toast.LENGTH_SHORT).show();
                 }
             }
         } else {
@@ -801,7 +801,7 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
                 TwitterAuthToken authToken = session.getAuthToken();
                 Util.twitterShare(this, "#" + rest_name.replaceAll("\\s+", "") + " #Gocci", share, authToken);
             } else {
-                Toast.makeText(this, "設定ページでTwitter連携を行ってください", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.alert_twitter_sharing), Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -840,7 +840,7 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
                         TwitterAuthToken authToken = session.getAuthToken();
                         Util.twitterShare(this, "#" + mShareRestname.replaceAll("\\s+", "") + " #Gocci", mShareShare, authToken);
                     } else {
-                        Toast.makeText(this, "設定ページでTwitter連携を行ってください", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, getString(R.string.alert_twitter_sharing), Toast.LENGTH_SHORT).show();
                     }
                 } else {
                     Toast.makeText(TenpoActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();

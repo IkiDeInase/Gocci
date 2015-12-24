@@ -94,7 +94,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         if (!memo.getMemo().equals("none")) {
             comment.setText(memo.getMemo());
         } else {
-            comment.setText("ノーコメント");
+            comment.setText(mContext.getString(R.string.no_comment));
         }
         comment.setTextColor(mContext.getResources().getColor(R.color.nameblack));
         comment.setTextSize(12);

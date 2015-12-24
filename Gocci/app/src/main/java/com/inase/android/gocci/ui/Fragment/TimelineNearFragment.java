@@ -448,11 +448,11 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
     @Subscribe
     public void subscribe(PageChangeVideoStopEvent event) {
         switch (event.position) {
-            case 0:
+            case 1:
                 mPlayBlockFlag = false;
                 releasePlayer();
                 break;
-            case 1:
+            case 0:
             case 2:
                 mPlayBlockFlag = true;
                 releasePlayer();
@@ -473,7 +473,7 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
 
     @Subscribe
     public void subscribe(FilterTimelineEvent event) {
-        if (event.currentPage == 0) {
+        if (event.currentPage == 1) {
             API3.Util.GetNearlineLocalCode localCode = API3.Impl.getRepository().GetNearlineParameterRegex(TimelineActivity.mLatitude, TimelineActivity.mLongitude, null, TimelineActivity.mNearCategory_id != 0 ? String.valueOf(TimelineActivity.mNearCategory_id) : null,
                     TimelineActivity.mNearValue_id != 0 ? String.valueOf(TimelineActivity.mNearValue_id) : null);
             if (localCode == null) {
@@ -509,13 +509,13 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
 
             if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)) {
                 new MaterialDialog.Builder(getActivity())
-                        .title("権限許可のお願い")
+                        .title(getString(R.string.permission_location_title))
                         .titleColorRes(R.color.namegrey)
-                        .content("近い店を表示するには位置情報を取得する必要があります。位置情報を許可しますか？")
+                        .content(getString(R.string.permission_location_content))
                         .contentColorRes(R.color.nameblack)
-                        .positiveText("許可する")
+                        .positiveText(getString(R.string.permission_location_positive))
                         .positiveColorRes(R.color.gocci_header)
-                        .negativeText("いいえ")
+                        .negativeText(getString(R.string.permission_location_negative))
                         .negativeColorRes(R.color.gocci_header)
                         .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
@@ -550,11 +550,13 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
 
             if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)) {
                 new MaterialDialog.Builder(getActivity())
-                        .content("近い店を表示するには位置情報を取得する必要があります。位置情報を許可しますか？")
+                        .title(getString(R.string.permission_location_title))
+                        .titleColorRes(R.color.namegrey)
+                        .content(getString(R.string.permission_location_content))
                         .contentColorRes(R.color.nameblack)
-                        .positiveText("許可する")
+                        .positiveText(getString(R.string.permission_location_positive))
                         .positiveColorRes(R.color.gocci_header)
-                        .negativeText("いいえ")
+                        .negativeText(getString(R.string.permission_location_negative))
                         .negativeColorRes(R.color.gocci_header)
                         .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
@@ -565,7 +567,7 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
                         .onNegative(new MaterialDialog.SingleButtonCallback() {
                             @Override
                             public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
-                                Toast.makeText(getActivity(), "近くの店は表示できなくなります", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getActivity(), getString(R.string.permission_location_cancel), Toast.LENGTH_SHORT).show();
                                 mEmptyImage.setVisibility(View.VISIBLE);
                                 mEmptyText.setVisibility(View.VISIBLE);
                                 mSwipeContainer.setRefreshing(false);
@@ -615,13 +617,13 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
                             onNegativeActionCausedByM();
                         } else {
                             new MaterialDialog.Builder(getActivity())
-                                    .title("権限許可のお願い")
+                                    .title(getString(R.string.permission_location_title))
                                     .titleColorRes(R.color.namegrey)
-                                    .content("近い店を表示するには位置情報を取得する必要があるため、設定を変更する必要があります")
+                                    .content(getString(R.string.permission_location_content))
                                     .contentColorRes(R.color.nameblack)
-                                    .positiveText("変更する")
+                                    .positiveText(R.string.permission_location_positive)
                                     .positiveColorRes(R.color.gocci_header)
-                                    .negativeText("いいえ")
+                                    .negativeText(getString(R.string.permission_location_negative))
                                     .negativeColorRes(R.color.gocci_header)
                                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                                         @Override
@@ -643,7 +645,7 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
                 } else {
                     if (PermissionChecker.checkSelfPermission(getActivity(),
                             Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                        Toast.makeText(getActivity(), "近くの店は表示できなくなります", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), getString(R.string.permission_location_cancel), Toast.LENGTH_SHORT).show();
                     } else {
                         mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
                         if (checkPlayServices()) {
@@ -678,19 +680,19 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
                         }
                     } else {
                         if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)) {
-                            Toast.makeText(getActivity(), "近くの店は表示できなくなります", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), getString(R.string.permission_location_cancel), Toast.LENGTH_SHORT).show();
                             mEmptyImage.setVisibility(View.VISIBLE);
                             mEmptyText.setVisibility(View.VISIBLE);
                             mSwipeContainer.setRefreshing(false);
                         } else {
                             new MaterialDialog.Builder(getActivity())
-                                    .title("権限許可のお願い")
+                                    .title(getString(R.string.permission_location_title))
                                     .titleColorRes(R.color.namegrey)
-                                    .content("近い店を表示するには位置情報を取得する必要があるため、設定を変更する必要があります")
+                                    .content(getString(R.string.permission_location_content))
                                     .contentColorRes(R.color.nameblack)
-                                    .positiveText("変更する")
+                                    .positiveText(getString(R.string.permission_location_positive))
                                     .positiveColorRes(R.color.gocci_header)
-                                    .negativeText("いいえ")
+                                    .negativeText(getString(R.string.permission_location_negative))
                                     .negativeColorRes(R.color.gocci_header)
                                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                                         @Override
@@ -704,7 +706,7 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
                                     .onNegative(new MaterialDialog.SingleButtonCallback() {
                                         @Override
                                         public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
-                                            Toast.makeText(getActivity(), "近くの店は表示できなくなります", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(getActivity(), getString(R.string.permission_location_cancel), Toast.LENGTH_SHORT).show();
                                             mEmptyImage.setVisibility(View.VISIBLE);
                                             mEmptyText.setVisibility(View.VISIBLE);
                                             mSwipeContainer.setRefreshing(false);
@@ -715,7 +717,7 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
                 } else {
                     if (PermissionChecker.checkSelfPermission(getActivity(),
                             Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                        Toast.makeText(getActivity(), "近くの店は表示できなくなります", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(), getString(R.string.permission_location_cancel), Toast.LENGTH_SHORT).show();
                     } else {
                         if (mGoogleApiClient != null) {
                             if (mGoogleApiClient.isConnected() && !isLocationUpdating) {
@@ -1163,7 +1165,6 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
                 );
         if (!mGoogleApiClient.isConnected() && !mGoogleApiClient.isConnecting()) {
             mGoogleApiClient.connect();
-            Log.e("ログ", "コネクト");
         }
         result.setResultCallback(this);
     }
@@ -1171,7 +1172,7 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
     @Override
     public void onConnected(Bundle bundle) {
         if (!isLocationUpdating) {
-            if ("現在地".equals(toolbar.getTitle())) {
+            if (getString(R.string.now_location).equals(toolbar.getTitle())) {
                 startLocationUpdates();
             }
         }

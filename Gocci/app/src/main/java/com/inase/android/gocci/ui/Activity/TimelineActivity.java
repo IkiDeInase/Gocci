@@ -118,7 +118,7 @@ public class TimelineActivity extends AppCompatActivity {
             if (mFab.getVisibility() == View.VISIBLE) {
                 FabTransformation.with(mFab).setOverlay(mOverlay).transformTo(mSheet);
             }
-            if ("現在地".equals(mToolBar.getTitle())) {
+            if (getString(R.string.now_location).equals(mToolBar.getTitle())) {
                 SmartLocation.with(TimelineActivity.this).location().oneFix().start(new OnLocationUpdatedListener() {
                     @Override
                     public void onLocationUpdated(Location location) {
@@ -128,7 +128,7 @@ public class TimelineActivity extends AppCompatActivity {
                 });
             }
         } else {
-            Toast.makeText(this, "位置情報の取得が許可されていません", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.alert_location_violation), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -143,19 +143,19 @@ public class TimelineActivity extends AppCompatActivity {
 
     public static int mShowPosition = 0;
 
+    public static int mLatestCategory_id = 0;
+    public static int mLatestValue_id = 0;
+
     public static int mNearCategory_id = 0;
     public static int mNearValue_id = 0;
 
     public static int mFollowCategory_id = 0;
     public static int mFollowValue_id = 0;
 
-    public static int mLatestCategory_id = 0;
-    public static int mLatestValue_id = 0;
-
     public static String mLongitude = "139.745433";
     public static String mLatitude = "35.658581";
 
-    private String mTitle = "現在地";
+    private String mTitle = "";
 
     private String[] CATEGORY;
     private String[] VALUE;
@@ -184,15 +184,17 @@ public class TimelineActivity extends AppCompatActivity {
         setContentView(R.layout.activity_timeline);
         ButterKnife.bind(this);
 
+        mTitle = getString(R.string.now_location);
         mShowPosition = 0;
-        mToolBar.setTitle(mTitle);
-        mToolBar.setSubtitle("エリアを変更する");
+        mToolBar.setTitle("");
+        mToolBar.setSubtitle("");
+        mToolBar.setLogo(R.drawable.ic_gocci_moji_white45);
         mToolBar.setTitleTextAppearance(TimelineActivity.this, R.style.Toolbar_TitleText);
         mToolBar.setSubtitleTextAppearance(TimelineActivity.this, R.style.Toolbar_SubTitleText);
         mToolBar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mShowPosition == 0) {
+                if (mShowPosition == 1) {
                     MapSearchActivity.startMapSearchActivity(123, Double.parseDouble(mLongitude), Double.parseDouble(mLatitude), TimelineActivity.this);
                 }
             }
@@ -261,9 +263,9 @@ public class TimelineActivity extends AppCompatActivity {
 
         adapter = new FragmentPagerItemAdapter(
                 getSupportFragmentManager(), FragmentPagerItems.with(this)
+                .add(R.string.tab_latest, TimelineLatestFragment.class)
                 .add(R.string.tab_near, TimelineNearFragment.class)
                 .add(R.string.tab_follow, TimelineFollowFragment.class)
-                .add(R.string.tab_latest, TimelineLatestFragment.class)
                 .create());
 
         mViewpager.setOffscreenPageLimit(2);
@@ -281,6 +283,23 @@ public class TimelineActivity extends AppCompatActivity {
                 mShowPosition = position;
                 switch (mShowPosition) {
                     case 0:
+                        if (mLatestCategory_id != 0) {
+                            mCategorySpinner.setText(CATEGORY[mLatestCategory_id]);
+                        } else {
+                            mCategorySpinner.setText("");
+                        }
+
+                        if (mLatestValue_id != 0) {
+                            mValueSpinner.setText(VALUE[mLatestValue_id]);
+                        } else {
+                            mValueSpinner.setText("");
+                        }
+
+                        mToolBar.setTitle("");
+                        mToolBar.setSubtitle("");
+                        mToolBar.setLogo(R.drawable.ic_gocci_moji_white45);
+                        break;
+                    case 1:
                         if (mNearCategory_id != 0) {
                             mCategorySpinner.setText(CATEGORY[mNearCategory_id]);
                         } else {
@@ -294,11 +313,11 @@ public class TimelineActivity extends AppCompatActivity {
                         }
 
                         mToolBar.setTitle(mTitle);
-                        mToolBar.setSubtitle("エリアを変更する");
+                        mToolBar.setSubtitle(getString(R.string.change_location));
                         mToolBar.setSubtitleTextAppearance(TimelineActivity.this, R.style.Toolbar_SubTitleText);
                         mToolBar.setLogo(null);
                         break;
-                    case 1:
+                    case 2:
                         if (mFollowCategory_id != 0) {
                             mCategorySpinner.setText(CATEGORY[mFollowCategory_id]);
                         } else {
@@ -307,23 +326,6 @@ public class TimelineActivity extends AppCompatActivity {
 
                         if (mFollowValue_id != 0) {
                             mValueSpinner.setText(VALUE[mFollowValue_id]);
-                        } else {
-                            mValueSpinner.setText("");
-                        }
-
-                        mToolBar.setTitle("");
-                        mToolBar.setSubtitle("");
-                        mToolBar.setLogo(R.drawable.ic_gocci_moji_white45);
-                        break;
-                    case 2:
-                        if (mLatestCategory_id != 0) {
-                            mCategorySpinner.setText(CATEGORY[mLatestCategory_id]);
-                        } else {
-                            mCategorySpinner.setText("");
-                        }
-
-                        if (mLatestValue_id != 0) {
-                            mValueSpinner.setText(VALUE[mLatestValue_id]);
                         } else {
                             mValueSpinner.setText("");
                         }
@@ -352,13 +354,13 @@ public class TimelineActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (mShowPosition) {
                     case 0:
-                        mNearCategory_id = position + 2;
+                        mLatestCategory_id = position + 2;
                         break;
                     case 1:
-                        mFollowCategory_id = position + 2;
+                        mNearCategory_id = position + 2;
                         break;
                     case 2:
-                        mLatestCategory_id = position + 2;
+                        mFollowCategory_id = position + 2;
                         break;
                 }
             }
@@ -370,13 +372,13 @@ public class TimelineActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (mShowPosition) {
                     case 0:
-                        mNearValue_id = position + 1;
+                        mLatestValue_id = position + 1;
                         break;
                     case 1:
-                        mFollowValue_id = position + 1;
+                        mNearValue_id = position + 1;
                         break;
                     case 2:
-                        mLatestValue_id = position + 1;
+                        mFollowValue_id = position + 1;
                         break;
                 }
             }
@@ -393,16 +395,16 @@ public class TimelineActivity extends AppCompatActivity {
                 mResetRipple.requestFocus();
                 switch (mShowPosition) {
                     case 0:
+                        mLatestCategory_id = 0;
+                        mLatestValue_id = 0;
+                        break;
+                    case 1:
                         mNearCategory_id = 0;
                         mNearValue_id = 0;
                         break;
-                    case 1:
+                    case 2:
                         mFollowCategory_id = 0;
                         mFollowValue_id = 0;
-                        break;
-                    case 2:
-                        mLatestCategory_id = 0;
-                        mLatestValue_id = 0;
                         break;
                 }
             }
@@ -415,16 +417,16 @@ public class TimelineActivity extends AppCompatActivity {
                 //Otto currentpageと絞り込みurl
                 switch (mShowPosition) {
                     case 0:
+                        BusHolder.get().post(new FilterTimelineEvent(mShowPosition, API3.Util.getGetTimelineAPI(null,
+                                mLatestCategory_id != 0 ? String.valueOf(mLatestCategory_id) : null, mLatestValue_id != 0 ? String.valueOf(mLatestValue_id) : null)));
+                        break;
+                    case 1:
                         BusHolder.get().post(new FilterTimelineEvent(mShowPosition, API3.Util.getGetNearlineAPI(
                                 mLatitude, mLongitude, null, mNearCategory_id != 0 ? String.valueOf(mNearCategory_id) : null, mNearValue_id != 0 ? String.valueOf(mNearValue_id) : null)));
                         break;
-                    case 1:
+                    case 2:
                         BusHolder.get().post(new FilterTimelineEvent(mShowPosition, API3.Util.getGetFollowlineAPI(null,
                                 mFollowCategory_id != 0 ? String.valueOf(mFollowCategory_id) : null, mFollowValue_id != 0 ? String.valueOf(mFollowValue_id) : null)));
-                        break;
-                    case 2:
-                        BusHolder.get().post(new FilterTimelineEvent(mShowPosition, API3.Util.getGetTimelineAPI(null,
-                                mLatestCategory_id != 0 ? String.valueOf(mLatestCategory_id) : null, mLatestValue_id != 0 ? String.valueOf(mLatestValue_id) : null)));
                         break;
                 }
             }
@@ -475,12 +477,12 @@ public class TimelineActivity extends AppCompatActivity {
                 if (resultCode == RESULT_OK) {
                     Bundle bundle = data.getExtras();
                     mTitle = bundle.getString("place");
-                    mToolBar.setTitle(mTitle.isEmpty() ? "場所不明" : mTitle);
-                    adapter.getPage(0).onActivityResult(requestCode, resultCode, data);
+                    mToolBar.setTitle(mTitle.isEmpty() ? getString(R.string.undefined_place) : mTitle);
+                    adapter.getPage(1).onActivityResult(requestCode, resultCode, data);
                 }
                 break;
             case REQUEST_CHECK_SETTINGS:
-                adapter.getPage(0).onActivityResult(requestCode, resultCode, data);
+                adapter.getPage(1).onActivityResult(requestCode, resultCode, data);
                 break;
             default:
                 break;
@@ -500,8 +502,8 @@ public class TimelineActivity extends AppCompatActivity {
     @Subscribe
     public void subscribe(AddressNameEvent event) {
         mTitle = event.mPlace;
-        if (mShowPosition == 0) {
-            mToolBar.setTitle(mTitle.isEmpty() ? "場所不明" : mTitle);
+        if (mShowPosition == 1) {
+            mToolBar.setTitle(mTitle.isEmpty() ? getString(R.string.undefined_place) : mTitle);
         }
     }
 
@@ -593,17 +595,12 @@ public class TimelineActivity extends AppCompatActivity {
 
     private void rationaleDialog(final String[] permissions, final int requestCode) {
         new MaterialDialog.Builder(this)
-                .title("権限許可のお願い")
+                .title(getString(R.string.permission_camera_title))
                 .titleColorRes(R.color.namegrey)
-                .content("カメラを起動するには以下のような権限が必要になります。\n\n"
-                        + "・カメラ(動画の撮影)\n\n"
-                        + "・録音(音声の録音)\n\n"
-                        + "・ストレージ(動画の作成)\n\n"
-                        + "・位置情報(店舗情報の取得)\n\n"
-                        + "権限を許可しますか？")
+                .content(getString(R.string.permission_camera_content))
                 .contentColorRes(R.color.nameblack)
-                .positiveText("許可する").positiveColorRes(R.color.gocci_header)
-                .negativeText("いいえ").negativeColorRes(R.color.gocci_header)
+                .positiveText(getString(R.string.permission_camera_positive)).positiveColorRes(R.color.gocci_header)
+                .negativeText(getString(R.string.permission_camera_negative)).negativeColorRes(R.color.gocci_header)
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
@@ -613,7 +610,7 @@ public class TimelineActivity extends AppCompatActivity {
                 .onNegative(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
-                        Toast.makeText(TimelineActivity.this, "カメラは起動できませんでした...", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(TimelineActivity.this, getString(R.string.permission_camera_cancel), Toast.LENGTH_SHORT).show();
                     }
                 }).show();
     }
@@ -678,7 +675,7 @@ public class TimelineActivity extends AppCompatActivity {
                 break;
             case 38:
             case 39:
-                adapter.getPage(0).onRequestPermissionsResult(requestCode, permissions, grantResults);
+                adapter.getPage(1).onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
         // other 'case' lines to check for other
         // permissions this app might request
@@ -690,13 +687,13 @@ public class TimelineActivity extends AppCompatActivity {
                 !ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) ||
                 !ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
             new MaterialDialog.Builder(this)
-                    .title("権限許可のお願い")
+                    .title(getString(R.string.permission_camera_rationale_title))
                     .titleColorRes(R.color.namegrey)
-                    .content("カメラを起動するには権限を許可する必要があるため、設定を変更する必要があります")
+                    .content(getString(R.string.permission_camera_rationale_content))
                     .contentColorRes(R.color.nameblack)
-                    .positiveText("変更する")
+                    .positiveText(getString(R.string.permission_camera_rationale_positive))
                     .positiveColorRes(R.color.gocci_header)
-                    .negativeText("いいえ")
+                    .negativeText(getString(R.string.permission_camera_rationale_negative))
                     .negativeColorRes(R.color.gocci_header)
                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                         @Override
@@ -710,11 +707,11 @@ public class TimelineActivity extends AppCompatActivity {
                     .onNegative(new MaterialDialog.SingleButtonCallback() {
                         @Override
                         public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
-                            Toast.makeText(TimelineActivity.this, "カメラは起動できませんでした", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(TimelineActivity.this, getString(R.string.permission_camera_cancel), Toast.LENGTH_SHORT).show();
                         }
                     }).show();
         } else {
-            Toast.makeText(TimelineActivity.this, "カメラは起動できませんでした", Toast.LENGTH_SHORT).show();
+            Toast.makeText(TimelineActivity.this, getString(R.string.permission_camera_cancel), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -725,7 +722,7 @@ public class TimelineActivity extends AppCompatActivity {
                 PermissionChecker.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             goCamera();
         } else {
-            Toast.makeText(TimelineActivity.this, "カメラは起動できませんでした", Toast.LENGTH_SHORT).show();
+            Toast.makeText(TimelineActivity.this, getString(R.string.permission_camera_cancel), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -776,7 +773,7 @@ public class TimelineActivity extends AppCompatActivity {
     }
 
     public void setNowLocationTitle() {
-        mTitle = "現在地";
+        mTitle = getString(R.string.now_location);
         mToolBar.setTitle(mTitle);
     }
 
