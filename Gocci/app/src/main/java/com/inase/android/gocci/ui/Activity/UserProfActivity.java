@@ -478,29 +478,24 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
         mUserProfFollow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                switch (mFollowText.getText().toString()) {
-                    case "フォローする":
-                        API3.Util.SetFollowLocalCode postFollowLocalCode = API3.Impl.getRepository().SetFollowParameterRegex(mUser_id);
-                        if (postFollowLocalCode == null) {
-                            mPresenter.postFollow(Const.APICategory.SET_FOLLOW, API3.Util.getSetFollowAPI(mUser_id), mUser_id);
-                            mFollowText.setText(getString(R.string.do_unfollow));
-                            headerUserData.setFollow_flag(1);
-                        } else {
-                            Toast.makeText(UserProfActivity.this, API3.Util.SetFollowLocalCodeMessageTable(postFollowLocalCode), Toast.LENGTH_SHORT).show();
-                        }
-                        break;
-                    case "フォローしています":
-                        API3.Util.UnsetFollowLocalCode postUnfollowLocalCode = API3.Impl.getRepository().UnsetFollowParameterRegex(mUser_id);
-                        if (postUnfollowLocalCode == null) {
-                            mPresenter.postFollow(Const.APICategory.UNSET_FOLLOW, API3.Util.getUnsetFollowAPI(mUser_id), mUser_id);
-                            mFollowText.setText(getString(R.string.do_follow));
-                            headerUserData.setFollow_flag(0);
-                        } else {
-                            Toast.makeText(UserProfActivity.this, API3.Util.UnsetFollowLocalCodeMessageTable(postUnfollowLocalCode), Toast.LENGTH_SHORT).show();
-                        }
-                        break;
-                    case "これはあなたです":
-                        break;
+                if (mFollowText.getText().toString().equals(getString(R.string.do_follow))) {
+                    API3.Util.SetFollowLocalCode postFollowLocalCode = API3.Impl.getRepository().SetFollowParameterRegex(mUser_id);
+                    if (postFollowLocalCode == null) {
+                        mPresenter.postFollow(Const.APICategory.SET_FOLLOW, API3.Util.getSetFollowAPI(mUser_id), mUser_id);
+                        mFollowText.setText(getString(R.string.do_unfollow));
+                        headerUserData.setFollow_flag(1);
+                    } else {
+                        Toast.makeText(UserProfActivity.this, API3.Util.SetFollowLocalCodeMessageTable(postFollowLocalCode), Toast.LENGTH_SHORT).show();
+                    }
+                } else if (mFollowText.getText().toString().equals(getString(R.string.do_unfollow))) {
+                    API3.Util.UnsetFollowLocalCode postUnfollowLocalCode = API3.Impl.getRepository().UnsetFollowParameterRegex(mUser_id);
+                    if (postUnfollowLocalCode == null) {
+                        mPresenter.postFollow(Const.APICategory.UNSET_FOLLOW, API3.Util.getUnsetFollowAPI(mUser_id), mUser_id);
+                        mFollowText.setText(getString(R.string.do_follow));
+                        headerUserData.setFollow_flag(0);
+                    } else {
+                        Toast.makeText(UserProfActivity.this, API3.Util.UnsetFollowLocalCodeMessageTable(postUnfollowLocalCode), Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });
@@ -583,29 +578,24 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
         mUserProfFollow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                switch (mFollowText.getText().toString()) {
-                    case "フォローする":
-                        API3.Util.SetFollowLocalCode postFollowLocalCode = API3.Impl.getRepository().SetFollowParameterRegex(mUser_id);
-                        if (postFollowLocalCode == null) {
-                            mPresenter.postFollow(Const.APICategory.SET_FOLLOW, API3.Util.getSetFollowAPI(mUser_id), mUser_id);
-                            mFollowText.setText(getString(R.string.do_unfollow));
-                            headerUserData.setFollow_flag(1);
-                        } else {
-                            Toast.makeText(UserProfActivity.this, API3.Util.SetFollowLocalCodeMessageTable(postFollowLocalCode), Toast.LENGTH_SHORT).show();
-                        }
-                        break;
-                    case "フォローしています":
-                        API3.Util.UnsetFollowLocalCode postUnfollowLocalCode = API3.Impl.getRepository().UnsetFollowParameterRegex(mUser_id);
-                        if (postUnfollowLocalCode == null) {
-                            mPresenter.postFollow(Const.APICategory.UNSET_FOLLOW, API3.Util.getUnsetFollowAPI(mUser_id), mUser_id);
-                            mFollowText.setText(getString(R.string.do_follow));
-                            headerUserData.setFollow_flag(0);
-                        } else {
-                            Toast.makeText(UserProfActivity.this, API3.Util.UnsetFollowLocalCodeMessageTable(postUnfollowLocalCode), Toast.LENGTH_SHORT).show();
-                        }
-                        break;
-                    case "これはあなたです":
-                        break;
+                if (mFollowText.getText().toString().equals(getString(R.string.do_follow))) {
+                    API3.Util.SetFollowLocalCode postFollowLocalCode = API3.Impl.getRepository().SetFollowParameterRegex(mUser_id);
+                    if (postFollowLocalCode == null) {
+                        mPresenter.postFollow(Const.APICategory.SET_FOLLOW, API3.Util.getSetFollowAPI(mUser_id), mUser_id);
+                        mFollowText.setText(getString(R.string.do_unfollow));
+                        headerUserData.setFollow_flag(1);
+                    } else {
+                        Toast.makeText(UserProfActivity.this, API3.Util.SetFollowLocalCodeMessageTable(postFollowLocalCode), Toast.LENGTH_SHORT).show();
+                    }
+                } else if (mFollowText.getText().toString().equals(getString(R.string.do_unfollow))) {
+                    API3.Util.UnsetFollowLocalCode postUnfollowLocalCode = API3.Impl.getRepository().UnsetFollowParameterRegex(mUser_id);
+                    if (postUnfollowLocalCode == null) {
+                        mPresenter.postFollow(Const.APICategory.UNSET_FOLLOW, API3.Util.getUnsetFollowAPI(mUser_id), mUser_id);
+                        mFollowText.setText(getString(R.string.do_follow));
+                        headerUserData.setFollow_flag(0);
+                    } else {
+                        Toast.makeText(UserProfActivity.this, API3.Util.UnsetFollowLocalCodeMessageTable(postUnfollowLocalCode), Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });
@@ -679,11 +669,13 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
             mShareRestname = restname;
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 new MaterialDialog.Builder(this)
-                        .content("シェアをするにはストレージにアクセスする必要があります。権限を許可しますか？")
+                        .title(getString(R.string.permission_storage_title))
+                        .titleColorRes(R.color.namegrey)
+                        .content(getString(R.string.permission_storage_content))
                         .contentColorRes(R.color.nameblack)
-                        .positiveText("許可する")
+                        .positiveText(getString(R.string.permission_storage_positive))
                         .positiveColorRes(R.color.gocci_header)
-                        .negativeText("いいえ")
+                        .negativeText(getString(R.string.permission_storage_negative))
                         .negativeColorRes(R.color.gocci_header)
                         .onPositive(new MaterialDialog.SingleButtonCallback() {
                             @Override
@@ -711,7 +703,7 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
                         TwitterAuthToken authToken = session.getAuthToken();
                         Util.twitterShare(this, "#" + restname.replaceAll("\\s+", "") + " #Gocci", share, authToken);
                     } else {
-                        Toast.makeText(this, "設定ページでTwitter連携を行ってください", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, getString(R.string.alert_twitter_sharing), Toast.LENGTH_SHORT).show();
                     }
                     break;
                 case 27:
@@ -733,13 +725,13 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
                     } else {
                         if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                             new MaterialDialog.Builder(this)
-                                    .title("権限許可のお願い")
+                                    .title(getString(R.string.permission_storage_title))
                                     .titleColorRes(R.color.namegrey)
-                                    .content("シェアするには権限を許可する必要があるため、設定を変更する必要があります")
+                                    .content(getString(R.string.permission_storage_content))
                                     .contentColorRes(R.color.nameblack)
-                                    .positiveText("変更する")
+                                    .positiveText(getString(R.string.permission_storage_positive))
                                     .positiveColorRes(R.color.gocci_header)
-                                    .negativeText("いいえ")
+                                    .negativeText(getString(R.string.permission_storage_negative))
                                     .negativeColorRes(R.color.gocci_header)
                                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                                         @Override
@@ -777,18 +769,18 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
                             TwitterAuthToken authToken = session.getAuthToken();
                             Util.twitterShare(this, "#" + mShareRestname.replaceAll("\\s+", "") + " #Gocci", mShareShare, authToken);
                         } else {
-                            Toast.makeText(this, "設定ページでTwitter連携を行ってください", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, getString(R.string.alert_twitter_sharing), Toast.LENGTH_SHORT).show();
                         }
                     } else {
                         if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                             new MaterialDialog.Builder(this)
-                                    .title("権限許可のお願い")
+                                    .title(getString(R.string.permission_storage_title))
                                     .titleColorRes(R.color.namegrey)
-                                    .content("シェアするには権限を許可する必要があるため、設定を変更する必要があります")
+                                    .content(getString(R.string.permission_storage_content))
                                     .contentColorRes(R.color.nameblack)
-                                    .positiveText("変更する")
+                                    .positiveText(getString(R.string.permission_storage_positive))
                                     .positiveColorRes(R.color.gocci_header)
-                                    .negativeText("いいえ")
+                                    .negativeText(getString(R.string.permission_storage_negative))
                                     .negativeColorRes(R.color.gocci_header)
                                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                                         @Override
@@ -818,7 +810,7 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
                             TwitterAuthToken authToken = session.getAuthToken();
                             Util.twitterShare(this, "#" + mShareRestname.replaceAll("\\s+", "") + " #Gocci", mShareShare, authToken);
                         } else {
-                            Toast.makeText(this, "設定ページでTwitter連携を行ってください", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, getString(R.string.alert_twitter_sharing), Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
@@ -831,13 +823,13 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
                     } else {
                         if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                             new MaterialDialog.Builder(this)
-                                    .title("権限許可のお願い")
+                                    .title(getString(R.string.permission_storage_title))
                                     .titleColorRes(R.color.namegrey)
-                                    .content("シェアするには権限を許可する必要があるため、設定を変更する必要があります")
+                                    .content(getString(R.string.permission_storage_content))
                                     .contentColorRes(R.color.nameblack)
-                                    .positiveText("変更する")
+                                    .positiveText(getString(R.string.permission_storage_positive))
                                     .positiveColorRes(R.color.gocci_header)
-                                    .negativeText("いいえ")
+                                    .negativeText(getString(R.string.permission_storage_negative))
                                     .negativeColorRes(R.color.gocci_header)
                                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                                         @Override
