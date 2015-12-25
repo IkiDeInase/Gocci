@@ -236,6 +236,8 @@
     <string name="setting_socialnetwork_twitter">Twitter</string>
     <string name="setting_socialnetwork_facebook">Facebook</string>
     <string name="setting_socialnetwork_instagram">Instagram</string>
+    <string name="setting_socialnetwork_invite_twitter">Invite friends by Twitter</string>
+    <string name="setting_socialnetwork_invite_facebook">Invite friends by Facebook</string>
     <string name="setting_support">Support</string>
     <string name="setting_support_autoplay">AutoPlay</string>
     <string name="setting_support_advice">Send advice</string>

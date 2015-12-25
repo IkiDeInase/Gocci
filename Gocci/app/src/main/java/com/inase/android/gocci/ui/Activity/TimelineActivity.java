@@ -155,7 +155,7 @@ public class TimelineActivity extends AppCompatActivity {
     public static String mLongitude = "139.745433";
     public static String mLatitude = "35.658581";
 
-    private String mTitle = "";
+    public static String mTitle = "";
 
     private String[] CATEGORY;
     private String[] VALUE;

@@ -353,7 +353,7 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
         if (player == null) {
             return;
         }
-        if (mPlayingPostId != null && TimelineActivity.mShowPosition == 1) {
+        if (mPlayingPostId != null && TimelineActivity.mShowPosition == 2) {
             releasePlayer();
         }
         player.setBackgrounded(false);

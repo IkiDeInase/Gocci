@@ -357,7 +357,7 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
         if (player == null) {
             return;
         }
-        if (mPlayingPostId != null && TimelineActivity.mShowPosition == 2) {
+        if (mPlayingPostId != null && TimelineActivity.mShowPosition == 0) {
             releasePlayer();
         }
         player.setBackgrounded(false);

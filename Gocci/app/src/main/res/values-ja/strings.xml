@@ -236,6 +236,8 @@
     <string name="setting_socialnetwork_twitter">Twitter</string>
     <string name="setting_socialnetwork_facebook">Facebook</string>
     <string name="setting_socialnetwork_instagram">Instagram</string>
+    <string name="setting_socialnetwork_invite_twitter">Twitterで友人を招待する</string>
+    <string name="setting_socialnetwork_invite_facebook">Facebookで友人を招待する</string>
     <string name="setting_support">サポート</string>
     <string name="setting_support_autoplay">動画の自動再生</string>
     <string name="setting_support_advice">アドバイスを送る</string>

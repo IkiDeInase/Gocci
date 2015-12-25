@@ -86,6 +86,7 @@ import com.inase.android.gocci.utils.video.HlsRendererBuilder;
 import com.inase.android.gocci.utils.video.VideoPlayer;
 import com.squareup.otto.Subscribe;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -497,7 +498,7 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
         if (player == null) {
             return;
         }
-        if (mPlayingPostId != null && TimelineActivity.mShowPosition == 0) {
+        if (mPlayingPostId != null && TimelineActivity.mShowPosition == 1) {
             releasePlayer();
         }
         player.setBackgrounded(false);
@@ -1085,7 +1086,7 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
             case GET_NEARLINE_REFRESH:
                 mPresenter.getNearTimelinePostData(Const.APICategory.GET_NEARLINE_REFRESH, API3.Util.getGetNearlineAPI(
                         TimelineActivity.mLatitude, TimelineActivity.mLongitude, null, null, null));
-                if (TimelineActivity.mShowPosition == 0) {
+                if (TimelineActivity.mShowPosition == 1) {
                     TimelineActivity activity = (TimelineActivity) getActivity();
                     activity.setNowLocationTitle();
                 }
@@ -1172,7 +1173,7 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
     @Override
     public void onConnected(Bundle bundle) {
         if (!isLocationUpdating) {
-            if (getString(R.string.now_location).equals(toolbar.getTitle())) {
+            if (getString(R.string.now_location).equals(TimelineActivity.mTitle)) {
                 startLocationUpdates();
             }
         }
@@ -1231,7 +1232,7 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
             if (localCode == null) {
                 mPresenter.getNearTimelinePostData(Const.APICategory.GET_NEARLINE_REFRESH, API3.Util.getGetNearlineAPI(
                         TimelineActivity.mLatitude, TimelineActivity.mLongitude, null, null, null));
-                if (TimelineActivity.mShowPosition == 0) {
+                if (TimelineActivity.mShowPosition == 1) {
                     TimelineActivity activity = (TimelineActivity) getActivity();
                     activity.setNowLocationTitle();
                 }

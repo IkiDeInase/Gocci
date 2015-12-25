@@ -237,10 +237,31 @@
                 android:background="#e0e0e0" />
 
             <TextView
-                android:id="@+id/socialnetwork_facebook"
+                android:id="@+id/socialnetwork_invite_twitter"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/socialnetwork_twitter_line"
+                android:layout_marginBottom="12dp"
+                android:layout_marginLeft="24dp"
+                android:layout_marginTop="12dp"
+                android:text="@string/setting_socialnetwork_invite_twitter"
+                android:textColor="@color/namegrey"
+                android:textSize="16sp" />
+
+            <View
+                android:id="@+id/socialnetwork_invite_twitter_line"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@+id/socialnetwork_invite_twitter"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:background="#e0e0e0" />
+
+            <TextView
+                android:id="@+id/socialnetwork_facebook"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/socialnetwork_invite_twitter_line"
                 android:layout_marginBottom="12dp"
                 android:layout_marginLeft="24dp"
                 android:layout_marginTop="12dp"
@@ -258,10 +279,31 @@
                 android:background="#e0e0e0" />
 
             <TextView
+                android:id="@+id/socialnetwork_invite_facebook"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/socialnetwork_facebook_line"
+                android:layout_marginBottom="12dp"
+                android:layout_marginLeft="24dp"
+                android:layout_marginTop="12dp"
+                android:text="@string/setting_socialnetwork_invite_facebook"
+                android:textColor="@color/namegrey"
+                android:textSize="16sp" />
+
+            <View
+                android:id="@+id/socialnetwork_invite_facebook_line"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@+id/socialnetwork_invite_facebook"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:background="#e0e0e0" />
+
+            <TextView
                 android:id="@+id/header_support"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/socialnetwork_facebook_line"
+                android:layout_below="@+id/socialnetwork_invite_facebook_line"
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="24dp"
                 android:text="@string/setting_support"

@@ -31,6 +31,8 @@ import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.facebook.share.model.AppInviteContent;
+import com.facebook.share.widget.AppInviteDialog;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.BuildConfig;
 import com.inase.android.gocci.R;
@@ -222,6 +224,27 @@ public class SettingActivity extends AppCompatActivity {
                     }).show();
         } else {
             mFacebookLoginButton.performClick();
+        }
+    }
+
+    @OnClick(R.id.socialnetwork_invite_twitter)
+    public void twitterInvite() {
+        if (isTwitterSetting) {
+
+        } else {
+            //ログイン
+            mTwitterLoginButton.performClick();
+        }
+    }
+
+    @OnClick(R.id.socialnetwork_invite_facebook)
+    public void facebookInvite() {
+        if (AppInviteDialog.canShow()) {
+            AppInviteContent content = new AppInviteContent.Builder()
+                    .setApplinkUrl("http://gocci.me/")
+                    .setPreviewImageUrl("https://techcrunchjp.files.wordpress.com/2015/08/gocci.png?w=1024")
+                    .build();
+            AppInviteDialog.show(this, content);
         }
     }
 
