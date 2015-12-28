@@ -238,7 +238,7 @@ public class TimelineCommentFragment extends Fragment implements AudioCapabiliti
 
         API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().GetTimelineParameterRegex(null, null, null);
         if (localCode == null) {
-            mPresenter.getCommentTimelinePostData(Const.APICategory.GET_COMMENT_FIRST, API3.Util.getGetTimelineAPI(
+            mPresenter.getCommentTimelinePostData(Const.APICategory.GET_COMMENTLINE_FIRST, API3.Util.getGetTimelineAPI(
                     null, null, null));
         } else {
             Toast.makeText(getActivity(), API3.Util.GetTimelineLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
@@ -473,7 +473,7 @@ public class TimelineCommentFragment extends Fragment implements AudioCapabiliti
 
                 API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().GetTimelineParameterRegex(null, null, null);
                 if (localCode == null) {
-                    mPresenter.getCommentTimelinePostData(Const.APICategory.GET_COMMENT_REFRESH, API3.Util.getGetTimelineAPI(
+                    mPresenter.getCommentTimelinePostData(Const.APICategory.GET_COMMENTLINE_REFRESH, API3.Util.getGetTimelineAPI(
                             null, null, null));
                 } else {
                     Toast.makeText(getActivity(), API3.Util.GetTimelineLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
