@@ -46,7 +46,9 @@ import com.inase.android.gocci.event.FilterTimelineEvent;
 import com.inase.android.gocci.event.NotificationNumberEvent;
 import com.inase.android.gocci.event.PageChangeVideoStopEvent;
 import com.inase.android.gocci.event.TimelineMuteChangeEvent;
+import com.inase.android.gocci.ui.fragment.TimelineCommentFragment;
 import com.inase.android.gocci.ui.fragment.TimelineFollowFragment;
+import com.inase.android.gocci.ui.fragment.TimelineGochiFragment;
 import com.inase.android.gocci.ui.fragment.TimelineLatestFragment;
 import com.inase.android.gocci.ui.fragment.TimelineNearFragment;
 import com.inase.android.gocci.ui.view.DrawerProfHeader;
@@ -151,6 +153,12 @@ public class TimelineActivity extends AppCompatActivity {
 
     public static int mFollowCategory_id = 0;
     public static int mFollowValue_id = 0;
+
+    public static int mGochiCategory_id = 0;
+    public static int mGochiValue_id = 0;
+
+    public static int mCommentCategory_id = 0;
+    public static int mCommentValue_id = 0;
 
     public static String mLongitude = "139.745433";
     public static String mLatitude = "35.658581";
@@ -266,8 +274,8 @@ public class TimelineActivity extends AppCompatActivity {
                 .add(R.string.tab_latest, TimelineLatestFragment.class)
                 .add(R.string.tab_near, TimelineNearFragment.class)
                 .add(R.string.tab_follow, TimelineFollowFragment.class)
-                .add("いいねした", TimelineFollowFragment.class)
-                .add("コメントした", TimelineFollowFragment.class)
+                .add(getString(R.string.tab_gochi), TimelineGochiFragment.class)
+                .add(getString(R.string.tab_comment), TimelineCommentFragment.class)
                 .create());
 
         mViewpager.setOffscreenPageLimit(4);
@@ -336,6 +344,40 @@ public class TimelineActivity extends AppCompatActivity {
                         mToolBar.setSubtitle("");
                         mToolBar.setLogo(R.drawable.ic_gocci_moji_white45);
                         break;
+                    case 3:
+                        if (mGochiCategory_id != 0) {
+                            mCategorySpinner.setText(CATEGORY[mGochiCategory_id]);
+                        } else {
+                            mCategorySpinner.setText("");
+                        }
+
+                        if (mGochiValue_id != 0) {
+                            mValueSpinner.setText(VALUE[mGochiValue_id]);
+                        } else {
+                            mValueSpinner.setText("");
+                        }
+
+                        mToolBar.setTitle("");
+                        mToolBar.setSubtitle("");
+                        mToolBar.setLogo(R.drawable.ic_gocci_moji_white45);
+                        break;
+                    case 4:
+                        if (mCommentCategory_id != 0) {
+                            mCategorySpinner.setText(CATEGORY[mCommentCategory_id]);
+                        } else {
+                            mCategorySpinner.setText("");
+                        }
+
+                        if (mCommentValue_id != 0) {
+                            mValueSpinner.setText(VALUE[mCommentValue_id]);
+                        } else {
+                            mValueSpinner.setText("");
+                        }
+
+                        mToolBar.setTitle("");
+                        mToolBar.setSubtitle("");
+                        mToolBar.setLogo(R.drawable.ic_gocci_moji_white45);
+                        break;
                 }
             }
 
@@ -364,6 +406,12 @@ public class TimelineActivity extends AppCompatActivity {
                     case 2:
                         mFollowCategory_id = position + 2;
                         break;
+                    case 3:
+                        mGochiCategory_id = position + 2;
+                        break;
+                    case 4:
+                        mCommentCategory_id = position + 2;
+                        break;
                 }
             }
         });
@@ -381,6 +429,12 @@ public class TimelineActivity extends AppCompatActivity {
                         break;
                     case 2:
                         mFollowValue_id = position + 1;
+                        break;
+                    case 3:
+                        mGochiValue_id = position + 1;
+                        break;
+                    case 4:
+                        mCommentValue_id = position + 1;
                         break;
                 }
             }
@@ -408,6 +462,14 @@ public class TimelineActivity extends AppCompatActivity {
                         mFollowCategory_id = 0;
                         mFollowValue_id = 0;
                         break;
+                    case 3:
+                        mGochiCategory_id = 0;
+                        mGochiValue_id = 0;
+                        break;
+                    case 4:
+                        mCommentCategory_id = 0;
+                        mCommentValue_id = 0;
+                        break;
                 }
             }
         });
@@ -429,6 +491,14 @@ public class TimelineActivity extends AppCompatActivity {
                     case 2:
                         BusHolder.get().post(new FilterTimelineEvent(mShowPosition, API3.Util.getGetFollowlineAPI(null,
                                 mFollowCategory_id != 0 ? String.valueOf(mFollowCategory_id) : null, mFollowValue_id != 0 ? String.valueOf(mFollowValue_id) : null)));
+                        break;
+                    case 3:
+                        BusHolder.get().post(new FilterTimelineEvent(mShowPosition, API3.Util.getGetTimelineAPI(null,
+                                mGochiCategory_id != 0 ? String.valueOf(mGochiCategory_id) : null, mGochiValue_id != 0 ? String.valueOf(mGochiValue_id) : null)));
+                        break;
+                    case 4:
+                        BusHolder.get().post(new FilterTimelineEvent(mShowPosition, API3.Util.getGetTimelineAPI(null,
+                                mCommentCategory_id != 0 ? String.valueOf(mCommentCategory_id) : null, mCommentValue_id != 0 ? String.valueOf(mCommentValue_id) : null)));
                         break;
                 }
             }

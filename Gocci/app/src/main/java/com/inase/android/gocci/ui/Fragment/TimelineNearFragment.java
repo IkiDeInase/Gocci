@@ -86,7 +86,6 @@ import com.inase.android.gocci.utils.video.HlsRendererBuilder;
 import com.inase.android.gocci.utils.video.VideoPlayer;
 import com.squareup.otto.Subscribe;
 
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -448,20 +447,16 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
 
     @Subscribe
     public void subscribe(PageChangeVideoStopEvent event) {
-        switch (event.position) {
-            case 1:
-                mPlayBlockFlag = false;
-                releasePlayer();
-                break;
-            case 0:
-            case 2:
-                mPlayBlockFlag = true;
-                releasePlayer();
-                if (getPlayingViewHolder() != null) {
-                    getPlayingViewHolder().mSquareImage.setVisibility(View.VISIBLE);
-                    mPlayingPostId = null;
-                }
-                break;
+        if (event.position == 1) {
+            mPlayBlockFlag = false;
+            releasePlayer();
+        } else {
+            mPlayBlockFlag = true;
+            releasePlayer();
+            if (getPlayingViewHolder() != null) {
+                getPlayingViewHolder().mSquareImage.setVisibility(View.VISIBLE);
+                mPlayingPostId = null;
+            }
         }
     }
 

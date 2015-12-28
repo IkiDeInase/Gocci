@@ -307,20 +307,16 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
 
     @Subscribe
     public void subscribe(PageChangeVideoStopEvent event) {
-        switch (event.position) {
-            case 0:
-                mPlayBlockFlag = false;
-                releasePlayer();
-                break;
-            case 1:
-            case 2:
-                mPlayBlockFlag = true;
-                releasePlayer();
-                if (getPlayingViewHolder() != null) {
-                    getPlayingViewHolder().mSquareImage.setVisibility(View.VISIBLE);
-                    mPlayingPostId = null;
-                }
-                break;
+        if (event.position == 0) {
+            mPlayBlockFlag = false;
+            releasePlayer();
+        } else {
+            mPlayBlockFlag = true;
+            releasePlayer();
+            if (getPlayingViewHolder() != null) {
+                getPlayingViewHolder().mSquareImage.setVisibility(View.VISIBLE);
+                mPlayingPostId = null;
+            }
         }
     }
 

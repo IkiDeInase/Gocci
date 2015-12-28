@@ -14,6 +14,8 @@
     <string name="tab_latest">Latest</string>
     <string name="tab_follow">Follow</string>
     <string name="tab_near">Near</string>
+    <string name="tab_gochi">Do Gochi</string>
+    <string name="tab_comment">Do Comment</string>
 
     <string name="timeline">Timeline</string>
     <string name="mypage">Mypage</string>

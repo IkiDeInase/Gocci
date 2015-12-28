@@ -14,6 +14,8 @@
     <string name="tab_latest">新着</string>
     <string name="tab_follow">フォロー</string>
     <string name="tab_near">近い店</string>
+    <string name="tab_gochi">ゴチした</string>
+    <string name="tab_comment">コメントした</string>
 
     <string name="timeline">タイムライン</string>
     <string name="mypage">マイページ</string>

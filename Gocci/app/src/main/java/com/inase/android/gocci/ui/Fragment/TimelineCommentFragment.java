@@ -40,15 +40,15 @@ import com.inase.android.gocci.domain.executor.UIThread;
 import com.inase.android.gocci.domain.model.TwoCellData;
 import com.inase.android.gocci.domain.usecase.GochiUseCase;
 import com.inase.android.gocci.domain.usecase.GochiUseCaseImpl;
-import com.inase.android.gocci.domain.usecase.TimelineFollowUseCase;
-import com.inase.android.gocci.domain.usecase.TimelineFollowUseCaseImpl;
+import com.inase.android.gocci.domain.usecase.TimelineCommentUseCase;
+import com.inase.android.gocci.domain.usecase.TimelineCommentUseCaseImpl;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.FilterTimelineEvent;
 import com.inase.android.gocci.event.NotificationNumberEvent;
 import com.inase.android.gocci.event.PageChangeVideoStopEvent;
 import com.inase.android.gocci.event.RetryApiEvent;
 import com.inase.android.gocci.event.TimelineMuteChangeEvent;
-import com.inase.android.gocci.presenter.ShowFollowTimelinePresenter;
+import com.inase.android.gocci.presenter.ShowCommentTimelinePresenter;
 import com.inase.android.gocci.ui.activity.CommentActivity;
 import com.inase.android.gocci.ui.activity.TenpoActivity;
 import com.inase.android.gocci.ui.activity.TimelineActivity;
@@ -70,10 +70,10 @@ import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
 
 /**
- * Created by kinagafuji on 15/06/11.
+ * Created by kinagafuji on 15/12/28.
  */
-public class TimelineFollowFragment extends Fragment implements AudioCapabilitiesReceiver.Listener, AppBarLayout.OnOffsetChangedListener,
-        ObservableScrollViewCallbacks, ShowFollowTimelinePresenter.ShowFollowTimelineView, TimelineAdapter.TimelineCallback {
+public class TimelineCommentFragment extends Fragment implements AudioCapabilitiesReceiver.Listener, AppBarLayout.OnOffsetChangedListener,
+        ObservableScrollViewCallbacks, ShowCommentTimelinePresenter.ShowCommentTimelineView, TimelineAdapter.TimelineCallback {
 
     @Bind(R.id.list)
     ObservableRecyclerView mTimelineRecyclerView;
@@ -109,7 +109,7 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
 
     private AudioCapabilitiesReceiver audioCapabilitiesReceiver;
 
-    private ShowFollowTimelinePresenter mPresenter;
+    private ShowCommentTimelinePresenter mPresenter;
 
     private TimelineActivity activity;
 
@@ -118,6 +118,7 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
             super.onScrollStateChanged(recyclerView, newState);
             switch (newState) {
+                // スクロールしていない
                 case RecyclerView.SCROLL_STATE_IDLE:
                     if (mPlayingPostId != null) {
                         int position = mPost_ids.indexOf(mPlayingPostId);
@@ -134,8 +135,10 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
                         }
                     }
                     break;
+                // スクロール中
                 case RecyclerView.SCROLL_STATE_DRAGGING:
                     break;
+                // はじいたとき
                 case RecyclerView.SCROLL_STATE_SETTLING:
                     break;
             }
@@ -162,15 +165,15 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
                 if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
                     loading = true;
                     if (!isEndScrioll) {
-                        API3.Util.GetFollowlineLocalCode localCode = API3.Impl.getRepository().GetFollowlineParameterRegex(String.valueOf(mNextCount), TimelineActivity.mFollowCategory_id != 0 ? String.valueOf(TimelineActivity.mFollowCategory_id) : null,
-                                TimelineActivity.mFollowValue_id != 0 ? String.valueOf(TimelineActivity.mFollowValue_id) : null);
+                        API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().GetTimelineParameterRegex(String.valueOf(mNextCount), TimelineActivity.mCommentCategory_id != 0 ? String.valueOf(TimelineActivity.mCommentCategory_id) : null,
+                                TimelineActivity.mCommentValue_id != 0 ? String.valueOf(TimelineActivity.mCommentValue_id) : null);
                         if (localCode == null) {
-                            mPresenter.getFollowTimelinePostData(Const.APICategory.GET_FOLLOWLINE_ADD, API3.Util.getGetFollowlineAPI(
+                            mPresenter.getCommentTimelinePostData(Const.APICategory.GET_COMMENTLINE_ADD, API3.Util.getGetTimelineAPI(
                                     String.valueOf(mNextCount),
-                                    TimelineActivity.mFollowCategory_id != 0 ? String.valueOf(TimelineActivity.mFollowCategory_id) : null,
-                                    TimelineActivity.mFollowValue_id != 0 ? String.valueOf(TimelineActivity.mFollowValue_id) : null));
+                                    TimelineActivity.mCommentCategory_id != 0 ? String.valueOf(TimelineActivity.mCommentCategory_id) : null,
+                                    TimelineActivity.mCommentValue_id != 0 ? String.valueOf(TimelineActivity.mCommentValue_id) : null));
                         } else {
-                            Toast.makeText(getActivity(), API3.Util.GetFollowlineLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), API3.Util.GetTimelineLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
@@ -205,11 +208,11 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
 
         API3 api3Impl = API3.Impl.getRepository();
         PostDataRepository postDataRepositoryImpl = PostDataRepositoryImpl.getRepository(api3Impl);
-        TimelineFollowUseCase followtTimelineUseCaseImpl = TimelineFollowUseCaseImpl.getUseCase(postDataRepositoryImpl, UIThread.getInstance());
+        TimelineCommentUseCase timelineCommentUseCaseImpl = TimelineCommentUseCaseImpl.getUseCase(postDataRepositoryImpl, UIThread.getInstance());
         GochiRepository gochiRepository = GochiRepositoryImpl.getRepository(api3Impl);
         GochiUseCase gochiUseCase = GochiUseCaseImpl.getUseCase(gochiRepository, UIThread.getInstance());
-        mPresenter = new ShowFollowTimelinePresenter(followtTimelineUseCaseImpl, gochiUseCase);
-        mPresenter.setFollowTimelineView(this);
+        mPresenter = new ShowCommentTimelinePresenter(timelineCommentUseCaseImpl, gochiUseCase);
+        mPresenter.setCommentTimelineView(this);
     }
 
     @Override
@@ -223,21 +226,22 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
 
         activity = (TimelineActivity) getActivity();
 
+        fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
+        appBarLayout = (AppBarLayout) getActivity().findViewById(R.id.app_bar);
+
         mLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
         mTimelineRecyclerView.setLayoutManager(mLayoutManager);
         mTimelineRecyclerView.setHasFixedSize(true);
         mTimelineRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
-        mTimelineRecyclerView.setScrollViewCallbacks(this);
         mTimelineRecyclerView.addOnScrollListener(scrollListener);
+        mTimelineRecyclerView.setScrollViewCallbacks(this);
 
-        fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
-        appBarLayout = (AppBarLayout) getActivity().findViewById(R.id.app_bar);
-
-        API3.Util.GetFollowlineLocalCode localCode = API3.Impl.getRepository().GetFollowlineParameterRegex(null, null, null);
+        API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().GetTimelineParameterRegex(null, null, null);
         if (localCode == null) {
-            mPresenter.getFollowTimelinePostData(Const.APICategory.GET_FOLLOWLINE_FIRST, API3.Util.getGetFollowlineAPI(null, null, null));
+            mPresenter.getCommentTimelinePostData(Const.APICategory.GET_COMMENT_FIRST, API3.Util.getGetTimelineAPI(
+                    null, null, null));
         } else {
-            Toast.makeText(getActivity(), API3.Util.GetFollowlineLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), API3.Util.GetTimelineLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
         }
 
         mSwipeContainer.setColorSchemeResources(R.color.gocci_1, R.color.gocci_2, R.color.gocci_3, R.color.gocci_4);
@@ -303,7 +307,7 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
 
     @Subscribe
     public void subscribe(PageChangeVideoStopEvent event) {
-        if (event.position == 2) {
+        if (event.position == 4) {
             mPlayBlockFlag = false;
             releasePlayer();
         } else {
@@ -325,14 +329,14 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
 
     @Subscribe
     public void subscribe(FilterTimelineEvent event) {
-        if (event.currentPage == 2) {
-            API3.Util.GetFollowlineLocalCode localCode = API3.Impl.getRepository().GetFollowlineParameterRegex(null, TimelineActivity.mFollowCategory_id != 0 ? String.valueOf(TimelineActivity.mFollowCategory_id) : null,
-                    TimelineActivity.mFollowValue_id != 0 ? String.valueOf(TimelineActivity.mFollowValue_id) : null);
+        if (event.currentPage == 4) {
+            API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().GetTimelineParameterRegex(null, TimelineActivity.mCommentCategory_id != 0 ? String.valueOf(TimelineActivity.mCommentCategory_id) : null,
+                    TimelineActivity.mCommentValue_id != 0 ? String.valueOf(TimelineActivity.mCommentValue_id) : null);
             if (localCode == null) {
                 mTimelineRecyclerView.scrollVerticallyToPosition(0);
-                mPresenter.getFollowTimelinePostData(Const.APICategory.GET_FOLLOWLINE_FILTER, event.filterUrl);
+                mPresenter.getCommentTimelinePostData(Const.APICategory.GET_COMMENTLINE_FILTER, event.filterUrl);
             } else {
-                Toast.makeText(getActivity(), API3.Util.GetFollowlineLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), API3.Util.GetTimelineLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -349,7 +353,7 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
         if (player == null) {
             return;
         }
-        if (mPlayingPostId != null && TimelineActivity.mShowPosition == 2) {
+        if (mPlayingPostId != null && TimelineActivity.mShowPosition == 4) {
             releasePlayer();
         }
         player.setBackgrounded(false);
@@ -398,7 +402,6 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
                             height == 0 ? 1 : (width * pixelWidthAspectRatio) / height);
                 }
             });
-            //player.seekTo(playerPosition);
             playerNeedsPrepare = true;
         }
         if (playerNeedsPrepare) {
@@ -422,27 +425,8 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
         }
     }
 
-    private void getRefreshAsync(final Context context) {
-        SmartLocation.with(context).location().oneFix().start(new OnLocationUpdatedListener() {
-            @Override
-            public void onLocationUpdated(Location location) {
-                TimelineActivity.mLongitude = String.valueOf(location.getLongitude());
-                TimelineActivity.mLatitude = String.valueOf(location.getLatitude());
-                TimelineActivity.mFollowValue_id = 0;
-                TimelineActivity.mFollowCategory_id = 0;
-
-                API3.Util.GetFollowlineLocalCode localCode = API3.Impl.getRepository().GetFollowlineParameterRegex(null, null, null);
-                if (localCode == null) {
-                    mPresenter.getFollowTimelinePostData(Const.APICategory.GET_FOLLOWLINE_REFRESH, API3.Util.getGetFollowlineAPI(
-                            null, null, null));
-                } else {
-                    Toast.makeText(getActivity(), API3.Util.GetFollowlineLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-    }
-
     private void changeMovie(TwoCellData postData) {
+        // TODO:実装
         if (mPlayingPostId != null) {
             // 前回の動画再生停止処理
             final Const.TwoCellViewHolder oldViewHolder = getPlayingViewHolder();
@@ -478,6 +462,26 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
         return viewHolder;
     }
 
+    private void getRefreshAsync(final Context context) {
+        SmartLocation.with(context).location().oneFix().start(new OnLocationUpdatedListener() {
+            @Override
+            public void onLocationUpdated(Location location) {
+                TimelineActivity.mLongitude = String.valueOf(location.getLongitude());
+                TimelineActivity.mLatitude = String.valueOf(location.getLatitude());
+                TimelineActivity.mCommentCategory_id = 0;
+                TimelineActivity.mCommentValue_id = 0;
+
+                API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().GetTimelineParameterRegex(null, null, null);
+                if (localCode == null) {
+                    mPresenter.getCommentTimelinePostData(Const.APICategory.GET_COMMENT_REFRESH, API3.Util.getGetTimelineAPI(
+                            null, null, null));
+                } else {
+                    Toast.makeText(getActivity(), API3.Util.GetTimelineLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
     @Override
     public void onOffsetChanged(AppBarLayout appBarLayout, int i) {
         mSwipeContainer.setEnabled(i == 0);
@@ -490,7 +494,6 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
 
     @Override
     public void onDownMotionEvent() {
-
     }
 
     @Override
@@ -515,12 +518,12 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
     @Override
     public void showEmpty(Const.APICategory api) {
         switch (api) {
-            case GET_FOLLOWLINE_FIRST:
-                mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.FOLLOWLINE, mTimelineusers);
+            case GET_COMMENTLINE_FIRST:
+                mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.TIMELINE, mTimelineusers);
                 mTimelineAdapter.setTimelineCallback(this);
                 mTimelineRecyclerView.setAdapter(mTimelineAdapter);
                 break;
-            case GET_FOLLOWLINE_REFRESH:
+            case GET_COMMENTLINE_REFRESH:
                 mTimelineusers.clear();
                 isEndScrioll = false;
                 previousTotal = 0;
@@ -528,7 +531,7 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
                 mPlayingPostId = null;
                 mTimelineAdapter.setData();
                 break;
-            case GET_FOLLOWLINE_FILTER:
+            case GET_COMMENTLINE_FILTER:
                 mTimelineusers.clear();
                 isEndScrioll = false;
                 previousTotal = 0;
@@ -550,14 +553,14 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
     @Override
     public void showResult(Const.APICategory api, ArrayList<TwoCellData> mPostData, ArrayList<String> post_ids) {
         switch (api) {
-            case GET_FOLLOWLINE_FIRST:
+            case GET_COMMENTLINE_FIRST:
                 mTimelineusers.addAll(mPostData);
                 mPost_ids.addAll(post_ids);
-                mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.FOLLOWLINE, mTimelineusers);
+                mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.TIMELINE, mTimelineusers);
                 mTimelineAdapter.setTimelineCallback(this);
                 mTimelineRecyclerView.setAdapter(mTimelineAdapter);
                 break;
-            case GET_FOLLOWLINE_REFRESH:
+            case GET_COMMENTLINE_REFRESH:
                 mTimelineusers.clear();
                 mTimelineusers.addAll(mPostData);
                 mPost_ids.clear();
@@ -576,7 +579,7 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
                     activity.refreshSheet();
                 }
                 break;
-            case GET_FOLLOWLINE_ADD:
+            case GET_COMMENTLINE_ADD:
                 if (mPostData.size() != 0) {
                     mPlayingPostId = null;
                     mTimelineusers.addAll(mPostData);
@@ -587,7 +590,7 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
                     isEndScrioll = true;
                 }
                 break;
-            case GET_FOLLOWLINE_FILTER:
+            case GET_COMMENTLINE_FILTER:
                 mTimelineusers.clear();
                 mTimelineusers.addAll(mPostData);
                 mPost_ids.clear();
@@ -606,8 +609,8 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
     public void causedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
         Application_Gocci.resolveOrHandleGlobalError(getActivity(), api, globalCode);
         mSwipeContainer.setRefreshing(false);
-        if (api == Const.APICategory.GET_FOLLOWLINE_FIRST) {
-            mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.FOLLOWLINE, mTimelineusers);
+        if (api == Const.APICategory.GET_COMMENTLINE_FIRST) {
+            mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.TIMELINE, mTimelineusers);
             mTimelineAdapter.setTimelineCallback(this);
             mTimelineRecyclerView.setAdapter(mTimelineAdapter);
         }
@@ -617,8 +620,8 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
     public void causedByLocalError(Const.APICategory api, String errorMessage) {
         Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
         mSwipeContainer.setRefreshing(false);
-        if (api == Const.APICategory.GET_FOLLOWLINE_FIRST) {
-            mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.FOLLOWLINE, mTimelineusers);
+        if (api == Const.APICategory.GET_COMMENTLINE_FIRST) {
+            mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.TIMELINE, mTimelineusers);
             mTimelineAdapter.setTimelineCallback(this);
             mTimelineRecyclerView.setAdapter(mTimelineAdapter);
         }
@@ -703,20 +706,20 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
     @Subscribe
     public void subscribe(RetryApiEvent event) {
         switch (event.api) {
-            case GET_FOLLOWLINE_FIRST:
-                mPresenter.getFollowTimelinePostData(Const.APICategory.GET_FOLLOWLINE_FIRST, API3.Util.getGetFollowlineAPI(null, null, null));
+            case GET_COMMENTLINE_FIRST:
+                mPresenter.getCommentTimelinePostData(Const.APICategory.GET_COMMENTLINE_FIRST, API3.Util.getGetTimelineAPI(null, null, null));
                 break;
-            case GET_FOLLOWLINE_REFRESH:
-                mPresenter.getFollowTimelinePostData(Const.APICategory.GET_FOLLOWLINE_REFRESH, API3.Util.getGetFollowlineAPI(
+            case GET_COMMENTLINE_REFRESH:
+                mPresenter.getCommentTimelinePostData(Const.APICategory.GET_COMMENTLINE_REFRESH, API3.Util.getGetTimelineAPI(
                         null, null, null));
                 break;
-            case GET_FOLLOWLINE_ADD:
-                mPresenter.getFollowTimelinePostData(Const.APICategory.GET_FOLLOWLINE_ADD, API3.Util.getGetFollowlineAPI(
+            case GET_COMMENTLINE_ADD:
+                mPresenter.getCommentTimelinePostData(Const.APICategory.GET_COMMENTLINE_ADD, API3.Util.getGetTimelineAPI(
                         String.valueOf(mNextCount),
-                        TimelineActivity.mFollowCategory_id != 0 ? String.valueOf(TimelineActivity.mFollowCategory_id) : null,
-                        TimelineActivity.mFollowValue_id != 0 ? String.valueOf(TimelineActivity.mFollowValue_id) : null));
+                        TimelineActivity.mCommentCategory_id != 0 ? String.valueOf(TimelineActivity.mCommentCategory_id) : null,
+                        TimelineActivity.mCommentValue_id != 0 ? String.valueOf(TimelineActivity.mCommentValue_id) : null));
                 break;
-            case GET_FOLLOWLINE_FILTER:
+            case GET_COMMENTLINE_FILTER:
 
                 break;
             default:
