@@ -175,6 +175,94 @@ public class PostDataRepositoryImpl implements PostDataRepository {
                                 }
                             });
                             break;
+                        case GET_GOCHILINE_FIRST:
+                        case GET_GOCHILINE_REFRESH:
+                        case GET_GOCHILINE_ADD:
+                        case GET_GOCHILINE_FILTER:
+                            mAPI3.GetFollowlineResponse(response, new API3.PayloadResponseCallback() {
+
+                                @Override
+                                public void onSuccess(JSONObject payload) {
+                                    try {
+                                        JSONArray posts = payload.getJSONArray("posts");
+
+                                        final ArrayList<TwoCellData> mPostData = new ArrayList<>();
+                                        final ArrayList<String> mPost_Ids = new ArrayList<>();
+
+                                        if (posts.length() != 0) {
+                                            for (int i = 0; i < posts.length(); i++) {
+                                                JSONObject postdata = posts.getJSONObject(i);
+                                                mPostData.add(TwoCellData.createPostData(postdata));
+                                                mPost_Ids.add(postdata.getString("post_id"));
+                                            }
+                                            cb.onPostDataLoaded(api, mPostData, mPost_Ids);
+                                        } else {
+                                            if (api == Const.APICategory.GET_GOCHILINE_ADD) {
+                                                cb.onPostDataLoaded(api, new ArrayList<TwoCellData>(), new ArrayList<String>());
+                                            } else {
+                                                cb.onPostDataEmpty(api);
+                                            }
+                                        }
+                                    } catch (JSONException e) {
+                                        cb.onCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                                    }
+                                }
+
+                                @Override
+                                public void onGlobalError(API3.Util.GlobalCode globalCode) {
+                                    cb.onCausedByGlobalError(api, globalCode);
+                                }
+
+                                @Override
+                                public void onLocalError(String errorMessage) {
+                                    cb.onCausedByLocalError(api, errorMessage);
+                                }
+                            });
+                            break;
+                        case GET_COMMENTLINE_FIRST:
+                        case GET_COMMENTLINE_REFRESH:
+                        case GET_COMMENTLINE_FILTER:
+                        case GET_COMMENTLINE_ADD:
+                            mAPI3.GetFollowlineResponse(response, new API3.PayloadResponseCallback() {
+
+                                @Override
+                                public void onSuccess(JSONObject payload) {
+                                    try {
+                                        JSONArray posts = payload.getJSONArray("posts");
+
+                                        final ArrayList<TwoCellData> mPostData = new ArrayList<>();
+                                        final ArrayList<String> mPost_Ids = new ArrayList<>();
+
+                                        if (posts.length() != 0) {
+                                            for (int i = 0; i < posts.length(); i++) {
+                                                JSONObject postdata = posts.getJSONObject(i);
+                                                mPostData.add(TwoCellData.createPostData(postdata));
+                                                mPost_Ids.add(postdata.getString("post_id"));
+                                            }
+                                            cb.onPostDataLoaded(api, mPostData, mPost_Ids);
+                                        } else {
+                                            if (api == Const.APICategory.GET_FOLLOWLINE_ADD) {
+                                                cb.onPostDataLoaded(api, new ArrayList<TwoCellData>(), new ArrayList<String>());
+                                            } else {
+                                                cb.onPostDataEmpty(api);
+                                            }
+                                        }
+                                    } catch (JSONException e) {
+                                        cb.onCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                                    }
+                                }
+
+                                @Override
+                                public void onGlobalError(API3.Util.GlobalCode globalCode) {
+                                    cb.onCausedByGlobalError(api, globalCode);
+                                }
+
+                                @Override
+                                public void onLocalError(String errorMessage) {
+                                    cb.onCausedByLocalError(api, errorMessage);
+                                }
+                            });
+                            break;
                     }
                 }
 
