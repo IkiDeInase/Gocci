@@ -48,9 +48,6 @@ public class ListGetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             case FOLLOWER:
                 v = LayoutInflater.from(mContext).inflate(R.layout.cell_follow_follower, parent, false);
                 return new Const.FollowFollowerViewHolder(v);
-            case WANT:
-                v = LayoutInflater.from(mContext).inflate(R.layout.cell_want, parent, false);
-                return new Const.WantViewHolder(v);
             case USER_CHEER:
                 v = LayoutInflater.from(mContext).inflate(R.layout.cell_cheer, parent, false);
                 return new Const.UserCheerViewHolder(v);
@@ -69,9 +66,6 @@ public class ListGetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             case FOLLOW:
             case FOLLOWER:
                 bindFollowFollower((Const.FollowFollowerViewHolder) viewHolder, data);
-                break;
-            case WANT:
-                bindWant((Const.WantViewHolder) viewHolder, data);
                 break;
             case USER_CHEER:
                 bindUserCheer((Const.UserCheerViewHolder) viewHolder, data);
@@ -123,49 +117,6 @@ public class ListGetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     holder.mDeleteFollowButton.setVisibility(View.VISIBLE);
                     holder.mAddFollowButton.setVisibility(View.INVISIBLE);
                     mCallback.onFollowClick(Const.APICategory.SET_FOLLOW, data.getUser_id());
-                }
-            }
-        });
-    }
-
-    private void bindWant(final Const.WantViewHolder holder, final ListGetData data) {
-        holder.mRestName.setText(data.getRestname());
-        holder.mLocality.setText(data.getLocality());
-
-            /*
-            Picasso.with(mContext)
-                    .load(user.getProfile_img())
-                    .placeholder(R.drawable.ic_userpicture)
-                    .transform(new RoundedTransformation())
-                    .into(viewHolder.restpicture);
-                    */
-
-        holder.mRestName.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mCallback.onRestClick(data.getRest_id(), data.getRestname());
-            }
-        });
-
-        holder.mWantPicture.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mCallback.onRestClick(data.getRest_id(), data.getRestname());
-            }
-        });
-
-        holder.mDeleteWantButton.setVisibility(View.VISIBLE);
-        holder.mWantRipple.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (holder.mDeleteWantButton.isShown()) {
-                    holder.mDeleteWantButton.setVisibility(View.INVISIBLE);
-                    holder.mAddWantButton.setVisibility(View.VISIBLE);
-                    API3PostUtil.setWantAsync(mContext, data.getRest_id());
-                } else {
-                    holder.mDeleteWantButton.setVisibility(View.VISIBLE);
-                    holder.mAddWantButton.setVisibility(View.INVISIBLE);
-                    API3PostUtil.unsetWantAsync(mContext, data.getRest_id());
                 }
             }
         });

@@ -120,6 +120,10 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
     TextView mFollowText;
     @Bind(R.id.gochi_layout)
     GochiLayout mGochi;
+    @Bind(R.id.post_count_num)
+    TextView mPostCountNum;
+    @Bind(R.id.gochi_count_text)
+    TextView mGochiCountNum;
 
     @Bind(R.id.follow_ripple)
     RippleView mFollowRipple;
@@ -129,6 +133,8 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
     RippleView mUsercheerRipple;
     @Bind(R.id.userprof_follow)
     RippleView mUserProfFollow;
+    @Bind(R.id.post_count_ripple)
+    RippleView mPostCountRipple;
 
     @OnClick(R.id.stream)
     public void onStream() {
@@ -464,6 +470,8 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
         mFollowNum.setText(String.valueOf(headerUserData.getFollow_num()));
         mFollowerNum.setText(String.valueOf(headerUserData.getFollower_num()));
         mUsercheerNum.setText(String.valueOf(headerUserData.getCheer_num()));
+        mPostCountNum.setText(String.valueOf(20));
+        mGochiCountNum.setText(String.valueOf(15));
 
         if (headerUserData.getFollow_flag() == 0) {
             mFollowText.setText(getString(R.string.do_follow));
@@ -564,6 +572,8 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
         mFollowNum.setText(String.valueOf(headerUserData.getFollow_num()));
         mFollowerNum.setText(String.valueOf(headerUserData.getFollower_num()));
         mUsercheerNum.setText(String.valueOf(headerUserData.getCheer_num()));
+        mPostCountNum.setText(String.valueOf(20));
+        mGochiCountNum.setText(String.valueOf(15));
 
         if (headerUserData.getFollow_flag() == 0) {
             mFollowText.setText(getString(R.string.do_follow));

@@ -81,6 +81,8 @@
     <string name="cheer_list">応援店</string>
     <string name="want_list">行きたい店</string>
     <string name="cheer_user_list">応援しているユーザー</string>
+    <string name="post_count">投稿数</string>
+    <string name="gochi_count">ゴチ数</string>
 
     <string name="two">モバイルネットワークとWi-Fiで再生</string>
     <string name="one">Wi-Fiでのみ再生</string>

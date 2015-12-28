@@ -81,6 +81,8 @@
     <string name="cheer_list">Cheer</string>
     <string name="want_list">Want</string>
     <string name="cheer_user_list">Cheer User</string>
+    <string name="post_count">PostCount</string>
+    <string name="gochi_count">GochiCount</string>
 
     <string name="two">Both Mobile Network and Wi-Fi</string>
     <string name="one">Wi-Fi only</string>

@@ -111,28 +111,6 @@ public class RestPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     private void bindHeader(final TenpoHeaderViewHolder holder) {
-        if (mRestData.getWant_flag() == 0) {
-            holder.mCheckImage.setImageResource(R.drawable.ic_favorite_outline_grey_600_24dp);
-            holder.mCheckText.setText(mContext.getString(R.string.add_want));
-        } else {
-            holder.mCheckImage.setImageResource(R.drawable.ic_favorite_white_24dp);
-            holder.mCheckText.setText(mContext.getString(R.string.remove_want));
-        }
-
-        holder.mCheckRipple.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (holder.mCheckText.getText().toString().equals(mContext.getString(R.string.add_want))) {
-                    holder.mCheckImage.setImageResource(R.drawable.ic_favorite_white_24dp);
-                    holder.mCheckText.setText(mContext.getString(R.string.remove_want));
-                    API3PostUtil.setWantAsync(mContext, mRestData.getRest_id());
-                } else {
-                    holder.mCheckImage.setImageResource(R.drawable.ic_favorite_outline_grey_600_24dp);
-                    holder.mCheckText.setText(mContext.getString(R.string.add_want));
-                    API3PostUtil.unsetWantAsync(mContext, mRestData.getRest_id());
-                }
-            }
-        });
         holder.mCallRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
             @Override
             public void onComplete(RippleView rippleView) {
@@ -337,12 +315,6 @@ public class RestPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public class TenpoHeaderViewHolder extends RecyclerView.ViewHolder implements OnMapReadyCallback {
         @Bind(R.id.category)
         TextView mTenpoCategory;
-        @Bind(R.id.check_ripple)
-        RippleView mCheckRipple;
-        @Bind(R.id.check_image)
-        ImageView mCheckImage;
-        @Bind(R.id.check_text)
-        TextView mCheckText;
         @Bind(R.id.call_ripple)
         RippleView mCallRipple;
         @Bind(R.id.go_here_ripple)

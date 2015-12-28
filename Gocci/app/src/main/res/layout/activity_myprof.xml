@@ -43,60 +43,92 @@
                     android:background="@color/materialwhite"
                     android:src="@color/materialwhite" />
 
-                <TextView
-                    android:id="@+id/myprof_username"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignTop="@+id/myprof_picture"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="8dp"
-                    android:layout_toRightOf="@+id/myprof_picture"
-                    android:singleLine="true"
-                    android:textColor="@color/namegrey"
-                    android:textSize="@dimen/large_text"
-                    android:textStyle="bold" />
-
-                <com.andexert.library.RippleView
-                    android:id="@+id/edit_profile"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/myprof_username"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="8dp"
-                    android:layout_toRightOf="@+id/myprof_picture"
-                    android:background="@drawable/button_follow">
-
-                    <TextView
-                        android:id="@+id/edit_text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingBottom="8dp"
-                        android:paddingLeft="12dp"
-                        android:paddingRight="12dp"
-                        android:paddingTop="8dp"
-                        android:text="@string/edit_profile"
-                        android:textColor="#ffffff"
-                        android:textSize="@dimen/small_text" />
-                </com.andexert.library.RippleView>
-
-
                 <ImageView
                     android:id="@+id/myprof_picture"
                     android:layout_width="75dp"
                     android:layout_height="75dp"
-                    android:layout_gravity="left"
-                    android:layout_marginBottom="16dp"
-                    android:layout_marginLeft="24dp"
-                    android:layout_marginRight="16dp"
+                    android:layout_centerHorizontal="true"
+                    android:src="@drawable/ic_userpicture"
                     android:layout_marginTop="16dp" />
+
+                <TextView
+                    android:id="@+id/myprof_username"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_below="@+id/myprof_picture"
+                    android:singleLine="true"
+                    android:layout_marginTop="8dp"
+                    android:textColor="@color/namegrey"
+                    android:textSize="@dimen/large_text"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:id="@+id/myprof_gochi_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_below="@+id/myprof_username"
+                    android:layout_centerHorizontal="true"
+                    >
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/gochi_count_icon"
+                        android:layout_gravity="center_vertical"
+                        android:src="@drawable/ic_icon_beef_orange"
+                        />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:singleLine="true"
+                        android:textColor="@color/nameblack"
+                        android:textSize="@dimen/accent_text"
+                        android:layout_gravity="center_vertical"
+                        android:id="@+id/gochi_count_text"
+                        android:layout_marginLeft="8dp" />
+                </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/num_bar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="false"
-                    android:layout_below="@+id/myprof_picture"
+                    android:layout_below="@+id/myprof_gochi_count"
+                    android:layout_marginTop="8dp"
+                    android:layout_centerHorizontal="true"
                     android:orientation="horizontal">
+
+                    <com.andexert.library.RippleView
+                        android:id="@+id/post_count_ripple"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        ripple:rv_centered="true"
+                        ripple:rv_color="@android:color/black">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/post_count_num"
+                            android:layout_centerHorizontal="true"
+                            android:layout_marginBottom="8dp"
+                            android:singleLine="false"
+                            android:text="@string/post_count"
+                            android:textColor="@color/namegrey"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:id="@+id/post_count_num"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerHorizontal="true"
+                            android:padding="8dp"
+                            android:textColor="@color/namegrey"
+                            android:textSize="24sp"
+                            android:textStyle="bold" />
+                    </com.andexert.library.RippleView>
 
                     <com.andexert.library.RippleView
                         android:id="@+id/follow_ripple"
@@ -111,7 +143,7 @@
                             android:layout_height="wrap_content"
                             android:layout_below="@+id/follow_num"
                             android:layout_centerHorizontal="true"
-                            android:layout_marginBottom="16dp"
+                            android:layout_marginBottom="8dp"
                             android:singleLine="false"
                             android:text="@string/follow_list"
                             android:textColor="@color/namegrey"
@@ -141,7 +173,7 @@
                             android:layout_height="wrap_content"
                             android:layout_below="@+id/follower_num"
                             android:layout_centerHorizontal="true"
-                            android:layout_marginBottom="16dp"
+                            android:layout_marginBottom="8dp"
                             android:text="@string/follower_list"
                             android:textColor="@color/namegrey"
                             android:textSize="12sp" />
@@ -170,7 +202,7 @@
                             android:layout_height="wrap_content"
                             android:layout_below="@+id/usercheer_num"
                             android:layout_centerHorizontal="true"
-                            android:layout_marginBottom="16dp"
+                            android:layout_marginBottom="8dp"
                             android:text="@string/cheer_list"
                             android:textColor="@color/namegrey"
                             android:textSize="12sp" />
@@ -185,37 +217,30 @@
                             android:textSize="24sp"
                             android:textStyle="bold" />
                     </com.andexert.library.RippleView>
-
-                    <com.andexert.library.RippleView
-                        android:id="@+id/want_ripple"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        ripple:rv_centered="true"
-                        ripple:rv_color="@android:color/black">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@+id/want_num"
-                            android:layout_centerHorizontal="true"
-                            android:layout_marginBottom="16dp"
-                            android:text="@string/want_list"
-                            android:textColor="@color/namegrey"
-                            android:textSize="12sp" />
-
-                        <TextView
-                            android:id="@+id/want_num"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerHorizontal="true"
-                            android:padding="8dp"
-                            android:textColor="@color/namegrey"
-                            android:textSize="24sp"
-                            android:textStyle="bold" />
-                    </com.andexert.library.RippleView>
                 </LinearLayout>
 
+                <com.andexert.library.RippleView
+                    android:id="@+id/edit_profile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/num_bar"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="16dp"
+                    android:background="@drawable/button_follow">
+
+                    <TextView
+                        android:id="@+id/edit_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="8dp"
+                        android:paddingLeft="12dp"
+                        android:paddingRight="12dp"
+                        android:paddingTop="8dp"
+                        android:text="@string/edit_profile"
+                        android:textColor="#ffffff"
+                        android:textSize="@dimen/small_text" />
+                </com.andexert.library.RippleView>
             </RelativeLayout>
 
             <android.support.v7.widget.Toolbar
