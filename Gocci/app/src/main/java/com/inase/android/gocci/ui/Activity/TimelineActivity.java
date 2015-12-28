@@ -266,9 +266,11 @@ public class TimelineActivity extends AppCompatActivity {
                 .add(R.string.tab_latest, TimelineLatestFragment.class)
                 .add(R.string.tab_near, TimelineNearFragment.class)
                 .add(R.string.tab_follow, TimelineFollowFragment.class)
+                .add("いいねした", TimelineFollowFragment.class)
+                .add("コメントした", TimelineFollowFragment.class)
                 .create());
 
-        mViewpager.setOffscreenPageLimit(2);
+        mViewpager.setOffscreenPageLimit(4);
         mViewpager.setAdapter(adapter);
 
         mSmartTab.setViewPager(mViewpager);
