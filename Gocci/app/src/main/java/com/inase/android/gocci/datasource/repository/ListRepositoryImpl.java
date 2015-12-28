@@ -115,42 +115,6 @@ public class ListRepositoryImpl implements ListRepository {
                                 }
                             });
                             break;
-                        case GET_WANT_FIRST:
-                        case GET_WANT_REFRESH:
-                            mAPI3.GetWantResponse(response, new API3.PayloadResponseCallback() {
-
-                                @Override
-                                public void onSuccess(JSONObject payload) {
-                                    try {
-                                        JSONArray rests = payload.getJSONArray("rests");
-
-                                        final ArrayList<ListGetData> mListData = new ArrayList<>();
-
-                                        if (rests.length() != 0) {
-                                            for (int i = 0; i < rests.length(); i++) {
-                                                JSONObject listData = rests.getJSONObject(i);
-                                                mListData.add(ListGetData.createRestData(listData));
-                                            }
-                                            cb.onSuccess(api, mListData);
-                                        } else {
-                                            cb.onEmpty(api);
-                                        }
-                                    } catch (JSONException e) {
-                                        cb.onFailureCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                                    }
-                                }
-
-                                @Override
-                                public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                    cb.onFailureCausedByGlobalError(api, globalCode);
-                                }
-
-                                @Override
-                                public void onLocalError(String errorMessage) {
-                                    cb.onFailureCausedByLocalError(api, errorMessage);
-                                }
-                            });
-                            break;
                         case GET_USER_CHEER_FIRST:
                         case GET_USER_CHEER_REFRESH:
                             mAPI3.GetUser_CheerResponse(response, new API3.PayloadResponseCallback() {

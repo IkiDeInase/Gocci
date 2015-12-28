@@ -127,8 +127,10 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
     TextView mFollowerNum;
     @Bind(R.id.usercheer_num)
     TextView mUsercheerNum;
-    @Bind(R.id.want_num)
-    TextView mWantNum;
+    @Bind(R.id.post_count_num)
+    TextView mPostCountNum;
+    @Bind(R.id.gochi_count_text)
+    TextView mGochiCountNum;
 
     @Bind(R.id.follow_ripple)
     RippleView mFollowRipple;
@@ -136,8 +138,8 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
     RippleView mFollowerRipple;
     @Bind(R.id.usercheer_ripple)
     RippleView mUsercheerRipple;
-    @Bind(R.id.want_ripple)
-    RippleView mWantRipple;
+    @Bind(R.id.post_count_ripple)
+    RippleView mPostCountRipple;
     @Bind(R.id.edit_profile)
     RippleView mEditProfile;
     @Bind(R.id.gochi_layout)
@@ -303,13 +305,6 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
             @Override
             public void onComplete(RippleView rippleView) {
                 ListActivity.startListActivity(SavedData.getServerUserId(MyprofActivity.this), Const.ListCategory.USER_CHEER, MyprofActivity.this);
-            }
-        });
-
-        mWantRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
-            @Override
-            public void onComplete(RippleView rippleView) {
-                ListActivity.startListActivity(SavedData.getServerUserId(MyprofActivity.this), Const.ListCategory.WANT, MyprofActivity.this);
             }
         });
 
@@ -988,7 +983,8 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
         mFollowNum.setText(String.valueOf(mHeaderUserData.getFollow_num()));
         mFollowerNum.setText(String.valueOf(mHeaderUserData.getFollower_num()));
         mUsercheerNum.setText(String.valueOf(mHeaderUserData.getCheer_num()));
-        mWantNum.setText(String.valueOf(mHeaderUserData.getWant_num()));
+        mPostCountNum.setText(String.valueOf(20));
+        mGochiCountNum.setText(String.valueOf(15));
 
         BusHolder.get().post(new ProfJsonEvent(api, mUsers, mPost_ids));
 
@@ -1026,7 +1022,8 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
         mFollowNum.setText(String.valueOf(mHeaderUserData.getFollow_num()));
         mFollowerNum.setText(String.valueOf(mHeaderUserData.getFollower_num()));
         mUsercheerNum.setText(String.valueOf(mHeaderUserData.getCheer_num()));
-        mWantNum.setText(String.valueOf(mHeaderUserData.getWant_num()));
+        mPostCountNum.setText(String.valueOf(20));
+        mGochiCountNum.setText(String.valueOf(15));
 
         mUsers.clear();
         mUsers.addAll(postData);

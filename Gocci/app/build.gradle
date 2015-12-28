@@ -64,8 +64,8 @@ dependencies {
         exclude group: 'com.android.support', module: 'appcompat-v7'
     }
     compile('com.afollestad.material-dialogs:core:0.8.5.3@aar') { transitive = true }
-    compile 'com.mikepenz:google-material-typeface:1.2.0.1@aar'
-    compile 'com.mikepenz:fontawesome-typeface:4.4.0.1@aar'
+    compile 'com.mikepenz:google-material-typeface:2.1.0.1.original@aar'
+    compile 'com.mikepenz:fontawesome-typeface:4.5.0.1@aar'
     compile 'com.android.support:multidex:1.0.1'
     compile 'com.github.emanzanoaxa:RippleEffect:52ea2a0ab6'
     compile 'com.squareup.picasso:picasso:2.5.2'
@@ -101,7 +101,7 @@ dependencies {
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.github.clans:fab:1.6.2'
     compile 'com.github.jakob-grabner:Circle-Progress-View:v1.2.8'
-    compile 'com.sothree.slidinguppanel:library:3.2.0'
+    compile 'com.sothree.slidinguppanel:library:3.2.1'
 }
 
 repositories {

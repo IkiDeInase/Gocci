@@ -65,7 +65,6 @@ public class Const {
     public enum ListCategory {
         FOLLOW,
         FOLLOWER,
-        WANT,
         USER_CHEER,
         REST_CHEER
     }
@@ -98,8 +97,6 @@ public class Const {
         GET_FOLLOW_REFRESH,
         GET_FOLLOWER_FIRST,
         GET_FOLLOWER_REFRESH,
-        GET_WANT_FIRST,
-        GET_WANT_REFRESH,
         GET_USER_CHEER_FIRST,
         GET_USER_CHEER_REFRESH,
         GET_REST_CHEER_FIRST,
@@ -271,26 +268,6 @@ public class Const {
         public TextView mLocality;
 
         public UserCheerViewHolder(View view) {
-            super(view);
-            ButterKnife.bind(this, view);
-        }
-    }
-
-    public static class WantViewHolder extends RecyclerView.ViewHolder {
-        @Bind(R.id.want_picture)
-        public ImageView mWantPicture;
-        @Bind(R.id.rest_name)
-        public TextView mRestName;
-        @Bind(R.id.locality)
-        public TextView mLocality;
-        @Bind(R.id.delete_want_button)
-        public ImageView mDeleteWantButton;
-        @Bind(R.id.add_want_button)
-        public ImageView mAddWantButton;
-        @Bind(R.id.want_button)
-        public RippleView mWantRipple;
-
-        public WantViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
         }
