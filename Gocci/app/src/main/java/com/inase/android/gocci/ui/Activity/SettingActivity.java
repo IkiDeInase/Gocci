@@ -27,6 +27,9 @@ import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
 import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
@@ -38,6 +41,7 @@ import com.inase.android.gocci.BuildConfig;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3PostUtil;
+import com.inase.android.gocci.domain.model.TwoCellData;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.NotificationNumberEvent;
 import com.inase.android.gocci.event.PostCallbackEvent;
@@ -46,6 +50,10 @@ import com.inase.android.gocci.ui.view.DrawerProfHeader;
 import com.inase.android.gocci.ui.view.GocciTwitterLoginButton;
 import com.inase.android.gocci.utils.SavedData;
 import com.inase.android.gocci.utils.Util;
+import com.inase.android.gocci.utils.encode.HttpParameters;
+import com.inase.android.gocci.utils.share.TwitterUtil;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
@@ -60,11 +68,17 @@ import com.twitter.sdk.android.core.TwitterAuthToken;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cz.msebera.android.httpclient.Header;
 
 public class SettingActivity extends AppCompatActivity {
 
@@ -230,7 +244,38 @@ public class SettingActivity extends AppCompatActivity {
     @OnClick(R.id.socialnetwork_invite_twitter)
     public void twitterInvite() {
         if (isTwitterSetting) {
-
+//            TwitterSession session = Twitter.getSessionManager().getActiveSession();
+//            TwitterAuthToken authToken = session.getAuthToken();
+//            HttpParameters httpParameters = TwitterUtil.getParam(authToken.token);
+//
+//            httpParameters.put(TwitterUtil.OAUTH_SIGNATURE, TwitterUtil.createOAuthSignature("GET", "https://api.twitter.com/1.1/friends/list.json", authToken.secret, httpParameters), true);
+//
+//            Application_Gocci.getClient().addHeader(TwitterUtil.HTTP_AUTHORIZATION_HEADER, TwitterUtil.createOAuthSignatureHeaderEntry(httpParameters));
+//            Application_Gocci.getClient().setTimeout(50000);
+//            Application_Gocci.getClient().get(this, "https://api.twitter.com/1.1/friends/list.json", new JsonHttpResponseHandler() {
+//                @Override
+//                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+//                    Log.e("ログ", errorResponse.toString());
+//                }
+//
+//                @Override
+//                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+//                    try {
+//                        JSONArray users = response.getJSONArray("users");
+//                        String previous_cursor_str = response.getString("previous_cursor_str");
+//                        String next_cursor_str = response.getString("next_cursor_str");
+//                        for (int i = 0; i < users.length(); i++) {
+//                            JSONObject data = users.getJSONObject(i);
+//                            String name = data.getString("name");
+//                            String profile_image_url = data.getString("profile_image_url");
+//                            String id_str = data.getString("id_str");
+//                            Log.e("ログ", name + " / " + profile_image_url + " / " + id_str);
+//                        }
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            });
         } else {
             //ログイン
             mTwitterLoginButton.performClick();
@@ -445,7 +490,6 @@ public class SettingActivity extends AppCompatActivity {
         TwitterSession session =
                 Twitter.getSessionManager().getActiveSession();
         if (session != null) {
-            //TwitterAuthToken authToken = session.getAuthToken();
             mTwitterSetting.setText(session.getUserName());
             isTwitterSetting = true;
 //            if (Application_Gocci.getShareTransfer() != null) {
@@ -459,6 +503,17 @@ public class SettingActivity extends AppCompatActivity {
         if (profile != null) {
             mFacebookSetting.setText(profile.getName());
             isFacebookSetting = true;
+            new GraphRequest(
+                    AccessToken.getCurrentAccessToken(),
+                    "/me/friends",
+                    null,
+                    HttpMethod.GET,
+                    new GraphRequest.Callback() {
+                        public void onCompleted(GraphResponse response) {
+                            Log.e("ログ", response.toString());
+                        }
+                    }
+            ).executeAsync();
 //            if (Application_Gocci.getShareTransfer() != null) {
 //                API3PostUtil.setSnsLinkAsync(SettingActivity.this, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), Const.ActivityCategory.SETTING, Const.APICategory.SET_FACEBOOK_LINK);
 //            }
