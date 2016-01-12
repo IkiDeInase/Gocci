@@ -7,6 +7,7 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:913263613395:android:4a3e162b53d12c42",
         "client_id": "android:com.inase.android.gocci",
         "client_type": 1,
         "android_client_info": {
@@ -19,10 +20,11 @@
           "client_type": 1,
           "android_info": {
             "package_name": "com.inase.android.gocci",
-            "certificate_hash": "3dc866be5f98675e0b06e012b00842f6a4e92b70"
+            "certificate_hash": "3DC866BE5F98675E0B06E012B00842F6A4E92B70"
           }
         }
       ],
+      "api_key": [],
       "services": {
         "analytics_service": {
           "status": 2,
@@ -47,5 +49,6 @@
       }
     }
   ],
+  "client_info": [],
   "ARTIFACT_VERSION": "1"
 }
