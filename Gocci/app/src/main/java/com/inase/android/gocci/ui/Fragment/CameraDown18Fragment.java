@@ -315,30 +315,34 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
         mRestaurantAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new MaterialDialog.Builder(getActivity())
-                        .content(getString(R.string.restaurant))
-                        .contentGravity(GravityEnum.CENTER)
-                        .contentColorRes(R.color.nameblack)
-                        .positiveText(getString(R.string.no_exist_restaurant))
-                        .positiveColorRes(R.color.nameblack)
-                        .onPositive(new MaterialDialog.SingleButtonCallback() {
-                            @Override
-                            public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
-                                materialDialog.dismiss();
-                                createTenpo();
-                            }
-                        })
-                        .items(CameraActivity.restname)
-                        .itemsColorRes(R.color.nameblack)
-                        .itemsCallback(new MaterialDialog.ListCallback() {
-                            @Override
-                            public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
-                                materialDialog.dismiss();
-                                mRest_name = charSequence.toString();
-                                mRest_id = CameraActivity.rest_idArray.get(i);
-                                mRestaurantAction.setLabelText(charSequence.toString());
-                            }
-                        }).show();
+                if (CameraActivity.restname[0] != null) {
+                    new MaterialDialog.Builder(getActivity())
+                            .content(getString(R.string.restaurant))
+                            .contentGravity(GravityEnum.CENTER)
+                            .contentColorRes(R.color.nameblack)
+                            .positiveText(getString(R.string.no_exist_restaurant))
+                            .positiveColorRes(R.color.nameblack)
+                            .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                @Override
+                                public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                                    materialDialog.dismiss();
+                                    createTenpo();
+                                }
+                            })
+                            .items(CameraActivity.restname)
+                            .itemsColorRes(R.color.nameblack)
+                            .itemsCallback(new MaterialDialog.ListCallback() {
+                                @Override
+                                public void onSelection(MaterialDialog materialDialog, View view, int i, CharSequence charSequence) {
+                                    materialDialog.dismiss();
+                                    mRest_name = charSequence.toString();
+                                    mRest_id = CameraActivity.rest_idArray.get(i);
+                                    mRestaurantAction.setLabelText(charSequence.toString());
+                                }
+                            }).show();
+                } else {
+                    Toast.makeText(getActivity(), "位置情報を取得しています", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
