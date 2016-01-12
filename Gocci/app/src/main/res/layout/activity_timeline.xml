@@ -1,108 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/coordinator_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.design.widget.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/app_bar">
-
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/tool_bar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/gocci_header"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:layout_scrollFlags="scroll|enterAlways">
-
-        </android.support.v7.widget.Toolbar>
-
-        <com.ogaclejapan.smarttablayout.SmartTabLayout
-            android:id="@+id/smart_tab"
-            android:layout_below="@id/tool_bar"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:background="@color/view_background"
-            android:clipToPadding="false"
-            android:paddingLeft="32dp"
-            android:paddingRight="32dp"
-            app:stl_defaultTabTextAllCaps="true"
-            app:stl_defaultTabTextColor="@color/gocci_header"
-            app:stl_defaultTabTextHorizontalPadding="24dp"
-            app:stl_defaultTabTextMinWidth="0dp"
-            app:stl_defaultTabTextSize="16sp"
-            app:stl_distributeEvenly="true"
-            app:stl_dividerColor="@color/transparent"
-            app:stl_dividerThickness="0dp"
-            app:stl_indicatorAlwaysInCenter="false"
-            app:stl_indicatorColor="@color/gocci_header"
-            app:stl_indicatorCornerRadius="0dp"
-            app:stl_indicatorInFront="false"
-            app:stl_indicatorInterpolation="smart"
-            app:stl_indicatorThickness="3dp"
-            app:stl_underlineColor="@color/transparent"
-            app:stl_underlineThickness="0dp" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:id="@+id/tab_bar"
-            android:background="@color/tabFooter"
-            android:layout_below="@id/smart_tab" />
-
-    </android.support.design.widget.AppBarLayout>
-
-    <android.support.v4.view.ViewPager
-        android:id="@+id/viewpager"
-        android:layout_below="@id/tab_bar"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-    <View
-        android:id="@+id/overlay"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/app_bar"
-        android:background="#4D000000"
-        android:clickable="true"
-        android:visibility="gone" />
-
-    <com.inase.android.gocci.ui.view.GochiLayout
-        android:id="@+id/gochi_layout"
-        android:layout_below="@+id/app_bar"
+    <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/coordinator_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    </com.inase.android.gocci.ui.view.GochiLayout>
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/app_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    <android.support.design.widget.FloatingActionButton
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/tool_bar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@color/gocci_header"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                app:layout_scrollFlags="scroll|enterAlways"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+            </android.support.v7.widget.Toolbar>
+
+            <com.ogaclejapan.smarttablayout.SmartTabLayout
+                android:id="@+id/smart_tab"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_below="@id/tool_bar"
+                android:background="@color/view_background"
+                android:clipToPadding="false"
+                android:paddingLeft="32dp"
+                android:paddingRight="32dp"
+                app:stl_defaultTabTextAllCaps="true"
+                app:stl_defaultTabTextColor="@color/gocci_header"
+                app:stl_defaultTabTextHorizontalPadding="0dp"
+                app:stl_defaultTabTextMinWidth="0dp"
+                app:stl_defaultTabTextSize="16sp"
+                app:stl_distributeEvenly="true"
+                app:stl_dividerColor="@color/transparent"
+                app:stl_dividerThickness="0dp"
+                app:stl_indicatorAlwaysInCenter="false"
+                app:stl_indicatorColor="@color/gocci_header"
+                app:stl_indicatorCornerRadius="0dp"
+                app:stl_indicatorInFront="false"
+                app:stl_indicatorInterpolation="smart"
+                app:stl_indicatorThickness="3dp"
+                app:stl_underlineColor="@color/transparent"
+                app:stl_underlineThickness="0dp" />
+
+            <View
+                android:id="@+id/tab_bar"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/smart_tab"
+                android:background="@color/tabFooter" />
+
+        </android.support.design.widget.AppBarLayout>
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/viewpager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/tab_bar"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+        <com.inase.android.gocci.ui.view.GochiLayout
+            android:id="@+id/gochi_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/app_bar">
+
+        </com.inase.android.gocci.ui.view.GochiLayout>
+
+    </android.support.design.widget.CoordinatorLayout>
+
+    <com.gordonwong.materialsheetfab.DimOverlayFrameLayout
+        android:id="@+id/overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <com.inase.android.gocci.ui.view.Fab
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_anchor="@id/coordinator_layout"
-        app:layout_anchorGravity="bottom|right"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         android:layout_marginRight="16dp"
-        app:backgroundTint="@color/fab"
-        android:src="@drawable/ic_filter_list_white_36dp" />
+        android:src="@drawable/ic_filter_list_white_36dp"
+        app:backgroundTint="@color/fab" />
 
-    <io.codetail.widget.RevealFrameLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_anchor="@id/coordinator_layout"
-        app:layout_anchorGravity="bottom|right">
+    <io.codetail.widget.RevealLinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="end|bottom"
+        android:orientation="vertical">
 
         <android.support.v7.widget.CardView
             android:id="@+id/sheet"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
-            app:cardElevation="2dp"
-            android:visibility="invisible">
+            app:cardElevation="2dp">
 
             <include
                 android:id="@+id/cell"
@@ -110,6 +113,6 @@
 
         </android.support.v7.widget.CardView>
 
-    </io.codetail.widget.RevealFrameLayout>
+    </io.codetail.widget.RevealLinearLayout>
 
-</android.support.design.widget.CoordinatorLayout>
+</RelativeLayout>

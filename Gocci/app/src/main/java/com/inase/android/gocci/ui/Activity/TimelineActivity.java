@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.PermissionChecker;
@@ -37,6 +36,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
 import com.andexert.library.RippleView;
+import com.gordonwong.materialsheetfab.MaterialSheetFab;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3;
@@ -52,12 +52,12 @@ import com.inase.android.gocci.ui.fragment.TimelineGochiFragment;
 import com.inase.android.gocci.ui.fragment.TimelineLatestFragment;
 import com.inase.android.gocci.ui.fragment.TimelineNearFragment;
 import com.inase.android.gocci.ui.view.DrawerProfHeader;
+import com.inase.android.gocci.ui.view.Fab;
 import com.inase.android.gocci.ui.view.GochiLayout;
 import com.inase.android.gocci.ui.view.NotificationListView;
 import com.inase.android.gocci.ui.view.ToukouPopup;
 import com.inase.android.gocci.utils.SavedData;
 import com.inase.android.gocci.utils.Util;
-import com.konifar.fab_transformation.FabTransformation;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
@@ -92,7 +92,7 @@ public class TimelineActivity extends AppCompatActivity {
     @Bind(R.id.overlay)
     View mOverlay;
     @Bind(R.id.fab)
-    FloatingActionButton mFab;
+    Fab mFab;
     @Bind(R.id.category_spinner)
     MaterialBetterSpinner mCategorySpinner;
     @Bind(R.id.value_spinner)
@@ -111,6 +111,8 @@ public class TimelineActivity extends AppCompatActivity {
     private float pointX;
     private float pointY;
 
+    private MaterialSheetFab materialSheetFab;
+
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
 
     @OnClick(R.id.fab)
@@ -118,7 +120,7 @@ public class TimelineActivity extends AppCompatActivity {
         if (PermissionChecker.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             if (mFab.getVisibility() == View.VISIBLE) {
-                FabTransformation.with(mFab).setOverlay(mOverlay).transformTo(mSheet);
+                materialSheetFab.showSheet();
             }
             if (getString(R.string.now_location).equals(mToolBar.getTitle())) {
                 SmartLocation.with(TimelineActivity.this).location().oneFix().start(new OnLocationUpdatedListener() {
@@ -137,7 +139,7 @@ public class TimelineActivity extends AppCompatActivity {
     @OnClick(R.id.overlay)
     public void clickOverlay() {
         if (mFab.getVisibility() != View.VISIBLE) {
-            FabTransformation.with(mFab).setOverlay(mOverlay).transformFrom(mSheet);
+            materialSheetFab.hideSheet();
         }
     }
 
@@ -269,13 +271,17 @@ public class TimelineActivity extends AppCompatActivity {
 
         result.setSelection(1);
 
+        int sheetColor = getResources().getColor(R.color.view_background);
+        int fabColor = getResources().getColor(R.color.fab);
+        materialSheetFab = new MaterialSheetFab<>(mFab, mSheet, mOverlay, sheetColor, fabColor);
+
         adapter = new FragmentPagerItemAdapter(
                 getSupportFragmentManager(), FragmentPagerItems.with(this)
                 .add(R.string.tab_latest, TimelineLatestFragment.class)
                 .add(R.string.tab_near, TimelineNearFragment.class)
                 .add(R.string.tab_follow, TimelineFollowFragment.class)
-                .add(getString(R.string.tab_gochi), TimelineGochiFragment.class)
-                .add(getString(R.string.tab_comment), TimelineCommentFragment.class)
+                //.add(getString(R.string.tab_gochi), TimelineGochiFragment.class)
+                //.add(getString(R.string.tab_comment), TimelineCommentFragment.class)
                 .create());
 
         mViewpager.setOffscreenPageLimit(4);
@@ -477,7 +483,7 @@ public class TimelineActivity extends AppCompatActivity {
         mFilterRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
             @Override
             public void onComplete(RippleView rippleView) {
-                FabTransformation.with(mFab).setOverlay(mOverlay).transformFrom(mSheet);
+                materialSheetFab.hideSheet();
                 //Otto currentpageと絞り込みurl
                 switch (mShowPosition) {
                     case 0:
@@ -837,7 +843,7 @@ public class TimelineActivity extends AppCompatActivity {
         if (result != null && result.isDrawerOpen()) {
             result.closeDrawer();
         } else if (mFab.getVisibility() != View.VISIBLE) {
-            FabTransformation.with(mFab).setOverlay(mOverlay).transformFrom(mSheet);
+            materialSheetFab.hideSheet();
         } else {
             super.onBackPressed();
             overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
