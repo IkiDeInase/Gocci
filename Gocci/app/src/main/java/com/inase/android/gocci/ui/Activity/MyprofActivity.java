@@ -983,8 +983,8 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
         mFollowNum.setText(String.valueOf(mHeaderUserData.getFollow_num()));
         mFollowerNum.setText(String.valueOf(mHeaderUserData.getFollower_num()));
         mUsercheerNum.setText(String.valueOf(mHeaderUserData.getCheer_num()));
-        mPostCountNum.setText(String.valueOf(20));
-        mGochiCountNum.setText(String.valueOf(15));
+        mPostCountNum.setText(String.valueOf(mHeaderUserData.getPost_num()));
+        mGochiCountNum.setText(String.valueOf(mHeaderUserData.getGochi_num()));
 
         BusHolder.get().post(new ProfJsonEvent(api, mUsers, mPost_ids));
 
@@ -1022,8 +1022,8 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
         mFollowNum.setText(String.valueOf(mHeaderUserData.getFollow_num()));
         mFollowerNum.setText(String.valueOf(mHeaderUserData.getFollower_num()));
         mUsercheerNum.setText(String.valueOf(mHeaderUserData.getCheer_num()));
-        mPostCountNum.setText(String.valueOf(20));
-        mGochiCountNum.setText(String.valueOf(15));
+        mPostCountNum.setText(String.valueOf(mHeaderUserData.getPost_num()));
+        mGochiCountNum.setText(String.valueOf(mHeaderUserData.getGochi_num()));
 
         mUsers.clear();
         mUsers.addAll(postData);

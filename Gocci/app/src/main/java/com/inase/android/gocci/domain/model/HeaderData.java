@@ -41,6 +41,8 @@ public class HeaderData {
     private static final String TAG_FOLLOWER_NUM = "follower_num";
     private static final String TAG_CHEER_NUM = "cheer_num";
     private static final String TAG_WANT_NUM = "want_num";
+    private static final String TAG_GOCHI_NUM = "gochi_num";
+    private static final String TAG_POST_NUM = "post_num";
     private static final String TAG_FOLLOW_FLAG = "follow_flag";
 
     //通知
@@ -81,7 +83,8 @@ public class HeaderData {
     private int follow_num;
     private int follower_num;
     private int cheer_num;
-    private int want_num;
+    private int gochi_num;
+    private int post_num;
     private int follow_flag;
 
     //通知
@@ -134,14 +137,15 @@ public class HeaderData {
 
     //ユーザー
     public HeaderData(String user_id, String username, String profile_img, int follow_num, int follower_num,
-                      int cheer_num, int want_num, int follow_flag) {
+                      int cheer_num, int gochi_num, int post_num, int follow_flag) {
         this.user_id = user_id;
         this.username = username;
         this.profile_img = profile_img;
         this.follow_num = follow_num;
         this.follower_num = follower_num;
         this.cheer_num = cheer_num;
-        this.want_num = want_num;
+        this.gochi_num = gochi_num;
+        this.post_num = post_num;
         this.follow_flag = follow_flag;
     }
 
@@ -225,11 +229,12 @@ public class HeaderData {
             int follow_num = jsonObject.getInt(TAG_FOLLOW_NUM);
             int follower_num = jsonObject.getInt(TAG_FOLLOWER_NUM);
             int cheer_num = jsonObject.getInt(TAG_CHEER_NUM);
-            int want_num = jsonObject.getInt(TAG_WANT_NUM);
+            int gochi_num = jsonObject.getInt(TAG_GOCHI_NUM);
+            int post_num = jsonObject.getInt(TAG_POST_NUM);
             int follow_flag = jsonObject.getInt(TAG_FOLLOW_FLAG);
 
             return new HeaderData(user_id, username, profile_img, follow_num, follower_num,
-                    cheer_num, want_num, follow_flag);
+                    cheer_num, gochi_num, post_num,  follow_flag);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -400,14 +405,6 @@ public class HeaderData {
         this.cheer_num = cheer_num;
     }
 
-    public int getWant_num() {
-        return want_num;
-    }
-
-    public void setWant_num(int want_num) {
-        this.want_num = want_num;
-    }
-
     public int getFollow_flag() {
         return follow_flag;
     }
@@ -482,5 +479,21 @@ public class HeaderData {
 
     public void setComment_id(String comment_id) {
         this.comment_id = comment_id;
+    }
+
+    public int getGochi_num() {
+        return gochi_num;
+    }
+
+    public void setGochi_num(int gochi_num) {
+        this.gochi_num = gochi_num;
+    }
+
+    public int getPost_num() {
+        return post_num;
+    }
+
+    public void setPost_num(int post_num) {
+        this.post_num = post_num;
     }
 }

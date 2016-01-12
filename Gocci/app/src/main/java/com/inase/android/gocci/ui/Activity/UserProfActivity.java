@@ -470,8 +470,8 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
         mFollowNum.setText(String.valueOf(headerUserData.getFollow_num()));
         mFollowerNum.setText(String.valueOf(headerUserData.getFollower_num()));
         mUsercheerNum.setText(String.valueOf(headerUserData.getCheer_num()));
-        mPostCountNum.setText(String.valueOf(20));
-        mGochiCountNum.setText(String.valueOf(15));
+        mPostCountNum.setText(String.valueOf(headerUserData.getPost_num()));
+        mGochiCountNum.setText(String.valueOf(headerUserData.getGochi_num()));
 
         if (headerUserData.getFollow_flag() == 0) {
             mFollowText.setText(getString(R.string.do_follow));
@@ -572,8 +572,8 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
         mFollowNum.setText(String.valueOf(headerUserData.getFollow_num()));
         mFollowerNum.setText(String.valueOf(headerUserData.getFollower_num()));
         mUsercheerNum.setText(String.valueOf(headerUserData.getCheer_num()));
-        mPostCountNum.setText(String.valueOf(20));
-        mGochiCountNum.setText(String.valueOf(15));
+        mPostCountNum.setText(String.valueOf(headerUserData.getPost_num()));
+        mGochiCountNum.setText(String.valueOf(headerUserData.getGochi_num()));
 
         if (headerUserData.getFollow_flag() == 0) {
             mFollowText.setText(getString(R.string.do_follow));
