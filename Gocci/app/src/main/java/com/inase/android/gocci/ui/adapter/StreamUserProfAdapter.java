@@ -135,9 +135,8 @@ public class StreamUserProfAdapter extends RecyclerView.Adapter<Const.StreamUser
             holder.mLikesRipple.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mCallback.onGochiTap();
-
                     if (user.getGochi_flag() == 0) {
+                        mCallback.onGochiTap();
                         mCallback.onGochiClick(user.getPost_id());
                         user.setGochi_flag(1);
                         user.setGochi_num(user.getGochi_num() + 1);
@@ -151,7 +150,7 @@ public class StreamUserProfAdapter extends RecyclerView.Adapter<Const.StreamUser
             holder.mLikesRipple.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mCallback.onGochiTap();
+                    //mCallback.onGochiTap();
                 }
             });
         }
