@@ -49,7 +49,7 @@
                     android:layout_height="75dp"
                     android:layout_centerHorizontal="true"
                     android:src="@drawable/ic_userpicture"
-                    android:layout_marginTop="16dp" />
+                    android:layout_marginTop="12dp" />
 
                 <TextView
                     android:id="@+id/myprof_username"
@@ -68,7 +68,7 @@
                     android:id="@+id/myprof_gochi_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
+                    android:layout_marginTop="12dp"
                     android:layout_below="@+id/myprof_username"
                     android:layout_centerHorizontal="true"
                     >
@@ -226,7 +226,7 @@
                     android:layout_below="@+id/num_bar"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="8dp"
-                    android:layout_marginBottom="16dp"
+                    android:layout_marginBottom="12dp"
                     android:background="@drawable/button_follow">
 
                     <TextView
