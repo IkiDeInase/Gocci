@@ -60,6 +60,7 @@ public class StreamMyProfAdapter extends RecyclerView.Adapter<Const.StreamUserVi
     public void onBindViewHolder(final Const.StreamUserViewHolder holder, final int position) {
         final PostData user = mPostData.get(position);
         holder.mName.setText(user.getRestname());
+        holder.mLocality.setText(user.getLocality());
 
         holder.mTimeText.setText(user.getPost_date());
 
