@@ -280,7 +280,7 @@ public class Application_Gocci extends Application {
         }.execute();
     }
 
-    public static void postingVideoToS3(final Context context, final String mAwsPostName, File mVideoFile, final CircleProgressView progressWheel, final Const.ActivityCategory activityCategory) {
+    public static void postingVideoToS3(final Context context, final String mAwsPostName, final File mVideoFile, final CircleProgressView progressWheel, final Const.ActivityCategory activityCategory) {
         final TransferObserver transferObserver = getTransfer(context).upload(Const.POST_MOVIE_BUCKET_NAME, mAwsPostName + ".mp4", mVideoFile);
         transferObserver.setTransferListener(new TransferListener() {
             @Override
@@ -300,7 +300,21 @@ public class Application_Gocci extends Application {
 
             @Override
             public void onError(int id, Exception ex) {
-                Toast.makeText(context, ex.getMessage(), Toast.LENGTH_SHORT).show();
+                new AsyncTask<Void, Void, Void>() {
+                    @Override
+                    protected Void doInBackground(Void... params) {
+                        credentialsProvider.refresh();
+                        s3 = new AmazonS3Client(credentialsProvider);
+                        s3.setRegion(Region.getRegion(Regions.AP_NORTHEAST_1));
+                        transferUtility = new TransferUtility(s3, context);
+                        return null;
+                    }
+
+                    @Override
+                    protected void onPostExecute(Void param) {
+                        postingVideoToS3(context, mAwsPostName, mVideoFile, progressWheel, activityCategory);
+                    }
+                }.execute();
             }
         });
     }
