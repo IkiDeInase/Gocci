@@ -230,7 +230,7 @@ public class HeaderData {
             boolean follow_flag = jsonObject.getBoolean(TAG_FOLLOW_FLAG);
 
             return new HeaderData(user_id, username, profile_img, follow_num, follower_num,
-                    cheer_num, gochi_num, post_num,  follow_flag);
+                    cheer_num, gochi_num, post_num, follow_flag);
 
         } catch (JSONException e) {
             e.printStackTrace();

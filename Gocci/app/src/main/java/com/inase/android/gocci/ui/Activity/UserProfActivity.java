@@ -629,6 +629,9 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
         if (api == Const.APICategory.SET_GOCHI) {
             data.setGochi_flag(false);
             data.setGochi_num(data.getGochi_num() - 1);
+        } else if (api == Const.APICategory.UNSET_GOCHI) {
+            data.setGochi_flag(true);
+            data.setGochi_num(data.getGochi_num() + 1);
         }
         BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.GLOBALERROR, Const.ActivityCategory.USER_PAGE, api, post_id));
         Application_Gocci.resolveOrHandleGlobalError(this, api, globalCode);
@@ -640,6 +643,9 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
         if (api == Const.APICategory.SET_GOCHI) {
             data.setGochi_flag(false);
             data.setGochi_num(data.getGochi_num() - 1);
+        } else if (api == Const.APICategory.UNSET_GOCHI) {
+            data.setGochi_flag(true);
+            data.setGochi_num(data.getGochi_num() + 1);
         }
         BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.LOCALERROR, Const.ActivityCategory.USER_PAGE, api, post_id));
         Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
@@ -664,12 +670,21 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
         });
     }
 
-    public void postGochi(String post_id) {
-        API3.Util.SetGochiLocalCode postGochiLocalCode = API3.Impl.getRepository().SetGochiParameterRegex(post_id);
-        if (postGochiLocalCode == null) {
-            mPresenter.postGochi(Const.APICategory.SET_GOCHI, API3.Util.getSetGochiAPI(post_id), post_id);
-        } else {
-            Toast.makeText(this, API3.Util.SetGochiLocalCodeMessageTable(postGochiLocalCode), Toast.LENGTH_SHORT).show();
+    public void postGochi(String post_id, Const.APICategory apiCategory) {
+        if (apiCategory == Const.APICategory.SET_GOCHI) {
+            API3.Util.SetGochiLocalCode postGochiLocalCode = API3.Impl.getRepository().SetGochiParameterRegex(post_id);
+            if (postGochiLocalCode == null) {
+                mPresenter.postGochi(Const.APICategory.SET_GOCHI, API3.Util.getSetGochiAPI(post_id), post_id);
+            } else {
+                Toast.makeText(this, API3.Util.SetGochiLocalCodeMessageTable(postGochiLocalCode), Toast.LENGTH_SHORT).show();
+            }
+        } else if (apiCategory == Const.APICategory.UNSET_GOCHI) {
+            API3.Util.UnsetGochiLocalCode unpostGochiLocalCode = API3.Impl.getRepository().UnsetGochiParameterRegex(post_id);
+            if (unpostGochiLocalCode == null) {
+                mPresenter.postGochi(Const.APICategory.UNSET_GOCHI, API3.Util.getUnsetGochiAPI(post_id), post_id);
+            } else {
+                Toast.makeText(this, API3.Util.UnsetGochiLocalCodeMessageTable(unpostGochiLocalCode), Toast.LENGTH_SHORT).show();
+            }
         }
     }
 

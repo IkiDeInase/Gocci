@@ -207,7 +207,9 @@ public class StreamUserProfFragment extends Fragment implements AppBarLayout.OnO
     public void subscribe(PostCallbackEvent event) {
         if (event.activityCategory == Const.ActivityCategory.USER_PAGE) {
             if (event.apiCategory == Const.APICategory.SET_GOCHI) {
-                mStreamUserProfAdapter.setData();
+                mStreamUserProfAdapter.notifyItemChanged(mPost_ids.indexOf(event.id));
+            } else if (event.apiCategory == Const.APICategory.UNSET_GOCHI) {
+                mStreamUserProfAdapter.notifyItemChanged(mPost_ids.indexOf(event.id));
             }
         }
     }
@@ -450,16 +452,17 @@ public class StreamUserProfFragment extends Fragment implements AppBarLayout.OnO
             activity.setGochiLayout();
         } else {
             activity = (UserProfActivity) getActivity();
+            activity.setGochiLayout();
         }
     }
 
     @Override
-    public void onGochiClick(String post_id) {
+    public void onGochiClick(String post_id, Const.APICategory apiCategory) {
         if (activity != null) {
-            activity.postGochi(post_id);
+            activity.postGochi(post_id, apiCategory);
         } else {
             activity = (UserProfActivity) getActivity();
-            activity.postGochi(post_id);
+            activity.postGochi(post_id, apiCategory);
         }
     }
 

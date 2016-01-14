@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
-import com.inase.android.gocci.datasource.api.API3PostUtil;
 import com.inase.android.gocci.domain.model.ListGetData;
 import com.inase.android.gocci.ui.view.RoundedTransformation;
 import com.squareup.picasso.Picasso;

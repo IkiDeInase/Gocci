@@ -61,7 +61,6 @@ import com.inase.android.gocci.domain.usecase.RestPageUseCaseImpl;
 import com.inase.android.gocci.domain.usecase.UserAndRestUseCase;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.NotificationNumberEvent;
-import com.inase.android.gocci.event.PostCallbackEvent;
 import com.inase.android.gocci.event.RetryApiEvent;
 import com.inase.android.gocci.presenter.ShowRestPagePresenter;
 import com.inase.android.gocci.ui.adapter.RestPageAdapter;
@@ -124,6 +123,7 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
     private TextView cheer_number;
 
     private ArrayList<PostData> mTenpousers = new ArrayList<PostData>();
+    private ArrayList<String> mPost_ids = new ArrayList<>();
     private RestPageAdapter mRestPageAdapter;
     private LinearLayoutManager mLayoutManager;
 
@@ -740,12 +740,21 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
     }
 
     @Override
-    public void onGochiClick(String post_id) {
-        API3.Util.SetGochiLocalCode postGochiLocalCode = API3.Impl.getRepository().SetGochiParameterRegex(post_id);
-        if (postGochiLocalCode == null) {
-            mPresenter.postGochi(Const.APICategory.SET_GOCHI, API3.Util.getSetGochiAPI(post_id), post_id);
-        } else {
-            Toast.makeText(this, API3.Util.SetGochiLocalCodeMessageTable(postGochiLocalCode), Toast.LENGTH_SHORT).show();
+    public void onGochiClick(String post_id, Const.APICategory apiCategory) {
+        if (apiCategory == Const.APICategory.SET_GOCHI) {
+            API3.Util.SetGochiLocalCode postGochiLocalCode = API3.Impl.getRepository().SetGochiParameterRegex(post_id);
+            if (postGochiLocalCode == null) {
+                mPresenter.postGochi(Const.APICategory.SET_GOCHI, API3.Util.getSetGochiAPI(post_id), post_id);
+            } else {
+                Toast.makeText(this, API3.Util.SetGochiLocalCodeMessageTable(postGochiLocalCode), Toast.LENGTH_SHORT).show();
+            }
+        } else if (apiCategory == Const.APICategory.UNSET_GOCHI) {
+            API3.Util.UnsetGochiLocalCode unpostGochiLocalCode = API3.Impl.getRepository().UnsetGochiParameterRegex(post_id);
+            if (unpostGochiLocalCode == null) {
+                mPresenter.postGochi(Const.APICategory.UNSET_GOCHI, API3.Util.getUnsetGochiAPI(post_id), post_id);
+            } else {
+                Toast.makeText(this, API3.Util.UnsetGochiLocalCodeMessageTable(unpostGochiLocalCode), Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -885,6 +894,7 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
                 break;
             case GET_REST_REFRESH:
                 mTenpousers.clear();
+                mPost_ids.clear();
                 mRestPageAdapter.setData(mHeaderRestData);
                 break;
         }
@@ -910,6 +920,8 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
         mHeaderRestData = restData;
         mTenpousers.clear();
         mTenpousers.addAll(mPostData);
+        mPost_ids.clear();
+        mPost_ids.addAll(post_ids);
         switch (api) {
             case GET_REST_FIRST:
                 Picasso.with(this).load(mTenpousers.get(0).getThumbnail()).into(mBackgroundImage);
@@ -929,18 +941,34 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
 
     @Override
     public void gochiSuccess(Const.APICategory api, String post_id) {
-        BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, Const.ActivityCategory.REST_PAGE, api, post_id));
+
     }
 
     @Override
     public void gochiFailureCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode, String post_id) {
-        BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.GLOBALERROR, Const.ActivityCategory.REST_PAGE, api, post_id));
+        PostData data = mTenpousers.get(mPost_ids.indexOf(post_id));
+        if (api == Const.APICategory.SET_GOCHI) {
+            data.setGochi_flag(false);
+            data.setGochi_num(data.getGochi_num() - 1);
+        } else if (api == Const.APICategory.UNSET_GOCHI) {
+            data.setGochi_flag(true);
+            data.setGochi_num(data.getGochi_num() + 1);
+        }
+        mRestPageAdapter.notifyItemChanged(mPost_ids.indexOf(post_id));
         Application_Gocci.resolveOrHandleGlobalError(this, api, globalCode);
     }
 
     @Override
     public void gochiFailureCausedByLocalError(Const.APICategory api, String errorMessage, String post_id) {
-        BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.LOCALERROR, Const.ActivityCategory.REST_PAGE, api, post_id));
+        PostData data = mTenpousers.get(mPost_ids.indexOf(post_id));
+        if (api == Const.APICategory.SET_GOCHI) {
+            data.setGochi_flag(false);
+            data.setGochi_num(data.getGochi_num() - 1);
+        } else if (api == Const.APICategory.UNSET_GOCHI) {
+            data.setGochi_flag(true);
+            data.setGochi_num(data.getGochi_num() + 1);
+        }
+        mRestPageAdapter.notifyItemChanged(mPost_ids.indexOf(post_id));
         Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
     }
 

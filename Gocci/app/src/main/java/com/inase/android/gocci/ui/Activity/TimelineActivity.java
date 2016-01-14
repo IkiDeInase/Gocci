@@ -280,8 +280,8 @@ public class TimelineActivity extends AppCompatActivity {
                 .add(R.string.tab_latest, TimelineLatestFragment.class)
                 .add(R.string.tab_near, TimelineNearFragment.class)
                 .add(R.string.tab_follow, TimelineFollowFragment.class)
-                //.add(getString(R.string.tab_gochi), TimelineGochiFragment.class)
-                //.add(getString(R.string.tab_comment), TimelineCommentFragment.class)
+                .add(getString(R.string.tab_gochi), TimelineGochiFragment.class)
+                .add(getString(R.string.tab_comment), TimelineCommentFragment.class)
                 .create());
 
         mViewpager.setOffscreenPageLimit(4);

@@ -240,7 +240,9 @@ public class StreamMyProfFragment extends Fragment implements AppBarLayout.OnOff
     public void subscribe(PostCallbackEvent event) {
         if (event.activityCategory == Const.ActivityCategory.MY_PAGE) {
             if (event.apiCategory == Const.APICategory.SET_GOCHI) {
-                mStreamMyProfAdapter.setData();
+                mStreamMyProfAdapter.notifyItemChanged(mPost_ids.indexOf(event.id));
+            } else if (event.apiCategory == Const.APICategory.UNSET_GOCHI) {
+                mStreamMyProfAdapter.notifyItemChanged(mPost_ids.indexOf(event.id));
             }
         }
     }
@@ -489,16 +491,17 @@ public class StreamMyProfFragment extends Fragment implements AppBarLayout.OnOff
             activity.setGochiLayout();
         } else {
             activity = (MyprofActivity) getActivity();
+            activity.setGochiLayout();
         }
     }
 
     @Override
-    public void onGochiClick(String post_id) {
+    public void onGochiClick(String post_id, Const.APICategory apiCategory) {
         if (activity != null) {
-            activity.postGochi(post_id);
+            activity.postGochi(post_id, apiCategory);
         } else {
             activity = (MyprofActivity) getActivity();
-            activity.postGochi(post_id);
+            activity.postGochi(post_id, apiCategory);
         }
     }
 

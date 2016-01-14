@@ -635,14 +635,22 @@ public class TimelineGochiFragment extends Fragment implements AudioCapabilities
     @Override
     public void gochiFailureCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode, String post_id) {
         Application_Gocci.resolveOrHandleGlobalError(getActivity(), api, globalCode);
-        mTimelineusers.get(mPost_ids.indexOf(post_id)).setGochi_flag(false);
+        if (api == Const.APICategory.SET_GOCHI) {
+            mTimelineusers.get(mPost_ids.indexOf(post_id)).setGochi_flag(false);
+        } else if (api == Const.APICategory.UNSET_GOCHI) {
+            mTimelineusers.get(mPost_ids.indexOf(post_id)).setGochi_flag(true);
+        }
         mTimelineAdapter.notifyItemChanged(mPost_ids.indexOf(post_id));
     }
 
     @Override
     public void gochiFailureCausedByLocalError(Const.APICategory api, String errorMessage, String post_id) {
         Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
-        mTimelineusers.get(mPost_ids.indexOf(post_id)).setGochi_flag(false);
+        if (api == Const.APICategory.SET_GOCHI) {
+            mTimelineusers.get(mPost_ids.indexOf(post_id)).setGochi_flag(false);
+        } else if (api == Const.APICategory.UNSET_GOCHI) {
+            mTimelineusers.get(mPost_ids.indexOf(post_id)).setGochi_flag(true);
+        }
         mTimelineAdapter.notifyItemChanged(mPost_ids.indexOf(post_id));
     }
 
@@ -667,16 +675,26 @@ public class TimelineGochiFragment extends Fragment implements AudioCapabilities
             activity.setGochiLayout();
         } else {
             activity = (TimelineActivity) getActivity();
+            activity.setGochiLayout();
         }
     }
 
     @Override
-    public void onGochiClick(String post_id) {
-        API3.Util.SetGochiLocalCode postGochiLocalCode = API3.Impl.getRepository().SetGochiParameterRegex(post_id);
-        if (postGochiLocalCode == null) {
-            mPresenter.postGochi(Const.APICategory.SET_GOCHI, API3.Util.getSetGochiAPI(post_id), post_id);
-        } else {
-            Toast.makeText(getActivity(), API3.Util.SetGochiLocalCodeMessageTable(postGochiLocalCode), Toast.LENGTH_SHORT).show();
+    public void onGochiClick(String post_id, Const.APICategory apiCategory) {
+        if (apiCategory == Const.APICategory.SET_GOCHI) {
+            API3.Util.SetGochiLocalCode postGochiLocalCode = API3.Impl.getRepository().SetGochiParameterRegex(post_id);
+            if (postGochiLocalCode == null) {
+                mPresenter.postGochi(Const.APICategory.SET_GOCHI, API3.Util.getSetGochiAPI(post_id), post_id);
+            } else {
+                Toast.makeText(getActivity(), API3.Util.SetGochiLocalCodeMessageTable(postGochiLocalCode), Toast.LENGTH_SHORT).show();
+            }
+        } else if (apiCategory == Const.APICategory.UNSET_GOCHI) {
+            API3.Util.UnsetGochiLocalCode unpostGochiLocalCode = API3.Impl.getRepository().UnsetGochiParameterRegex(post_id);
+            if (unpostGochiLocalCode == null) {
+                mPresenter.postGochi(Const.APICategory.UNSET_GOCHI, API3.Util.getUnsetGochiAPI(post_id), post_id);
+            } else {
+                Toast.makeText(getActivity(), API3.Util.UnsetGochiLocalCodeMessageTable(unpostGochiLocalCode), Toast.LENGTH_SHORT).show();
+            }
         }
     }
 

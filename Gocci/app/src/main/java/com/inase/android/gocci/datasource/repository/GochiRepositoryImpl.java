@@ -37,22 +37,41 @@ public class GochiRepositoryImpl implements GochiRepository {
             Application_Gocci.getJsonSync(url, new JsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    mAPI3.SetGochiResponse(response, new API3.PayloadResponseCallback() {
-                        @Override
-                        public void onSuccess(JSONObject payload) {
-                            cb.onSuccess(api, post_id);
-                        }
+                    if (api == Const.APICategory.SET_GOCHI) {
+                        mAPI3.SetGochiResponse(response, new API3.PayloadResponseCallback() {
+                            @Override
+                            public void onSuccess(JSONObject payload) {
+                                cb.onSuccess(api, post_id);
+                            }
 
-                        @Override
-                        public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                            cb.onFailureCausedByGlobalError(api, globalCode, post_id);
-                        }
+                            @Override
+                            public void onGlobalError(API3.Util.GlobalCode globalCode) {
+                                cb.onFailureCausedByGlobalError(api, globalCode, post_id);
+                            }
 
-                        @Override
-                        public void onLocalError(String errorMessage) {
-                            cb.onFailureCausedByLocalError(api, errorMessage, post_id);
-                        }
-                    });
+                            @Override
+                            public void onLocalError(String errorMessage) {
+                                cb.onFailureCausedByLocalError(api, errorMessage, post_id);
+                            }
+                        });
+                    } else if (api == Const.APICategory.UNSET_GOCHI) {
+                        mAPI3.UnsetGochiResponse(response, new API3.PayloadResponseCallback() {
+                            @Override
+                            public void onSuccess(JSONObject payload) {
+                                cb.onSuccess(api, post_id);
+                            }
+
+                            @Override
+                            public void onGlobalError(API3.Util.GlobalCode globalCode) {
+                                cb.onFailureCausedByGlobalError(api, globalCode, post_id);
+                            }
+
+                            @Override
+                            public void onLocalError(String errorMessage) {
+                                cb.onFailureCausedByLocalError(api, errorMessage, post_id);
+                            }
+                        });
+                    }
                 }
 
                 @Override

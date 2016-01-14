@@ -7,7 +7,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,7 +24,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
-import com.inase.android.gocci.datasource.api.API3PostUtil;
 import com.inase.android.gocci.domain.model.HeaderData;
 import com.inase.android.gocci.domain.model.PostData;
 import com.inase.android.gocci.ui.view.RoundedTransformation;
@@ -248,7 +246,7 @@ public class RestPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 public void onClick(View v) {
                     if (!user.isGochi_flag()) {
                         mCallback.onGochiTap();
-                        mCallback.onGochiClick(user.getPost_id());
+                        mCallback.onGochiClick(user.getPost_id(), Const.APICategory.SET_GOCHI);
                         user.setGochi_flag(true);
                         user.setGochi_num(user.getGochi_num() + 1);
                         holder.mLikesNumber.setText(String.valueOf((user.getGochi_num())));
@@ -261,7 +259,13 @@ public class RestPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             holder.mLikesRipple.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //mCallback.onGochiTap();
+                    if (user.isGochi_flag()) {
+                        mCallback.onGochiClick(user.getPost_id(), Const.APICategory.UNSET_GOCHI);
+                        user.setGochi_flag(false);
+                        user.setGochi_num(user.getGochi_num() - 1);
+                        holder.mLikesNumber.setText(String.valueOf((user.getGochi_num())));
+                        holder.mLikesImage.setImageResource(R.drawable.ic_icon_beef);
+                    }
                 }
             });
         }
@@ -366,7 +370,7 @@ public class RestPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         void onGochiTap();
 
-        void onGochiClick(String post_id);
+        void onGochiClick(String post_id, Const.APICategory apiCategory);
 
         void onVideoFrameClick();
 
