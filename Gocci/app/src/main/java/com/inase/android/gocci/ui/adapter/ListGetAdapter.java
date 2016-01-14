@@ -101,7 +101,7 @@ public class ListGetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             }
         });
 
-        if (data.getFollow_flag() == 0) {
+        if (!data.isFollow_flag()) {
             holder.mAddFollowButton.setVisibility(View.VISIBLE);
         } else {
             holder.mDeleteFollowButton.setVisibility(View.VISIBLE);
@@ -172,7 +172,7 @@ public class ListGetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             }
         });
 
-        if (data.getFollow_flag() == 0) {
+        if (!data.isFollow_flag()) {
             holder.mAddFollowButton.setVisibility(View.VISIBLE);
         } else {
             holder.mDeleteFollowButton.setVisibility(View.VISIBLE);

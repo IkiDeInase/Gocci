@@ -1042,7 +1042,7 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
     public void gochiFailureCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode, String post_id) {
         PostData data = mUsers.get(mPost_ids.indexOf(post_id));
         if (api == Const.APICategory.SET_GOCHI) {
-            data.setGochi_flag(0);
+            data.setGochi_flag(false);
             data.setGochi_num(data.getGochi_num() - 1);
         }
         BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.GLOBALERROR, Const.ActivityCategory.MY_PAGE, api, post_id));
@@ -1053,7 +1053,7 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
     public void gochiFailureCausedByLocalError(Const.APICategory api, String errorMessage, String post_id) {
         PostData data = mUsers.get(mPost_ids.indexOf(post_id));
         if (api == Const.APICategory.SET_GOCHI) {
-            data.setGochi_flag(0);
+            data.setGochi_flag(false);
             data.setGochi_num(data.getGochi_num() - 1);
         }
         BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.LOCALERROR, Const.ActivityCategory.MY_PAGE, api, post_id));

@@ -130,16 +130,16 @@ public class TimelineAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
             }
         });
 
-        if (user.getGochi_flag() == 0) {
+        if (!user.isGochi_flag()) {
             holder.mGochiImage.setImageResource(R.drawable.ic_icon_beef);
 
             holder.mGochiAction.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (user.getGochi_flag() == 0) {
+                    if (!user.isGochi_flag()) {
                         mCallback.onGochiTap();
                         mCallback.onGochiClick(user.getPost_id());
-                        user.setGochi_flag(1);
+                        user.setGochi_flag(true);
                         holder.mGochiImage.setImageResource(R.drawable.ic_icon_beef_orange);
                     }
                 }

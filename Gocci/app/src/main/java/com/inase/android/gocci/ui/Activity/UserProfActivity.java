@@ -473,7 +473,7 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
         mPostCountNum.setText(String.valueOf(headerUserData.getPost_num()));
         mGochiCountNum.setText(String.valueOf(headerUserData.getGochi_num()));
 
-        if (headerUserData.getFollow_flag() == 0) {
+        if (!headerUserData.isFollow_flag()) {
             mFollowText.setText(getString(R.string.do_follow));
         } else {
             mFollowText.setText(getString(R.string.do_unfollow));
@@ -491,7 +491,7 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
                     if (postFollowLocalCode == null) {
                         mPresenter.postFollow(Const.APICategory.SET_FOLLOW, API3.Util.getSetFollowAPI(mUser_id), mUser_id);
                         mFollowText.setText(getString(R.string.do_unfollow));
-                        headerUserData.setFollow_flag(1);
+                        headerUserData.setFollow_flag(true);
                     } else {
                         Toast.makeText(UserProfActivity.this, API3.Util.SetFollowLocalCodeMessageTable(postFollowLocalCode), Toast.LENGTH_SHORT).show();
                     }
@@ -500,7 +500,7 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
                     if (postUnfollowLocalCode == null) {
                         mPresenter.postFollow(Const.APICategory.UNSET_FOLLOW, API3.Util.getUnsetFollowAPI(mUser_id), mUser_id);
                         mFollowText.setText(getString(R.string.do_follow));
-                        headerUserData.setFollow_flag(0);
+                        headerUserData.setFollow_flag(false);
                     } else {
                         Toast.makeText(UserProfActivity.this, API3.Util.UnsetFollowLocalCodeMessageTable(postUnfollowLocalCode), Toast.LENGTH_SHORT).show();
                     }
@@ -540,10 +540,10 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
         Application_Gocci.resolveOrHandleGlobalError(this, api, globalCode);
         if (api == Const.APICategory.SET_FOLLOW) {
             mFollowText.setText(getString(R.string.do_follow));
-            headerUserData.setFollow_flag(0);
+            headerUserData.setFollow_flag(false);
         } else if (api == Const.APICategory.UNSET_FOLLOW) {
             mFollowText.setText(getString(R.string.do_unfollow));
-            headerUserData.setFollow_flag(1);
+            headerUserData.setFollow_flag(true);
         }
     }
 
@@ -552,10 +552,10 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
         Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
         if (api == Const.APICategory.SET_FOLLOW) {
             mFollowText.setText(getString(R.string.do_follow));
-            headerUserData.setFollow_flag(0);
+            headerUserData.setFollow_flag(false);
         } else if (api == Const.APICategory.UNSET_FOLLOW) {
             mFollowText.setText(getString(R.string.do_unfollow));
-            headerUserData.setFollow_flag(1);
+            headerUserData.setFollow_flag(true);
         }
     }
 
@@ -575,7 +575,7 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
         mPostCountNum.setText(String.valueOf(headerUserData.getPost_num()));
         mGochiCountNum.setText(String.valueOf(headerUserData.getGochi_num()));
 
-        if (headerUserData.getFollow_flag() == 0) {
+        if (!headerUserData.isFollow_flag()) {
             mFollowText.setText(getString(R.string.do_follow));
         } else {
             mFollowText.setText(getString(R.string.do_unfollow));
@@ -593,7 +593,7 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
                     if (postFollowLocalCode == null) {
                         mPresenter.postFollow(Const.APICategory.SET_FOLLOW, API3.Util.getSetFollowAPI(mUser_id), mUser_id);
                         mFollowText.setText(getString(R.string.do_unfollow));
-                        headerUserData.setFollow_flag(1);
+                        headerUserData.setFollow_flag(true);
                     } else {
                         Toast.makeText(UserProfActivity.this, API3.Util.SetFollowLocalCodeMessageTable(postFollowLocalCode), Toast.LENGTH_SHORT).show();
                     }
@@ -602,7 +602,7 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
                     if (postUnfollowLocalCode == null) {
                         mPresenter.postFollow(Const.APICategory.UNSET_FOLLOW, API3.Util.getUnsetFollowAPI(mUser_id), mUser_id);
                         mFollowText.setText(getString(R.string.do_follow));
-                        headerUserData.setFollow_flag(0);
+                        headerUserData.setFollow_flag(false);
                     } else {
                         Toast.makeText(UserProfActivity.this, API3.Util.UnsetFollowLocalCodeMessageTable(postUnfollowLocalCode), Toast.LENGTH_SHORT).show();
                     }
@@ -627,7 +627,7 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
     public void gochiFailureCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode, String post_id) {
         PostData data = mUsers.get(mPost_ids.indexOf(post_id));
         if (api == Const.APICategory.SET_GOCHI) {
-            data.setGochi_flag(0);
+            data.setGochi_flag(false);
             data.setGochi_num(data.getGochi_num() - 1);
         }
         BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.GLOBALERROR, Const.ActivityCategory.USER_PAGE, api, post_id));
@@ -638,7 +638,7 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
     public void gochiFailureCausedByLocalError(Const.APICategory api, String errorMessage, String post_id) {
         PostData data = mUsers.get(mPost_ids.indexOf(post_id));
         if (api == Const.APICategory.SET_GOCHI) {
-            data.setGochi_flag(0);
+            data.setGochi_flag(false);
             data.setGochi_num(data.getGochi_num() - 1);
         }
         BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.LOCALERROR, Const.ActivityCategory.USER_PAGE, api, post_id));

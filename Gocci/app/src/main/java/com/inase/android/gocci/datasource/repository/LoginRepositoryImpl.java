@@ -50,10 +50,10 @@ public class LoginRepositoryImpl implements LoginRepository {
                                         String user_id = payload.getString("user_id");
                                         String username = payload.getString("username");
                                         String profile_img = payload.getString("profile_img");
-                                        String badge_num = payload.getString("badge_num");
+                                        int badge_num = payload.getInt("badge_num");
                                         String cognito_token = payload.getString("cognito_token");
                                         Application_Gocci.GuestInit(Application_Gocci.getInstance().getApplicationContext(), SavedData.getIdentityId(Application_Gocci.getInstance().getApplicationContext()), cognito_token, user_id);
-                                        SavedData.setWelcome(Application_Gocci.getInstance().getApplicationContext(), username, profile_img, user_id, Integer.parseInt(badge_num));
+                                        SavedData.setWelcome(Application_Gocci.getInstance().getApplicationContext(), username, profile_img, user_id, badge_num);
                                         cb.onLogin(api);
                                     } catch (JSONException e) {
                                         cb.onNotLoginCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);

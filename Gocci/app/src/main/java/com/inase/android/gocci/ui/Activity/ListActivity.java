@@ -475,9 +475,9 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
     public void followFailureCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode, String user_id) {
         Application_Gocci.resolveOrHandleGlobalError(this, api, globalCode);
         if (api == Const.APICategory.SET_FOLLOW) {
-            mList.get(mUser_idList.indexOf(user_id)).setFollow_flag(0);
+            mList.get(mUser_idList.indexOf(user_id)).setFollow_flag(false);
         } else if (api == Const.APICategory.UNSET_FOLLOW) {
-            mList.get(mUser_idList.indexOf(user_id)).setFollow_flag(1);
+            mList.get(mUser_idList.indexOf(user_id)).setFollow_flag(true);
         }
         mListGetAdapter.notifyItemChanged(mUser_idList.indexOf(user_id));
     }
@@ -486,9 +486,9 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
     public void followFailureCausedByLocalError(Const.APICategory api, String errorMessage, String user_id) {
         Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
         if (api == Const.APICategory.SET_FOLLOW) {
-            mList.get(mUser_idList.indexOf(user_id)).setFollow_flag(0);
+            mList.get(mUser_idList.indexOf(user_id)).setFollow_flag(false);
         } else if (api == Const.APICategory.UNSET_FOLLOW) {
-            mList.get(mUser_idList.indexOf(user_id)).setFollow_flag(1);
+            mList.get(mUser_idList.indexOf(user_id)).setFollow_flag(true);
         }
         mListGetAdapter.notifyItemChanged(mUser_idList.indexOf(user_id));
     }

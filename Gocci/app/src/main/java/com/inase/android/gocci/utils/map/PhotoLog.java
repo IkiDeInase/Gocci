@@ -13,8 +13,6 @@ public class PhotoLog implements ClusterItem {
 
     public final String mRestname;
     public final String mDatetime;
-    //public final int mWant_flag;
-    public final int mCheer_num;
     public final PostData userdata;
     public final Drawable mDrawable;
     private final LatLng mPosition;
@@ -23,8 +21,6 @@ public class PhotoLog implements ClusterItem {
         mRestname = user.getRestname();
         mPosition = new LatLng(user.getLat(), user.getLon());
         mDatetime = user.getPost_date();
-        //mWant_flag = user.getWant_flag();
-        mCheer_num = user.getCheer_flag();
         userdata = user;
         mDrawable = drawable;
     }

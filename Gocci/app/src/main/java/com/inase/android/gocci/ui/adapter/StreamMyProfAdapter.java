@@ -119,7 +119,7 @@ public class StreamMyProfAdapter extends RecyclerView.Adapter<Const.StreamUserVi
         } else {
             holder.mCategory.setText("　　　　");
         }
-        if (!user.getValue().equals("0")) {
+        if (user.getValue() != 0) {
             holder.mValue.setText(user.getValue() + "円");
         } else {
             holder.mValue.setText("　　　　");
@@ -128,16 +128,16 @@ public class StreamMyProfAdapter extends RecyclerView.Adapter<Const.StreamUserVi
         holder.mLikesNumber.setText(String.valueOf(user.getGochi_num()));
         holder.mCommentsNumber.setText(String.valueOf(user.getComment_num()));
 
-        if (user.getGochi_flag() == 0) {
+        if (!user.isGochi_flag()) {
             holder.mLikesImage.setImageResource(R.drawable.ic_icon_beef);
 
             holder.mLikesRipple.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (user.getGochi_flag() == 0) {
+                    if (!user.isGochi_flag()) {
                         mCallback.onGochiTap();
                         mCallback.onGochiClick(user.getPost_id());
-                        user.setGochi_flag(1);
+                        user.setGochi_flag(true);
                         user.setGochi_num(user.getGochi_num() + 1);
                         holder.mLikesNumber.setText(String.valueOf((user.getGochi_num())));
                         holder.mLikesImage.setImageResource(R.drawable.ic_icon_beef_orange);

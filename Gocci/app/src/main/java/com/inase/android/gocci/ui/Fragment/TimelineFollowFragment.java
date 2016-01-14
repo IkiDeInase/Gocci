@@ -632,14 +632,14 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
     @Override
     public void gochiFailureCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode, String post_id) {
         Application_Gocci.resolveOrHandleGlobalError(getActivity(), api, globalCode);
-        mTimelineusers.get(mPost_ids.indexOf(post_id)).setGochi_flag(0);
+        mTimelineusers.get(mPost_ids.indexOf(post_id)).setGochi_flag(false);
         mTimelineAdapter.notifyItemChanged(mPost_ids.indexOf(post_id));
     }
 
     @Override
     public void gochiFailureCausedByLocalError(Const.APICategory api, String errorMessage, String post_id) {
         Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
-        mTimelineusers.get(mPost_ids.indexOf(post_id)).setGochi_flag(0);
+        mTimelineusers.get(mPost_ids.indexOf(post_id)).setGochi_flag(false);
         mTimelineAdapter.notifyItemChanged(mPost_ids.indexOf(post_id));
     }
 

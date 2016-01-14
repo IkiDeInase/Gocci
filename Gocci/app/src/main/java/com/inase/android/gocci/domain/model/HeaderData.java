@@ -76,7 +76,6 @@ public class HeaderData {
     private String tell;
     private String homepage;
     private String rest_category;
-    private int want_flag;
 
     //ユーザーページ
     private String user_id;
@@ -85,13 +84,12 @@ public class HeaderData {
     private int cheer_num;
     private int gochi_num;
     private int post_num;
-    private int follow_flag;
+    private boolean follow_flag;
 
     //通知
     private String notice_id;
     private String notice;
     private String notice_post_id;
-    private int read_flag;
     private String notice_date;
 
     //ニアー
@@ -123,7 +121,7 @@ public class HeaderData {
 
     //店舗
     public HeaderData(String rest_id, String restname, String locality, double lat, double lon,
-                      String tell, String homepage, String rest_category, int want_flag) {
+                      String tell, String homepage, String rest_category) {
         this.rest_id = rest_id;
         this.restname = restname;
         this.locality = locality;
@@ -132,12 +130,11 @@ public class HeaderData {
         this.tell = tell;
         this.homepage = homepage;
         this.rest_category = rest_category;
-        this.want_flag = want_flag;
     }
 
     //ユーザー
     public HeaderData(String user_id, String username, String profile_img, int follow_num, int follower_num,
-                      int cheer_num, int gochi_num, int post_num, int follow_flag) {
+                      int cheer_num, int gochi_num, int post_num, boolean follow_flag) {
         this.user_id = user_id;
         this.username = username;
         this.profile_img = profile_img;
@@ -210,10 +207,9 @@ public class HeaderData {
             String tell = jsonObject.getString(TAG_TELL);
             String homepage = jsonObject.getString(TAG_HOMEPAGE);
             String rest_category = jsonObject.getString(TAG_REST_CATEGORY);
-            int want_flag = jsonObject.getInt(TAG_WANT_FLAG);
 
             return new HeaderData(rest_id, restname, localoty, lat, lon,
-                    tell, homepage, rest_category, want_flag);
+                    tell, homepage, rest_category);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -231,7 +227,7 @@ public class HeaderData {
             int cheer_num = jsonObject.getInt(TAG_CHEER_NUM);
             int gochi_num = jsonObject.getInt(TAG_GOCHI_NUM);
             int post_num = jsonObject.getInt(TAG_POST_NUM);
-            int follow_flag = jsonObject.getInt(TAG_FOLLOW_FLAG);
+            boolean follow_flag = jsonObject.getBoolean(TAG_FOLLOW_FLAG);
 
             return new HeaderData(user_id, username, profile_img, follow_num, follower_num,
                     cheer_num, gochi_num, post_num,  follow_flag);
@@ -365,14 +361,6 @@ public class HeaderData {
         this.rest_category = rest_category;
     }
 
-    public int getWant_flag() {
-        return want_flag;
-    }
-
-    public void setWant_flag(int want_flag) {
-        this.want_flag = want_flag;
-    }
-
     public String getUser_id() {
         return user_id;
     }
@@ -405,14 +393,6 @@ public class HeaderData {
         this.cheer_num = cheer_num;
     }
 
-    public int getFollow_flag() {
-        return follow_flag;
-    }
-
-    public void setFollow_flag(int follow_flag) {
-        this.follow_flag = follow_flag;
-    }
-
     public String getNotice_id() {
         return notice_id;
     }
@@ -435,14 +415,6 @@ public class HeaderData {
 
     public void setNotice_post_id(String notice_post_id) {
         this.notice_post_id = notice_post_id;
-    }
-
-    public int getRead_flag() {
-        return read_flag;
-    }
-
-    public void setRead_flag(int read_flag) {
-        this.read_flag = read_flag;
     }
 
     public String getNotice_date() {
@@ -495,5 +467,13 @@ public class HeaderData {
 
     public void setPost_num(int post_num) {
         this.post_num = post_num;
+    }
+
+    public boolean isFollow_flag() {
+        return follow_flag;
+    }
+
+    public void setFollow_flag(boolean follow_flag) {
+        this.follow_flag = follow_flag;
     }
 }

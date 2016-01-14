@@ -163,8 +163,8 @@ public interface API3 {
     }
 
     class Util {
-        public static final String liveurl = "https://mobile.api.gocci.me/v3";
-        public static final String testurl = "http://test.mobile.api.gocci.me/v3";
+        public static final String liveurl = "https://mobile.api.gocci.me/v4";
+        public static final String testurl = "http://test.mobile.api.gocci.me/v4";
         public static final String version = "3.7";
 
         private static final ConcurrentHashMap<GlobalCode, String> GlobalCodeMap = new ConcurrentHashMap<>();

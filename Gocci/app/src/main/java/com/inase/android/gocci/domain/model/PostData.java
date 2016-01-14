@@ -37,10 +37,10 @@ public class PostData {
     private String movie;
     private String thumbnail;
     private String category;
-    private String value;
+    private int value;
     private String memo;
     private String post_date;
-    private int cheer_flag;
+    private boolean cheer_flag;
 
     private String post_rest_id;
     private String restname;
@@ -54,7 +54,7 @@ public class PostData {
     private String mp4_movie;
     private String hls_movie;
     private int gochi_num;
-    private int gochi_flag;
+    private boolean gochi_flag;
     private int comment_num;
 
     private String locality;
@@ -64,9 +64,9 @@ public class PostData {
 
     //店舗
     public PostData(String post_id, String movie, String thumbnail, String category,
-                    String value, String memo, String post_date, int cheer_flag, String post_user_id,
+                    int value, String memo, String post_date, boolean cheer_flag, String post_user_id,
                     String username, String profile_img, String mp4_movie, String hls_movie,
-                    int gochi_num, int gochi_flag, int comment_num) {
+                    int gochi_num, boolean gochi_flag, int comment_num) {
         this.post_id = post_id;
         this.movie = movie;
         this.thumbnail = thumbnail;
@@ -87,9 +87,9 @@ public class PostData {
 
     //ユーザー
     public PostData(String post_id, String movie, String thumbnail, String category,
-                    String value, String memo, String post_date, int cheer_flag, String post_rest_id,
+                    int value, String memo, String post_date, boolean cheer_flag, String post_rest_id,
                     String restname, double lon, double lat, String locality, String mp4_movie, String hls_movie,
-                    int gochi_num, int gochi_flag, int comment_num) {
+                    int gochi_num, boolean gochi_flag, int comment_num) {
         this.post_id = post_id;
         this.movie = movie;
         this.thumbnail = thumbnail;
@@ -116,10 +116,10 @@ public class PostData {
             String movie = jsonObject.getString(TAG_MOVIE);
             String thumbnail = jsonObject.getString(TAG_THUMBNAIL);
             String category = jsonObject.getString(TAG_CATEGORY);
-            String value = jsonObject.getString(TAG_VALUE);
+            int value = jsonObject.getInt(TAG_VALUE);
             String memo = jsonObject.getString(TAG_MEMO);
             String post_date = jsonObject.getString(TAG_POST_DATE);
-            int cheer_flag = jsonObject.getInt(TAG_CHEER_FLAG);
+            boolean cheer_flag = jsonObject.getBoolean(TAG_CHEER_FLAG);
             String post_rest_id = jsonObject.getString(TAG_POST_REST_ID);
             String restname = jsonObject.getString(TAG_RESTNAME);
             double lon = jsonObject.getDouble(TAG_LON);
@@ -128,7 +128,7 @@ public class PostData {
             String mp4_movie = jsonObject.getString(TAG_MP4_MOVIE);
             String hls_movie = jsonObject.getString(TAG_HLS_MOVIE);
             int gochi_num = jsonObject.getInt(TAG_GOCHI_NUM);
-            int gochi_flag = jsonObject.getInt(TAG_GOCHI_FLAG);
+            boolean gochi_flag = jsonObject.getBoolean(TAG_GOCHI_FLAG);
             int comment_num = jsonObject.getInt(TAG_COMMENT_NUM);
 
             return new PostData(post_id, movie, thumbnail, category, value,
@@ -147,17 +147,17 @@ public class PostData {
             String movie = jsonObject.getString(TAG_MOVIE);
             String thumbnail = jsonObject.getString(TAG_THUMBNAIL);
             String category = jsonObject.getString(TAG_CATEGORY);
-            String value = jsonObject.getString(TAG_VALUE);
+            int value = jsonObject.getInt(TAG_VALUE);
             String memo = jsonObject.getString(TAG_MEMO);
             String post_date = jsonObject.getString(TAG_POST_DATE);
-            int cheer_flag = jsonObject.getInt(TAG_CHEER_FLAG);
+            boolean cheer_flag = jsonObject.getBoolean(TAG_CHEER_FLAG);
             String post_user_id = jsonObject.getString(TAG_POST_USER_ID);
             String username = jsonObject.getString(TAG_USERNAME);
             String profile_img = jsonObject.getString(TAG_PROFILE_IMG);
             String mp4_movie = jsonObject.getString(TAG_MP4_MOVIE);
             String hls_movie = jsonObject.getString(TAG_HLS_MOVIE);
             int gochi_num = jsonObject.getInt(TAG_GOCHI_NUM);
-            int gochi_flag = jsonObject.getInt(TAG_GOCHI_FLAG);
+            boolean gochi_flag = jsonObject.getBoolean(TAG_GOCHI_FLAG);
             int comment_num = jsonObject.getInt(TAG_COMMENT_NUM);
 
             return new PostData(post_id, movie, thumbnail, category, value,
@@ -242,11 +242,11 @@ public class PostData {
         this.category = category;
     }
 
-    public String getValue() {
+    public int getValue() {
         return value;
     }
 
-    public void setValue(String value) {
+    public void setValue(int value) {
         this.value = value;
     }
 
@@ -266,14 +266,6 @@ public class PostData {
         this.post_date = post_date;
     }
 
-    public int getCheer_flag() {
-        return cheer_flag;
-    }
-
-    public void setCheer_flag(int cheer_flag) {
-        this.cheer_flag = cheer_flag;
-    }
-
     public int getGochi_num() {
         return gochi_num;
     }
@@ -288,14 +280,6 @@ public class PostData {
 
     public void setComment_num(int comment_num) {
         this.comment_num = comment_num;
-    }
-
-    public int getGochi_flag() {
-        return gochi_flag;
-    }
-
-    public void setGochi_flag(int gochi_flag) {
-        this.gochi_flag = gochi_flag;
     }
 
     public double getLat() {
@@ -336,5 +320,21 @@ public class PostData {
 
     public void setLocality(String locality) {
         this.locality = locality;
+    }
+
+    public boolean isCheer_flag() {
+        return cheer_flag;
+    }
+
+    public void setCheer_flag(boolean cheer_flag) {
+        this.cheer_flag = cheer_flag;
+    }
+
+    public boolean isGochi_flag() {
+        return gochi_flag;
+    }
+
+    public void setGochi_flag(boolean gochi_flag) {
+        this.gochi_flag = gochi_flag;
     }
 }

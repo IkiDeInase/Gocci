@@ -21,6 +21,7 @@ public class TwoCellData {
     private static final String TAG_MP4_MOVIE = "mp4_movie";
     private static final String TAG_HLS_MOVIE = "hls_movie";
     private static final String TAG_PROFILE_IMG = "profile_img";
+    private static final String TAG_VALUE = "value";
 
     private static final String TAG_DISTANCE = "distance";
 
@@ -31,12 +32,13 @@ public class TwoCellData {
     private String restname;
     private String post_user_id;
     private String username;
-    private int cheer_flag;
-    private int gochi_flag;
+    private boolean cheer_flag;
+    private boolean gochi_flag;
     private String post_date;
     private String mp4_movie;
     private String hls_movie;
     private String profile_img;
+    private int value;
 
     private int distance;
 
@@ -44,8 +46,8 @@ public class TwoCellData {
     }
 
     public TwoCellData(String post_id, String movie, String thumbnail, String post_rest_id, String restname,
-                       String post_user_id, String username, int cheer_flag, int gochi_flag, String post_date, String mp4_movie, String hls_movie,
-                       String profile_img, int distance) {
+                       String post_user_id, String username, boolean cheer_flag, boolean gochi_flag, String post_date, String mp4_movie, String hls_movie,
+                       String profile_img, int value, int distance) {
         this.post_id = post_id;
         this.movie = movie;
         this.thumbnail = thumbnail;
@@ -59,11 +61,12 @@ public class TwoCellData {
         this.mp4_movie = mp4_movie;
         this.hls_movie = hls_movie;
         this.profile_img = profile_img;
+        this.value = value;
         this.distance = distance;
     }
 
     public TwoCellData(String post_id, String movie, String thumbnail, String post_rest_id, String restname,
-                       String post_user_id, String username, int cheer_flag, int gochi_flag, String post_date, String mp4_movie, String hls_movie, String profile_img) {
+                       String post_user_id, String username, boolean cheer_flag, boolean gochi_flag, String post_date, String mp4_movie, String hls_movie, String profile_img, int value) {
         this.post_id = post_id;
         this.movie = movie;
         this.thumbnail = thumbnail;
@@ -77,6 +80,7 @@ public class TwoCellData {
         this.mp4_movie = mp4_movie;
         this.hls_movie = hls_movie;
         this.profile_img = profile_img;
+        this.value = value;
     }
 
     public static TwoCellData createPostData(JSONObject jsonObject) {
@@ -88,20 +92,21 @@ public class TwoCellData {
             String restname = jsonObject.getString(TAG_RESTNAME);
             String post_user_id = jsonObject.getString(TAG_POST_USER_ID);
             String username = jsonObject.getString(TAG_USERNAME);
-            int cheer_flag = jsonObject.getInt(TAG_CHEER_FLAG);
-            int gochi_flag = jsonObject.getInt(TAG_GOCHI_FLAG);
+            boolean cheer_flag = jsonObject.getBoolean(TAG_CHEER_FLAG);
+            boolean gochi_flag = jsonObject.getBoolean(TAG_GOCHI_FLAG);
             String post_date = jsonObject.getString(TAG_POST_DATE);
             String mp4_movie = jsonObject.getString(TAG_MP4_MOVIE);
             String hls_movie = jsonObject.getString(TAG_HLS_MOVIE);
             String profile_img = jsonObject.getString(TAG_PROFILE_IMG);
+            int value = jsonObject.getInt(TAG_VALUE);
 
             if (jsonObject.has(TAG_DISTANCE)) {
                 int distance = jsonObject.getInt(TAG_DISTANCE);
                 return new TwoCellData(post_id, movie, thumbnail, post_rest_id, restname,
-                        post_user_id, username, cheer_flag, gochi_flag, post_date, mp4_movie, hls_movie, profile_img, distance);
+                        post_user_id, username, cheer_flag, gochi_flag, post_date, mp4_movie, hls_movie, profile_img, value, distance);
             } else {
                 return new TwoCellData(post_id, movie, thumbnail, post_rest_id, restname,
-                        post_user_id, username, cheer_flag, gochi_flag, post_date, mp4_movie, hls_movie, profile_img);
+                        post_user_id, username, cheer_flag, gochi_flag, post_date, mp4_movie, hls_movie, profile_img, value);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -157,14 +162,6 @@ public class TwoCellData {
         this.post_user_id = post_user_id;
     }
 
-    public int getCheer_flag() {
-        return cheer_flag;
-    }
-
-    public void setCheer_flag(int cheer_flag) {
-        this.cheer_flag = cheer_flag;
-    }
-
     public String getPost_date() {
         return post_date;
     }
@@ -205,19 +202,35 @@ public class TwoCellData {
         this.username = username;
     }
 
-    public int getGochi_flag() {
-        return gochi_flag;
-    }
-
-    public void setGochi_flag(int gochi_flag) {
-        this.gochi_flag = gochi_flag;
-    }
-
     public String getProfile_img() {
         return profile_img;
     }
 
     public void setProfile_img(String profile_img) {
         this.profile_img = profile_img;
+    }
+
+    public boolean isCheer_flag() {
+        return cheer_flag;
+    }
+
+    public void setCheer_flag(boolean cheer_flag) {
+        this.cheer_flag = cheer_flag;
+    }
+
+    public void setGochi_flag(boolean gochi_flag) {
+        this.gochi_flag = gochi_flag;
+    }
+
+    public int getValue() {
+        return value;
+    }
+
+    public void setValue(int value) {
+        this.value = value;
+    }
+
+    public boolean isGochi_flag() {
+        return gochi_flag;
     }
 }

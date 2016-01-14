@@ -20,7 +20,7 @@ public class ListGetData {
     private String user_id;
     private String username;
     private String profile_img;
-    private int follow_flag;
+    private boolean follow_flag;
 
     private String rest_id;
     private String restname;
@@ -29,7 +29,7 @@ public class ListGetData {
     public ListGetData() {
     }
 
-    public ListGetData(String user_id, String username, String profile_img, int follow_flag) {
+    public ListGetData(String user_id, String username, String profile_img, boolean follow_flag) {
         this.user_id = user_id;
         this.username = username;
         this.profile_img = profile_img;
@@ -47,7 +47,7 @@ public class ListGetData {
             String user_id = jsonObject.getString(TAG_USER_ID);
             String username = jsonObject.getString(TAG_USERNAME);
             String profile_img = jsonObject.getString(TAG_PROFILE_IMG);
-            int follow_flag = jsonObject.getInt(TAG_FOLLOW_FLAG);
+            boolean follow_flag = jsonObject.getBoolean(TAG_FOLLOW_FLAG);
 
             return new ListGetData(user_id, username, profile_img, follow_flag);
 
@@ -95,14 +95,6 @@ public class ListGetData {
         this.profile_img = profile_img;
     }
 
-    public int getFollow_flag() {
-        return follow_flag;
-    }
-
-    public void setFollow_flag(int follow_flag) {
-        this.follow_flag = follow_flag;
-    }
-
     public String getRest_id() {
         return rest_id;
     }
@@ -125,5 +117,13 @@ public class ListGetData {
 
     public void setLocality(String locality) {
         this.locality = locality;
+    }
+
+    public boolean isFollow_flag() {
+        return follow_flag;
+    }
+
+    public void setFollow_flag(boolean follow_flag) {
+        this.follow_flag = follow_flag;
     }
 }
