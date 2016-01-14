@@ -229,7 +229,7 @@ public class RestPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         } else {
             holder.mCategory.setText("　　　　");
         }
-        if (user.getValue() != 0) {
+        if (!user.getValue().equals("0")) {
             holder.mValue.setText(user.getValue() + "円");
         } else {
             holder.mValue.setText("　　　　");

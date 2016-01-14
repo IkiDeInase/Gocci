@@ -53,7 +53,7 @@ public class HeatmapRepositoryImpl implements HeatmapRepository {
 
                                 for (int i = 0; i < rests.length(); i++) {
                                     JSONObject listData = rests.getJSONObject(i);
-                                    String rest_id = listData.getString("post_rest_id");
+                                    String rest_id = listData.getString("rest_id");
                                     String restname = listData.getString("restname");
                                     double lat = listData.getDouble("lat");
                                     double lon = listData.getDouble("lon");

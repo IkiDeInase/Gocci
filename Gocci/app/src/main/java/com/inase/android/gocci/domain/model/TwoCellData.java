@@ -38,7 +38,7 @@ public class TwoCellData {
     private String mp4_movie;
     private String hls_movie;
     private String profile_img;
-    private int value;
+    private String value;
 
     private int distance;
 
@@ -47,7 +47,7 @@ public class TwoCellData {
 
     public TwoCellData(String post_id, String movie, String thumbnail, String post_rest_id, String restname,
                        String post_user_id, String username, boolean cheer_flag, boolean gochi_flag, String post_date, String mp4_movie, String hls_movie,
-                       String profile_img, int value, int distance) {
+                       String profile_img, String value, int distance) {
         this.post_id = post_id;
         this.movie = movie;
         this.thumbnail = thumbnail;
@@ -66,7 +66,7 @@ public class TwoCellData {
     }
 
     public TwoCellData(String post_id, String movie, String thumbnail, String post_rest_id, String restname,
-                       String post_user_id, String username, boolean cheer_flag, boolean gochi_flag, String post_date, String mp4_movie, String hls_movie, String profile_img, int value) {
+                       String post_user_id, String username, boolean cheer_flag, boolean gochi_flag, String post_date, String mp4_movie, String hls_movie, String profile_img, String value) {
         this.post_id = post_id;
         this.movie = movie;
         this.thumbnail = thumbnail;
@@ -98,7 +98,7 @@ public class TwoCellData {
             String mp4_movie = jsonObject.getString(TAG_MP4_MOVIE);
             String hls_movie = jsonObject.getString(TAG_HLS_MOVIE);
             String profile_img = jsonObject.getString(TAG_PROFILE_IMG);
-            int value = jsonObject.getInt(TAG_VALUE);
+            String value = jsonObject.getString(TAG_VALUE);
 
             if (jsonObject.has(TAG_DISTANCE)) {
                 int distance = jsonObject.getInt(TAG_DISTANCE);
@@ -222,11 +222,11 @@ public class TwoCellData {
         this.gochi_flag = gochi_flag;
     }
 
-    public int getValue() {
+    public String getValue() {
         return value;
     }
 
-    public void setValue(int value) {
+    public void setValue(String value) {
         this.value = value;
     }
 

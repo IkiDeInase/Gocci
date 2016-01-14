@@ -37,7 +37,7 @@ public class PostData {
     private String movie;
     private String thumbnail;
     private String category;
-    private int value;
+    private String value;
     private String memo;
     private String post_date;
     private boolean cheer_flag;
@@ -64,7 +64,7 @@ public class PostData {
 
     //店舗
     public PostData(String post_id, String movie, String thumbnail, String category,
-                    int value, String memo, String post_date, boolean cheer_flag, String post_user_id,
+                    String value, String memo, String post_date, boolean cheer_flag, String post_user_id,
                     String username, String profile_img, String mp4_movie, String hls_movie,
                     int gochi_num, boolean gochi_flag, int comment_num) {
         this.post_id = post_id;
@@ -87,7 +87,7 @@ public class PostData {
 
     //ユーザー
     public PostData(String post_id, String movie, String thumbnail, String category,
-                    int value, String memo, String post_date, boolean cheer_flag, String post_rest_id,
+                    String value, String memo, String post_date, boolean cheer_flag, String post_rest_id,
                     String restname, double lon, double lat, String locality, String mp4_movie, String hls_movie,
                     int gochi_num, boolean gochi_flag, int comment_num) {
         this.post_id = post_id;
@@ -116,7 +116,7 @@ public class PostData {
             String movie = jsonObject.getString(TAG_MOVIE);
             String thumbnail = jsonObject.getString(TAG_THUMBNAIL);
             String category = jsonObject.getString(TAG_CATEGORY);
-            int value = jsonObject.getInt(TAG_VALUE);
+            String value = jsonObject.getString(TAG_VALUE);
             String memo = jsonObject.getString(TAG_MEMO);
             String post_date = jsonObject.getString(TAG_POST_DATE);
             boolean cheer_flag = jsonObject.getBoolean(TAG_CHEER_FLAG);
@@ -147,7 +147,7 @@ public class PostData {
             String movie = jsonObject.getString(TAG_MOVIE);
             String thumbnail = jsonObject.getString(TAG_THUMBNAIL);
             String category = jsonObject.getString(TAG_CATEGORY);
-            int value = jsonObject.getInt(TAG_VALUE);
+            String value = jsonObject.getString(TAG_VALUE);
             String memo = jsonObject.getString(TAG_MEMO);
             String post_date = jsonObject.getString(TAG_POST_DATE);
             boolean cheer_flag = jsonObject.getBoolean(TAG_CHEER_FLAG);
@@ -242,11 +242,11 @@ public class PostData {
         this.category = category;
     }
 
-    public int getValue() {
+    public String getValue() {
         return value;
     }
 
-    public void setValue(int value) {
+    public void setValue(String value) {
         this.value = value;
     }
 
