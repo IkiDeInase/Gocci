@@ -26,7 +26,7 @@ public class FacebookUtil {
 
     private static final String FACEBOOK_SHARE_URL = "https://graph-video.facebook.com/me/videos";
 
-    public static void performShare(final Context context, String token, final File movie, String description) {
+        public static void performShare(final Context context, String token, final File movie, String description) {
         RequestParams param = new RequestParams();
         try {
             param.put(ACCESS_TOKEN, token);
@@ -36,8 +36,8 @@ public class FacebookUtil {
             e.printStackTrace();
         }
 
-        Application_Gocci.getClient().removeAllHeaders();
-        Application_Gocci.getClient().setTimeout(50000);
+            Application_Gocci.getClient().removeAllHeaders();
+            Application_Gocci.getClient().setTimeout(50000);
         Application_Gocci.getClient().post(context, FACEBOOK_SHARE_URL, param, new TextHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {

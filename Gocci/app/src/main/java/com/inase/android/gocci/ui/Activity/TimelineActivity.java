@@ -46,6 +46,7 @@ import com.inase.android.gocci.event.FilterTimelineEvent;
 import com.inase.android.gocci.event.NotificationNumberEvent;
 import com.inase.android.gocci.event.PageChangeVideoStopEvent;
 import com.inase.android.gocci.event.TimelineMuteChangeEvent;
+import com.inase.android.gocci.ui.fragment.TimelineCommentFragment;
 import com.inase.android.gocci.ui.fragment.TimelineFollowFragment;
 import com.inase.android.gocci.ui.fragment.TimelineGochiFragment;
 import com.inase.android.gocci.ui.fragment.TimelineLatestFragment;
