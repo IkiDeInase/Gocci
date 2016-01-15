@@ -46,7 +46,6 @@ import com.inase.android.gocci.domain.usecase.CommentPostUseCaseImpl;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.NotificationNumberEvent;
 import com.inase.android.gocci.event.PostCallbackEvent;
-import com.inase.android.gocci.event.ProfJsonEvent;
 import com.inase.android.gocci.event.RetryApiEvent;
 import com.inase.android.gocci.presenter.ShowCommentPagePresenter;
 import com.inase.android.gocci.ui.adapter.CommentAdapter;
@@ -55,7 +54,6 @@ import com.inase.android.gocci.utils.Util;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.squareup.otto.Subscribe;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import butterknife.Bind;
