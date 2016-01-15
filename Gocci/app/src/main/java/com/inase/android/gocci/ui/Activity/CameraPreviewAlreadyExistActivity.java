@@ -139,7 +139,8 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
                 .widgetColorRes(R.color.twitter_background)
                 .positiveText(getString(R.string.complete))
                 .positiveColorRes(R.color.gocci_header)
-                .input("", getMessage(), false, new MaterialDialog.InputCallback() {
+                .inputRangeRes(6, 115, R.color.gocci_header)
+                .input("", mTwitterMemo.isEmpty() ? getMessage() : mTwitterMemo, false, new MaterialDialog.InputCallback() {
                     @Override
                     public void onInput(MaterialDialog materialDialog, CharSequence charSequence) {
                         mTwitterMemo = charSequence.toString();
@@ -157,7 +158,8 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
                 .widgetColorRes(R.color.facebook_background)
                 .positiveText(getString(R.string.complete))
                 .positiveColorRes(R.color.gocci_header)
-                .input("", getMessage(), false, new MaterialDialog.InputCallback() {
+                .inputRangeRes(6, 140, R.color.gocci_header)
+                .input("", mFacebookMemo.isEmpty() ? getMessage() : mFacebookMemo, false, new MaterialDialog.InputCallback() {
                     @Override
                     public void onInput(MaterialDialog materialDialog, CharSequence charSequence) {
                         mFacebookMemo = charSequence.toString();

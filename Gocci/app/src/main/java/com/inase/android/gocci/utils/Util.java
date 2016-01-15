@@ -276,29 +276,6 @@ public class Util {
                 }).show();
     }
 
-//    public static void facebooSharing(final Context context, final File movie, String description) {
-//        RequestParams param = new RequestParams();
-//        try {
-//            param.put("access_token", AccessToken.getCurrentAccessToken().getToken());
-//            param.put("source", movie, "application/octet-stream", "gocci.mp4");
-//            param.put("description", description);
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        }
-//
-//        new AsyncHttpClient().post(context, "https://graph-video.facebook.com/me/videos", param, new TextHttpResponseHandler() {
-//            @Override
-//            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-//
-//            }
-//
-//            @Override
-//            public void onSuccess(int statusCode, Header[] headers, String responseString) {
-//
-//            }
-//        });
-//    }
-
     public static void facebookVideoShare(final Context context, final ShareDialog dialog, String key) {
         final File file = new File(Environment.getExternalStorageDirectory().toString() + "/" + key);
         TransferObserver transferObserver = Application_Gocci.getTransfer(context).download(Const.GET_MOVIE_BUCKET_NAME, "mp4/" + key + ".mp4", file);
