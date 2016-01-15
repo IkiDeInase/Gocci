@@ -14,7 +14,7 @@ public interface CommentDataRepository {
     void getCommentDataList(Const.APICategory api, String url, CommentDataRepositoryCallback cb);
 
     interface CommentDataRepositoryCallback {
-        void onCommentDataLoaded(Const.APICategory api, HeaderData memoData, ArrayList<HeaderData> commentData);
+        void onCommentDataLoaded(Const.APICategory api, HeaderData memoData, ArrayList<HeaderData> commentData, ArrayList<String> comment_ids);
 
         void onCommentDataEmpty(Const.APICategory api, HeaderData memoData);
 

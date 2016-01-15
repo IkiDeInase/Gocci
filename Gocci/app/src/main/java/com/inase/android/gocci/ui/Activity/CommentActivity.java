@@ -32,6 +32,7 @@ import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3;
+import com.inase.android.gocci.datasource.api.API3PostUtil;
 import com.inase.android.gocci.datasource.repository.CommentActionRepository;
 import com.inase.android.gocci.datasource.repository.CommentActionRepositoryImpl;
 import com.inase.android.gocci.datasource.repository.CommentDataRepository;
@@ -44,6 +45,8 @@ import com.inase.android.gocci.domain.usecase.CommentPostUseCase;
 import com.inase.android.gocci.domain.usecase.CommentPostUseCaseImpl;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.NotificationNumberEvent;
+import com.inase.android.gocci.event.PostCallbackEvent;
+import com.inase.android.gocci.event.ProfJsonEvent;
 import com.inase.android.gocci.event.RetryApiEvent;
 import com.inase.android.gocci.presenter.ShowCommentPagePresenter;
 import com.inase.android.gocci.ui.adapter.CommentAdapter;
@@ -52,6 +55,7 @@ import com.inase.android.gocci.utils.Util;
 import com.pnikosis.materialishprogress.ProgressWheel;
 import com.squareup.otto.Subscribe;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import butterknife.Bind;
@@ -122,6 +126,7 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
 
     private LinearLayoutManager mLayoutManager;
     private ArrayList<HeaderData> mCommentusers = new ArrayList<>();
+    private ArrayList<String> mComment_ids = new ArrayList<>();
     private CommentAdapter mCommentAdapter;
 
     private CommentActivity self = this;
@@ -369,7 +374,7 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
     }
 
     @Override
-    public void onCommentLongClick(String user_id) {
+    public void onCommentLongClick(String user_id, final String comment_id) {
         if (user_id.equals(SavedData.getServerUserId(this)) || isMyPage) {
             //自分の投稿　削除
             new MaterialDialog.Builder(this)
@@ -382,7 +387,7 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                         @Override
                         public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
-
+                            API3PostUtil.unsetCommentAsync(CommentActivity.this, comment_id, Const.ActivityCategory.COMMENT_PAGE);
                         }
                     }).show();
         } else {
@@ -397,7 +402,7 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                         @Override
                         public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
-
+                            API3PostUtil.setCommentBlockAsync(CommentActivity.this, comment_id);
                         }
                     }).show();
         }
@@ -425,6 +430,7 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
                 break;
             case GET_COMMENT_REFRESH:
                 mCommentusers.clear();
+                mComment_ids.clear();
                 mCommentAdapter.setData();
                 break;
         }
@@ -446,9 +452,11 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
     }
 
     @Override
-    public void showResult(Const.APICategory api, HeaderData memoData, ArrayList<HeaderData> commentData) {
+    public void showResult(Const.APICategory api, HeaderData memoData, ArrayList<HeaderData> commentData, ArrayList<String> comment_ids) {
         mCommentusers.clear();
         mCommentusers.addAll(commentData);
+        mComment_ids.clear();
+        mComment_ids.addAll(comment_ids);
         switch (api) {
             case GET_COMMENT_FIRST:
                 mProgress.setVisibility(View.INVISIBLE);
@@ -465,10 +473,12 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
     }
 
     @Override
-    public void postCommented(Const.APICategory api, HeaderData postData, ArrayList<HeaderData> commentData) {
+    public void postCommented(Const.APICategory api, HeaderData postData, ArrayList<HeaderData> commentData, ArrayList<String> comment_ids) {
         mCommentEdit.setText("");
         mCommentusers.clear();
         mCommentusers.addAll(commentData);
+        mComment_ids.clear();
+        mComment_ids.addAll(comment_ids);
         mCommentAdapter.setData();
         if (mOverlay.getVisibility() == View.VISIBLE) {
             mOverlay.setVisibility(View.GONE);
@@ -480,6 +490,7 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
     @Override
     public void postCommentEmpty(Const.APICategory api, HeaderData postData) {
         mCommentusers.clear();
+        mComment_ids.clear();
         mCommentAdapter.setData();
     }
 
@@ -500,10 +511,20 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
             case GET_COMMENT_REFRESH:
                 mPresenter.getCommentData(event.api, API3.Util.getGetCommentAPI(mPost_id));
                 break;
-            case SET_COMMENT:
-                mSendButton.performClick();
-            default:
-                break;
+        }
+    }
+
+    @Subscribe
+    public void subscribe(PostCallbackEvent event) {
+        if (event.activityCategory == Const.ActivityCategory.COMMENT_PAGE) {
+            switch (event.apiCategory) {
+                case UNSET_COMMENT:
+                    int position = mComment_ids.indexOf(event.id);
+                    mCommentusers.remove(position);
+                    mComment_ids.remove(position);
+                    mCommentAdapter.setData();
+                    break;
+            }
         }
     }
 }

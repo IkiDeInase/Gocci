@@ -113,7 +113,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
                                 mCallback.onCommentClick(user.getPost_id());
                                 break;
                             case R.id.violation:
-                                Util.setBlockDialog(mContext, user.getPost_id());
+                                Util.setPostBlockDialog(mContext, user.getPost_id());
                                 break;
                             case R.id.close:
                                 dialog.dismiss();

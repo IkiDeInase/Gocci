@@ -241,7 +241,7 @@ public class PostDataRepositoryImpl implements PostDataRepository {
                                             }
                                             cb.onPostDataLoaded(api, mPostData, mPost_Ids);
                                         } else {
-                                            if (api == Const.APICategory.GET_FOLLOWLINE_ADD) {
+                                            if (api == Const.APICategory.GET_COMMENTLINE_ADD) {
                                                 cb.onPostDataLoaded(api, new ArrayList<TwoCellData>(), new ArrayList<String>());
                                             } else {
                                                 cb.onPostDataEmpty(api);

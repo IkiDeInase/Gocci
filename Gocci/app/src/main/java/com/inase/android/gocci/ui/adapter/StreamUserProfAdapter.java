@@ -93,7 +93,7 @@ public class StreamUserProfAdapter extends RecyclerView.Adapter<Const.StreamUser
                     public void onClick(DialogInterface dialog, int which) {
                         switch (which) {
                             case R.id.violation:
-                                Util.setBlockDialog(mContext, user.getPost_id());
+                                Util.setPostBlockDialog(mContext, user.getPost_id());
                                 break;
                             case R.id.close:
                                 dialog.dismiss();

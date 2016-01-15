@@ -51,12 +51,12 @@ public class CommentPageUseCaseImpl extends UseCase2<Const.APICategory, String> 
     }
 
     @Override
-    public void onCommentDataLoaded(final Const.APICategory api, final HeaderData memoData, final ArrayList<HeaderData> commentData) {
+    public void onCommentDataLoaded(final Const.APICategory api, final HeaderData memoData, final ArrayList<HeaderData> commentData, final ArrayList<String> comment_ids) {
         mPostExecutionThread.post(new Runnable() {
             @Override
             public void run() {
                 if (mCallback != null) {
-                    mCallback.onDataLoaded(api, memoData, commentData);
+                    mCallback.onDataLoaded(api, memoData, commentData, comment_ids);
                 }
             }
         });

@@ -37,10 +37,10 @@ public class ShowCommentPagePresenter extends Presenter implements CommentPageUs
     }
 
     @Override
-    public void onDataLoaded(Const.APICategory api, HeaderData memoData, ArrayList<HeaderData> commentData) {
+    public void onDataLoaded(Const.APICategory api, HeaderData memoData, ArrayList<HeaderData> commentData, ArrayList<String> comment_ids) {
         mShowCommentView.hideLoading();
         mShowCommentView.hideEmpty();
-        mShowCommentView.showResult(api, memoData, commentData);
+        mShowCommentView.showResult(api, memoData, commentData, comment_ids);
     }
 
     @Override
@@ -84,10 +84,10 @@ public class ShowCommentPagePresenter extends Presenter implements CommentPageUs
     }
 
     @Override
-    public void onCommentPosted(Const.APICategory api, HeaderData memoData, ArrayList<HeaderData> commentData) {
+    public void onCommentPosted(Const.APICategory api, HeaderData memoData, ArrayList<HeaderData> commentData, ArrayList<String> comment_ids) {
         mShowCommentView.hideLoading();
         mShowCommentView.hideEmpty();
-        mShowCommentView.postCommented(api, memoData, commentData);
+        mShowCommentView.postCommented(api, memoData, commentData, comment_ids);
     }
 
     @Override
@@ -121,9 +121,9 @@ public class ShowCommentPagePresenter extends Presenter implements CommentPageUs
 
         void causedByLocalError(Const.APICategory api, String errorMessage);
 
-        void showResult(Const.APICategory api, HeaderData postData, ArrayList<HeaderData> commentData);
+        void showResult(Const.APICategory api, HeaderData postData, ArrayList<HeaderData> commentData, ArrayList<String> comment_ids);
 
-        void postCommented(Const.APICategory api, HeaderData postData, ArrayList<HeaderData> commentData);
+        void postCommented(Const.APICategory api, HeaderData postData, ArrayList<HeaderData> commentData, ArrayList<String> comment_ids);
 
         void postCommentEmpty(Const.APICategory api, HeaderData postData);
 

@@ -259,7 +259,7 @@ public class Util {
                 .show();
     }
 
-    public static void setBlockDialog(final Context context, final String post_id) {
+    public static void setPostBlockDialog(final Context context, final String post_id) {
         new MaterialDialog.Builder(context)
                 .title(context.getString(R.string.violate_title))
                 .titleColorRes(R.color.namegrey)
@@ -271,7 +271,7 @@ public class Util {
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
-                        API3PostUtil.setBlockAsync(context, post_id);
+                        API3PostUtil.setPostBlockAsync(context, post_id);
                     }
                 }).show();
     }

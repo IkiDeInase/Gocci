@@ -118,21 +118,21 @@ public class Const {
         UNSET_TWITTER_LINK,
         SET_GOCHI,
         UNSET_GOCHI,
-        UNSET_POST,
-        SET_BLOCK,
+        SET_POST_BLOCK,
+        SET_COMMENT_BLOCK,
         SET_FOLLOW,
         UNSET_FOLLOW,
         SET_FEEDBACK,
         SET_PASSWORD,
         SET_COMMENT,
+        UNSET_COMMENT,
         SET_USERNAME,
         SET_PROFILEIMG,
         SET_RESTADD,
         SET_POST,
+        UNSET_POST,
         SET_DEVICE,
         UNSET_DEVICE,
-        SET_WANT,
-        UNSET_WANT
     }
 
     public static final class TwoCellViewHolder extends RecyclerView.ViewHolder {

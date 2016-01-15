@@ -73,7 +73,7 @@ public class API3PostUtil {
         }
     }
 
-    public static void setBlockAsync(final Context context, final String post_id) {
+    public static void setPostBlockAsync(final Context context, final String post_id) {
         if (Util.getConnectedState(context) != Util.NetworkStatus.OFF) {
             API3.Util.SetPost_BlockLocalCode localCode = API3.Impl.getRepository().SetPost_BlockParameterRegex(post_id);
             if (localCode == null) {
@@ -89,7 +89,7 @@ public class API3PostUtil {
 
                             @Override
                             public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_BLOCK, globalCode);
+                                Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_POST_BLOCK, globalCode);
                             }
 
                             @Override
@@ -101,11 +101,50 @@ public class API3PostUtil {
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                        Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_BLOCK, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                        Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_POST_BLOCK, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
                     }
                 });
             } else {
                 Toast.makeText(context, API3.Util.SetPost_BlockLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public static void setCommentBlockAsync(final Context context, final String comment_id) {
+        if (Util.getConnectedState(context) != Util.NetworkStatus.OFF) {
+            API3.Util.SetComment_BlockLocalCode localCode = API3.Impl.getRepository().SetComment_BlockParameterRegex(comment_id);
+            if (localCode == null) {
+                Application_Gocci.getJsonAsync(API3.Util.getSetCommentBlockAPI(comment_id), new JsonHttpResponseHandler() {
+
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        API3.Impl.getRepository().SetComment_BlockResponse(response, new API3.PayloadResponseCallback() {
+                            @Override
+                            public void onSuccess(JSONObject payload) {
+                                Toast.makeText(context, "このコメントを違反報告しました", Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void onGlobalError(API3.Util.GlobalCode globalCode) {
+                                Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_COMMENT_BLOCK, globalCode);
+                            }
+
+                            @Override
+                            public void onLocalError(String errorMessage) {
+                                Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                        Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_COMMENT_BLOCK, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                    }
+                });
+            } else {
+                Toast.makeText(context, API3.Util.SetComment_BlockLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
             }
         } else {
             Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
@@ -145,6 +184,45 @@ public class API3PostUtil {
                 });
             } else {
                 Toast.makeText(context, API3.Util.UnsetPostLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public static void unsetCommentAsync(final Context context, final String comment_id, final Const.ActivityCategory activityCategory) {
+        if (Util.getConnectedState(context) != Util.NetworkStatus.OFF) {
+            API3.Util.UnsetCommentLocalCode localCode = API3.Impl.getRepository().UnsetCommentParameterRegex(comment_id);
+            if (localCode == null) {
+                Application_Gocci.getJsonAsync(API3.Util.getUnsetCommentAPI(comment_id), new JsonHttpResponseHandler() {
+
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        API3.Impl.getRepository().UnsetCommentResponse(response, new API3.PayloadResponseCallback() {
+                            @Override
+                            public void onSuccess(JSONObject payload) {
+                                BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, activityCategory, Const.APICategory.UNSET_COMMENT, comment_id));
+                            }
+
+                            @Override
+                            public void onGlobalError(API3.Util.GlobalCode globalCode) {
+                                Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.UNSET_COMMENT, globalCode);
+                            }
+
+                            @Override
+                            public void onLocalError(String errorMessage) {
+                                Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                        Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.UNSET_COMMENT, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                    }
+                });
+            } else {
+                Toast.makeText(context, API3.Util.UnsetCommentLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
             }
         } else {
             Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();

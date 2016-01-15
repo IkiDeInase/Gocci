@@ -11,7 +11,7 @@ import java.util.ArrayList;
  */
 public interface CommentPostUseCase {
     interface CommentPostUseCaseCallback {
-        void onCommentPosted(Const.APICategory api, HeaderData memoData, ArrayList<HeaderData> commentData);
+        void onCommentPosted(Const.APICategory api, HeaderData memoData, ArrayList<HeaderData> commentData, ArrayList<String> comment_ids);
 
         void onCommentPostEmpty(Const.APICategory api, HeaderData memoData);
 

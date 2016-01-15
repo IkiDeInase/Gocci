@@ -13,7 +13,7 @@ public interface CommentActionRepository {
     void postComment(Const.APICategory api, String postUrl, String getUrl, CommentActionRepositoryCallback cb);
 
     interface CommentActionRepositoryCallback {
-        void onPostCommented(Const.APICategory api, HeaderData memoData, ArrayList<HeaderData> commentData);
+        void onPostCommented(Const.APICategory api, HeaderData memoData, ArrayList<HeaderData> commentData, ArrayList<String> comment_ids);
 
         void onPostEmpty(Const.APICategory api, HeaderData memoData);
 
