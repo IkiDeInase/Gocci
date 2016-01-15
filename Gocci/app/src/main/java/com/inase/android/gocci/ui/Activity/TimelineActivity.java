@@ -281,7 +281,7 @@ public class TimelineActivity extends AppCompatActivity {
                 .add(R.string.tab_near, TimelineNearFragment.class)
                 .add(R.string.tab_follow, TimelineFollowFragment.class)
                 .add(getString(R.string.tab_gochi), TimelineGochiFragment.class)
-                .add(getString(R.string.tab_comment), TimelineCommentFragment.class)
+                //.add(getString(R.string.tab_comment), TimelineCommentFragment.class)
                 .create());
 
         mViewpager.setOffscreenPageLimit(4);
@@ -499,7 +499,7 @@ public class TimelineActivity extends AppCompatActivity {
                                 mFollowCategory_id != 0 ? String.valueOf(mFollowCategory_id) : null, mFollowValue_id != 0 ? String.valueOf(mFollowValue_id) : null)));
                         break;
                     case 3:
-                        BusHolder.get().post(new FilterTimelineEvent(mShowPosition, API3.Util.getGetTimelineAPI(null,
+                        BusHolder.get().post(new FilterTimelineEvent(mShowPosition, API3.Util.getGetGochilineAPI(null,
                                 mGochiCategory_id != 0 ? String.valueOf(mGochiCategory_id) : null, mGochiValue_id != 0 ? String.valueOf(mGochiValue_id) : null)));
                         break;
                     case 4:

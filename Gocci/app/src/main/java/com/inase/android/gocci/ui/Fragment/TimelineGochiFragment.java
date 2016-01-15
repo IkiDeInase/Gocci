@@ -165,15 +165,15 @@ public class TimelineGochiFragment extends Fragment implements AudioCapabilities
                 if ((visibleItemCount + pastVisibleItems) >= totalItemCount) {
                     loading = true;
                     if (!isEndScrioll) {
-                        API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().GetTimelineParameterRegex(String.valueOf(mNextCount), TimelineActivity.mGochiCategory_id != 0 ? String.valueOf(TimelineActivity.mGochiCategory_id) : null,
+                        API3.Util.GetGochilineLocalCode localCode = API3.Impl.getRepository().GetGochilineParameterRegex(String.valueOf(mNextCount), TimelineActivity.mGochiCategory_id != 0 ? String.valueOf(TimelineActivity.mGochiCategory_id) : null,
                                 TimelineActivity.mGochiValue_id != 0 ? String.valueOf(TimelineActivity.mGochiValue_id) : null);
                         if (localCode == null) {
-                            mPresenter.getGochiTimelinePostData(Const.APICategory.GET_GOCHILINE_ADD, API3.Util.getGetTimelineAPI(
+                            mPresenter.getGochiTimelinePostData(Const.APICategory.GET_GOCHILINE_ADD, API3.Util.getGetGochilineAPI(
                                     String.valueOf(mNextCount),
                                     TimelineActivity.mGochiCategory_id != 0 ? String.valueOf(TimelineActivity.mGochiCategory_id) : null,
                                     TimelineActivity.mGochiValue_id != 0 ? String.valueOf(TimelineActivity.mGochiValue_id) : null));
                         } else {
-                            Toast.makeText(getActivity(), API3.Util.GetTimelineLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), API3.Util.GetGochilineLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
                         }
                     }
                 }
@@ -236,12 +236,12 @@ public class TimelineGochiFragment extends Fragment implements AudioCapabilities
         mTimelineRecyclerView.addOnScrollListener(scrollListener);
         mTimelineRecyclerView.setScrollViewCallbacks(this);
 
-        API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().GetTimelineParameterRegex(null, null, null);
+        API3.Util.GetGochilineLocalCode localCode = API3.Impl.getRepository().GetGochilineParameterRegex(null, null, null);
         if (localCode == null) {
-            mPresenter.getGochiTimelinePostData(Const.APICategory.GET_GOCHILINE_FIRST, API3.Util.getGetTimelineAPI(
+            mPresenter.getGochiTimelinePostData(Const.APICategory.GET_GOCHILINE_FIRST, API3.Util.getGetGochilineAPI(
                     null, null, null));
         } else {
-            Toast.makeText(getActivity(), API3.Util.GetTimelineLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), API3.Util.GetGochilineLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
         }
 
         mSwipeContainer.setColorSchemeResources(R.color.gocci_1, R.color.gocci_2, R.color.gocci_3, R.color.gocci_4);
@@ -330,13 +330,13 @@ public class TimelineGochiFragment extends Fragment implements AudioCapabilities
     @Subscribe
     public void subscribe(FilterTimelineEvent event) {
         if (event.currentPage == 3) {
-            API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().GetTimelineParameterRegex(null, TimelineActivity.mGochiCategory_id != 0 ? String.valueOf(TimelineActivity.mGochiCategory_id) : null,
+            API3.Util.GetGochilineLocalCode localCode = API3.Impl.getRepository().GetGochilineParameterRegex(null, TimelineActivity.mGochiCategory_id != 0 ? String.valueOf(TimelineActivity.mGochiCategory_id) : null,
                     TimelineActivity.mGochiValue_id != 0 ? String.valueOf(TimelineActivity.mGochiValue_id) : null);
             if (localCode == null) {
                 mTimelineRecyclerView.scrollVerticallyToPosition(0);
                 mPresenter.getGochiTimelinePostData(Const.APICategory.GET_GOCHILINE_FILTER, event.filterUrl);
             } else {
-                Toast.makeText(getActivity(), API3.Util.GetTimelineLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), API3.Util.GetGochilineLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -471,12 +471,12 @@ public class TimelineGochiFragment extends Fragment implements AudioCapabilities
                 TimelineActivity.mGochiCategory_id = 0;
                 TimelineActivity.mGochiValue_id = 0;
 
-                API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().GetTimelineParameterRegex(null, null, null);
+                API3.Util.GetGochilineLocalCode localCode = API3.Impl.getRepository().GetGochilineParameterRegex(null, null, null);
                 if (localCode == null) {
-                    mPresenter.getGochiTimelinePostData(Const.APICategory.GET_GOCHILINE_REFRESH, API3.Util.getGetTimelineAPI(
+                    mPresenter.getGochiTimelinePostData(Const.APICategory.GET_GOCHILINE_REFRESH, API3.Util.getGetGochilineAPI(
                             null, null, null));
                 } else {
-                    Toast.makeText(getActivity(), API3.Util.GetTimelineLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), API3.Util.GetGochilineLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -519,7 +519,7 @@ public class TimelineGochiFragment extends Fragment implements AudioCapabilities
     public void showEmpty(Const.APICategory api) {
         switch (api) {
             case GET_GOCHILINE_FIRST:
-                mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.TIMELINE, mTimelineusers);
+                mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.GOCHILINE, mTimelineusers);
                 mTimelineAdapter.setTimelineCallback(this);
                 mTimelineRecyclerView.setAdapter(mTimelineAdapter);
                 break;
@@ -556,7 +556,7 @@ public class TimelineGochiFragment extends Fragment implements AudioCapabilities
             case GET_GOCHILINE_FIRST:
                 mTimelineusers.addAll(mPostData);
                 mPost_ids.addAll(post_ids);
-                mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.TIMELINE, mTimelineusers);
+                mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.GOCHILINE, mTimelineusers);
                 mTimelineAdapter.setTimelineCallback(this);
                 mTimelineRecyclerView.setAdapter(mTimelineAdapter);
                 break;
@@ -610,7 +610,7 @@ public class TimelineGochiFragment extends Fragment implements AudioCapabilities
         Application_Gocci.resolveOrHandleGlobalError(getActivity(), api, globalCode);
         mSwipeContainer.setRefreshing(false);
         if (api == Const.APICategory.GET_GOCHILINE_FIRST) {
-            mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.TIMELINE, mTimelineusers);
+            mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.GOCHILINE, mTimelineusers);
             mTimelineAdapter.setTimelineCallback(this);
             mTimelineRecyclerView.setAdapter(mTimelineAdapter);
         }
@@ -621,7 +621,7 @@ public class TimelineGochiFragment extends Fragment implements AudioCapabilities
         Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
         mSwipeContainer.setRefreshing(false);
         if (api == Const.APICategory.GET_GOCHILINE_FIRST) {
-            mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.TIMELINE, mTimelineusers);
+            mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.GOCHILINE, mTimelineusers);
             mTimelineAdapter.setTimelineCallback(this);
             mTimelineRecyclerView.setAdapter(mTimelineAdapter);
         }
@@ -725,14 +725,14 @@ public class TimelineGochiFragment extends Fragment implements AudioCapabilities
     public void subscribe(RetryApiEvent event) {
         switch (event.api) {
             case GET_GOCHILINE_FIRST:
-                mPresenter.getGochiTimelinePostData(Const.APICategory.GET_GOCHILINE_FIRST, API3.Util.getGetTimelineAPI(null, null, null));
+                mPresenter.getGochiTimelinePostData(Const.APICategory.GET_GOCHILINE_FIRST, API3.Util.getGetGochilineAPI(null, null, null));
                 break;
             case GET_GOCHILINE_REFRESH:
-                mPresenter.getGochiTimelinePostData(Const.APICategory.GET_GOCHILINE_REFRESH, API3.Util.getGetTimelineAPI(
+                mPresenter.getGochiTimelinePostData(Const.APICategory.GET_GOCHILINE_REFRESH, API3.Util.getGetGochilineAPI(
                         null, null, null));
                 break;
             case GET_GOCHILINE_ADD:
-                mPresenter.getGochiTimelinePostData(Const.APICategory.GET_GOCHILINE_ADD, API3.Util.getGetTimelineAPI(
+                mPresenter.getGochiTimelinePostData(Const.APICategory.GET_GOCHILINE_ADD, API3.Util.getGetGochilineAPI(
                         String.valueOf(mNextCount),
                         TimelineActivity.mGochiCategory_id != 0 ? String.valueOf(TimelineActivity.mGochiCategory_id) : null,
                         TimelineActivity.mGochiValue_id != 0 ? String.valueOf(TimelineActivity.mGochiValue_id) : null));

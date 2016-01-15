@@ -44,7 +44,7 @@ public class Const {
 //    public static final String POST_PHOTO_BUCKET_NAME = "gocci.imgs.provider.jp";
 
     public enum TimelineCategory {
-        NEARLINE, FOLLOWLINE, TIMELINE,
+        NEARLINE, FOLLOWLINE, TIMELINE, GOCHILINE
     }
 
     public enum PostCallback {
