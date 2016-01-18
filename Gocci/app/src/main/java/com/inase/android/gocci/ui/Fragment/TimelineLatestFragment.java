@@ -34,8 +34,8 @@ import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3;
 import com.inase.android.gocci.datasource.repository.GochiRepository;
 import com.inase.android.gocci.datasource.repository.GochiRepositoryImpl;
-import com.inase.android.gocci.datasource.repository.PostDataRepository;
-import com.inase.android.gocci.datasource.repository.PostDataRepositoryImpl;
+import com.inase.android.gocci.datasource.repository.PostsDataRepository;
+import com.inase.android.gocci.datasource.repository.PostsDataRepositoryImpl;
 import com.inase.android.gocci.domain.executor.UIThread;
 import com.inase.android.gocci.domain.model.TwoCellData;
 import com.inase.android.gocci.domain.usecase.GochiUseCase;
@@ -207,8 +207,8 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
         audioCapabilitiesReceiver.register();
 
         API3 api3Impl = API3.Impl.getRepository();
-        PostDataRepository postDataRepositoryImpl = PostDataRepositoryImpl.getRepository(api3Impl);
-        TimelineLatestUseCase timelineLatestUseCaseImpl = TimelineLatestUseCaseImpl.getUseCase(postDataRepositoryImpl, UIThread.getInstance());
+        PostsDataRepository postsDataRepositoryImpl = PostsDataRepositoryImpl.getRepository(api3Impl);
+        TimelineLatestUseCase timelineLatestUseCaseImpl = TimelineLatestUseCaseImpl.getUseCase(postsDataRepositoryImpl, UIThread.getInstance());
         GochiRepository gochiRepository = GochiRepositoryImpl.getRepository(api3Impl);
         GochiUseCase gochiUseCase = GochiUseCaseImpl.getUseCase(gochiRepository, UIThread.getInstance());
         mPresenter = new ShowLatestTimelinePresenter(timelineLatestUseCaseImpl, gochiUseCase);

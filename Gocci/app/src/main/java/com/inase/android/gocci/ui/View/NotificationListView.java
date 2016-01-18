@@ -24,6 +24,7 @@ import com.inase.android.gocci.domain.usecase.NoticeDataUseCase;
 import com.inase.android.gocci.domain.usecase.NoticeDataUseCaseImpl;
 import com.inase.android.gocci.presenter.ShowNoticePresenter;
 import com.inase.android.gocci.ui.activity.CommentActivity;
+import com.inase.android.gocci.ui.activity.PostActivity;
 import com.inase.android.gocci.ui.activity.UserProfActivity;
 import com.inase.android.gocci.ui.adapter.NoticeAdapter;
 import com.pnikosis.materialishprogress.ProgressWheel;
@@ -70,7 +71,7 @@ public class NotificationListView extends RelativeLayout implements
 
                 switch (user.getNotice()) {
                     case "like":
-
+                        PostActivity.startPostActivityOnContext(user.getNotice_post_id(), getContext());
                         break;
                     case "follow":
                         Intent intent = new Intent(getContext(), UserProfActivity.class);
@@ -79,7 +80,7 @@ public class NotificationListView extends RelativeLayout implements
                         getContext().startActivity(intent);
                         break;
                     case "comment":
-                        CommentActivity.startCommentActivityOnContext(user.getNotice_post_id(), false, getContext());
+                        PostActivity.startPostActivityOnContext(user.getNotice_post_id(), getContext());
                         break;
                 }
             }

@@ -1,25 +1,22 @@
 package com.inase.android.gocci.datasource.repository;
 
+import android.util.Log;
 import android.widget.Toast;
 
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3;
-import com.inase.android.gocci.domain.model.TwoCellData;
+import com.inase.android.gocci.domain.model.PostData;
 import com.inase.android.gocci.utils.Util;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.Header;
 
 /**
- * Created by kinagafuji on 15/09/25.
+ * Created by kinagafuji on 16/01/18.
  */
 public class PostDataRepositoryImpl implements PostDataRepository {
     private static PostDataRepositoryImpl sPostDataRepository;
@@ -42,228 +39,24 @@ public class PostDataRepositoryImpl implements PostDataRepository {
             Application_Gocci.getJsonSync(url, new JsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    switch (api) {
-                        case GET_NEARLINE_FIRST:
-                        case GET_NEARLINE_REFRESH:
-                        case GET_NEARLINE_FILTER:
-                        case GET_NEARLINE_ADD:
-                            mAPI3.GetNearlineResponse(response, new API3.PayloadResponseCallback() {
+                    mAPI3.GetPostResponse(response, new API3.PayloadResponseCallback() {
 
-                                @Override
-                                public void onSuccess(JSONObject payload) {
-                                    try {
-                                        JSONArray posts = payload.getJSONArray("posts");
+                        @Override
+                        public void onSuccess(JSONObject payload) {
+                            PostData postData = PostData.createPostData(payload);
+                            cb.onPostDataLoaded(api, postData);
+                        }
 
-                                        final ArrayList<TwoCellData> mPostData = new ArrayList<>();
-                                        final ArrayList<String> mPost_Ids = new ArrayList<>();
+                        @Override
+                        public void onGlobalError(API3.Util.GlobalCode globalCode) {
+                            cb.onCausedByGlobalError(api, globalCode);
+                        }
 
-                                        if (posts.length() != 0) {
-                                            for (int i = 0; i < posts.length(); i++) {
-                                                JSONObject postdata = posts.getJSONObject(i);
-                                                mPostData.add(TwoCellData.createPostData(postdata));
-                                                mPost_Ids.add(postdata.getString("post_id"));
-                                            }
-                                            cb.onPostDataLoaded(api, mPostData, mPost_Ids);
-                                        } else {
-                                            if (api == Const.APICategory.GET_NEARLINE_ADD) {
-                                                cb.onPostDataLoaded(api, new ArrayList<TwoCellData>(), new ArrayList<String>());
-                                            } else {
-                                                cb.onPostDataEmpty(api);
-                                            }
-                                        }
-                                    } catch (JSONException e) {
-                                        cb.onCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                                    }
-                                }
-
-                                @Override
-                                public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                    cb.onCausedByGlobalError(api, globalCode);
-                                }
-
-                                @Override
-                                public void onLocalError(String errorMessage) {
-                                    cb.onCausedByLocalError(api, errorMessage);
-                                }
-                            });
-                            break;
-                        case GET_FOLLOWLINE_FIRST:
-                        case GET_FOLLOWLINE_REFRESH:
-                        case GET_FOLLOWLINE_FILTER:
-                        case GET_FOLLOWLINE_ADD:
-                            mAPI3.GetFollowlineResponse(response, new API3.PayloadResponseCallback() {
-
-                                @Override
-                                public void onSuccess(JSONObject payload) {
-                                    try {
-                                        JSONArray posts = payload.getJSONArray("posts");
-
-                                        final ArrayList<TwoCellData> mPostData = new ArrayList<>();
-                                        final ArrayList<String> mPost_Ids = new ArrayList<>();
-
-                                        if (posts.length() != 0) {
-                                            for (int i = 0; i < posts.length(); i++) {
-                                                JSONObject postdata = posts.getJSONObject(i);
-                                                mPostData.add(TwoCellData.createPostData(postdata));
-                                                mPost_Ids.add(postdata.getString("post_id"));
-                                            }
-                                            cb.onPostDataLoaded(api, mPostData, mPost_Ids);
-                                        } else {
-                                            if (api == Const.APICategory.GET_FOLLOWLINE_ADD) {
-                                                cb.onPostDataLoaded(api, new ArrayList<TwoCellData>(), new ArrayList<String>());
-                                            } else {
-                                                cb.onPostDataEmpty(api);
-                                            }
-                                        }
-                                    } catch (JSONException e) {
-                                        cb.onCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                                    }
-                                }
-
-                                @Override
-                                public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                    cb.onCausedByGlobalError(api, globalCode);
-                                }
-
-                                @Override
-                                public void onLocalError(String errorMessage) {
-                                    cb.onCausedByLocalError(api, errorMessage);
-                                }
-                            });
-                            break;
-                        case GET_TIMELINE_FIRST:
-                        case GET_TIMELINE_REFRESH:
-                        case GET_TIMELINE_FILTER:
-                        case GET_TIMELINE_ADD:
-                            mAPI3.GetTimelineResponse(response, new API3.PayloadResponseCallback() {
-
-                                @Override
-                                public void onSuccess(JSONObject payload) {
-                                    try {
-                                        JSONArray posts = payload.getJSONArray("posts");
-
-                                        final ArrayList<TwoCellData> mPostData = new ArrayList<>();
-                                        final ArrayList<String> mPost_Ids = new ArrayList<>();
-
-                                        if (posts.length() != 0) {
-                                            for (int i = 0; i < posts.length(); i++) {
-                                                JSONObject postdata = posts.getJSONObject(i);
-                                                mPostData.add(TwoCellData.createPostData(postdata));
-                                                mPost_Ids.add(postdata.getString("post_id"));
-                                            }
-                                            cb.onPostDataLoaded(api, mPostData, mPost_Ids);
-                                        } else {
-                                            if (api == Const.APICategory.GET_TIMELINE_ADD) {
-                                                cb.onPostDataLoaded(api, new ArrayList<TwoCellData>(), new ArrayList<String>());
-                                            } else {
-                                                cb.onPostDataEmpty(api);
-                                            }
-                                        }
-                                    } catch (JSONException e) {
-                                        cb.onCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                                    }
-                                }
-
-                                @Override
-                                public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                    cb.onCausedByGlobalError(api, globalCode);
-                                }
-
-                                @Override
-                                public void onLocalError(String errorMessage) {
-                                    cb.onCausedByLocalError(api, errorMessage);
-                                }
-                            });
-                            break;
-                        case GET_GOCHILINE_FIRST:
-                        case GET_GOCHILINE_REFRESH:
-                        case GET_GOCHILINE_ADD:
-                        case GET_GOCHILINE_FILTER:
-                            mAPI3.GetFollowlineResponse(response, new API3.PayloadResponseCallback() {
-
-                                @Override
-                                public void onSuccess(JSONObject payload) {
-                                    try {
-                                        JSONArray posts = payload.getJSONArray("posts");
-
-                                        final ArrayList<TwoCellData> mPostData = new ArrayList<>();
-                                        final ArrayList<String> mPost_Ids = new ArrayList<>();
-
-                                        if (posts.length() != 0) {
-                                            for (int i = 0; i < posts.length(); i++) {
-                                                JSONObject postdata = posts.getJSONObject(i);
-                                                mPostData.add(TwoCellData.createPostData(postdata));
-                                                mPost_Ids.add(postdata.getString("post_id"));
-                                            }
-                                            cb.onPostDataLoaded(api, mPostData, mPost_Ids);
-                                        } else {
-                                            if (api == Const.APICategory.GET_GOCHILINE_ADD) {
-                                                cb.onPostDataLoaded(api, new ArrayList<TwoCellData>(), new ArrayList<String>());
-                                            } else {
-                                                cb.onPostDataEmpty(api);
-                                            }
-                                        }
-                                    } catch (JSONException e) {
-                                        cb.onCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                                    }
-                                }
-
-                                @Override
-                                public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                    cb.onCausedByGlobalError(api, globalCode);
-                                }
-
-                                @Override
-                                public void onLocalError(String errorMessage) {
-                                    cb.onCausedByLocalError(api, errorMessage);
-                                }
-                            });
-                            break;
-                        case GET_COMMENTLINE_FIRST:
-                        case GET_COMMENTLINE_REFRESH:
-                        case GET_COMMENTLINE_FILTER:
-                        case GET_COMMENTLINE_ADD:
-                            mAPI3.GetFollowlineResponse(response, new API3.PayloadResponseCallback() {
-
-                                @Override
-                                public void onSuccess(JSONObject payload) {
-                                    try {
-                                        JSONArray posts = payload.getJSONArray("posts");
-
-                                        final ArrayList<TwoCellData> mPostData = new ArrayList<>();
-                                        final ArrayList<String> mPost_Ids = new ArrayList<>();
-
-                                        if (posts.length() != 0) {
-                                            for (int i = 0; i < posts.length(); i++) {
-                                                JSONObject postdata = posts.getJSONObject(i);
-                                                mPostData.add(TwoCellData.createPostData(postdata));
-                                                mPost_Ids.add(postdata.getString("post_id"));
-                                            }
-                                            cb.onPostDataLoaded(api, mPostData, mPost_Ids);
-                                        } else {
-                                            if (api == Const.APICategory.GET_COMMENTLINE_ADD) {
-                                                cb.onPostDataLoaded(api, new ArrayList<TwoCellData>(), new ArrayList<String>());
-                                            } else {
-                                                cb.onPostDataEmpty(api);
-                                            }
-                                        }
-                                    } catch (JSONException e) {
-                                        cb.onCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                                    }
-                                }
-
-                                @Override
-                                public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                    cb.onCausedByGlobalError(api, globalCode);
-                                }
-
-                                @Override
-                                public void onLocalError(String errorMessage) {
-                                    cb.onCausedByLocalError(api, errorMessage);
-                                }
-                            });
-                            break;
-                    }
+                        @Override
+                        public void onLocalError(String errorMessage) {
+                            cb.onCausedByLocalError(api, errorMessage);
+                        }
+                    });
                 }
 
                 @Override

@@ -137,10 +137,10 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ui.activity.CameraActivity"
+            android:alwaysRetainTaskState="true"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.NoTitleBar"
-            android:launchMode="singleTask"
-            android:alwaysRetainTaskState="true"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ui.activity.CommentActivity"
@@ -164,6 +164,8 @@
         <activity
             android:name=".ui.activity.MapSearchActivity"
             android:screenOrientation="portrait" />
+        <activity android:name=".ui.activity.PostActivity">
+        </activity>
     </application>
 
 </manifest>

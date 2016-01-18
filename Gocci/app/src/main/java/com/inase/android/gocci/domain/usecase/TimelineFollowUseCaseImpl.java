@@ -2,7 +2,7 @@ package com.inase.android.gocci.domain.usecase;
 
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3;
-import com.inase.android.gocci.datasource.repository.PostDataRepository;
+import com.inase.android.gocci.datasource.repository.PostsDataRepository;
 import com.inase.android.gocci.domain.executor.PostExecutionThread;
 import com.inase.android.gocci.domain.model.TwoCellData;
 
@@ -11,21 +11,21 @@ import java.util.ArrayList;
 /**
  * Created by kinagafuji on 15/09/29.
  */
-public class TimelineFollowUseCaseImpl extends UseCase2<Const.APICategory, String> implements TimelineFollowUseCase, PostDataRepository.PostDataRepositoryCallback {
+public class TimelineFollowUseCaseImpl extends UseCase2<Const.APICategory, String> implements TimelineFollowUseCase, PostsDataRepository.PostDataRepositoryCallback {
     private static TimelineFollowUseCaseImpl sUseCase;
-    private final PostDataRepository mPostDataRepository;
+    private final PostsDataRepository mPostsDataRepository;
     private PostExecutionThread mPostExecutionThread;
     private TimelineFollowUseCase.FollowTimelineUseCaseCallback mCallback;
 
-    public static TimelineFollowUseCaseImpl getUseCase(PostDataRepository postDataRepository, PostExecutionThread postExecutionThread) {
+    public static TimelineFollowUseCaseImpl getUseCase(PostsDataRepository postsDataRepository, PostExecutionThread postExecutionThread) {
         if (sUseCase == null) {
-            sUseCase = new TimelineFollowUseCaseImpl(postDataRepository, postExecutionThread);
+            sUseCase = new TimelineFollowUseCaseImpl(postsDataRepository, postExecutionThread);
         }
         return sUseCase;
     }
 
-    public TimelineFollowUseCaseImpl(PostDataRepository postDataRepository, PostExecutionThread postExecutionThread) {
-        mPostDataRepository = postDataRepository;
+    public TimelineFollowUseCaseImpl(PostsDataRepository postsDataRepository, PostExecutionThread postExecutionThread) {
+        mPostsDataRepository = postsDataRepository;
         mPostExecutionThread = postExecutionThread;
     }
 
@@ -37,7 +37,7 @@ public class TimelineFollowUseCaseImpl extends UseCase2<Const.APICategory, Strin
 
     @Override
     protected void call(Const.APICategory param1, String param2) {
-        mPostDataRepository.getPostDataList(param1, param2, this);
+        mPostsDataRepository.getPostDataList(param1, param2, this);
     }
 
     @Override

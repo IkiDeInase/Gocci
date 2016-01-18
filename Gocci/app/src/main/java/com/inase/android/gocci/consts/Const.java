@@ -59,7 +59,7 @@ public class Const {
         CAMERA_PREVIEW_ALREADY,
         MAP_SEARCH, MAP_PROFILE,
         WEBVIEW_LICENSE, WEBVIEW_POLICY,
-        LOGIN_SESSION
+        LOGIN_SESSION, POST_PAGE
     }
 
     public enum ListCategory {
@@ -130,6 +130,7 @@ public class Const {
         SET_PROFILEIMG,
         SET_RESTADD,
         SET_POST,
+        GET_POST,
         UNSET_POST,
         SET_DEVICE,
         UNSET_DEVICE,

@@ -2,7 +2,7 @@ package com.inase.android.gocci.domain.usecase;
 
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3;
-import com.inase.android.gocci.datasource.repository.PostDataRepository;
+import com.inase.android.gocci.datasource.repository.PostsDataRepository;
 import com.inase.android.gocci.domain.executor.PostExecutionThread;
 import com.inase.android.gocci.domain.model.TwoCellData;
 
@@ -11,21 +11,21 @@ import java.util.ArrayList;
 /**
  * Created by kinagafuji on 15/09/25.
  */
-public class TimelineLatestUseCaseImpl extends UseCase2<Const.APICategory, String> implements TimelineLatestUseCase, PostDataRepository.PostDataRepositoryCallback {
+public class TimelineLatestUseCaseImpl extends UseCase2<Const.APICategory, String> implements TimelineLatestUseCase, PostsDataRepository.PostDataRepositoryCallback {
     private static TimelineLatestUseCaseImpl sUseCase;
-    private final PostDataRepository mPostDataRepository;
+    private final PostsDataRepository mPostsDataRepository;
     private PostExecutionThread mPostExecutionThread;
     private LatestTimelineUseCaseCallback mCallback;
 
-    public static TimelineLatestUseCaseImpl getUseCase(PostDataRepository postDataRepository, PostExecutionThread postExecutionThread) {
+    public static TimelineLatestUseCaseImpl getUseCase(PostsDataRepository postsDataRepository, PostExecutionThread postExecutionThread) {
         if (sUseCase == null) {
-            sUseCase = new TimelineLatestUseCaseImpl(postDataRepository, postExecutionThread);
+            sUseCase = new TimelineLatestUseCaseImpl(postsDataRepository, postExecutionThread);
         }
         return sUseCase;
     }
 
-    public TimelineLatestUseCaseImpl(PostDataRepository postDataRepository, PostExecutionThread postExecutionThread) {
-        mPostDataRepository = postDataRepository;
+    public TimelineLatestUseCaseImpl(PostsDataRepository postsDataRepository, PostExecutionThread postExecutionThread) {
+        mPostsDataRepository = postsDataRepository;
         mPostExecutionThread = postExecutionThread;
     }
 
@@ -37,7 +37,7 @@ public class TimelineLatestUseCaseImpl extends UseCase2<Const.APICategory, Strin
 
     @Override
     protected void call(Const.APICategory param1, String param2) {
-        mPostDataRepository.getPostDataList(param1, param2, this);
+        mPostsDataRepository.getPostDataList(param1, param2, this);
     }
 
     @Override

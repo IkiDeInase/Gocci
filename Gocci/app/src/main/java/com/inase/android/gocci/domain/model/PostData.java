@@ -62,6 +62,31 @@ public class PostData {
     public PostData() {
     }
 
+    //投稿
+    public PostData(String post_id, String movie, String thumbnail, String category,
+                    String value, String memo, String post_user_id, String username, String profile_img,
+                    boolean cheer_flag, String post_date, String post_rest_id, String restname, String mp4_movie,
+                    String hls_movie, int gochi_num, boolean gochi_flag, int comment_num) {
+        this.post_id = post_id;
+        this.movie = movie;
+        this.thumbnail = thumbnail;
+        this.category = category;
+        this.value = value;
+        this.memo = memo;
+        this.post_user_id = post_user_id;
+        this.username = username;
+        this.profile_img = profile_img;
+        this.cheer_flag = cheer_flag;
+        this.post_date = post_date;
+        this.post_rest_id = post_rest_id;
+        this.restname = restname;
+        this.mp4_movie = mp4_movie;
+        this.hls_movie = hls_movie;
+        this.gochi_num = gochi_num;
+        this.gochi_flag = gochi_flag;
+        this.comment_num = comment_num;
+    }
+
     //店舗
     public PostData(String post_id, String movie, String thumbnail, String category,
                     String value, String memo, String post_date, boolean cheer_flag, String post_user_id,
@@ -108,6 +133,37 @@ public class PostData {
         this.gochi_num = gochi_num;
         this.gochi_flag = gochi_flag;
         this.comment_num = comment_num;
+    }
+
+    public static PostData createPostData(JSONObject jsonObject) {
+        try {
+            String post_id = jsonObject.getString(TAG_POST_ID);
+            String movie = jsonObject.getString(TAG_MOVIE);
+            String thumbnail = jsonObject.getString(TAG_THUMBNAIL);
+            String category = jsonObject.getString(TAG_CATEGORY);
+            String value = jsonObject.getString(TAG_VALUE);
+            String memo = jsonObject.getString(TAG_MEMO);
+            String post_user_id = jsonObject.getString(TAG_POST_USER_ID);
+            String username = jsonObject.getString(TAG_USERNAME);
+            String profile_img = jsonObject.getString(TAG_PROFILE_IMG);
+            boolean cheer_flag = jsonObject.getBoolean(TAG_CHEER_FLAG);
+            String post_date = jsonObject.getString(TAG_POST_DATE);
+            String rest_id = jsonObject.getString(TAG_POST_REST_ID);
+            String restname = jsonObject.getString(TAG_RESTNAME);
+            String mp4_movie = jsonObject.getString(TAG_MP4_MOVIE);
+            String hls_movie = jsonObject.getString(TAG_HLS_MOVIE);
+            int gochi_num = jsonObject.getInt(TAG_GOCHI_NUM);
+            boolean gochi_flag = jsonObject.getBoolean(TAG_GOCHI_FLAG);
+            int comment_num = jsonObject.getInt(TAG_COMMENT_NUM);
+
+            return new PostData(post_id, movie, thumbnail, category, value,
+                    memo, post_user_id, username, profile_img, cheer_flag, post_date,
+                    rest_id, restname, mp4_movie, hls_movie, gochi_num, gochi_flag, comment_num);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public static PostData createUserPostData(JSONObject jsonObject) {
