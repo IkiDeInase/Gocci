@@ -65,7 +65,7 @@ public class PostData {
     //投稿
     public PostData(String post_id, String movie, String thumbnail, String category,
                     String value, String memo, String post_user_id, String username, String profile_img,
-                    boolean cheer_flag, String post_date, String post_rest_id, String restname, String mp4_movie,
+                    boolean cheer_flag, String post_date, String post_rest_id, String restname, String locality, String mp4_movie,
                     String hls_movie, int gochi_num, boolean gochi_flag, int comment_num) {
         this.post_id = post_id;
         this.movie = movie;
@@ -80,6 +80,7 @@ public class PostData {
         this.post_date = post_date;
         this.post_rest_id = post_rest_id;
         this.restname = restname;
+        this.locality = locality;
         this.mp4_movie = mp4_movie;
         this.hls_movie = hls_movie;
         this.gochi_num = gochi_num;
@@ -150,6 +151,7 @@ public class PostData {
             String post_date = jsonObject.getString(TAG_POST_DATE);
             String rest_id = jsonObject.getString(TAG_POST_REST_ID);
             String restname = jsonObject.getString(TAG_RESTNAME);
+            String locality = jsonObject.getString(TAG_LOCALITY);
             String mp4_movie = jsonObject.getString(TAG_MP4_MOVIE);
             String hls_movie = jsonObject.getString(TAG_HLS_MOVIE);
             int gochi_num = jsonObject.getInt(TAG_GOCHI_NUM);
@@ -158,7 +160,7 @@ public class PostData {
 
             return new PostData(post_id, movie, thumbnail, category, value,
                     memo, post_user_id, username, profile_img, cheer_flag, post_date,
-                    rest_id, restname, mp4_movie, hls_movie, gochi_num, gochi_flag, comment_num);
+                    rest_id, restname, locality, mp4_movie, hls_movie, gochi_num, gochi_flag, comment_num);
 
         } catch (JSONException e) {
             e.printStackTrace();

@@ -21,14 +21,14 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="false"
         android:layout_centerVertical="true"
-        android:layout_toLeftOf="@+id/time_text"
+        android:layout_toLeftOf="@+id/user_time_text"
         android:layout_toRightOf="@+id/circle_image"
         android:singleLine="true"
         android:textColor="@color/namegrey"
         android:textSize="@dimen/accent_text" />
 
     <TextView
-        android:id="@+id/time_text"
+        android:id="@+id/user_time_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"

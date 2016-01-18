@@ -174,7 +174,7 @@ public class Const {
         public TextView mName;
         @Bind(R.id.locality)
         public TextView mLocality;
-        @Bind(R.id.time_text)
+        @Bind(R.id.rest_time_text)
         public TextView mTimeText;
         @Bind(R.id.menu_ripple)
         public RippleView mMenuRipple;
@@ -215,7 +215,7 @@ public class Const {
         public ImageView mCircleImage;
         @Bind(R.id.username)
         public TextView mName;
-        @Bind(R.id.time_text)
+        @Bind(R.id.user_time_text)
         public TextView mTimeText;
         @Bind(R.id.menu_ripple)
         public RippleView mMenuRipple;

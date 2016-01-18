@@ -77,6 +77,8 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
         BusHolder.get().register(this);
         mPresenter.resume();
 
+        //us-east-1:d046db41-2d24-4121-b70f-72d341a5c189
+
         if (Util.getConnectedState(this) != Util.NetworkStatus.OFF) {
             String mIdentityId = SavedData.getIdentityId(this);
             if (!mIdentityId.equals("no identityId")) {

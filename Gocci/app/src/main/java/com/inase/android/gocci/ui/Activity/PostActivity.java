@@ -86,8 +86,10 @@ public class PostActivity extends AppCompatActivity implements AudioCapabilities
     public TextView mRestname;
     @Bind(R.id.locality)
     public TextView mLocality;
-    @Bind(R.id.time_text)
-    public TextView mTimeText;
+    @Bind(R.id.user_time_text)
+    public TextView mUserTimeText;
+    @Bind(R.id.rest_time_text)
+    public TextView mRestTimeText;
     @Bind(R.id.menu_ripple)
     public RippleView mMenuRipple;
     @Bind(R.id.video_thumbnail)
@@ -400,7 +402,8 @@ public class PostActivity extends AppCompatActivity implements AudioCapabilities
         mRestname.setText(mPostData.getRestname());
         mLocality.setText(mPostData.getLocality());
 
-        mTimeText.setVisibility(View.INVISIBLE);
+        mUserTimeText.setText(mPostData.getPost_date());
+        mRestTimeText.setVisibility(View.INVISIBLE);
 
         if (!mPostData.getMemo().equals("none")) {
             mComment.setText(mPostData.getMemo());
@@ -425,6 +428,20 @@ public class PostActivity extends AppCompatActivity implements AudioCapabilities
             @Override
             public void onClick(View v) {
                 UserProfActivity.startUserProfActivity(mPostData.getPost_user_id(), mPostData.getUsername(), PostActivity.this);
+            }
+        });
+
+        mRestname.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TenpoActivity.startTenpoActivity(mPostData.getPost_rest_id(), mPostData.getRestname(), PostActivity.this);
+            }
+        });
+
+        mLocality.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TenpoActivity.startTenpoActivity(mPostData.getPost_rest_id(), mPostData.getRestname(), PostActivity.this);
             }
         });
 
@@ -590,6 +607,8 @@ public class PostActivity extends AppCompatActivity implements AudioCapabilities
                 }
             }
         });
+
+        changeMovie();
     }
 
     @Override
