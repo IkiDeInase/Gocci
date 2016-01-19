@@ -37,6 +37,8 @@ import com.facebook.rebound.Spring;
 import com.facebook.rebound.SpringSystem;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -160,6 +162,9 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
 
     private ShowCameraPresenter mPresenter;
 
+    private Tracker mTracker;
+    private Application_Gocci applicationGocci;
+
     public CameraUp18Fragment() {
 
     }
@@ -237,7 +242,7 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_camera_up18, container, false);
         ButterKnife.bind(this, rootView);
-
+        applicationGocci = (Application_Gocci) getActivity().getApplication();
         mCameraView.setVideoSize(480, 480);
 
         mCircleProgress.setValue(0);
@@ -472,6 +477,9 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
     public void onResume() {
         super.onResume();
         if (DEBUG) Log.v(TAG, "onResume:");
+        mTracker = applicationGocci.getDefaultTracker();
+        mTracker.setScreenName("CameraUp18");
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
         mPresenter.resume();
         mCameraView.onResume();
 

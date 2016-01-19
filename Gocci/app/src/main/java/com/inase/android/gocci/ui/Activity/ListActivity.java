@@ -21,6 +21,9 @@ import android.widget.Toast;
 
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
+import com.google.android.exoplayer.extractor.mp4.Track;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
@@ -88,7 +91,8 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
     private Drawer result;
 
-    private static MobileAnalyticsManager analytics;
+    private Tracker  mTracker;
+    private Application_Gocci applicationGocci;
 
     private ShowListPresenter mPresenter;
 
@@ -105,16 +109,6 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        try {
-            analytics = MobileAnalyticsManager.getOrCreateInstance(
-                    this.getApplicationContext(),
-                    Const.ANALYTICS_ID, //Amazon Mobile Analytics App ID
-                    Const.IDENTITY_POOL_ID //Amazon Cognito Identity Pool ID
-            );
-        } catch (InitializationException ex) {
-            Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
-        }
-
         final API3 api3Impl = API3.Impl.getRepository();
         ListRepository listRepositoryImpl = ListRepositoryImpl.getRepository(api3Impl);
         ListGetUseCase listGetUseCaseImpl = ListGetUseCaseImpl.getUseCase(listRepositoryImpl, UIThread.getInstance());
@@ -125,6 +119,8 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
         setContentView(R.layout.activity_list_follow_follower_cheer);
         ButterKnife.bind(this);
+
+        applicationGocci = (Application_Gocci) getApplication();
 
         Intent intent = getIntent();
         mCategory = (Const.ListCategory) intent.getSerializableExtra("category");
@@ -306,10 +302,6 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
     protected void onPause() {
         super.onPause();
         BusHolder.get().unregister(this);
-        if (analytics != null) {
-            analytics.getSessionClient().pauseSession();
-            analytics.getEventClient().submitEvents();
-        }
         mPresenter.pause();
         mAppBar.removeOnOffsetChangedListener(this);
     }
@@ -317,10 +309,25 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
     @Override
     protected void onResume() {
         super.onResume();
-        BusHolder.get().register(this);
-        if (analytics != null) {
-            analytics.getSessionClient().resumeSession();
+        if (mCategory != null) {
+            mTracker = applicationGocci.getDefaultTracker();
+            switch (mCategory) {
+                case FOLLOW:
+                    mTracker.setScreenName("Followlist");
+                    break;
+                case FOLLOWER:
+                    mTracker.setScreenName("Followerlist");
+                    break;
+                case USER_CHEER:
+                    mTracker.setScreenName("UserCheerlist");
+                    break;
+                case REST_CHEER:
+                    mTracker.setScreenName("RestCheerlist");
+                    break;
+            }
+            mTracker.send(new HitBuilders.ScreenViewBuilder().build());
         }
+        BusHolder.get().register(this);
         mPresenter.resume();
         mAppBar.addOnOffsetChangedListener(this);
     }

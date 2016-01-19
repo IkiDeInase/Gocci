@@ -36,7 +36,10 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
 import com.andexert.library.RippleView;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.gordonwong.materialsheetfab.MaterialSheetFab;
+import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3;
@@ -172,27 +175,21 @@ public class TimelineActivity extends AppCompatActivity {
 
     private Drawer result;
 
-    private static MobileAnalyticsManager analytics;
-
     private FragmentPagerItemAdapter adapter;
+
+    private Tracker mTracker;
+    private Application_Gocci applicationGocci;
 
     private static Handler sHandler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        try {
-            analytics = MobileAnalyticsManager.getOrCreateInstance(
-                    this.getApplicationContext(),
-                    Const.ANALYTICS_ID, //Amazon Mobile Analytics App ID
-                    Const.IDENTITY_POOL_ID //Amazon Cognito Identity Pool ID
-            );
-        } catch (InitializationException ex) {
-            Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
-        }
 
         setContentView(R.layout.activity_timeline);
         ButterKnife.bind(this);
+
+        applicationGocci = (Application_Gocci) getApplication();
 
         mTitle = getString(R.string.now_location);
         mShowPosition = 0;
@@ -299,6 +296,9 @@ public class TimelineActivity extends AppCompatActivity {
                 mShowPosition = position;
                 switch (mShowPosition) {
                     case 0:
+                        mTracker = applicationGocci.getDefaultTracker();
+                        mTracker.setScreenName("Timeline");
+                        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
                         if (mLatestCategory_id != 0) {
                             mCategorySpinner.setText(CATEGORY[mLatestCategory_id]);
                         } else {
@@ -316,6 +316,9 @@ public class TimelineActivity extends AppCompatActivity {
                         mToolBar.setLogo(R.drawable.ic_gocci_moji_white45);
                         break;
                     case 1:
+                        mTracker = applicationGocci.getDefaultTracker();
+                        mTracker.setScreenName("Nearline");
+                        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
                         if (mNearCategory_id != 0) {
                             mCategorySpinner.setText(CATEGORY[mNearCategory_id]);
                         } else {
@@ -334,6 +337,9 @@ public class TimelineActivity extends AppCompatActivity {
                         mToolBar.setLogo(null);
                         break;
                     case 2:
+                        mTracker = applicationGocci.getDefaultTracker();
+                        mTracker.setScreenName("Followline");
+                        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
                         if (mFollowCategory_id != 0) {
                             mCategorySpinner.setText(CATEGORY[mFollowCategory_id]);
                         } else {
@@ -351,6 +357,9 @@ public class TimelineActivity extends AppCompatActivity {
                         mToolBar.setLogo(R.drawable.ic_gocci_moji_white45);
                         break;
                     case 3:
+                        mTracker = applicationGocci.getDefaultTracker();
+                        mTracker.setScreenName("Gochiline");
+                        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
                         if (mGochiCategory_id != 0) {
                             mCategorySpinner.setText(CATEGORY[mGochiCategory_id]);
                         } else {
@@ -368,6 +377,9 @@ public class TimelineActivity extends AppCompatActivity {
                         mToolBar.setLogo(R.drawable.ic_gocci_moji_white45);
                         break;
                     case 4:
+                        mTracker = applicationGocci.getDefaultTracker();
+                        mTracker.setScreenName("Commentline");
+                        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
                         if (mCommentCategory_id != 0) {
                             mCategorySpinner.setText(CATEGORY[mCommentCategory_id]);
                         } else {
@@ -524,19 +536,15 @@ public class TimelineActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (analytics != null) {
-            analytics.getSessionClient().resumeSession();
-        }
+        mTracker = applicationGocci.getDefaultTracker();
+        mTracker.setScreenName("Timeline");
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
         BusHolder.get().register(self);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        if (analytics != null) {
-            analytics.getSessionClient().pauseSession();
-            analytics.getEventClient().submitEvents();
-        }
         BusHolder.get().unregister(self);
     }
 

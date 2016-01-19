@@ -44,6 +44,8 @@ import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.google.android.exoplayer.audio.AudioCapabilities;
 import com.google.android.exoplayer.audio.AudioCapabilitiesReceiver;
 import com.google.android.exoplayer.drm.UnsupportedDrmException;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
@@ -159,7 +161,8 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
 
     private AudioCapabilitiesReceiver audioCapabilitiesReceiver;
 
-    private static MobileAnalyticsManager analytics;
+    private Tracker mTracker;
+    private Application_Gocci applicationGocci;
 
     private ShowRestPagePresenter mPresenter;
 
@@ -191,16 +194,6 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
     @Override
     public final void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        try {
-            analytics = MobileAnalyticsManager.getOrCreateInstance(
-                    this.getApplicationContext(),
-                    Const.ANALYTICS_ID, //Amazon Mobile Analytics App ID
-                    Const.IDENTITY_POOL_ID //Amazon Cognito Identity Pool ID
-            );
-        } catch (InitializationException ex) {
-            Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
-        }
-
         audioCapabilitiesReceiver = new AudioCapabilitiesReceiver(getApplicationContext(), this);
         audioCapabilitiesReceiver.register();
 
@@ -245,6 +238,8 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
 
         setContentView(R.layout.activity_tenpo);
         ButterKnife.bind(this);
+
+        applicationGocci = (Application_Gocci) getApplication();
 
         Intent intent = getIntent();
         mRest_id = intent.getStringExtra("rest_id");
@@ -454,10 +449,6 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
             mRestPageAdapter.getMapView().onPause();
         }
         super.onPause();
-        if (analytics != null) {
-            analytics.getSessionClient().pauseSession();
-            analytics.getEventClient().submitEvents();
-        }
         BusHolder.get().unregister(self);
 
         if (player != null) {
@@ -474,9 +465,9 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
     @Override
     public final void onResume() {
         super.onResume();
-        if (analytics != null) {
-            analytics.getSessionClient().resumeSession();
-        }
+        mTracker = applicationGocci.getDefaultTracker();
+        mTracker.setScreenName("TenpoPage");
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
         BusHolder.get().register(self);
         if (mRestPageAdapter != null && mRestPageAdapter.getMapView() != null) {
             mRestPageAdapter.getMapView().onResume();
@@ -564,6 +555,10 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
 
     private void preparePlayer(final Const.StreamRestViewHolder viewHolder, String path) {
         if (player == null) {
+            mTracker = applicationGocci.getDefaultTracker();
+            mTracker.setScreenName("TenpoPage");
+            mTracker.send(new HitBuilders.EventBuilder().setAction("PlayCount").setCategory("Movie").setValue(Long.parseLong(mPlayingPostId)).build());
+
             player = new VideoPlayer(new HlsRendererBuilder(this, com.google.android.exoplayer.util.Util.getUserAgent(this, "Gocci"), path));
             player.addListener(new VideoPlayer.Listener() {
                 @Override
@@ -573,6 +568,9 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
                             break;
                         case VideoPlayer.STATE_ENDED:
                             player.seekTo(0);
+                            mTracker = applicationGocci.getDefaultTracker();
+                            mTracker.setScreenName("TenpoPage");
+                            mTracker.send(new HitBuilders.EventBuilder().setAction("PlayCount").setCategory("Movie").setValue(Long.parseLong(mPlayingPostId)).build());
                             break;
                         case VideoPlayer.STATE_IDLE:
                             break;

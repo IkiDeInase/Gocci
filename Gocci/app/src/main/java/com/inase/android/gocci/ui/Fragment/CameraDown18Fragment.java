@@ -38,6 +38,8 @@ import com.facebook.rebound.Spring;
 import com.facebook.rebound.SpringSystem;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -165,6 +167,9 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
 
     private boolean isFinish = false;
 
+    private Tracker mTracker;
+    private Application_Gocci applicationGocci;
+
     public CameraDown18Fragment() {
 
     }
@@ -243,6 +248,7 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_camera_down18, container, false);
         ButterKnife.bind(this, rootView);
+        applicationGocci = (Application_Gocci) getActivity().getApplication();
         cameraManager = getCameraManager();
         recorderManager = new RecorderManager(getCameraManager(), mCameraView, getActivity());
 
@@ -483,6 +489,9 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
     @Override
     public void onResume() {
         super.onResume();
+        mTracker = applicationGocci.getDefaultTracker();
+        mTracker.setScreenName("CameraDown18");
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
         mPresenter.resume();
         mScaleSpring.addListener(mSpringListener);
         checkPlayServices();

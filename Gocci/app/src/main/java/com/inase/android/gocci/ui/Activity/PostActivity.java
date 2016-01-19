@@ -34,6 +34,8 @@ import com.google.android.exoplayer.AspectRatioFrameLayout;
 import com.google.android.exoplayer.audio.AudioCapabilities;
 import com.google.android.exoplayer.audio.AudioCapabilitiesReceiver;
 import com.google.android.exoplayer.drm.UnsupportedDrmException;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
@@ -132,7 +134,8 @@ public class PostActivity extends AppCompatActivity implements AudioCapabilities
     private CallbackManager callbackManager;
     private ShareDialog shareDialog;
 
-    private static MobileAnalyticsManager analytics;
+    private Tracker mTracker;
+    private Application_Gocci applicationGocci;
 
     private ShowPostPagePresenter mPresenter;
 
@@ -154,15 +157,6 @@ public class PostActivity extends AppCompatActivity implements AudioCapabilities
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        try {
-            analytics = MobileAnalyticsManager.getOrCreateInstance(
-                    this.getApplicationContext(),
-                    Const.ANALYTICS_ID, //Amazon Mobile Analytics App ID
-                    Const.IDENTITY_POOL_ID //Amazon Cognito Identity Pool ID
-            );
-        } catch (InitializationException ex) {
-            Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
-        }
         audioCapabilitiesReceiver = new AudioCapabilitiesReceiver(getApplicationContext(), this);
         audioCapabilitiesReceiver.register();
 
@@ -202,6 +196,8 @@ public class PostActivity extends AppCompatActivity implements AudioCapabilities
         setContentView(R.layout.activity_post);
         ButterKnife.bind(this);
 
+        applicationGocci = (Application_Gocci) getApplication();
+
         Intent intent = getIntent();
         mPost_id = intent.getStringExtra("post_id");
 
@@ -239,10 +235,6 @@ public class PostActivity extends AppCompatActivity implements AudioCapabilities
     @Override
     public final void onPause() {
         super.onPause();
-        if (analytics != null) {
-            analytics.getSessionClient().pauseSession();
-            analytics.getEventClient().submitEvents();
-        }
         BusHolder.get().unregister(this);
 
         if (player != null) {
@@ -256,9 +248,9 @@ public class PostActivity extends AppCompatActivity implements AudioCapabilities
     @Override
     public final void onResume() {
         super.onResume();
-        if (analytics != null) {
-            analytics.getSessionClient().resumeSession();
-        }
+        mTracker = applicationGocci.getDefaultTracker();
+        mTracker.setScreenName("PostPage");
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
         BusHolder.get().register(this);
 
         if (mPostData != null) {
@@ -309,6 +301,10 @@ public class PostActivity extends AppCompatActivity implements AudioCapabilities
 
     private void preparePlayer(String path) {
         if (player == null) {
+            mTracker = applicationGocci.getDefaultTracker();
+            mTracker.setScreenName("PostPage");
+            mTracker.send(new HitBuilders.EventBuilder().setAction("PlayCount").setCategory("Movie").setValue(Long.parseLong(mPost_id)).build());
+
             player = new VideoPlayer(new HlsRendererBuilder(this, com.google.android.exoplayer.util.Util.getUserAgent(this, "Gocci"), path));
             player.addListener(new VideoPlayer.Listener() {
                 @Override
@@ -317,6 +313,9 @@ public class PostActivity extends AppCompatActivity implements AudioCapabilities
                         case VideoPlayer.STATE_BUFFERING:
                             break;
                         case VideoPlayer.STATE_ENDED:
+                            mTracker = applicationGocci.getDefaultTracker();
+                            mTracker.setScreenName("PostPage");
+                            mTracker.send(new HitBuilders.EventBuilder().setAction("PlayCount").setCategory("Movie").setValue(Long.parseLong(mPost_id)).build());
                             player.seekTo(0);
                             break;
                         case VideoPlayer.STATE_IDLE:

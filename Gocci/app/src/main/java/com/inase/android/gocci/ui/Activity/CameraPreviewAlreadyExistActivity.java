@@ -30,6 +30,7 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.Profile;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.facebook.share.Sharer;
@@ -37,6 +38,8 @@ import com.facebook.share.model.ShareVideo;
 import com.facebook.share.model.ShareVideoContent;
 import com.facebook.share.widget.ShareDialog;
 import com.github.clans.fab.FloatingActionButton;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
@@ -55,6 +58,7 @@ import com.inase.android.gocci.ui.view.GocciTwitterLoginButton;
 import com.inase.android.gocci.ui.view.SquareVideoView;
 import com.inase.android.gocci.utils.SavedData;
 import com.inase.android.gocci.utils.Util;
+import com.inase.android.gocci.utils.share.FacebookUtil;
 import com.inase.android.gocci.utils.share.TwitterUtil;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
@@ -158,8 +162,7 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
                 .widgetColorRes(R.color.facebook_background)
                 .positiveText(getString(R.string.complete))
                 .positiveColorRes(R.color.gocci_header)
-                .inputRangeRes(6, 140, R.color.gocci_header)
-                .input("", mFacebookMemo.isEmpty() ? getMessage() : mFacebookMemo, false, new MaterialDialog.InputCallback() {
+                .input("", mFacebookMemo.isEmpty() ? "" : mFacebookMemo, false, new MaterialDialog.InputCallback() {
                     @Override
                     public void onInput(MaterialDialog materialDialog, CharSequence charSequence) {
                         mFacebookMemo = charSequence.toString();
@@ -189,36 +192,43 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
 
     @OnClick(R.id.check_facebook)
     public void facebook() {
-        //        if (mFacebookEdit.isHidden()) {
-//            Profile profile = Profile.getCurrentProfile();
-//            if (profile != null) {
-//                mFacebookEdit.show(true);
-//            } else {
-//                mFacebookLoginButton.performClick();
-//            }
-//        } else {
-//            mFacebookEdit.hide(true);
-//        }
-        if (mCheckFacebook.isChecked()) {
-            Profile profile = Profile.getCurrentProfile();
-            if (profile != null) {
-                Uri uri = Uri.fromFile(mVideoFile);
-                if (ShareDialog.canShow(ShareVideoContent.class)) {
-                    ShareVideo video = new ShareVideo.Builder()
-                            .setLocalUrl(uri)
-                            .build();
-                    ShareVideoContent content = new ShareVideoContent.Builder()
-                            .setVideo(video)
-                            .build();
-                    shareDialog.show(content);
+        if (mFacebookEdit.isHidden()) {
+            //Profile profile = Profile.getCurrentProfile();
+            AccessToken accessToken = AccessToken.getCurrentAccessToken();
+            if (accessToken != null) {
+                if (accessToken.getPermissions().contains("publish_actions")) {
+                    mFacebookEdit.show(true);
                 } else {
-                    // ...sharing failed, handle error
-                    Toast.makeText(this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+                    ArrayList<String> permissions = new ArrayList<>();
+                    permissions.add("publish_actions");
+                    LoginManager.getInstance().logInWithPublishPermissions(this, permissions);
                 }
             } else {
                 mFacebookLoginButton.performClick();
             }
+        } else {
+            mFacebookEdit.hide(true);
         }
+//        if (mCheckFacebook.isChecked()) {
+//            Profile profile = Profile.getCurrentProfile();
+//            if (profile != null) {
+//                Uri uri = Uri.fromFile(mVideoFile);
+//                if (ShareDialog.canShow(ShareVideoContent.class)) {
+//                    ShareVideo video = new ShareVideo.Builder()
+//                            .setLocalUrl(uri)
+//                            .build();
+//                    ShareVideoContent content = new ShareVideoContent.Builder()
+//                            .setVideo(video)
+//                            .build();
+//                    shareDialog.show(content);
+//                } else {
+//                    // ...sharing failed, handle error
+//                    Toast.makeText(this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+//                }
+//            } else {
+//                mFacebookLoginButton.performClick();
+//            }
+//        }
     }
 
     @OnClick(R.id.check_instagram)
@@ -256,7 +266,8 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
     private CallbackManager callbackManager;
     private ShareDialog shareDialog;
 
-    private static MobileAnalyticsManager analytics;
+    private Tracker mTracker;
+    private Application_Gocci applicationGocci;
 
     private ArrayAdapter<String> restAdapter;
 
@@ -267,16 +278,6 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        try {
-            analytics = MobileAnalyticsManager.getOrCreateInstance(
-                    this.getApplicationContext(),
-                    Const.ANALYTICS_ID, //Amazon Mobile Analytics App ID
-                    Const.IDENTITY_POOL_ID //Amazon Cognito Identity Pool ID
-            );
-        } catch (InitializationException ex) {
-            Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
-        }
-
         final API3 api3Impl = API3.Impl.getRepository();
         NearRepository nearRepositoryImpl = NearRepositoryImpl.getRepository(api3Impl);
         NearDataUseCase neardataUseCaseImpl = NearDataUseCaseImpl.getUseCase(nearRepositoryImpl, UIThread.getInstance());
@@ -285,6 +286,8 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
 
         setContentView(R.layout.activity_camera_preview_already_exist);
         ButterKnife.bind(this);
+
+        applicationGocci = (Application_Gocci) getApplication();
 
         mTwitterEdit.hide(false);
         mFacebookEdit.hide(false);
@@ -356,6 +359,27 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
             @Override
             public void onError(FacebookException e) {
                 Toast.makeText(CameraPreviewAlreadyExistActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                mFacebookEdit.show(true);
+                mCheckFacebook.setChecked(true);
+                API3PostUtil.setSnsLinkAsync(CameraPreviewAlreadyExistActivity.this, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), Const.ActivityCategory.CAMERA_PREVIEW_ALREADY, Const.APICategory.SET_FACEBOOK_LINK);
+            }
+
+            @Override
+            public void onCancel() {
+                mFacebookEdit.hide(true);
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+                mFacebookEdit.hide(true);
+                mCheckFacebook.setChecked(false);
+                Toast.makeText(CameraPreviewAlreadyExistActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -465,7 +489,14 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
                                 }
                             }
                         }
-                        API3PostUtil.setPostAsync(CameraPreviewAlreadyExistActivity.this, Const.ActivityCategory.CAMERA_PREVIEW_ALREADY, mRest_id, mAwsPostName, mCategory_id, mValue, mMemo, mCheer_flag);
+                        if (mCheckFacebook.isChecked()) {
+                            if (mFacebookMemo.isEmpty()) {
+                                mFacebookMemo = getMessage();
+                            }
+                            FacebookUtil.performShare(CameraPreviewAlreadyExistActivity.this, AccessToken.getCurrentAccessToken().getToken(), mVideoFile, mFacebookMemo);
+                        }
+                        Toast.makeText(CameraPreviewAlreadyExistActivity.this, "Start Facebook Sharing", Toast.LENGTH_SHORT).show();
+                        //API3PostUtil.setPostAsync(CameraPreviewAlreadyExistActivity.this, Const.ActivityCategory.CAMERA_PREVIEW_ALREADY, mRest_id, mAwsPostName, mCategory_id, mValue, mMemo, mCheer_flag);
                     } else {
                         Toast.makeText(CameraPreviewAlreadyExistActivity.this, getString(R.string.please_input_restname), Toast.LENGTH_SHORT).show();
                     }
@@ -479,23 +510,25 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
             mAddRestText.setVisibility(View.GONE);
         }
 
-        mFacebookLoginButton.setReadPermissions("public_profile");
+        mFacebookLoginButton.setPublishPermissions("publish_actions");
         mFacebookLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                Uri uri = Uri.fromFile(mVideoFile);
-                if (ShareDialog.canShow(ShareVideoContent.class)) {
-                    ShareVideo video = new ShareVideo.Builder()
-                            .setLocalUrl(uri)
-                            .build();
-                    ShareVideoContent content = new ShareVideoContent.Builder()
-                            .setVideo(video)
-                            .build();
-                    shareDialog.show(content);
-                } else {
-                    // ...sharing failed, handle error
-                    Toast.makeText(CameraPreviewAlreadyExistActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
-                }
+//                Uri uri = Uri.fromFile(mVideoFile);
+//                if (ShareDialog.canShow(ShareVideoContent.class)) {
+//                    ShareVideo video = new ShareVideo.Builder()
+//                            .setLocalUrl(uri)
+//                            .build();
+//                    ShareVideoContent content = new ShareVideoContent.Builder()
+//                            .setVideo(video)
+//                            .build();
+//                    shareDialog.show(content);
+//                } else {
+//                    // ...sharing failed, handle error
+//                    Toast.makeText(CameraPreviewAlreadyExistActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+//                }
+                mFacebookEdit.show(true);
+                mCheckFacebook.setChecked(true);
                 API3PostUtil.setSnsLinkAsync(CameraPreviewAlreadyExistActivity.this, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), Const.ActivityCategory.CAMERA_PREVIEW_ALREADY, Const.APICategory.SET_FACEBOOK_LINK);
                 //Profile profile = Profile.getCurrentProfile();
                 //String profile_img = "https://graph.facebook.com/" + profile.getId() + "/picture";
@@ -505,13 +538,13 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
 
             @Override
             public void onCancel() {
-                //mFacebookEdit.hide(true);
+                mFacebookEdit.hide(true);
                 mCheckFacebook.setChecked(false);
             }
 
             @Override
             public void onError(FacebookException e) {
-                //mFacebookEdit.hide(true);
+                mFacebookEdit.hide(true);
                 mCheckFacebook.setChecked(false);
                 Toast.makeText(CameraPreviewAlreadyExistActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
             }
@@ -542,10 +575,6 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
     @Override
     protected void onPause() {
         super.onPause();
-        if (analytics != null) {
-            analytics.getSessionClient().pauseSession();
-            analytics.getEventClient().submitEvents();
-        }
         mPresenter.pause();
         BusHolder.get().unregister(this);
     }
@@ -553,9 +582,9 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
     @Override
     protected void onResume() {
         super.onResume();
-        if (analytics != null) {
-            analytics.getSessionClient().resumeSession();
-        }
+        mTracker = applicationGocci.getDefaultTracker();
+        mTracker.setScreenName("CameraPreviewAlready");
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
         mPresenter.resume();
         BusHolder.get().register(this);
     }

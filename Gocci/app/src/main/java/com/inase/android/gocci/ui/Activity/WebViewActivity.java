@@ -13,6 +13,9 @@ import android.webkit.WebViewClient;
 
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 
@@ -29,7 +32,8 @@ public class WebViewActivity extends AppCompatActivity {
     private int category;
     // rule 0 : policy 1 : license 2
 
-    private static MobileAnalyticsManager analytics;
+    private Tracker mTracker;
+    private Application_Gocci applicationGocci;
 
     private static final String URL_RULE = "http://inase-inc.jp/rules/";
     private static final String URL_POLICY = "http://inase-inc.jp/rules/privacy/";
@@ -45,18 +49,10 @@ public class WebViewActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        try {
-            analytics = MobileAnalyticsManager.getOrCreateInstance(
-                    this.getApplicationContext(),
-                    Const.ANALYTICS_ID, //Amazon Mobile Analytics App ID
-                    Const.IDENTITY_POOL_ID //Amazon Cognito Identity Pool ID
-            );
-        } catch (InitializationException ex) {
-            Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
-        }
-
         setContentView(R.layout.activity_web_view);
         ButterKnife.bind(this);
+
+        applicationGocci = (Application_Gocci) getApplication();
 
         Intent intent = getIntent();
         category = intent.getIntExtra("category", 0);
@@ -89,18 +85,24 @@ public class WebViewActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        if (analytics != null) {
-            analytics.getSessionClient().pauseSession();
-            analytics.getEventClient().submitEvents();
-        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (analytics != null) {
-            analytics.getSessionClient().resumeSession();
+        mTracker = applicationGocci.getDefaultTracker();
+        switch (category) {
+            case 0:
+                mTracker.setScreenName("rule");
+                break;
+            case 1:
+                mTracker.setScreenName("policy");
+                break;
+            case 2:
+                mTracker.setScreenName("license");
+                break;
         }
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     @Override

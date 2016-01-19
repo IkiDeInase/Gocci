@@ -11,6 +11,8 @@ import android.widget.Toast;
 
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.inase.android.gocci.Application_Gocci;
@@ -38,7 +40,8 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
     private Handler handler;
     private loginRunnable runnable;
 
-    private static MobileAnalyticsManager analytics;
+    private Tracker mTracker;
+    private Application_Gocci applicationGocci;
 
     private ShowUserLoginPresenter mPresenter;
 
@@ -49,17 +52,9 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
     @Override
     protected void onCreate(Bundle icicle) {
         super.onCreate(icicle);
-        try {
-            analytics = MobileAnalyticsManager.getOrCreateInstance(
-                    this.getApplicationContext(),
-                    Const.ANALYTICS_ID, //Amazon Mobile Analytics App ID
-                    Const.IDENTITY_POOL_ID //Amazon Cognito Identity Pool ID
-            );
-        } catch (InitializationException ex) {
-            Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
-        }
-
         setContentView(R.layout.activity_splash);
+
+        applicationGocci = (Application_Gocci) getApplication();
 
         API3 api3Impl = API3.Impl.getRepository();
         LoginRepository loginRepositoryImpl = LoginRepositoryImpl.getRepository(api3Impl);
@@ -71,13 +66,13 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
     @Override
     protected void onResume() {
         super.onResume();
-        if (analytics != null) {
-            analytics.getSessionClient().resumeSession();
-        }
+        mTracker = applicationGocci.getDefaultTracker();
+        mTracker.setScreenName("Splash");
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
         BusHolder.get().register(this);
         mPresenter.resume();
 
-        //us-east-1:d046db41-2d24-4121-b70f-72d341a5c189
+        //SavedData.setIdentityId(this, "us-east-1:b5eea423-e2bd-4067-97a9-e268255ab96d");
 
         if (Util.getConnectedState(this) != Util.NetworkStatus.OFF) {
             String mIdentityId = SavedData.getIdentityId(this);
@@ -105,10 +100,6 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
     @Override
     protected void onPause() {
         super.onPause();
-        if (analytics != null) {
-            analytics.getSessionClient().pauseSession();
-            analytics.getEventClient().submitEvents();
-        }
         BusHolder.get().unregister(this);
         mPresenter.pause();
     }

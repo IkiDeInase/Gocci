@@ -28,6 +28,8 @@ import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.google.android.exoplayer.audio.AudioCapabilities;
 import com.google.android.exoplayer.audio.AudioCapabilitiesReceiver;
 import com.google.android.exoplayer.drm.UnsupportedDrmException;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
@@ -112,6 +114,9 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
     private ShowFollowTimelinePresenter mPresenter;
 
     private TimelineActivity activity;
+
+    private Tracker mTracker;
+    private Application_Gocci applicationGocci;
 
     private RecyclerView.OnScrollListener scrollListener = new RecyclerView.OnScrollListener() {
         @Override
@@ -217,6 +222,8 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
         mPlayBlockFlag = true;
         View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_timeline, container, false);
         ButterKnife.bind(this, view);
+
+        applicationGocci = (Application_Gocci) getActivity().getApplication();
 
         mPlayingPostId = null;
         mViewHolderHash = new ConcurrentHashMap<>();
@@ -357,6 +364,10 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
 
     private void preparePlayer(final Const.TwoCellViewHolder viewHolder, String path) {
         if (player == null) {
+            mTracker = applicationGocci.getDefaultTracker();
+            mTracker.setScreenName("Followline");
+            mTracker.send(new HitBuilders.EventBuilder().setAction("PlayCount").setCategory("Movie").setValue(Long.parseLong(mPlayingPostId)).build());
+
             player = new VideoPlayer(new HlsRendererBuilder(getActivity(), com.google.android.exoplayer.util.Util.getUserAgent(getActivity(), "Gocci"), path));
             player.addListener(new VideoPlayer.Listener() {
                 @Override
@@ -366,6 +377,9 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
                             break;
                         case VideoPlayer.STATE_ENDED:
                             player.seekTo(0);
+                            mTracker = applicationGocci.getDefaultTracker();
+                            mTracker.setScreenName("Followline");
+                            mTracker.send(new HitBuilders.EventBuilder().setAction("PlayCount").setCategory("Movie").setValue(Long.parseLong(mPlayingPostId)).build());
                             break;
                         case VideoPlayer.STATE_IDLE:
                             break;

@@ -35,6 +35,8 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.share.Sharer;
 import com.facebook.share.widget.ShareDialog;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
@@ -175,7 +177,8 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
     private CallbackManager callbackManager;
     private ShareDialog shareDialog;
 
-    private static MobileAnalyticsManager analytics;
+    private Tracker mTracker;
+    private Application_Gocci applicationGocci;
 
     private ShowUserProfPresenter mPresenter;
 
@@ -197,16 +200,6 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        try {
-            analytics = MobileAnalyticsManager.getOrCreateInstance(
-                    this.getApplicationContext(),
-                    Const.ANALYTICS_ID, //Amazon Mobile Analytics App ID
-                    Const.IDENTITY_POOL_ID //Amazon Cognito Identity Pool ID
-            );
-        } catch (InitializationException ex) {
-            Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
-        }
-
         final API3 api3Impl = API3.Impl.getRepository();
         UserAndRestDataRepository userAndRestDataRepositoryImpl = UserAndRestDataRepositoryImpl.getRepository(api3Impl);
         FollowRepository followRepository = FollowRepositoryImpl.getRepository(api3Impl);
@@ -241,6 +234,8 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
         setContentView(R.layout.activity_userprof);
         ButterKnife.bind(this);
 
+        applicationGocci = (Application_Gocci) getApplication();
+
         Intent userintent = getIntent();
         mUser_id = userintent.getStringExtra("user_id");
 
@@ -268,6 +263,18 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
             public void onPageSelected(int position) {
                 BusHolder.get().post(new PageChangeVideoStopEvent(position));
                 mShowPosition = position;
+                switch (mShowPosition) {
+                    case 0:
+                        mTracker = applicationGocci.getDefaultTracker();
+                        mTracker.setScreenName("UserProfStream");
+                        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+                        break;
+                    case 1:
+                        mTracker = applicationGocci.getDefaultTracker();
+                        mTracker.setScreenName("UserProfGrid");
+                        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+                        break;
+                }
             }
 
             @Override
@@ -396,10 +403,6 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
     @Override
     protected void onPause() {
         super.onPause();
-        if (analytics != null) {
-            analytics.getSessionClient().pauseSession();
-            analytics.getEventClient().submitEvents();
-        }
         BusHolder.get().unregister(self);
         mPresenter.pause();
     }
@@ -407,9 +410,9 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
     @Override
     protected void onResume() {
         super.onResume();
-        if (analytics != null) {
-            analytics.getSessionClient().resumeSession();
-        }
+        mTracker = applicationGocci.getDefaultTracker();
+        mTracker.setScreenName("UserProfStream");
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
         BusHolder.get().register(self);
         mPresenter.resume();
     }

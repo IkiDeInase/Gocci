@@ -42,6 +42,8 @@ import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.google.android.exoplayer.audio.AudioCapabilities;
 import com.google.android.exoplayer.audio.AudioCapabilitiesReceiver;
 import com.google.android.exoplayer.drm.UnsupportedDrmException;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -156,6 +158,9 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
     protected LocationSettingsRequest mLocationSettingsRequest;
     private LocationManager mLocationManager;
 
+    private Tracker mTracker;
+    private Application_Gocci applicationGocci;
+
     private RecyclerView.OnScrollListener scrollListener = new RecyclerView.OnScrollListener() {
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -260,6 +265,8 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
         mPlayBlockFlag = false;
         View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_timeline, container, false);
         ButterKnife.bind(this, view);
+
+        applicationGocci = (Application_Gocci) getActivity().getApplication();
 
         mPlayingPostId = null;
         mViewHolderHash = new ConcurrentHashMap<>();
@@ -748,6 +755,10 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
 
     private void preparePlayer(final Const.TwoCellViewHolder viewHolder, String path) {
         if (player == null) {
+            mTracker = applicationGocci.getDefaultTracker();
+            mTracker.setScreenName("Nearline");
+            mTracker.send(new HitBuilders.EventBuilder().setAction("PlayCount").setCategory("Movie").setValue(Long.parseLong(mPlayingPostId)).build());
+
             player = new VideoPlayer(new HlsRendererBuilder(getActivity(), com.google.android.exoplayer.util.Util.getUserAgent(getActivity(), "Gocci"), path));
             player.addListener(new VideoPlayer.Listener() {
                 @Override
@@ -757,6 +768,9 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
                             break;
                         case VideoPlayer.STATE_ENDED:
                             player.seekTo(0);
+                            mTracker = applicationGocci.getDefaultTracker();
+                            mTracker.setScreenName("Nearline");
+                            mTracker.send(new HitBuilders.EventBuilder().setAction("PlayCount").setCategory("Movie").setValue(Long.parseLong(mPlayingPostId)).build());
                             break;
                         case VideoPlayer.STATE_IDLE:
                             break;

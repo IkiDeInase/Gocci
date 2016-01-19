@@ -42,6 +42,8 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.share.Sharer;
 import com.facebook.share.widget.ShareDialog;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
@@ -183,7 +185,8 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
     private CallbackManager callbackManager;
     private ShareDialog shareDialog;
 
-    private static MobileAnalyticsManager analytics;
+    private Tracker mTracker;
+    private Application_Gocci applicationGocci;
 
     private ShowMyProfPresenter mPresenter;
 
@@ -209,16 +212,6 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        try {
-            analytics = MobileAnalyticsManager.getOrCreateInstance(
-                    this.getApplicationContext(),
-                    Const.ANALYTICS_ID, //Amazon Mobile Analytics App ID
-                    Const.IDENTITY_POOL_ID //Amazon Cognito Identity Pool ID
-            );
-        } catch (InitializationException ex) {
-            Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
-        }
-
         final API3 api3Impl = API3.Impl.getRepository();
         UserAndRestDataRepository userAndRestDataRepositoryImpl = UserAndRestDataRepositoryImpl.getRepository(api3Impl);
         GochiRepository gochiRepositoryImpl = GochiRepositoryImpl.getRepository(api3Impl);
@@ -251,6 +244,8 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
         setContentView(R.layout.activity_myprof);
         ButterKnife.bind(this);
 
+        applicationGocci = (Application_Gocci) getApplication();
+
         adapter = new FragmentPagerItemAdapter(
                 getSupportFragmentManager(), FragmentPagerItems.with(this)
                 .add(R.string.tab_near, StreamMyProfFragment.class)
@@ -268,6 +263,18 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
             public void onPageSelected(int position) {
                 BusHolder.get().post(new PageChangeVideoStopEvent(position));
                 mShowPosition = position;
+                switch (mShowPosition) {
+                    case 0:
+                        mTracker = applicationGocci.getDefaultTracker();
+                        mTracker.setScreenName("MyProfStream");
+                        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+                        break;
+                    case 1:
+                        mTracker = applicationGocci.getDefaultTracker();
+                        mTracker.setScreenName("MyProfGrid");
+                        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+                        break;
+                }
             }
 
             @Override
@@ -467,9 +474,9 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
     @Override
     protected void onResume() {
         super.onResume();
-        if (analytics != null) {
-            analytics.getSessionClient().resumeSession();
-        }
+        mTracker = applicationGocci.getDefaultTracker();
+        mTracker.setScreenName("MyProfStream");
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
         BusHolder.get().register(self);
         mPresenter.resume();
     }
@@ -477,10 +484,6 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
     @Override
     protected void onPause() {
         super.onPause();
-        if (analytics != null) {
-            analytics.getSessionClient().pauseSession();
-            analytics.getEventClient().submitEvents();
-        }
         BusHolder.get().unregister(self);
         mPresenter.pause();
     }

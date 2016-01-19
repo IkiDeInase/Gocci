@@ -1,35 +1,26 @@
 {
   "project_info": {
-    "project_id": "gocci-android",
-    "project_number": "913263613395",
+    "project_id": "gocci-b8323",
+    "project_number": "28011987019",
     "name": "Gocci"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:913263613395:android:4a3e162b53d12c42",
+        "mobilesdk_app_id": "1:28011987019:android:4a3e162b53d12c42",
         "client_id": "android:com.inase.android.gocci",
         "client_type": 1,
         "android_client_info": {
           "package_name": "com.inase.android.gocci"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "913263613395-1de8n0m2dnmniejsojhv3838k87tiaiu.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.inase.android.gocci",
-            "certificate_hash": "3DC866BE5F98675E0B06E012B00842F6A4E92B70"
-          }
-        }
-      ],
+      "oauth_client": [],
       "api_key": [],
       "services": {
         "analytics_service": {
           "status": 2,
           "analytics_property": {
-            "tracking_id": "UA-63362687-1"
+            "tracking_id": "UA-68091523-4"
           }
         },
         "cloud_messaging_service": {

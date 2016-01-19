@@ -20,6 +20,9 @@ import android.widget.LinearLayout;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
 import com.andexert.library.RippleView;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.ui.fragment.LoginCreateUserNameFragment;
@@ -36,7 +39,8 @@ public class TutorialActivity extends AppCompatActivity {
 
     PagerAdapter pagerAdapter;
 
-    private static MobileAnalyticsManager analytics;
+    private Tracker mTracker;
+    private Application_Gocci applicationGocci;
 
     @Bind(R.id.pager)
     public ViewPager mPager;
@@ -51,20 +55,12 @@ public class TutorialActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        try {
-            analytics = MobileAnalyticsManager.getOrCreateInstance(
-                    this.getApplicationContext(),
-                    Const.ANALYTICS_ID, //Amazon Mobile Analytics App ID
-                    Const.IDENTITY_POOL_ID //Amazon Cognito Identity Pool ID
-            );
-        } catch (InitializationException ex) {
-            Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
-        }
-
         Window window = getWindow();
         window.setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         setContentView(R.layout.activity_tutorial);
         ButterKnife.bind(this);
+
+        applicationGocci = (Application_Gocci) getApplication();
 
         pagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
         mPager.setAdapter(pagerAdapter);
@@ -79,6 +75,18 @@ public class TutorialActivity extends AppCompatActivity {
             @Override
             public void onPageSelected(int position) {
                 setIndicator(position);
+                switch (position) {
+                    case 3:
+                        mTracker = applicationGocci.getDefaultTracker();
+                        mTracker.setScreenName("TutorialCreateUser");
+                        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+                        break;
+                    case 4:
+                        mTracker = applicationGocci.getDefaultTracker();
+                        mTracker.setScreenName("TutorialSocialAuth");
+                        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+                        break;
+                }
             }
 
             @Override
@@ -117,18 +125,14 @@ public class TutorialActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        if (analytics != null) {
-            analytics.getSessionClient().pauseSession();
-            analytics.getEventClient().submitEvents();
-        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (analytics != null) {
-            analytics.getSessionClient().resumeSession();
-        }
+        mTracker = applicationGocci.getDefaultTracker();
+        mTracker.setScreenName("Tutorial");
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     @Override

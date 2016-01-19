@@ -15,6 +15,8 @@ import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -79,6 +81,9 @@ public class MapSearchActivity extends AppCompatActivity implements ShowHeatmapP
     private ShowHeatmapPresenter mPresenter;
 
     private Geocoder geo;
+
+    private Tracker mTracker;
+    private Application_Gocci applicationGocci;
 
     public static void startMapSearchActivity(int requestCode, double longitude, double latitude, Activity startingActivity) {
         Intent intent = new Intent(startingActivity, MapSearchActivity.class);
@@ -176,6 +181,8 @@ public class MapSearchActivity extends AppCompatActivity implements ShowHeatmapP
         setContentView(R.layout.activity_map_search);
         ButterKnife.bind(this);
 
+        applicationGocci = (Application_Gocci) getApplication();
+
         //googleserviceが使えるか判断して処理を分ける
         int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(MapSearchActivity.this);
         if (status != ConnectionResult.SUCCESS) {
@@ -206,6 +213,10 @@ public class MapSearchActivity extends AppCompatActivity implements ShowHeatmapP
     @Override
     protected void onResume() {
         super.onResume();
+        mTracker = applicationGocci.getDefaultTracker();
+        mTracker.setScreenName("MapSearch");
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+
         BusHolder.get().register(this);
         mPresenter.resume();
     }

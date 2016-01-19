@@ -17,6 +17,9 @@ import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
 import com.google.android.exoplayer.audio.AudioCapabilities;
 import com.google.android.exoplayer.audio.AudioCapabilitiesReceiver;
 import com.google.android.exoplayer.drm.UnsupportedDrmException;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.domain.model.PostData;
@@ -76,6 +79,9 @@ public class StreamUserProfFragment extends Fragment implements AppBarLayout.OnO
 
     private UserProfActivity activity;
 
+    private Tracker mTracker;
+    private Application_Gocci applicationGocci;
+
     private RecyclerView.OnScrollListener mStreamScrollListener = new RecyclerView.OnScrollListener() {
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -133,6 +139,8 @@ public class StreamUserProfFragment extends Fragment implements AppBarLayout.OnO
         mPlayBlockFlag = false;
         View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_timeline, container, false);
         ButterKnife.bind(this, view);
+
+        applicationGocci = (Application_Gocci) getActivity().getApplication();
 
         mPlayingPostId = null;
         mStreamViewHolderHash = new ConcurrentHashMap<>();
@@ -301,6 +309,10 @@ public class StreamUserProfFragment extends Fragment implements AppBarLayout.OnO
 
     private void streamPreparePlayer(final Const.StreamUserViewHolder viewHolder, String path) {
         if (player == null) {
+            mTracker = applicationGocci.getDefaultTracker();
+            mTracker.setScreenName("UserProfStream");
+            mTracker.send(new HitBuilders.EventBuilder().setAction("PlayCount").setCategory("Movie").setValue(Long.parseLong(mPlayingPostId)).build());
+
             player = new VideoPlayer(new HlsRendererBuilder(getActivity(), com.google.android.exoplayer.util.Util.getUserAgent(getActivity(), "Gocci"), path));
             player.addListener(new VideoPlayer.Listener() {
                 @Override
@@ -310,6 +322,9 @@ public class StreamUserProfFragment extends Fragment implements AppBarLayout.OnO
                             break;
                         case VideoPlayer.STATE_ENDED:
                             player.seekTo(0);
+                            mTracker = applicationGocci.getDefaultTracker();
+                            mTracker.setScreenName("UserProfStream");
+                            mTracker.send(new HitBuilders.EventBuilder().setAction("PlayCount").setCategory("Movie").setValue(Long.parseLong(mPlayingPostId)).build());
                             break;
                         case VideoPlayer.STATE_IDLE:
                             break;

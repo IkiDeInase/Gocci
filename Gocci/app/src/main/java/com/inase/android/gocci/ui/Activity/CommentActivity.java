@@ -28,6 +28,8 @@ import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManag
 import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
@@ -139,7 +141,8 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
     private String mNoticeUser_name;
     private String mNoticeUser_id = "";
 
-    private static MobileAnalyticsManager analytics;
+    private Tracker mTracker;
+    private Application_Gocci applicationGocci;
 
     private int previousTotal = 0;
     private boolean loading = true;
@@ -166,16 +169,6 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        try {
-            analytics = MobileAnalyticsManager.getOrCreateInstance(
-                    this.getApplicationContext(),
-                    Const.ANALYTICS_ID, //Amazon Mobile Analytics App ID
-                    Const.IDENTITY_POOL_ID //Amazon Cognito Identity Pool ID
-            );
-        } catch (InitializationException ex) {
-            Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
-        }
-
         final API3 api3Impl = API3.Impl.getRepository();
         CommentDataRepository commentDataRepositoryImpl = CommentDataRepositoryImpl.getRepository(api3Impl);
         CommentActionRepository commentActionRepositoryImpl = CommentActionRepositoryImpl.getRepository(api3Impl);
@@ -186,6 +179,8 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
 
         setContentView(R.layout.activity_comment);
         ButterKnife.bind(this);
+
+        applicationGocci = (Application_Gocci) getApplication();
 
         Intent intent = getIntent();
         isMyPage = intent.getBooleanExtra("judge", false);
@@ -294,9 +289,9 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
     public void onResume() {
         super.onResume();
         BusHolder.get().register(self);
-        if (analytics != null) {
-            analytics.getSessionClient().resumeSession();
-        }
+        mTracker = applicationGocci.getDefaultTracker();
+        mTracker.setScreenName("Comment");
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
 
         mPresenter.resume();
     }
@@ -305,12 +300,6 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
     public void onPause() {
         super.onPause();
         BusHolder.get().unregister(self);
-
-        if (analytics != null) {
-            analytics.getSessionClient().pauseSession();
-            analytics.getEventClient().submitEvents();
-        }
-
         mPresenter.pause();
     }
 

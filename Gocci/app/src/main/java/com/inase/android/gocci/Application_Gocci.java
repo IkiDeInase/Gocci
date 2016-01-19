@@ -113,18 +113,10 @@ public class Application_Gocci extends Application {
         return transferUtility;
     }
 
-    private static final String PROPERTY_ID = "UA-63362687-1";
+    private static final String PROPERTY_ID = "UA-68091523-4";
 
     public static GoogleAnalytics analytics;
     public static Tracker tracker;
-
-    public enum TrackerName {
-        APP_TRACKER, // Tracker used only in this app.
-        GLOBAL_TRACKER, // Tracker used by all the apps from a company. eg: roll-up tracking.
-        ECOMMERCE_TRACKER, // Tracker used by all ecommerce transactions from a company.
-    }
-
-    HashMap<TrackerName, Tracker> mTrackers = new HashMap<TrackerName, Tracker>();
 
     public Application_Gocci() {
         super();

@@ -20,6 +20,8 @@ import android.widget.ImageView;
 
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -33,6 +35,7 @@ import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.google.maps.android.ui.IconGenerator;
+import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.domain.model.PostData;
@@ -65,7 +68,8 @@ public class MapProfActivity extends AppCompatActivity implements ClusterManager
 
     private static ArrayList<PhotoLog> list = new ArrayList<>();
 
-    private static MobileAnalyticsManager analytics;
+    private Tracker mTracker;
+    private Application_Gocci applicationGocci;
 
     private static ArrayList<PostData> mList = new ArrayList<>();
 
@@ -193,18 +197,10 @@ public class MapProfActivity extends AppCompatActivity implements ClusterManager
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // FragmentのViewを返却
-        try {
-            analytics = MobileAnalyticsManager.getOrCreateInstance(
-                    this.getApplicationContext(),
-                    Const.ANALYTICS_ID, //Amazon Mobile Analytics App ID
-                    Const.IDENTITY_POOL_ID //Amazon Cognito Identity Pool ID
-            );
-        } catch (InitializationException ex) {
-            Log.e(this.getClass().getName(), "Failed to initialize Amazon Mobile Analytics", ex);
-        }
-
         setContentView(R.layout.activity_map_prof);
         ButterKnife.bind(this);
+
+        applicationGocci = (Application_Gocci) getApplication();
 
         mAsync = new MapDrawableAsync(new MapDrawableAsync.Callback() {
             @Override
@@ -236,18 +232,14 @@ public class MapProfActivity extends AppCompatActivity implements ClusterManager
     @Override
     protected void onPause() {
         super.onPause();
-        if (analytics != null) {
-            analytics.getSessionClient().pauseSession();
-            analytics.getEventClient().submitEvents();
-        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (analytics != null) {
-            analytics.getSessionClient().resumeSession();
-        }
+        mTracker = applicationGocci.getDefaultTracker();
+        mTracker.setScreenName("MapProf");
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
     @Override
