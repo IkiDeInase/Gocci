@@ -22,6 +22,7 @@ import com.facebook.FacebookException;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.inase.android.gocci.Application_Gocci;
@@ -225,6 +226,7 @@ public class LoginSessionActivity extends AppCompatActivity implements ShowUserL
         mTracker = applicationGocci.getDefaultTracker();
         mTracker.setScreenName("LoginSession");
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+        GoogleAnalytics.getInstance(this).reportActivityStart(this);
         BusHolder.get().register(this);
         mPresenter.resume();
     }
@@ -232,6 +234,7 @@ public class LoginSessionActivity extends AppCompatActivity implements ShowUserL
     @Override
     protected void onPause() {
         super.onPause();
+        GoogleAnalytics.getInstance(this).reportActivityStop(this);
         BusHolder.get().unregister(this);
         mPresenter.pause();
     }

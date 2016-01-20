@@ -420,8 +420,8 @@ public class Application_Gocci extends Application {
 
         tracker = analytics.newTracker(PROPERTY_ID); // Replace with actual tracker/property Id
         tracker.enableExceptionReporting(true);
-        tracker.enableAdvertisingIdCollection(true);
-        tracker.enableAutoActivityTracking(true);
+        tracker.enableAdvertisingIdCollection(false);
+        tracker.enableAutoActivityTracking(false);
     }
 
     @Override

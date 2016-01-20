@@ -28,6 +28,7 @@ import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManag
 import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
+import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.inase.android.gocci.Application_Gocci;
@@ -288,6 +289,7 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
     @Override
     public void onResume() {
         super.onResume();
+        GoogleAnalytics.getInstance(this).reportActivityStart(this);
         BusHolder.get().register(self);
         mTracker = applicationGocci.getDefaultTracker();
         mTracker.setScreenName("Comment");
@@ -299,6 +301,7 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
     @Override
     public void onPause() {
         super.onPause();
+        GoogleAnalytics.getInstance(this).reportActivityStop(this);
         BusHolder.get().unregister(self);
         mPresenter.pause();
     }

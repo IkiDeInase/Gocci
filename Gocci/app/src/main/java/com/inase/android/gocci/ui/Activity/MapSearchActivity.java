@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.ConnectionResult;
@@ -216,7 +217,7 @@ public class MapSearchActivity extends AppCompatActivity implements ShowHeatmapP
         mTracker = applicationGocci.getDefaultTracker();
         mTracker.setScreenName("MapSearch");
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
-
+        GoogleAnalytics.getInstance(this).reportActivityStart(this);
         BusHolder.get().register(this);
         mPresenter.resume();
     }
@@ -224,6 +225,7 @@ public class MapSearchActivity extends AppCompatActivity implements ShowHeatmapP
     @Override
     protected void onPause() {
         super.onPause();
+        GoogleAnalytics.getInstance(this).reportActivityStop(this);
         BusHolder.get().unregister(this);
         mPresenter.pause();
     }

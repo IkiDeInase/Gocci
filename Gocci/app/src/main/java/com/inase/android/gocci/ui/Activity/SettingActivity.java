@@ -36,6 +36,7 @@ import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.facebook.share.model.AppInviteContent;
 import com.facebook.share.widget.AppInviteDialog;
+import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.inase.android.gocci.Application_Gocci;
@@ -527,12 +528,14 @@ public class SettingActivity extends AppCompatActivity {
         mTracker = applicationGocci.getDefaultTracker();
         mTracker.setScreenName("SettingPage");
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+        GoogleAnalytics.getInstance(this).reportActivityStart(this);
         BusHolder.get().register(self);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        GoogleAnalytics.getInstance(this).reportActivityStop(this);
         BusHolder.get().unregister(self);
     }
 

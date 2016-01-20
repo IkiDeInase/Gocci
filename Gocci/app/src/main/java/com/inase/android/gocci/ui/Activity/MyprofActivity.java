@@ -42,6 +42,7 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.share.Sharer;
 import com.facebook.share.widget.ShareDialog;
+import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.inase.android.gocci.Application_Gocci;
@@ -477,6 +478,7 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
         mTracker = applicationGocci.getDefaultTracker();
         mTracker.setScreenName("MyProfStream");
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+        GoogleAnalytics.getInstance(this).reportActivityStart(this);
         BusHolder.get().register(self);
         mPresenter.resume();
     }
@@ -484,6 +486,7 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
     @Override
     protected void onPause() {
         super.onPause();
+        GoogleAnalytics.getInstance(this).reportActivityStop(this);
         BusHolder.get().unregister(self);
         mPresenter.pause();
     }

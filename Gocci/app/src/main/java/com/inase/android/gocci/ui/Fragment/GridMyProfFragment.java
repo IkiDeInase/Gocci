@@ -297,7 +297,7 @@ public class GridMyProfFragment extends Fragment implements AppBarLayout.OnOffse
         if (player == null) {
             mTracker = applicationGocci.getDefaultTracker();
             mTracker.setScreenName("MyProfGrid");
-            mTracker.send(new HitBuilders.EventBuilder().setAction("PlayCount").setCategory("Movie").setValue(Long.parseLong(mPlayingPostId)).build());
+            mTracker.send(new HitBuilders.EventBuilder().setAction("PlayCount").setCategory("Movie").setLabel(mPlayingPostId).build());
 
             player = new VideoPlayer(new HlsRendererBuilder(getActivity(), com.google.android.exoplayer.util.Util.getUserAgent(getActivity(), "Gocci"), path));
             player.addListener(new VideoPlayer.Listener() {
@@ -310,7 +310,7 @@ public class GridMyProfFragment extends Fragment implements AppBarLayout.OnOffse
                             player.seekTo(0);
                             mTracker = applicationGocci.getDefaultTracker();
                             mTracker.setScreenName("MyProfGrid");
-                            mTracker.send(new HitBuilders.EventBuilder().setAction("PlayCount").setCategory("Movie").setValue(Long.parseLong(mPlayingPostId)).build());
+                            mTracker.send(new HitBuilders.EventBuilder().setAction("PlayCount").setCategory("Movie").setLabel(mPlayingPostId).build());
                             break;
                         case VideoPlayer.STATE_IDLE:
                             break;

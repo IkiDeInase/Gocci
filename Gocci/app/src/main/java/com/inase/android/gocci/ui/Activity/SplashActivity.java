@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
+import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.google.android.gms.common.ConnectionResult;
@@ -69,6 +70,7 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
         mTracker = applicationGocci.getDefaultTracker();
         mTracker.setScreenName("Splash");
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+        GoogleAnalytics.getInstance(this).reportActivityStart(this);
         BusHolder.get().register(this);
         mPresenter.resume();
 
@@ -100,6 +102,7 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
     @Override
     protected void onPause() {
         super.onPause();
+        GoogleAnalytics.getInstance(this).reportActivityStop(this);
         BusHolder.get().unregister(this);
         mPresenter.pause();
     }

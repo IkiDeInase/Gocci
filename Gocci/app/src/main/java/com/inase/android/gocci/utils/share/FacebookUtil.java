@@ -1,7 +1,6 @@
 package com.inase.android.gocci.utils.share;
 
 import android.content.Context;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.inase.android.gocci.Application_Gocci;

@@ -164,8 +164,9 @@
         <activity
             android:name=".ui.activity.MapSearchActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".ui.activity.PostActivity">
-        </activity>
+        <activity
+            android:name=".ui.activity.PostActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

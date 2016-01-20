@@ -34,6 +34,7 @@ import com.google.android.exoplayer.AspectRatioFrameLayout;
 import com.google.android.exoplayer.audio.AudioCapabilities;
 import com.google.android.exoplayer.audio.AudioCapabilitiesReceiver;
 import com.google.android.exoplayer.drm.UnsupportedDrmException;
+import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.inase.android.gocci.Application_Gocci;
@@ -236,7 +237,7 @@ public class PostActivity extends AppCompatActivity implements AudioCapabilities
     public final void onPause() {
         super.onPause();
         BusHolder.get().unregister(this);
-
+        GoogleAnalytics.getInstance(this).reportActivityStop(this);
         if (player != null) {
             player.blockingClearSurface();
         }
@@ -251,6 +252,7 @@ public class PostActivity extends AppCompatActivity implements AudioCapabilities
         mTracker = applicationGocci.getDefaultTracker();
         mTracker.setScreenName("PostPage");
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+        GoogleAnalytics.getInstance(this).reportActivityStart(this);
         BusHolder.get().register(this);
 
         if (mPostData != null) {
@@ -303,7 +305,7 @@ public class PostActivity extends AppCompatActivity implements AudioCapabilities
         if (player == null) {
             mTracker = applicationGocci.getDefaultTracker();
             mTracker.setScreenName("PostPage");
-            mTracker.send(new HitBuilders.EventBuilder().setAction("PlayCount").setCategory("Movie").setValue(Long.parseLong(mPost_id)).build());
+            mTracker.send(new HitBuilders.EventBuilder().setAction("PlayCount").setCategory("Movie").setLabel(mPost_id).build());
 
             player = new VideoPlayer(new HlsRendererBuilder(this, com.google.android.exoplayer.util.Util.getUserAgent(this, "Gocci"), path));
             player.addListener(new VideoPlayer.Listener() {
@@ -315,7 +317,7 @@ public class PostActivity extends AppCompatActivity implements AudioCapabilities
                         case VideoPlayer.STATE_ENDED:
                             mTracker = applicationGocci.getDefaultTracker();
                             mTracker.setScreenName("PostPage");
-                            mTracker.send(new HitBuilders.EventBuilder().setAction("PlayCount").setCategory("Movie").setValue(Long.parseLong(mPost_id)).build());
+                            mTracker.send(new HitBuilders.EventBuilder().setAction("PlayCount").setCategory("Movie").setLabel(mPost_id).build());
                             player.seekTo(0);
                             break;
                         case VideoPlayer.STATE_IDLE:

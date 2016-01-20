@@ -38,6 +38,7 @@ import com.facebook.share.model.ShareVideo;
 import com.facebook.share.model.ShareVideoContent;
 import com.facebook.share.widget.ShareDialog;
 import com.github.clans.fab.FloatingActionButton;
+import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.inase.android.gocci.Application_Gocci;
@@ -473,6 +474,9 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
                             mCheer_flag = 1;
                         }
                         if (mCheckTwitter.isChecked()) {
+                            mTracker = applicationGocci.getDefaultTracker();
+                            mTracker.setScreenName("CameraPreviewAlready");
+                            mTracker.send(new HitBuilders.SocialBuilder().setNetwork("Twitter").setAction("Share").setTarget(mAwsPostName).build());
                             TwitterSession session =
                                     Twitter.getSessionManager().getActiveSession();
                             if (session != null) {
@@ -490,13 +494,15 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
                             }
                         }
                         if (mCheckFacebook.isChecked()) {
+                            mTracker = applicationGocci.getDefaultTracker();
+                            mTracker.setScreenName("CameraPreviewAlready");
+                            mTracker.send(new HitBuilders.SocialBuilder().setNetwork("Facebook").setAction("Share").setTarget(mAwsPostName).build());
                             if (mFacebookMemo.isEmpty()) {
                                 mFacebookMemo = getMessage();
                             }
                             FacebookUtil.performShare(CameraPreviewAlreadyExistActivity.this, AccessToken.getCurrentAccessToken().getToken(), mVideoFile, mFacebookMemo);
                         }
-                        Toast.makeText(CameraPreviewAlreadyExistActivity.this, "Start Facebook Sharing", Toast.LENGTH_SHORT).show();
-                        //API3PostUtil.setPostAsync(CameraPreviewAlreadyExistActivity.this, Const.ActivityCategory.CAMERA_PREVIEW_ALREADY, mRest_id, mAwsPostName, mCategory_id, mValue, mMemo, mCheer_flag);
+                        API3PostUtil.setPostAsync(CameraPreviewAlreadyExistActivity.this, Const.ActivityCategory.CAMERA_PREVIEW_ALREADY, mRest_id, mAwsPostName, mCategory_id, mValue, mMemo, mCheer_flag);
                     } else {
                         Toast.makeText(CameraPreviewAlreadyExistActivity.this, getString(R.string.please_input_restname), Toast.LENGTH_SHORT).show();
                     }
@@ -575,6 +581,7 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
     @Override
     protected void onPause() {
         super.onPause();
+        GoogleAnalytics.getInstance(this).reportActivityStop(this);
         mPresenter.pause();
         BusHolder.get().unregister(this);
     }
@@ -582,6 +589,7 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
     @Override
     protected void onResume() {
         super.onResume();
+        GoogleAnalytics.getInstance(this).reportActivityStart(this);
         mTracker = applicationGocci.getDefaultTracker();
         mTracker.setScreenName("CameraPreviewAlready");
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());

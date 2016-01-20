@@ -22,6 +22,7 @@ import android.widget.Toast;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
 import com.google.android.exoplayer.extractor.mp4.Track;
+import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.inase.android.gocci.Application_Gocci;
@@ -301,6 +302,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
     @Override
     protected void onPause() {
         super.onPause();
+        GoogleAnalytics.getInstance(this).reportActivityStop(this);
         BusHolder.get().unregister(this);
         mPresenter.pause();
         mAppBar.removeOnOffsetChangedListener(this);
@@ -309,6 +311,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
     @Override
     protected void onResume() {
         super.onResume();
+        GoogleAnalytics.getInstance(this).reportActivityStart(this);
         if (mCategory != null) {
             mTracker = applicationGocci.getDefaultTracker();
             switch (mCategory) {

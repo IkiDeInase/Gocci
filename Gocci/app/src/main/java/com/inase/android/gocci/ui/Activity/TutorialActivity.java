@@ -20,6 +20,7 @@ import android.widget.LinearLayout;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
 import com.andexert.library.RippleView;
+import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.inase.android.gocci.Application_Gocci;
@@ -125,6 +126,7 @@ public class TutorialActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        GoogleAnalytics.getInstance(this).reportActivityStop(this);
     }
 
     @Override
@@ -133,6 +135,7 @@ public class TutorialActivity extends AppCompatActivity {
         mTracker = applicationGocci.getDefaultTracker();
         mTracker.setScreenName("Tutorial");
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+        GoogleAnalytics.getInstance(this).reportActivityStart(this);
     }
 
     @Override

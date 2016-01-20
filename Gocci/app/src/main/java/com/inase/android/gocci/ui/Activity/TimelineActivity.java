@@ -36,6 +36,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
 import com.andexert.library.RippleView;
+import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.gordonwong.materialsheetfab.MaterialSheetFab;
@@ -539,6 +540,7 @@ public class TimelineActivity extends AppCompatActivity {
         mTracker = applicationGocci.getDefaultTracker();
         mTracker.setScreenName("Timeline");
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+        GoogleAnalytics.getInstance(this).reportActivityStart(this);
         BusHolder.get().register(self);
     }
 
@@ -546,6 +548,7 @@ public class TimelineActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         BusHolder.get().unregister(self);
+        GoogleAnalytics.getInstance(this).reportActivityStop(this);
     }
 
     @Override
