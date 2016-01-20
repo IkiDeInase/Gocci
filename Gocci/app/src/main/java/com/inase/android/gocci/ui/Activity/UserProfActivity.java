@@ -529,11 +529,15 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
     @Override
     public void causedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
         Application_Gocci.resolveOrHandleGlobalError(this, api, globalCode);
+        mTracker = applicationGocci.getDefaultTracker();
+        mTracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").setAction(api.name()).setLabel(API3.Util.GlobalCodeMessageTable(globalCode)).build());
     }
 
     @Override
     public void causedByLocalError(Const.APICategory api, String errorMessage) {
         Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
+        mTracker = applicationGocci.getDefaultTracker();
+        mTracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").setAction(api.name()).setLabel(errorMessage).build());
     }
 
     @Override
@@ -551,6 +555,8 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
             mFollowText.setText(getString(R.string.do_unfollow));
             headerUserData.setFollow_flag(true);
         }
+        mTracker = applicationGocci.getDefaultTracker();
+        mTracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").setAction(api.name()).setLabel(API3.Util.GlobalCodeMessageTable(globalCode)).build());
     }
 
     @Override
@@ -563,6 +569,8 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
             mFollowText.setText(getString(R.string.do_unfollow));
             headerUserData.setFollow_flag(true);
         }
+        mTracker = applicationGocci.getDefaultTracker();
+        mTracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").setAction(api.name()).setLabel(errorMessage).build());
     }
 
     @Override
@@ -641,6 +649,8 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
         }
         BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.GLOBALERROR, Const.ActivityCategory.USER_PAGE, api, post_id));
         Application_Gocci.resolveOrHandleGlobalError(this, api, globalCode);
+        mTracker = applicationGocci.getDefaultTracker();
+        mTracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").setAction(api.name()).setLabel(API3.Util.GlobalCodeMessageTable(globalCode)).build());
     }
 
     @Override
@@ -655,6 +665,8 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
         }
         BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.LOCALERROR, Const.ActivityCategory.USER_PAGE, api, post_id));
         Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
+        mTracker = applicationGocci.getDefaultTracker();
+        mTracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").setAction(api.name()).setLabel(errorMessage).build());
     }
 
     public void refreshJson() {

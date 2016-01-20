@@ -485,6 +485,8 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 mRecyclerView.setAdapter(mListGetAdapter);
                 break;
         }
+        mTracker = applicationGocci.getDefaultTracker();
+        mTracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").setAction(api.name()).setLabel(API3.Util.GlobalCodeMessageTable(globalCode)).build());
     }
 
     @Override
@@ -501,6 +503,8 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 mRecyclerView.setAdapter(mListGetAdapter);
                 break;
         }
+        mTracker = applicationGocci.getDefaultTracker();
+        mTracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").setAction(api.name()).setLabel(errorMessage).build());
     }
 
     @Override
@@ -517,6 +521,8 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
             mList.get(mUser_idList.indexOf(user_id)).setFollow_flag(true);
         }
         mListGetAdapter.notifyItemChanged(mUser_idList.indexOf(user_id));
+        mTracker = applicationGocci.getDefaultTracker();
+        mTracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").setAction(api.name()).setLabel(API3.Util.GlobalCodeMessageTable(globalCode)).build());
     }
 
     @Override
@@ -528,6 +534,8 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
             mList.get(mUser_idList.indexOf(user_id)).setFollow_flag(true);
         }
         mListGetAdapter.notifyItemChanged(mUser_idList.indexOf(user_id));
+        mTracker = applicationGocci.getDefaultTracker();
+        mTracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").setAction(api.name()).setLabel(errorMessage).build());
     }
 
     @Override

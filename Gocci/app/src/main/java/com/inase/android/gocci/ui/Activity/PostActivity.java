@@ -652,11 +652,15 @@ public class PostActivity extends AppCompatActivity implements AudioCapabilities
     @Override
     public void causedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
         Application_Gocci.resolveOrHandleGlobalError(this, api, globalCode);
+        mTracker = applicationGocci.getDefaultTracker();
+        mTracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").setAction(api.name()).setLabel(API3.Util.GlobalCodeMessageTable(globalCode)).build());
     }
 
     @Override
     public void causedByLocalError(Const.APICategory api, String errorMessage) {
         Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
+        mTracker = applicationGocci.getDefaultTracker();
+        mTracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").setAction(api.name()).setLabel(errorMessage).build());
     }
 
     @Override
@@ -677,6 +681,8 @@ public class PostActivity extends AppCompatActivity implements AudioCapabilities
         }
         mLikesNumber.setText(String.valueOf(mPostData.getGochi_num()));
         Application_Gocci.resolveOrHandleGlobalError(this, api, globalCode);
+        mTracker = applicationGocci.getDefaultTracker();
+        mTracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").setAction(api.name()).setLabel(API3.Util.GlobalCodeMessageTable(globalCode)).build());
     }
 
     @Override
@@ -692,6 +698,8 @@ public class PostActivity extends AppCompatActivity implements AudioCapabilities
         }
         mLikesNumber.setText(String.valueOf(mPostData.getGochi_num()));
         Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
+        mTracker = applicationGocci.getDefaultTracker();
+        mTracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").setAction(api.name()).setLabel(errorMessage).build());
     }
 
     private void setGochiLayout() {

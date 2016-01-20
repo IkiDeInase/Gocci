@@ -439,11 +439,15 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
     @Override
     public void causedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
         Application_Gocci.resolveOrHandleGlobalError(this, api, globalCode);
+        mTracker = applicationGocci.getDefaultTracker();
+        mTracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").setAction(api.name()).setLabel(API3.Util.GlobalCodeMessageTable(globalCode)).build());
     }
 
     @Override
     public void causedByLocalError(Const.APICategory api, String errorMessage) {
         Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
+        mTracker = applicationGocci.getDefaultTracker();
+        mTracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").setAction(api.name()).setLabel(errorMessage).build());
     }
 
     @Override
@@ -492,11 +496,15 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
     @Override
     public void postFailureCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
         Application_Gocci.resolveOrHandleGlobalError(this, api, globalCode);
+        mTracker = applicationGocci.getDefaultTracker();
+        mTracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").setAction(api.name()).setLabel(API3.Util.GlobalCodeMessageTable(globalCode)).build());
     }
 
     @Override
     public void postFailureCausedByLocalError(Const.APICategory api, String errorMessage) {
         Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
+        mTracker = applicationGocci.getDefaultTracker();
+        mTracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").setAction(api.name()).setLabel(errorMessage).build());
     }
 
     @Subscribe

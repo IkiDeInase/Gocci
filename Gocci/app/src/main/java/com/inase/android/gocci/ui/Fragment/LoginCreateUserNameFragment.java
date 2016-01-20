@@ -19,6 +19,8 @@ import android.widget.Toast;
 
 import com.github.jorgecastilloprz.FABProgressCircle;
 import com.github.jorgecastilloprz.listeners.FABProgressListener;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
@@ -56,6 +58,9 @@ public class LoginCreateUserNameFragment extends Fragment implements FABProgress
     FloatingActionButton mFab;
     @Bind(R.id.fab_progress_circle)
     FABProgressCircle mFabProgressCircle;
+
+    private Application_Gocci applicationGocci;
+    private Tracker mTracker;
 
     @OnClick(R.id.fab)
     public void fab() {
@@ -102,6 +107,8 @@ public class LoginCreateUserNameFragment extends Fragment implements FABProgress
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.view_tutorial4, container, false);
         ButterKnife.bind(this, rootView);
+
+        applicationGocci = (Application_Gocci) getActivity().getApplication();
 
         mUsernameTextInput.setErrorEnabled(true);
         mUsernameTextInput.getEditText().setHintTextColor(getResources().getColor(R.color.namegrey));
@@ -187,6 +194,8 @@ public class LoginCreateUserNameFragment extends Fragment implements FABProgress
         mFabProgressCircle.hide();
         mUsernameTextInput.setError(API3.Util.GlobalCodeMessageTable(globalCode));
         Application_Gocci.resolveOrHandleGlobalError(getActivity(), api, globalCode);
+        mTracker = applicationGocci.getDefaultTracker();
+        mTracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").setAction(api.name()).setLabel(API3.Util.GlobalCodeMessageTable(globalCode)).build());
     }
 
     @Override
@@ -194,6 +203,8 @@ public class LoginCreateUserNameFragment extends Fragment implements FABProgress
         mFab.setClickable(true);
         mFabProgressCircle.hide();
         mUsernameTextInput.setError(errorMessage);
+        mTracker = applicationGocci.getDefaultTracker();
+        mTracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").setAction(api.name()).setLabel(errorMessage).build());
     }
 
     private void enableLocationAndStorage() {

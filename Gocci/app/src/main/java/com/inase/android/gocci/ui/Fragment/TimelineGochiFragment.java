@@ -631,6 +631,8 @@ public class TimelineGochiFragment extends Fragment implements AudioCapabilities
             mTimelineAdapter.setTimelineCallback(this);
             mTimelineRecyclerView.setAdapter(mTimelineAdapter);
         }
+        mTracker = applicationGocci.getDefaultTracker();
+        mTracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").setAction(api.name()).setLabel(API3.Util.GlobalCodeMessageTable(globalCode)).build());
     }
 
     @Override
@@ -642,6 +644,8 @@ public class TimelineGochiFragment extends Fragment implements AudioCapabilities
             mTimelineAdapter.setTimelineCallback(this);
             mTimelineRecyclerView.setAdapter(mTimelineAdapter);
         }
+        mTracker = applicationGocci.getDefaultTracker();
+        mTracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").setAction(api.name()).setLabel(errorMessage).build());
     }
 
     @Override
@@ -658,6 +662,8 @@ public class TimelineGochiFragment extends Fragment implements AudioCapabilities
             mTimelineusers.get(mPost_ids.indexOf(post_id)).setGochi_flag(true);
         }
         mTimelineAdapter.notifyItemChanged(mPost_ids.indexOf(post_id));
+        mTracker = applicationGocci.getDefaultTracker();
+        mTracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").setAction(api.name()).setLabel(API3.Util.GlobalCodeMessageTable(globalCode)).build());
     }
 
     @Override
@@ -669,6 +675,8 @@ public class TimelineGochiFragment extends Fragment implements AudioCapabilities
             mTimelineusers.get(mPost_ids.indexOf(post_id)).setGochi_flag(true);
         }
         mTimelineAdapter.notifyItemChanged(mPost_ids.indexOf(post_id));
+        mTracker = applicationGocci.getDefaultTracker();
+        mTracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").setAction(api.name()).setLabel(errorMessage).build());
     }
 
     @Override

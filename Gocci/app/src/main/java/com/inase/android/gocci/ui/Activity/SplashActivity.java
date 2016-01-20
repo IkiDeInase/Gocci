@@ -147,6 +147,8 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
     @Override
     public void showNoResultCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
         Application_Gocci.resolveOrHandleGlobalError(this, api, globalCode);
+        mTracker = applicationGocci.getDefaultTracker();
+        mTracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").setAction(api.name()).setLabel(API3.Util.GlobalCodeMessageTable(globalCode)).build());
     }
 
     @Override
@@ -155,6 +157,8 @@ public class SplashActivity extends AppCompatActivity implements ShowUserLoginPr
         handler = new Handler();
         runnable = new loginRunnable();
         handler.post(runnable);
+        mTracker = applicationGocci.getDefaultTracker();
+        mTracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").setAction(api.name()).setLabel(errorMessage).build());
     }
 
     private class loginRunnable implements Runnable {
