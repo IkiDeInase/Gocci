@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -22,21 +21,16 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.GravityEnum;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
-import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
 import com.andexert.library.RippleView;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
-import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.facebook.share.Sharer;
-import com.facebook.share.model.ShareVideo;
-import com.facebook.share.model.ShareVideoContent;
 import com.facebook.share.widget.ShareDialog;
 import com.github.clans.fab.FloatingActionButton;
 import com.google.android.gms.analytics.GoogleAnalytics;
@@ -75,7 +69,6 @@ import com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Set;
 
 import at.grabner.circleprogress.AnimationState;
 import at.grabner.circleprogress.AnimationStateChangedListener;
@@ -262,6 +255,8 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
     private String mLatitude;
     private String mLongitude;
 
+    private boolean isPostApiFinished;
+
     private File mVideoFile;
 
     private CallbackManager callbackManager;
@@ -309,6 +304,8 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
         mIsnewRestname = intent.getBooleanExtra("isNewRestname", false);
         mLatitude = intent.getStringExtra("lat");
         mLongitude = intent.getStringExtra("lon");
+
+        isPostApiFinished = SavedData.getPostFinished(this);
 
         SavedData.setPostVideoPreview(this, mRestname, mRest_id, mVideoUrl, mAwsPostName, mCategory_id, mMemo, mValue, mIsnewRestname, mLongitude, mLatitude);
 
@@ -457,50 +454,54 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
             @Override
             public void onClick(View v) {
                 if (Util.getConnectedState(CameraPreviewActivity.this) != Util.NetworkStatus.OFF) {
-                    mProgressWheel.setVisibility(View.VISIBLE);
-                    mOverlay.setVisibility(View.VISIBLE);
                     if (!mRest_id.equals("1")) {
-                        if (mEditValue.getText().length() != 0) {
-                            mValue = mEditValue.getText().toString();
-                            SavedData.setValue(CameraPreviewActivity.this, mValue);
-                        }
-                        if (mEditComment.getText().length() != 0) {
-                            mMemo = mEditComment.getText().toString();
-                            SavedData.setMemo(CameraPreviewActivity.this, mMemo);
-                        }
-                        if (mCheckCheer.isChecked()) {
-                            mCheer_flag = 1;
-                        }
-                        if (mCheckTwitter.isChecked()) {
-                            mTracker = applicationGocci.getDefaultTracker();
-                            mTracker.setScreenName("CameraPreview");
-                            mTracker.send(new HitBuilders.SocialBuilder().setNetwork("Twitter").setAction("Share").setTarget(mAwsPostName).build());
-                            TwitterSession session =
-                                    Twitter.getSessionManager().getActiveSession();
-                            if (session != null) {
-                                if (mVideoFile.length() < 1024 * 1024 * 15) {
-                                    try {
-                                        final TwitterAuthToken authToken = session.getAuthToken();
-                                        if (mTwitterMemo.isEmpty()) {
-                                            mTwitterMemo = getMessage();
+                        if (!isPostApiFinished) {
+                            if (mEditValue.getText().length() != 0) {
+                                mValue = mEditValue.getText().toString();
+                                SavedData.setValue(CameraPreviewActivity.this, mValue);
+                            }
+                            if (mEditComment.getText().length() != 0) {
+                                mMemo = mEditComment.getText().toString();
+                                SavedData.setMemo(CameraPreviewActivity.this, mMemo);
+                            }
+                            if (mCheckCheer.isChecked()) {
+                                mCheer_flag = 1;
+                            }
+                            if (mCheckTwitter.isChecked()) {
+                                mTracker = applicationGocci.getDefaultTracker();
+                                mTracker.setScreenName("CameraPreview");
+                                mTracker.send(new HitBuilders.SocialBuilder().setNetwork("Twitter").setAction("Share").setTarget(mAwsPostName).build());
+                                TwitterSession session =
+                                        Twitter.getSessionManager().getActiveSession();
+                                if (session != null) {
+                                    if (mVideoFile.length() < 1024 * 1024 * 15) {
+                                        try {
+                                            final TwitterAuthToken authToken = session.getAuthToken();
+                                            if (mTwitterMemo.isEmpty()) {
+                                                mTwitterMemo = getMessage();
+                                            }
+                                            TwitterUtil.performShare(CameraPreviewActivity.this, authToken.token, authToken.secret, mVideoFile, mTwitterMemo);
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
                                         }
-                                        TwitterUtil.performShare(CameraPreviewActivity.this, authToken.token, authToken.secret, mVideoFile, mTwitterMemo);
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
                                     }
                                 }
                             }
-                        }
-                        if (mCheckFacebook.isChecked()) {
-                            mTracker = applicationGocci.getDefaultTracker();
-                            mTracker.setScreenName("CameraPreview");
-                            mTracker.send(new HitBuilders.SocialBuilder().setNetwork("Facebook").setAction("Share").setTarget(mAwsPostName).build());
-                            if (mFacebookMemo.isEmpty()) {
-                                mFacebookMemo = getMessage();
+                            if (mCheckFacebook.isChecked()) {
+                                mTracker = applicationGocci.getDefaultTracker();
+                                mTracker.setScreenName("CameraPreview");
+                                mTracker.send(new HitBuilders.SocialBuilder().setNetwork("Facebook").setAction("Share").setTarget(mAwsPostName).build());
+                                if (mFacebookMemo.isEmpty()) {
+                                    mFacebookMemo = getMessage();
+                                }
+                                FacebookUtil.performShare(CameraPreviewActivity.this, AccessToken.getCurrentAccessToken().getToken(), mVideoFile, mFacebookMemo);
                             }
-                            FacebookUtil.performShare(CameraPreviewActivity.this, AccessToken.getCurrentAccessToken().getToken(), mVideoFile, mFacebookMemo);
+                            API3PostUtil.setPostAsync(CameraPreviewActivity.this, Const.ActivityCategory.CAMERA_PREVIEW, mRest_id, mAwsPostName, mCategory_id, mValue, mMemo, mCheer_flag);
+                        } else {
+                            mProgressWheel.setVisibility(View.VISIBLE);
+                            mOverlay.setVisibility(View.VISIBLE);
+                            Application_Gocci.postingVideoToS3(CameraPreviewActivity.this, mAwsPostName, mVideoFile, mProgressWheel, Const.ActivityCategory.CAMERA_PREVIEW);
                         }
-                        API3PostUtil.setPostAsync(CameraPreviewActivity.this, Const.ActivityCategory.CAMERA_PREVIEW, mRest_id, mAwsPostName, mCategory_id, mValue, mMemo, mCheer_flag);
                     } else {
                         Toast.makeText(CameraPreviewActivity.this, getString(R.string.please_input_restname), Toast.LENGTH_SHORT).show();
                     }
@@ -605,10 +606,16 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
             } else if (event.apiCategory == Const.APICategory.SET_POST) {
                 switch (event.callback) {
                     case SUCCESS:
+                        mProgressWheel.setVisibility(View.VISIBLE);
+                        mOverlay.setVisibility(View.VISIBLE);
+                        isPostApiFinished = true;
+                        SavedData.setPostFinished(CameraPreviewActivity.this, true);
                         Application_Gocci.postingVideoToS3(CameraPreviewActivity.this, mAwsPostName, mVideoFile, mProgressWheel, Const.ActivityCategory.CAMERA_PREVIEW);
                         break;
                     case LOCALERROR:
                     case GLOBALERROR:
+                        mProgressWheel.setVisibility(View.INVISIBLE);
+                        mOverlay.setVisibility(View.INVISIBLE);
                         Toast.makeText(this, getString(R.string.videoposting_failure), Toast.LENGTH_LONG).show();
                         break;
                 }

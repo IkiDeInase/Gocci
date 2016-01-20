@@ -12,16 +12,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
-import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
-import com.google.android.exoplayer.extractor.mp4.Track;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -92,7 +88,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
     private Drawer result;
 
-    private Tracker  mTracker;
+    private Tracker mTracker;
     private Application_Gocci applicationGocci;
 
     private ShowListPresenter mPresenter;

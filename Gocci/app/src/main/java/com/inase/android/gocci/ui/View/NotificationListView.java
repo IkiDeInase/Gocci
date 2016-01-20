@@ -26,7 +26,6 @@ import com.inase.android.gocci.domain.model.HeaderData;
 import com.inase.android.gocci.domain.usecase.NoticeDataUseCase;
 import com.inase.android.gocci.domain.usecase.NoticeDataUseCaseImpl;
 import com.inase.android.gocci.presenter.ShowNoticePresenter;
-import com.inase.android.gocci.ui.activity.CommentActivity;
 import com.inase.android.gocci.ui.activity.PostActivity;
 import com.inase.android.gocci.ui.activity.UserProfActivity;
 import com.inase.android.gocci.ui.adapter.NoticeAdapter;

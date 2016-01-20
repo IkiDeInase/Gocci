@@ -4,6 +4,7 @@ package com.inase.android.gocci;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -25,10 +26,12 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.crashlytics.android.Crashlytics;
 import com.facebook.FacebookSdk;
 import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3;
 import com.inase.android.gocci.event.BusHolder;
+import com.inase.android.gocci.event.PostCallbackEvent;
 import com.inase.android.gocci.event.RetryApiEvent;
 import com.inase.android.gocci.utils.SavedData;
 import com.inase.android.gocci.utils.aws.CustomProvider;
@@ -67,6 +70,8 @@ public class Application_Gocci extends Application {
 
     private static int sRetryCount = 0;
     private static final int MAX_RETRY_COUNT = 4;
+
+    private static Tracker mTracker;
 
     public static void getJsonSync(String url, JsonHttpResponseHandler responseHandler) {
         sSyncHttpClient.setCookieStore(SavedData.getCookieStore(getInstance().getApplicationContext()));
@@ -244,12 +249,19 @@ public class Application_Gocci extends Application {
             @Override
             protected void onPostExecute(Void result) {
                 if (SavedData.getPostingId(context) != 0) {
-                    TransferObserver observer = transferUtility.resume(SavedData.getPostingId(context));
+                    TransferObserver observer = getTransfer(context).upload(Const.POST_MOVIE_BUCKET_NAME, SavedData.getAwsPostname(context) + "mp4", new File(SavedData.getVideoUrl(context)));
                     if (observer != null) {
                         observer.setTransferListener(new TransferListener() {
                             @Override
                             public void onStateChanged(int id, TransferState state) {
                                 if (state == TransferState.COMPLETED) {
+                                    Toast.makeText(context, "以前投稿できていなかった動画の投稿が完了しました！", Toast.LENGTH_SHORT).show();
+                                    SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
+                                    SharedPreferences.Editor editor = prefs.edit();
+                                    editor.clear();
+                                    editor.apply();
+                                    SavedData.setPostingId(context, 0);
+                                } else {
                                     SavedData.setPostingId(context, id);
                                 }
                             }
@@ -261,7 +273,11 @@ public class Application_Gocci extends Application {
 
                             @Override
                             public void onError(int id, Exception ex) {
-
+                                SavedData.setPostingId(context, id);
+                                mTracker = getInstance().getDefaultTracker();
+                                mTracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
+                                        setAction(Const.APICategory.SET_POST.name()).
+                                        setLabel("MovieUploadFailure").build());
                             }
                         });
                     } else {
@@ -277,10 +293,10 @@ public class Application_Gocci extends Application {
         transferObserver.setTransferListener(new TransferListener() {
             @Override
             public void onStateChanged(int id, TransferState state) {
-                if (state == TransferState.FAILED || state == TransferState.CANCELED) {
-                    SavedData.setPostingId(context, id);
-                } else if (state == TransferState.COMPLETED) {
+                if (state == TransferState.COMPLETED) {
                     SavedData.setPostingId(context, 0);
+                } else {
+                    SavedData.setPostingId(context, id);
                 }
             }
 
@@ -292,21 +308,27 @@ public class Application_Gocci extends Application {
 
             @Override
             public void onError(int id, Exception ex) {
-                new AsyncTask<Void, Void, Void>() {
-                    @Override
-                    protected Void doInBackground(Void... params) {
-                        credentialsProvider.refresh();
-                        s3 = new AmazonS3Client(credentialsProvider);
-                        s3.setRegion(Region.getRegion(Regions.AP_NORTHEAST_1));
-                        transferUtility = new TransferUtility(s3, context);
-                        return null;
-                    }
-
-                    @Override
-                    protected void onPostExecute(Void param) {
-                        postingVideoToS3(context, mAwsPostName, mVideoFile, progressWheel, activityCategory);
-                    }
-                }.execute();
+                mTracker = getInstance().getDefaultTracker();
+                mTracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
+                        setAction(Const.APICategory.SET_POST.name()).
+                        setLabel("MovieUploadFailure").build());
+                BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.GLOBALERROR, activityCategory, Const.APICategory.SET_POST, ex.toString()));
+                SavedData.setPostingId(context, id);
+//                new AsyncTask<Void, Void, Void>() {
+//                    @Override
+//                    protected Void doInBackground(Void... params) {
+//                        credentialsProvider.refresh();
+//                        s3 = new AmazonS3Client(credentialsProvider);
+//                        s3.setRegion(Region.getRegion(Regions.AP_NORTHEAST_1));
+//                        transferUtility = new TransferUtility(s3, context);
+//                        return null;
+//                    }
+//
+//                    @Override
+//                    protected void onPostExecute(Void param) {
+//                        postingVideoToS3(context, mAwsPostName, mVideoFile, progressWheel, activityCategory);
+//                    }
+//                }.execute();
             }
         });
     }
@@ -339,11 +361,19 @@ public class Application_Gocci extends Application {
                                 @Override
                                 public void onGlobalError(API3.Util.GlobalCode globalCode) {
                                     resolveOrHandleGlobalError(context, api, globalCode);
+                                    mTracker = getInstance().getDefaultTracker();
+                                    mTracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
+                                            setAction(api.name()).
+                                            setLabel(API3.Util.GlobalCodeMessageTable(globalCode)).build());
                                 }
 
                                 @Override
                                 public void onLocalError(String errorMessage) {
                                     Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show();
+                                    mTracker = getInstance().getDefaultTracker();
+                                    mTracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
+                                            setAction(api.name()).
+                                            setLabel(errorMessage).build());
                                 }
                             });
                         }

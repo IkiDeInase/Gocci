@@ -3,7 +3,6 @@ package com.inase.android.gocci.domain.usecase;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3;
 import com.inase.android.gocci.datasource.repository.PostDataRepository;
-import com.inase.android.gocci.datasource.repository.PostsDataRepository;
 import com.inase.android.gocci.domain.executor.PostExecutionThread;
 import com.inase.android.gocci.domain.model.PostData;
 

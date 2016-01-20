@@ -3,9 +3,6 @@ package com.inase.android.gocci.datasource.repository;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3;
 import com.inase.android.gocci.domain.model.PostData;
-import com.inase.android.gocci.domain.model.TwoCellData;
-
-import java.util.ArrayList;
 
 /**
  * Created by kinagafuji on 16/01/18.

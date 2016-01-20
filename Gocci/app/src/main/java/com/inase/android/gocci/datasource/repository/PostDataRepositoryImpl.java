@@ -1,6 +1,5 @@
 package com.inase.android.gocci.datasource.repository;
 
-import android.util.Log;
 import android.widget.Toast;
 
 import com.inase.android.gocci.Application_Gocci;

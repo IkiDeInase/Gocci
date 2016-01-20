@@ -45,6 +45,8 @@ public class SavedData {
     private static final String KEY_LON = "lon";
     private static final String KEY_LAT = "lat";
 
+    private static final String KEY_POST_FINISHED = "post_finished";
+
     private static final String KEY_ID = "id";
 
     public static void setWelcome(Context context, String username, String picture, String user_id, int badge_num) {
@@ -291,6 +293,13 @@ public class SavedData {
         editor.apply();
     }
 
+    public static void setPostFinished(Context context, boolean isPostFinished) {
+        SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean(KEY_POST_FINISHED, isPostFinished);
+        editor.apply();
+    }
+
     public static String getRestname(Context context) {
         SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
         return prefs.getString(KEY_RESTNAME, "");
@@ -339,6 +348,11 @@ public class SavedData {
     public static String getLat(Context context) {
         SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
         return prefs.getString(KEY_LAT, "");
+    }
+
+    public static boolean getPostFinished(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
+        return prefs.getBoolean(KEY_POST_FINISHED, false);
     }
 
     public static PersistentCookieStore getCookieStore(Context context) {

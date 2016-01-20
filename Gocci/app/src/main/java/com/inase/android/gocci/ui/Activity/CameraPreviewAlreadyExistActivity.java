@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -21,21 +20,16 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.GravityEnum;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
-import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
 import com.andexert.library.RippleView;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
-import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.facebook.share.Sharer;
-import com.facebook.share.model.ShareVideo;
-import com.facebook.share.model.ShareVideoContent;
 import com.facebook.share.widget.ShareDialog;
 import com.github.clans.fab.FloatingActionButton;
 import com.google.android.gms.analytics.GoogleAnalytics;
@@ -262,6 +256,8 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
     private String mLatitude;
     private String mLongitude;
 
+    private boolean isPostApiFinished;
+
     private ArrayList<String> rest_nameList = new ArrayList<>();
     private ArrayList<String> rest_idList = new ArrayList<>();
 
@@ -311,6 +307,8 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
         mIsnewRestname = SavedData.getIsNewRestname(this);
         mLatitude = SavedData.getLat(this);
         mLongitude = SavedData.getLon(this);
+
+        isPostApiFinished = SavedData.getPostFinished(this);
 
         mVideoFile = new File(mVideoUrl);
 
@@ -462,50 +460,54 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
             @Override
             public void onClick(View v) {
                 if (Util.getConnectedState(CameraPreviewAlreadyExistActivity.this) != Util.NetworkStatus.OFF) {
-                    mProgressWheel.setVisibility(View.VISIBLE);
-                    mOverlay.setVisibility(View.VISIBLE);
                     if (!mRest_id.equals("1")) {
-                        if (mEditValue.getText().length() != 0) {
-                            mValue = mEditValue.getText().toString();
-                            SavedData.setValue(CameraPreviewAlreadyExistActivity.this, mValue);
-                        }
-                        if (mEditComment.getText().length() != 0) {
-                            mMemo = mEditComment.getText().toString();
-                            SavedData.setMemo(CameraPreviewAlreadyExistActivity.this, mMemo);
-                        }
-                        if (mCheckCheer.isChecked()) {
-                            mCheer_flag = 1;
-                        }
-                        if (mCheckTwitter.isChecked()) {
-                            mTracker = applicationGocci.getDefaultTracker();
-                            mTracker.setScreenName("CameraPreviewAlready");
-                            mTracker.send(new HitBuilders.SocialBuilder().setNetwork("Twitter").setAction("Share").setTarget(mAwsPostName).build());
-                            TwitterSession session =
-                                    Twitter.getSessionManager().getActiveSession();
-                            if (session != null) {
-                                if (mVideoFile.length() < 1024 * 1024 * 15) {
-                                    try {
-                                        final TwitterAuthToken authToken = session.getAuthToken();
-                                        if (mTwitterMemo.isEmpty()) {
-                                            mTwitterMemo = getMessage();
+                        if (!isPostApiFinished) {
+                            if (mEditValue.getText().length() != 0) {
+                                mValue = mEditValue.getText().toString();
+                                SavedData.setValue(CameraPreviewAlreadyExistActivity.this, mValue);
+                            }
+                            if (mEditComment.getText().length() != 0) {
+                                mMemo = mEditComment.getText().toString();
+                                SavedData.setMemo(CameraPreviewAlreadyExistActivity.this, mMemo);
+                            }
+                            if (mCheckCheer.isChecked()) {
+                                mCheer_flag = 1;
+                            }
+                            if (mCheckTwitter.isChecked()) {
+                                mTracker = applicationGocci.getDefaultTracker();
+                                mTracker.setScreenName("CameraPreviewAlready");
+                                mTracker.send(new HitBuilders.SocialBuilder().setNetwork("Twitter").setAction("Share").setTarget(mAwsPostName).build());
+                                TwitterSession session =
+                                        Twitter.getSessionManager().getActiveSession();
+                                if (session != null) {
+                                    if (mVideoFile.length() < 1024 * 1024 * 15) {
+                                        try {
+                                            final TwitterAuthToken authToken = session.getAuthToken();
+                                            if (mTwitterMemo.isEmpty()) {
+                                                mTwitterMemo = getMessage();
+                                            }
+                                            TwitterUtil.performShare(CameraPreviewAlreadyExistActivity.this, authToken.token, authToken.secret, mVideoFile, mTwitterMemo);
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
                                         }
-                                        TwitterUtil.performShare(CameraPreviewAlreadyExistActivity.this, authToken.token, authToken.secret, mVideoFile, mTwitterMemo);
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
                                     }
                                 }
                             }
-                        }
-                        if (mCheckFacebook.isChecked()) {
-                            mTracker = applicationGocci.getDefaultTracker();
-                            mTracker.setScreenName("CameraPreviewAlready");
-                            mTracker.send(new HitBuilders.SocialBuilder().setNetwork("Facebook").setAction("Share").setTarget(mAwsPostName).build());
-                            if (mFacebookMemo.isEmpty()) {
-                                mFacebookMemo = getMessage();
+                            if (mCheckFacebook.isChecked()) {
+                                mTracker = applicationGocci.getDefaultTracker();
+                                mTracker.setScreenName("CameraPreviewAlready");
+                                mTracker.send(new HitBuilders.SocialBuilder().setNetwork("Facebook").setAction("Share").setTarget(mAwsPostName).build());
+                                if (mFacebookMemo.isEmpty()) {
+                                    mFacebookMemo = getMessage();
+                                }
+                                FacebookUtil.performShare(CameraPreviewAlreadyExistActivity.this, AccessToken.getCurrentAccessToken().getToken(), mVideoFile, mFacebookMemo);
                             }
-                            FacebookUtil.performShare(CameraPreviewAlreadyExistActivity.this, AccessToken.getCurrentAccessToken().getToken(), mVideoFile, mFacebookMemo);
+                            API3PostUtil.setPostAsync(CameraPreviewAlreadyExistActivity.this, Const.ActivityCategory.CAMERA_PREVIEW_ALREADY, mRest_id, mAwsPostName, mCategory_id, mValue, mMemo, mCheer_flag);
+                        } else {
+                            mProgressWheel.setVisibility(View.VISIBLE);
+                            mOverlay.setVisibility(View.VISIBLE);
+                            Application_Gocci.postingVideoToS3(CameraPreviewAlreadyExistActivity.this, mAwsPostName, mVideoFile, mProgressWheel, Const.ActivityCategory.CAMERA_PREVIEW_ALREADY);
                         }
-                        API3PostUtil.setPostAsync(CameraPreviewAlreadyExistActivity.this, Const.ActivityCategory.CAMERA_PREVIEW_ALREADY, mRest_id, mAwsPostName, mCategory_id, mValue, mMemo, mCheer_flag);
                     } else {
                         Toast.makeText(CameraPreviewAlreadyExistActivity.this, getString(R.string.please_input_restname), Toast.LENGTH_SHORT).show();
                     }
@@ -614,10 +616,16 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
             } else if (event.apiCategory == Const.APICategory.SET_POST) {
                 switch (event.callback) {
                     case SUCCESS:
+                        mProgressWheel.setVisibility(View.VISIBLE);
+                        mOverlay.setVisibility(View.VISIBLE);
+                        isPostApiFinished = true;
+                        SavedData.setPostFinished(CameraPreviewAlreadyExistActivity.this, true);
                         Application_Gocci.postingVideoToS3(CameraPreviewAlreadyExistActivity.this, mAwsPostName, mVideoFile, mProgressWheel, Const.ActivityCategory.CAMERA_PREVIEW_ALREADY);
                         break;
                     case LOCALERROR:
                     case GLOBALERROR:
+                        mProgressWheel.setVisibility(View.INVISIBLE);
+                        mOverlay.setVisibility(View.INVISIBLE);
                         Toast.makeText(this, getString(R.string.videoposting_failure), Toast.LENGTH_LONG).show();
                         break;
                 }

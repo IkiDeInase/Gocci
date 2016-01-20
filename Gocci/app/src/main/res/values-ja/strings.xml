@@ -116,7 +116,7 @@
 
     <string name="add_restname_complete_message">店舗を追加しました</string>
 
-    <string name="videoposting_failure">投稿に失敗しました</string>
+    <string name="videoposting_failure">投稿に失敗しました。通信環境の良いところで再度実行してみてください！</string>
     <string name="videoposting_success">投稿しました</string>
     <string name="videoposting_message">投稿完了までは少し時間がかかります！</string>
 
