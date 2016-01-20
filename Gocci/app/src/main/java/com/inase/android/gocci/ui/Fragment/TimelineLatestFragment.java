@@ -225,7 +225,7 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
 
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
-        mPlayBlockFlag = true;
+        mPlayBlockFlag = false;
         View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_timeline, container, false);
         ButterKnife.bind(this, view);
 

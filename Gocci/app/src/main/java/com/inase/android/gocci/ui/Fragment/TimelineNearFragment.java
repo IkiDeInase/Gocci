@@ -265,7 +265,7 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
 
     @Override
     public View onCreateView(LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
-        mPlayBlockFlag = false;
+        mPlayBlockFlag = true;
         View view = getActivity().getLayoutInflater().inflate(R.layout.fragment_timeline, container, false);
         ButterKnife.bind(this, view);
 
