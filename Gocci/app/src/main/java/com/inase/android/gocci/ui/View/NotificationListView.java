@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -12,6 +13,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
@@ -27,6 +30,7 @@ import com.inase.android.gocci.ui.activity.CommentActivity;
 import com.inase.android.gocci.ui.activity.PostActivity;
 import com.inase.android.gocci.ui.activity.UserProfActivity;
 import com.inase.android.gocci.ui.adapter.NoticeAdapter;
+import com.inase.android.gocci.utils.SavedData;
 import com.pnikosis.materialishprogress.ProgressWheel;
 
 import java.util.ArrayList;
@@ -47,6 +51,9 @@ public class NotificationListView extends RelativeLayout implements
 
     private ShowNoticePresenter mPresenter;
 
+    private Tracker mTracker;
+    private Application_Gocci applicationGocci;
+
     public NotificationListView(final Context context) {
         super(context);
 
@@ -57,6 +64,8 @@ public class NotificationListView extends RelativeLayout implements
         mPresenter.setNoticeView(this);
 
         View inflateView = LayoutInflater.from(context).inflate(R.layout.view_notification_list, this);
+
+        applicationGocci = (Application_Gocci) context;
 
         mNotificationProgress = (ProgressWheel) inflateView.findViewById(R.id.progress);
         mNotificationList = (ListView) inflateView.findViewById(R.id.notification_list);
@@ -83,6 +92,24 @@ public class NotificationListView extends RelativeLayout implements
                         PostActivity.startPostActivityOnContext(user.getNotice_post_id(), getContext());
                         break;
                 }
+            }
+        });
+
+        mNotificationList.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                switch (scrollState) {
+                    case SCROLL_STATE_TOUCH_SCROLL:
+                        mTracker = applicationGocci.getDefaultTracker();
+                        mTracker.setScreenName("Notice");
+                        mTracker.send(new HitBuilders.EventBuilder().setAction("ScrollCount").setCategory("Public").setLabel(SavedData.getServerUserId(context)).build());
+                        break;
+                }
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+
             }
         });
 

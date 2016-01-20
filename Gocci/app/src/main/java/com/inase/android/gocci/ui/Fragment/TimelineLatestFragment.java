@@ -142,6 +142,9 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
                     break;
                 // スクロール中
                 case RecyclerView.SCROLL_STATE_DRAGGING:
+                    mTracker = applicationGocci.getDefaultTracker();
+                    mTracker.setScreenName("Timeline");
+                    mTracker.send(new HitBuilders.EventBuilder().setAction("ScrollCount").setCategory("Public").setLabel(SavedData.getServerUserId(getActivity())).build());
                     break;
                 // はじいたとき
                 case RecyclerView.SCROLL_STATE_SETTLING:

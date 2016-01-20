@@ -99,6 +99,9 @@ public class StreamMyProfFragment extends Fragment implements AppBarLayout.OnOff
                     streamChangeMovie();
                     break;
                 case RecyclerView.SCROLL_STATE_DRAGGING:
+                    mTracker = applicationGocci.getDefaultTracker();
+                    mTracker.setScreenName("MyProfStream");
+                    mTracker.send(new HitBuilders.EventBuilder().setAction("ScrollCount").setCategory("Public").setLabel(SavedData.getServerUserId(getActivity())).build());
                     break;
                 case RecyclerView.SCROLL_STATE_SETTLING:
                     break;

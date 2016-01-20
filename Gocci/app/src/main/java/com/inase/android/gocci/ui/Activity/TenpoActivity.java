@@ -365,6 +365,9 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
                     // スクロール中
                     case RecyclerView.SCROLL_STATE_DRAGGING:
                         //mBusy = true;
+                        mTracker = applicationGocci.getDefaultTracker();
+                        mTracker.setScreenName("TenpoPage");
+                        mTracker.send(new HitBuilders.EventBuilder().setCategory("Public").setAction("ScrollCount").setLabel(SavedData.getServerUserId(TenpoActivity.this)).build());
                         break;
                     // はじいたとき
                     case RecyclerView.SCROLL_STATE_SETTLING:

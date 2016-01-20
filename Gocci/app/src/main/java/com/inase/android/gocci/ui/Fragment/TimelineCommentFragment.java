@@ -142,6 +142,9 @@ public class TimelineCommentFragment extends Fragment implements AudioCapabiliti
                     break;
                 // スクロール中
                 case RecyclerView.SCROLL_STATE_DRAGGING:
+                    mTracker = applicationGocci.getDefaultTracker();
+                    mTracker.setScreenName("Commentline");
+                    mTracker.send(new HitBuilders.EventBuilder().setAction("ScrollCount").setCategory("Public").setLabel(SavedData.getServerUserId(getActivity())).build());
                     break;
                 // はじいたとき
                 case RecyclerView.SCROLL_STATE_SETTLING:

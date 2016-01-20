@@ -235,6 +235,9 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
     @OnClick(R.id.check_instagram)
     public void instagram() {
         if (mCheckInstagram.isChecked()) {
+            mTracker = applicationGocci.getDefaultTracker();
+            mTracker.setScreenName("CameraPreviewAlready");
+            mTracker.send(new HitBuilders.SocialBuilder().setNetwork("Instagram").setAction("Share").setTarget(mAwsPostName).build());
             Uri uri = Uri.fromFile(mVideoFile);
             Intent share = new Intent(Intent.ACTION_SEND);
             // Set the MIME type

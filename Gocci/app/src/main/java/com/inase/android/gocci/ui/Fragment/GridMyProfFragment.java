@@ -111,6 +111,9 @@ public class GridMyProfFragment extends Fragment implements AppBarLayout.OnOffse
                     }
                     break;
                 case RecyclerView.SCROLL_STATE_DRAGGING:
+                    mTracker = applicationGocci.getDefaultTracker();
+                    mTracker.setScreenName("MyProfGrid");
+                    mTracker.send(new HitBuilders.EventBuilder().setAction("ScrollCount").setCategory("Public").setLabel(SavedData.getServerUserId(getActivity())).build());
                     break;
                 case RecyclerView.SCROLL_STATE_SETTLING:
                     break;

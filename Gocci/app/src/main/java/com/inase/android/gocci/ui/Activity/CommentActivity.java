@@ -259,6 +259,9 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
                     // スクロール中
                     case RecyclerView.SCROLL_STATE_DRAGGING:
                         //mBusy = true;
+                        mTracker = applicationGocci.getDefaultTracker();
+                        mTracker.setScreenName("Comment");
+                        mTracker.send(new HitBuilders.EventBuilder().setCategory("Public").setAction("ScrollCount").setLabel(SavedData.getServerUserId(CommentActivity.this)).build());
                         break;
                     // はじいたとき
                     case RecyclerView.SCROLL_STATE_SETTLING:

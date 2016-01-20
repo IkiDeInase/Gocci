@@ -179,6 +179,33 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
             }
         });
 
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                switch (newState) {
+                    case RecyclerView.SCROLL_STATE_DRAGGING:
+                        mTracker = applicationGocci.getDefaultTracker();
+                        switch (mCategory) {
+                            case FOLLOW:
+                                mTracker.setScreenName("Followlist");
+                                break;
+                            case FOLLOWER:
+                                mTracker.setScreenName("Followerlist");
+                                break;
+                            case USER_CHEER:
+                                mTracker.setScreenName("UserCheerlist");
+                                break;
+                            case REST_CHEER:
+                                mTracker.setScreenName("RestCheerlist");
+                                break;
+                        }
+                        mTracker.send(new HitBuilders.EventBuilder().setCategory("Public").setAction("ScrollCount").setLabel(SavedData.getServerUserId(ListActivity.this)).build());
+                        break;
+                }
+            }
+        });
+
         result = new DrawerBuilder()
                 .withActivity(this)
                 .withToolbar(mToolBar)
