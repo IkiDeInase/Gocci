@@ -12,6 +12,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,6 +22,7 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.GravityEnum;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
@@ -125,6 +127,7 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
     private LinearLayoutManager mLayoutManager;
     private ArrayList<HeaderData> mCommentusers = new ArrayList<>();
     private ArrayList<String> mComment_ids = new ArrayList<>();
+    private HeaderData mMemoData;
     private CommentAdapter mCommentAdapter;
 
     private CommentActivity self = this;
@@ -146,6 +149,9 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
     int firstVisibleItem, visibleItemCount, totalItemCount;
 
     private ShowCommentPagePresenter mPresenter;
+
+    private String mEditedMemo;
+    private String mEditedComment;
 
     public static void startCommentActivity(String post_id, boolean isMyPage, Activity startingActivity) {
         Intent intent = new Intent(startingActivity, CommentActivity.class);
@@ -364,22 +370,69 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
     }
 
     @Override
-    public void onCommentLongClick(String user_id, final String comment_id) {
+    public void onMemoLongClick(final String memo) {
+        new MaterialDialog.Builder(CommentActivity.this)
+                .content(getString(R.string.edit_comment))
+                .contentColorRes(R.color.nameblack)
+                .contentGravity(GravityEnum.CENTER)
+                .inputType(InputType.TYPE_CLASS_TEXT)
+                .widgetColorRes(R.color.nameblack)
+                .positiveText(getString(R.string.complete))
+                .positiveColorRes(R.color.gocci_header)
+                .input(memo.equals("none") ? "ノーコメント" : "", memo.equals("none") ? "" : memo, false, new MaterialDialog.InputCallback() {
+                    @Override
+                    public void onInput(MaterialDialog materialDialog, CharSequence charSequence) {
+                        mEditedMemo = charSequence.toString();
+                        API3PostUtil.setMemoEditAsync(CommentActivity.this, mPost_id, memo, Const.ActivityCategory.COMMENT_PAGE);
+                    }
+                }).show();
+    }
+
+    @Override
+    public void onCommentLongClick(String user_id, final String comment_id, final String comment) {
         if (user_id.equals(SavedData.getServerUserId(this)) || isMyPage) {
             //自分の投稿　削除
             new MaterialDialog.Builder(this)
-                    .content(getString(R.string.delete_comment_content))
-                    .contentColorRes(R.color.nameblack)
-                    .positiveText(getString(R.string.delete_comment_positive))
-                    .positiveColorRes(R.color.gocci_header)
-                    .negativeText(getString(R.string.delete_comment_negative))
-                    .negativeColorRes(R.color.gocci_header)
-                    .onPositive(new MaterialDialog.SingleButtonCallback() {
-                        @Override
-                        public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
-                            API3PostUtil.unsetCommentAsync(CommentActivity.this, comment_id, Const.ActivityCategory.COMMENT_PAGE);
-                        }
-                    }).show();
+                    .items("コメントを編集する", "コメントを削除する")
+                    .itemsCallback(new MaterialDialog.ListCallback() {
+                @Override
+                public void onSelection(MaterialDialog dialog, View itemView, int which, CharSequence text) {
+                    switch (which) {
+                        case 0:
+                            new MaterialDialog.Builder(CommentActivity.this)
+                                    .content(getString(R.string.edit_comment))
+                                    .contentColorRes(R.color.nameblack)
+                                    .contentGravity(GravityEnum.CENTER)
+                                    .inputType(InputType.TYPE_CLASS_TEXT)
+                                    .widgetColorRes(R.color.nameblack)
+                                    .positiveText(getString(R.string.complete))
+                                    .positiveColorRes(R.color.gocci_header)
+                                    .input("", comment, false, new MaterialDialog.InputCallback() {
+                                        @Override
+                                        public void onInput(MaterialDialog materialDialog, CharSequence charSequence) {
+                                            mEditedComment = charSequence.toString();
+                                            API3PostUtil.setCommentEditAsync(CommentActivity.this, comment_id, comment, Const.ActivityCategory.COMMENT_PAGE);
+                                        }
+                                    }).show();
+                            break;
+                        case 1:
+                            new MaterialDialog.Builder(CommentActivity.this)
+                                    .content(getString(R.string.delete_comment_content))
+                                    .contentColorRes(R.color.nameblack)
+                                    .positiveText(getString(R.string.delete_comment_positive))
+                                    .positiveColorRes(R.color.gocci_header)
+                                    .negativeText(getString(R.string.delete_comment_negative))
+                                    .negativeColorRes(R.color.gocci_header)
+                                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                        @Override
+                                        public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                                            API3PostUtil.unsetCommentAsync(CommentActivity.this, comment_id, Const.ActivityCategory.COMMENT_PAGE);
+                                        }
+                                    }).show();
+                            break;
+                    }
+                }
+            }).show();
         } else {
             //他人の　不適切
             new MaterialDialog.Builder(this)
@@ -414,6 +467,7 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
         switch (api) {
             case GET_COMMENT_FIRST:
                 mProgress.setVisibility(View.INVISIBLE);
+                mMemoData = memoData;
                 mCommentAdapter = new CommentAdapter(this, mPost_id, memoData, mCommentusers);
                 mCommentAdapter.setCommentCallback(this);
                 mCommentRecyclerView.setAdapter(mCommentAdapter);
@@ -421,6 +475,7 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
             case GET_COMMENT_REFRESH:
                 mCommentusers.clear();
                 mComment_ids.clear();
+                mMemoData = memoData;
                 mCommentAdapter.setData();
                 break;
         }
@@ -451,6 +506,7 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
         mCommentusers.addAll(commentData);
         mComment_ids.clear();
         mComment_ids.addAll(comment_ids);
+        mMemoData = memoData;
         switch (api) {
             case GET_COMMENT_FIRST:
                 mProgress.setVisibility(View.INVISIBLE);
@@ -473,6 +529,7 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
         mCommentusers.addAll(commentData);
         mComment_ids.clear();
         mComment_ids.addAll(comment_ids);
+        mMemoData = postData;
         mCommentAdapter.setData();
         if (mOverlay.getVisibility() == View.VISIBLE) {
             mOverlay.setVisibility(View.GONE);
@@ -485,6 +542,7 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
     public void postCommentEmpty(Const.APICategory api, HeaderData postData) {
         mCommentusers.clear();
         mComment_ids.clear();
+        mMemoData = postData;
         mCommentAdapter.setData();
     }
 
@@ -515,12 +573,26 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
     @Subscribe
     public void subscribe(PostCallbackEvent event) {
         if (event.activityCategory == Const.ActivityCategory.COMMENT_PAGE) {
+            int position;
             switch (event.apiCategory) {
                 case UNSET_COMMENT:
-                    int position = mComment_ids.indexOf(event.id);
+                    position = mComment_ids.indexOf(event.id);
                     mCommentusers.remove(position);
                     mComment_ids.remove(position);
-                    mCommentAdapter.setData();
+                    mCommentAdapter.notifyItemRemoved(position + 1);
+                    break;
+                case SET_COMMENT_EDIT:
+                    if (mEditedComment != null) {
+                        position = mComment_ids.indexOf(event.id);
+                        mCommentusers.get(position).setComment(mEditedComment);
+                        mCommentAdapter.notifyItemChanged(position + 1);
+                    }
+                    break;
+                case SET_MEMO_EDIT:
+                    if (mEditedMemo != null) {
+                        mMemoData.setMemo(mEditedMemo);
+                        mCommentAdapter.notifyItemChanged(0);
+                    }
                     break;
             }
         }

@@ -125,6 +125,8 @@ public class Const {
         SET_FEEDBACK,
         SET_PASSWORD,
         SET_COMMENT,
+        SET_COMMENT_EDIT,
+        SET_MEMO_EDIT,
         UNSET_COMMENT,
         SET_USERNAME,
         SET_PROFILEIMG,

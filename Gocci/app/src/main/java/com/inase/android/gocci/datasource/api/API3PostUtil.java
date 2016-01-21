@@ -53,8 +53,7 @@ public class API3PostUtil {
                             @Override
                             public void onGlobalError(API3.Util.GlobalCode globalCode) {
                                 Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_FEEDBACK, globalCode);
-                                Application_Gocci applicationGocci = (Application_Gocci) context;
-                                Tracker tracker = applicationGocci.getDefaultTracker();
+                                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                                 tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                         setAction(Const.APICategory.SET_FEEDBACK.name()).
                                         setLabel(API3.Util.GlobalCodeMessageTable(globalCode)).build());
@@ -63,8 +62,7 @@ public class API3PostUtil {
                             @Override
                             public void onLocalError(String errorMessage) {
                                 Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
-                                Application_Gocci applicationGocci = (Application_Gocci) context;
-                                Tracker tracker = applicationGocci.getDefaultTracker();
+                                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                                 tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                         setAction(Const.APICategory.SET_FEEDBACK.name()).
                                         setLabel(errorMessage).build());
@@ -75,8 +73,7 @@ public class API3PostUtil {
                     @Override
                     public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                         Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_FEEDBACK, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                        Application_Gocci applicationGocci = (Application_Gocci) context;
-                        Tracker tracker = applicationGocci.getDefaultTracker();
+                        Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                         tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                 setAction(Const.APICategory.SET_FEEDBACK.name()).
                                 setLabel(API3.Util.GlobalCodeMessageTable(API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR)).build());
@@ -84,8 +81,7 @@ public class API3PostUtil {
                 });
             } else {
                 Toast.makeText(context, API3.Util.SetFeedbackLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
-                Application_Gocci applicationGocci = (Application_Gocci) context;
-                Tracker tracker = applicationGocci.getDefaultTracker();
+                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                 tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                         setAction(Const.APICategory.SET_FEEDBACK.name()).
                         setLabel(API3.Util.SetFeedbackLocalCodeMessageTable(localCode)).build());
@@ -112,8 +108,7 @@ public class API3PostUtil {
                             @Override
                             public void onGlobalError(API3.Util.GlobalCode globalCode) {
                                 Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_POST_BLOCK, globalCode);
-                                Application_Gocci applicationGocci = (Application_Gocci) context;
-                                Tracker tracker = applicationGocci.getDefaultTracker();
+                                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                                 tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                         setAction(Const.APICategory.SET_POST_BLOCK.name()).
                                         setLabel(API3.Util.GlobalCodeMessageTable(globalCode)).build());
@@ -122,8 +117,7 @@ public class API3PostUtil {
                             @Override
                             public void onLocalError(String errorMessage) {
                                 Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
-                                Application_Gocci applicationGocci = (Application_Gocci) context;
-                                Tracker tracker = applicationGocci.getDefaultTracker();
+                                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                                 tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                         setAction(Const.APICategory.SET_POST_BLOCK.name()).
                                         setLabel(errorMessage).build());
@@ -134,8 +128,7 @@ public class API3PostUtil {
                     @Override
                     public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                         Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_POST_BLOCK, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                        Application_Gocci applicationGocci = (Application_Gocci) context;
-                        Tracker tracker = applicationGocci.getDefaultTracker();
+                        Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                         tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                 setAction(Const.APICategory.SET_POST_BLOCK.name()).
                                 setLabel(API3.Util.GlobalCodeMessageTable(API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR)).build());
@@ -143,8 +136,7 @@ public class API3PostUtil {
                 });
             } else {
                 Toast.makeText(context, API3.Util.SetPost_BlockLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
-                Application_Gocci applicationGocci = (Application_Gocci) context;
-                Tracker tracker = applicationGocci.getDefaultTracker();
+                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                 tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                         setAction(Const.APICategory.SET_POST_BLOCK.name()).
                         setLabel(API3.Util.SetPost_BlockLocalCodeMessageTable(localCode)).build());
@@ -171,8 +163,7 @@ public class API3PostUtil {
                             @Override
                             public void onGlobalError(API3.Util.GlobalCode globalCode) {
                                 Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_COMMENT_BLOCK, globalCode);
-                                Application_Gocci applicationGocci = (Application_Gocci) context;
-                                Tracker tracker = applicationGocci.getDefaultTracker();
+                                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                                 tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                         setAction(Const.APICategory.SET_COMMENT_BLOCK.name()).
                                         setLabel(API3.Util.GlobalCodeMessageTable(globalCode)).build());
@@ -181,8 +172,7 @@ public class API3PostUtil {
                             @Override
                             public void onLocalError(String errorMessage) {
                                 Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
-                                Application_Gocci applicationGocci = (Application_Gocci) context;
-                                Tracker tracker = applicationGocci.getDefaultTracker();
+                                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                                 tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                         setAction(Const.APICategory.SET_COMMENT_BLOCK.name()).
                                         setLabel(errorMessage).build());
@@ -193,8 +183,7 @@ public class API3PostUtil {
                     @Override
                     public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                         Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_COMMENT_BLOCK, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                        Application_Gocci applicationGocci = (Application_Gocci) context;
-                        Tracker tracker = applicationGocci.getDefaultTracker();
+                        Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                         tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                 setAction(Const.APICategory.SET_COMMENT_BLOCK.name()).
                                 setLabel(API3.Util.GlobalCodeMessageTable(API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR)).build());
@@ -202,8 +191,7 @@ public class API3PostUtil {
                 });
             } else {
                 Toast.makeText(context, API3.Util.SetComment_BlockLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
-                Application_Gocci applicationGocci = (Application_Gocci) context;
-                Tracker tracker = applicationGocci.getDefaultTracker();
+                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                 tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                         setAction(Const.APICategory.SET_COMMENT_BLOCK.name()).
                         setLabel(API3.Util.SetComment_BlockLocalCodeMessageTable(localCode)).build());
@@ -230,8 +218,7 @@ public class API3PostUtil {
                             @Override
                             public void onGlobalError(API3.Util.GlobalCode globalCode) {
                                 Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.UNSET_POST, globalCode);
-                                Application_Gocci applicationGocci = (Application_Gocci) context;
-                                Tracker tracker = applicationGocci.getDefaultTracker();
+                                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                                 tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                         setAction(Const.APICategory.UNSET_POST.name()).
                                         setLabel(API3.Util.GlobalCodeMessageTable(globalCode)).build());
@@ -240,8 +227,7 @@ public class API3PostUtil {
                             @Override
                             public void onLocalError(String errorMessage) {
                                 Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
-                                Application_Gocci applicationGocci = (Application_Gocci) context;
-                                Tracker tracker = applicationGocci.getDefaultTracker();
+                                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                                 tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                         setAction(Const.APICategory.UNSET_POST.name()).
                                         setLabel(errorMessage).build());
@@ -252,8 +238,7 @@ public class API3PostUtil {
                     @Override
                     public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                         Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.UNSET_POST, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                        Application_Gocci applicationGocci = (Application_Gocci) context;
-                        Tracker tracker = applicationGocci.getDefaultTracker();
+                        Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                         tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                 setAction(Const.APICategory.UNSET_POST.name()).
                                 setLabel(API3.Util.GlobalCodeMessageTable(API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR)).build());
@@ -261,8 +246,7 @@ public class API3PostUtil {
                 });
             } else {
                 Toast.makeText(context, API3.Util.UnsetPostLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
-                Application_Gocci applicationGocci = (Application_Gocci) context;
-                Tracker tracker = applicationGocci.getDefaultTracker();
+                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                 tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                         setAction(Const.APICategory.UNSET_POST.name()).
                         setLabel(API3.Util.UnsetPostLocalCodeMessageTable(localCode)).build());
@@ -289,8 +273,7 @@ public class API3PostUtil {
                             @Override
                             public void onGlobalError(API3.Util.GlobalCode globalCode) {
                                 Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.UNSET_COMMENT, globalCode);
-                                Application_Gocci applicationGocci = (Application_Gocci) context;
-                                Tracker tracker = applicationGocci.getDefaultTracker();
+                                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                                 tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                         setAction(Const.APICategory.UNSET_COMMENT.name()).
                                         setLabel(API3.Util.GlobalCodeMessageTable(globalCode)).build());
@@ -299,8 +282,7 @@ public class API3PostUtil {
                             @Override
                             public void onLocalError(String errorMessage) {
                                 Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
-                                Application_Gocci applicationGocci = (Application_Gocci) context;
-                                Tracker tracker = applicationGocci.getDefaultTracker();
+                                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                                 tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                         setAction(Const.APICategory.UNSET_COMMENT.name()).
                                         setLabel(errorMessage).build());
@@ -311,8 +293,7 @@ public class API3PostUtil {
                     @Override
                     public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                         Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.UNSET_COMMENT, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                        Application_Gocci applicationGocci = (Application_Gocci) context;
-                        Tracker tracker = applicationGocci.getDefaultTracker();
+                        Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                         tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                 setAction(Const.APICategory.UNSET_COMMENT.name()).
                                 setLabel(API3.Util.GlobalCodeMessageTable(API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR)).build());
@@ -320,11 +301,120 @@ public class API3PostUtil {
                 });
             } else {
                 Toast.makeText(context, API3.Util.UnsetCommentLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
-                Application_Gocci applicationGocci = (Application_Gocci) context;
-                Tracker tracker = applicationGocci.getDefaultTracker();
+                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                 tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                         setAction(Const.APICategory.UNSET_COMMENT.name()).
                         setLabel(API3.Util.UnsetCommentLocalCodeMessageTable(localCode)).build());
+            }
+        } else {
+            Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public static void setCommentEditAsync(final Context context, final String comment_id, final String comment, final Const.ActivityCategory activityCategory) {
+        if (Util.getConnectedState(context) != Util.NetworkStatus.OFF) {
+            API3.Util.SetComment_EditLocalCode localCode = API3.Impl.getRepository().SetComment_EditParameterRegex(comment_id, comment);
+            if (localCode == null) {
+                Application_Gocci.getJsonAsync(API3.Util.getSetCommentEditAPI(comment_id, comment), new JsonHttpResponseHandler() {
+
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        API3.Impl.getRepository().SetComment_EditResponse(response, new API3.PayloadResponseCallback() {
+                            @Override
+                            public void onSuccess(JSONObject payload) {
+                                BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, activityCategory, Const.APICategory.SET_COMMENT_EDIT, comment_id));
+                            }
+
+                            @Override
+                            public void onGlobalError(API3.Util.GlobalCode globalCode) {
+                                Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_COMMENT_EDIT, globalCode);
+                                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
+                                tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
+                                        setAction(Const.APICategory.SET_COMMENT_EDIT.name()).
+                                        setLabel(API3.Util.GlobalCodeMessageTable(globalCode)).build());
+                            }
+
+                            @Override
+                            public void onLocalError(String errorMessage) {
+                                Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
+                                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
+                                tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
+                                        setAction(Const.APICategory.SET_COMMENT_EDIT.name()).
+                                        setLabel(errorMessage).build());
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                        Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_COMMENT_EDIT, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                        Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
+                        tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
+                                setAction(Const.APICategory.SET_COMMENT_EDIT.name()).
+                                setLabel(API3.Util.GlobalCodeMessageTable(API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR)).build());
+                    }
+                });
+            } else {
+                Toast.makeText(context, API3.Util.SetComment_EditLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
+                tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
+                        setAction(Const.APICategory.SET_COMMENT_EDIT.name()).
+                        setLabel(API3.Util.SetComment_EditLocalCodeMessageTable(localCode)).build());
+            }
+        } else {
+            Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public static void setMemoEditAsync(final Context context, final String post_id, final String memo, final Const.ActivityCategory activityCategory) {
+        if (Util.getConnectedState(context) != Util.NetworkStatus.OFF) {
+            API3.Util.SetMemo_EditLocalCode localCode = API3.Impl.getRepository().SetMemo_EditParameterRegex(post_id, memo);
+            if (localCode == null) {
+                Application_Gocci.getJsonAsync(API3.Util.getSetMemoEditAPI(post_id, memo), new JsonHttpResponseHandler() {
+
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        API3.Impl.getRepository().SetMemo_EditResponse(response, new API3.PayloadResponseCallback() {
+                            @Override
+                            public void onSuccess(JSONObject payload) {
+                                BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, activityCategory, Const.APICategory.SET_MEMO_EDIT, post_id));
+                            }
+
+                            @Override
+                            public void onGlobalError(API3.Util.GlobalCode globalCode) {
+                                Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_MEMO_EDIT, globalCode);
+                                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
+                                tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
+                                        setAction(Const.APICategory.SET_MEMO_EDIT.name()).
+                                        setLabel(API3.Util.GlobalCodeMessageTable(globalCode)).build());
+                            }
+
+                            @Override
+                            public void onLocalError(String errorMessage) {
+                                Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
+                                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
+                                tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
+                                        setAction(Const.APICategory.SET_MEMO_EDIT.name()).
+                                        setLabel(errorMessage).build());
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                        Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_MEMO_EDIT, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                        Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
+                        tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
+                                setAction(Const.APICategory.SET_MEMO_EDIT.name()).
+                                setLabel(API3.Util.GlobalCodeMessageTable(API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR)).build());
+                    }
+                });
+            } else {
+                Toast.makeText(context, API3.Util.SetMemo_EditLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
+                tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
+                        setAction(Const.APICategory.SET_MEMO_EDIT.name()).
+                        setLabel(API3.Util.SetMemo_EditLocalCodeMessageTable(localCode)).build());
             }
         } else {
             Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
@@ -349,8 +439,7 @@ public class API3PostUtil {
                             @Override
                             public void onGlobalError(API3.Util.GlobalCode globalCode) {
                                 Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_PASSWORD, globalCode);
-                                Application_Gocci applicationGocci = (Application_Gocci) context;
-                                Tracker tracker = applicationGocci.getDefaultTracker();
+                                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                                 tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                         setAction(Const.APICategory.SET_PASSWORD.name()).
                                         setLabel(API3.Util.GlobalCodeMessageTable(globalCode)).build());
@@ -359,8 +448,7 @@ public class API3PostUtil {
                             @Override
                             public void onLocalError(String errorMessage) {
                                 Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
-                                Application_Gocci applicationGocci = (Application_Gocci) context;
-                                Tracker tracker = applicationGocci.getDefaultTracker();
+                                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                                 tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                         setAction(Const.APICategory.SET_PASSWORD.name()).
                                         setLabel(errorMessage).build());
@@ -371,8 +459,7 @@ public class API3PostUtil {
                     @Override
                     public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                         Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_PASSWORD, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                        Application_Gocci applicationGocci = (Application_Gocci) context;
-                        Tracker tracker = applicationGocci.getDefaultTracker();
+                        Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                         tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                 setAction(Const.APICategory.SET_PASSWORD.name()).
                                 setLabel(API3.Util.GlobalCodeMessageTable(API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR)).build());
@@ -380,8 +467,7 @@ public class API3PostUtil {
                 });
             } else {
                 Toast.makeText(context, API3.Util.SetPasswordLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
-                Application_Gocci applicationGocci = (Application_Gocci) context;
-                Tracker tracker = applicationGocci.getDefaultTracker();
+                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                 tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                         setAction(Const.APICategory.SET_PASSWORD.name()).
                         setLabel(API3.Util.SetPasswordLocalCodeMessageTable(localCode)).build());
@@ -413,8 +499,7 @@ public class API3PostUtil {
                             @Override
                             public void onGlobalError(API3.Util.GlobalCode globalCode) {
                                 Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_RESTADD, globalCode);
-                                Application_Gocci applicationGocci = (Application_Gocci) context;
-                                Tracker tracker = applicationGocci.getDefaultTracker();
+                                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                                 tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                         setAction(Const.APICategory.SET_RESTADD.name()).
                                         setLabel(API3.Util.GlobalCodeMessageTable(globalCode)).build());
@@ -423,8 +508,7 @@ public class API3PostUtil {
                             @Override
                             public void onLocalError(String errorMessage) {
                                 Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
-                                Application_Gocci applicationGocci = (Application_Gocci) context;
-                                Tracker tracker = applicationGocci.getDefaultTracker();
+                                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                                 tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                         setAction(Const.APICategory.SET_RESTADD.name()).
                                         setLabel(errorMessage).build());
@@ -435,8 +519,7 @@ public class API3PostUtil {
                     @Override
                     public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                         Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_RESTADD, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                        Application_Gocci applicationGocci = (Application_Gocci) context;
-                        Tracker tracker = applicationGocci.getDefaultTracker();
+                        Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                         tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                 setAction(Const.APICategory.SET_RESTADD.name()).
                                 setLabel(API3.Util.GlobalCodeMessageTable(API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR)).build());
@@ -444,8 +527,7 @@ public class API3PostUtil {
                 });
             } else {
                 Toast.makeText(context, API3.Util.SetRestLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
-                Application_Gocci applicationGocci = (Application_Gocci) context;
-                Tracker tracker = applicationGocci.getDefaultTracker();
+                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                 tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                         setAction(Const.APICategory.SET_RESTADD.name()).
                         setLabel(API3.Util.SetRestLocalCodeMessageTable(localCode)).build());
@@ -472,8 +554,7 @@ public class API3PostUtil {
                             @Override
                             public void onGlobalError(API3.Util.GlobalCode globalCode) {
                                 Application_Gocci.resolveOrHandleGlobalError(context, api, globalCode);
-                                Application_Gocci applicationGocci = (Application_Gocci) context;
-                                Tracker tracker = applicationGocci.getDefaultTracker();
+                                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                                 tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                         setAction(api.name()).
                                         setLabel(API3.Util.GlobalCodeMessageTable(globalCode)).build());
@@ -482,8 +563,7 @@ public class API3PostUtil {
                             @Override
                             public void onLocalError(String errorMessage) {
                                 Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
-                                Application_Gocci applicationGocci = (Application_Gocci) context;
-                                Tracker tracker = applicationGocci.getDefaultTracker();
+                                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                                 tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                         setAction(api.name()).
                                         setLabel(errorMessage).build());
@@ -494,8 +574,7 @@ public class API3PostUtil {
                     @Override
                     public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                         Application_Gocci.resolveOrHandleGlobalError(context, api, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                        Application_Gocci applicationGocci = (Application_Gocci) context;
-                        Tracker tracker = applicationGocci.getDefaultTracker();
+                        Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                         tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                 setAction(api.name()).
                                 setLabel(API3.Util.GlobalCodeMessageTable(API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR)).build());
@@ -503,8 +582,7 @@ public class API3PostUtil {
                 });
             } else {
                 Toast.makeText(context, API3.Util.SetSns_LinkLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
-                Application_Gocci applicationGocci = (Application_Gocci) context;
-                Tracker tracker = applicationGocci.getDefaultTracker();
+                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                 tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                         setAction(api.name()).
                         setLabel(API3.Util.SetSns_LinkLocalCodeMessageTable(localCode)).build());
@@ -531,8 +609,7 @@ public class API3PostUtil {
                             @Override
                             public void onGlobalError(API3.Util.GlobalCode globalCode) {
                                 Application_Gocci.resolveOrHandleGlobalError(context, api, globalCode);
-                                Application_Gocci applicationGocci = (Application_Gocci) context;
-                                Tracker tracker = applicationGocci.getDefaultTracker();
+                                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                                 tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                         setAction(api.name()).
                                         setLabel(API3.Util.GlobalCodeMessageTable(globalCode)).build());
@@ -541,8 +618,7 @@ public class API3PostUtil {
                             @Override
                             public void onLocalError(String errorMessage) {
                                 Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
-                                Application_Gocci applicationGocci = (Application_Gocci) context;
-                                Tracker tracker = applicationGocci.getDefaultTracker();
+                                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                                 tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                         setAction(api.name()).
                                         setLabel(errorMessage).build());
@@ -553,8 +629,7 @@ public class API3PostUtil {
                     @Override
                     public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                         Application_Gocci.resolveOrHandleGlobalError(context, api, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                        Application_Gocci applicationGocci = (Application_Gocci) context;
-                        Tracker tracker = applicationGocci.getDefaultTracker();
+                        Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                         tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                 setAction(api.name()).
                                 setLabel(API3.Util.GlobalCodeMessageTable(API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR)).build());
@@ -562,8 +637,7 @@ public class API3PostUtil {
                 });
             } else {
                 Toast.makeText(context, API3.Util.UnsetSns_LinkLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
-                Application_Gocci applicationGocci = (Application_Gocci) context;
-                Tracker tracker = applicationGocci.getDefaultTracker();
+                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                 tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                         setAction(api.name()).
                         setLabel(API3.Util.UnsetSns_LinkLocalCodeMessageTable(localCode)).build());
@@ -590,8 +664,7 @@ public class API3PostUtil {
                             @Override
                             public void onGlobalError(API3.Util.GlobalCode globalCode) {
                                 Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_DEVICE, globalCode);
-                                Application_Gocci applicationGocci = (Application_Gocci) context;
-                                Tracker tracker = applicationGocci.getDefaultTracker();
+                                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                                 tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                         setAction(Const.APICategory.SET_DEVICE.name()).
                                         setLabel(API3.Util.GlobalCodeMessageTable(globalCode)).build());
@@ -600,8 +673,7 @@ public class API3PostUtil {
                             @Override
                             public void onLocalError(String errorMessage) {
                                 Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
-                                Application_Gocci applicationGocci = (Application_Gocci) context;
-                                Tracker tracker = applicationGocci.getDefaultTracker();
+                                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                                 tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                         setAction(Const.APICategory.SET_DEVICE.name()).
                                         setLabel(errorMessage).build());
@@ -612,8 +684,7 @@ public class API3PostUtil {
                     @Override
                     public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                         Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_DEVICE, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                        Application_Gocci applicationGocci = (Application_Gocci) context;
-                        Tracker tracker = applicationGocci.getDefaultTracker();
+                        Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                         tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                 setAction(Const.APICategory.SET_DEVICE.name()).
                                 setLabel(API3.Util.GlobalCodeMessageTable(API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR)).build());
@@ -621,8 +692,7 @@ public class API3PostUtil {
                 });
             } else {
                 Toast.makeText(context, API3.Util.SetDeviceLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
-                Application_Gocci applicationGocci = (Application_Gocci) context;
-                Tracker tracker = applicationGocci.getDefaultTracker();
+                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                 tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                         setAction(Const.APICategory.SET_DEVICE.name()).
                         setLabel(API3.Util.SetDeviceLocalCodeMessageTable(localCode)).build());
@@ -649,8 +719,7 @@ public class API3PostUtil {
                             @Override
                             public void onGlobalError(API3.Util.GlobalCode globalCode) {
                                 Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.UNSET_DEVICE, globalCode);
-                                Application_Gocci applicationGocci = (Application_Gocci) context;
-                                Tracker tracker = applicationGocci.getDefaultTracker();
+                                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                                 tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                         setAction(Const.APICategory.UNSET_DEVICE.name()).
                                         setLabel(API3.Util.GlobalCodeMessageTable(globalCode)).build());
@@ -659,8 +728,7 @@ public class API3PostUtil {
                             @Override
                             public void onLocalError(String errorMessage) {
                                 Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
-                                Application_Gocci applicationGocci = (Application_Gocci) context;
-                                Tracker tracker = applicationGocci.getDefaultTracker();
+                                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                                 tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                         setAction(Const.APICategory.UNSET_DEVICE.name()).
                                         setLabel(errorMessage).build());
@@ -671,8 +739,7 @@ public class API3PostUtil {
                     @Override
                     public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                         Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.UNSET_DEVICE, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                        Application_Gocci applicationGocci = (Application_Gocci) context;
-                        Tracker tracker = applicationGocci.getDefaultTracker();
+                        Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                         tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                 setAction(Const.APICategory.UNSET_DEVICE.name()).
                                 setLabel(API3.Util.GlobalCodeMessageTable(API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR)).build());
@@ -680,8 +747,7 @@ public class API3PostUtil {
                 });
             } else {
                 Toast.makeText(context, API3.Util.UnsetDeviceLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
-                Application_Gocci applicationGocci = (Application_Gocci) context;
-                Tracker tracker = applicationGocci.getDefaultTracker();
+                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                 tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                         setAction(Const.APICategory.UNSET_DEVICE.name()).
                         setLabel(API3.Util.UnsetDeviceLocalCodeMessageTable(localCode)).build());
@@ -709,8 +775,7 @@ public class API3PostUtil {
                             @Override
                             public void onGlobalError(API3.Util.GlobalCode globalCode) {
                                 Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_USERNAME, globalCode);
-                                Application_Gocci applicationGocci = (Application_Gocci) context;
-                                Tracker tracker = applicationGocci.getDefaultTracker();
+                                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                                 tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                         setAction(Const.APICategory.SET_USERNAME.name()).
                                         setLabel(API3.Util.GlobalCodeMessageTable(globalCode)).build());
@@ -719,8 +784,7 @@ public class API3PostUtil {
                             @Override
                             public void onLocalError(String errorMessage) {
                                 Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
-                                Application_Gocci applicationGocci = (Application_Gocci) context;
-                                Tracker tracker = applicationGocci.getDefaultTracker();
+                                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                                 tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                         setAction(Const.APICategory.SET_USERNAME.name()).
                                         setLabel(errorMessage).build());
@@ -731,8 +795,7 @@ public class API3PostUtil {
                     @Override
                     public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                         Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_USERNAME, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                        Application_Gocci applicationGocci = (Application_Gocci) context;
-                        Tracker tracker = applicationGocci.getDefaultTracker();
+                        Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                         tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                 setAction(Const.APICategory.SET_USERNAME.name()).
                                 setLabel(API3.Util.GlobalCodeMessageTable(API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR)).build());
@@ -740,8 +803,7 @@ public class API3PostUtil {
                 });
             } else {
                 Toast.makeText(context, API3.Util.SetUsernameLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
-                Application_Gocci applicationGocci = (Application_Gocci) context;
-                Tracker tracker = applicationGocci.getDefaultTracker();
+                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                 tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                         setAction(Const.APICategory.SET_USERNAME.name()).
                         setLabel(API3.Util.SetUsernameLocalCodeMessageTable(localCode)).build());
@@ -779,8 +841,7 @@ public class API3PostUtil {
                                         @Override
                                         public void onGlobalError(API3.Util.GlobalCode globalCode) {
                                             Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_PROFILEIMG, globalCode);
-                                            Application_Gocci applicationGocci = (Application_Gocci) context;
-                                            Tracker tracker = applicationGocci.getDefaultTracker();
+                                            Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                                             tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                                     setAction(Const.APICategory.SET_PROFILEIMG.name()).
                                                     setLabel(API3.Util.GlobalCodeMessageTable(globalCode)).build());
@@ -789,8 +850,7 @@ public class API3PostUtil {
                                         @Override
                                         public void onLocalError(String errorMessage) {
                                             Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
-                                            Application_Gocci applicationGocci = (Application_Gocci) context;
-                                            Tracker tracker = applicationGocci.getDefaultTracker();
+                                            Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                                             tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                                     setAction(Const.APICategory.SET_PROFILEIMG.name()).
                                                     setLabel(errorMessage).build());
@@ -801,8 +861,7 @@ public class API3PostUtil {
                                 @Override
                                 public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                                     Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_PROFILEIMG, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                                    Application_Gocci applicationGocci = (Application_Gocci) context;
-                                    Tracker tracker = applicationGocci.getDefaultTracker();
+                                    Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                                     tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                             setAction(Const.APICategory.SET_PROFILEIMG.name()).
                                             setLabel(API3.Util.GlobalCodeMessageTable(API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR)).build());
@@ -810,8 +869,7 @@ public class API3PostUtil {
                             });
                         } else {
                             Toast.makeText(context, API3.Util.SetProfile_ImgLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
-                            Application_Gocci applicationGocci = (Application_Gocci) context;
-                            Tracker tracker = applicationGocci.getDefaultTracker();
+                            Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                             tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                     setAction(Const.APICategory.SET_PROFILEIMG.name()).
                                     setLabel(API3.Util.SetProfile_ImgLocalCodeMessageTable(localCode)).build());
@@ -827,8 +885,7 @@ public class API3PostUtil {
                 @Override
                 public void onError(int id, Exception ex) {
                     Toast.makeText(context, ex.getMessage(), Toast.LENGTH_SHORT).show();
-                    Application_Gocci applicationGocci = (Application_Gocci) context;
-                    Tracker tracker = applicationGocci.getDefaultTracker();
+                    Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                     tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                             setAction(Const.APICategory.SET_PROFILEIMG.name()).
                             setLabel("Profile_imgUploadFailure").build());
@@ -881,8 +938,7 @@ public class API3PostUtil {
                                                 @Override
                                                 public void onGlobalError(API3.Util.GlobalCode globalCode) {
                                                     Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_PROFILEIMG, globalCode);
-                                                    Application_Gocci applicationGocci = (Application_Gocci) context;
-                                                    Tracker tracker = applicationGocci.getDefaultTracker();
+                                                    Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                                                     tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                                             setAction(Const.APICategory.SET_PROFILEIMG.name()).
                                                             setLabel(API3.Util.GlobalCodeMessageTable(globalCode)).build());
@@ -891,8 +947,7 @@ public class API3PostUtil {
                                                 @Override
                                                 public void onLocalError(String errorMessage) {
                                                     Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
-                                                    Application_Gocci applicationGocci = (Application_Gocci) context;
-                                                    Tracker tracker = applicationGocci.getDefaultTracker();
+                                                    Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                                                     tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                                             setAction(Const.APICategory.SET_PROFILEIMG.name()).
                                                             setLabel(errorMessage).build());
@@ -903,8 +958,7 @@ public class API3PostUtil {
                                         @Override
                                         public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                                             Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_PROFILEIMG, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                                            Application_Gocci applicationGocci = (Application_Gocci) context;
-                                            Tracker tracker = applicationGocci.getDefaultTracker();
+                                            Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                                             tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                                     setAction(Const.APICategory.SET_PROFILEIMG.name()).
                                                     setLabel(API3.Util.GlobalCodeMessageTable(API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR)).build());
@@ -912,8 +966,7 @@ public class API3PostUtil {
                                     });
                                 } else {
                                     Toast.makeText(context, API3.Util.SetProfile_ImgLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
-                                    Application_Gocci applicationGocci = (Application_Gocci) context;
-                                    Tracker tracker = applicationGocci.getDefaultTracker();
+                                    Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                                     tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                             setAction(Const.APICategory.SET_PROFILEIMG.name()).
                                             setLabel(API3.Util.SetProfile_ImgLocalCodeMessageTable(localCode)).build());
@@ -929,8 +982,7 @@ public class API3PostUtil {
                         @Override
                         public void onError(int id, Exception ex) {
                             Toast.makeText(context, ex.getMessage(), Toast.LENGTH_SHORT).show();
-                            Application_Gocci applicationGocci = (Application_Gocci) context;
-                            Tracker tracker = applicationGocci.getDefaultTracker();
+                            Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                             tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                     setAction(Const.APICategory.SET_PROFILEIMG.name()).
                                     setLabel("Profile_imgUploadFailure").build());
@@ -971,8 +1023,7 @@ public class API3PostUtil {
                             public void onGlobalError(API3.Util.GlobalCode globalCode) {
                                 Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_POST, globalCode);
                                 BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.GLOBALERROR, activityCategory, Const.APICategory.SET_POST, memo));
-                                Application_Gocci applicationGocci = (Application_Gocci) context;
-                                Tracker tracker = applicationGocci.getDefaultTracker();
+                                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                                 tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                         setAction(Const.APICategory.SET_POST.name()).
                                         setLabel(API3.Util.GlobalCodeMessageTable(globalCode)).build());
@@ -982,8 +1033,7 @@ public class API3PostUtil {
                             public void onLocalError(String errorMessage) {
                                 Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
                                 BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.LOCALERROR, activityCategory, Const.APICategory.SET_POST, memo));
-                                Application_Gocci applicationGocci = (Application_Gocci) context;
-                                Tracker tracker = applicationGocci.getDefaultTracker();
+                                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                                 tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                         setAction(Const.APICategory.SET_POST.name()).
                                         setLabel(errorMessage).build());
@@ -995,8 +1045,7 @@ public class API3PostUtil {
                     public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                         Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_POST, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
                         BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.GLOBALERROR, activityCategory, Const.APICategory.SET_POST, memo));
-                        Application_Gocci applicationGocci = (Application_Gocci) context;
-                        Tracker tracker = applicationGocci.getDefaultTracker();
+                        Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                         tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                 setAction(Const.APICategory.SET_POST.name()).
                                 setLabel(API3.Util.GlobalCodeMessageTable(API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR)).build());
@@ -1005,8 +1054,7 @@ public class API3PostUtil {
             } else {
                 Toast.makeText(context, API3.Util.SetPostLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
                 BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.LOCALERROR, activityCategory, Const.APICategory.SET_POST, memo));
-                Application_Gocci applicationGocci = (Application_Gocci) context;
-                Tracker tracker = applicationGocci.getDefaultTracker();
+                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
                 tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                         setAction(Const.APICategory.SET_POST.name()).
                         setLabel(API3.Util.SetPostLocalCodeMessageTable(localCode)).build());

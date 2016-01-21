@@ -127,6 +127,14 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 mCallback.onUserClick(memo.getUser_id(), memo.getUsername());
             }
         });
+
+        holder.mCommentCell.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                mCallback.onMemoLongClick(memo.getMemo());
+                return false;
+            }
+        });
     }
 
     private void bindComment(final CommentViewHolder holder, final HeaderData users) {
@@ -209,7 +217,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         holder.mCommentCell.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                mCallback.onCommentLongClick(users.getComment_user_id(), users.getComment_id());
+                mCallback.onCommentLongClick(users.getComment_user_id(), users.getComment_id(), users.getComment());
                 return false;
             }
         });
@@ -243,7 +251,9 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         void onCommentClick(String username, String user_id);
 
-        void onCommentLongClick(String user_id, String comment_id);
+        void onMemoLongClick(String memo);
+
+        void onCommentLongClick(String user_id, String comment_id, String comment);
 
     }
 }
