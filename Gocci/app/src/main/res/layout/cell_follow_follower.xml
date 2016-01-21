@@ -9,18 +9,49 @@
         android:src="@drawable/ic_userpicture"
         android:layout_margin="12dp" />
 
-    <TextView
+    <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/username"
-        android:id="@+id/user_name"
-        android:textStyle="bold"
-        android:textSize="@dimen/accent_text"
-        android:singleLine="true"
-        android:textColor="@color/namegrey"
         android:layout_gravity="center_vertical"
         android:layout_centerVertical="true"
-        android:layout_toRightOf="@+id/follow_follower_picture" />
+        android:layout_toRightOf="@+id/follow_follower_picture">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/username"
+            android:id="@+id/user_name"
+            android:textStyle="bold"
+            android:textSize="@dimen/normal_text"
+            android:singleLine="true"
+            android:textColor="@color/namegrey"
+             />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:id="@+id/gochi_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/user_name">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/gochi_count_icon"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/ic_icon_beef_orange"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:textColor="@color/nameblack"
+                android:textSize="@dimen/normal_text"
+                android:layout_gravity="center_vertical"
+                android:id="@+id/gochi_count_text"
+                android:layout_marginLeft="8dp" />
+        </LinearLayout>
+    </RelativeLayout>
 
     <com.andexert.library.RippleView
         android:layout_width="wrap_content"

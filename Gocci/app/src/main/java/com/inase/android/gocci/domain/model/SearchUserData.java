@@ -4,9 +4,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Created by kinagafuji on 15/11/18.
+ * Created by kinagafuji on 16/01/21.
  */
-public class ListGetData {
+public class SearchUserData {
 
     private static final String TAG_USER_ID = "user_id";
     private static final String TAG_USERNAME = "username";
@@ -14,24 +14,13 @@ public class ListGetData {
     private static final String TAG_GOCHI_NUM = "gochi_num";
     private static final String TAG_FOLLOW_FLAG = "follow_flag";
 
-    private static final String TAG_REST_ID = "rest_id";
-    private static final String TAG_RESTNAME = "restname";
-    private static final String TAG_LOCALITY = "locality";
-
     private String user_id;
     private String username;
     private String profile_img;
     private int gochi_num;
     private boolean follow_flag;
 
-    private String rest_id;
-    private String restname;
-    private String locality;
-
-    public ListGetData() {
-    }
-
-    public ListGetData(String user_id, String username, String profile_img, int gochi_num, boolean follow_flag) {
+    public SearchUserData(String user_id, String username, String profile_img, int gochi_num, boolean follow_flag) {
         this.user_id = user_id;
         this.username = username;
         this.profile_img = profile_img;
@@ -39,13 +28,7 @@ public class ListGetData {
         this.follow_flag = follow_flag;
     }
 
-    public ListGetData(String rest_id, String restname, String locality) {
-        this.rest_id = rest_id;
-        this.restname = restname;
-        this.locality = locality;
-    }
-
-    public static ListGetData createUserData(JSONObject jsonObject) {
+    public static SearchUserData createSearchUserData(JSONObject jsonObject) {
         try {
             String user_id = jsonObject.getString(TAG_USER_ID);
             String username = jsonObject.getString(TAG_USERNAME);
@@ -53,22 +36,7 @@ public class ListGetData {
             int gochi_num = jsonObject.getInt(TAG_GOCHI_NUM);
             boolean follow_flag = jsonObject.getBoolean(TAG_FOLLOW_FLAG);
 
-            return new ListGetData(user_id, username, profile_img, gochi_num, follow_flag);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public static ListGetData createRestData(JSONObject jsonObject) {
-        try {
-            String rest_id = jsonObject.getString(TAG_REST_ID);
-            String restname = jsonObject.getString(TAG_RESTNAME);
-            String localoty = jsonObject.getString(TAG_LOCALITY);
-
-            return new ListGetData(rest_id, restname, localoty);
-
+            return new SearchUserData(user_id, username, profile_img, gochi_num, follow_flag);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -99,28 +67,12 @@ public class ListGetData {
         this.profile_img = profile_img;
     }
 
-    public String getRest_id() {
-        return rest_id;
+    public int getGochi_num() {
+        return gochi_num;
     }
 
-    public void setRest_id(String rest_id) {
-        this.rest_id = rest_id;
-    }
-
-    public String getRestname() {
-        return restname;
-    }
-
-    public void setRestname(String restname) {
-        this.restname = restname;
-    }
-
-    public String getLocality() {
-        return locality;
-    }
-
-    public void setLocality(String locality) {
-        this.locality = locality;
+    public void setGochi_num(int gochi_num) {
+        this.gochi_num = gochi_num;
     }
 
     public boolean isFollow_flag() {
@@ -129,13 +81,5 @@ public class ListGetData {
 
     public void setFollow_flag(boolean follow_flag) {
         this.follow_flag = follow_flag;
-    }
-
-    public int getGochi_num() {
-        return gochi_num;
-    }
-
-    public void setGochi_num(int gochi_num) {
-        this.gochi_num = gochi_num;
     }
 }

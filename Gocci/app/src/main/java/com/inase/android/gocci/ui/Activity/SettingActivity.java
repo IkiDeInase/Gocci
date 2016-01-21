@@ -161,19 +161,7 @@ public class SettingActivity extends AppCompatActivity {
 
     @OnClick(R.id.friend_search)
     public void search() {
-        new MaterialDialog.Builder(SettingActivity.this)
-                .inputType(InputType.TYPE_CLASS_TEXT)
-                .input(getString(R.string.search_friend_hint), null, false, new MaterialDialog.InputCallback() {
-                    @Override
-                    public void onInput(MaterialDialog dialog, CharSequence input) {
-                        // Do something
-                        //Util.searchUserPost(SettingActivity.this, SettingActivity.this, input.toString());
-                    }
-                })
-                .widgetColorRes(R.color.gocci_header)
-                .positiveText(getString(R.string.search_friend_yeah))
-                .positiveColorRes(R.color.gocci_header)
-                .show();
+        UserSearchActivity.startUserSearchActivity(this);
     }
 
     @OnClick(R.id.friend_invite)

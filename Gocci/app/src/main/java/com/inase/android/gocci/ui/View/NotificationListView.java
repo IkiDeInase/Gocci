@@ -64,7 +64,7 @@ public class NotificationListView extends RelativeLayout implements
 
         View inflateView = LayoutInflater.from(context).inflate(R.layout.view_notification_list, this);
 
-        applicationGocci = (Application_Gocci) context;
+        applicationGocci = Application_Gocci.getInstance();
 
         mNotificationProgress = (ProgressWheel) inflateView.findViewById(R.id.progress);
         mNotificationList = (ListView) inflateView.findViewById(R.id.notification_list);

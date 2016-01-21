@@ -370,28 +370,29 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
     }
 
     @Override
-    public void onMemoLongClick(final String memo) {
-        new MaterialDialog.Builder(CommentActivity.this)
-                .content(getString(R.string.edit_comment))
-                .contentColorRes(R.color.nameblack)
-                .contentGravity(GravityEnum.CENTER)
-                .inputType(InputType.TYPE_CLASS_TEXT)
-                .widgetColorRes(R.color.nameblack)
-                .positiveText(getString(R.string.complete))
-                .positiveColorRes(R.color.gocci_header)
-                .input(memo.equals("none") ? "ノーコメント" : "", memo.equals("none") ? "" : memo, false, new MaterialDialog.InputCallback() {
-                    @Override
-                    public void onInput(MaterialDialog materialDialog, CharSequence charSequence) {
-                        mEditedMemo = charSequence.toString();
-                        API3PostUtil.setMemoEditAsync(CommentActivity.this, mPost_id, memo, Const.ActivityCategory.COMMENT_PAGE);
-                    }
-                }).show();
+    public void onMemoLongClick(final String user_id, final String memo) {
+        if (user_id.equals(SavedData.getServerUserId(this))) {
+            new MaterialDialog.Builder(CommentActivity.this)
+                    .content(getString(R.string.edit_comment))
+                    .contentColorRes(R.color.nameblack)
+                    .contentGravity(GravityEnum.CENTER)
+                    .inputType(InputType.TYPE_CLASS_TEXT)
+                    .widgetColorRes(R.color.nameblack)
+                    .positiveText(getString(R.string.complete))
+                    .positiveColorRes(R.color.gocci_header)
+                    .input(memo.equals("none") ? "ノーコメント" : "", memo.equals("none") ? "" : memo, false, new MaterialDialog.InputCallback() {
+                        @Override
+                        public void onInput(MaterialDialog materialDialog, CharSequence charSequence) {
+                            mEditedMemo = charSequence.toString();
+                            API3PostUtil.setMemoEditAsync(CommentActivity.this, mPost_id, mEditedMemo, Const.ActivityCategory.COMMENT_PAGE);
+                        }
+                    }).show();
+        }
     }
 
     @Override
     public void onCommentLongClick(String user_id, final String comment_id, final String comment) {
-        if (user_id.equals(SavedData.getServerUserId(this)) || isMyPage) {
-            //自分の投稿　削除
+        if (user_id.equals(SavedData.getServerUserId(this))) {
             new MaterialDialog.Builder(this)
                     .items("コメントを編集する", "コメントを削除する")
                     .itemsCallback(new MaterialDialog.ListCallback() {
@@ -411,7 +412,7 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
                                                 @Override
                                                 public void onInput(MaterialDialog materialDialog, CharSequence charSequence) {
                                                     mEditedComment = charSequence.toString();
-                                                    API3PostUtil.setCommentEditAsync(CommentActivity.this, comment_id, comment, Const.ActivityCategory.COMMENT_PAGE);
+                                                    API3PostUtil.setCommentEditAsync(CommentActivity.this, comment_id, mEditedComment, Const.ActivityCategory.COMMENT_PAGE);
                                                 }
                                             }).show();
                                     break;
@@ -434,20 +435,35 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
                         }
                     }).show();
         } else {
-            //他人の　不適切
-            new MaterialDialog.Builder(this)
-                    .content(getString(R.string.block_comment_content))
-                    .contentColorRes(R.color.nameblack)
-                    .positiveText(getString(R.string.block_comment_positive))
-                    .positiveColorRes(R.color.gocci_header)
-                    .negativeText(getString(R.string.block_comment_negative))
-                    .negativeColorRes(R.color.gocci_header)
-                    .onPositive(new MaterialDialog.SingleButtonCallback() {
-                        @Override
-                        public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
-                            API3PostUtil.setCommentBlockAsync(CommentActivity.this, comment_id);
-                        }
-                    }).show();
+            if (isMyPage) {
+                new MaterialDialog.Builder(this)
+                        .content(getString(R.string.delete_comment_content))
+                        .contentColorRes(R.color.nameblack)
+                        .positiveText(getString(R.string.delete_comment_positive))
+                        .positiveColorRes(R.color.gocci_header)
+                        .negativeText(getString(R.string.delete_comment_negative))
+                        .negativeColorRes(R.color.gocci_header)
+                        .onPositive(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                                API3PostUtil.unsetCommentAsync(CommentActivity.this, comment_id, Const.ActivityCategory.COMMENT_PAGE);
+                            }
+                        }).show();
+            } else {
+                new MaterialDialog.Builder(this)
+                        .content(getString(R.string.block_comment_content))
+                        .contentColorRes(R.color.nameblack)
+                        .positiveText(getString(R.string.block_comment_positive))
+                        .positiveColorRes(R.color.gocci_header)
+                        .negativeText(getString(R.string.block_comment_negative))
+                        .negativeColorRes(R.color.gocci_header)
+                        .onPositive(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                                API3PostUtil.setCommentBlockAsync(CommentActivity.this, comment_id);
+                            }
+                        }).show();
+            }
         }
     }
 
@@ -586,12 +602,14 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
                         position = mComment_ids.indexOf(event.id);
                         mCommentusers.get(position).setComment(mEditedComment);
                         mCommentAdapter.notifyItemChanged(position + 1);
+                        mEditedComment = null;
                     }
                     break;
                 case SET_MEMO_EDIT:
                     if (mEditedMemo != null) {
                         mMemoData.setMemo(mEditedMemo);
                         mCommentAdapter.notifyItemChanged(0);
+                        mEditedMemo = null;
                     }
                     break;
             }

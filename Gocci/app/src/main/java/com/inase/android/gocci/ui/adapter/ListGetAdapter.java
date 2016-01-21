@@ -79,6 +79,7 @@ public class ListGetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     private void bindFollowFollower(final Const.FollowFollowerViewHolder holder, final ListGetData data) {
         holder.mUserName.setText(data.getUsername());
+        holder.mGochiCount.setText(String.valueOf(data.getGochi_num()));
 
         Picasso.with(mContext)
                 .load(data.getProfile_img())
@@ -150,6 +151,7 @@ public class ListGetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     private void bindRestCheer(final Const.RestCheerViewHolder holder, final ListGetData data) {
         holder.mUserName.setText(data.getUsername());
+        holder.mGochiCount.setText(String.valueOf(data.getGochi_num()));
 
         Picasso.with(mContext)
                 .load(data.getProfile_img())

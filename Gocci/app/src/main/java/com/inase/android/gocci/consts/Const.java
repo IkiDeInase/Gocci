@@ -59,7 +59,7 @@ public class Const {
         CAMERA_PREVIEW_ALREADY,
         MAP_SEARCH, MAP_PROFILE,
         WEBVIEW_LICENSE, WEBVIEW_POLICY,
-        LOGIN_SESSION, POST_PAGE
+        LOGIN_SESSION, POST_PAGE, USER_SEARCH
     }
 
     public enum ListCategory {
@@ -112,6 +112,7 @@ public class Const {
         GET_NOTICE_FIRST,
         GET_HEATMAP_FIRST,
         GET_NEAR_FIRST,
+        GET_USERNAME,
         SET_FACEBOOK_LINK,
         SET_TWITTER_LINK,
         UNSET_FACEBOOK_LINK,
@@ -263,6 +264,8 @@ public class Const {
         public ImageView mDeleteFollowButton;
         @Bind(R.id.account_button)
         public RippleView mAccountRipple;
+        @Bind(R.id.gochi_count_text)
+        public TextView mGochiCount;
 
         public FollowFollowerViewHolder(View view) {
             super(view);
@@ -295,6 +298,8 @@ public class Const {
         public ImageView mDeleteFollowButton;
         @Bind(R.id.account_button)
         public RippleView mAccountRipple;
+        @Bind(R.id.gochi_count_text)
+        public TextView mGochiCount;
 
         public RestCheerViewHolder(View view) {
             super(view);

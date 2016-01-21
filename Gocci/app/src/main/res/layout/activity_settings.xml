@@ -135,8 +135,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="24dp"
                 android:text="@string/setting_friend"
-                android:textColor="@color/nameblack"
-                android:visibility="gone" />
+                android:textColor="@color/nameblack" />
 
             <View
                 android:id="@+id/header_friend_line"
@@ -146,8 +145,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 android:layout_marginTop="4dp"
-                android:background="#e0e0e0"
-                android:visibility="gone" />
+                android:background="#e0e0e0" />
 
             <TextView
                 android:id="@+id/friend_search"
@@ -158,7 +156,6 @@
                 android:text="@string/setting_friend_search"
                 android:textColor="@color/namegrey"
                 android:textSize="16sp"
-                android:visibility="gone"
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="12dp" />
 
@@ -169,8 +166,7 @@
                 android:layout_below="@+id/friend_search"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:background="#e0e0e0"
-                android:visibility="gone" />
+                android:background="#e0e0e0" />
 
             <TextView
                 android:id="@+id/friend_invite"
