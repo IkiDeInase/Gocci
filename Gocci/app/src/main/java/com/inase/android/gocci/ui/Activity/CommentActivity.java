@@ -395,44 +395,44 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
             new MaterialDialog.Builder(this)
                     .items("コメントを編集する", "コメントを削除する")
                     .itemsCallback(new MaterialDialog.ListCallback() {
-                @Override
-                public void onSelection(MaterialDialog dialog, View itemView, int which, CharSequence text) {
-                    switch (which) {
-                        case 0:
-                            new MaterialDialog.Builder(CommentActivity.this)
-                                    .content(getString(R.string.edit_comment))
-                                    .contentColorRes(R.color.nameblack)
-                                    .contentGravity(GravityEnum.CENTER)
-                                    .inputType(InputType.TYPE_CLASS_TEXT)
-                                    .widgetColorRes(R.color.nameblack)
-                                    .positiveText(getString(R.string.complete))
-                                    .positiveColorRes(R.color.gocci_header)
-                                    .input("", comment, false, new MaterialDialog.InputCallback() {
-                                        @Override
-                                        public void onInput(MaterialDialog materialDialog, CharSequence charSequence) {
-                                            mEditedComment = charSequence.toString();
-                                            API3PostUtil.setCommentEditAsync(CommentActivity.this, comment_id, comment, Const.ActivityCategory.COMMENT_PAGE);
-                                        }
-                                    }).show();
-                            break;
-                        case 1:
-                            new MaterialDialog.Builder(CommentActivity.this)
-                                    .content(getString(R.string.delete_comment_content))
-                                    .contentColorRes(R.color.nameblack)
-                                    .positiveText(getString(R.string.delete_comment_positive))
-                                    .positiveColorRes(R.color.gocci_header)
-                                    .negativeText(getString(R.string.delete_comment_negative))
-                                    .negativeColorRes(R.color.gocci_header)
-                                    .onPositive(new MaterialDialog.SingleButtonCallback() {
-                                        @Override
-                                        public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
-                                            API3PostUtil.unsetCommentAsync(CommentActivity.this, comment_id, Const.ActivityCategory.COMMENT_PAGE);
-                                        }
-                                    }).show();
-                            break;
-                    }
-                }
-            }).show();
+                        @Override
+                        public void onSelection(MaterialDialog dialog, View itemView, int which, CharSequence text) {
+                            switch (which) {
+                                case 0:
+                                    new MaterialDialog.Builder(CommentActivity.this)
+                                            .content(getString(R.string.edit_comment))
+                                            .contentColorRes(R.color.nameblack)
+                                            .contentGravity(GravityEnum.CENTER)
+                                            .inputType(InputType.TYPE_CLASS_TEXT)
+                                            .widgetColorRes(R.color.nameblack)
+                                            .positiveText(getString(R.string.complete))
+                                            .positiveColorRes(R.color.gocci_header)
+                                            .input("", comment, false, new MaterialDialog.InputCallback() {
+                                                @Override
+                                                public void onInput(MaterialDialog materialDialog, CharSequence charSequence) {
+                                                    mEditedComment = charSequence.toString();
+                                                    API3PostUtil.setCommentEditAsync(CommentActivity.this, comment_id, comment, Const.ActivityCategory.COMMENT_PAGE);
+                                                }
+                                            }).show();
+                                    break;
+                                case 1:
+                                    new MaterialDialog.Builder(CommentActivity.this)
+                                            .content(getString(R.string.delete_comment_content))
+                                            .contentColorRes(R.color.nameblack)
+                                            .positiveText(getString(R.string.delete_comment_positive))
+                                            .positiveColorRes(R.color.gocci_header)
+                                            .negativeText(getString(R.string.delete_comment_negative))
+                                            .negativeColorRes(R.color.gocci_header)
+                                            .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                                @Override
+                                                public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                                                    API3PostUtil.unsetCommentAsync(CommentActivity.this, comment_id, Const.ActivityCategory.COMMENT_PAGE);
+                                                }
+                                            }).show();
+                                    break;
+                            }
+                        }
+                    }).show();
         } else {
             //他人の　不適切
             new MaterialDialog.Builder(this)

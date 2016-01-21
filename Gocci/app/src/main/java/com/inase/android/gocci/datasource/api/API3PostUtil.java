@@ -1094,7 +1094,7 @@ public class API3PostUtil {
                                     });
                                 } else {
                                     Toast.makeText(context, API3.Util.SetProfile_ImgLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
-                                    Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
+                                    tracker = Application_Gocci.getInstance().getDefaultTracker();
                                     tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                             setAction(Const.APICategory.SET_PROFILEIMG.name()).
                                             setLabel(API3.Util.SetProfile_ImgLocalCodeMessageTable(localCode)).build());
