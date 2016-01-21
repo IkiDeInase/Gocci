@@ -91,6 +91,7 @@ public class UserSearchActivity extends AppCompatActivity implements ShowUserSea
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {

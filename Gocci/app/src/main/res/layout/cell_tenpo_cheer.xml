@@ -32,13 +32,13 @@
             android:id="@+id/gochi_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
             android:layout_below="@+id/user_name">
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/gochi_count_icon"
-                android:layout_gravity="center_vertical"
                 android:src="@drawable/ic_icon_beef_orange"
                 />
 
@@ -47,10 +47,10 @@
                 android:layout_height="wrap_content"
                 android:singleLine="true"
                 android:textColor="@color/nameblack"
-                android:textSize="@dimen/normal_text"
+                android:textSize="@dimen/accent_text"
                 android:layout_gravity="center_vertical"
                 android:id="@+id/gochi_count_text"
-                android:layout_marginLeft="8dp" />
+                android:layout_marginLeft="4dp" />
         </LinearLayout>
     </RelativeLayout>
 
