@@ -342,6 +342,8 @@
     <string name="delete_comment_positive">Delete it</string>
     <string name="delete_comment_negative">no</string>
 
+    <string name="edit_comment">CommentEdit</string>
+
     <string name="block_comment_content">Do you want block this post?</string>
     <string name="block_comment_positive">Block it</string>
     <string name="block_comment_negative">no</string>

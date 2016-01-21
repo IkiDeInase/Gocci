@@ -324,6 +324,12 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
                     TimelineActivity.mNearCategory_id = 0;
                     TimelineActivity.mNearValue_id = 0;
 
+                    if (mTimelineAdapter == null) {
+                        mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.NEARLINE, mTimelineusers);
+                        mTimelineAdapter.setTimelineCallback(this);
+                        mTimelineRecyclerView.setAdapter(mTimelineAdapter);
+                    }
+
                     API3.Util.GetNearlineLocalCode localCode = API3.Impl.getRepository().GetNearlineParameterRegex(TimelineActivity.mLatitude, TimelineActivity.mLongitude, null, null, null);
                     if (localCode == null) {
                         mPresenter.getNearTimelinePostData(Const.APICategory.GET_NEARLINE_REFRESH, API3.Util.getGetNearlineAPI(

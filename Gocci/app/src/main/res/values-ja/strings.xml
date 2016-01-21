@@ -112,6 +112,8 @@
     <string name="add_restname">あなたのいるお店の名前を入力してください。※位置情報は現在の位置を使います。</string>
     <string name="add_restname_post">送信する</string>
 
+    <string name="edit_comment">コメント編集</string>
+
     <string name="error_internet_connection">通信に失敗しました</string>
 
     <string name="add_restname_complete_message">店舗を追加しました</string>

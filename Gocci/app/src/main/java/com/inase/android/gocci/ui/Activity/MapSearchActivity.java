@@ -335,9 +335,11 @@ public class MapSearchActivity extends AppCompatActivity implements ShowHeatmapP
             protected String doInBackground(Void... voids) {
                 try {
                     List<Address> list = geo.getFromLocation(lat, lng, 1);
-                    String address = list.get(0).getAddressLine(1);
-                    int index = address.indexOf(" ");
-                    mPlace = address.substring(index + 1);
+                    if (list != null && list.size() > 0) {
+                        String address = list.get(0).getAddressLine(1);
+                        int index = address.indexOf(" ");
+                        mPlace = address.substring(index + 1);
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
