@@ -370,7 +370,7 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
     }
 
     @Override
-    public void onMemoLongClick(final String user_id, final String memo) {
+    public void onMemoLongClick(final String user_id, final String username, final String memo) {
         if (user_id.equals(SavedData.getServerUserId(this))) {
             new MaterialDialog.Builder(CommentActivity.this)
                     .content(getString(R.string.edit_comment))
@@ -387,11 +387,24 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
                             API3PostUtil.setMemoEditAsync(CommentActivity.this, mPost_id, mEditedMemo, Const.ActivityCategory.COMMENT_PAGE);
                         }
                     }).show();
+        } else {
+            new MaterialDialog.Builder(this)
+                    .items("このユーザーのページへ行く")
+                    .itemsCallback(new MaterialDialog.ListCallback() {
+                        @Override
+                        public void onSelection(MaterialDialog dialog, View itemView, int which, CharSequence text) {
+                            switch (which) {
+                                case 0:
+                                    UserProfActivity.startUserProfActivity(user_id, username, CommentActivity.this);
+                                    break;
+                            }
+                        }
+                    }).show();
         }
     }
 
     @Override
-    public void onCommentLongClick(String user_id, final String comment_id, final String comment) {
+    public void onCommentLongClick(final String user_id, final String username, final String comment_id, final String comment) {
         if (user_id.equals(SavedData.getServerUserId(this))) {
             new MaterialDialog.Builder(this)
                     .items("コメントを編集する", "コメントを削除する")
@@ -437,30 +450,57 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
         } else {
             if (isMyPage) {
                 new MaterialDialog.Builder(this)
-                        .content(getString(R.string.delete_comment_content))
-                        .contentColorRes(R.color.nameblack)
-                        .positiveText(getString(R.string.delete_comment_positive))
-                        .positiveColorRes(R.color.gocci_header)
-                        .negativeText(getString(R.string.delete_comment_negative))
-                        .negativeColorRes(R.color.gocci_header)
-                        .onPositive(new MaterialDialog.SingleButtonCallback() {
+                        .items("このユーザーのページへ行く", "コメントを削除する")
+                        .itemsCallback(new MaterialDialog.ListCallback() {
                             @Override
-                            public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
-                                API3PostUtil.unsetCommentAsync(CommentActivity.this, comment_id, Const.ActivityCategory.COMMENT_PAGE);
+                            public void onSelection(MaterialDialog dialog, View itemView, int which, CharSequence text) {
+                                switch (which) {
+                                    case 0:
+                                        UserProfActivity.startUserProfActivity(user_id, username, CommentActivity.this);
+                                        break;
+                                    case 1:
+                                        new MaterialDialog.Builder(CommentActivity.this)
+                                                .content(getString(R.string.delete_comment_content))
+                                                .contentColorRes(R.color.nameblack)
+                                                .positiveText(getString(R.string.delete_comment_positive))
+                                                .positiveColorRes(R.color.gocci_header)
+                                                .negativeText(getString(R.string.delete_comment_negative))
+                                                .negativeColorRes(R.color.gocci_header)
+                                                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                                    @Override
+                                                    public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                                                        API3PostUtil.unsetCommentAsync(CommentActivity.this, comment_id, Const.ActivityCategory.COMMENT_PAGE);
+                                                    }
+                                                }).show();
+                                        break;
+                                }
                             }
                         }).show();
             } else {
                 new MaterialDialog.Builder(this)
-                        .content(getString(R.string.block_comment_content))
-                        .contentColorRes(R.color.nameblack)
-                        .positiveText(getString(R.string.block_comment_positive))
-                        .positiveColorRes(R.color.gocci_header)
-                        .negativeText(getString(R.string.block_comment_negative))
-                        .negativeColorRes(R.color.gocci_header)
-                        .onPositive(new MaterialDialog.SingleButtonCallback() {
+                        .items("このユーザーのページへ行く", "コメントを違反報告する")
+                        .itemsCallback(new MaterialDialog.ListCallback() {
                             @Override
-                            public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
-                                API3PostUtil.setCommentBlockAsync(CommentActivity.this, comment_id);
+                            public void onSelection(MaterialDialog dialog, View itemView, int which, CharSequence text) {
+                                switch (which) {
+                                    case 0:
+                                        UserProfActivity.startUserProfActivity(user_id, username, CommentActivity.this);
+                                        break;
+                                    case 1:
+                                        new MaterialDialog.Builder(CommentActivity.this)
+                                                .content(getString(R.string.block_comment_content))
+                                                .contentColorRes(R.color.nameblack)
+                                                .positiveText(getString(R.string.block_comment_positive))
+                                                .positiveColorRes(R.color.gocci_header)
+                                                .negativeText(getString(R.string.block_comment_negative))
+                                                .negativeColorRes(R.color.gocci_header)
+                                                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                                    @Override
+                                                    public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                                                        API3PostUtil.setCommentBlockAsync(CommentActivity.this, comment_id);
+                                                    }
+                                                }).show();
+                                }
                             }
                         }).show();
             }
