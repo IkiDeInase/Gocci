@@ -249,12 +249,19 @@ public class Application_Gocci extends Application {
             @Override
             protected void onPostExecute(Void result) {
                 if (SavedData.getPostingId(context) != 0) {
+                    final long startTime = System.currentTimeMillis();
                     TransferObserver observer = getTransfer(context).upload(Const.POST_MOVIE_BUCKET_NAME, SavedData.getAwsPostname(context) + "mp4", new File(SavedData.getVideoUrl(context)));
                     if (observer != null) {
                         observer.setTransferListener(new TransferListener() {
                             @Override
                             public void onStateChanged(int id, TransferState state) {
                                 if (state == TransferState.COMPLETED) {
+                                    Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
+                                    tracker.send(new HitBuilders.TimingBuilder()
+                                            .setCategory("System")
+                                            .setVariable("MovieUpload")
+                                            .setLabel(SavedData.getServerUserId(context))
+                                            .setValue(System.currentTimeMillis() - startTime).build());
                                     Toast.makeText(context, "以前投稿できていなかった動画の投稿が完了しました！", Toast.LENGTH_SHORT).show();
                                     SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
                                     SharedPreferences.Editor editor = prefs.edit();
@@ -289,12 +296,19 @@ public class Application_Gocci extends Application {
     }
 
     public static void postingVideoToS3(final Context context, final String mAwsPostName, final File mVideoFile, final CircleProgressView progressWheel, final Const.ActivityCategory activityCategory) {
+        final long startTime = System.currentTimeMillis();
         final TransferObserver transferObserver = getTransfer(context).upload(Const.POST_MOVIE_BUCKET_NAME, mAwsPostName + ".mp4", mVideoFile);
         transferObserver.setTransferListener(new TransferListener() {
             @Override
             public void onStateChanged(int id, TransferState state) {
                 if (state == TransferState.COMPLETED) {
                     SavedData.setPostingId(context, 0);
+                    Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
+                    tracker.send(new HitBuilders.TimingBuilder()
+                            .setCategory("System")
+                            .setVariable("MovieUpload")
+                            .setLabel(SavedData.getServerUserId(context))
+                            .setValue(System.currentTimeMillis() - startTime).build());
                 } else {
                     SavedData.setPostingId(context, id);
                 }

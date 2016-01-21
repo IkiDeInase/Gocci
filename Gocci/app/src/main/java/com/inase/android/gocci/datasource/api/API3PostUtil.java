@@ -36,14 +36,23 @@ import cz.msebera.android.httpclient.Header;
  */
 public class API3PostUtil {
 
+    private static long startTime;
+
     public static void setFeedbackAsync(final Context context, final String feedback) {
         if (Util.getConnectedState(context) != Util.NetworkStatus.OFF) {
             API3.Util.SetFeedbackLocalCode localCode = API3.Impl.getRepository().SetFeedbackParameterRegex(feedback);
             if (localCode == null) {
+                startTime = System.currentTimeMillis();
                 Application_Gocci.getJsonAsync(API3.Util.getSetFeedbackAPI(feedback), new JsonHttpResponseHandler() {
 
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
+                        tracker.send(new HitBuilders.TimingBuilder()
+                                .setCategory("System")
+                                .setVariable(Const.APICategory.SET_FEEDBACK.name())
+                                .setLabel(SavedData.getServerUserId(context))
+                                .setValue(System.currentTimeMillis() - startTime).build());
                         API3.Impl.getRepository().SetFeedbackResponse(response, new API3.PayloadResponseCallback() {
                             @Override
                             public void onSuccess(JSONObject payload) {
@@ -95,10 +104,17 @@ public class API3PostUtil {
         if (Util.getConnectedState(context) != Util.NetworkStatus.OFF) {
             API3.Util.SetPost_BlockLocalCode localCode = API3.Impl.getRepository().SetPost_BlockParameterRegex(post_id);
             if (localCode == null) {
+                startTime = System.currentTimeMillis();
                 Application_Gocci.getJsonAsync(API3.Util.getSetPostBlockAPI(post_id), new JsonHttpResponseHandler() {
 
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
+                        tracker.send(new HitBuilders.TimingBuilder()
+                                .setCategory("System")
+                                .setVariable(Const.APICategory.SET_POST_BLOCK.name())
+                                .setLabel(SavedData.getServerUserId(context))
+                                .setValue(System.currentTimeMillis() - startTime).build());
                         API3.Impl.getRepository().SetPost_BlockResponse(response, new API3.PayloadResponseCallback() {
                             @Override
                             public void onSuccess(JSONObject payload) {
@@ -150,10 +166,17 @@ public class API3PostUtil {
         if (Util.getConnectedState(context) != Util.NetworkStatus.OFF) {
             API3.Util.SetComment_BlockLocalCode localCode = API3.Impl.getRepository().SetComment_BlockParameterRegex(comment_id);
             if (localCode == null) {
+                startTime = System.currentTimeMillis();
                 Application_Gocci.getJsonAsync(API3.Util.getSetCommentBlockAPI(comment_id), new JsonHttpResponseHandler() {
 
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
+                        tracker.send(new HitBuilders.TimingBuilder()
+                                .setCategory("System")
+                                .setVariable(Const.APICategory.SET_COMMENT_BLOCK.name())
+                                .setLabel(SavedData.getServerUserId(context))
+                                .setValue(System.currentTimeMillis() - startTime).build());
                         API3.Impl.getRepository().SetComment_BlockResponse(response, new API3.PayloadResponseCallback() {
                             @Override
                             public void onSuccess(JSONObject payload) {
@@ -205,10 +228,17 @@ public class API3PostUtil {
         if (Util.getConnectedState(context) != Util.NetworkStatus.OFF) {
             API3.Util.UnsetPostLocalCode localCode = API3.Impl.getRepository().UnsetPostParameterRegex(post_id);
             if (localCode == null) {
+                startTime = System.currentTimeMillis();
                 Application_Gocci.getJsonAsync(API3.Util.getUnsetPostAPI(post_id), new JsonHttpResponseHandler() {
 
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
+                        tracker.send(new HitBuilders.TimingBuilder()
+                                .setCategory("System")
+                                .setVariable(Const.APICategory.UNSET_POST.name())
+                                .setLabel(SavedData.getServerUserId(context))
+                                .setValue(System.currentTimeMillis() - startTime).build());
                         API3.Impl.getRepository().UnsetPostResponse(response, new API3.PayloadResponseCallback() {
                             @Override
                             public void onSuccess(JSONObject payload) {
@@ -260,10 +290,17 @@ public class API3PostUtil {
         if (Util.getConnectedState(context) != Util.NetworkStatus.OFF) {
             API3.Util.UnsetCommentLocalCode localCode = API3.Impl.getRepository().UnsetCommentParameterRegex(comment_id);
             if (localCode == null) {
+                startTime = System.currentTimeMillis();
                 Application_Gocci.getJsonAsync(API3.Util.getUnsetCommentAPI(comment_id), new JsonHttpResponseHandler() {
 
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
+                        tracker.send(new HitBuilders.TimingBuilder()
+                                .setCategory("System")
+                                .setVariable(Const.APICategory.UNSET_COMMENT.name())
+                                .setLabel(SavedData.getServerUserId(context))
+                                .setValue(System.currentTimeMillis() - startTime).build());
                         API3.Impl.getRepository().UnsetCommentResponse(response, new API3.PayloadResponseCallback() {
                             @Override
                             public void onSuccess(JSONObject payload) {
@@ -315,10 +352,17 @@ public class API3PostUtil {
         if (Util.getConnectedState(context) != Util.NetworkStatus.OFF) {
             API3.Util.SetComment_EditLocalCode localCode = API3.Impl.getRepository().SetComment_EditParameterRegex(comment_id, comment);
             if (localCode == null) {
+                startTime = System.currentTimeMillis();
                 Application_Gocci.getJsonAsync(API3.Util.getSetCommentEditAPI(comment_id, comment), new JsonHttpResponseHandler() {
 
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
+                        tracker.send(new HitBuilders.TimingBuilder()
+                                .setCategory("System")
+                                .setVariable(Const.APICategory.SET_COMMENT_EDIT.name())
+                                .setLabel(SavedData.getServerUserId(context))
+                                .setValue(System.currentTimeMillis() - startTime).build());
                         API3.Impl.getRepository().SetComment_EditResponse(response, new API3.PayloadResponseCallback() {
                             @Override
                             public void onSuccess(JSONObject payload) {
@@ -370,10 +414,17 @@ public class API3PostUtil {
         if (Util.getConnectedState(context) != Util.NetworkStatus.OFF) {
             API3.Util.SetMemo_EditLocalCode localCode = API3.Impl.getRepository().SetMemo_EditParameterRegex(post_id, memo);
             if (localCode == null) {
+                startTime = System.currentTimeMillis();
                 Application_Gocci.getJsonAsync(API3.Util.getSetMemoEditAPI(post_id, memo), new JsonHttpResponseHandler() {
 
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
+                        tracker.send(new HitBuilders.TimingBuilder()
+                                .setCategory("System")
+                                .setVariable(Const.APICategory.SET_MEMO_EDIT.name())
+                                .setLabel(SavedData.getServerUserId(context))
+                                .setValue(System.currentTimeMillis() - startTime).build());
                         API3.Impl.getRepository().SetMemo_EditResponse(response, new API3.PayloadResponseCallback() {
                             @Override
                             public void onSuccess(JSONObject payload) {
@@ -425,10 +476,17 @@ public class API3PostUtil {
         if (Util.getConnectedState(context) != Util.NetworkStatus.OFF) {
             API3.Util.SetPasswordLocalCode localCode = API3.Impl.getRepository().SetPasswordParameterRegex(password);
             if (localCode == null) {
+                startTime = System.currentTimeMillis();
                 Application_Gocci.getJsonAsync(API3.Util.getSetPasswordAPI(password), new JsonHttpResponseHandler() {
 
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
+                        tracker.send(new HitBuilders.TimingBuilder()
+                                .setCategory("System")
+                                .setVariable(Const.APICategory.SET_PASSWORD.name())
+                                .setLabel(SavedData.getServerUserId(context))
+                                .setValue(System.currentTimeMillis() - startTime).build());
                         API3.Impl.getRepository().SetPasswordResponse(response, new API3.PayloadResponseCallback() {
                             @Override
                             public void onSuccess(JSONObject payload) {
@@ -481,10 +539,17 @@ public class API3PostUtil {
         if (Util.getConnectedState(context) != Util.NetworkStatus.OFF) {
             API3.Util.SetRestLocalCode localCode = API3.Impl.getRepository().SetRestParameterRegex(restname, lat, lon);
             if (localCode == null) {
+                startTime = System.currentTimeMillis();
                 Application_Gocci.getJsonAsync(API3.Util.getSetRestAPI(restname, lat, lon), new JsonHttpResponseHandler() {
 
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
+                        tracker.send(new HitBuilders.TimingBuilder()
+                                .setCategory("System")
+                                .setVariable(Const.APICategory.SET_RESTADD.name())
+                                .setLabel(SavedData.getServerUserId(context))
+                                .setValue(System.currentTimeMillis() - startTime).build());
                         API3.Impl.getRepository().SetRestResponse(response, new API3.PayloadResponseCallback() {
                             @Override
                             public void onSuccess(JSONObject payload) {
@@ -541,10 +606,17 @@ public class API3PostUtil {
         if (Util.getConnectedState(context) != Util.NetworkStatus.OFF) {
             API3.Util.SetSns_LinkLocalCode localCode = API3.Impl.getRepository().SetSns_LinkParameterRegex(provider, sns_token);
             if (localCode == null) {
+                startTime = System.currentTimeMillis();
                 Application_Gocci.getJsonAsync(API3.Util.getSetSnsLinkAPI(provider, sns_token), new JsonHttpResponseHandler() {
 
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
+                        tracker.send(new HitBuilders.TimingBuilder()
+                                .setCategory("System")
+                                .setVariable(api.name())
+                                .setLabel(SavedData.getServerUserId(context))
+                                .setValue(System.currentTimeMillis() - startTime).build());
                         API3.Impl.getRepository().SetSns_LinkResponse(response, new API3.PayloadResponseCallback() {
                             @Override
                             public void onSuccess(JSONObject payload) {
@@ -596,10 +668,17 @@ public class API3PostUtil {
         if (Util.getConnectedState(context) != Util.NetworkStatus.OFF) {
             API3.Util.UnsetSns_LinkLocalCode localCode = API3.Impl.getRepository().UnsetSns_LinkParameterRegex(provider, sns_token);
             if (localCode == null) {
+                startTime = System.currentTimeMillis();
                 Application_Gocci.getJsonAsync(API3.Util.getUnsetSnsLinkAPI(provider, sns_token), new JsonHttpResponseHandler() {
 
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
+                        tracker.send(new HitBuilders.TimingBuilder()
+                                .setCategory("System")
+                                .setVariable(api.name())
+                                .setLabel(SavedData.getServerUserId(context))
+                                .setValue(System.currentTimeMillis() - startTime).build());
                         API3.Impl.getRepository().UnsetSns_LinkResponse(response, new API3.PayloadResponseCallback() {
                             @Override
                             public void onSuccess(JSONObject payload) {
@@ -651,10 +730,17 @@ public class API3PostUtil {
         if (Util.getConnectedState(context) != Util.NetworkStatus.OFF) {
             API3.Util.SetDeviceLocalCode localCode = API3.Impl.getRepository().SetDeviceParameterRegex(regId, os, ver, model);
             if (localCode == null) {
+                startTime = System.currentTimeMillis();
                 Application_Gocci.getJsonAsync(API3.Util.getSetDeviceAPI(regId, os, ver, model), new JsonHttpResponseHandler() {
 
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
+                        tracker.send(new HitBuilders.TimingBuilder()
+                                .setCategory("System")
+                                .setVariable(Const.APICategory.SET_DEVICE.name())
+                                .setLabel(SavedData.getServerUserId(context))
+                                .setValue(System.currentTimeMillis() - startTime).build());
                         API3.Impl.getRepository().SetDeviceResponse(response, new API3.PayloadResponseCallback() {
                             @Override
                             public void onSuccess(JSONObject payload) {
@@ -706,10 +792,17 @@ public class API3PostUtil {
         if (Util.getConnectedState(context) != Util.NetworkStatus.OFF) {
             API3.Util.UnsetDeviceLocalCode localCode = API3.Impl.getRepository().UnsetDeviceParameterRegex();
             if (localCode == null) {
+                startTime = System.currentTimeMillis();
                 Application_Gocci.getJsonAsync(API3.Util.getUnsetDeviceAPI(), new JsonHttpResponseHandler() {
 
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
+                        tracker.send(new HitBuilders.TimingBuilder()
+                                .setCategory("System")
+                                .setVariable(Const.APICategory.UNSET_DEVICE.name())
+                                .setLabel(SavedData.getServerUserId(context))
+                                .setValue(System.currentTimeMillis() - startTime).build());
                         API3.Impl.getRepository().UnsetDeviceResponse(response, new API3.PayloadResponseCallback() {
                             @Override
                             public void onSuccess(JSONObject payload) {
@@ -761,10 +854,17 @@ public class API3PostUtil {
         if (Util.getConnectedState(context) != Util.NetworkStatus.OFF) {
             API3.Util.SetUsernameLocalCode localCode = API3.Impl.getRepository().SetUsernameParameterRegex(username);
             if (localCode == null) {
+                startTime = System.currentTimeMillis();
                 Application_Gocci.getJsonAsync(API3.Util.getSetUsernameAPI(username), new JsonHttpResponseHandler() {
 
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
+                        tracker.send(new HitBuilders.TimingBuilder()
+                                .setCategory("System")
+                                .setVariable(Const.APICategory.SET_USERNAME.name())
+                                .setLabel(SavedData.getServerUserId(context))
+                                .setValue(System.currentTimeMillis() - startTime).build());
                         API3.Impl.getRepository().SetUsernameResponse(response, new API3.PayloadResponseCallback() {
                             @Override
                             public void onSuccess(JSONObject payload) {
@@ -815,17 +915,31 @@ public class API3PostUtil {
 
     public static void setProfileImgAsync(final Context context, final String post_date, File file, final Const.ActivityCategory activityCategory) {
         if (Util.getConnectedState(context) != Util.NetworkStatus.OFF) {
+            startTime = System.currentTimeMillis();
             TransferObserver transferObserver = Application_Gocci.getShareTransfer().upload(Const.POST_PHOTO_BUCKET_NAME, post_date + "_img.png", file);
             transferObserver.setTransferListener(new TransferListener() {
                 @Override
                 public void onStateChanged(int id, TransferState state) {
                     if (state == TransferState.COMPLETED) {
+                        Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
+                        tracker.send(new HitBuilders.TimingBuilder()
+                                .setCategory("System")
+                                .setVariable("ProfileImgUpload")
+                                .setLabel(SavedData.getServerUserId(context))
+                                .setValue(System.currentTimeMillis() - startTime).build());
                         API3.Util.SetProfile_ImgLocalCode localCode = API3.Impl.getRepository().SetProfile_ImgParameterRegex(post_date + "_img");
                         if (localCode == null) {
+                            startTime = System.currentTimeMillis();
                             Application_Gocci.getJsonAsync(API3.Util.getSetProfileImgAPI(post_date + "_img"), new JsonHttpResponseHandler() {
 
                                 @Override
                                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                                    Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
+                                    tracker.send(new HitBuilders.TimingBuilder()
+                                            .setCategory("System")
+                                            .setVariable(Const.APICategory.SET_PROFILEIMG.name())
+                                            .setLabel(SavedData.getServerUserId(context))
+                                            .setValue(System.currentTimeMillis() - startTime).build());
                                     API3.Impl.getRepository().SetProfile_ImgResponse(response, new API3.PayloadResponseCallback() {
                                         @Override
                                         public void onSuccess(JSONObject payload) {
@@ -869,7 +983,7 @@ public class API3PostUtil {
                             });
                         } else {
                             Toast.makeText(context, API3.Util.SetProfile_ImgLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
-                            Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
+                            tracker = Application_Gocci.getInstance().getDefaultTracker();
                             tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
                                     setAction(Const.APICategory.SET_PROFILEIMG.name()).
                                     setLabel(API3.Util.SetProfile_ImgLocalCodeMessageTable(localCode)).build());
@@ -912,17 +1026,31 @@ public class API3PostUtil {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                    startTime = System.currentTimeMillis();
                     TransferObserver transferObserver = Application_Gocci.getShareTransfer().upload(Const.POST_PHOTO_BUCKET_NAME, post_date + "_img.png", file);
                     transferObserver.setTransferListener(new TransferListener() {
                         @Override
                         public void onStateChanged(int id, TransferState state) {
                             if (state == TransferState.COMPLETED) {
+                                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
+                                tracker.send(new HitBuilders.TimingBuilder()
+                                        .setCategory("System")
+                                        .setVariable("ProfileImgUpload")
+                                        .setLabel(SavedData.getServerUserId(context))
+                                        .setValue(System.currentTimeMillis() - startTime).build());
                                 API3.Util.SetProfile_ImgLocalCode localCode = API3.Impl.getRepository().SetProfile_ImgParameterRegex(post_date + "_img");
                                 if (localCode == null) {
+                                    startTime = System.currentTimeMillis();
                                     Application_Gocci.getJsonAsync(API3.Util.getSetProfileImgAPI(post_date + "_img"), new JsonHttpResponseHandler() {
 
                                         @Override
                                         public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                                            Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
+                                            tracker.send(new HitBuilders.TimingBuilder()
+                                                    .setCategory("System")
+                                                    .setVariable(Const.APICategory.SET_PROFILEIMG.name())
+                                                    .setLabel(SavedData.getServerUserId(context))
+                                                    .setValue(System.currentTimeMillis() - startTime).build());
                                             API3.Impl.getRepository().SetProfile_ImgResponse(response, new API3.PayloadResponseCallback() {
                                                 @Override
                                                 public void onSuccess(JSONObject payload) {
@@ -1009,10 +1137,17 @@ public class API3PostUtil {
         if (Util.getConnectedState(context) != Util.NetworkStatus.OFF) {
             API3.Util.SetPostLocalCode localCode = API3.Impl.getRepository().SetPostParameterRegex(rest_id, movie_name, category_id == 1 ? null : String.valueOf(category_id), value.isEmpty() ? null : value, memo.isEmpty() ? null : memo, cheer_flag == 0 ? null : String.valueOf(cheer_flag));
             if (localCode == null) {
+                startTime = System.currentTimeMillis();
                 Application_Gocci.getJsonAsync(API3.Util.getSetPostAPI(rest_id, movie_name, category_id == 1 ? null : String.valueOf(category_id), value.isEmpty() ? null : value, memo.isEmpty() ? null : memo, cheer_flag == 0 ? null : String.valueOf(cheer_flag)), new JsonHttpResponseHandler() {
 
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
+                        tracker.send(new HitBuilders.TimingBuilder()
+                                .setCategory("System")
+                                .setVariable(Const.APICategory.SET_POST.name())
+                                .setLabel(SavedData.getServerUserId(context))
+                                .setValue(System.currentTimeMillis() - startTime).build());
                         API3.Impl.getRepository().SetPostResponse(response, new API3.PayloadResponseCallback() {
                             @Override
                             public void onSuccess(JSONObject payload) {

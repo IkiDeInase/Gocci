@@ -2,10 +2,13 @@ package com.inase.android.gocci.datasource.repository;
 
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3;
+import com.inase.android.gocci.utils.SavedData;
 import com.inase.android.gocci.utils.Util;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -23,6 +26,7 @@ import cz.msebera.android.httpclient.Header;
 public class NearRepositoryImpl implements NearRepository {
     private static NearRepositoryImpl sNearRepository;
     private final API3 mAPI3;
+    private long startTime;
 
     public NearRepositoryImpl(API3 api3) {
         mAPI3 = api3;
@@ -38,9 +42,16 @@ public class NearRepositoryImpl implements NearRepository {
     @Override
     public void getNear(final Const.APICategory api, final String url, final NearRepositoryCallback cb) {
         if (Util.getConnectedState(Application_Gocci.getInstance().getApplicationContext()) != Util.NetworkStatus.OFF) {
+            startTime = System.currentTimeMillis();
             Application_Gocci.getJsonSync(url, new JsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
+                    tracker.send(new HitBuilders.TimingBuilder()
+                            .setCategory("System")
+                            .setVariable(api.name())
+                            .setLabel(SavedData.getServerUserId(Application_Gocci.getInstance()))
+                            .setValue(System.currentTimeMillis() - startTime).build());
                     mAPI3.GetNearResponse(response, new API3.PayloadResponseCallback() {
 
                         @Override
