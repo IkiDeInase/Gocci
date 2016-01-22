@@ -11,6 +11,7 @@ import android.media.ThumbnailUtils;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.telephony.TelephonyManager;
@@ -26,13 +27,11 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferObserver;
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferState;
-import com.facebook.share.model.ShareVideo;
-import com.facebook.share.model.ShareVideoContent;
-import com.facebook.share.widget.ShareDialog;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3PostUtil;
+import com.inase.android.gocci.utils.share.FacebookUtil;
 import com.inase.android.gocci.utils.share.TwitterUtil;
 import com.twitter.sdk.android.core.TwitterAuthToken;
 
@@ -276,61 +275,76 @@ public class Util {
                 }).show();
     }
 
-    public static void facebookVideoShare(final Context context, final ShareDialog dialog, String key) {
-        final File file = new File(Environment.getExternalStorageDirectory().toString() + "/" + key);
-        TransferObserver transferObserver = Application_Gocci.getTransfer(context).download(Const.GET_MOVIE_BUCKET_NAME, "mp4/" + key + ".mp4", file);
-        transferObserver.setTransferListener(new TransferListener() {
-            @Override
-            public void onStateChanged(int id, TransferState state) {
-                if (state == TransferState.COMPLETED) {
-                    Uri uri = Uri.fromFile(file);
-                    if (ShareDialog.canShow(ShareVideoContent.class)) {
-                        ShareVideo video = new ShareVideo.Builder()
-                                .setLocalUrl(uri)
-                                .build();
-                        ShareVideoContent content = new ShareVideoContent.Builder()
-                                .setVideo(video)
-                                .build();
-                        dialog.show(content);
-                    } else {
-                        // ...sharing failed, handle error
-                        Toast.makeText(context, context.getString(R.string.error_share), Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-
-            @Override
-            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
-
-            }
-
-            @Override
-            public void onError(int id, Exception ex) {
-                Toast.makeText(context, context.getString(R.string.error_share), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    public static void twitterShare(final Context context, final String message, final String key, final TwitterAuthToken authToken) {
+    public static void facebookVideoShare(final Context context, final String message, final String key, final String token) {
         new MaterialDialog.Builder(context)
-                .title("Twitterシェアの確認")
-                .titleColorRes(R.color.namegrey)
-                .content("Twitterシェアでは自動で動画がシェアされます。\nこの動画をシェアしますか？")
+                .content("Facebookシェアでは自動で動画がシェアされます。\nメッセージを追加してシェアしましょう！")
                 .contentColorRes(R.color.namegrey)
                 .positiveText("シェアする")
                 .positiveColorRes(R.color.gocci_header)
                 .negativeText("いいえ")
                 .negativeColorRes(R.color.gocci_header)
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                .inputType(InputType.TYPE_CLASS_TEXT)
+                .widgetColorRes(R.color.facebook_background)
+                .input("", message, false, new MaterialDialog.InputCallback() {
                     @Override
-                    public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                    public void onInput(MaterialDialog materialDialog, final CharSequence charSequence) {
                         final File file = new File(Environment.getExternalStorageDirectory().toString() + "/" + key);
                         TransferObserver transferObserver = Application_Gocci.getTransfer(context).download(Const.GET_MOVIE_BUCKET_NAME, "mp4/" + key + ".mp4", file);
                         transferObserver.setTransferListener(new TransferListener() {
                             @Override
                             public void onStateChanged(int id, TransferState state) {
                                 if (state == TransferState.COMPLETED) {
-                                    TwitterUtil.performShare(context, authToken.token, authToken.secret, file, message);
+                                    new AsyncTask<Void, Void, Void>() {
+                                        @Override
+                                        protected Void doInBackground(Void... params) {
+                                            FacebookUtil.performShare(context, token, file, charSequence.toString());
+                                            return null;
+                                        }
+                                    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                                }
+                            }
+
+                            @Override
+                            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+
+                            }
+
+                            @Override
+                            public void onError(int id, Exception ex) {
+                                Toast.makeText(context, context.getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                }).show();
+    }
+
+    public static void twitterVideoShare(final Context context, final String message, final String key, final TwitterAuthToken authToken) {
+        new MaterialDialog.Builder(context)
+                .content("Twitterシェアでは自動で動画がシェアされます。\nメッセージを追加してシェアしましょう！")
+                .contentColorRes(R.color.namegrey)
+                .positiveText("シェアする")
+                .positiveColorRes(R.color.gocci_header)
+                .negativeText("いいえ")
+                .negativeColorRes(R.color.gocci_header)
+                .inputType(InputType.TYPE_CLASS_TEXT)
+                .widgetColorRes(R.color.twitter_background)
+                .inputRangeRes(6, 115, R.color.gocci_header)
+                .input("", message, false, new MaterialDialog.InputCallback() {
+                    @Override
+                    public void onInput(MaterialDialog materialDialog, final CharSequence charSequence) {
+                        final File file = new File(Environment.getExternalStorageDirectory().toString() + "/" + key);
+                        TransferObserver transferObserver = Application_Gocci.getTransfer(context).download(Const.GET_MOVIE_BUCKET_NAME, "mp4/" + key + ".mp4", file);
+                        transferObserver.setTransferListener(new TransferListener() {
+                            @Override
+                            public void onStateChanged(int id, TransferState state) {
+                                if (state == TransferState.COMPLETED) {
+                                    new AsyncTask<Void, Void, Void>() {
+                                        @Override
+                                        protected Void doInBackground(Void... params) {
+                                            TwitterUtil.performShare(context, authToken.token, authToken.secret, file, charSequence.toString());
+                                            return null;
+                                        }
+                                    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                                 }
                             }
 
