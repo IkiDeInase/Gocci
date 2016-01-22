@@ -1,5 +1,6 @@
 package com.inase.android.gocci.ui.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -63,9 +64,10 @@ public class UserSearchActivity extends AppCompatActivity implements ShowUserSea
 
     private ShowUserSearchPresenter mPresenter;
 
-    public static void startUserSearchActivity(Context context) {
-        Intent intent = new Intent(context, UserSearchActivity.class);
-        context.startActivity(intent);
+    public static void startUserSearchActivity(Activity startingActivity) {
+        Intent intent = new Intent(startingActivity, UserSearchActivity.class);
+        startingActivity.startActivity(intent);
+        startingActivity.overridePendingTransition(R.anim.activity_in, R.anim.activity_out);
     }
 
     @Override

@@ -246,6 +246,8 @@ public class TimelineGochiFragment extends Fragment implements AudioCapabilities
         mTimelineRecyclerView.addOnScrollListener(scrollListener);
         mTimelineRecyclerView.setScrollViewCallbacks(this);
 
+        mEmptyText.setText("投稿をお気に入りすると表示されます！");
+
         API3.Util.GetGochilineLocalCode localCode = API3.Impl.getRepository().GetGochilineParameterRegex(null, null, null);
         if (localCode == null) {
             mPresenter.getGochiTimelinePostData(Const.APICategory.GET_GOCHILINE_FIRST, API3.Util.getGetGochilineAPI(

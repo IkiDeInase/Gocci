@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.andexert.library.RippleView;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -55,6 +56,7 @@ import com.inase.android.gocci.ui.activity.CommentActivity;
 import com.inase.android.gocci.ui.activity.TenpoActivity;
 import com.inase.android.gocci.ui.activity.TimelineActivity;
 import com.inase.android.gocci.ui.activity.UserProfActivity;
+import com.inase.android.gocci.ui.activity.UserSearchActivity;
 import com.inase.android.gocci.ui.adapter.TimelineAdapter;
 import com.inase.android.gocci.utils.SavedData;
 import com.inase.android.gocci.utils.Util;
@@ -85,6 +87,8 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
     TextView mEmptyText;
     @Bind(R.id.empty_image)
     ImageView mEmptyImage;
+    @Bind(R.id.empty_ripple)
+    RippleView mEmptyRipple;
 
     private AppBarLayout appBarLayout;
     private FloatingActionButton fab;
@@ -239,6 +243,16 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
         mTimelineRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
         mTimelineRecyclerView.setScrollViewCallbacks(this);
         mTimelineRecyclerView.addOnScrollListener(scrollListener);
+
+        mEmptyText.setText("ユーザーを探してみましょう！");
+        mEmptyRipple.setVisibility(View.VISIBLE);
+
+        mEmptyRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
+            @Override
+            public void onComplete(RippleView rippleView) {
+                UserSearchActivity.startUserSearchActivity(getActivity());
+            }
+        });
 
         fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
         appBarLayout = (AppBarLayout) getActivity().findViewById(R.id.app_bar);

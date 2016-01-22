@@ -14,6 +14,31 @@
             android:layout_height="match_parent" />
     </android.support.v4.widget.SwipeRefreshLayout>
 
+    <com.andexert.library.RippleView
+        android:id="@+id/empty_ripple"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginLeft="85dp"
+        android:layout_marginRight="85dp"
+        android:layout_marginTop="24dp"
+        android:background="@color/gocci_header"
+        android:layout_below="@+id/empty_text"
+        android:layout_centerHorizontal="true"
+        android:gravity="center">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textSize="@dimen/accent_text"
+            android:text="@string/search_friend_yeah"
+            android:paddingBottom="8dp"
+            android:paddingTop="8dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:textColor="@color/white"/>
+    </com.andexert.library.RippleView>
+
     <TextView
         android:id="@+id/empty_text"
         android:layout_width="wrap_content"
@@ -31,8 +56,8 @@
         android:layout_width="175dp"
         android:layout_height="175dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="120dp"
-        android:src="@drawable/ic_gocci_wao"
-        android:visibility="gone" />
+        android:layout_marginTop="100dp"
+        android:visibility="gone"
+        android:src="@drawable/ic_gocci_wao" />
 
 </RelativeLayout>
