@@ -4,6 +4,9 @@ import android.content.Context;
 import android.widget.Toast;
 
 import com.inase.android.gocci.Application_Gocci;
+import com.inase.android.gocci.event.BusHolder;
+import com.inase.android.gocci.event.NotificationNumberEvent;
+import com.inase.android.gocci.utils.SavedData;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 
@@ -38,16 +41,16 @@ public class FacebookUtil {
         }
         //190　400
         Application_Gocci.getClient().removeAllHeaders();
-        Application_Gocci.getClient().setTimeout(50000);
+        Application_Gocci.getClient().setTimeout(100000);
         Application_Gocci.getClient().post(context, FACEBOOK_SHARE_URL, param, new TextHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), "Facebookシェアに失敗しました", Toast.LENGTH_SHORT).show();
+                BusHolder.get().post(new NotificationNumberEvent(SavedData.getNotification(context), "Facebookシェアに失敗しました"));
             }
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, String responseString) {
-                Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), "Facebookシェアが完了しました", Toast.LENGTH_SHORT).show();
+                BusHolder.get().post(new NotificationNumberEvent(SavedData.getNotification(context), "Facebookシェアが完了しました"));
             }
         });
     }

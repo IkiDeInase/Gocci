@@ -85,8 +85,8 @@ public class Application_Gocci extends Application {
         sAsyncHttpClient.get(url, responseHandler);
     }
 
-    public static AsyncHttpClient getClient() {
-        return sAsyncHttpClient;
+    public static SyncHttpClient getClient() {
+        return sSyncHttpClient;
     }
 
     public static CognitoCachingCredentialsProvider getLoginProvider() {

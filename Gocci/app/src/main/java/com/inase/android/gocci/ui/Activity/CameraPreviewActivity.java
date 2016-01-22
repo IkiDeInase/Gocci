@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.location.Location;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -54,7 +55,9 @@ import com.inase.android.gocci.ui.view.GocciTwitterLoginButton;
 import com.inase.android.gocci.ui.view.SquareVideoView;
 import com.inase.android.gocci.utils.SavedData;
 import com.inase.android.gocci.utils.Util;
+import com.inase.android.gocci.utils.share.FacebookShareIntentService;
 import com.inase.android.gocci.utils.share.FacebookUtil;
+import com.inase.android.gocci.utils.share.TwitterShareIntentService;
 import com.inase.android.gocci.utils.share.TwitterUtil;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
@@ -480,7 +483,13 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
                                             if (mTwitterMemo.isEmpty()) {
                                                 mTwitterMemo = getMessage();
                                             }
-                                            TwitterUtil.performShare(CameraPreviewActivity.this, authToken.token, authToken.secret, mVideoFile, mTwitterMemo);
+                                            new AsyncTask<Void, Void, Void>() {
+                                                @Override
+                                                protected Void doInBackground(Void... params) {
+                                                    TwitterUtil.performShare(CameraPreviewActivity.this, authToken.token, authToken.secret, mVideoFile, mTwitterMemo);
+                                                    return null;
+                                                }
+                                            }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                                         } catch (Exception e) {
                                             e.printStackTrace();
                                         }
@@ -494,7 +503,13 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
                                 if (mFacebookMemo.isEmpty()) {
                                     mFacebookMemo = getMessage();
                                 }
-                                FacebookUtil.performShare(CameraPreviewActivity.this, AccessToken.getCurrentAccessToken().getToken(), mVideoFile, mFacebookMemo);
+                                new AsyncTask<Void, Void, Void>() {
+                                    @Override
+                                    protected Void doInBackground(Void... params) {
+                                        FacebookUtil.performShare(CameraPreviewActivity.this, AccessToken.getCurrentAccessToken().getToken(), mVideoFile, mFacebookMemo);
+                                        return null;
+                                    }
+                                }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                             }
                             API3PostUtil.setPostAsync(CameraPreviewActivity.this, Const.ActivityCategory.CAMERA_PREVIEW, mRest_id, mAwsPostName, mCategory_id, mValue, mMemo, mCheer_flag);
                         } else {

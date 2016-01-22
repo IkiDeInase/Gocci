@@ -245,7 +245,6 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
         mTimelineRecyclerView.addOnScrollListener(scrollListener);
 
         mEmptyText.setText("ユーザーを探してみましょう！");
-        mEmptyRipple.setVisibility(View.VISIBLE);
 
         mEmptyRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
             @Override
@@ -570,12 +569,14 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
         }
         mEmptyImage.setVisibility(View.VISIBLE);
         mEmptyText.setVisibility(View.VISIBLE);
+        mEmptyRipple.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void hideEmpty() {
         mEmptyImage.setVisibility(View.INVISIBLE);
         mEmptyText.setVisibility(View.INVISIBLE);
+        mEmptyRipple.setVisibility(View.INVISIBLE);
     }
 
     @Override

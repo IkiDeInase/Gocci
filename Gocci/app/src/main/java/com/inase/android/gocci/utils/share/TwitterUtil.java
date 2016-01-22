@@ -5,6 +5,9 @@ import android.util.Base64;
 import android.widget.Toast;
 
 import com.inase.android.gocci.Application_Gocci;
+import com.inase.android.gocci.event.BusHolder;
+import com.inase.android.gocci.event.NotificationNumberEvent;
+import com.inase.android.gocci.utils.SavedData;
 import com.inase.android.gocci.utils.encode.HttpParameters;
 import com.inase.android.gocci.utils.encode.PercentEscaper;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -285,11 +288,11 @@ public class TwitterUtil {
         httpParameters.put(OAUTH_SIGNATURE, createOAuthSignature("POST", POST_TWITTER, tokenSecret, httpParameters), true);
 
         Application_Gocci.getClient().addHeader(HTTP_AUTHORIZATION_HEADER, createOAuthSignatureHeaderEntry(httpParameters));
-        Application_Gocci.getClient().setTimeout(50000);
+        Application_Gocci.getClient().setTimeout(100000);
         Application_Gocci.getClient().post(context, POST_TWITTER, requestParams, new JsonHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), "Twitterシェアに失敗しました", Toast.LENGTH_SHORT).show();
+                BusHolder.get().post(new NotificationNumberEvent(SavedData.getNotification(context), "Twitterシェアに失敗しました"));
             }
 
             @Override
@@ -317,12 +320,12 @@ public class TwitterUtil {
         httpParameters.put(OAUTH_SIGNATURE, createOAuthSignature("POST", POST_TWITTER, tokenSecret, httpParameters), true);
 
         Application_Gocci.getClient().removeHeader(HTTP_AUTHORIZATION_HEADER);
-        Application_Gocci.getClient().setTimeout(50000);
+        Application_Gocci.getClient().setTimeout(100000);
         Application_Gocci.getClient().addHeader(HTTP_AUTHORIZATION_HEADER, createOAuthSignatureHeaderEntry(httpParameters));
         Application_Gocci.getClient().post(context, POST_TWITTER, requestParams, new JsonHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), "Twitterシェアに失敗しました", Toast.LENGTH_SHORT).show();
+                BusHolder.get().post(new NotificationNumberEvent(SavedData.getNotification(context), "Twitterシェアに失敗しました"));
             }
 
             @Override
@@ -348,12 +351,12 @@ public class TwitterUtil {
         httpParameters.put(OAUTH_SIGNATURE, createOAuthSignature("POST", POST_TWITTER, tokenSecret, httpParameters), true);
 
         Application_Gocci.getClient().removeHeader(HTTP_AUTHORIZATION_HEADER);
-        Application_Gocci.getClient().setTimeout(50000);
+        Application_Gocci.getClient().setTimeout(100000);
         Application_Gocci.getClient().addHeader(HTTP_AUTHORIZATION_HEADER, createOAuthSignatureHeaderEntry(httpParameters));
         Application_Gocci.getClient().post(context, POST_TWITTER, requestParams, new JsonHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), "Twitterシェアに失敗しました", Toast.LENGTH_SHORT).show();
+                BusHolder.get().post(new NotificationNumberEvent(SavedData.getNotification(context), "Twitterシェアに失敗しました"));
             }
 
             @Override
@@ -363,7 +366,7 @@ public class TwitterUtil {
         });
     }
 
-    private static void performVideoTweet(Context context, final String media_id, String token, String tokenSecret, String message) {
+    private static void performVideoTweet(final Context context, final String media_id, String token, String tokenSecret, String message) {
         HttpParameters httpParameters = getParam(token);
         httpParameters.put("status", message, true);
         httpParameters.put("media_ids", media_id, true);
@@ -375,17 +378,17 @@ public class TwitterUtil {
         httpParameters.put(OAUTH_SIGNATURE, createOAuthSignature("POST", TWEET_TWITTER, tokenSecret, httpParameters), true);
 
         Application_Gocci.getClient().removeHeader(HTTP_AUTHORIZATION_HEADER);
-        Application_Gocci.getClient().setTimeout(50000);
+        Application_Gocci.getClient().setTimeout(100000);
         Application_Gocci.getClient().addHeader(HTTP_AUTHORIZATION_HEADER, createOAuthSignatureHeaderEntry(httpParameters));
         Application_Gocci.getClient().post(context, TWEET_TWITTER, requestParams, new JsonHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), "Twitterシェアに失敗しました", Toast.LENGTH_SHORT).show();
+                BusHolder.get().post(new NotificationNumberEvent(SavedData.getNotification(context), "Twitterシェアに失敗しました"));
             }
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                Toast.makeText(Application_Gocci.getInstance().getApplicationContext(), "Twitterシェアが完了しました", Toast.LENGTH_SHORT).show();
+                BusHolder.get().post(new NotificationNumberEvent(SavedData.getNotification(context), "Twitterシェアが完了しました"));
             }
         });
     }
@@ -403,7 +406,7 @@ public class TwitterUtil {
         httpParameters.put(OAUTH_SIGNATURE, createOAuthSignature("GET", GET_TWITTER, tokenSecret, httpParameters), true);
 
         Application_Gocci.getClient().removeHeader(HTTP_AUTHORIZATION_HEADER);
-        Application_Gocci.getClient().setTimeout(50000);
+        Application_Gocci.getClient().setTimeout(100000);
         Application_Gocci.getClient().addHeader(HTTP_AUTHORIZATION_HEADER, createOAuthSignatureHeaderEntry(httpParameters));
         Application_Gocci.getClient().get(context, url, new JsonHttpResponseHandler() {
             @Override
