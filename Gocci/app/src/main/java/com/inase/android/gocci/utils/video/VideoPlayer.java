@@ -91,7 +91,7 @@ public class VideoPlayer implements ExoPlayer.Listener, ChunkSampleSource.EventL
         void onDecoderInitialized(String decoderName, long elapsedRealtimeMs,
                                   long initializationDurationMs);
 
-        void onAvailableRangeChanged(TimeRange availableRange);
+        void onAvailableRangeChanged(int sourceId, TimeRange availableRange);
     }
 
     public static final int STATE_IDLE = ExoPlayer.STATE_IDLE;
@@ -439,9 +439,9 @@ public class VideoPlayer implements ExoPlayer.Listener, ChunkSampleSource.EventL
     }
 
     @Override
-    public void onAvailableRangeChanged(TimeRange availableRange) {
+    public void onAvailableRangeChanged(int sourceId, TimeRange availableRange) {
         if (infoListener != null) {
-            infoListener.onAvailableRangeChanged(availableRange);
+            infoListener.onAvailableRangeChanged(sourceId, availableRange);
         }
     }
 
