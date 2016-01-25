@@ -3,6 +3,13 @@ package com.inase.android.gocci.utils.share;
 import android.content.Context;
 import android.widget.Toast;
 
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.share.ShareApi;
+import com.facebook.share.Sharer;
+import com.facebook.share.model.ShareOpenGraphAction;
+import com.facebook.share.model.ShareOpenGraphContent;
+import com.facebook.share.model.ShareOpenGraphObject;
 import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.event.BusHolder;
 import com.inase.android.gocci.event.NotificationNumberEvent;
@@ -51,6 +58,44 @@ public class FacebookUtil {
             @Override
             public void onSuccess(int statusCode, Header[] headers, String responseString) {
                 BusHolder.get().post(new NotificationNumberEvent(SavedData.getNotification(context), "Facebookシェアが完了しました"));
+            }
+        });
+    }
+
+    public static void performStoryPost(String title, String description, String videoUrl, String thumbUrl) {
+        ShareOpenGraphObject object = new ShareOpenGraphObject.Builder()
+                .putString("og:type", "video.other")
+                .putString("og:title", title)
+                .putString("og:description", description)
+                .putString("og:url", "http://gocci.me")
+                .putString("og:video", videoUrl)
+                .putString("og:image", thumbUrl)
+                .putString("og:locale", "ja_JP")
+                .putString("og:site_name", "Gocci")
+                .build();
+        ShareOpenGraphAction action = new ShareOpenGraphAction.Builder()
+                .setActionType("goccitest:record")
+                .putString("fb:explicitly_shared", "true")
+                .putObject("other", object)
+                .build();
+        ShareOpenGraphContent content = new ShareOpenGraphContent.Builder()
+                .setPreviewPropertyName("other")
+                .setAction(action)
+                .build();
+        ShareApi.share(content, new FacebookCallback<Sharer.Result>() {
+            @Override
+            public void onSuccess(Sharer.Result result) {
+
+            }
+
+            @Override
+            public void onCancel() {
+
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+
             }
         });
     }
