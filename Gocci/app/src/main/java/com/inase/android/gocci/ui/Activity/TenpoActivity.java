@@ -9,12 +9,13 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
+import android.support.v4.content.PermissionChecker;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -29,9 +30,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
 import com.facebook.share.Sharer;
 import com.facebook.share.widget.ShareDialog;
 import com.flaviofaria.kenburnsview.RandomTransitionGenerator;
@@ -48,6 +54,7 @@ import com.inase.android.gocci.Application_Gocci;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
 import com.inase.android.gocci.datasource.api.API3;
+import com.inase.android.gocci.datasource.api.API3PostUtil;
 import com.inase.android.gocci.datasource.repository.GochiRepository;
 import com.inase.android.gocci.datasource.repository.GochiRepositoryImpl;
 import com.inase.android.gocci.datasource.repository.UserAndRestDataRepository;
@@ -214,6 +221,24 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
 
             @Override
             public void onError(FacebookException e) {
+                Toast.makeText(TenpoActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                Util.facebookVideoShare(TenpoActivity.this, "#" + mShareRestname.replaceAll("\\s+", "") + " #Gocci", mShareShare, loginResult.getAccessToken().getToken());
+                API3PostUtil.setSnsLinkAsync(TenpoActivity.this, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), Const.ActivityCategory.REST_PAGE, Const.APICategory.SET_FACEBOOK_LINK);
+            }
+
+            @Override
+            public void onCancel() {
+                Toast.makeText(TenpoActivity.this, getString(R.string.cancel_share), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onError(FacebookException error) {
                 Toast.makeText(TenpoActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
             }
         });
@@ -775,57 +800,80 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
     }
 
     @Override
-    public void onFacebookShare(String share) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                mShareShare = share;
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 25);
-            } else {
-                Util.facebookVideoShare(this, shareDialog, share);
-            }
-        } else {
-            Util.facebookVideoShare(this, shareDialog, share);
-        }
+    public void onFacebookShare(String share, String rest_name) {
+        shareVideoPost(25, share, rest_name);
     }
 
     @Override
     public void onTwitterShare(String share, String rest_name) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                mShareShare = share;
-                mShareRestname = rest_name;
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 26);
-            } else {
-                TwitterSession session = Twitter.getSessionManager().getActiveSession();
-                if (session != null) {
-                    TwitterAuthToken authToken = session.getAuthToken();
-                    Util.twitterShare(this, "#" + rest_name.replaceAll("\\s+", "") + " #Gocci", share, authToken);
-                } else {
-                    Toast.makeText(this, getString(R.string.alert_twitter_sharing), Toast.LENGTH_SHORT).show();
-                }
-            }
-        } else {
-            TwitterSession session = Twitter.getSessionManager().getActiveSession();
-            if (session != null) {
-                TwitterAuthToken authToken = session.getAuthToken();
-                Util.twitterShare(this, "#" + rest_name.replaceAll("\\s+", "") + " #Gocci", share, authToken);
-            } else {
-                Toast.makeText(this, getString(R.string.alert_twitter_sharing), Toast.LENGTH_SHORT).show();
-            }
-        }
+        shareVideoPost(26, share, rest_name);
     }
 
     @Override
-    public void onInstaShare(String share) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                mShareShare = share;
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 27);
+    public void onInstaShare(String share, String rest_name) {
+        shareVideoPost(27, share, rest_name);
+    }
+
+    public void shareVideoPost(final int requastCode, String share, String restname) {
+        if (PermissionChecker.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            mShareShare = share;
+            mShareRestname = restname;
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                new MaterialDialog.Builder(this)
+                        .title(getString(R.string.permission_storage_title))
+                        .titleColorRes(R.color.namegrey)
+                        .content(getString(R.string.permission_storage_content))
+                        .contentColorRes(R.color.nameblack)
+                        .positiveText(getString(R.string.permission_storage_positive))
+                        .positiveColorRes(R.color.gocci_header)
+                        .negativeText(getString(R.string.permission_storage_negative))
+                        .negativeColorRes(R.color.gocci_header)
+                        .onPositive(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                                ActivityCompat.requestPermissions(TenpoActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, requastCode);
+                            }
+                        })
+                        .onNegative(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                                Toast.makeText(TenpoActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+                            }
+                        }).show();
             } else {
-                Util.instaVideoShare(this, share);
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, requastCode);
             }
         } else {
-            Util.instaVideoShare(this, share);
+            switch (requastCode) {
+                case 25:
+                    AccessToken accessToken = AccessToken.getCurrentAccessToken();
+                    if (accessToken != null) {
+                        if (accessToken.getPermissions().contains("publish_actions")) {
+                            Util.facebookVideoShare(this, "#" + restname.replaceAll("\\s+", "") + " #Gocci", share, accessToken.getToken());
+                        } else {
+                            ArrayList<String> permission = new ArrayList<>();
+                            permission.add("publish_actions");
+                            LoginManager.getInstance().logInWithPublishPermissions(this, permission);
+                        }
+                    } else {
+                        ArrayList<String> permission = new ArrayList<>();
+                        permission.add("publish_actions");
+                        LoginManager.getInstance().logInWithPublishPermissions(this, permission);
+                    }
+                    break;
+                case 26:
+                    TwitterSession session = Twitter.getSessionManager().getActiveSession();
+                    if (session != null) {
+                        TwitterAuthToken authToken = session.getAuthToken();
+                        Util.twitterVideoShare(this, "#" + restname.replaceAll("\\s+", "") + " #Gocci", share, authToken);
+                    } else {
+                        Toast.makeText(this, getString(R.string.alert_twitter_sharing), Toast.LENGTH_SHORT).show();
+                    }
+                    break;
+                case 27:
+                    Util.instaVideoShare(this, share);
+                    break;
+            }
         }
     }
 
@@ -834,37 +882,177 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
                                            String permissions[], int[] grantResults) {
         switch (requestCode) {
             case 25:
-                if (grantResults.length > 0 &&
-                        grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Util.facebookVideoShare(this, shareDialog, mShareShare);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (grantResults.length > 0 &&
+                            grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+                        if (accessToken != null) {
+                            if (accessToken.getPermissions().contains("publish_actions")) {
+                                Util.facebookVideoShare(this, "#" + mShareRestname.replaceAll("\\s+", "") + " #Gocci", mShareShare, accessToken.getToken());
+                            } else {
+                                ArrayList<String> permission = new ArrayList<>();
+                                permission.add("publish_actions");
+                                LoginManager.getInstance().logInWithPublishPermissions(this, permission);
+                            }
+                        } else {
+                            ArrayList<String> permission = new ArrayList<>();
+                            permission.add("publish_actions");
+                            LoginManager.getInstance().logInWithPublishPermissions(this, permission);
+                        }
+                    } else {
+                        if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                            new MaterialDialog.Builder(this)
+                                    .title(getString(R.string.permission_storage_title))
+                                    .titleColorRes(R.color.namegrey)
+                                    .content(getString(R.string.permission_storage_content))
+                                    .contentColorRes(R.color.nameblack)
+                                    .positiveText(getString(R.string.permission_storage_positive))
+                                    .positiveColorRes(R.color.gocci_header)
+                                    .negativeText(getString(R.string.permission_storage_negative))
+                                    .negativeColorRes(R.color.gocci_header)
+                                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                        @Override
+                                        public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                                            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                            Uri uri = Uri.fromParts("package", getPackageName(), null); //Fragmentの場合はgetContext().getPackageName()
+                                            intent.setData(uri);
+                                            startActivity(intent);
+                                        }
+                                    })
+                                    .onNegative(new MaterialDialog.SingleButtonCallback() {
+                                        @Override
+                                        public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                                            Toast.makeText(TenpoActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+                                        }
+                                    }).show();
+                        } else {
+                            Toast.makeText(TenpoActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+                        }
+                    }
                 } else {
-                    Toast.makeText(TenpoActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+                    if (PermissionChecker.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                        Toast.makeText(TenpoActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+                    } else {
+                        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+                        if (accessToken != null) {
+                            if (accessToken.getPermissions().contains("publish_actions")) {
+                                Util.facebookVideoShare(this, "#" + mShareRestname.replaceAll("\\s+", "") + " #Gocci", mShareShare, accessToken.getToken());
+                            } else {
+                                ArrayList<String> permission = new ArrayList<>();
+                                permission.add("publish_actions");
+                                LoginManager.getInstance().logInWithPublishPermissions(this, permission);
+                            }
+                        } else {
+                            ArrayList<String> permission = new ArrayList<>();
+                            permission.add("publish_actions");
+                            LoginManager.getInstance().logInWithPublishPermissions(this, permission);
+                        }
+                    }
                 }
                 break;
             case 26:
-                if (grantResults.length > 0 &&
-                        grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    TwitterSession session = Twitter.getSessionManager().getActiveSession();
-                    if (session != null) {
-                        TwitterAuthToken authToken = session.getAuthToken();
-                        Util.twitterShare(this, "#" + mShareRestname.replaceAll("\\s+", "") + " #Gocci", mShareShare, authToken);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (grantResults.length > 0 &&
+                            grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        TwitterSession session = Twitter.getSessionManager().getActiveSession();
+                        if (session != null) {
+                            TwitterAuthToken authToken = session.getAuthToken();
+                            Util.twitterVideoShare(this, "#" + mShareRestname.replaceAll("\\s+", "") + " #Gocci", mShareShare, authToken);
+                        } else {
+                            Toast.makeText(this, getString(R.string.alert_twitter_sharing), Toast.LENGTH_SHORT).show();
+                        }
                     } else {
-                        Toast.makeText(this, getString(R.string.alert_twitter_sharing), Toast.LENGTH_SHORT).show();
+                        if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                            new MaterialDialog.Builder(this)
+                                    .title(getString(R.string.permission_storage_title))
+                                    .titleColorRes(R.color.namegrey)
+                                    .content(getString(R.string.permission_storage_content))
+                                    .contentColorRes(R.color.nameblack)
+                                    .positiveText(getString(R.string.permission_storage_positive))
+                                    .positiveColorRes(R.color.gocci_header)
+                                    .negativeText(getString(R.string.permission_storage_negative))
+                                    .negativeColorRes(R.color.gocci_header)
+                                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                        @Override
+                                        public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                                            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                            Uri uri = Uri.fromParts("package", getPackageName(), null); //Fragmentの場合はgetContext().getPackageName()
+                                            intent.setData(uri);
+                                            startActivity(intent);
+                                        }
+                                    })
+                                    .onNegative(new MaterialDialog.SingleButtonCallback() {
+                                        @Override
+                                        public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                                            Toast.makeText(TenpoActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+                                        }
+                                    }).show();
+                        } else {
+                            Toast.makeText(TenpoActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+                        }
                     }
                 } else {
-                    Toast.makeText(TenpoActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+                    if (PermissionChecker.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                        Toast.makeText(TenpoActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+                    } else {
+                        TwitterSession session = Twitter.getSessionManager().getActiveSession();
+                        if (session != null) {
+                            TwitterAuthToken authToken = session.getAuthToken();
+                            Util.twitterVideoShare(this, "#" + mShareRestname.replaceAll("\\s+", "") + " #Gocci", mShareShare, authToken);
+                        } else {
+                            Toast.makeText(this, getString(R.string.alert_twitter_sharing), Toast.LENGTH_SHORT).show();
+                        }
+                    }
                 }
                 break;
             case 27:
-                if (grantResults.length > 0 &&
-                        grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Util.instaVideoShare(this, mShareShare);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (grantResults.length > 0 &&
+                            grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        Util.instaVideoShare(this, mShareShare);
+                    } else {
+                        if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                            new MaterialDialog.Builder(this)
+                                    .title(getString(R.string.permission_storage_title))
+                                    .titleColorRes(R.color.namegrey)
+                                    .content(getString(R.string.permission_storage_content))
+                                    .contentColorRes(R.color.nameblack)
+                                    .positiveText(getString(R.string.permission_storage_positive))
+                                    .positiveColorRes(R.color.gocci_header)
+                                    .negativeText(getString(R.string.permission_storage_negative))
+                                    .negativeColorRes(R.color.gocci_header)
+                                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                                        @Override
+                                        public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                                            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                            Uri uri = Uri.fromParts("package", getPackageName(), null); //Fragmentの場合はgetContext().getPackageName()
+                                            intent.setData(uri);
+                                            startActivity(intent);
+                                        }
+                                    })
+                                    .onNegative(new MaterialDialog.SingleButtonCallback() {
+                                        @Override
+                                        public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                                            Toast.makeText(TenpoActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+                                        }
+                                    }).show();
+                        } else {
+                            Toast.makeText(TenpoActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+                        }
+                    }
                 } else {
-                    Toast.makeText(TenpoActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+                    if (PermissionChecker.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                        Toast.makeText(TenpoActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+                    } else {
+                        Util.instaVideoShare(this, mShareShare);
+                    }
                 }
                 break;
         }
+        // other 'case' lines to check for other
+        // permissions this app might request
     }
+
 
     @Override
     public void onHashHolder(Const.StreamRestViewHolder holder, String post_id) {

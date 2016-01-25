@@ -524,9 +524,9 @@ public class StreamMyProfFragment extends Fragment implements AppBarLayout.OnOff
     }
 
     @Override
-    public void onFacebookShare(String share) {
+    public void onFacebookShare(String share, String rest_name) {
         MyprofActivity activity = (MyprofActivity) getActivity();
-        activity.shareVideoPost(25, share, null);
+        activity.shareVideoPost(25, share, rest_name);
     }
 
     @Override
@@ -536,11 +536,10 @@ public class StreamMyProfFragment extends Fragment implements AppBarLayout.OnOff
     }
 
     @Override
-    public void onInstaShare(String share) {
+    public void onInstaShare(String share, String rest_name) {
         MyprofActivity activity = (MyprofActivity) getActivity();
-        activity.shareVideoPost(27, share, null);
+        activity.shareVideoPost(27, share, rest_name);
     }
-
 
     @Override
     public void onStreamHashHolder(Const.StreamUserViewHolder holder, String post_id) {

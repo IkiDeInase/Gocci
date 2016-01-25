@@ -485,9 +485,9 @@ public class StreamUserProfFragment extends Fragment implements AppBarLayout.OnO
     }
 
     @Override
-    public void onFacebookShare(String share) {
+    public void onFacebookShare(String share, String rest_name) {
         UserProfActivity activity = (UserProfActivity) getActivity();
-        activity.shareVideoPost(25, share, null);
+        activity.shareVideoPost(25, share, rest_name);
     }
 
     @Override
@@ -497,9 +497,9 @@ public class StreamUserProfFragment extends Fragment implements AppBarLayout.OnO
     }
 
     @Override
-    public void onInstaShare(String share) {
+    public void onInstaShare(String share, String rest_name) {
         UserProfActivity activity = (UserProfActivity) getActivity();
-        activity.shareVideoPost(27, share, null);
+        activity.shareVideoPost(27, share, rest_name);
     }
 
     @Override

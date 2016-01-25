@@ -280,14 +280,14 @@ public class RestPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                             switch (which) {
                                 case R.id.facebook_share:
                                     Toast.makeText(mContext, mContext.getString(R.string.preparing_share), Toast.LENGTH_LONG).show();
-                                    mCallback.onFacebookShare(user.getMovie());
+                                    mCallback.onFacebookShare(user.getMovie(), user.getRestname());
                                     break;
                                 case R.id.twitter_share:
                                     mCallback.onTwitterShare(user.getMovie(), mRestData.getRestname());
                                     break;
                                 case R.id.other_share:
                                     Toast.makeText(mContext, mContext.getString(R.string.preparing_share), Toast.LENGTH_LONG).show();
-                                    mCallback.onInstaShare(user.getMovie());
+                                    mCallback.onInstaShare(user.getMovie(), user.getRestname());
                                     break;
                                 case R.id.close:
                                     dialog.dismiss();
@@ -367,11 +367,11 @@ public class RestPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         void onVideoFrameClick();
 
-        void onFacebookShare(String share);
+        void onFacebookShare(String share, String rest_name);
 
         void onTwitterShare(String share, String rest_name);
 
-        void onInstaShare(String share);
+        void onInstaShare(String share, String rest_name);
 
         void onHashHolder(Const.StreamRestViewHolder holder, String post_id);
     }

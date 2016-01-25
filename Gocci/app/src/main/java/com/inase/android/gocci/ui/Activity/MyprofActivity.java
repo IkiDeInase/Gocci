@@ -34,9 +34,12 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.andexert.library.RippleView;
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
 import com.facebook.share.Sharer;
 import com.facebook.share.widget.ShareDialog;
 import com.google.android.gms.analytics.GoogleAnalytics;
@@ -95,6 +98,7 @@ import com.twitter.sdk.android.tweetcomposer.TweetComposer;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import butterknife.Bind;
@@ -234,6 +238,24 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
             @Override
             public void onError(FacebookException e) {
                 Toast.makeText(MyprofActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                Util.facebookVideoShare(MyprofActivity.this, "#" + mShareRestname.replaceAll("\\s+", "") + " #Gocci", mShareShare, loginResult.getAccessToken().getToken());
+                API3PostUtil.setSnsLinkAsync(MyprofActivity.this, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), Const.ActivityCategory.MY_PAGE, Const.APICategory.SET_FACEBOOK_LINK);
+            }
+
+            @Override
+            public void onCancel() {
+                Toast.makeText(MyprofActivity.this, getString(R.string.cancel_share), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+                Toast.makeText(MyprofActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -626,7 +648,20 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     if (grantResults.length > 0 &&
                             grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                        Util.facebookVideoShare(this, shareDialog, mShareShare);
+                        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+                        if (accessToken != null) {
+                            if (accessToken.getPermissions().contains("publish_actions")) {
+                                Util.facebookVideoShare(this, "#" + mShareRestname.replaceAll("\\s+", "") + " #Gocci", mShareShare, accessToken.getToken());
+                            } else {
+                                ArrayList<String> permission = new ArrayList<>();
+                                permission.add("publish_actions");
+                                LoginManager.getInstance().logInWithPublishPermissions(this, permission);
+                            }
+                        } else {
+                            ArrayList<String> permission = new ArrayList<>();
+                            permission.add("publish_actions");
+                            LoginManager.getInstance().logInWithPublishPermissions(this, permission);
+                        }
                     } else {
                         if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                             new MaterialDialog.Builder(this)
@@ -661,7 +696,20 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
                     if (PermissionChecker.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                         Toast.makeText(MyprofActivity.this, getString(R.string.error_share), Toast.LENGTH_SHORT).show();
                     } else {
-                        Util.facebookVideoShare(this, shareDialog, mShareShare);
+                        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+                        if (accessToken != null) {
+                            if (accessToken.getPermissions().contains("publish_actions")) {
+                                Util.facebookVideoShare(this, "#" + mShareRestname.replaceAll("\\s+", "") + " #Gocci", mShareShare, accessToken.getToken());
+                            } else {
+                                ArrayList<String> permission = new ArrayList<>();
+                                permission.add("publish_actions");
+                                LoginManager.getInstance().logInWithPublishPermissions(this, permission);
+                            }
+                        } else {
+                            ArrayList<String> permission = new ArrayList<>();
+                            permission.add("publish_actions");
+                            LoginManager.getInstance().logInWithPublishPermissions(this, permission);
+                        }
                     }
                 }
                 break;
@@ -672,7 +720,7 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
                         TwitterSession session = Twitter.getSessionManager().getActiveSession();
                         if (session != null) {
                             TwitterAuthToken authToken = session.getAuthToken();
-                            Util.twitterShare(this, "#" + mShareRestname.replaceAll("\\s+", "") + " #Gocci", mShareShare, authToken);
+                            Util.twitterVideoShare(this, "#" + mShareRestname.replaceAll("\\s+", "") + " #Gocci", mShareShare, authToken);
                         } else {
                             Toast.makeText(this, getString(R.string.alert_twitter_sharing), Toast.LENGTH_SHORT).show();
                         }
@@ -713,7 +761,7 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
                         TwitterSession session = Twitter.getSessionManager().getActiveSession();
                         if (session != null) {
                             TwitterAuthToken authToken = session.getAuthToken();
-                            Util.twitterShare(this, "#" + mShareRestname.replaceAll("\\s+", "") + " #Gocci", mShareShare, authToken);
+                            Util.twitterVideoShare(this, "#" + mShareRestname.replaceAll("\\s+", "") + " #Gocci", mShareShare, authToken);
                         } else {
                             Toast.makeText(this, getString(R.string.alert_twitter_sharing), Toast.LENGTH_SHORT).show();
                         }
@@ -1137,13 +1185,26 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
         } else {
             switch (requastCode) {
                 case 25:
-                    Util.facebookVideoShare(this, shareDialog, share);
+                    AccessToken accessToken = AccessToken.getCurrentAccessToken();
+                    if (accessToken != null) {
+                        if (accessToken.getPermissions().contains("publish_actions")) {
+                            Util.facebookVideoShare(this, "#" + restname.replaceAll("\\s+", "") + " #Gocci", share, accessToken.getToken());
+                        } else {
+                            ArrayList<String> permission = new ArrayList<>();
+                            permission.add("publish_actions");
+                            LoginManager.getInstance().logInWithPublishPermissions(this, permission);
+                        }
+                    } else {
+                        ArrayList<String> permission = new ArrayList<>();
+                        permission.add("publish_actions");
+                        LoginManager.getInstance().logInWithPublishPermissions(this, permission);
+                    }
                     break;
                 case 26:
                     TwitterSession session = Twitter.getSessionManager().getActiveSession();
                     if (session != null) {
                         TwitterAuthToken authToken = session.getAuthToken();
-                        Util.twitterShare(this, "#" + restname.replaceAll("\\s+", "") + " #Gocci", share, authToken);
+                        Util.twitterVideoShare(this, "#" + restname.replaceAll("\\s+", "") + " #Gocci", share, authToken);
                     } else {
                         Toast.makeText(this, getString(R.string.alert_twitter_sharing), Toast.LENGTH_SHORT).show();
                     }
