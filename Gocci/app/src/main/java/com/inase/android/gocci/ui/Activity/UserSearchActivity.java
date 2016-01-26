@@ -1,7 +1,6 @@
 package com.inase.android.gocci.ui.activity;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -31,11 +30,13 @@ import com.inase.android.gocci.domain.usecase.FollowUseCaseImpl;
 import com.inase.android.gocci.domain.usecase.UserSearchUseCase;
 import com.inase.android.gocci.domain.usecase.UserSearchUseCaseImpl;
 import com.inase.android.gocci.event.BusHolder;
+import com.inase.android.gocci.event.RetryApiEvent;
 import com.inase.android.gocci.presenter.ShowUserSearchPresenter;
 import com.inase.android.gocci.ui.adapter.UserSearchAdapter;
 import com.inase.android.gocci.utils.SavedData;
 import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import com.pnikosis.materialishprogress.ProgressWheel;
+import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 
@@ -57,12 +58,23 @@ public class UserSearchActivity extends AppCompatActivity implements ShowUserSea
     private Tracker mTracker;
     private Application_Gocci applicationGocci;
 
-    private LinearLayoutManager mLayoutManager;
-    private ArrayList<SearchUserData> mList = new ArrayList<>();
-    private ArrayList<String> mUser_idList = new ArrayList<>();
     private UserSearchAdapter mUserSearchAdapter;
+    private LinearLayoutManager mLayoutManager;
+
+    private ArrayList<SearchUserData> mSearchList = new ArrayList<>();
+    private ArrayList<String> mSearchUser_idList = new ArrayList<>();
+
+    private ArrayList<SearchUserData> mRankusers = new ArrayList<>();
+    private ArrayList<String> mRankUser_idList = new ArrayList<>();
 
     private ShowUserSearchPresenter mPresenter;
+
+    private int previousTotal = 0;
+    private boolean loading = true;
+    private int visibleThreshold = 5;
+    int firstVisibleItem, visibleItemCount, totalItemCount;
+    private int mNextCount = 1;
+    private boolean isEndScrioll = false;
 
     public static void startUserSearchActivity(Activity startingActivity) {
         Intent intent = new Intent(startingActivity, UserSearchActivity.class);
@@ -106,18 +118,55 @@ public class UserSearchActivity extends AppCompatActivity implements ShowUserSea
                         break;
                 }
             }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                if (!mSearchView.isSearchOpen()) {
+                    visibleItemCount = mRecyclerView.getChildCount();
+                    totalItemCount = mLayoutManager.getItemCount();
+                    firstVisibleItem = mLayoutManager.findFirstVisibleItemPosition();
+
+                    if (loading) {
+                        if (totalItemCount > previousTotal) {
+                            loading = false;
+                            previousTotal = totalItemCount;
+                        }
+                    }
+                    if (!loading && (totalItemCount - visibleItemCount)
+                            <= (firstVisibleItem + visibleThreshold)) {
+                        // End has been reached
+                        loading = true;
+                        if (!isEndScrioll) {
+                            API3.Util.GetFollower_RankLocalCode localCode = API3.Impl.getRepository().GetFollower_RankParameterRegex(String.valueOf(mNextCount));
+                            if (localCode == null) {
+                                mPresenter.getListData(Const.APICategory.GET_FOLLOWER_RANK_ADD, API3.Util.getGetFollowerRankAPI(String.valueOf(mNextCount)));
+                            } else {
+                                Toast.makeText(UserSearchActivity.this, API3.Util.GetFollower_RankLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+                }
+            }
         });
 
-        mUserSearchAdapter = new UserSearchAdapter(this, mList);
+        mUserSearchAdapter = new UserSearchAdapter(this, mRankusers);
         mUserSearchAdapter.setSearchUserCallback(this);
         mRecyclerView.setAdapter(mUserSearchAdapter);
+
+        API3.Util.GetFollower_RankLocalCode localCode = API3.Impl.getRepository().GetFollower_RankParameterRegex(null);
+        if (localCode == null) {
+            mPresenter.getListData(Const.APICategory.GET_FOLLOWER_RANK_FIRST, API3.Util.getGetFollowerRankAPI(null));
+        } else {
+            Toast.makeText(UserSearchActivity.this, API3.Util.GetFollower_RankLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+        }
 
         mSearchView.setHint("ユーザー名");
         mSearchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 //Do some magic
-                return false;
+                mSearchView.clearFocus();
+                return true;
             }
 
             @Override
@@ -130,6 +179,10 @@ public class UserSearchActivity extends AppCompatActivity implements ShowUserSea
                     } else {
                         Toast.makeText(UserSearchActivity.this, API3.Util.GetUsernameLocalCodeMessageTable(getUsernameLocalCode), Toast.LENGTH_SHORT).show();
                     }
+                } else {
+                    mSearchList.clear();
+                    mSearchUser_idList.clear();
+                    mUserSearchAdapter.setData(mSearchList);
                 }
                 return false;
             }
@@ -138,12 +191,14 @@ public class UserSearchActivity extends AppCompatActivity implements ShowUserSea
         mSearchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
             @Override
             public void onSearchViewShown() {
-                //Do some magic
+                //検索
+                mUserSearchAdapter.setData(mSearchList);
             }
 
             @Override
             public void onSearchViewClosed() {
-                //Do some magic
+                //おすすめ
+                mUserSearchAdapter.setData(mRankusers);
             }
         });
     }
@@ -254,12 +309,23 @@ public class UserSearchActivity extends AppCompatActivity implements ShowUserSea
     @Override
     public void followFailureCausedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode, String user_id) {
         Application_Gocci.resolveOrHandleGlobalError(this, api, globalCode);
-        if (api == Const.APICategory.SET_FOLLOW) {
-            mList.get(mUser_idList.indexOf(user_id)).setFollow_flag(false);
-        } else if (api == Const.APICategory.UNSET_FOLLOW) {
-            mList.get(mUser_idList.indexOf(user_id)).setFollow_flag(true);
+
+        if (mSearchView.isSearchOpen()) {
+            if (api == Const.APICategory.SET_FOLLOW) {
+                mSearchList.get(mSearchUser_idList.indexOf(user_id)).setFollow_flag(false);
+            } else if (api == Const.APICategory.UNSET_FOLLOW) {
+                mSearchList.get(mSearchUser_idList.indexOf(user_id)).setFollow_flag(true);
+            }
+            mUserSearchAdapter.notifyItemChanged(mSearchUser_idList.indexOf(user_id));
+        } else {
+            if (api == Const.APICategory.SET_FOLLOW) {
+                mRankusers.get(mRankUser_idList.indexOf(user_id)).setFollow_flag(false);
+            } else if (api == Const.APICategory.UNSET_FOLLOW) {
+                mRankusers.get(mRankUser_idList.indexOf(user_id)).setFollow_flag(true);
+            }
+            mUserSearchAdapter.notifyItemChanged(mRankUser_idList.indexOf(user_id));
         }
-        mUserSearchAdapter.notifyItemChanged(mUser_idList.indexOf(user_id));
+
         mTracker = applicationGocci.getDefaultTracker();
         mTracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").setAction(api.name()).setLabel(API3.Util.GlobalCodeMessageTable(globalCode)).build());
     }
@@ -267,12 +333,23 @@ public class UserSearchActivity extends AppCompatActivity implements ShowUserSea
     @Override
     public void followFailureCausedByLocalError(Const.APICategory api, String errorMessage, String user_id) {
         Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
-        if (api == Const.APICategory.SET_FOLLOW) {
-            mList.get(mUser_idList.indexOf(user_id)).setFollow_flag(false);
-        } else if (api == Const.APICategory.UNSET_FOLLOW) {
-            mList.get(mUser_idList.indexOf(user_id)).setFollow_flag(true);
+
+        if (mSearchView.isSearchOpen()) {
+            if (api == Const.APICategory.SET_FOLLOW) {
+                mSearchList.get(mSearchUser_idList.indexOf(user_id)).setFollow_flag(false);
+            } else if (api == Const.APICategory.UNSET_FOLLOW) {
+                mSearchList.get(mSearchUser_idList.indexOf(user_id)).setFollow_flag(true);
+            }
+            mUserSearchAdapter.notifyItemChanged(mSearchUser_idList.indexOf(user_id));
+        } else {
+            if (api == Const.APICategory.SET_FOLLOW) {
+                mRankusers.get(mRankUser_idList.indexOf(user_id)).setFollow_flag(false);
+            } else if (api == Const.APICategory.UNSET_FOLLOW) {
+                mRankusers.get(mRankUser_idList.indexOf(user_id)).setFollow_flag(true);
+            }
+            mUserSearchAdapter.notifyItemChanged(mRankUser_idList.indexOf(user_id));
         }
-        mUserSearchAdapter.notifyItemChanged(mUser_idList.indexOf(user_id));
+
         mTracker = applicationGocci.getDefaultTracker();
         mTracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").setAction(api.name()).setLabel(errorMessage).build());
 
@@ -280,10 +357,45 @@ public class UserSearchActivity extends AppCompatActivity implements ShowUserSea
 
     @Override
     public void showResult(Const.APICategory api, ArrayList<SearchUserData> list, ArrayList<String> user_ids) {
-        mList.clear();
-        mList.addAll(list);
-        mUser_idList.clear();
-        mUser_idList.addAll(user_ids);
-        mUserSearchAdapter.setData();
+        switch (api) {
+            case GET_USERNAME:
+                mSearchList.clear();
+                mSearchList.addAll(list);
+                mSearchUser_idList.clear();
+                mSearchUser_idList.addAll(user_ids);
+                mUserSearchAdapter.setData(mSearchList);
+                break;
+            case GET_FOLLOWER_RANK_FIRST:
+                mRankusers.clear();
+                mRankusers.addAll(list);
+                mRankUser_idList.clear();
+                mRankUser_idList.addAll(user_ids);
+                mUserSearchAdapter.setData(mRankusers);
+                break;
+            case GET_FOLLOWER_RANK_ADD:
+                if (list.size() != 0) {
+                    mRankusers.addAll(list);
+                    mRankUser_idList.addAll(user_ids);
+                    mUserSearchAdapter.setData(mRankusers);
+                    mNextCount++;
+                } else {
+                    isEndScrioll = true;
+                }
+                break;
+        }
+    }
+
+    @Subscribe
+    public void subscribe(RetryApiEvent event) {
+        switch (event.api) {
+            case GET_FOLLOWER_RANK_FIRST:
+                mPresenter.getListData(Const.APICategory.GET_FOLLOWER_RANK_FIRST, API3.Util.getGetFollowerRankAPI(null));
+                break;
+            case GET_FOLLOWER_RANK_ADD:
+                mPresenter.getListData(Const.APICategory.GET_FOLLOWER_RANK_ADD, API3.Util.getGetFollowerRankAPI(String.valueOf(mNextCount)));
+                break;
+            default:
+                break;
+        }
     }
 }

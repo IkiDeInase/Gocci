@@ -28,7 +28,8 @@ public class UserSearchAdapter extends RecyclerView.Adapter<Const.FollowFollower
         mCallback = callback;
     }
 
-    public void setData() {
+    public void setData(ArrayList<SearchUserData> list) {
+        mList = list;
         this.notifyDataSetChanged();
     }
 

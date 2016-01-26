@@ -53,37 +53,75 @@ public class UserSearchRepositoryImpl implements UserSearchRepository {
                             .setVariable(api.name())
                             .setLabel(SavedData.getServerUserId(Application_Gocci.getInstance()))
                             .setValue(System.currentTimeMillis() - startTime).build());
-                    mAPI3.GetUsernameResponse(response, new API3.PayloadResponseCallback() {
+                    switch (api) {
+                        case GET_USERNAME:
+                            mAPI3.GetUsernameResponse(response, new API3.PayloadResponseCallback() {
 
-                        @Override
-                        public void onSuccess(JSONObject payload) {
-                            try {
-                                JSONArray users = payload.getJSONArray("users");
+                                @Override
+                                public void onSuccess(JSONObject payload) {
+                                    try {
+                                        JSONArray users = payload.getJSONArray("users");
 
-                                final ArrayList<SearchUserData> mListData = new ArrayList<>();
-                                final ArrayList<String> mUser_ids = new ArrayList<>();
+                                        final ArrayList<SearchUserData> mListData = new ArrayList<>();
+                                        final ArrayList<String> mUser_ids = new ArrayList<>();
 
-                                for (int i = 0; i < users.length(); i++) {
-                                    JSONObject listData = users.getJSONObject(i);
-                                    mListData.add(SearchUserData.createSearchUserData(listData));
-                                    mUser_ids.add(listData.getString("user_id"));
+                                        for (int i = 0; i < users.length(); i++) {
+                                            JSONObject listData = users.getJSONObject(i);
+                                            mListData.add(SearchUserData.createSearchUserData(listData));
+                                            mUser_ids.add(listData.getString("user_id"));
+                                        }
+                                        cb.onSuccess(api, mListData, mUser_ids);
+                                    } catch (JSONException e) {
+                                        cb.onFailureCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                                    }
                                 }
-                                cb.onSuccess(api, mListData, mUser_ids);
-                            } catch (JSONException e) {
-                                cb.onFailureCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                            }
-                        }
 
-                        @Override
-                        public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                            cb.onFailureCausedByGlobalError(api, globalCode);
-                        }
+                                @Override
+                                public void onGlobalError(API3.Util.GlobalCode globalCode) {
+                                    cb.onFailureCausedByGlobalError(api, globalCode);
+                                }
 
-                        @Override
-                        public void onLocalError(String errorMessage) {
-                            cb.onFailureCausedByLocalError(api, errorMessage);
-                        }
-                    });
+                                @Override
+                                public void onLocalError(String errorMessage) {
+                                    cb.onFailureCausedByLocalError(api, errorMessage);
+                                }
+                            });
+                            break;
+                        case GET_FOLLOWER_RANK_FIRST:
+                        case GET_FOLLOWER_RANK_ADD:
+                            mAPI3.GetUsernameResponse(response, new API3.PayloadResponseCallback() {
+
+                                @Override
+                                public void onSuccess(JSONObject payload) {
+                                    try {
+                                        JSONArray users = payload.getJSONArray("users");
+
+                                        final ArrayList<SearchUserData> mListData = new ArrayList<>();
+                                        final ArrayList<String> mUser_ids = new ArrayList<>();
+
+                                        for (int i = 0; i < users.length(); i++) {
+                                            JSONObject listData = users.getJSONObject(i);
+                                            mListData.add(SearchUserData.createSearchUserData(listData));
+                                            mUser_ids.add(listData.getString("user_id"));
+                                        }
+                                        cb.onSuccess(api, mListData, mUser_ids);
+                                    } catch (JSONException e) {
+                                        cb.onFailureCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                                    }
+                                }
+
+                                @Override
+                                public void onGlobalError(API3.Util.GlobalCode globalCode) {
+                                    cb.onFailureCausedByGlobalError(api, globalCode);
+                                }
+
+                                @Override
+                                public void onLocalError(String errorMessage) {
+                                    cb.onFailureCausedByLocalError(api, errorMessage);
+                                }
+                            });
+                            break;
+                    }
                 }
 
                 @Override
