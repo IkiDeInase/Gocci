@@ -1,7 +1,6 @@
 package com.inase.android.gocci.utils.share;
 
 import android.content.Context;
-import android.widget.Toast;
 
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;

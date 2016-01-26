@@ -277,7 +277,7 @@ public class Util {
 
     public static void facebookVideoShare(final Context context, final String message, final String key, final String token) {
         new MaterialDialog.Builder(context)
-                .content("Facebookシェアでは自動で動画がシェアされます。\nメッセージを追加してシェアしましょう！")
+                .content("Facebookでは動画がシェアされます。\nメッセージを追加してシェアしましょう！")
                 .contentColorRes(R.color.namegrey)
                 .positiveText("シェアする")
                 .positiveColorRes(R.color.gocci_header)
@@ -320,7 +320,7 @@ public class Util {
 
     public static void twitterVideoShare(final Context context, final String message, final String key, final TwitterAuthToken authToken) {
         new MaterialDialog.Builder(context)
-                .content("Twitterシェアでは自動で動画がシェアされます。\nメッセージを追加してシェアしましょう！")
+                .content("Twitter動画がシェアされます。\nメッセージを追加してシェアしましょう！")
                 .contentColorRes(R.color.namegrey)
                 .positiveText("シェアする")
                 .positiveColorRes(R.color.gocci_header)
