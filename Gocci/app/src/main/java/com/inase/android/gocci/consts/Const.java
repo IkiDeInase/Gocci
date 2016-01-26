@@ -137,6 +137,8 @@ public class Const {
         UNSET_POST,
         SET_DEVICE,
         UNSET_DEVICE,
+        GET_FOLLOWER_RANK_FIRST,
+        GET_FOLLOWER_RANK_ADD,
     }
 
     public static final class TwoCellViewHolder extends RecyclerView.ViewHolder {
