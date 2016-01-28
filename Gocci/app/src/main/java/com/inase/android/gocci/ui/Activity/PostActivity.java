@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.PermissionChecker;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -126,6 +127,8 @@ public class PostActivity extends AppCompatActivity implements AudioCapabilities
     public RippleView mShareRipple;
     @Bind(R.id.video_frame)
     public AspectRatioFrameLayout mVideoFrame;
+    @Bind(R.id.scroll_view)
+    NestedScrollView mScrollView;
 
     private float pointX;
     private float pointY;
@@ -422,6 +425,7 @@ public class PostActivity extends AppCompatActivity implements AudioCapabilities
 
     @Override
     public void showResult(Const.APICategory api, final PostData mPostData) {
+        mScrollView.setVisibility(View.VISIBLE);
         this.mPostData = mPostData;
 
         mUsername.setText(mPostData.getUsername());
