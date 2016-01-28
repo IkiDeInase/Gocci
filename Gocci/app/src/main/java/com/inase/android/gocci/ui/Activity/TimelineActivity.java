@@ -578,8 +578,10 @@ public class TimelineActivity extends AppCompatActivity {
         Snackbar.make(mCoordinatorLayout, event.mMessage, Snackbar.LENGTH_SHORT).show();
         //２1文字で改行っぽい
         if (!event.mMessage.equals(getString(R.string.videoposting_complete))) {
-            mNotificationNumber.setVisibility(View.VISIBLE);
             mNotificationNumber.setText(String.valueOf(event.mNotificationNumber));
+            if (event.mNotificationNumber != 0) {
+                mNotificationNumber.setVisibility(View.VISIBLE);
+            }
         }
     }
 

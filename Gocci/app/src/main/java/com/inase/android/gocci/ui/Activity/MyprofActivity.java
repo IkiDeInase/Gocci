@@ -520,8 +520,10 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
                 Toast.makeText(this, API3.Util.GetUserLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
             }
         } else {
-            mNotificationNumber.setVisibility(View.VISIBLE);
             mNotificationNumber.setText(String.valueOf(event.mNotificationNumber));
+            if (event.mNotificationNumber != 0) {
+                mNotificationNumber.setVisibility(View.VISIBLE);
+            }
         }
     }
 
