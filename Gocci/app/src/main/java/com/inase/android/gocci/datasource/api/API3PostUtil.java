@@ -916,7 +916,7 @@ public class API3PostUtil {
     public static void setProfileImgAsync(final Context context, final String post_date, File file, final Const.ActivityCategory activityCategory) {
         if (Util.getConnectedState(context) != Util.NetworkStatus.OFF) {
             startTime = System.currentTimeMillis();
-            TransferObserver transferObserver = Application_Gocci.getShareTransfer().upload(Const.POST_PHOTO_BUCKET_NAME, post_date + "_img.png", file);
+            TransferObserver transferObserver = Application_Gocci.getTransfer(context).upload(Const.POST_PHOTO_BUCKET_NAME, post_date + "_img.png", file);
             transferObserver.setTransferListener(new TransferListener() {
                 @Override
                 public void onStateChanged(int id, TransferState state) {
@@ -1027,7 +1027,7 @@ public class API3PostUtil {
                         e.printStackTrace();
                     }
                     startTime = System.currentTimeMillis();
-                    TransferObserver transferObserver = Application_Gocci.getShareTransfer().upload(Const.POST_PHOTO_BUCKET_NAME, post_date + "_img.png", file);
+                    TransferObserver transferObserver = Application_Gocci.getTransfer(context).upload(Const.POST_PHOTO_BUCKET_NAME, post_date + "_img.png", file);
                     transferObserver.setTransferListener(new TransferListener() {
                         @Override
                         public void onStateChanged(int id, TransferState state) {

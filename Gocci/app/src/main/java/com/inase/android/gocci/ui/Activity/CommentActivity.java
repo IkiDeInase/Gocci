@@ -357,10 +357,11 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
         mNoticeUser_id = user_id;
         if (username.isEmpty()) {
             mNoticeUser_name = username;
+            isNotice = false;
         } else {
             mNoticeUser_name = username + "\n";
+            isNotice = true;
         }
-        isNotice = true;
         mCommentEdit.setText(mNoticeUser_name);
         mCommentEdit.setSelection(mCommentEdit.getText().length());
         mCommentEdit.requestFocus();
@@ -585,6 +586,8 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
         mCommentusers.addAll(commentData);
         mComment_ids.clear();
         mComment_ids.addAll(comment_ids);
+        mNoticeUser_id = "";
+        mNoticeUser_name = "";
         mMemoData = postData;
         mCommentAdapter.setData();
         if (mOverlay.getVisibility() == View.VISIBLE) {
