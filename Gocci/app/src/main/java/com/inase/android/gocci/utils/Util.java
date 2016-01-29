@@ -289,31 +289,35 @@ public class Util {
                     @Override
                     public void onInput(MaterialDialog materialDialog, final CharSequence charSequence) {
                         final File file = new File(Environment.getExternalStorageDirectory().toString() + "/" + key);
-                        TransferObserver transferObserver = Application_Gocci.getTransfer(context).download(Const.GET_MOVIE_BUCKET_NAME, "mp4/" + key + ".mp4", file);
-                        transferObserver.setTransferListener(new TransferListener() {
-                            @Override
-                            public void onStateChanged(int id, TransferState state) {
-                                if (state == TransferState.COMPLETED) {
-                                    new AsyncTask<Void, Void, Void>() {
-                                        @Override
-                                        protected Void doInBackground(Void... params) {
-                                            FacebookUtil.performShare(context, token, file, charSequence.toString());
-                                            return null;
-                                        }
-                                    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                        if (Application_Gocci.getShareTransfer() != null) {
+                            TransferObserver transferObserver = Application_Gocci.getShareTransfer().download(Const.GET_MOVIE_BUCKET_NAME, "mp4/" + key + ".mp4", file);
+                            transferObserver.setTransferListener(new TransferListener() {
+                                @Override
+                                public void onStateChanged(int id, TransferState state) {
+                                    if (state == TransferState.COMPLETED) {
+                                        new AsyncTask<Void, Void, Void>() {
+                                            @Override
+                                            protected Void doInBackground(Void... params) {
+                                                FacebookUtil.performShare(context, token, file, charSequence.toString());
+                                                return null;
+                                            }
+                                        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                                    }
                                 }
-                            }
 
-                            @Override
-                            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                                @Override
+                                public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
 
-                            }
+                                }
 
-                            @Override
-                            public void onError(int id, Exception ex) {
-                                Toast.makeText(context, context.getString(R.string.error_share), Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                                @Override
+                                public void onError(int id, Exception ex) {
+                                    Toast.makeText(context, context.getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        } else {
+                            Toast.makeText(context, context.getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+                        }
                     }
                 }).show();
     }
@@ -333,31 +337,35 @@ public class Util {
                     @Override
                     public void onInput(MaterialDialog materialDialog, final CharSequence charSequence) {
                         final File file = new File(Environment.getExternalStorageDirectory().toString() + "/" + key);
-                        TransferObserver transferObserver = Application_Gocci.getTransfer(context).download(Const.GET_MOVIE_BUCKET_NAME, "mp4/" + key + ".mp4", file);
-                        transferObserver.setTransferListener(new TransferListener() {
-                            @Override
-                            public void onStateChanged(int id, TransferState state) {
-                                if (state == TransferState.COMPLETED) {
-                                    new AsyncTask<Void, Void, Void>() {
-                                        @Override
-                                        protected Void doInBackground(Void... params) {
-                                            TwitterUtil.performShare(context, authToken.token, authToken.secret, file, charSequence.toString());
-                                            return null;
-                                        }
-                                    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                        if (Application_Gocci.getShareTransfer() != null) {
+                            TransferObserver transferObserver = Application_Gocci.getShareTransfer().download(Const.GET_MOVIE_BUCKET_NAME, "mp4/" + key + ".mp4", file);
+                            transferObserver.setTransferListener(new TransferListener() {
+                                @Override
+                                public void onStateChanged(int id, TransferState state) {
+                                    if (state == TransferState.COMPLETED) {
+                                        new AsyncTask<Void, Void, Void>() {
+                                            @Override
+                                            protected Void doInBackground(Void... params) {
+                                                TwitterUtil.performShare(context, authToken.token, authToken.secret, file, charSequence.toString());
+                                                return null;
+                                            }
+                                        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                                    }
                                 }
-                            }
 
-                            @Override
-                            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                                @Override
+                                public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
 
-                            }
+                                }
 
-                            @Override
-                            public void onError(int id, Exception ex) {
-                                Toast.makeText(context, context.getString(R.string.error_share), Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                                @Override
+                                public void onError(int id, Exception ex) {
+                                    Toast.makeText(context, context.getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        } else {
+                            Toast.makeText(context, context.getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+                        }
                     }
                 })
                 .show();
@@ -365,33 +373,37 @@ public class Util {
 
     public static void instaVideoShare(final Context context, String key) {
         final File file = new File(Environment.getExternalStorageDirectory().toString() + "/" + key);
-        TransferObserver transferObserver = Application_Gocci.getTransfer(context).download(Const.GET_MOVIE_BUCKET_NAME, "mp4/" + key + ".mp4", file);
-        transferObserver.setTransferListener(new TransferListener() {
-            @Override
-            public void onStateChanged(int id, TransferState state) {
-                if (state == TransferState.COMPLETED) {
-                    Uri uri = Uri.fromFile(file);
-                    // Create the new Intent using the 'Send' action.
-                    Intent share = new Intent(Intent.ACTION_SEND);
-                    // Set the MIME type
-                    share.setType("video/*");
-                    // Add the URI and the caption to the Intent.
-                    share.putExtra(Intent.EXTRA_STREAM, uri);
-                    share.setPackage("com.instagram.android");
-                    // Broadcast the Intent.
-                    context.startActivity(Intent.createChooser(share, "Share to"));
+        if (Application_Gocci.getShareTransfer() != null) {
+            TransferObserver transferObserver = Application_Gocci.getShareTransfer().download(Const.GET_MOVIE_BUCKET_NAME, "mp4/" + key + ".mp4", file);
+            transferObserver.setTransferListener(new TransferListener() {
+                @Override
+                public void onStateChanged(int id, TransferState state) {
+                    if (state == TransferState.COMPLETED) {
+                        Uri uri = Uri.fromFile(file);
+                        // Create the new Intent using the 'Send' action.
+                        Intent share = new Intent(Intent.ACTION_SEND);
+                        // Set the MIME type
+                        share.setType("video/*");
+                        // Add the URI and the caption to the Intent.
+                        share.putExtra(Intent.EXTRA_STREAM, uri);
+                        share.setPackage("com.instagram.android");
+                        // Broadcast the Intent.
+                        context.startActivity(Intent.createChooser(share, "Share to"));
+                    }
                 }
-            }
 
-            @Override
-            public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
+                @Override
+                public void onProgressChanged(int id, long bytesCurrent, long bytesTotal) {
 
-            }
+                }
 
-            @Override
-            public void onError(int id, Exception ex) {
-                Toast.makeText(context, context.getString(R.string.error_share), Toast.LENGTH_SHORT).show();
-            }
-        });
+                @Override
+                public void onError(int id, Exception ex) {
+                    Toast.makeText(context, context.getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            Toast.makeText(context, context.getString(R.string.error_share), Toast.LENGTH_SHORT).show();
+        }
     }
 }

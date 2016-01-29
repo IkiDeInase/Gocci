@@ -2,7 +2,6 @@ package com.inase.android.gocci.ui.activity;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.CoordinatorLayout;
@@ -10,7 +9,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.CookieManager;
@@ -25,9 +23,6 @@ import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
-import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
-import com.facebook.HttpMethod;
 import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
@@ -474,17 +469,6 @@ public class SettingActivity extends AppCompatActivity {
         if (profile != null) {
             mFacebookSetting.setText(profile.getName());
             isFacebookSetting = true;
-            new GraphRequest(
-                    AccessToken.getCurrentAccessToken(),
-                    "/me/friends",
-                    null,
-                    HttpMethod.GET,
-                    new GraphRequest.Callback() {
-                        public void onCompleted(GraphResponse response) {
-                            Log.e("ログ", response.toString());
-                        }
-                    }
-            ).executeAsync();
 //            if (Application_Gocci.getShareTransfer() != null) {
 //                API3PostUtil.setSnsLinkAsync(SettingActivity.this, Const.ENDPOINT_FACEBOOK, AccessToken.getCurrentAccessToken().getToken(), Const.ActivityCategory.SETTING, Const.APICategory.SET_FACEBOOK_LINK);
 //            }
@@ -584,48 +568,20 @@ public class SettingActivity extends AppCompatActivity {
                 case SET_FACEBOOK_LINK:
                     mFacebookSetting.setText(Profile.getCurrentProfile().getName());
                     isFacebookSetting = true;
-                    new AsyncTask<Void, Void, Void>() {
-                        @Override
-                        protected Void doInBackground(Void... params) {
-                            Application_Gocci.getProvider(SettingActivity.this).refresh();
-                            return null;
-                        }
-                    }.execute();
                     break;
                 case UNSET_FACEBOOK_LINK:
                     mFacebookSetting.setText(getString(R.string.no_auth_message));
                     isFacebookSetting = false;
                     logoutFacebook();
-                    new AsyncTask<Void, Void, Void>() {
-                        @Override
-                        protected Void doInBackground(Void... params) {
-                            Application_Gocci.getProvider(SettingActivity.this).refresh();
-                            return null;
-                        }
-                    }.execute();
                     break;
                 case SET_TWITTER_LINK:
                     mTwitterSetting.setText(Twitter.getSessionManager().getActiveSession().getUserName());
                     isTwitterSetting = true;
-                    new AsyncTask<Void, Void, Void>() {
-                        @Override
-                        protected Void doInBackground(Void... params) {
-                            Application_Gocci.getProvider(SettingActivity.this).refresh();
-                            return null;
-                        }
-                    }.execute();
                     break;
                 case UNSET_TWITTER_LINK:
                     mTwitterSetting.setText(getString(R.string.no_auth_message));
                     isTwitterSetting = false;
                     logoutTwitter();
-                    new AsyncTask<Void, Void, Void>() {
-                        @Override
-                        protected Void doInBackground(Void... params) {
-                            Application_Gocci.getProvider(SettingActivity.this).refresh();
-                            return null;
-                        }
-                    }.execute();
                     break;
             }
         }
