@@ -251,7 +251,7 @@ public class Application_Gocci extends Application {
             protected void onPostExecute(Void result) {
                 if (SavedData.getPostingId(context) != 0) {
                     final long startTime = System.currentTimeMillis();
-                    TransferObserver observer = getTransfer(context).upload(Const.POST_MOVIE_BUCKET_NAME, SavedData.getAwsPostname(context) + "mp4", new File(SavedData.getVideoUrl(context)));
+                    TransferObserver observer = getTransfer(context).upload(Const.POST_MOVIE_BUCKET_NAME, SavedData.getAwsPostname(context) + ".mp4", new File(SavedData.getVideoUrl(context)));
                     if (observer != null) {
                         observer.setTransferListener(new TransferListener() {
                             @Override
