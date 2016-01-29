@@ -230,10 +230,10 @@ public class LoginSessionActivity extends AppCompatActivity implements ShowUserL
 
     @Override
     protected void onPause() {
-        super.onPause();
         GoogleAnalytics.getInstance(this).reportActivityStop(this);
         BusHolder.get().unregister(this);
         mPresenter.pause();
+        super.onPause();
     }
 
     @Override

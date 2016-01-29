@@ -228,8 +228,8 @@ public class MapProfActivity extends AppCompatActivity implements ClusterManager
 
     @Override
     protected void onPause() {
-        super.onPause();
         GoogleAnalytics.getInstance(this).reportActivityStop(this);
+        super.onPause();
     }
 
     @Override

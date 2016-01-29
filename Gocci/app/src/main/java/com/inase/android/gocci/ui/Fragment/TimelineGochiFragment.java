@@ -291,7 +291,6 @@ public class TimelineGochiFragment extends Fragment implements AudioCapabilities
 
     @Override
     public void onPause() {
-        super.onPause();
         BusHolder.get().unregister(this);
         if (player != null) {
             player.blockingClearSurface();
@@ -302,6 +301,7 @@ public class TimelineGochiFragment extends Fragment implements AudioCapabilities
         }
         appBarLayout.removeOnOffsetChangedListener(this);
         mPresenter.pause();
+        super.onPause();
     }
 
     @Override

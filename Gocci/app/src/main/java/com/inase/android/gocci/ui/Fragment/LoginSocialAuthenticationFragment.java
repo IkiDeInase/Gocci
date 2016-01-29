@@ -213,8 +213,8 @@ public class LoginSocialAuthenticationFragment extends Fragment {
 
     @Override
     public void onPause() {
-        super.onPause();
         BusHolder.get().unregister(this);
+        super.onPause();
     }
 
     @Override

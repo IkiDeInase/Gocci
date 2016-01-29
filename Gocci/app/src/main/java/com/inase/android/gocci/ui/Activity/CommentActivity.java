@@ -304,10 +304,10 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
 
     @Override
     public void onPause() {
-        super.onPause();
         GoogleAnalytics.getInstance(this).reportActivityStop(this);
         BusHolder.get().unregister(self);
         mPresenter.pause();
+        super.onPause();
     }
 
     @Subscribe

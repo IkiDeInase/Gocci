@@ -195,7 +195,6 @@ public class StreamUserProfFragment extends Fragment implements AppBarLayout.OnO
 
     @Override
     public void onPause() {
-        super.onPause();
         BusHolder.get().unregister(this);
         if (player != null) {
             player.blockingClearSurface();
@@ -205,6 +204,7 @@ public class StreamUserProfFragment extends Fragment implements AppBarLayout.OnO
             getStreamPlayingViewHolder().mVideoThumbnail.setVisibility(View.VISIBLE);
         }
         appBarLayout.removeOnOffsetChangedListener(this);
+        super.onPause();
     }
 
     @Override

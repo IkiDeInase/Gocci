@@ -540,7 +540,6 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
 
     @Override
     public void onPause() {
-        super.onPause();
         mPresenter.pause();
         mScaleSpring.removeListener(mSpringListener);
         if (isLocationUpdating) {
@@ -549,6 +548,7 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
         if (handler != null) handler.removeCallbacks(progressRunnable);
 
         BusHolder.get().unregister(this);
+        super.onPause();
     }
 
     @Override

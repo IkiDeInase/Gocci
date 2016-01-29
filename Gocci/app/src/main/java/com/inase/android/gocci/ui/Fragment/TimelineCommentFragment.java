@@ -289,7 +289,6 @@ public class TimelineCommentFragment extends Fragment implements AudioCapabiliti
 
     @Override
     public void onPause() {
-        super.onPause();
         BusHolder.get().unregister(this);
         if (player != null) {
             player.blockingClearSurface();
@@ -300,6 +299,7 @@ public class TimelineCommentFragment extends Fragment implements AudioCapabiliti
         }
         appBarLayout.removeOnOffsetChangedListener(this);
         mPresenter.pause();
+        super.onPause();
     }
 
     @Override

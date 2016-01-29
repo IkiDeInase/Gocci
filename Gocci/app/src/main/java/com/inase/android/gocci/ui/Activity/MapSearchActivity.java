@@ -224,10 +224,10 @@ public class MapSearchActivity extends AppCompatActivity implements ShowHeatmapP
 
     @Override
     protected void onPause() {
-        super.onPause();
         GoogleAnalytics.getInstance(this).reportActivityStop(this);
         BusHolder.get().unregister(this);
         mPresenter.pause();
+        super.onPause();
     }
 
     @Subscribe

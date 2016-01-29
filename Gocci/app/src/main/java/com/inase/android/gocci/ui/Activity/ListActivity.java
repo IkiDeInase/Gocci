@@ -324,11 +324,11 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
     @Override
     protected void onPause() {
-        super.onPause();
         GoogleAnalytics.getInstance(this).reportActivityStop(this);
         BusHolder.get().unregister(this);
         mPresenter.pause();
         mAppBar.removeOnOffsetChangedListener(this);
+        super.onPause();
     }
 
     @Override

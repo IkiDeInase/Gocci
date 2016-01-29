@@ -159,10 +159,10 @@ public class LoginCreateUserNameFragment extends Fragment implements FABProgress
 
     @Override
     public void onPause() {
-        super.onPause();
         mPresenter.pause();
 
         BusHolder.get().unregister(this);
+        super.onPause();
     }
 
     @Override

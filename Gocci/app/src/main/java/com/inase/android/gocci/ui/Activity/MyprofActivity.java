@@ -503,10 +503,10 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
 
     @Override
     protected void onPause() {
-        super.onPause();
         GoogleAnalytics.getInstance(this).reportActivityStop(this);
         BusHolder.get().unregister(self);
         mPresenter.pause();
+        super.onPause();
     }
 
     @Subscribe

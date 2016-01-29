@@ -421,7 +421,6 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
 
     @Override
     public void onPause() {
-        super.onPause();
         BusHolder.get().unregister(this);
         if (player != null) {
             player.blockingClearSurface();
@@ -436,6 +435,7 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
         if (isLocationUpdating) {
             stopLocationUpdates();
         }
+        super.onPause();
     }
 
     @Override

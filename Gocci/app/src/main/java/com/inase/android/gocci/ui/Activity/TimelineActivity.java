@@ -541,9 +541,9 @@ public class TimelineActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        super.onPause();
         BusHolder.get().unregister(self);
         GoogleAnalytics.getInstance(this).reportActivityStop(this);
+        super.onPause();
     }
 
     @Override

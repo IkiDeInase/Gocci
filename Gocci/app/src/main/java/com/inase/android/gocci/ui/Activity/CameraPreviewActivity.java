@@ -588,10 +588,10 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
 
     @Override
     protected void onPause() {
-        super.onPause();
         GoogleAnalytics.getInstance(this).reportActivityStop(this);
         mPresenter.pause();
         BusHolder.get().unregister(this);
+        super.onPause();
     }
 
     @Override

@@ -202,7 +202,6 @@ public class GridMyProfFragment extends Fragment implements AppBarLayout.OnOffse
 
     @Override
     public void onPause() {
-        super.onPause();
         BusHolder.get().unregister(this);
         if (player != null) {
             player.blockingClearSurface();
@@ -212,6 +211,7 @@ public class GridMyProfFragment extends Fragment implements AppBarLayout.OnOffse
             getGridPlayingViewHolder().mSquareImage.setVisibility(View.VISIBLE);
         }
         appBarLayout.removeOnOffsetChangedListener(this);
+        super.onPause();
     }
 
     @Override

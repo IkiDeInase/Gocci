@@ -474,7 +474,6 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
         if (mRestPageAdapter != null && mRestPageAdapter.getMapView() != null) {
             mRestPageAdapter.getMapView().onPause();
         }
-        super.onPause();
         BusHolder.get().unregister(self);
         GoogleAnalytics.getInstance(this).reportActivityStop(this);
         if (player != null) {
@@ -486,6 +485,7 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
         }
         mAppBar.removeOnOffsetChangedListener(this);
         mPresenter.pause();
+        super.onPause();
     }
 
     @Override

@@ -263,7 +263,6 @@ public class PostActivity extends AppCompatActivity implements AudioCapabilities
 
     @Override
     public final void onPause() {
-        super.onPause();
         BusHolder.get().unregister(this);
         GoogleAnalytics.getInstance(this).reportActivityStop(this);
         if (player != null) {
@@ -272,6 +271,7 @@ public class PostActivity extends AppCompatActivity implements AudioCapabilities
         releasePlayer();
         mVideoThumbnail.setVisibility(View.VISIBLE);
         mPresenter.pause();
+        super.onPause();
     }
 
     @Override

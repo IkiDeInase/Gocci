@@ -533,7 +533,6 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
         //stopRecording();
         mPresenter.pause();
         mCameraView.onPause();
-        super.onPause();
 
         if (handler != null) handler.removeCallbacks(progressRunnable);
 
@@ -543,6 +542,7 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
         }
 
         BusHolder.get().unregister(this);
+        super.onPause();
     }
 
     @Override

@@ -289,7 +289,6 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
 
     @Override
     public void onPause() {
-        super.onPause();
         BusHolder.get().unregister(this);
         if (player != null) {
             player.blockingClearSurface();
@@ -300,6 +299,7 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
         }
         appBarLayout.removeOnOffsetChangedListener(this);
         mPresenter.pause();
+        super.onPause();
     }
 
     @Override

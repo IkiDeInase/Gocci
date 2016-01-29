@@ -205,10 +205,10 @@ public class UserSearchActivity extends AppCompatActivity implements ShowUserSea
 
     @Override
     public final void onPause() {
-        super.onPause();
         BusHolder.get().unregister(this);
         GoogleAnalytics.getInstance(this).reportActivityStop(this);
         mPresenter.pause();
+        super.onPause();
     }
 
     @Override

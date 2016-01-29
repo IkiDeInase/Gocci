@@ -520,9 +520,9 @@ public class SettingActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        super.onPause();
         GoogleAnalytics.getInstance(this).reportActivityStop(this);
         BusHolder.get().unregister(self);
+        super.onPause();
     }
 
     @Override

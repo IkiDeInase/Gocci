@@ -422,10 +422,10 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
 
     @Override
     protected void onPause() {
-        super.onPause();
         BusHolder.get().unregister(self);
         mPresenter.pause();
         GoogleAnalytics.getInstance(this).reportActivityStop(this);
+        super.onPause();
     }
 
     @Override

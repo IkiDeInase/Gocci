@@ -81,8 +81,8 @@ public class WebViewActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        super.onPause();
         GoogleAnalytics.getInstance(this).reportActivityStop(this);
+        super.onPause();
     }
 
     @Override
