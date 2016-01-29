@@ -850,7 +850,7 @@ public class TimelineActivity extends AppCompatActivity {
     public void onBackPressed() {
         if (result != null && result.isDrawerOpen()) {
             result.closeDrawer();
-        } else if (mFab.getVisibility() != View.VISIBLE) {
+        } else if (materialSheetFab.isSheetVisible()) {
             materialSheetFab.hideSheet();
         } else {
             super.onBackPressed();
