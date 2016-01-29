@@ -653,7 +653,7 @@ public class UserProfActivity extends AppCompatActivity implements ShowUserProfP
 
     @Override
     public void gochiSuccess(Const.APICategory api, String post_id) {
-        BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, Const.ActivityCategory.USER_PAGE, api, post_id));
+
     }
 
     @Override

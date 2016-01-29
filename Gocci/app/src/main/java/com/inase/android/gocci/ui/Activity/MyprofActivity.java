@@ -1091,7 +1091,7 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
 
     @Override
     public void gochiSuccess(Const.APICategory api, String post_id) {
-        BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, Const.ActivityCategory.MY_PAGE, api, post_id));
+
     }
 
     @Override
