@@ -336,6 +336,7 @@ public class Application_Gocci extends Application {
     }
 
     public static void loginAndProfileImgPost(final Context context, final String post_date, final File file, final Const.ActivityCategory activityCategory) {
+        Toast.makeText(context, "ログイン情報を取得中です。少し時間がかかります。", Toast.LENGTH_SHORT).show();
         getJsonAsync(API3.Util.getAuthLoginAPI(SavedData.getIdentityId(context)), new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -407,6 +408,7 @@ public class Application_Gocci extends Application {
     }
 
     public static void loginAndVideoPost(final Context context, final String mAwsPostName, final File mVideoFile, final CircleProgressView progressWheel, final Const.ActivityCategory activityCategory) {
+        Toast.makeText(context, "ログイン情報を取得中です。少し時間がかかります。", Toast.LENGTH_SHORT).show();
         getJsonAsync(API3.Util.getAuthLoginAPI(SavedData.getIdentityId(context)), new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
