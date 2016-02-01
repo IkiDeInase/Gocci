@@ -68,6 +68,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import co.mobiwise.materialintro.animation.MaterialIntroListener;
+import co.mobiwise.materialintro.shape.Focus;
+import co.mobiwise.materialintro.shape.FocusGravity;
+import co.mobiwise.materialintro.view.MaterialIntroView;
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
 
@@ -576,6 +580,39 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
                 mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.TIMELINE, mTimelineusers);
                 mTimelineAdapter.setTimelineCallback(this);
                 mTimelineRecyclerView.setAdapter(mTimelineAdapter);
+
+                new MaterialIntroView.Builder(getActivity())
+                        .dismissOnTouch(true)
+                        .setTextColor(getResources().getColor(R.color.nameblack))
+                        .enableDotAnimation(true)
+                        .setFocusGravity(FocusGravity.LEFT)
+                        .setFocusType(Focus.MINIMUM)
+                        .setDelayMillis(200)
+                        .enableFadeAnimation(true)
+                        .performClick(true)
+                        .setInfoText("タップすれば動画を再生できます")
+                        .setTarget(mTimelineRecyclerView)
+                        .setUsageId("timeline_video_tap") //THIS SHOULD BE UNIQUE ID
+                        .setListener(new MaterialIntroListener() {
+                            @Override
+                            public void onUserClicked(String s) {
+                                new MaterialIntroView.Builder(getActivity())
+                                        .dismissOnTouch(true)
+                                        .setTextColor(getResources().getColor(R.color.nameblack))
+                                        .enableDotAnimation(true)
+                                        .setFocusGravity(FocusGravity.CENTER)
+                                        .setFocusType(Focus.MINIMUM)
+                                        .setDelayMillis(200)
+                                        .enableFadeAnimation(true)
+                                        .performClick(true)
+                                        .setInfoText("カテゴリーや価格帯で絞り込みもできます")
+                                        .setTarget(fab)
+                                        .setTargetPadding(48)
+                                        .setUsageId("timeline_filter") //THIS SHOULD BE UNIQUE ID
+                                        .show();
+                            }
+                        })
+                        .show();
                 break;
             case GET_TIMELINE_REFRESH:
                 mTimelineusers.clear();

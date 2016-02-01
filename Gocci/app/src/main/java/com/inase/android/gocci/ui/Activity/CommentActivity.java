@@ -61,6 +61,9 @@ import java.util.ArrayList;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import co.mobiwise.materialintro.shape.Focus;
+import co.mobiwise.materialintro.shape.FocusGravity;
+import co.mobiwise.materialintro.view.MaterialIntroView;
 
 public class CommentActivity extends AppCompatActivity implements ObservableScrollViewCallbacks,
         ShowCommentPagePresenter.ShowCommentView, CommentAdapter.CommentCallback {
@@ -572,6 +575,19 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
                 mCommentRecyclerView.setAdapter(mCommentAdapter);
 
                 mLayoutManager.scrollToPosition(mCommentusers.size());
+
+                new MaterialIntroView.Builder(CommentActivity.this)
+                        .dismissOnTouch(true)
+                        .setTextColor(getResources().getColor(R.color.nameblack))
+                        .setFocusGravity(FocusGravity.CENTER)
+                        .setFocusType(Focus.MINIMUM)
+                        .setDelayMillis(200)
+                        .enableFadeAnimation(true)
+                        .performClick(true)
+                        .setInfoText("コメントはタップで返信、長押しでアクションが選べます")
+                        .setTarget(mCommentRecyclerView)
+                        .setUsageId("comment_action") //THIS SHOULD BE UNIQUE ID
+                        .show();
                 break;
             case GET_COMMENT_REFRESH:
                 mCommentAdapter.setData();

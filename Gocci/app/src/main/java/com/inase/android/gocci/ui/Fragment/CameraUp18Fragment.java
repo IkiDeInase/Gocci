@@ -82,6 +82,10 @@ import java.util.Date;
 import at.grabner.circleprogress.CircleProgressView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import co.mobiwise.materialintro.animation.MaterialIntroListener;
+import co.mobiwise.materialintro.shape.Focus;
+import co.mobiwise.materialintro.shape.FocusGravity;
+import co.mobiwise.materialintro.view.MaterialIntroView;
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
 
@@ -255,6 +259,40 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
         mScaleSpring = mSpringSystem.createSpring();
 
         mScaleSpring.setEndValue(1);
+
+        new MaterialIntroView.Builder(getActivity())
+                .dismissOnTouch(true)
+                .setTextColor(getResources().getColor(R.color.nameblack))
+                .enableDotAnimation(true)
+                .setFocusGravity(FocusGravity.CENTER)
+                .setFocusType(Focus.MINIMUM)
+                .setDelayMillis(200)
+                .enableFadeAnimation(true)
+                .performClick(true)
+                .setInfoText("撮影中でも投稿の情報を追加できます")
+                .setTarget(mMenuFab.getMenuIconView())
+                .setTargetPadding(48)
+                .setUsageId("camera_edit") //THIS SHOULD BE UNIQUE ID
+                .setListener(new MaterialIntroListener() {
+                    @Override
+                    public void onUserClicked(String s) {
+                        new MaterialIntroView.Builder(getActivity())
+                                .dismissOnTouch(true)
+                                .setTextColor(getResources().getColor(R.color.nameblack))
+                                .enableDotAnimation(true)
+                                .setFocusGravity(FocusGravity.CENTER)
+                                .setFocusType(Focus.MINIMUM)
+                                .setDelayMillis(200)
+                                .enableFadeAnimation(true)
+                                .performClick(false)
+                                .setInfoText("長押しされている間だけ録画されます")
+                                .setTarget(mToukouButton)
+                                .setTargetPadding(48)
+                                .setUsageId("camera_recording") //THIS SHOULD BE UNIQUE ID
+                                .show();
+                    }
+                })
+                .show();
 
         mCommentAction.setOnClickListener(new View.OnClickListener() {
             @Override

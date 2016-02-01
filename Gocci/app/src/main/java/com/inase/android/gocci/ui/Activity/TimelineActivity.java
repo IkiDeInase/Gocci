@@ -76,6 +76,10 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import co.mobiwise.materialintro.prefs.PreferencesManager;
+import co.mobiwise.materialintro.shape.Focus;
+import co.mobiwise.materialintro.shape.FocusGravity;
+import co.mobiwise.materialintro.view.MaterialIntroView;
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
 
@@ -268,6 +272,8 @@ public class TimelineActivity extends AppCompatActivity {
         int fabColor = getResources().getColor(R.color.fab);
         materialSheetFab = new MaterialSheetFab<>(mFab, mSheet, mOverlay, sheetColor, fabColor);
 
+        new PreferencesManager(this).resetAll();
+
         adapter = new FragmentPagerItemAdapter(
                 getSupportFragmentManager(), FragmentPagerItems.with(this)
                 .add(R.string.tab_latest, TimelineLatestFragment.class)
@@ -331,6 +337,21 @@ public class TimelineActivity extends AppCompatActivity {
                         mToolBar.setSubtitle(getString(R.string.change_location));
                         mToolBar.setSubtitleTextAppearance(TimelineActivity.this, R.style.Toolbar_SubTitleText);
                         mToolBar.setLogo(null);
+
+                        new MaterialIntroView.Builder(TimelineActivity.this)
+                                .dismissOnTouch(true)
+                                .setTextColor(getResources().getColor(R.color.nameblack))
+                                .enableDotAnimation(true)
+                                .setFocusGravity(FocusGravity.LEFT)
+                                .setFocusType(Focus.MINIMUM)
+                                .setDelayMillis(200)
+                                .enableFadeAnimation(true)
+                                .performClick(true)
+                                .setInfoText("現在地以外の場所でも地図から近い店を検索できます")
+                                .setTarget(mToolBar)
+                                .setTargetPadding(48)
+                                .setUsageId("timeline_search_map") //THIS SHOULD BE UNIQUE ID
+                                .show();
                         break;
                     case 2:
                         mTracker = applicationGocci.getDefaultTracker();

@@ -228,7 +228,6 @@ public class UserSearchActivity extends AppCompatActivity implements ShowUserSea
 
         MenuItem item = menu.findItem(R.id.action_search);
         mSearchView.setMenuItem(item);
-
         return true;
     }
 
