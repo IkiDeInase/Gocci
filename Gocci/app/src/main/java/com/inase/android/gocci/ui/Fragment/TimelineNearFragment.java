@@ -283,30 +283,44 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
         mTimelineRecyclerView.setScrollViewCallbacks(this);
         mTimelineRecyclerView.addOnScrollListener(scrollListener);
 
+        mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.NEARLINE, mTimelineusers);
+        mTimelineAdapter.setTimelineCallback(this);
+        mTimelineRecyclerView.setAdapter(mTimelineAdapter);
+
         toolbar = (Toolbar) getActivity().findViewById(R.id.tool_bar);
         fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
         appBarLayout = (AppBarLayout) getActivity().findViewById(R.id.app_bar);
-
-        if (Util.getConnectedState(getActivity()) != Util.NetworkStatus.OFF) {
-            getSignupAsync();
-        } else {
-            Toast.makeText(getActivity(), getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
-        }
 
         mSwipeContainer.setColorSchemeResources(R.color.gocci_1, R.color.gocci_2, R.color.gocci_3, R.color.gocci_4);
         mSwipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mSwipeContainer.setRefreshing(true);
                 if (Util.getConnectedState(getActivity()) != Util.NetworkStatus.OFF) {
                     releasePlayer();
                     getRefreshAsync();
                 } else {
                     Toast.makeText(getActivity(), getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
-                    mSwipeContainer.setRefreshing(false);
+                    mSwipeContainer.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mSwipeContainer.setRefreshing(false);
+                        }
+                    });
                 }
             }
         });
+
+        if (Util.getConnectedState(getActivity()) != Util.NetworkStatus.OFF) {
+            mSwipeContainer.post(new Runnable() {
+                @Override
+                public void run() {
+                    mSwipeContainer.setRefreshing(true);
+                }
+            });
+            getSignupAsync();
+        } else {
+            Toast.makeText(getActivity(), getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
+        }
 
         return view;
     }
@@ -582,7 +596,12 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
                                 Toast.makeText(getActivity(), getString(R.string.permission_location_cancel), Toast.LENGTH_SHORT).show();
                                 mEmptyImage.setVisibility(View.VISIBLE);
                                 mEmptyText.setVisibility(View.VISIBLE);
-                                mSwipeContainer.setRefreshing(false);
+                                mSwipeContainer.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        mSwipeContainer.setRefreshing(false);
+                                    }
+                                });
                             }
                         }).show();
             } else {
@@ -695,7 +714,12 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
                             Toast.makeText(getActivity(), getString(R.string.permission_location_cancel), Toast.LENGTH_SHORT).show();
                             mEmptyImage.setVisibility(View.VISIBLE);
                             mEmptyText.setVisibility(View.VISIBLE);
-                            mSwipeContainer.setRefreshing(false);
+                            mSwipeContainer.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mSwipeContainer.setRefreshing(false);
+                                }
+                            });
                         } else {
                             new MaterialDialog.Builder(getActivity())
                                     .title(getString(R.string.permission_location_title))
@@ -721,7 +745,12 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
                                             Toast.makeText(getActivity(), getString(R.string.permission_location_cancel), Toast.LENGTH_SHORT).show();
                                             mEmptyImage.setVisibility(View.VISIBLE);
                                             mEmptyText.setVisibility(View.VISIBLE);
-                                            mSwipeContainer.setRefreshing(false);
+                                            mSwipeContainer.post(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    mSwipeContainer.setRefreshing(false);
+                                                }
+                                            });
                                         }
                                     }).show();
                         }
@@ -756,7 +785,12 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
     private void onNegativeActionCausedByM() {
         mEmptyImage.setVisibility(View.VISIBLE);
         mEmptyText.setVisibility(View.VISIBLE);
-        mSwipeContainer.setRefreshing(false);
+        mSwipeContainer.post(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeContainer.setRefreshing(false);
+            }
+        });
         mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.NEARLINE, mTimelineusers);
         mTimelineAdapter.setTimelineCallback(this);
         mTimelineRecyclerView.setAdapter(mTimelineAdapter);
@@ -899,21 +933,28 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
 
     @Override
     public void showLoading() {
-        mSwipeContainer.setRefreshing(true);
+        mSwipeContainer.post(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeContainer.setRefreshing(true);
+            }
+        });
     }
 
     @Override
     public void hideLoading() {
-        mSwipeContainer.setRefreshing(false);
+        mSwipeContainer.post(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeContainer.setRefreshing(false);
+            }
+        });
     }
 
     @Override
     public void showEmpty(Const.APICategory api) {
         switch (api) {
             case GET_NEARLINE_FIRST:
-                mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.NEARLINE, mTimelineusers);
-                mTimelineAdapter.setTimelineCallback(this);
-                mTimelineRecyclerView.setAdapter(mTimelineAdapter);
                 break;
             case GET_NEARLINE_REFRESH:
                 mTimelineusers.clear();
@@ -948,9 +989,7 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
             case GET_NEARLINE_FIRST:
                 mTimelineusers.addAll(mPostData);
                 mPost_ids.addAll(post_ids);
-                mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.NEARLINE, mTimelineusers);
-                mTimelineAdapter.setTimelineCallback(this);
-                mTimelineRecyclerView.setAdapter(mTimelineAdapter);
+                mTimelineAdapter.setData();
                 break;
             case GET_NEARLINE_REFRESH:
                 mTimelineusers.clear();
@@ -1000,7 +1039,12 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
     @Override
     public void causedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
         Application_Gocci.resolveOrHandleGlobalError(getActivity(), api, globalCode);
-        mSwipeContainer.setRefreshing(false);
+        mSwipeContainer.post(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeContainer.setRefreshing(false);
+            }
+        });
         if (api == Const.APICategory.GET_NEARLINE_FIRST) {
             mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.NEARLINE, mTimelineusers);
             mTimelineAdapter.setTimelineCallback(this);
@@ -1013,7 +1057,12 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
     @Override
     public void causedByLocalError(Const.APICategory api, String errorMessage) {
         Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
-        mSwipeContainer.setRefreshing(false);
+        mSwipeContainer.post(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeContainer.setRefreshing(false);
+            }
+        });
         if (api == Const.APICategory.GET_NEARLINE_FIRST) {
             mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.NEARLINE, mTimelineusers);
             mTimelineAdapter.setTimelineCallback(this);
@@ -1096,11 +1145,6 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
                 Toast.makeText(getActivity(), API3.Util.UnsetGochiLocalCodeMessageTable(unpostGochiLocalCode), Toast.LENGTH_SHORT).show();
             }
         }
-    }
-
-    @Override
-    public void onViewRecycled(Const.TwoCellViewHolder holder) {
-
     }
 
     @Override

@@ -14,6 +14,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.PermissionChecker;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -275,13 +276,9 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
         mTenpoRecyclerView.setHasFixedSize(true);
         mTenpoRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
         mTenpoRecyclerView.setScrollViewCallbacks(this);
-
-        API3.Util.GetRestLocalCode localCode = api3Impl.GetRestParameterRegex(mRest_id);
-        if (localCode == null) {
-            mPresenter.getRestData(Const.APICategory.GET_REST_FIRST, API3.Util.getGetRestAPI(mRest_id));
-        } else {
-            Toast.makeText(this, API3.Util.GetRestLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
-        }
+        mRestPageAdapter = new RestPageAdapter(this, mHeaderRestData, mTenpousers);
+        mRestPageAdapter.setRestPageCallback(this);
+        mTenpoRecyclerView.setAdapter(mRestPageAdapter);
 
         result = new DrawerBuilder()
                 .withActivity(this)
@@ -423,7 +420,6 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
         mSwipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mSwipeContainer.setRefreshing(true);
                 if (Util.getConnectedState(TenpoActivity.this) != Util.NetworkStatus.OFF) {
                     API3.Util.GetRestLocalCode localCode = api3Impl.GetRestParameterRegex(mRest_id);
                     if (localCode == null) {
@@ -433,10 +429,22 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
                     }
                 } else {
                     Toast.makeText(TenpoActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
-                    mSwipeContainer.setRefreshing(false);
+                    mSwipeContainer.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mSwipeContainer.setRefreshing(false);
+                        }
+                    });
                 }
             }
         });
+
+        API3.Util.GetRestLocalCode localCode = api3Impl.GetRestParameterRegex(mRest_id);
+        if (localCode == null) {
+            mPresenter.getRestData(Const.APICategory.GET_REST_FIRST, API3.Util.getGetRestAPI(mRest_id));
+        } else {
+            Toast.makeText(this, API3.Util.GetRestLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+        }
 
         mGochi.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -1060,12 +1068,22 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
 
     @Override
     public void showLoading() {
-        mSwipeContainer.setRefreshing(true);
+        mSwipeContainer.post(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeContainer.setRefreshing(true);
+            }
+        });
     }
 
     @Override
     public void hideLoading() {
-        mSwipeContainer.setRefreshing(false);
+        mSwipeContainer.post(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeContainer.setRefreshing(false);
+            }
+        });
     }
 
     @Override
@@ -1074,10 +1092,8 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
         switch (api) {
             case GET_REST_FIRST:
                 mBackgroundImage.setImageResource(R.drawable.ic_background_login);
-                mRestPageAdapter = new RestPageAdapter(this, mHeaderRestData, mTenpousers);
-                mRestPageAdapter.setRestPageCallback(this);
                 mTenpoRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
-                mTenpoRecyclerView.setAdapter(mRestPageAdapter);
+                mRestPageAdapter.setData(mHeaderRestData);
                 break;
             case GET_REST_REFRESH:
                 mTenpousers.clear();
@@ -1116,10 +1132,8 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
         switch (api) {
             case GET_REST_FIRST:
                 Picasso.with(this).load(mTenpousers.get(0).getThumbnail()).into(mBackgroundImage);
-                mRestPageAdapter = new RestPageAdapter(this, mHeaderRestData, mTenpousers);
-                mRestPageAdapter.setRestPageCallback(this);
                 mTenpoRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
-                mTenpoRecyclerView.setAdapter(mRestPageAdapter);
+                mRestPageAdapter.setData(mHeaderRestData);
                 break;
             case GET_REST_REFRESH:
                 mPlayingPostId = null;

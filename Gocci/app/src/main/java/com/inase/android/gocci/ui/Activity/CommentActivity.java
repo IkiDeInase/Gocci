@@ -224,11 +224,15 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
         mCommentRecyclerView.setHasFixedSize(true);
         mCommentRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
         mCommentRecyclerView.setScrollViewCallbacks(this);
+
+        mCommentAdapter = new CommentAdapter(this, mPost_id, mMemoData, mCommentusers);
+        mCommentAdapter.setCommentCallback(this);
+        mCommentRecyclerView.setAdapter(mCommentAdapter);
+
         mSwipeRefresh.setColorSchemeResources(R.color.gocci_1, R.color.gocci_2, R.color.gocci_3, R.color.gocci_4);
         mSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mSwipeRefresh.setRefreshing(true);
                 if (Util.getConnectedState(CommentActivity.this) != Util.NetworkStatus.OFF) {
                     API3.Util.GetCommentLocalCode localCode = api3Impl.GetCommentParameterRegex(mPost_id);
                     if (localCode == null) {
@@ -239,7 +243,12 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
                     }
                 } else {
                     Toast.makeText(CommentActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
-                    mSwipeRefresh.setRefreshing(false);
+                    mSwipeRefresh.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mSwipeRefresh.setRefreshing(false);
+                        }
+                    });
                 }
             }
         });
@@ -513,13 +522,23 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
 
     @Override
     public void showLoading() {
-
+        mSwipeRefresh.post(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeRefresh.setRefreshing(true);
+            }
+        });
     }
 
     @Override
     public void hideLoading() {
         mProgress.setVisibility(View.INVISIBLE);
-        mSwipeRefresh.setRefreshing(false);
+        mSwipeRefresh.post(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeRefresh.setRefreshing(false);
+            }
+        });
     }
 
     @Override
@@ -528,9 +547,6 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
             case GET_COMMENT_FIRST:
                 mProgress.setVisibility(View.INVISIBLE);
                 mMemoData = memoData;
-                mCommentAdapter = new CommentAdapter(this, mPost_id, memoData, mCommentusers);
-                mCommentAdapter.setCommentCallback(this);
-                mCommentRecyclerView.setAdapter(mCommentAdapter);
                 break;
             case GET_COMMENT_REFRESH:
                 mCommentusers.clear();
@@ -570,9 +586,7 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
         switch (api) {
             case GET_COMMENT_FIRST:
                 mProgress.setVisibility(View.INVISIBLE);
-                mCommentAdapter = new CommentAdapter(this, mPost_id, memoData, mCommentusers);
-                mCommentAdapter.setCommentCallback(this);
-                mCommentRecyclerView.setAdapter(mCommentAdapter);
+                mCommentAdapter.setData();
 
                 mLayoutManager.scrollToPosition(mCommentusers.size());
 

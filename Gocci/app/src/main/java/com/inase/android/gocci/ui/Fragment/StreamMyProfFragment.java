@@ -186,14 +186,18 @@ public class StreamMyProfFragment extends Fragment implements AppBarLayout.OnOff
         mSwipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mSwipeContainer.setRefreshing(true);
                 if (Util.getConnectedState(getActivity()) != Util.NetworkStatus.OFF) {
                     releasePlayer();
                     MyprofActivity activity = (MyprofActivity) getActivity();
                     activity.refreshJson();
                 } else {
                     Toast.makeText(getActivity(), getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
-                    mSwipeContainer.setRefreshing(false);
+                    mSwipeContainer.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mSwipeContainer.setRefreshing(false);
+                        }
+                    });
                 }
             }
         });
@@ -301,7 +305,12 @@ public class StreamMyProfFragment extends Fragment implements AppBarLayout.OnOff
         mUsers.addAll(event.mData);
         mPost_ids.clear();
         mPost_ids.addAll(event.mPost_Ids);
-        mSwipeContainer.setRefreshing(false);
+        mSwipeContainer.post(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeContainer.setRefreshing(false);
+            }
+        });
         switch (event.mApi) {
             case GET_USER_FIRST:
                 mStreamMyProfAdapter = new StreamMyProfAdapter(getActivity(), mUsers);

@@ -128,11 +128,15 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setHasFixedSize(true);
+
+        mListGetAdapter = new ListGetAdapter(this, mCategory, mList);
+        mListGetAdapter.setListGetCallback(this);
+        mRecyclerView.setAdapter(mListGetAdapter);
+
         mSwipeRefresh.setColorSchemeResources(R.color.gocci_1, R.color.gocci_2, R.color.gocci_3, R.color.gocci_4);
         mSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mSwipeRefresh.setRefreshing(true);
                 if (Util.getConnectedState(ListActivity.this) != Util.NetworkStatus.OFF) {
                     switch (mCategory) {
                         case FOLLOW:
@@ -170,7 +174,12 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                     }
                 } else {
                     Toast.makeText(ListActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
-                    mSwipeRefresh.setRefreshing(false);
+                    mSwipeRefresh.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mSwipeRefresh.setRefreshing(false);
+                        }
+                    });
                 }
             }
         });
@@ -427,13 +436,23 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
 
     @Override
     public void showLoading() {
-
+        mSwipeRefresh.post(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeRefresh.setRefreshing(true);
+            }
+        });
     }
 
     @Override
     public void hideLoading() {
         mProgress.setVisibility(View.INVISIBLE);
-        mSwipeRefresh.setRefreshing(false);
+        mSwipeRefresh.post(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeRefresh.setRefreshing(false);
+            }
+        });
     }
 
     @Override
@@ -444,9 +463,6 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
             case GET_USER_CHEER_FIRST:
             case GET_REST_CHEER_FIRST:
                 mProgress.setVisibility(View.INVISIBLE);
-                mListGetAdapter = new ListGetAdapter(this, mCategory, mList);
-                mListGetAdapter.setListGetCallback(this);
-                mRecyclerView.setAdapter(mListGetAdapter);
                 break;
             case GET_FOLLOW_REFRESH:
             case GET_FOLLOWER_REFRESH:
@@ -471,16 +487,6 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
     public void causedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
         Application_Gocci.resolveOrHandleGlobalError(this, api, globalCode);
         mProgress.setVisibility(View.INVISIBLE);
-        switch (api) {
-            case GET_FOLLOW_FIRST:
-            case GET_FOLLOWER_FIRST:
-            case GET_USER_CHEER_FIRST:
-            case GET_REST_CHEER_FIRST:
-                mListGetAdapter = new ListGetAdapter(this, mCategory, mList);
-                mListGetAdapter.setListGetCallback(this);
-                mRecyclerView.setAdapter(mListGetAdapter);
-                break;
-        }
         mTracker = applicationGocci.getDefaultTracker();
         mTracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").setAction(api.name()).setLabel(API3.Util.GlobalCodeMessageTable(globalCode)).build());
     }
@@ -489,16 +495,6 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
     public void causedByLocalError(Const.APICategory api, String errorMessage) {
         Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
         mProgress.setVisibility(View.INVISIBLE);
-        switch (api) {
-            case GET_FOLLOW_FIRST:
-            case GET_FOLLOWER_FIRST:
-            case GET_USER_CHEER_FIRST:
-            case GET_REST_CHEER_FIRST:
-                mListGetAdapter = new ListGetAdapter(this, mCategory, mList);
-                mListGetAdapter.setListGetCallback(this);
-                mRecyclerView.setAdapter(mListGetAdapter);
-                break;
-        }
         mTracker = applicationGocci.getDefaultTracker();
         mTracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").setAction(api.name()).setLabel(errorMessage).build());
     }
@@ -543,9 +539,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
             case GET_REST_CHEER_FIRST:
                 mProgress.setVisibility(View.INVISIBLE);
                 mList.addAll(list);
-                mListGetAdapter = new ListGetAdapter(this, mCategory, mList);
-                mListGetAdapter.setListGetCallback(this);
-                mRecyclerView.setAdapter(mListGetAdapter);
+                mListGetAdapter.setData();
 
                 if (api == Const.APICategory.GET_FOLLOW_FIRST || api == Const.APICategory.GET_FOLLOWER_FIRST) {
                     for (int i = 0; i < mList.size(); i++) {

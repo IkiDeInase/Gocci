@@ -76,7 +76,6 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import co.mobiwise.materialintro.prefs.PreferencesManager;
 import co.mobiwise.materialintro.shape.Focus;
 import co.mobiwise.materialintro.shape.FocusGravity;
 import co.mobiwise.materialintro.view.MaterialIntroView;
@@ -271,8 +270,6 @@ public class TimelineActivity extends AppCompatActivity {
         int sheetColor = getResources().getColor(R.color.view_background);
         int fabColor = getResources().getColor(R.color.fab);
         materialSheetFab = new MaterialSheetFab<>(mFab, mSheet, mOverlay, sheetColor, fabColor);
-
-        new PreferencesManager(this).resetAll();
 
         adapter = new FragmentPagerItemAdapter(
                 getSupportFragmentManager(), FragmentPagerItems.with(this)

@@ -158,11 +158,6 @@ public class TimelineAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
         return mData.size();
     }
 
-    @Override
-    public void onViewRecycled(Const.TwoCellViewHolder holder) {
-        mCallback.onViewRecycled(holder);
-    }
-
     private String getDist(int distance) {
         String dist = null;
         if (distance > 1000) {
@@ -184,8 +179,6 @@ public class TimelineAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
         void onGochiTap();
 
         void onGochiClick(String post_id, Const.APICategory apiCategory);
-
-        void onViewRecycled(Const.TwoCellViewHolder holder);
 
         void onVideoFrameClick(TwoCellData data);
 

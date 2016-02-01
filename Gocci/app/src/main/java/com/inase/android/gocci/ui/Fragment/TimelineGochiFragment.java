@@ -246,7 +246,30 @@ public class TimelineGochiFragment extends Fragment implements AudioCapabilities
         mTimelineRecyclerView.addOnScrollListener(scrollListener);
         mTimelineRecyclerView.setScrollViewCallbacks(this);
 
+        mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.GOCHILINE, mTimelineusers);
+        mTimelineAdapter.setTimelineCallback(this);
+        mTimelineRecyclerView.setAdapter(mTimelineAdapter);
+
         mEmptyText.setText("投稿をお気に入りすると表示されます！");
+
+        mSwipeContainer.setColorSchemeResources(R.color.gocci_1, R.color.gocci_2, R.color.gocci_3, R.color.gocci_4);
+        mSwipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (Util.getConnectedState(getActivity()) != Util.NetworkStatus.OFF) {
+                    releasePlayer();
+                    getRefreshAsync(getActivity());
+                } else {
+                    Toast.makeText(getActivity(), getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
+                    mSwipeContainer.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mSwipeContainer.setRefreshing(false);
+                        }
+                    });
+                }
+            }
+        });
 
         API3.Util.GetGochilineLocalCode localCode = API3.Impl.getRepository().GetGochilineParameterRegex(null, null, null);
         if (localCode == null) {
@@ -255,21 +278,6 @@ public class TimelineGochiFragment extends Fragment implements AudioCapabilities
         } else {
             Toast.makeText(getActivity(), API3.Util.GetGochilineLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
         }
-
-        mSwipeContainer.setColorSchemeResources(R.color.gocci_1, R.color.gocci_2, R.color.gocci_3, R.color.gocci_4);
-        mSwipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                mSwipeContainer.setRefreshing(true);
-                if (Util.getConnectedState(getActivity()) != Util.NetworkStatus.OFF) {
-                    releasePlayer();
-                    getRefreshAsync(getActivity());
-                } else {
-                    Toast.makeText(getActivity(), getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
-                    mSwipeContainer.setRefreshing(false);
-                }
-            }
-        });
 
         return view;
     }
@@ -526,21 +534,28 @@ public class TimelineGochiFragment extends Fragment implements AudioCapabilities
 
     @Override
     public void showLoading() {
-        mSwipeContainer.setRefreshing(true);
+        mSwipeContainer.post(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeContainer.setRefreshing(true);
+            }
+        });
     }
 
     @Override
     public void hideLoading() {
-        mSwipeContainer.setRefreshing(false);
+        mSwipeContainer.post(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeContainer.setRefreshing(false);
+            }
+        });
     }
 
     @Override
     public void showEmpty(Const.APICategory api) {
         switch (api) {
             case GET_GOCHILINE_FIRST:
-                mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.GOCHILINE, mTimelineusers);
-                mTimelineAdapter.setTimelineCallback(this);
-                mTimelineRecyclerView.setAdapter(mTimelineAdapter);
                 break;
             case GET_GOCHILINE_REFRESH:
                 mTimelineusers.clear();
@@ -575,9 +590,7 @@ public class TimelineGochiFragment extends Fragment implements AudioCapabilities
             case GET_GOCHILINE_FIRST:
                 mTimelineusers.addAll(mPostData);
                 mPost_ids.addAll(post_ids);
-                mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.GOCHILINE, mTimelineusers);
-                mTimelineAdapter.setTimelineCallback(this);
-                mTimelineRecyclerView.setAdapter(mTimelineAdapter);
+                mTimelineAdapter.setData();
                 break;
             case GET_GOCHILINE_REFRESH:
                 mTimelineusers.clear();
@@ -627,7 +640,12 @@ public class TimelineGochiFragment extends Fragment implements AudioCapabilities
     @Override
     public void causedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
         Application_Gocci.resolveOrHandleGlobalError(getActivity(), api, globalCode);
-        mSwipeContainer.setRefreshing(false);
+        mSwipeContainer.post(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeContainer.setRefreshing(false);
+            }
+        });
         if (api == Const.APICategory.GET_GOCHILINE_FIRST) {
             mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.GOCHILINE, mTimelineusers);
             mTimelineAdapter.setTimelineCallback(this);
@@ -640,7 +658,12 @@ public class TimelineGochiFragment extends Fragment implements AudioCapabilities
     @Override
     public void causedByLocalError(Const.APICategory api, String errorMessage) {
         Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
-        mSwipeContainer.setRefreshing(false);
+        mSwipeContainer.post(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeContainer.setRefreshing(false);
+            }
+        });
         if (api == Const.APICategory.GET_GOCHILINE_FIRST) {
             mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.GOCHILINE, mTimelineusers);
             mTimelineAdapter.setTimelineCallback(this);
@@ -723,11 +746,6 @@ public class TimelineGochiFragment extends Fragment implements AudioCapabilities
                 Toast.makeText(getActivity(), API3.Util.UnsetGochiLocalCodeMessageTable(unpostGochiLocalCode), Toast.LENGTH_SHORT).show();
             }
         }
-    }
-
-    @Override
-    public void onViewRecycled(Const.TwoCellViewHolder holder) {
-
     }
 
     @Override

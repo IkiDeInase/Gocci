@@ -244,6 +244,10 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
         mTimelineRecyclerView.setScrollViewCallbacks(this);
         mTimelineRecyclerView.addOnScrollListener(scrollListener);
 
+        mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.FOLLOWLINE, mTimelineusers);
+        mTimelineAdapter.setTimelineCallback(this);
+        mTimelineRecyclerView.setAdapter(mTimelineAdapter);
+
         mEmptyText.setText("ユーザーを探してみましょう！");
 
         mEmptyRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
@@ -256,27 +260,31 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
         fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
         appBarLayout = (AppBarLayout) getActivity().findViewById(R.id.app_bar);
 
+        mSwipeContainer.setColorSchemeResources(R.color.gocci_1, R.color.gocci_2, R.color.gocci_3, R.color.gocci_4);
+        mSwipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (Util.getConnectedState(getActivity()) != Util.NetworkStatus.OFF) {
+                    releasePlayer();
+                    getRefreshAsync(getActivity());
+                } else {
+                    Toast.makeText(getActivity(), getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
+                    mSwipeContainer.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mSwipeContainer.setRefreshing(false);
+                        }
+                    });
+                }
+            }
+        });
+
         API3.Util.GetFollowlineLocalCode localCode = API3.Impl.getRepository().GetFollowlineParameterRegex(null, null, null);
         if (localCode == null) {
             mPresenter.getFollowTimelinePostData(Const.APICategory.GET_FOLLOWLINE_FIRST, API3.Util.getGetFollowlineAPI(null, null, null));
         } else {
             Toast.makeText(getActivity(), API3.Util.GetFollowlineLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
         }
-
-        mSwipeContainer.setColorSchemeResources(R.color.gocci_1, R.color.gocci_2, R.color.gocci_3, R.color.gocci_4);
-        mSwipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                mSwipeContainer.setRefreshing(true);
-                if (Util.getConnectedState(getActivity()) != Util.NetworkStatus.OFF) {
-                    releasePlayer();
-                    getRefreshAsync(getActivity());
-                } else {
-                    Toast.makeText(getActivity(), getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
-                    mSwipeContainer.setRefreshing(false);
-                }
-            }
-        });
 
         return view;
     }
@@ -534,21 +542,28 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
 
     @Override
     public void showLoading() {
-        mSwipeContainer.setRefreshing(true);
+        mSwipeContainer.post(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeContainer.setRefreshing(true);
+            }
+        });
     }
 
     @Override
     public void hideLoading() {
-        mSwipeContainer.setRefreshing(false);
+        mSwipeContainer.post(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeContainer.setRefreshing(false);
+            }
+        });
     }
 
     @Override
     public void showEmpty(Const.APICategory api) {
         switch (api) {
             case GET_FOLLOWLINE_FIRST:
-                mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.FOLLOWLINE, mTimelineusers);
-                mTimelineAdapter.setTimelineCallback(this);
-                mTimelineRecyclerView.setAdapter(mTimelineAdapter);
                 break;
             case GET_FOLLOWLINE_REFRESH:
                 mTimelineusers.clear();
@@ -585,9 +600,7 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
             case GET_FOLLOWLINE_FIRST:
                 mTimelineusers.addAll(mPostData);
                 mPost_ids.addAll(post_ids);
-                mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.FOLLOWLINE, mTimelineusers);
-                mTimelineAdapter.setTimelineCallback(this);
-                mTimelineRecyclerView.setAdapter(mTimelineAdapter);
+                mTimelineAdapter.setData();
                 break;
             case GET_FOLLOWLINE_REFRESH:
                 mTimelineusers.clear();
@@ -637,7 +650,12 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
     @Override
     public void causedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
         Application_Gocci.resolveOrHandleGlobalError(getActivity(), api, globalCode);
-        mSwipeContainer.setRefreshing(false);
+        mSwipeContainer.post(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeContainer.setRefreshing(false);
+            }
+        });
         if (api == Const.APICategory.GET_FOLLOWLINE_FIRST) {
             mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.FOLLOWLINE, mTimelineusers);
             mTimelineAdapter.setTimelineCallback(this);
@@ -650,7 +668,12 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
     @Override
     public void causedByLocalError(Const.APICategory api, String errorMessage) {
         Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
-        mSwipeContainer.setRefreshing(false);
+        mSwipeContainer.post(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeContainer.setRefreshing(false);
+            }
+        });
         if (api == Const.APICategory.GET_FOLLOWLINE_FIRST) {
             mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.FOLLOWLINE, mTimelineusers);
             mTimelineAdapter.setTimelineCallback(this);
@@ -733,11 +756,6 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
                 Toast.makeText(getActivity(), API3.Util.UnsetGochiLocalCodeMessageTable(unpostGochiLocalCode), Toast.LENGTH_SHORT).show();
             }
         }
-    }
-
-    @Override
-    public void onViewRecycled(Const.TwoCellViewHolder holder) {
-
     }
 
     @Override

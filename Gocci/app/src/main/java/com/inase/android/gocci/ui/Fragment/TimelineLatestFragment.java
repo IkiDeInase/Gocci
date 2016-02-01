@@ -250,6 +250,29 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
         mTimelineRecyclerView.addOnScrollListener(scrollListener);
         mTimelineRecyclerView.setScrollViewCallbacks(this);
 
+        mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.TIMELINE, mTimelineusers);
+        mTimelineAdapter.setTimelineCallback(this);
+        mTimelineRecyclerView.setAdapter(mTimelineAdapter);
+
+        mSwipeContainer.setColorSchemeResources(R.color.gocci_1, R.color.gocci_2, R.color.gocci_3, R.color.gocci_4);
+        mSwipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (Util.getConnectedState(getActivity()) != Util.NetworkStatus.OFF) {
+                    releasePlayer();
+                    getRefreshAsync(getActivity());
+                } else {
+                    Toast.makeText(getActivity(), getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
+                    mSwipeContainer.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mSwipeContainer.setRefreshing(false);
+                        }
+                    });
+                }
+            }
+        });
+
         API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().GetTimelineParameterRegex(null, null, null);
         if (localCode == null) {
             mPresenter.getLatestTimelinePostData(Const.APICategory.GET_TIMELINE_FIRST, API3.Util.getGetTimelineAPI(
@@ -257,21 +280,6 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
         } else {
             Toast.makeText(getActivity(), API3.Util.GetTimelineLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
         }
-
-        mSwipeContainer.setColorSchemeResources(R.color.gocci_1, R.color.gocci_2, R.color.gocci_3, R.color.gocci_4);
-        mSwipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                mSwipeContainer.setRefreshing(true);
-                if (Util.getConnectedState(getActivity()) != Util.NetworkStatus.OFF) {
-                    releasePlayer();
-                    getRefreshAsync(getActivity());
-                } else {
-                    Toast.makeText(getActivity(), getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
-                    mSwipeContainer.setRefreshing(false);
-                }
-            }
-        });
 
         return view;
     }
@@ -528,21 +536,28 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
 
     @Override
     public void showLoading() {
-        mSwipeContainer.setRefreshing(true);
+        mSwipeContainer.post(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeContainer.setRefreshing(true);
+            }
+        });
     }
 
     @Override
     public void hideLoading() {
-        mSwipeContainer.setRefreshing(false);
+        mSwipeContainer.post(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeContainer.setRefreshing(false);
+            }
+        });
     }
 
     @Override
     public void showEmpty(Const.APICategory api) {
         switch (api) {
             case GET_TIMELINE_FIRST:
-                mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.TIMELINE, mTimelineusers);
-                mTimelineAdapter.setTimelineCallback(this);
-                mTimelineRecyclerView.setAdapter(mTimelineAdapter);
                 break;
             case GET_TIMELINE_REFRESH:
                 mTimelineusers.clear();
@@ -577,9 +592,7 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
             case GET_TIMELINE_FIRST:
                 mTimelineusers.addAll(mPostData);
                 mPost_ids.addAll(post_ids);
-                mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.TIMELINE, mTimelineusers);
-                mTimelineAdapter.setTimelineCallback(this);
-                mTimelineRecyclerView.setAdapter(mTimelineAdapter);
+                mTimelineAdapter.setData();
 
                 new MaterialIntroView.Builder(getActivity())
                         .dismissOnTouch(true)
@@ -662,7 +675,12 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
     @Override
     public void causedByGlobalError(Const.APICategory api, API3.Util.GlobalCode globalCode) {
         Application_Gocci.resolveOrHandleGlobalError(getActivity(), api, globalCode);
-        mSwipeContainer.setRefreshing(false);
+        mSwipeContainer.post(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeContainer.setRefreshing(false);
+            }
+        });
         if (api == Const.APICategory.GET_TIMELINE_FIRST) {
             mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.TIMELINE, mTimelineusers);
             mTimelineAdapter.setTimelineCallback(this);
@@ -675,7 +693,12 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
     @Override
     public void causedByLocalError(Const.APICategory api, String errorMessage) {
         Toast.makeText(getActivity(), errorMessage, Toast.LENGTH_SHORT).show();
-        mSwipeContainer.setRefreshing(false);
+        mSwipeContainer.post(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeContainer.setRefreshing(false);
+            }
+        });
         if (api == Const.APICategory.GET_TIMELINE_FIRST) {
             mTimelineAdapter = new TimelineAdapter(getActivity(), Const.TimelineCategory.TIMELINE, mTimelineusers);
             mTimelineAdapter.setTimelineCallback(this);
@@ -758,11 +781,6 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
                 Toast.makeText(getActivity(), API3.Util.UnsetGochiLocalCodeMessageTable(unpostGochiLocalCode), Toast.LENGTH_SHORT).show();
             }
         }
-    }
-
-    @Override
-    public void onViewRecycled(Const.TwoCellViewHolder holder) {
-
     }
 
     @Override
