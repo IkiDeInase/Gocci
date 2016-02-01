@@ -276,9 +276,6 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
         mTenpoRecyclerView.setHasFixedSize(true);
         mTenpoRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
         mTenpoRecyclerView.setScrollViewCallbacks(this);
-        mRestPageAdapter = new RestPageAdapter(this, mHeaderRestData, mTenpousers);
-        mRestPageAdapter.setRestPageCallback(this);
-        mTenpoRecyclerView.setAdapter(mRestPageAdapter);
 
         result = new DrawerBuilder()
                 .withActivity(this)
@@ -1092,8 +1089,10 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
         switch (api) {
             case GET_REST_FIRST:
                 mBackgroundImage.setImageResource(R.drawable.ic_background_login);
+                mRestPageAdapter = new RestPageAdapter(this, mHeaderRestData, mTenpousers);
+                mRestPageAdapter.setRestPageCallback(this);
+                mTenpoRecyclerView.setAdapter(mRestPageAdapter);
                 mTenpoRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
-                mRestPageAdapter.setData(mHeaderRestData);
                 break;
             case GET_REST_REFRESH:
                 mTenpousers.clear();
@@ -1132,8 +1131,10 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
         switch (api) {
             case GET_REST_FIRST:
                 Picasso.with(this).load(mTenpousers.get(0).getThumbnail()).into(mBackgroundImage);
+                mRestPageAdapter = new RestPageAdapter(this, mHeaderRestData, mTenpousers);
+                mRestPageAdapter.setRestPageCallback(this);
+                mTenpoRecyclerView.setAdapter(mRestPageAdapter);
                 mTenpoRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
-                mRestPageAdapter.setData(mHeaderRestData);
                 break;
             case GET_REST_REFRESH:
                 mPlayingPostId = null;

@@ -225,10 +225,6 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
         mCommentRecyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
         mCommentRecyclerView.setScrollViewCallbacks(this);
 
-        mCommentAdapter = new CommentAdapter(this, mPost_id, mMemoData, mCommentusers);
-        mCommentAdapter.setCommentCallback(this);
-        mCommentRecyclerView.setAdapter(mCommentAdapter);
-
         mSwipeRefresh.setColorSchemeResources(R.color.gocci_1, R.color.gocci_2, R.color.gocci_3, R.color.gocci_4);
         mSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -547,6 +543,9 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
             case GET_COMMENT_FIRST:
                 mProgress.setVisibility(View.INVISIBLE);
                 mMemoData = memoData;
+                mCommentAdapter = new CommentAdapter(this, mPost_id, mMemoData, mCommentusers);
+                mCommentAdapter.setCommentCallback(this);
+                mCommentRecyclerView.setAdapter(mCommentAdapter);
                 break;
             case GET_COMMENT_REFRESH:
                 mCommentusers.clear();
@@ -586,7 +585,9 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
         switch (api) {
             case GET_COMMENT_FIRST:
                 mProgress.setVisibility(View.INVISIBLE);
-                mCommentAdapter.setData();
+                mCommentAdapter = new CommentAdapter(this, mPost_id, mMemoData, mCommentusers);
+                mCommentAdapter.setCommentCallback(this);
+                mCommentRecyclerView.setAdapter(mCommentAdapter);
 
                 mLayoutManager.scrollToPosition(mCommentusers.size());
 
