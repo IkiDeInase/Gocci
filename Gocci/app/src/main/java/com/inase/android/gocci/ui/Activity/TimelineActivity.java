@@ -79,6 +79,7 @@ import butterknife.OnClick;
 import co.mobiwise.materialintro.shape.Focus;
 import co.mobiwise.materialintro.shape.FocusGravity;
 import co.mobiwise.materialintro.view.MaterialIntroView;
+import hotchemi.android.rate.AppRate;
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
 
@@ -189,6 +190,17 @@ public class TimelineActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         applicationGocci = (Application_Gocci) getApplication();
+
+        AppRate.with(this)
+                .setInstallDays(10) // default 10, 0 means install day.
+                .setLaunchTimes(10) // default 10
+                .setRemindInterval(2) // default 1
+                .setShowLaterButton(true)
+                .setCancelable(false)
+                .setDebug(false) // default falsex
+                .monitor();
+
+        AppRate.showRateDialogIfMeetsConditions(this);
 
         mTitle = getString(R.string.now_location);
         mShowPosition = 0;

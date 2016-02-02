@@ -2,7 +2,6 @@ package com.inase.android.gocci.ui.fragment;
 
 import android.content.Context;
 import android.content.Intent;
-import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -68,8 +67,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import io.nlopez.smartlocation.OnLocationUpdatedListener;
-import io.nlopez.smartlocation.SmartLocation;
 
 /**
  * Created by kinagafuji on 15/12/28.
@@ -488,23 +485,16 @@ public class TimelineCommentFragment extends Fragment implements AudioCapabiliti
     }
 
     private void getRefreshAsync(final Context context) {
-        SmartLocation.with(context).location().oneFix().start(new OnLocationUpdatedListener() {
-            @Override
-            public void onLocationUpdated(Location location) {
-                TimelineActivity.mLongitude = String.valueOf(location.getLongitude());
-                TimelineActivity.mLatitude = String.valueOf(location.getLatitude());
-                TimelineActivity.mCommentCategory_id = 0;
-                TimelineActivity.mCommentValue_id = 0;
+        TimelineActivity.mCommentCategory_id = 0;
+        TimelineActivity.mCommentValue_id = 0;
 
-                API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().GetTimelineParameterRegex(null, null, null);
-                if (localCode == null) {
-                    mPresenter.getCommentTimelinePostData(Const.APICategory.GET_COMMENTLINE_REFRESH, API3.Util.getGetTimelineAPI(
-                            null, null, null));
-                } else {
-                    Toast.makeText(getActivity(), API3.Util.GetTimelineLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+        API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().GetTimelineParameterRegex(null, null, null);
+        if (localCode == null) {
+            mPresenter.getCommentTimelinePostData(Const.APICategory.GET_COMMENTLINE_REFRESH, API3.Util.getGetTimelineAPI(
+                    null, null, null));
+        } else {
+            Toast.makeText(getActivity(), API3.Util.GetTimelineLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override

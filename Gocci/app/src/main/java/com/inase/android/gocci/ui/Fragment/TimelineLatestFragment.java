@@ -2,7 +2,6 @@ package com.inase.android.gocci.ui.fragment;
 
 import android.content.Context;
 import android.content.Intent;
-import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -72,8 +71,6 @@ import co.mobiwise.materialintro.animation.MaterialIntroListener;
 import co.mobiwise.materialintro.shape.Focus;
 import co.mobiwise.materialintro.shape.FocusGravity;
 import co.mobiwise.materialintro.view.MaterialIntroView;
-import io.nlopez.smartlocation.OnLocationUpdatedListener;
-import io.nlopez.smartlocation.SmartLocation;
 
 /**
  * Created by kinagafuji on 15/06/08.
@@ -492,23 +489,16 @@ public class TimelineLatestFragment extends Fragment implements AudioCapabilitie
     }
 
     private void getRefreshAsync(final Context context) {
-        SmartLocation.with(context).location().oneFix().start(new OnLocationUpdatedListener() {
-            @Override
-            public void onLocationUpdated(Location location) {
-                TimelineActivity.mLongitude = String.valueOf(location.getLongitude());
-                TimelineActivity.mLatitude = String.valueOf(location.getLatitude());
-                TimelineActivity.mLatestCategory_id = 0;
-                TimelineActivity.mLatestValue_id = 0;
+        TimelineActivity.mLatestCategory_id = 0;
+        TimelineActivity.mLatestValue_id = 0;
 
-                API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().GetTimelineParameterRegex(null, null, null);
-                if (localCode == null) {
-                    mPresenter.getLatestTimelinePostData(Const.APICategory.GET_TIMELINE_REFRESH, API3.Util.getGetTimelineAPI(
-                            null, null, null));
-                } else {
-                    Toast.makeText(getActivity(), API3.Util.GetTimelineLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+        API3.Util.GetTimelineLocalCode localCode = API3.Impl.getRepository().GetTimelineParameterRegex(null, null, null);
+        if (localCode == null) {
+            mPresenter.getLatestTimelinePostData(Const.APICategory.GET_TIMELINE_REFRESH, API3.Util.getGetTimelineAPI(
+                    null, null, null));
+        } else {
+            Toast.makeText(getActivity(), API3.Util.GetTimelineLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override

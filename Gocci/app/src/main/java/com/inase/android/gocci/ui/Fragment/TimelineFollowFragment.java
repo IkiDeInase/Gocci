@@ -2,7 +2,6 @@ package com.inase.android.gocci.ui.fragment;
 
 import android.content.Context;
 import android.content.Intent;
-import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -70,8 +69,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import io.nlopez.smartlocation.OnLocationUpdatedListener;
-import io.nlopez.smartlocation.SmartLocation;
 
 /**
  * Created by kinagafuji on 15/06/11.
@@ -461,23 +458,16 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
     }
 
     private void getRefreshAsync(final Context context) {
-        SmartLocation.with(context).location().oneFix().start(new OnLocationUpdatedListener() {
-            @Override
-            public void onLocationUpdated(Location location) {
-                TimelineActivity.mLongitude = String.valueOf(location.getLongitude());
-                TimelineActivity.mLatitude = String.valueOf(location.getLatitude());
-                TimelineActivity.mFollowValue_id = 0;
-                TimelineActivity.mFollowCategory_id = 0;
+        TimelineActivity.mFollowValue_id = 0;
+        TimelineActivity.mFollowCategory_id = 0;
 
-                API3.Util.GetFollowlineLocalCode localCode = API3.Impl.getRepository().GetFollowlineParameterRegex(null, null, null);
-                if (localCode == null) {
-                    mPresenter.getFollowTimelinePostData(Const.APICategory.GET_FOLLOWLINE_REFRESH, API3.Util.getGetFollowlineAPI(
-                            null, null, null));
-                } else {
-                    Toast.makeText(getActivity(), API3.Util.GetFollowlineLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+        API3.Util.GetFollowlineLocalCode localCode = API3.Impl.getRepository().GetFollowlineParameterRegex(null, null, null);
+        if (localCode == null) {
+            mPresenter.getFollowTimelinePostData(Const.APICategory.GET_FOLLOWLINE_REFRESH, API3.Util.getGetFollowlineAPI(
+                    null, null, null));
+        } else {
+            Toast.makeText(getActivity(), API3.Util.GetFollowlineLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void changeMovie(TwoCellData postData) {
