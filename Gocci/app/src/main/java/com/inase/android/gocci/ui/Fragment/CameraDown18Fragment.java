@@ -831,8 +831,12 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
 
     protected void stopLocationUpdates() {
         isLocationUpdating = false;
-        LocationServices.FusedLocationApi.removeLocationUpdates(
-                mGoogleApiClient, this);
+        if (mGoogleApiClient != null) {
+            if (mGoogleApiClient.isConnected()) {
+                LocationServices.FusedLocationApi.removeLocationUpdates(
+                        mGoogleApiClient, this);
+            }
+        }
     }
 
     protected void createLocationRequest() {
