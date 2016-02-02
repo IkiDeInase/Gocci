@@ -11,6 +11,7 @@ import com.google.android.exoplayer.AspectRatioFrameLayout;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.ui.view.SquareExoVideoView;
 import com.inase.android.gocci.ui.view.SquareImageView;
+import com.zl.reik.dilatingdotsprogressbar.DilatingDotsProgressBar;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -148,6 +149,8 @@ public class Const {
         public SquareExoVideoView mSquareExoVideo;
         @Bind(R.id.video_frame)
         public AspectRatioFrameLayout mAspectFrame;
+        @Bind(R.id.progress)
+        public DilatingDotsProgressBar mProgress;
         @Bind(R.id.overlay_footer)
         public ImageView mOverlay;
         @Bind(R.id.circle_image)
@@ -187,6 +190,8 @@ public class Const {
         public SquareImageView mVideoThumbnail;
         @Bind(R.id.square_video_exo)
         public SquareExoVideoView mSquareVideoExo;
+        @Bind(R.id.progress)
+        public DilatingDotsProgressBar mProgress;
         @Bind(R.id.category)
         public TextView mCategory;
         @Bind(R.id.value)
@@ -228,6 +233,8 @@ public class Const {
         public SquareImageView mVideoThumbnail;
         @Bind(R.id.square_video_exo)
         public SquareExoVideoView mSquareVideoExo;
+        @Bind(R.id.progress)
+        public DilatingDotsProgressBar mProgress;
         @Bind(R.id.category)
         public TextView mCategory;
         @Bind(R.id.value)

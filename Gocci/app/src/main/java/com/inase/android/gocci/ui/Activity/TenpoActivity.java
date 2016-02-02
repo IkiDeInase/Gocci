@@ -586,6 +586,8 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
 
     private void preparePlayer(final Const.StreamRestViewHolder viewHolder, String path) {
         if (player == null) {
+            viewHolder.mProgress.showNow();
+
             mTracker = applicationGocci.getDefaultTracker();
             mTracker.setScreenName("TenpoPage");
             mTracker.send(new HitBuilders.EventBuilder().setAction("PlayCount").setCategory("Movie").setLabel(mPlayingPostId).build());
@@ -625,11 +627,13 @@ public class TenpoActivity extends AppCompatActivity implements AudioCapabilitie
                         Toast.makeText(getApplicationContext(), stringId, Toast.LENGTH_LONG).show();
                     }
                     playerNeedsPrepare = true;
+                    viewHolder.mProgress.hideNow();
                 }
 
                 @Override
                 public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees, float pixelWidthAspectRatio) {
                     viewHolder.mVideoThumbnail.setVisibility(View.GONE);
+                    viewHolder.mProgress.hideNow();
                     viewHolder.mVideoFrame.setAspectRatio(
                             height == 0 ? 1 : (width * pixelWidthAspectRatio) / height);
                 }

@@ -378,6 +378,8 @@ public class TimelineGochiFragment extends Fragment implements AudioCapabilities
 
     private void preparePlayer(final Const.TwoCellViewHolder viewHolder, String path) {
         if (player == null) {
+            viewHolder.mProgress.showNow();
+
             mTracker = applicationGocci.getDefaultTracker();
             mTracker.setScreenName("Gochiline");
             mTracker.send(new HitBuilders.EventBuilder().setAction("PlayCount").setCategory("Movie").setLabel(mPlayingPostId).build());
@@ -417,11 +419,13 @@ public class TimelineGochiFragment extends Fragment implements AudioCapabilities
                         Toast.makeText(getActivity().getApplicationContext(), stringId, Toast.LENGTH_LONG).show();
                     }
                     playerNeedsPrepare = true;
+                    viewHolder.mProgress.hideNow();
                 }
 
                 @Override
                 public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees, float pixelWidthAspectRatio) {
                     viewHolder.mSquareImage.setVisibility(View.GONE);
+                    viewHolder.mProgress.hideNow();
                     viewHolder.mAspectFrame.setAspectRatio(
                             height == 0 ? 1 : (width * pixelWidthAspectRatio) / height);
                 }

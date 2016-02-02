@@ -74,6 +74,7 @@ import com.twitter.sdk.android.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthToken;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.tweetcomposer.TweetComposer;
+import com.zl.reik.dilatingdotsprogressbar.DilatingDotsProgressBar;
 
 import java.util.ArrayList;
 
@@ -107,6 +108,8 @@ public class PostActivity extends AppCompatActivity implements AudioCapabilities
     public SquareImageView mVideoThumbnail;
     @Bind(R.id.square_video_exo)
     public SquareExoVideoView mSquareVideoExo;
+    @Bind(R.id.progress)
+    public DilatingDotsProgressBar mProgress;
     @Bind(R.id.category)
     public TextView mCategory;
     @Bind(R.id.value)
@@ -331,6 +334,8 @@ public class PostActivity extends AppCompatActivity implements AudioCapabilities
 
     private void preparePlayer(String path) {
         if (player == null) {
+            mProgress.showNow();
+
             mTracker = applicationGocci.getDefaultTracker();
             mTracker.setScreenName("PostPage");
             mTracker.send(new HitBuilders.EventBuilder().setAction("PlayCount").setCategory("Movie").setLabel(mPost_id).build());
@@ -370,11 +375,13 @@ public class PostActivity extends AppCompatActivity implements AudioCapabilities
                         Toast.makeText(getApplicationContext(), stringId, Toast.LENGTH_LONG).show();
                     }
                     playerNeedsPrepare = true;
+                    mProgress.hideNow();
                 }
 
                 @Override
                 public void onVideoSizeChanged(int width, int height, int unappliedRotationDegrees, float pixelWidthAspectRatio) {
                     mVideoThumbnail.setVisibility(View.GONE);
+                    mProgress.hideNow();
                     mVideoFrame.setAspectRatio(
                             height == 0 ? 1 : (width * pixelWidthAspectRatio) / height);
                 }
