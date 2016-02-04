@@ -55,7 +55,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:src="@drawable/ic_close_grey600_24dp"
+            android:src="@drawable/ic_close_grey_600_24dp"
             fab:fab_showShadow="false"
             fab:fab_colorNormal="@color/white"
             fab:fab_colorPressed="@color/white"
@@ -88,7 +88,7 @@
             android:id="@+id/comment_action"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_comment_grey600_24dp"
+            android:src="@drawable/ic_comment_grey_600_24dp"
             style="@style/MenuButtonsStyle"
             fab:fab_label="　" />
 
@@ -96,7 +96,7 @@
             android:id="@+id/value_action"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_attach_money_grey600_24dp"
+            android:src="@drawable/ic_attach_money_grey_600_24dp"
             style="@style/MenuButtonsStyle"
             fab:fab_label="　" />
 
@@ -104,7 +104,7 @@
             android:id="@+id/category_action"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_restaurant_menu_grey600_24dp"
+            android:src="@drawable/ic_restaurant_menu_grey_600_24dp"
             style="@style/MenuButtonsStyle"
             fab:fab_label="　" />
 
@@ -112,7 +112,7 @@
             android:id="@+id/restaurant_action"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_store_grey600_24dp"
+            android:src="@drawable/ic_store_grey_600_24dp"
             style="@style/MenuButtonsStyle"
             fab:fab_label="　" />
 

@@ -103,7 +103,7 @@
                 android:background="@color/gocci_header"
                 android:clickable="false"
                 android:padding="12dp"
-                android:src="@drawable/ic_send_white" />
+                android:src="@drawable/ic_send_white_24dp" />
 
         </RelativeLayout>
     </RelativeLayout>

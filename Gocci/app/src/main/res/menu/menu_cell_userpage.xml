@@ -4,12 +4,12 @@
     <item
         android:id="@+id/move_to_restpage"
         android:title="@string/move_restpage"
-        android:icon="@drawable/ic_store_grey600_24dp" />
+        android:icon="@drawable/ic_store_grey_600_24dp" />
 
     <item
         android:id="@+id/move_to_comment"
         android:title="@string/move_comment"
-        android:icon="@drawable/ic_comment_grey600_24dp" />
+        android:icon="@drawable/ic_comment_grey_600_24dp" />
 
     <item
         android:id="@+id/move_to_detail"
@@ -19,11 +19,11 @@
     <item
         android:id="@+id/violation"
         android:title="@string/popup_violate"
-        android:icon="@drawable/ic_content_cut_grey600_24dp" />
+        android:icon="@drawable/ic_content_cut_grey_600_24dp" />
 
     <item
         android:id="@+id/close"
         android:title="@string/close"
-        android:icon="@drawable/ic_close_grey600_24dp" />
+        android:icon="@drawable/ic_close_grey_600_24dp" />
 
 </menu>
