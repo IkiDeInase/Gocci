@@ -112,6 +112,9 @@ public class TimelineAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
                             case R.id.move_to_comment:
                                 mCallback.onCommentClick(user.getPost_id());
                                 break;
+                            case R.id.move_to_detail:
+                                mCallback.onDetailClick(user.getPost_id());
+                                break;
                             case R.id.violation:
                                 Util.setPostBlockDialog(mContext, user.getPost_id());
                                 break;
@@ -175,6 +178,8 @@ public class TimelineAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
         void onRestClick(String rest_id, String rest_name);
 
         void onCommentClick(String post_id);
+
+        void onDetailClick(String post_id);
 
         void onGochiTap();
 

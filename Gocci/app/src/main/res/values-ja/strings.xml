@@ -332,6 +332,7 @@
     <string name="move_userpage">ユーザーのページへ行く</string>
     <string name="move_restpage">店舗のページへ行く</string>
     <string name="move_comment">コメントする</string>
+    <string name="move_detail">詳しく見る</string>
 
     <string name="reset">リセット</string>
 

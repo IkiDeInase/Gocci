@@ -330,6 +330,7 @@
     <string name="move_userpage">move_to_userpage</string>
     <string name="move_restpage">move_to_restpage</string>
     <string name="move_comment">move_to_comment</string>
+    <string name="move_detail">move_to_detail</string>
 
     <string name="reset">Reset</string>
 

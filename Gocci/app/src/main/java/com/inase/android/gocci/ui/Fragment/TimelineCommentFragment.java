@@ -51,6 +51,7 @@ import com.inase.android.gocci.event.RetryApiEvent;
 import com.inase.android.gocci.event.TimelineMuteChangeEvent;
 import com.inase.android.gocci.presenter.ShowCommentTimelinePresenter;
 import com.inase.android.gocci.ui.activity.CommentActivity;
+import com.inase.android.gocci.ui.activity.PostActivity;
 import com.inase.android.gocci.ui.activity.TenpoActivity;
 import com.inase.android.gocci.ui.activity.TimelineActivity;
 import com.inase.android.gocci.ui.activity.UserProfActivity;
@@ -709,6 +710,11 @@ public class TimelineCommentFragment extends Fragment implements AudioCapabiliti
     @Override
     public void onCommentClick(String post_id) {
         CommentActivity.startCommentActivity(post_id, false, getActivity());
+    }
+
+    @Override
+    public void onDetailClick(String post_id) {
+        PostActivity.startPostActivity(post_id, getActivity());
     }
 
     @Override

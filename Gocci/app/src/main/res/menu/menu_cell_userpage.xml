@@ -12,6 +12,11 @@
         android:icon="@drawable/ic_comment_grey600_24dp" />
 
     <item
+        android:id="@+id/move_to_detail"
+        android:title="@string/move_detail"
+        android:icon="@drawable/ic_zoom_in_grey_600_24dp" />
+
+    <item
         android:id="@+id/violation"
         android:title="@string/popup_violate"
         android:icon="@drawable/ic_content_cut_grey600_24dp" />

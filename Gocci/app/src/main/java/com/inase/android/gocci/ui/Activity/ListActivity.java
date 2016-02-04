@@ -389,7 +389,7 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
             result.closeDrawer();
         } else {
             super.onBackPressed();
-            overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+            overridePendingTransition(R.anim.activity_back_in, R.anim.activity_back_out);
         }
     }
 

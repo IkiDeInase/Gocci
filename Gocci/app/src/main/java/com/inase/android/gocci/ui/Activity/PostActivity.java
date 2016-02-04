@@ -328,6 +328,12 @@ public class PostActivity extends AppCompatActivity implements AudioCapabilities
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(R.anim.activity_back_in, R.anim.activity_back_out);
+    }
+
     private String getVideoPath() {
         return mPostData.getHls_movie();
     }

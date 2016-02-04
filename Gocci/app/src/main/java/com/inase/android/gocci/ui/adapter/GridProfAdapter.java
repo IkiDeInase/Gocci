@@ -99,6 +99,9 @@ public class GridProfAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
                                 case R.id.move_to_comment:
                                     mCallback.onGridCommentClick(user.getPost_id());
                                     break;
+                                case R.id.move_to_detail:
+                                    mCallback.onGridDetailClick(user.getPost_id());
+                                    break;
                                 case R.id.delete:
                                     mCallback.onGridDeleteClick(user.getPost_id());
                                     break;
@@ -117,6 +120,9 @@ public class GridProfAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
                                     break;
                                 case R.id.move_to_comment:
                                     mCallback.onGridCommentClick(user.getPost_id());
+                                    break;
+                                case R.id.move_to_detail:
+                                    mCallback.onGridDetailClick(user.getPost_id());
                                     break;
                                 case R.id.violation:
                                     Util.setPostBlockDialog(mContext, user.getPost_id());
@@ -183,6 +189,8 @@ public class GridProfAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
         void onGridRestClick(String rest_id, String rest_name);
 
         void onGridCommentClick(String post_id);
+
+        void onGridDetailClick(String post_id);
 
         void onGridDeleteClick(String post_id);
 
