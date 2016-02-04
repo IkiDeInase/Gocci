@@ -650,7 +650,8 @@ public class CameraPreviewAlreadyExistActivity extends AppCompatActivity impleme
         StringBuilder builder = new StringBuilder();
         if (!mEditComment.getText().toString().isEmpty())
             builder.append(mEditComment.getText().toString());
-        builder.append(" #").append(mRestname.replaceAll("\\s+", ""));
+        if (!mRestnameSpinner.getText().toString().isEmpty())
+            builder.append(" #").append(mRestname.replaceAll("\\s+", ""));
         if (!mCategorySpinner.getText().toString().isEmpty())
             builder.append(" #").append(mCategorySpinner.getText().toString());
         if (!mEditValue.getText().toString().isEmpty())

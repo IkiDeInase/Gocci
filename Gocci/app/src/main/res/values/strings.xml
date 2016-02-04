@@ -105,10 +105,6 @@
 
     <string name="bad_internet_connection">bad response.....</string>
 
-    <string name="check_videoposting_cancel">Are you OK?</string>
-    <string name="check_videoposting_yeah">Go Back</string>
-    <string name="check_videoposting_no">No</string>
-
     <string name="add_restname">Please write Restname here</string>
     <string name="add_restname_post">Submit</string>
 
@@ -301,6 +297,11 @@
     <string name="already_exist_video_message">Go to CameraPreview?</string>
     <string name="already_exist_video_yeah">yeah</string>
     <string name="already_exist_video_no">delete it</string>
+
+    <string name="already_exist_pre_video">Saving Preview Message</string>
+    <string name="already_exist_pre_video_message">Go to CameraView retry?</string>
+    <string name="already_exist_pre_video_yeah">yeah</string>
+    <string name="already_exist_pre_video_no">No reset</string>
 
     <string name="setting_support_mute">mute on!</string>
     <string name="setting_support_unmute">unmute on!</string>

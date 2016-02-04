@@ -47,7 +47,7 @@ public class RecorderManager {
         this.mySurfaceView = mySurfaceView;
         this.mainActivity = mainActivity;
         parentPath = generateParentFolder();
-        reset();
+        reset(false);
     }
 
     private Camera getCamera() {
@@ -60,6 +60,10 @@ public class RecorderManager {
 
     public long getVideoStartTime() {
         return videoStartTime;
+    }
+
+    public int getTotalTime() {
+        return totalTime;
     }
 
     public int checkIfMax(long timeNow) {
@@ -81,11 +85,13 @@ public class RecorderManager {
         return during;
     }
 
-    public void reset() {
+    public void reset(boolean isFinish) {
         for (String file : videoTempFiles) {
-            File tempFile = new File(file);
-            if (tempFile.exists()) {
-                tempFile.delete();
+            if (isFinish) {
+                File tempFile = new File(file);
+                if (tempFile.exists()) {
+                    tempFile.delete();
+                }
             }
         }
         videoTempFiles = new ArrayList<String>();
@@ -96,6 +102,11 @@ public class RecorderManager {
 
     public List<String> getVideoTempFiles() {
         return videoTempFiles;
+    }
+
+    public void setVideoTempFiles(List<String> list, int totalTime) {
+        videoTempFiles.addAll(list);
+        this.totalTime = totalTime;
     }
 
     public String getVideoParentpath() {

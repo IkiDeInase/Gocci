@@ -8,8 +8,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.ui.fragment.CameraDown18Fragment;
@@ -80,23 +78,6 @@ public class CameraActivity extends AppCompatActivity {
                 }
                 break;
         }
-    }
-
-    @Override
-    public void onBackPressed() {
-        new MaterialDialog.Builder(this)
-                .content(getString(R.string.check_videoposting_cancel))
-                .contentColorRes(R.color.nameblack)
-                .positiveText(getString(R.string.check_videoposting_yeah))
-                .positiveColorRes(R.color.gocci_header)
-                .negativeText(getString(R.string.check_videoposting_no))
-                .negativeColorRes(R.color.gocci_header)
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
-                        CameraActivity.this.finish();
-                    }
-                }).show();
     }
 }
 

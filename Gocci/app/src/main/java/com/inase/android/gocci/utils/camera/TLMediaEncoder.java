@@ -32,7 +32,7 @@ public abstract class TLMediaEncoder {
     private static final String TAG_STATIC = "TLMediaEncoder";
     private final String TAG = getClass().getSimpleName();
 
-    protected static final int TIMEOUT_USEC = 10000;    // 10[msec]
+    protected static final int TIMEOUT_USEC = 20000;    // 10[msec]
 
     private static final int STATE_RELEASE = 0;
     private static final int STATE_INITIALIZED = 1;

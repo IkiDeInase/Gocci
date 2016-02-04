@@ -5,6 +5,10 @@ import android.content.SharedPreferences;
 
 import com.loopj.android.http.PersistentCookieStore;
 
+import org.json.JSONArray;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 /**
@@ -48,6 +52,9 @@ public class SavedData {
     private static final String KEY_POST_FINISHED = "post_finished";
 
     private static final String KEY_ID = "id";
+
+    private static final String KEY_TOTAL_TIME = "total_time";
+    private static final String KEY_MOVIE_NAME = "movie_name";
 
     public static void setWelcome(Context context, String username, String picture, String user_id, int badge_num) {
         SharedPreferences prefs = context.getSharedPreferences("pref", Context.MODE_PRIVATE);
@@ -272,6 +279,20 @@ public class SavedData {
         editor.apply();
     }
 
+    public static void setVideoUrl(Context context, String videoUrl) {
+        SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(KEY_VIDEO_URL, videoUrl);
+        editor.apply();
+    }
+
+    public static void setAwsPostname(Context context, String awsPostname) {
+        SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(KEY_AWS_POST_NAME, awsPostname);
+        editor.apply();
+    }
+
     public static void setIsNewRestname(Context context, boolean isNew) {
         SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
@@ -357,5 +378,58 @@ public class SavedData {
 
     public static PersistentCookieStore getCookieStore(Context context) {
         return new PersistentCookieStore(context);
+    }
+
+    public static void saveList(Context ctx, String key, List<String> list) {
+        JSONArray jsonAry = new JSONArray();
+        for (int i = 0; i < list.size(); i++) {
+            jsonAry.put(list.get(i));
+        }
+        SharedPreferences prefs = ctx.getSharedPreferences("movie", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(key, jsonAry.toString());
+        editor.apply();
+    }
+
+    // 設定値 ArrayList<String> を取得（Context は Activity や Application や Service）
+    public static List<String> loadList(Context ctx, String key) {
+        List<String> list = new ArrayList<String>();
+        SharedPreferences prefs = ctx.getSharedPreferences("movie", Context.MODE_PRIVATE);
+        String strJson = prefs.getString(key, ""); // 第２引数はkeyが存在しない時に返す初期値
+        if (!strJson.equals("")) {
+            try {
+                JSONArray jsonAry = new JSONArray(strJson);
+                for (int i = 0; i < jsonAry.length(); i++) {
+                    list.add(jsonAry.getString(i));
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+        return list;
+    }
+
+    public static void setTotalTime(Context context, int totalTime) {
+        SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt(KEY_TOTAL_TIME, totalTime);
+        editor.apply();
+    }
+
+    public static int getTotalTime(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
+        return prefs.getInt(KEY_TOTAL_TIME, 0);
+    }
+
+    public static void setMovieName(Context context, String movieName) {
+        SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(KEY_MOVIE_NAME, movieName);
+        editor.apply();
+    }
+
+    public static String getMovieName(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences("movie", Context.MODE_PRIVATE);
+        return prefs.getString(KEY_MOVIE_NAME, "");
     }
 }

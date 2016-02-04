@@ -843,8 +843,38 @@ public class TimelineActivity extends AppCompatActivity {
     }
 
     private void goCamera() {
-        if (SavedData.getVideoUrl(TimelineActivity.this).isEmpty() || SavedData.getLat(TimelineActivity.this).isEmpty()) {
-            startActivity(new Intent(TimelineActivity.this, CameraActivity.class));
+        if (SavedData.getVideoUrl(TimelineActivity.this).isEmpty()) {
+            if (SavedData.getTotalTime(TimelineActivity.this) != 0) {
+                new MaterialDialog.Builder(TimelineActivity.this)
+                        .title(getString(R.string.already_exist_pre_video))
+                        .titleColorRes(R.color.namegrey)
+                        .content(getString(R.string.already_exist_pre_video_message))
+                        .contentColorRes(R.color.namegrey)
+                        .positiveText(getString(R.string.already_exist_pre_video_yeah))
+                        .positiveColorRes(R.color.gocci_header)
+                        .negativeText(getString(R.string.already_exist_pre_video_no))
+                        .negativeColorRes(R.color.gocci_header)
+                        .onPositive(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                                Intent intent = new Intent(TimelineActivity.this, CameraActivity.class);
+                                startActivity(intent);
+                                overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+                            }
+                        })
+                        .onNegative(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
+                                SharedPreferences prefs = getSharedPreferences("movie", Context.MODE_PRIVATE);
+                                SharedPreferences.Editor editor = prefs.edit();
+                                editor.clear();
+                                editor.apply();
+                                startActivity(new Intent(TimelineActivity.this, CameraActivity.class));
+                            }
+                        }).show();
+            } else {
+                startActivity(new Intent(TimelineActivity.this, CameraActivity.class));
+            }
         } else {
             new MaterialDialog.Builder(TimelineActivity.this)
                     .title(getString(R.string.already_exist_video))

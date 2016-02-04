@@ -19,7 +19,6 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.GravityEnum;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.andexert.library.RippleView;
@@ -640,7 +639,8 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
         StringBuilder builder = new StringBuilder();
         if (!mEditComment.getText().toString().isEmpty())
             builder.append(mEditComment.getText().toString());
-        builder.append(" #").append(mRestname.replaceAll("\\s+", ""));
+        if (!mRestnameSpinner.getText().toString().isEmpty())
+            builder.append(" #").append(mRestname.replaceAll("\\s+", ""));
         if (!mCategorySpinner.getText().toString().isEmpty())
             builder.append(" #").append(mCategorySpinner.getText().toString());
         if (!mEditValue.getText().toString().isEmpty())
@@ -655,19 +655,7 @@ public class CameraPreviewActivity extends AppCompatActivity implements ShowCame
                 (mSlidingLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED || mSlidingLayout.getPanelState() == SlidingUpPanelLayout.PanelState.ANCHORED)) {
             mSlidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
         } else {
-            new MaterialDialog.Builder(this)
-                    .content(getString(R.string.check_videoposting_cancel))
-                    .contentColorRes(R.color.nameblack)
-                    .positiveText(getString(R.string.check_videoposting_yeah))
-                    .positiveColorRes(R.color.gocci_header)
-                    .negativeText(getString(R.string.check_videoposting_no))
-                    .negativeColorRes(R.color.gocci_header)
-                    .onPositive(new MaterialDialog.SingleButtonCallback() {
-                        @Override
-                        public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
-                            CameraPreviewActivity.this.finish();
-                        }
-                    }).show();
+            super.onBackPressed();
         }
     }
 

@@ -105,10 +105,6 @@
 
     <string name="bad_internet_connection">回線が悪いようです。。。</string>
 
-    <string name="check_videoposting_cancel">ここで戻ると、この動画は初期化されますがよろしいですか？</string>
-    <string name="check_videoposting_yeah">戻る</string>
-    <string name="check_videoposting_no">いいえ</string>
-
     <string name="add_restname">あなたのいるお店の名前を入力してください。※位置情報は現在の位置を使います。</string>
     <string name="add_restname_post">送信する</string>
 
@@ -303,6 +299,11 @@
     <string name="already_exist_video_message">以前の投稿を編集しますか？</string>
     <string name="already_exist_video_yeah">編集する</string>
     <string name="already_exist_video_no">削除する</string>
+
+    <string name="already_exist_pre_video">下書き状態の動画があります</string>
+    <string name="already_exist_pre_video_message">動画の撮影を再開しますか？</string>
+    <string name="already_exist_pre_video_yeah">再開する</string>
+    <string name="already_exist_pre_video_no">初めから</string>
 
     <string name="setting_support_mute">音声をミュートにする</string>
     <string name="setting_support_unmute">音声のミュートを解除する</string>

@@ -68,6 +68,7 @@ import com.inase.android.gocci.presenter.ShowCameraPresenter;
 import com.inase.android.gocci.ui.activity.CameraActivity;
 import com.inase.android.gocci.ui.activity.CameraPreviewActivity;
 import com.inase.android.gocci.ui.view.CameraGLView;
+import com.inase.android.gocci.utils.SavedData;
 import com.inase.android.gocci.utils.camera.TLMediaAudioEncoder;
 import com.inase.android.gocci.utils.camera.TLMediaEncoder;
 import com.inase.android.gocci.utils.camera.TLMediaMovieBuilder;
@@ -176,6 +177,10 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        if (!isFinish) {
+            SavedData.setMovieName(getActivity(), mMovieName);
+            SavedData.setTotalTime(getActivity(), totalTime);
+        }
         mCameraView.onFinish();
         ButterKnife.unbind(this);
     }
@@ -256,6 +261,13 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
         mCircleProgress.setValue(0);
         mCircleProgress.setBarColor(getResources().getColor(R.color.gocci_1), getResources().getColor(R.color.gocci_2), getResources().getColor(R.color.gocci_3), getResources().getColor(R.color.gocci_4));
 
+        mMovieName = SavedData.getMovieName(getActivity());
+        if (!mMovieName.isEmpty()) {
+            totalTime = SavedData.getTotalTime(getActivity());
+            int circle = (int) (totalTime * 1.0 / 70);
+            mCircleProgress.setValue(circle);
+        }
+
         mScaleSpring = mSpringSystem.createSpring();
 
         mScaleSpring.setEndValue(1);
@@ -310,6 +322,7 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
                             public void onInput(MaterialDialog materialDialog, CharSequence charSequence) {
                                 mMemo = charSequence.toString();
                                 mCommentAction.setLabelText(charSequence.toString());
+                                SavedData.setMemo(getActivity(), mMemo);
                             }
                         }).show();
             }
@@ -330,6 +343,7 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
                             public void onInput(MaterialDialog materialDialog, CharSequence charSequence) {
                                 mValue = charSequence.toString();
                                 mValueAction.setLabelText(charSequence.toString() + "円");
+                                SavedData.setValue(getActivity(), mValue);
                             }
                         }).show();
             }
@@ -349,6 +363,7 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
                                 materialDialog.dismiss();
                                 mCategory_id = i + 2;
                                 mCategoryAction.setLabelText(charSequence.toString());
+                                SavedData.setCategory_id(getActivity(), mCategory_id);
                             }
                         }).show();
             }
@@ -379,6 +394,8 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
                                     mRest_name = charSequence.toString();
                                     mRest_id = CameraActivity.rest_idArray.get(i);
                                     mRestaurantAction.setLabelText(charSequence.toString());
+                                    SavedData.setRestname(getActivity(), mRest_name);
+                                    SavedData.setRest_id(getActivity(), mRest_id);
                                 }
                             }).show();
                 } else {
@@ -390,20 +407,24 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
         mCancelFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new MaterialDialog.Builder(getActivity())
-                        .content(getString(R.string.check_videoposting_cancel))
-                        .positiveText(getString(R.string.check_videoposting_yeah))
-                        .positiveColorRes(R.color.gocci_header)
-                        .negativeText(getString(R.string.check_videoposting_no))
-                        .negativeColorRes(R.color.gocci_header)
-                        .onPositive(new MaterialDialog.SingleButtonCallback() {
-                            @Override
-                            public void onClick(MaterialDialog materialDialog, DialogAction dialogAction) {
-                                getActivity().finish();
-                            }
-                        }).show();
+                getActivity().finish();
             }
         });
+
+        mMemo = SavedData.getMemo(getActivity());
+        mValue = SavedData.getValue(getActivity());
+        mCategory_id = SavedData.getCategory_id(getActivity());
+        mRest_name = SavedData.getRestname(getActivity());
+        mRest_id = SavedData.getRest_id(getActivity());
+        mIsnewRestname = SavedData.getIsNewRestname(getActivity());
+        latitude = SavedData.getLat(getActivity());
+        longitude = SavedData.getLon(getActivity());
+
+        mCommentAction.setLabelText(mMemo);
+        mValueAction.setLabelText(mValue.isEmpty() ? "" : mValue + "円");
+        String[] CATEGORY = getResources().getStringArray(R.array.list_category);
+        mCategoryAction.setLabelText(mCategory_id == 1 ? "" : CATEGORY[mCategory_id - 2]);
+        mRestaurantAction.setLabelText(mRest_name);
 
         mMenuFab.setClosedOnTouchOutside(true);
 
@@ -484,6 +505,8 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
         } else {
             Toast.makeText(getActivity(), API3.Util.GetNearLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
         }
+        SavedData.setLat(getActivity(), latitude);
+        SavedData.setLon(getActivity(), longitude);
     }
 
     public void startPlay() {
@@ -600,6 +623,9 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
                 mIsnewRestname = true;
                 mRest_id = event.id;
                 mRestaurantAction.setLabelText(mRest_name);
+                SavedData.setIsNewRestname(getActivity(), mIsnewRestname);
+                SavedData.setRestname(getActivity(), mRest_name);
+                SavedData.setRest_id(getActivity(), mRest_id);
             }
         }
     }
@@ -654,7 +680,9 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
         if (DEBUG) Log.v(TAG, "start:");
         try {
             //mRecordButton.setColorFilter(0xffffff00);    // turn yellow
-            mMovieName = TAG + System.nanoTime();
+            if (mMovieName.isEmpty()) {
+                mMovieName = TAG + System.nanoTime();
+            }
             if (true) {
                 // for video capturing
                 mVideoEncoder = new TLMediaVideoEncoder(getActivity(), mMovieName, mMediaEncoderListener);
@@ -814,6 +842,8 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
                 mCameraView.onFinish();
                 mFinalVideoUrl = output_path;
                 mAwsPostName = awspostname;
+                SavedData.setVideoUrl(getActivity(), mFinalVideoUrl);
+                SavedData.setAwsPostname(getActivity(), mAwsPostName);
                 startPlay();
                 //画面遷移するときにやる
             }
