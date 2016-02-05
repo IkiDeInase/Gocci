@@ -163,14 +163,6 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                                 Toast.makeText(ListActivity.this, API3.Util.GetUser_CheerLocalCodeMessageTable(getUserCheerLocalCode), Toast.LENGTH_SHORT).show();
                             }
                             break;
-                        case REST_CHEER:
-                            API3.Util.GetRest_CheerLocalCode getRestCheerLocalCode = api3Impl.GetRest_CheerParameterRegex(mId);
-                            if (getRestCheerLocalCode == null) {
-                                mPresenter.getListData(Const.APICategory.GET_REST_CHEER_REFRESH, API3.Util.getGetRestCheerAPI(mId));
-                            } else {
-                                Toast.makeText(ListActivity.this, API3.Util.GetRest_CheerLocalCodeMessageTable(getRestCheerLocalCode), Toast.LENGTH_SHORT).show();
-                            }
-                            break;
                     }
                 } else {
                     Toast.makeText(ListActivity.this, getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
@@ -200,9 +192,6 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                                 break;
                             case USER_CHEER:
                                 mTracker.setScreenName("UserCheerlist");
-                                break;
-                            case REST_CHEER:
-                                mTracker.setScreenName("RestCheerlist");
                                 break;
                         }
                         mTracker.send(new HitBuilders.EventBuilder().setCategory("Public").setAction("ScrollCount").setLabel(SavedData.getServerUserId(ListActivity.this)).build());
@@ -318,16 +307,6 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                     Toast.makeText(this, API3.Util.GetUser_CheerLocalCodeMessageTable(getUserCheerLocalCode), Toast.LENGTH_SHORT).show();
                 }
                 break;
-            case REST_CHEER:
-                getSupportActionBar().setTitle(getString(R.string.cheer_user_list));
-                mEmptyText.setText(getString(R.string.usercheer_empty_text));
-                API3.Util.GetRest_CheerLocalCode getRestCheerLocalCode = api3Impl.GetRest_CheerParameterRegex(mId);
-                if (getRestCheerLocalCode == null) {
-                    mPresenter.getListData(Const.APICategory.GET_REST_CHEER_FIRST, API3.Util.getGetRestCheerAPI(mId));
-                } else {
-                    Toast.makeText(this, API3.Util.GetRest_CheerLocalCodeMessageTable(getRestCheerLocalCode), Toast.LENGTH_SHORT).show();
-                }
-                break;
         }
     }
 
@@ -355,9 +334,6 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                     break;
                 case USER_CHEER:
                     mTracker.setScreenName("UserCheerlist");
-                    break;
-                case REST_CHEER:
-                    mTracker.setScreenName("RestCheerlist");
                     break;
             }
             mTracker.send(new HitBuilders.ScreenViewBuilder().build());
@@ -461,13 +437,11 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
             case GET_FOLLOW_FIRST:
             case GET_FOLLOWER_FIRST:
             case GET_USER_CHEER_FIRST:
-            case GET_REST_CHEER_FIRST:
                 mProgress.setVisibility(View.INVISIBLE);
                 break;
             case GET_FOLLOW_REFRESH:
             case GET_FOLLOWER_REFRESH:
             case GET_USER_CHEER_REFRESH:
-            case GET_REST_CHEER_REFRESH:
                 mList.clear();
                 mListGetAdapter.setData();
                 mUser_idList.clear();
@@ -536,7 +510,6 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
             case GET_FOLLOW_FIRST:
             case GET_FOLLOWER_FIRST:
             case GET_USER_CHEER_FIRST:
-            case GET_REST_CHEER_FIRST:
                 mProgress.setVisibility(View.INVISIBLE);
                 mList.addAll(list);
                 mListGetAdapter.setData();
@@ -550,7 +523,6 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
             case GET_FOLLOW_REFRESH:
             case GET_FOLLOWER_REFRESH:
             case GET_USER_CHEER_REFRESH:
-            case GET_REST_CHEER_REFRESH:
                 mList.clear();
                 mList.addAll(list);
                 mListGetAdapter.setData();
@@ -576,9 +548,6 @@ public class ListActivity extends AppCompatActivity implements AppBarLayout.OnOf
                 break;
             case USER_CHEER:
                 mPresenter.getListData(event.api, API3.Util.getGetUserCheerAPI(mId));
-                break;
-            case REST_CHEER:
-                mPresenter.getListData(event.api, API3.Util.getGetRestCheerAPI(mId));
                 break;
             default:
                 break;

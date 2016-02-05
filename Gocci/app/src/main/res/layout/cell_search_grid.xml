@@ -127,7 +127,6 @@
         app:dd_numDots="3"
         app:dd_scaleMultiplier="1.3"
         app:dd_animationDuration="300"
-        app:dd_horizontalSpacing="4dp"
-        />
+        app:dd_horizontalSpacing="4dp" />
 
 </com.google.android.exoplayer.AspectRatioFrameLayout>

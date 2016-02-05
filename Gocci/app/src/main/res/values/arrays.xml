@@ -26,18 +26,8 @@
         <item>@string/rich</item>
     </array>
 
-    <array name="list_mood">
-        <!--<item>@string/no_tag</item>-->
-        <item>@string/nigi</item>
-        <item>@string/yutta</item>
-    </array>
-
     <array name="list_tenpo_menu">
         <item>@string/seeHomepage</item>
-    </array>
-
-    <array name="list_lifelog_menu">
-        <item>@string/seeWantList</item>
     </array>
 
     <array name="locale">

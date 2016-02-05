@@ -162,42 +162,6 @@ public class ListRepositoryImpl implements ListRepository {
                                 }
                             });
                             break;
-                        case GET_REST_CHEER_FIRST:
-                        case GET_REST_CHEER_REFRESH:
-                            mAPI3.GetRest_CheerResponse(response, new API3.PayloadResponseCallback() {
-
-                                @Override
-                                public void onSuccess(JSONObject payload) {
-                                    try {
-                                        JSONArray users = payload.getJSONArray("users");
-
-                                        final ArrayList<ListGetData> mListData = new ArrayList<>();
-
-                                        if (users.length() != 0) {
-                                            for (int i = 0; i < users.length(); i++) {
-                                                JSONObject listData = users.getJSONObject(i);
-                                                mListData.add(ListGetData.createUserData(listData));
-                                            }
-                                            cb.onSuccess(api, mListData);
-                                        } else {
-                                            cb.onEmpty(api);
-                                        }
-                                    } catch (JSONException e) {
-                                        cb.onFailureCausedByGlobalError(api, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
-                                    }
-                                }
-
-                                @Override
-                                public void onGlobalError(API3.Util.GlobalCode globalCode) {
-                                    cb.onFailureCausedByGlobalError(api, globalCode);
-                                }
-
-                                @Override
-                                public void onLocalError(String errorMessage) {
-                                    cb.onFailureCausedByLocalError(api, errorMessage);
-                                }
-                            });
-                            break;
                     }
                 }
 

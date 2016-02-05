@@ -50,9 +50,6 @@ public class ListGetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             case USER_CHEER:
                 v = LayoutInflater.from(mContext).inflate(R.layout.cell_cheer, parent, false);
                 return new Const.UserCheerViewHolder(v);
-            case REST_CHEER:
-                v = LayoutInflater.from(mContext).inflate(R.layout.cell_tenpo_cheer, parent, false);
-                return new Const.RestCheerViewHolder(v);
             default:
                 return null;
         }
@@ -68,9 +65,6 @@ public class ListGetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 break;
             case USER_CHEER:
                 bindUserCheer((Const.UserCheerViewHolder) viewHolder, data);
-                break;
-            case REST_CHEER:
-                bindRestCheer((Const.RestCheerViewHolder) viewHolder, data);
                 break;
             default:
                 break;
@@ -145,51 +139,6 @@ public class ListGetAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             @Override
             public void onClick(View v) {
                 mCallback.onRestClick(data.getRest_id(), data.getRestname());
-            }
-        });
-    }
-
-    private void bindRestCheer(final Const.RestCheerViewHolder holder, final ListGetData data) {
-        holder.mUserName.setText(data.getUsername());
-        holder.mGochiCount.setText(String.valueOf(data.getGochi_num()));
-
-        Picasso.with(mContext)
-                .load(data.getProfile_img())
-                .placeholder(R.drawable.ic_userpicture)
-                .transform(new RoundedTransformation())
-                .into(holder.mTenpoCheerPicture);
-
-        holder.mUserName.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mCallback.onUserClick(data.getUser_id(), data.getUsername());
-            }
-        });
-
-        holder.mTenpoCheerPicture.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mCallback.onUserClick(data.getUser_id(), data.getUsername());
-            }
-        });
-
-        if (!data.isFollow_flag()) {
-            holder.mAddFollowButton.setVisibility(View.VISIBLE);
-        } else {
-            holder.mDeleteFollowButton.setVisibility(View.VISIBLE);
-        }
-        holder.mAccountRipple.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (holder.mAddFollowButton.isShown()) {
-                    holder.mAddFollowButton.setVisibility(View.INVISIBLE);
-                    holder.mDeleteFollowButton.setVisibility(View.VISIBLE);
-                    mCallback.onFollowClick(Const.APICategory.SET_FOLLOW, data.getUser_id());
-                } else {
-                    holder.mAddFollowButton.setVisibility(View.VISIBLE);
-                    holder.mDeleteFollowButton.setVisibility(View.INVISIBLE);
-                    mCallback.onFollowClick(Const.APICategory.UNSET_FOLLOW, data.getUser_id());
-                }
             }
         });
     }

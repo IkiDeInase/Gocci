@@ -67,7 +67,6 @@ public class Const {
         FOLLOW,
         FOLLOWER,
         USER_CHEER,
-        REST_CHEER
     }
 
     public enum APICategory {
@@ -92,10 +91,6 @@ public class Const {
         GET_GOCHILINE_REFRESH,
         GET_GOCHILINE_ADD,
         GET_GOCHILINE_FILTER,
-        GET_COMMENTLINE_FIRST,
-        GET_COMMENTLINE_REFRESH,
-        GET_COMMENTLINE_ADD,
-        GET_COMMENTLINE_FILTER,
         GET_USER_FIRST,
         GET_USER_REFRESH,
         GET_REST_FIRST,
@@ -108,8 +103,6 @@ public class Const {
         GET_FOLLOWER_REFRESH,
         GET_USER_CHEER_FIRST,
         GET_USER_CHEER_REFRESH,
-        GET_REST_CHEER_FIRST,
-        GET_REST_CHEER_REFRESH,
         GET_NOTICE_FIRST,
         GET_HEATMAP_FIRST,
         GET_NEAR_FIRST,
@@ -291,26 +284,6 @@ public class Const {
         public TextView mLocality;
 
         public UserCheerViewHolder(View view) {
-            super(view);
-            ButterKnife.bind(this, view);
-        }
-    }
-
-    public static class RestCheerViewHolder extends RecyclerView.ViewHolder {
-        @Bind(R.id.tenpo_cheer_picture)
-        public ImageView mTenpoCheerPicture;
-        @Bind(R.id.user_name)
-        public TextView mUserName;
-        @Bind(R.id.add_follow_button)
-        public ImageView mAddFollowButton;
-        @Bind(R.id.delete_follow_button)
-        public ImageView mDeleteFollowButton;
-        @Bind(R.id.account_button)
-        public RippleView mAccountRipple;
-        @Bind(R.id.gochi_count_text)
-        public TextView mGochiCount;
-
-        public RestCheerViewHolder(View view) {
             super(view);
             ButterKnife.bind(this, view);
         }

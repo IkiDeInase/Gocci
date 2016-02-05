@@ -18,11 +18,6 @@
 
     <style name="Animations" />
 
-    <style name="Animations.GrowFromBottom">
-        <item name="@android:windowEnterAnimation">@anim/grow_from_bottom</item>
-        <item name="@android:windowExitAnimation">@anim/shrink_from_top</item>
-    </style>
-
     <style name="Animations.GrowFromBottomright">
         <item name="@android:windowEnterAnimation">@anim/grow_from_bottomright_to_topleft</item>
         <item name="@android:windowExitAnimation">@anim/shrink_from_topleft_to_bottomright</item>
