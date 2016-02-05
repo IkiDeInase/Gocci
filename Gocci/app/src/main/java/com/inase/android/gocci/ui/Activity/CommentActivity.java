@@ -82,8 +82,6 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
     EditText mCommentEdit;
     @Bind(R.id.send_button)
     ImageButton mSendButton;
-    @Bind(R.id.progress_wheel)
-    ProgressWheel mProgress;
 
     @OnClick(R.id.comment_edit)
     public void onEdit() {
@@ -106,7 +104,6 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
                 button.setFocusable(true);
                 button.setFocusableInTouchMode(true);
                 button.requestFocus();
-                mProgress.setVisibility(View.VISIBLE);
                 if (isNotice) {
                     mPresenter.postComment(Const.APICategory.SET_COMMENT, API3.Util.getSetCommentAPI(mPost_id, comment, mNoticeUser_id), API3.Util.getGetCommentAPI(mPost_id));
                 } else {
@@ -528,7 +525,6 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
 
     @Override
     public void hideLoading() {
-        mProgress.setVisibility(View.INVISIBLE);
         mSwipeRefresh.post(new Runnable() {
             @Override
             public void run() {
@@ -541,7 +537,6 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
     public void showEmpty(Const.APICategory api, HeaderData memoData) {
         switch (api) {
             case GET_COMMENT_FIRST:
-                mProgress.setVisibility(View.INVISIBLE);
                 mMemoData = memoData;
                 mCommentAdapter = new CommentAdapter(this, mPost_id, mMemoData, mCommentusers);
                 mCommentAdapter.setCommentCallback(this);
@@ -584,7 +579,6 @@ public class CommentActivity extends AppCompatActivity implements ObservableScro
         mMemoData = memoData;
         switch (api) {
             case GET_COMMENT_FIRST:
-                mProgress.setVisibility(View.INVISIBLE);
                 mCommentAdapter = new CommentAdapter(this, mPost_id, mMemoData, mCommentusers);
                 mCommentAdapter.setCommentCallback(this);
                 mCommentRecyclerView.setAdapter(mCommentAdapter);
