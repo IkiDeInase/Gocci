@@ -12,6 +12,7 @@ import android.content.IntentSender;
 import android.content.pm.ActivityInfo;
 import android.location.Location;
 import android.location.LocationManager;
+import android.media.CamcorderProfile;
 import android.media.MediaScannerConnection;
 import android.os.Bundle;
 import android.os.Handler;
@@ -683,11 +684,13 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
             if (mMovieName.isEmpty()) {
                 mMovieName = TAG + System.nanoTime();
             }
+            CamcorderProfile camcorderProfile = CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH);
             if (true) {
                 // for video capturing
                 mVideoEncoder = new TLMediaVideoEncoder(getActivity(), mMovieName, mMediaEncoderListener);
+
                 try {
-                    mVideoEncoder.setFormat(mCameraView.getVideoWidth(), mCameraView.getVideoHeight());
+                    mVideoEncoder.setFormat(mCameraView.getVideoWidth(), mCameraView.getVideoHeight(), camcorderProfile.videoFrameRate, camcorderProfile.videoBitRate);
                     //画質あげる
                     mVideoEncoder.prepare();
                 } catch (Exception e) {
@@ -698,7 +701,7 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
             }
             if (true) {
                 // for audio capturing
-                mAudioEncoder = new TLMediaAudioEncoder(getActivity(), mMovieName, mMediaEncoderListener);
+                mAudioEncoder = new TLMediaAudioEncoder(getActivity(), mMovieName, mMediaEncoderListener, camcorderProfile.audioSampleRate, camcorderProfile.audioBitRate);
                 try {
                     mAudioEncoder.prepare();
                 } catch (Exception e) {

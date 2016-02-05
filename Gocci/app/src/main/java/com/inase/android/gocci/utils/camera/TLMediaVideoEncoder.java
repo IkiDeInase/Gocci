@@ -2,7 +2,6 @@ package com.inase.android.gocci.utils.camera;
 
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.media.CamcorderProfile;
 import android.media.MediaCodec;
 import android.media.MediaCodecInfo;
 import android.media.MediaCodecList;
@@ -153,7 +152,7 @@ public class TLMediaVideoEncoder extends TLMediaEncoder {
     protected MediaCodec internal_configure(MediaCodec previous_codec, final MediaFormat format) throws IOException {
         if (DEBUG) Log.v(TAG, "internal_configure:");
         format.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface);    // API >= 18
-        format.setInteger(MediaFormat.KEY_BIT_RATE, getMaxBitrate());
+        format.setInteger(MediaFormat.KEY_BIT_RATE, mBitRate);
         format.setInteger(MediaFormat.KEY_FRAME_RATE, mFrameRate);
         format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, mIFrameIntervals);
         if (DEBUG) Log.i(TAG, "format: " + format);
@@ -195,30 +194,6 @@ public class TLMediaVideoEncoder extends TLMediaEncoder {
         Log.e(TAG, String.valueOf(bitrate));
         mCalcBitrate = bitrate;
         return bitrate;
-    }
-
-    public int getMaxBitrate() {
-        if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_1080P)) {
-            Log.d("解像度入りました", "1080P");
-            mMaxBitrate = 8000000;
-            return mMaxBitrate;
-        } else if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_720P)) {
-            Log.d("解像度入りました", "720P");
-            mMaxBitrate = 5000000;
-            return mMaxBitrate;
-        } else if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_480P)) {
-            Log.d("解像度入りました", "480P");
-            mMaxBitrate = 2500000;
-            return mMaxBitrate;
-        } else if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_HIGH)) {
-            Log.d("解像度入りました", "high");
-            mMaxBitrate = 1000000;
-            return mMaxBitrate;
-        } else {
-            Log.d("解像度入りました", "low");
-            mMaxBitrate = 1000000;
-            return mMaxBitrate;
-        }
     }
 
     /**

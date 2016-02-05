@@ -39,7 +39,6 @@ public class RecorderManager {
     private int AUDIO_ENCODER = MediaRecorder.AudioEncoder.AAC;
     private int VIDEO_SOURCE = MediaRecorder.VideoSource.CAMERA;
     private int VIDEO_ENCODER = MediaRecorder.VideoEncoder.H264;
-    private int mBitrate;
 
     public RecorderManager(CameraManager cameraManager,
                            SurfaceView mySurfaceView, Activity mainActivity) {
@@ -132,9 +131,8 @@ public class RecorderManager {
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
         mediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
 
-        CamcorderProfile baseProfile = getBaseRecordingProfile();
+        CamcorderProfile baseProfile = CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH);
         baseProfile.fileFormat = OUTPUT_FORMAT;
-        baseProfile.videoBitRate = mBitrate;
         baseProfile.audioCodec = AUDIO_ENCODER;
         baseProfile.videoCodec = VIDEO_ENCODER;
         mediaRecorder.setProfile(baseProfile);
@@ -221,29 +219,4 @@ public class RecorderManager {
         }
         return parentPath;
     }
-
-    public CamcorderProfile getBaseRecordingProfile() {
-        if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_1080P)) {
-            Log.d("解像度入りました", "1080P");
-            mBitrate = 8000000;
-            return CamcorderProfile.get(CamcorderProfile.QUALITY_1080P);
-        } else if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_720P)) {
-            Log.d("解像度入りました", "720P");
-            mBitrate = 5000000;
-            return CamcorderProfile.get(CamcorderProfile.QUALITY_720P);
-        } else if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_480P)) {
-            Log.d("解像度入りました", "480P");
-            mBitrate = 2500000;
-            return CamcorderProfile.get(CamcorderProfile.QUALITY_480P);
-        } else if (CamcorderProfile.hasProfile(CamcorderProfile.QUALITY_HIGH)) {
-            Log.d("解像度入りました", "high");
-            mBitrate = 1000000;
-            return CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH);
-        } else {
-            Log.d("解像度入りました", "low");
-            mBitrate = 1000000;
-            return CamcorderProfile.get(CamcorderProfile.QUALITY_LOW);
-        }
-    }
-
 }
