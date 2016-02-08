@@ -112,6 +112,10 @@ public final class CameraGLView extends GLSurfaceView {
         mCameraHandler.release(true);
     }
 
+    public Camera getCamera() {
+        return mCameraHandler.mThread.mCamera;
+    }
+
     public void setScaleMode(final int mode) {
         if (mScaleMode != mode) {
             mScaleMode = mode;

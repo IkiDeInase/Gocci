@@ -10,6 +10,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.hardware.Camera;
 import android.location.Location;
 import android.location.LocationManager;
 import android.media.AudioManager;
@@ -108,6 +109,8 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
     MySurfaceView mCameraView;
     @Bind(R.id.cancel_fab)
     FloatingActionButton mCancelFab;
+    @Bind(R.id.flash_fab)
+    FloatingActionButton mFlashFab;
     @Bind(R.id.circle_progress)
     CircleProgressView mCircleProgress;
     @Bind(R.id.toukou_button)
@@ -171,6 +174,7 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
     private ShowCameraPresenter mPresenter;
 
     private boolean isFinish = false;
+    private boolean flashOn = false;
 
     private Tracker mTracker;
     private Application_Gocci applicationGocci;
@@ -416,6 +420,25 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
             public void onClick(View v) {
                 recorderManager.reset(false);
                 getActivity().finish();
+            }
+        });
+
+        mFlashFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Camera.Parameters camParam = cameraManager.getCamera().getParameters();
+                if(!flashOn){
+                    //フラッシュを点灯状態に
+                    camParam.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+                    mFlashFab.setImageResource(R.drawable.ic_flash_on_grey_600_24dp);
+                }else{
+                    //フラッシュをオフ
+                    camParam.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+                    mFlashFab.setImageResource(R.drawable.ic_flash_off_grey_600_24dp);
+                }
+                //パラメータを設定
+                cameraManager.getCamera().setParameters(camParam);
+                flashOn = !(flashOn);
             }
         });
 

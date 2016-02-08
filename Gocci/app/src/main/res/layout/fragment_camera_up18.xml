@@ -64,6 +64,20 @@
             android:layout_marginRight="32dp"
             android:layout_toLeftOf="@+id/camera_button" />
 
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/flash_fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_flash_off_grey_600_24dp"
+            fab:fab_size="mini"
+            fab:fab_showShadow="false"
+            fab:fab_colorNormal="@color/white"
+            fab:fab_colorPressed="@color/white"
+            fab:fab_colorRipple="@color/white"
+            android:layout_toRightOf="@+id/camera_button"
+            android:layout_marginLeft="32dp" />
+
     </RelativeLayout>
 
     <com.github.clans.fab.FloatingActionMenu

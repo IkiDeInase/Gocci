@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.ActivityInfo;
+import android.hardware.Camera;
 import android.location.Location;
 import android.location.LocationManager;
 import android.media.CamcorderProfile;
@@ -103,6 +104,8 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
     ImageButton mToukouButton;
     @Bind(R.id.cancel_fab)
     FloatingActionButton mCancelFab;
+    @Bind(R.id.flash_fab)
+    FloatingActionButton mFlashFab;
     @Bind(R.id.comment_action)
     FloatingActionButton mCommentAction;
     @Bind(R.id.value_action)
@@ -143,6 +146,7 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
     private int totalTime = 0;
     private boolean isStart = false;
     private boolean isFinish = false;
+    private boolean flashOn = false;
 
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
 
@@ -409,6 +413,29 @@ public class CameraUp18Fragment extends Fragment implements LocationListener, Go
             @Override
             public void onClick(View v) {
                 getActivity().finish();
+            }
+        });
+
+        mFlashFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mCameraView.getCamera() != null) {
+                    Camera.Parameters camParam = mCameraView.getCamera().getParameters();
+                    if (!flashOn) {
+                        //フラッシュを点灯状態に
+                        camParam.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+                        mFlashFab.setImageResource(R.drawable.ic_flash_on_grey_600_24dp);
+                    } else {
+                        //フラッシュをオフ
+                        camParam.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+                        mFlashFab.setImageResource(R.drawable.ic_flash_off_grey_600_24dp);
+                    }
+                    //パラメータを設定
+                    mCameraView.getCamera().setParameters(camParam);
+                    flashOn = !(flashOn);
+                } else {
+                    Toast.makeText(getActivity(), "ライトを点灯できませんでした。", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
