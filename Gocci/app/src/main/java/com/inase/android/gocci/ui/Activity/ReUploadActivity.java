@@ -2,16 +2,13 @@ package com.inase.android.gocci.ui.activity;
 
 import android.app.Activity;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -228,7 +225,7 @@ public class ReUploadActivity extends AppCompatActivity {
                     mVideoText.setVisibility(View.INVISIBLE);
 
                     ContentResolver contentResolver = getContentResolver();
-                    Cursor cursor = contentResolver.query(data.getData(), new String[] { MediaStore.MediaColumns.DATA }, null, null, null);
+                    Cursor cursor = contentResolver.query(data.getData(), new String[]{MediaStore.MediaColumns.DATA}, null, null, null);
                     if (cursor != null) {
                         cursor.moveToFirst();
                         String path = cursor.getString(0);

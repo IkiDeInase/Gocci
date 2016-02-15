@@ -427,11 +427,11 @@ public class CameraDown18Fragment extends Fragment implements LocationListener, 
             @Override
             public void onClick(View v) {
                 Camera.Parameters camParam = cameraManager.getCamera().getParameters();
-                if(!flashOn){
+                if (!flashOn) {
                     //フラッシュを点灯状態に
                     camParam.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
                     mFlashFab.setImageResource(R.drawable.ic_flash_on_grey_600_24dp);
-                }else{
+                } else {
                     //フラッシュをオフ
                     camParam.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
                     mFlashFab.setImageResource(R.drawable.ic_flash_off_grey_600_24dp);

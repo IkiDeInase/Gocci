@@ -6,7 +6,6 @@ import android.hardware.Camera.Size;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
 import android.os.Environment;
-import android.util.Log;
 import android.view.SurfaceView;
 
 import java.io.File;
