@@ -2,6 +2,7 @@ package com.inase.android.gocci.ui.fragment;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -769,6 +770,11 @@ public class TimelineFollowFragment extends Fragment implements AudioCapabilitie
         } else {
             changeMovie(data);
         }
+    }
+
+    @Override
+    public void onGoHereClick(Uri uri) {
+
     }
 
     @Override

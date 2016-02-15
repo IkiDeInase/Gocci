@@ -289,6 +289,7 @@ public class StreamMyProfFragment extends Fragment implements AppBarLayout.OnOff
                 }
                 break;
             case 1:
+            case 2:
                 mPlayBlockFlag = true;
                 if (player != null) {
                     if (player.getPlayerControl().isPlaying()) {

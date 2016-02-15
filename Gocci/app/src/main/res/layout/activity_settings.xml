@@ -444,10 +444,31 @@
                 android:background="#e0e0e0" />
 
             <TextView
-                android:id="@+id/support_version"
+                android:id="@+id/support_reupload"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/support_source_line"
+                android:layout_marginLeft="24dp"
+                android:text="@string/setting_support_reupload"
+                android:textColor="@color/namegrey"
+                android:textSize="16sp"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp" />
+
+            <View
+                android:id="@+id/support_reupload_line"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@+id/support_reupload"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:background="#e0e0e0" />
+
+            <TextView
+                android:id="@+id/support_version"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/support_reupload_line"
                 android:layout_marginBottom="12dp"
                 android:layout_marginLeft="24dp"
                 android:layout_marginTop="12dp"
@@ -480,7 +501,7 @@
                 android:id="@+id/support_delete"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/support_source_line"
+                android:layout_below="@+id/support_reupload_line"
                 android:layout_marginLeft="24dp"
                 android:text="@string/setting_support_delete"
                 android:textColor="@color/namegrey"

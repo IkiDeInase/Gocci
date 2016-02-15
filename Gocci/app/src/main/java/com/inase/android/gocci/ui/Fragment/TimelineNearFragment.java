@@ -1139,6 +1139,14 @@ public class TimelineNearFragment extends Fragment implements AppBarLayout.OnOff
     }
 
     @Override
+    public void onGoHereClick(Uri uri) {
+        Intent mapIntent = new Intent(Intent.ACTION_VIEW, uri);
+        mapIntent.setPackage("com.google.android.apps.maps");
+        startActivity(mapIntent);
+        getActivity().overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
+    }
+
+    @Override
     public void onGochiClick(String post_id, Const.APICategory apiCategory) {
         if (apiCategory == Const.APICategory.SET_GOCHI) {
             API3.Util.SetGochiLocalCode postGochiLocalCode = API3.Impl.getRepository().SetGochiParameterRegex(post_id);

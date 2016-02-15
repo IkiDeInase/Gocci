@@ -311,6 +311,11 @@ public class SettingActivity extends AppCompatActivity {
         WebViewActivity.startWebViewActivity(1, SettingActivity.this);
     }
 
+    @OnClick(R.id.support_reupload)
+    public void reupload() {
+        ReUploadActivity.startReUploadActivity(SettingActivity.this);
+    }
+
     @OnClick(R.id.support_source)
     public void source() {
         WebViewActivity.startWebViewActivity(2, SettingActivity.this);

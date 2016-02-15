@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:CircleProgressView="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/coordinator_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/tool_bar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/gocci_header"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+        </android.support.v7.widget.Toolbar>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <android.support.v4.widget.NestedScrollView
+            android:id="@+id/scroll_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/view_background">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="16dp"
+                    android:background="#c5c6c9" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/white">
+
+                    <FrameLayout
+                        android:id="@+id/videoFrame"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                    <com.inase.android.gocci.ui.view.SquareVideoView
+                        android:id="@+id/video"
+                        android:visibility="invisible"
+                        android:layout_width="100dp"
+                        android:layout_height="match_parent" />
+
+                        <View
+                            android:layout_width="100dp"
+                            android:layout_height="match_parent"
+                            android:id="@+id/videoFrameView"
+                            android:background="@color/videobackground" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:textColor="@color/white"
+                            android:textSize="14sp"
+                            android:id="@+id/videoText"
+                            android:text="動画を選ぶ"/>
+
+                    </FrameLayout>
+
+                    <EditText
+                        android:id="@+id/memo"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_alignBottom="@+id/videoFrame"
+                        android:layout_alignTop="@+id/videoFrame"
+                        android:layout_toRightOf="@+id/videoFrame"
+                        android:background="#00000000"
+                        android:gravity="left|top"
+                        android:hint="コメント"
+                        android:inputType="textMultiLine"
+                        android:maxLength="140"
+                        android:padding="12dp"
+                        android:textColor="@color/nameblack"
+                        android:textSize="14sp" />
+
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginBottom="16dp"
+                    android:background="#c5c6c9" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:orientation="vertical">
+
+                    <com.rengwuxian.materialedittext.MaterialEditText
+                        android:id="@+id/restnameEdit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:hint="@string/restname_strong"
+                        android:inputType="textShortMessage"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"
+                        android:textColor="@color/timecolor"
+                        android:textSize="@dimen/small_text"
+                        app:met_floatingLabel="normal"
+                        app:met_floatingLabelTextSize="10sp" />
+
+                    <com.rengwuxian.materialedittext.MaterialEditText
+                        android:id="@+id/areaEdit"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:hint="@string/area_strong"
+                        android:inputType="textShortMessage"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"
+                        android:textColor="@color/timecolor"
+                        android:textSize="@dimen/small_text"
+                        app:met_floatingLabel="normal"
+                        app:met_floatingLabelTextSize="10sp" />
+
+                    <com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner
+                        android:id="@+id/category_spinner"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/category"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"
+                        android:textColor="@color/timecolor"
+                        android:textSize="@dimen/small_text"
+                        app:met_floatingLabel="normal"
+                        app:met_floatingLabelTextSize="10sp" />
+
+                    <com.rengwuxian.materialedittext.MaterialEditText
+                        android:id="@+id/edit_value"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:hint="@string/value_strong"
+                        android:inputType="number"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"
+                        android:textColor="@color/timecolor"
+                        android:textSize="@dimen/small_text"
+                        app:met_floatingLabel="normal"
+                        app:met_floatingLabelTextSize="10sp" />
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="16dp"
+                    android:background="#c5c6c9" />
+
+                <EditText
+                    android:id="@+id/feedback"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:background="@color/white"
+                    android:gravity="left|top"
+                    android:hint="Gocci運営にフィードバックも送る。"
+                    android:inputType="textMultiLine"
+                    android:maxLength="140"
+                    android:padding="12dp"
+                    android:textColor="@color/nameblack"
+                    android:textSize="14sp" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#c5c6c9" />
+
+            </LinearLayout>
+
+        </android.support.v4.widget.NestedScrollView>
+
+        <com.andexert.library.RippleView
+            android:id="@+id/toukou_button_ripple"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/gocci_button"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Gocci運営に送る"
+                android:textColor="#ffffff"
+                android:textSize="@dimen/accent_text" />
+
+        </com.andexert.library.RippleView>
+
+        <View
+            android:id="@+id/overlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#4D000000"
+            android:visibility="gone" />
+
+        <at.grabner.circleprogress.CircleProgressView
+            android:id="@+id/progress_wheel"
+            android:layout_width="@dimen/progress_size"
+            android:layout_height="@dimen/progress_size"
+            android:layout_centerInParent="true"
+            CircleProgressView:cpv_barColor="@color/gocci_header"
+            CircleProgressView:cpv_barWidth="16dp"
+            CircleProgressView:cpv_contourSize="0dp"
+            CircleProgressView:cpv_autoTextSize="true"
+            CircleProgressView:cpv_maxValue="100"
+            CircleProgressView:cpv_unit="%"
+            CircleProgressView:cpv_unitPosition="right_top"
+            CircleProgressView:cpv_textColor="@color/white"
+            CircleProgressView:cpv_unitColor="@color/white"
+            CircleProgressView:cpv_rimColor="#afafaf"
+            CircleProgressView:cpv_rimWidth="16dp"
+            CircleProgressView:cpv_showUnit="true"
+            CircleProgressView:cpv_seekMode="false"
+            android:visibility="gone" />
+
+    </RelativeLayout>
+
+</android.support.design.widget.CoordinatorLayout>

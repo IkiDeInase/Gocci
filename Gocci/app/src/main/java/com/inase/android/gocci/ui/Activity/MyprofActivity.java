@@ -19,6 +19,7 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -69,6 +70,7 @@ import com.inase.android.gocci.event.ProfJsonEvent;
 import com.inase.android.gocci.event.RetryApiEvent;
 import com.inase.android.gocci.event.TimelineMuteChangeEvent;
 import com.inase.android.gocci.presenter.ShowMyProfPresenter;
+import com.inase.android.gocci.ui.fragment.CalendarMyProfFragment;
 import com.inase.android.gocci.ui.fragment.GridMyProfFragment;
 import com.inase.android.gocci.ui.fragment.StreamMyProfFragment;
 import com.inase.android.gocci.ui.view.DrawerProfHeader;
@@ -148,9 +150,17 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
     @Bind(R.id.gochi_layout)
     GochiLayout mGochi;
 
+    @OnClick(R.id.calendar)
+    public void onCalendar() {
+        if (mShowPosition != 2) {
+            mShowPosition = 2;
+            mViewpager.setCurrentItem(mShowPosition);
+        }
+    }
+
     @OnClick(R.id.stream)
     public void onStream() {
-        if (mShowPosition == 1) {
+        if (mShowPosition != 0) {
             mShowPosition = 0;
             mViewpager.setCurrentItem(mShowPosition);
         }
@@ -158,7 +168,7 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
 
     @OnClick(R.id.grid)
     public void onGrid() {
-        if (mShowPosition == 0) {
+        if (mShowPosition != 1) {
             mShowPosition = 1;
             mViewpager.setCurrentItem(mShowPosition);
         }
@@ -269,8 +279,10 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
                 getSupportFragmentManager(), FragmentPagerItems.with(this)
                 .add(R.string.tab_near, StreamMyProfFragment.class)
                 .add(R.string.tab_follow, GridMyProfFragment.class)
+                .add(R.string.tab_gochi, CalendarMyProfFragment.class)
                 .create());
 
+        mViewpager.setOffscreenPageLimit(3);
         mViewpager.setAdapter(adapter);
         mViewpager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -291,6 +303,11 @@ public class MyprofActivity extends AppCompatActivity implements ShowMyProfPrese
                     case 1:
                         mTracker = applicationGocci.getDefaultTracker();
                         mTracker.setScreenName("MyProfGrid");
+                        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+                        break;
+                    case 2:
+                        mTracker = applicationGocci.getDefaultTracker();
+                        mTracker.setScreenName("MyProfCalendar");
                         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
                         break;
                 }

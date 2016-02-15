@@ -60,7 +60,8 @@ public class Const {
         CAMERA_PREVIEW_ALREADY,
         MAP_SEARCH, MAP_PROFILE,
         WEBVIEW_LICENSE, WEBVIEW_POLICY,
-        LOGIN_SESSION, POST_PAGE, USER_SEARCH
+        LOGIN_SESSION, POST_PAGE, USER_SEARCH,
+        REUPLOAD
     }
 
     public enum ListCategory {
@@ -133,6 +134,7 @@ public class Const {
         UNSET_DEVICE,
         GET_FOLLOWER_RANK_FIRST,
         GET_FOLLOWER_RANK_ADD,
+        SET_POST_CRASH
     }
 
     public static final class TwoCellViewHolder extends RecyclerView.ViewHolder {
@@ -160,6 +162,8 @@ public class Const {
         public ImageView mGochiImage;
         @Bind(R.id.other_image)
         public ImageView mOtherImage;
+        @Bind(R.id.navigationRipple)
+        public RippleView mNavigationRipple;
 
         public TwoCellViewHolder(View view) {
             super(view);

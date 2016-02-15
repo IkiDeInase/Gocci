@@ -22,6 +22,17 @@
         android:layout_height="match_parent"
         android:layout_gravity="center_horizontal" />
 
+    <com.andexert.library.RippleView
+        android:id="@+id/navigationRipple"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ic_near_me_deep_orange_600_24dp"
+        android:layout_margin="8dp"
+        android:padding="8dp"
+        ripple:rv_centered="true"
+        android:visibility="invisible"
+        android:layout_gravity="right"/>
+
     <ImageView
         android:id="@+id/overlay_footer"
         android:layout_width="match_parent"
@@ -74,6 +85,7 @@
                 android:layout_marginRight="8dp"
                 android:gravity="right"
                 android:singleLine="true"
+                android:textSize="@dimen/small_text"
                 android:textColor="@color/white"
                 android:textStyle="bold" />
 

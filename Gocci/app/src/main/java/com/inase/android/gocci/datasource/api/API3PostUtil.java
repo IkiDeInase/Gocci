@@ -1072,4 +1072,70 @@ public class API3PostUtil {
             Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
         }
     }
+
+    public static void setPostCrashAsync(final Context context, final Const.ActivityCategory activityCategory, String movie_name, String restname, String address, int category_id, String value, final String memo, final String feedback, int cheer_flag) {
+        if (Util.getConnectedState(context) != Util.NetworkStatus.OFF) {
+            API3.Util.SetPost_CrashLocalCode localCode = API3.Impl.getRepository().SetPost_CrashParameterRegex(restname, address, movie_name, category_id == 1 ? null : String.valueOf(category_id), value.isEmpty() ? null : value, memo.isEmpty() ? null : memo, cheer_flag == 0 ? null : String.valueOf(cheer_flag));
+            if (localCode == null) {
+                startTime = System.currentTimeMillis();
+                Application_Gocci.getJsonAsync(API3.Util.getSetPostCrashAPI(restname, address, movie_name, category_id == 1 ? null : String.valueOf(category_id), value.isEmpty() ? null : value, memo.isEmpty() ? null : memo, cheer_flag == 0 ? null : String.valueOf(cheer_flag)), new JsonHttpResponseHandler() {
+
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
+                        tracker.send(new HitBuilders.TimingBuilder()
+                                .setCategory("System")
+                                .setVariable(Const.APICategory.SET_POST_CRASH.name())
+                                .setLabel(SavedData.getServerUserId(context))
+                                .setValue(System.currentTimeMillis() - startTime).build());
+                        API3.Impl.getRepository().SetPost_CrashResponse(response, new API3.PayloadResponseCallback() {
+                            @Override
+                            public void onSuccess(JSONObject payload) {
+                                BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.SUCCESS, activityCategory, Const.APICategory.SET_POST_CRASH, feedback));
+                            }
+
+                            @Override
+                            public void onGlobalError(API3.Util.GlobalCode globalCode) {
+                                Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_POST_CRASH, globalCode);
+                                BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.GLOBALERROR, activityCategory, Const.APICategory.SET_POST_CRASH, feedback));
+                                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
+                                tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
+                                        setAction(Const.APICategory.SET_POST_CRASH.name()).
+                                        setLabel(API3.Util.GlobalCodeMessageTable(globalCode)).build());
+                            }
+
+                            @Override
+                            public void onLocalError(String errorMessage) {
+                                Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show();
+                                BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.LOCALERROR, activityCategory, Const.APICategory.SET_POST_CRASH, feedback));
+                                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
+                                tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
+                                        setAction(Const.APICategory.SET_POST_CRASH.name()).
+                                        setLabel(errorMessage).build());
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                        Application_Gocci.resolveOrHandleGlobalError(context, Const.APICategory.SET_POST_CRASH, API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR);
+                        BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.GLOBALERROR, activityCategory, Const.APICategory.SET_POST_CRASH, feedback));
+                        Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
+                        tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
+                                setAction(Const.APICategory.SET_POST_CRASH.name()).
+                                setLabel(API3.Util.GlobalCodeMessageTable(API3.Util.GlobalCode.ERROR_UNKNOWN_ERROR)).build());
+                    }
+                });
+            } else {
+                Toast.makeText(context, API3.Util.SetPost_CrashLocalCodeMessageTable(localCode), Toast.LENGTH_SHORT).show();
+                BusHolder.get().post(new PostCallbackEvent(Const.PostCallback.LOCALERROR, activityCategory, Const.APICategory.SET_POST_CRASH, memo));
+                Tracker tracker = Application_Gocci.getInstance().getDefaultTracker();
+                tracker.send(new HitBuilders.EventBuilder().setCategory("ApiBug").
+                        setAction(Const.APICategory.SET_POST_CRASH.name()).
+                        setLabel(API3.Util.SetPost_CrashLocalCodeMessageTable(localCode)).build());
+            }
+        } else {
+            Toast.makeText(context, context.getString(R.string.error_internet_connection), Toast.LENGTH_LONG).show();
+        }
+    }
 }

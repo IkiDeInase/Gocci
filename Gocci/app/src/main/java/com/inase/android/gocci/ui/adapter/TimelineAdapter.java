@@ -2,12 +2,15 @@ package com.inase.android.gocci.ui.adapter;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.andexert.library.RippleView;
 import com.cocosw.bottomsheet.BottomSheet;
 import com.inase.android.gocci.R;
 import com.inase.android.gocci.consts.Const;
@@ -91,9 +94,16 @@ public class TimelineAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
 
         if (mCategory == Const.TimelineCategory.NEARLINE) {
             holder.mDistance.setText(getDist(user.getDistance()));
+            holder.mNavigationRipple.setVisibility(View.VISIBLE);
+            holder.mNavigationRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
+                @Override
+                public void onComplete(RippleView rippleView) {
+                    //ナビ
+                    mCallback.onGoHereClick((Uri.parse("google.navigation:q=" + user.getLat() + "," + user.getLon() + "&mode=w")));
+                }
+            });
         } else {
             holder.mDistance.setText(user.getPost_date());
-            holder.mDistance.setTextSize(12);
         }
 
         holder.mOtherAction.setOnClickListener(new View.OnClickListener() {
@@ -163,10 +173,16 @@ public class TimelineAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
 
     private String getDist(int distance) {
         String dist = null;
-        if (distance > 1000) {
-            dist = distance / 1000 + "km";
+        int minute = distance / 80;
+
+        if (minute > 60) {
+            dist = "１時間越";
         } else {
-            dist = distance + "m";
+            if (minute == 0 || minute == 1) {
+                dist = "すぐそこ！";
+            } else {
+                dist = "徒歩" + minute + "分";
+            }
         }
         return dist;
     }
@@ -186,6 +202,8 @@ public class TimelineAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
         void onGochiClick(String post_id, Const.APICategory apiCategory);
 
         void onVideoFrameClick(TwoCellData data);
+
+        void onGoHereClick(Uri uri);
 
         void onHashHolder(Const.TwoCellViewHolder holder, String post_id);
     }

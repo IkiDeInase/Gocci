@@ -258,6 +258,7 @@ public class GridMyProfFragment extends Fragment implements AppBarLayout.OnOffse
                 releasePlayer();
                 break;
             case 0:
+            case 2:
                 mPlayBlockFlag = true;
                 releasePlayer();
                 if (getGridPlayingViewHolder() != null) {

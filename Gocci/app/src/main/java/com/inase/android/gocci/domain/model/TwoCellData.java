@@ -24,6 +24,8 @@ public class TwoCellData {
     private static final String TAG_VALUE = "value";
 
     private static final String TAG_DISTANCE = "distance";
+    private static final String TAG_LAT = "lat";
+    private static final String TAG_LON = "lon";
 
     private String post_id;
     private String movie;
@@ -41,13 +43,15 @@ public class TwoCellData {
     private String value;
 
     private int distance;
+    private double lat;
+    private double lon;
 
     public TwoCellData() {
     }
 
     public TwoCellData(String post_id, String movie, String thumbnail, String post_rest_id, String restname,
                        String post_user_id, String username, boolean cheer_flag, boolean gochi_flag, String post_date, String mp4_movie, String hls_movie,
-                       String profile_img, String value, int distance) {
+                       String profile_img, String value, int distance, double lat, double lon) {
         this.post_id = post_id;
         this.movie = movie;
         this.thumbnail = thumbnail;
@@ -63,6 +67,8 @@ public class TwoCellData {
         this.profile_img = profile_img;
         this.value = value;
         this.distance = distance;
+        this.lat = lat;
+        this.lon = lon;
     }
 
     public TwoCellData(String post_id, String movie, String thumbnail, String post_rest_id, String restname,
@@ -102,8 +108,10 @@ public class TwoCellData {
 
             if (jsonObject.has(TAG_DISTANCE)) {
                 int distance = jsonObject.getInt(TAG_DISTANCE);
+                double lat = jsonObject.getDouble(TAG_LAT);
+                double lon = jsonObject.getDouble(TAG_LON);
                 return new TwoCellData(post_id, movie, thumbnail, post_rest_id, restname,
-                        post_user_id, username, cheer_flag, gochi_flag, post_date, mp4_movie, hls_movie, profile_img, value, distance);
+                        post_user_id, username, cheer_flag, gochi_flag, post_date, mp4_movie, hls_movie, profile_img, value, distance, lat, lon);
             } else {
                 return new TwoCellData(post_id, movie, thumbnail, post_rest_id, restname,
                         post_user_id, username, cheer_flag, gochi_flag, post_date, mp4_movie, hls_movie, profile_img, value);
@@ -232,5 +240,21 @@ public class TwoCellData {
 
     public boolean isGochi_flag() {
         return gochi_flag;
+    }
+
+    public double getLat() {
+        return lat;
+    }
+
+    public void setLat(double lat) {
+        this.lat = lat;
+    }
+
+    public double getLon() {
+        return lon;
+    }
+
+    public void setLon(double lon) {
+        this.lon = lon;
     }
 }
