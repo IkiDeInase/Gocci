@@ -59,7 +59,7 @@ dependencies {
     compile('io.nlopez.smartlocation:library:3.2.1') { transitive = false; }
     compile('com.twitter.sdk.android:twitter:1.12.1@aar') { transitive = true }
     compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') { transitive = true }
-    compile('com.mikepenz:materialdrawer:4.6.4@aar') { transitive = true }
+    compile('com.mikepenz:materialdrawer:5.0.0@aar') { transitive = true }
     compile('com.weiwangcn.betterspinner:library-material:1.1.0') {
         exclude group: 'com.android.support', module: 'appcompat-v7'
     }
@@ -107,7 +107,7 @@ dependencies {
     compile 'com.github.iammert:MaterialIntroView:1.5'
     compile 'com.github.hotchemi:android-rate:0.5.6'
     compile 'com.github.justzak:dilatingdotsprogressbar:1.0.1'
-    compile 'com.squareup:android-times-square:1.6.4@aar'
+    compile 'com.squareup:android-times-square:1.6.5@aar'
 }
 
 repositories {

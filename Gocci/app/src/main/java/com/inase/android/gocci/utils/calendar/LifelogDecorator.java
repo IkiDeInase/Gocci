@@ -71,17 +71,20 @@ public class LifelogDecorator implements CalendarCellDecorator {
                             e.printStackTrace();
                         }
                     }
+                    mThumbnailMap.remove(post_date);
                     return null;
                 }
 
                 @Override
                 protected void onPostExecute(Void result) {
-                    MultiDrawable multiDrawable = new MultiDrawable(profilePhotos);
-                    multiDrawable.setBounds(0, 0, width, height);
+                    if (profilePhotos.size() != 0) {
+                        MultiDrawable multiDrawable = new MultiDrawable(profilePhotos);
+                        multiDrawable.setBounds(0, 0, width, height);
 
-                    mImageView.setImageDrawable(multiDrawable);
-                    Bitmap icon = mClusterIconGenerator.makeIcon(String.valueOf(thumbnailMap.size()));
-                    cellView.setBackground(new BitmapDrawable(mContext.getResources(), icon));
+                        mImageView.setImageDrawable(multiDrawable);
+                        Bitmap icon = mClusterIconGenerator.makeIcon(String.valueOf(thumbnailMap.size()));
+                        cellView.setBackground(new BitmapDrawable(mContext.getResources(), icon));
+                    }
                 }
             }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }

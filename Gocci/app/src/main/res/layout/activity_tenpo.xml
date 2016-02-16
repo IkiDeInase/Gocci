@@ -58,7 +58,8 @@
         android:layout_height="wrap_content"
         android:layout_marginRight="16dp"
         app:layout_anchor="@id/app_bar"
-        app:layout_anchorGravity="top|right">
+        app:layout_anchorGravity="top|right"
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/cheer_flag"

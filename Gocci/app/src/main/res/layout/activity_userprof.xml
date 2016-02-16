@@ -181,7 +181,8 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         ripple:rv_centered="true"
-                        ripple:rv_color="@android:color/black">
+                        ripple:rv_color="@android:color/black"
+                        android:visibility="gone">
 
                         <TextView
                             android:layout_width="wrap_content"

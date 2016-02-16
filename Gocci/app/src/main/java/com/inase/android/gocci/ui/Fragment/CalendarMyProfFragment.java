@@ -68,7 +68,6 @@ public class CalendarMyProfFragment extends Fragment implements AppBarLayout.OnO
         lastYear.add(Calendar.YEAR, -1);
 
         ViewCompat.setNestedScrollingEnabled(mCalendar, true);
-        mCalendar.setDecorators(Arrays.<CalendarCellDecorator>asList(new LifelogDecorator(getActivity(), thumbnailMap)));
         mCalendar.init(lastYear.getTime(), nextYear.getTime()) //
                 .inMode(CalendarPickerView.SelectionMode.MULTIPLE);
 
@@ -106,7 +105,7 @@ public class CalendarMyProfFragment extends Fragment implements AppBarLayout.OnO
         thumbnailMap.clear();
         dateList.clear();
 
-        SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+        final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
         String post_date = null;
         ArrayList<String> thumbnails = null;
         for (PostData data : mUsers) {
@@ -139,6 +138,22 @@ public class CalendarMyProfFragment extends Fragment implements AppBarLayout.OnO
         } catch (ParseException e) {
             e.printStackTrace();
         }
+
+        mCalendar.setOnDateSelectedListener(new CalendarPickerView.OnDateSelectedListener() {
+            @Override
+            public void onDateSelected(Date date) {
+                if (dateList.contains(date)) {
+
+                }
+            }
+
+            @Override
+            public void onDateUnselected(Date date) {
+                if (dateList.contains(date)) {
+
+                }
+            }
+        });
     }
 
     @Override
