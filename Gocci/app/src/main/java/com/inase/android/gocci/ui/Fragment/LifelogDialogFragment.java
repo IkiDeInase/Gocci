@@ -456,6 +456,7 @@ public class LifelogDialogFragment extends SupportBlurDialogFragment implements 
     public void onStreamDeleteClick(String post_id) {
         MyprofActivity activity = (MyprofActivity) getActivity();
         activity.setDeleteDialog(post_id);
+        dismiss();
     }
 
     @Override
