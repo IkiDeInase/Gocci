@@ -281,7 +281,8 @@ public class StreamMyProfFragment extends Fragment implements AppBarLayout.OnOff
                         player.getPlayerControl().start();
                     }
                 } else {
-                    if (!mUsers.isEmpty()) {
+                    if (!mUsers.isEmpty() && mPlayingPostId != null) {
+                        releasePlayer();
                         if (Util.isMovieAutoPlay(getActivity())) {
                             streamPreparePlayer(getStreamPlayingViewHolder(), getVideoPath());
                         }

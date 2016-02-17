@@ -287,7 +287,7 @@ public class RestPageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                                     break;
                                 case R.id.other_share:
                                     Toast.makeText(mContext, mContext.getString(R.string.preparing_share), Toast.LENGTH_LONG).show();
-                                    mCallback.onInstaShare(user.getMovie(), user.getRestname());
+                                    mCallback.onInstaShare(user.getMovie(), mRestData.getRestname());
                                     break;
                                 case R.id.close:
                                     dialog.dismiss();

@@ -1,6 +1,7 @@
 package com.inase.android.gocci.utils.share;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -63,38 +64,36 @@ public class FacebookUtil {
 
     public static void performStoryPost(String title, String description, String videoUrl, String thumbUrl) {
         ShareOpenGraphObject object = new ShareOpenGraphObject.Builder()
-                .putString("og:type", "video.other")
-                .putString("og:title", title)
-                .putString("og:description", description)
-                .putString("og:url", "http://gocci.me")
-                .putString("og:video", videoUrl)
-                .putString("og:image", thumbUrl)
-                .putString("og:locale", "ja_JP")
-                .putString("og:site_name", "Gocci")
+                .putString("fb:app_id", "977612005613710")
+                .putString("og:type", "video.movie")
+                .putString("og:title", "One Direction - Drag Me Down")
+                .putString("og:description", "One Direction&#39;s new single Drag Me Down is out now! iTunes: http://smarturl.it/1DdmdIT Apple Music: http://smarturl.it/1DdmdAM Spotify: http://smarturl.it/1D...")
+                .putString("og:url", "https://www.youtube.com/watch?v=Jwgf3wmiA04")
+                .putString("og:image", "https://i.ytimg.com/vi/Jwgf3wmiA04/maxresdefault.jpg")
                 .build();
         ShareOpenGraphAction action = new ShareOpenGraphAction.Builder()
-                .setActionType("goccitest:record")
+                .setActionType("video.watches")
                 .putString("fb:explicitly_shared", "true")
-                .putObject("other", object)
+                .putObject("movie", object)
                 .build();
         ShareOpenGraphContent content = new ShareOpenGraphContent.Builder()
-                .setPreviewPropertyName("other")
+                .setPreviewPropertyName("movie")
                 .setAction(action)
                 .build();
         ShareApi.share(content, new FacebookCallback<Sharer.Result>() {
             @Override
             public void onSuccess(Sharer.Result result) {
-
+                Log.e("ログ", result.toString());
             }
 
             @Override
             public void onCancel() {
-
+                Log.e("ログ", "cancel");
             }
 
             @Override
             public void onError(FacebookException error) {
-
+                Log.e("ログ", error.toString());
             }
         });
     }

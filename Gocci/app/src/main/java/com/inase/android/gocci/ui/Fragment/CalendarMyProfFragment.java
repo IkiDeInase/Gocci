@@ -47,6 +47,8 @@ public class CalendarMyProfFragment extends Fragment implements AppBarLayout.OnO
 
     private ArrayList<Date> dateList = new ArrayList<>();
     private HashMap<String, ArrayList<String>> thumbnailMap = new HashMap<>();
+    private HashMap<String, ArrayList<PostData>> postDataMap = new HashMap<>();
+    private HashMap<String, ArrayList<String>> postIdMap = new HashMap<>();
 
     private MyprofActivity activity;
 
@@ -105,9 +107,16 @@ public class CalendarMyProfFragment extends Fragment implements AppBarLayout.OnO
         thumbnailMap.clear();
         dateList.clear();
 
+        if (mUsers.isEmpty()) {
+            mCalendar.setVisibility(View.INVISIBLE);
+        } else {
+            mCalendar.setVisibility(View.VISIBLE);
+        }
+
         final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
         String post_date = null;
         ArrayList<String> thumbnails = null;
+        ArrayList<PostData> postDatas = null;
         for (PostData data : mUsers) {
             try {
                 dateList.add(dateTimeFormat.parse(data.getPost_date()));
@@ -118,23 +127,28 @@ public class CalendarMyProfFragment extends Fragment implements AppBarLayout.OnO
             if (post_date == null) {
                 post_date = data.getPost_date();
                 thumbnails = new ArrayList<>();
+                postDatas = new ArrayList<>();
             }
 
             if (post_date.equals(data.getPost_date())) {
                 thumbnails.add(data.getThumbnail());
+                postDatas.add(data);
             } else {
                 thumbnailMap.put(data.getPost_date(), thumbnails);
+                postDataMap.put(data.getPost_date(), postDatas);
                 post_date = null;
             }
         }
         if (post_date != null) {
             thumbnailMap.put(post_date, thumbnails);
+            postDataMap.put(post_date, postDatas);
         }
         mCalendar.setDecorators(Arrays.<CalendarCellDecorator>asList(new LifelogDecorator(getActivity(), thumbnailMap)));
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_MONTH, 1);
         try {
-            mCalendar.init(dateTimeFormat.parse(mUsers.get(mUsers.size() - 1).getPost_date()), Calendar.getInstance().getTime())
-                    .inMode(CalendarPickerView.SelectionMode.MULTIPLE)
-                    .withSelectedDates(dateList);
+            mCalendar.init(mUsers.isEmpty() ? Calendar.getInstance().getTime() : dateTimeFormat.parse(mUsers.get(mUsers.size() - 1).getPost_date()), calendar.getTime())
+                    .inMode(CalendarPickerView.SelectionMode.MULTIPLE);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -143,14 +157,16 @@ public class CalendarMyProfFragment extends Fragment implements AppBarLayout.OnO
             @Override
             public void onDateSelected(Date date) {
                 if (dateList.contains(date)) {
-
+                    LifelogDialogFragment fragment = LifelogDialogFragment.newInstance(postDataMap.get(dateTimeFormat.format(date)));
+                    fragment.show(getActivity().getSupportFragmentManager(), "lifelog");
                 }
             }
 
             @Override
             public void onDateUnselected(Date date) {
                 if (dateList.contains(date)) {
-
+                    LifelogDialogFragment fragment = LifelogDialogFragment.newInstance(postDataMap.get(dateTimeFormat.format(date)));
+                    fragment.show(getActivity().getSupportFragmentManager(), "lifelog");
                 }
             }
         });

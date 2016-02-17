@@ -92,7 +92,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
         holder.mRestname.setText(user.getRestname());
 
         if (mCategory == Const.TimelineCategory.NEARLINE) {
-            holder.mDistance.setText(getDist(user.getDistance()));
+            holder.mDistance.setText(getDist(holder, user.getDistance()));
             holder.mNavigationRipple.setVisibility(View.VISIBLE);
             holder.mNavigationRipple.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
                 @Override
@@ -170,17 +170,20 @@ public class TimelineAdapter extends RecyclerView.Adapter<Const.TwoCellViewHolde
         return mData.size();
     }
 
-    private String getDist(int distance) {
+    private String getDist(Const.TwoCellViewHolder holder, int distance) {
         String dist = null;
         int minute = distance / 80;
 
         if (minute > 60) {
+            holder.mDistance.setTextSize(10);
             dist = "１時間越";
         } else {
             if (minute == 0 || minute == 1) {
                 dist = "すぐそこ！";
+                holder.mDistance.setTextSize(10);
             } else {
                 dist = "徒歩" + minute + "分";
+                holder.mDistance.setTextSize(12);
             }
         }
         return dist;
