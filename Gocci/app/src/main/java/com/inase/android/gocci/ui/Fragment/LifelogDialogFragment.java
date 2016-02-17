@@ -497,12 +497,6 @@ public class LifelogDialogFragment extends SupportBlurDialogFragment implements 
     }
 
     @Override
-    public void onLineShare(ImageView image) {
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("line://msg/image/" + Util.getLocalBitmapUri(image)));
-        startActivity(intent);
-    }
-
-    @Override
     public void onStreamHashHolder(Const.StreamUserViewHolder holder, String post_id) {
         mStreamViewHolderHash.put(holder, post_id);
     }
